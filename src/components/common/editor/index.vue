@@ -67,6 +67,7 @@
     import LinkPreview from './extensions/linkPreview/linkPreview'
 
     export default defineComponent({
+        name: 'TiptapEditor',
         components: {
             EditorContent,
             BubbleMenu,
@@ -86,6 +87,11 @@
                 type: String,
                 default: ``,
             },
+            emptyText: {
+                type: String,
+                required: false,
+                default: ``,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
@@ -93,7 +99,7 @@
             const widthOption = ref(1)
             const customWidth = ref(100)
 
-            const { isEditMode } = toRefs(props)
+            const { isEditMode, emptyText } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
 
             const localModelValue = ref(decodeURIComponent(modelValue.value))
@@ -128,16 +134,19 @@
                     Highlight.configure({ multicolor: true }),
                     Placeholder.configure({
                         placeholder: ({ node }) => {
+                            if (!isEditMode.value) {
+                                return emptyText.value
+                            }
                             switch (node.type.name) {
                                 case 'heading':
-                                    return `Type in a heading`
+                                    return 'Type in a heading'
                                 case 'codeBlock':
                                     return 'Go ahead. Type some geek...'
                                 default:
                                     return props.placeholder
                             }
                         },
-                        showOnlyWhenEditable: true,
+                        showOnlyWhenEditable: false,
                     }),
                     CustomTable.extend({
                         addKeyboardShortcuts() {
@@ -183,29 +192,11 @@
                 editor.value?.setEditable(isEditMode.value)
             })
 
-            const shouldShowLegacyMenu = ({
-                editor: currEditor,
-                view,
-                state,
-                oldState,
-                from,
-                to,
-            }) => {
-                // only show the bubble menu for images and links
-                return from !== to
-            }
+            const shouldShowLegacyMenu = ({ from, to }) => from !== to
 
-            const shouldShowTableMenu = ({
-                editor: currEditor,
-                view,
-                state,
-                oldState,
-                from,
-                to,
-            }) => {
+            const shouldShowTableMenu = ({ editor: currEditor, from, to }) =>
                 // only show the bubble menu for images and links
-                return currEditor.isActive('table') && from === to
-            }
+                currEditor.isActive('table') && from === to
 
             return {
                 editor,

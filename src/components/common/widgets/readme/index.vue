@@ -74,23 +74,17 @@
                 >
             </div>
         </div>
-
-        <div
-            v-if="!localReadmeContent && !isEditMode"
-            class="text-sm text-gray-500"
-        >
-            {{
-                isEdit
-                    ? 'Add a README with an overview of your asset.'
-                    : `Readme hasn't been added for this asset.`
-            }}
-        </div>
-        <div v-if="isEditMode || readmeGuid(asset)" class="border-0">
+        <div class="border-0">
             <Editor
                 ref="editor"
                 v-model="localReadmeContent"
                 placeholder="Type '/' for commands"
                 :is-edit-mode="isEditMode"
+                :empty-text="
+                    isEditAllowed
+                        ? 'Add a Readme with an overview of your asset.'
+                        : 'Readme hasn\'t been added for this asset.'
+                "
             />
         </div>
     </div>
@@ -120,7 +114,7 @@
             },
         },
         setup(props) {
-            const { asset } = toRefs(props)
+            const { asset, isEdit: isEditAllowed } = toRefs(props)
 
             const { readmeContent, readmeGuid } = useAssetInfo()
 
@@ -160,6 +154,7 @@
                 editor,
                 localReadmeContent,
                 readmeGuid,
+                isEditAllowed,
             }
         },
     })

@@ -107,13 +107,13 @@
     const isValidUrl = ref(isEdit.value)
     const { username } = whoami()
     const localResource = ref({
-        link: 'https://',
+        link: '',
         title: '',
     })
 
     const reset = () => {
         localResource.value = {
-            link: 'https://',
+            link: '',
             title: '',
         }
     }

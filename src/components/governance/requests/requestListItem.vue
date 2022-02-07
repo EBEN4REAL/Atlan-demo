@@ -385,12 +385,12 @@
             // })
             const nameUpdater = computed(() => {
                 if (request.value.status === 'approved') {
-                    const time = request.value?.approvedBy || []
-                    return time[0]?.username || ''
+                    const userUpdater = request.value?.approvedBy || []
+                    return userUpdater[0]?.username || ''
                 }
                 if (request.value.status === 'rejected') {
-                    const time = request.value?.rejectedBy || []
-                    return time[0]?.username || ''
+                    const userUpdater = request.value?.rejectedBy || []
+                    return userUpdater[0]?.username || ''
                 }
                 return ''
             })

@@ -175,6 +175,7 @@
         "prosemirror-image-plugin",
         "prosemirror-model",
         "prosemirror-state",
+        "qs",
         "short-unique-id",
         "splitpanes",
         "sql-formatter",

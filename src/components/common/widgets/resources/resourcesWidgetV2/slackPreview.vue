@@ -42,7 +42,16 @@
                         </span>
                     </div>
 
-                    <ShowLess :text="stripSlackText(data.message.text ?? '')" />
+                    <!-- <ShowLess :text="stripSlackText(data.message.text ?? '')" /> -->
+
+                    <span class="" style="min-width: 20rem">
+                        <Truncate
+                            :tooltip-text="
+                                stripSlackText(data.message.text ?? '')
+                            "
+                            width=""
+                        />
+                    </span>
 
                     <div class="flex text-sm text-gray-500">
                         <span v-if="data.message.reply_count" class="">
@@ -87,6 +96,7 @@
     import ShowLess from '@/UI/showLess.vue'
     import CardActions from '@/common/widgets/resources/resourcesWidgetV2/misc/cardActionMenu.vue'
     import integrationStore from '~/store/integrations/index'
+    import Truncate from '@/common/ellipsis/index.vue'
 
     const props = defineProps({
         link: {

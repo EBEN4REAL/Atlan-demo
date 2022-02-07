@@ -33,13 +33,16 @@
                         @click="handleSave"
                     >
                         <AtlanIcon
+                            v-if="!loadingSave && !isLoading"
                             icon="Edit"
                             class="w-auto h-4 mr-1"
                             :class="{
                                 'ml-2': loadingSave || isLoading,
                             }"
                         />
-                        Save</a-button
+                        {{
+                            loadingSave || isLoading ? 'Saving' : 'Save'
+                        }}</a-button
                     >
                 </template>
             </div>

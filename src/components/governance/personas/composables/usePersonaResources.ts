@@ -2,6 +2,7 @@
 import { defineComponent, PropType, ref, toRefs, h, watch } from 'vue'
 import { reFetchList } from '@/governance/personas/composables/usePersonaList'
 import { savePersona } from '@/governance/personas/composables/useEditPersona'
+import usePersona from '~/composables/persona/usePersona'
 
 const usePersonaResources = (persona) => {
 
@@ -20,6 +21,7 @@ const usePersonaResources = (persona) => {
             delete body.metadataPolicies
             delete body.dataPolicies
             await savePersona(body)
+            usePersona() // update store
             reFetchList() // TODO refetch only required persona
             addStatus.value = 'success'
         } catch (e) {
@@ -39,7 +41,8 @@ const usePersonaResources = (persona) => {
             )
             if (index > -1) body.resources.links[index] = r
             await savePersona(body)
-            reFetchList() // TODO refetch only required persona
+            usePersona() // update store
+            reFetchList()  // TODO refetch only required persona
             updateStatus.value = 'success'
         } catch (error) {
             updateStatus.value = 'error'
@@ -58,6 +61,7 @@ const usePersonaResources = (persona) => {
             delete body.dataPolicies
             await savePersona(body)
             removeStatus.value = 'success'
+            usePersona() // update store
             reFetchList() // TODO refetch only required persona
         } catch (e) {
             removeStatus.value = 'error'

@@ -3,10 +3,11 @@ import { ref, computed, watch } from 'vue'
 // import { useRoute } from 'vue-router'
 import usePersonaService from './usePersonaService'
 import { safeArray } from '~/utils/array'
-
+import { usePersonaStore } from '~/store/persona'
 // TODO make use of store for persona list
 
 // Main Persona List, fetched from API
+const personaStore = usePersonaStore()
 const { listPersonas } = usePersonaService()
 const {
     data: list,
@@ -17,6 +18,9 @@ const {
 } = listPersonas()
 
 const personaList = computed(() => safeArray(list.value?.records))
+watch(list, () => {
+       personaStore.setList(list.value.records)
+})
 export {
     reFetchList,
     personaList,

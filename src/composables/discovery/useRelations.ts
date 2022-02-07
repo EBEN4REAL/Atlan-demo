@@ -1,9 +1,8 @@
-import { ref, Ref, watch, computed } from 'vue'
+import { ref, watch } from 'vue'
 import useIndexSearch from './useIndexSearch'
 import { assetInterface } from '~/types/assets/asset.interface'
 import { useBody } from './useBody'
 
-import { AssetRelationAttributes } from '~/constant/projection'
 import useAssetInfo from './useAssetInfo'
 
 export function useRelations(selectedAsset) {
@@ -11,7 +10,6 @@ export function useRelations(selectedAsset) {
 
     const { assetTypeRelations } = useAssetInfo()
     const defaultAttributes = ref(assetTypeRelations(selectedAsset.value))
-    const relationAttributes = ref([...AssetRelationAttributes])
 
     const generateBody = () => {
         const dsl = useBody(
@@ -26,7 +24,6 @@ export function useRelations(selectedAsset) {
         defaultBody.value = {
             dsl,
             attributes: defaultAttributes?.value,
-            relationAttributes: relationAttributes?.value,
         }
     }
 

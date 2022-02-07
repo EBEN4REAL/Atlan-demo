@@ -225,7 +225,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref, computed, watch } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        ref,
+        computed,
+        watch,
+        toRefs,
+    } from 'vue'
     import { message } from 'ant-design-vue'
     import MinimalTab from '@/UI/minimalTab.vue'
     import AtlanBtn from '@/UI/button.vue'
@@ -289,6 +296,7 @@
         },
         emits: ['selectPolicy'],
         setup(props, { emit }) {
+            const { persona } = toRefs(props)
             const searchPersona = ref('')
             const activeTabFilter = ref('all Persona')
             const selectedPolicy = ref({})
@@ -494,7 +502,7 @@
                 handleAddResource,
                 handleUpdateResource,
                 handleRemoveResource,
-            } = usePersonaResources(props.persona)
+            } = usePersonaResources(persona)
 
             return {
                 addStatus,

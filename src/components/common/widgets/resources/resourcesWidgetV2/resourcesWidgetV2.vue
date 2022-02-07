@@ -20,7 +20,7 @@
         </div>
         <section>
             <template v-if="!resources?.length">
-                <div class="flex flex-col items-center">
+                <div class="flex flex-col items-center h-40">
                     <EmptyScreen desc="No Resources found." />
                 </div>
             </template>

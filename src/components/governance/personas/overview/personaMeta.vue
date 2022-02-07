@@ -147,12 +147,6 @@
                 }
             )
             return {
-                addStatus,
-                updateStatus,
-                removeStatus,
-                handleAddResource,
-                handleUpdateResource,
-                handleRemoveResource,
                 setActiveTab,
                 timeStamp,
                 handleEnableDisablePersona,

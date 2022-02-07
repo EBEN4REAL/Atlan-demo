@@ -43,6 +43,18 @@
                 @editDetails="$emit('editDetails')"
             />
             <PurposeReadme :purpose="persona" />
+            <div class="p-4 mt-3 bg-white border border-gray-200 rounded">
+                <ResourcesWidget
+                    :entityName="persona.name"
+                    :resources="persona?.resources?.links ?? []"
+                    :add-status="addStatus"
+                    :update-status="updateStatus"
+                    :remove-status="removeStatus"
+                    @add="handleAddResource"
+                    @update="handleUpdateResource"
+                    @remove="handleRemoveResource"
+                />
+            </div>
         </div>
         <div
             v-else-if="activeTabKey === 'policies'"
@@ -261,10 +273,13 @@
     import { selectedPersona } from './composables/usePurposeList'
     import AssetList from '@/common/assetList/assetList.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import ResourcesWidget from '@common/widgets/resources/resourcesWidgetV2/resourcesWidgetV2.vue'
+    import usePurposeResources from '@/governance/purposes/composables/usePurposeResources'
 
     export default defineComponent({
         name: 'PurposeBody',
         components: {
+            ResourcesWidget,
             MinimalTab,
             PolicyCard,
             MetadataPolicy,
@@ -481,7 +496,23 @@
             const handleCloseAddPolicy = () => {
                 addpolicyVisible.value = false
             }
+
+            const {
+                addStatus,
+                updateStatus,
+                removeStatus,
+                handleAddResource,
+                handleUpdateResource,
+                handleRemoveResource,
+            } = usePurposeResources(persona)
+
             return {
+                addStatus,
+                updateStatus,
+                removeStatus,
+                handleAddResource,
+                handleUpdateResource,
+                handleRemoveResource,
                 filterConfig,
                 newIdTag,
                 userId,

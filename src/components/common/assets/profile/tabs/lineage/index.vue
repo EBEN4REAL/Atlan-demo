@@ -199,32 +199,26 @@
                                 ...parentGuidObj,
                                 [parentGuid]: [x],
                             }
-
-                        if (relatedBiAssets.value.length - 1 === index) {
-                            Object.entries(parentGuidObj).forEach(([k, v]) => {
-                                const typeNames = v.map((x) => x.typeName)
-                                const typeNamesUnique = [...new Set(typeNames)]
-
-                                typeNamesUnique.forEach((xxx) => {
-                                    const entity = v.find(
-                                        (x) => x.typeName === xxx
-                                    )
-                                    const length = v.filter(
-                                        (x) => x.typeName === xxx
-                                    ).length
-
-                                    if (length > 1)
-                                        entity.typeCount = `${pluralizeString(
-                                            getNodeTypeText[entity.typeName],
-                                            length
-                                        )}`
-                                    addRelatedBiAssetToLineage(data, entity)
-                                })
-                            })
-                        }
-                        return
                     }
-                    addRelatedBiAssetToLineage(data, x)
+                })
+
+                Object.entries(parentGuidObj).forEach(([k, v]) => {
+                    const typeNames = v.map((x) => x.typeName)
+                    const typeNamesUnique = [...new Set(typeNames)]
+
+                    typeNamesUnique.forEach((xxx) => {
+                        const entity = v.find((x) => x.typeName === xxx)
+                        const length = v.filter(
+                            (x) => x.typeName === xxx
+                        ).length
+
+                        if (length > 1)
+                            entity.typeCount = `${pluralizeString(
+                                getNodeTypeText[entity.typeName],
+                                length
+                            )}`
+                        addRelatedBiAssetToLineage(data, entity)
+                    })
                 })
 
                 return computedLineage.value

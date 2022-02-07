@@ -65,7 +65,8 @@ export default async function useComputeGraph(
 
             if (
                 !nonBiTypes.includes(typeName) &&
-                typeNamesDupArr.includes(typeName)
+                typeNamesDupArr.includes(typeName) &&
+                attributes[childGroupBiAssetMap[typeName]]
             ) {
                 const parentGuid =
                     attributes[childGroupBiAssetMap[typeName]].guid
@@ -80,7 +81,9 @@ export default async function useComputeGraph(
                 if (biEntity[parentGuid].length > 1) return
 
                 const typeCountLength = guidEntityMap.filter(
-                    (x) => x?.attributes?.model?.guid === parentGuid
+                    (x) =>
+                        x?.attributes?.[childGroupBiAssetMap[typeName]]
+                            ?.guid === parentGuid
                 ).length
                 if (typeCountLength > 1)
                     ent.typeCount = `${pluralizeString(

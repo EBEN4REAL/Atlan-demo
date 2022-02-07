@@ -5,8 +5,9 @@ import { IPersona, IUser } from '~/types/accessPolicies/personas'
 function usePersonaUserList(persona: Ref<IPersona>, cancelToken) {
     const userListAPIParams: any = {
         sort: 'firstName',
-        filter: { $and: [] },
+        filter: { $or: [] },
     }
+
     const {
         error,
         isLoading,
@@ -14,12 +15,25 @@ function usePersonaUserList(persona: Ref<IPersona>, cancelToken) {
         state,
         STATES,
         getUserList,
-    } = useUsers(userListAPIParams, true, cancelToken)
+    } = useUsers(userListAPIParams, false, cancelToken)
 
     const list: ComputedRef<IUser[]> = computed(() =>
         data.value.map((usr) => getFormattedUser(usr))
     )
     const userList: Ref<IUser[]> = ref([])
+
+    const fetchUsers = () => {
+        userListAPIParams.filter.$or = []
+        persona.value.users?.forEach((id) =>
+            userListAPIParams.filter.$or.push({ id })
+        )
+        getUserList()
+    }
+    /* Fetching user subjects of the persona if there are any. */
+    const fetchPersonaUserSubjects = () => {
+        if (persona?.value?.users?.length) fetchUsers()
+        else userList.value = []
+    }
 
     watch(
         data,
@@ -38,10 +52,10 @@ function usePersonaUserList(persona: Ref<IPersona>, cancelToken) {
         { immediate: true }
     )
     watch(
-        () => persona.value.id,
-        () => getUserList()
+        () => [persona?.value?.id, persona?.value?.users],
+        fetchPersonaUserSubjects,
+        { immediate: true }
     )
-
     return {
         state,
         STATES,
@@ -49,7 +63,7 @@ function usePersonaUserList(persona: Ref<IPersona>, cancelToken) {
         isLoading,
         list: data,
         userListAPIParams,
-        getUserList,
+        fetchPersonaUserSubjects,
         userList,
     }
 }

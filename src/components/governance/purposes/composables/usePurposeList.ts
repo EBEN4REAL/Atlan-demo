@@ -4,7 +4,7 @@ import usePurposeService from './usePurposeService'
 import { safeArray } from '~/utils/array'
 
 // !! THESE ARE ALL PURPOSES, VARIABLE NAMES ARE NEED TO BE CHANGED FROM PERSONA REF TO PURPOSE
-
+// TODO make use of store for list
 const { listPurposes } = usePurposeService()
 const {
     data: list,
@@ -37,7 +37,7 @@ watch(
             return
         }
         selectedPersona.value = undefined
-        
+
     },
     { immediate: true }
 )

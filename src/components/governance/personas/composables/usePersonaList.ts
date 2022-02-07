@@ -4,6 +4,7 @@ import { ref, computed, watch } from 'vue'
 import usePersonaService from './usePersonaService'
 import { safeArray } from '~/utils/array'
 
+// TODO make use of store for persona list
 
 // Main Persona List, fetched from API
 const { listPersonas } = usePersonaService()
@@ -15,7 +16,6 @@ const {
     mutate: reFetchList,
 } = listPersonas()
 
-// export const modifyPersona()
 const personaList = computed(() => safeArray(list.value?.records))
 export {
     reFetchList,
@@ -39,7 +39,7 @@ watch(
             return
         }
         selectedPersona.value = undefined
-        
+
     },
     { immediate: true }
 )
@@ -48,13 +48,13 @@ export const searchTerm = ref('')
 export const filteredPersonas = computed(() => {
     let result = []
     if (searchTerm.value) {
-        result =  personaList.value.filter((ps) =>
+        result = personaList.value.filter((ps) =>
             ps.displayName
                 ?.toLowerCase()
                 .includes(searchTerm.value?.toLowerCase())
         )
     } else {
-        result =  personaList.value
+        result = personaList.value
     }
     return result.sort((a, b) => {
         const current = a.displayName.toLowerCase()

@@ -254,6 +254,7 @@ import TaskList from '~/assets/images/readme/TaskList.svg'
 import Running from '~/assets/images/icons/running.svg'
 import ExclaimCircle from '~/assets/images/icons/exclaimCircle.svg'
 import Refresh from '~/assets/images/icons/Refresh.svg'
+import PlusWhite from '~/assets/images/icons/plus-white.svg'
 import WFEmptyTab from '~/assets/images/workflows/empty-tab.svg'
 import CreateWF from '~/assets/images/workflows/createWF.svg'
 import NoRuns from '~/assets/images/workflows/noRuns.svg'
@@ -396,8 +397,10 @@ import Request from '~/assets/images/icons/Request.svg'
 import RequestActive from '~/assets/images/icons/RequestActive.svg'
 import FilterFunnelDot from '~/assets/images/icons/filterFunnelDot.svg'
 import Comment from '~/assets/images/icons/Comment.svg'
+import Resources2 from '~/assets/images/illustrations/resources/resources.svg'
 
 export default {
+    Resources2,
     IntegrationsActive,
     Integrations,
     SlackToken,
@@ -777,4 +780,5 @@ export default {
     FilterFunnelDot,
     Comment,
     EmptyRequest,
+    PlusWhite,
 }

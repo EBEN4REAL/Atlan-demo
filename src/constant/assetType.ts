@@ -477,7 +477,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         image: 'Salesforce',
         parents: ['SalesforceOrganization'],
-        relationships: ['fields', 'lookupFields', 'organization'],
+        relationships: ['lookupFields', 'organization'],
         groupOrder: 6,
     },
     {

@@ -97,43 +97,48 @@
                         v-model="localEntityType"
                     ></GTCSelect>
                 </div>
-                    <a-dropdown
-                        placement="bottomLeft"
-                        :trigger="['click']"
-                        @click.stop="() => {}"
-                    >
-                        <template #overlay>
-                            <a-menu>
-                                <a-menu-item
-                                    v-for="item in ListForSidebar"
-                                    :key="item.id"
-                                    @click="handleStatusChange(item)"
+                <a-dropdown
+                    placement="bottomLeft"
+                    :trigger="['click']"
+                    @click.stop="() => {}"
+                >
+                    <template #overlay>
+                        <a-menu>
+                            <a-menu-item
+                                v-for="item in ListForSidebar"
+                                :key="item.id"
+                                @click="handleStatusChange(item)"
+                            >
+                                <div
+                                    class="flex items-center space-x-2 text-xs"
                                 >
-                                    <div class="flex items-center space-x-2 text-xs">
-                                        <component
-                                            :is="item.icon"
-                                            class="w-auto h-4 ml-1 mr-2 pushtop"
-                                        />
-                                        {{ item.label }}
-                                    </div>
-                                </a-menu-item>
-                            </a-menu>
-                        </template>
-                        <div class="flex flex-row-reverse text-xs" style="width: 140px">
-                            <AtlanIcon
-                                icon="CaretDown"
-                                class="w-4 h-4 ml-1"
-                            ></AtlanIcon>
-                            <StatusBadge
-                                :status-id="entity.attributes.certificateStatus"
-                                :show-chip-style-status="false"
-                                :show-no-status="true"
-                                :show-label="true"
-                                :is-tree="false"
-                                class="p-0 cursor-pointer"
-                            ></StatusBadge>
-                        </div>
-                    </a-dropdown>
+                                    <component
+                                        :is="item.icon"
+                                        class="w-auto h-4 ml-1 mr-2 pushtop"
+                                    />
+                                    {{ item.label }}
+                                </div>
+                            </a-menu-item>
+                        </a-menu>
+                    </template>
+                    <div
+                        class="flex flex-row-reverse text-xs"
+                        style="width: 140px"
+                    >
+                        <AtlanIcon
+                            icon="CaretDown"
+                            class="w-4 h-4 ml-1"
+                        ></AtlanIcon>
+                        <StatusBadge
+                            :status-id="entity.attributes.certificateStatus"
+                            :show-chip-style-status="false"
+                            :show-no-status="true"
+                            :show-label="true"
+                            :is-tree="false"
+                            class="p-0 cursor-pointer"
+                        ></StatusBadge>
+                    </div>
+                </a-dropdown>
             </div>
             <!-- header ends here  -->
             <a-input
@@ -193,6 +198,7 @@
     } from 'vue'
 
     import { useMagicKeys, whenever } from '@vueuse/core'
+    import { useRouter, useRoute } from 'vue-router'
     import { message } from 'ant-design-vue'
     import StatusBadge from '@common/badge/status/index.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
@@ -279,6 +285,7 @@
             const keys = useMagicKeys()
             const { meta, Enter } = keys
 
+            const router = useRouter()
             const localEntityType = ref(entityType.value)
             watch(entityType, () => {
                 localEntityType.value = entityType.value
@@ -493,6 +500,8 @@
                             getGlossaryByQF(anchorQf.value)
                         )
                     else emit('add', asset.value)
+                    if(asset?.value?.guid)
+                    router.push(`/glossary/${asset?.value?.guid}/overview`)
                 } else if (defaultRetry.value > 0) {
                     defaultRetry.value -= 1
                     mutateUpdate()

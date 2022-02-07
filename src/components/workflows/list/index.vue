@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs } from 'vue'
+    import { defineComponent, ref, toRefs, watch } from 'vue'
     import { useRunDiscoverList } from '~/composables/package/useRunDiscoverList'
     import Item from './item.vue'
 
@@ -47,6 +47,15 @@
                 emit('select', item)
             }
 
+            watch(
+                list,
+                () => {
+                    if (list.value?.length > 0) {
+                        handleSelect(list.value[0])
+                    }
+                },
+                { immediate: true }
+            )
             const getPackage = (item) => {
                 const packageName =
                     item.metadata.annotations['package.argoproj.io/name']

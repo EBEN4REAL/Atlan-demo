@@ -81,6 +81,7 @@
     import {
         savePersona,
         updateSelectedPersona,
+        updatedSelectedData,
     } from '../composables/useEditPurpose'
 
     export default {
@@ -175,7 +176,11 @@
                         ...payload,
                         readme: dataEditor,
                     })
-                    updateSelectedPersona()
+                    updatedSelectedData({
+                        ...payload,
+                        readme: dataEditor,
+                    })
+                    // updateSelectedPersona()
                     loadingSave.value = false
                     isEditMode.value = false
                 } catch (error) {

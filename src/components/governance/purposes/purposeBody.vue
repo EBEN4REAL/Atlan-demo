@@ -42,7 +42,7 @@
                 :persona="persona"
                 @editDetails="$emit('editDetails')"
             />
-            <PurposeReadme :purpose="persona" />
+            <PurposeReadme :purpose="selectedPersonaDirty" />
         </div>
         <div
             v-else-if="activeTabKey === 'policies'"

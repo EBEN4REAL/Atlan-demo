@@ -79,6 +79,10 @@ export async function savePersona(persona: IPersona) {
     return updatePersona(payload)
 }
 
+export function updatedSelectedData(data:any) {
+    selectedPersonaDirty.value = data
+}
+
 export function discardPersona(type: PolicyType, idx: string) {
     isEditing.value = false
 }

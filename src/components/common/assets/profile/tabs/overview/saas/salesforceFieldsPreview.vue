@@ -276,8 +276,7 @@
                     selectedAsset?.value.typeName?.toLowerCase() ===
                     'salesforcefield'
                 ) {
-                    facets.value.organizationQualifiedName =
-                        selectedAsset.value?.attributes?.organization?.uniqueAttributes?.qualifiedName
+                    facets.value.objectQualifiedName = assetQualifiedName.value
                 }
             }
 

@@ -118,6 +118,7 @@ export const AssetAttributes = [
     'pageCount',
     'sourceId',
     'fieldCount',
+    'objectQualifiedName',
 ]
 
 export const SQLAttributes = [

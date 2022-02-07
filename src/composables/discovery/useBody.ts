@@ -343,13 +343,9 @@ export function useBody(
                 }
                 break
             }
-            case 'organizationQualifiedName': {
+            case 'objectQualifiedName': {
                 if (filterObject) {
-                    base.filter(
-                        'term',
-                        'organizationQualifiedName',
-                        filterObject
-                    )
+                    base.filter('term', 'objectQualifiedName', filterObject)
                 }
                 break
             }

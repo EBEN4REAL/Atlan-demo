@@ -162,6 +162,7 @@
     import useActiveQueryAccess from '~/components/insights/explorers/queries/composables/useActiveQueryAccess'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
     import { getDialectInfo } from '~/components/insights/common/composables/getDialectInfo'
+    import { useQuery } from '~/components/insights/common/composables/useQuery'
 
     import {
         explorerPaneSize,
@@ -204,6 +205,7 @@
                 outputPaneSize,
                 paneResize,
             } = useSpiltPanes()
+            const { getDetectQueryTab } = useQuery()
             const route = useRoute()
             // TODO: will be used for HOTKEYs
             const {
@@ -496,190 +498,24 @@
                 }
             }
 
-            // FIXME: refactor it
-
             const detectQuery = () => {
-                // for assetQuote Info of different sources
-                const assetQuoteType = getDialectInfo(
-                    getConnectorName(
-                        `${databaseQualifiedNameFromURL}/${schemaNameFromURL}/${tableNameFromURL}`
-                    ) ?? ''
-                )
-
-                let vqbData =
-                    openVQB === 'true'
-                        ? {
-                              selectedTables: [
-                                  {
-                                      tableQualifiedName: `${databaseQualifiedNameFromURL}/${schemaNameFromURL}/${tableNameFromURL}`,
-                                      addedBy: 'column',
-                                  },
-                              ],
-                              panels: [
-                                  {
-                                      order: 1,
-                                      id: 'columns',
-                                      hide: true,
-                                      subpanels: [
-                                          {
-                                              id: '1',
-                                              columns: ['all'],
-                                              tableData: {
-                                                  item: {},
-                                                  assetType: 'Table',
-                                              },
-                                              columnsData: [],
-                                              tableQualfiedName: `${databaseQualifiedNameFromURL}/${schemaNameFromURL}/${tableNameFromURL}`,
-                                          },
-                                      ],
-                                      expand: false,
-                                  },
-                              ],
-                          }
-                        : {
-                              selectedTables: [],
-                              panels: [
-                                  {
-                                      order: 1,
-                                      id: 'columns',
-                                      hide: false,
-                                      subpanels: [
-                                          {
-                                              id: '1',
-                                              tableQualifiedName: undefined,
-                                              columns: ['all'],
-                                              tableData: {
-                                                  certificateStatus: undefined,
-                                                  assetType: undefined,
-                                                  item: {},
-                                              },
-                                              columnsData: [],
-                                          },
-                                      ],
-                                      expand: true,
-                                  },
-                              ],
-                          }
-
-                const queryTab: activeInlineTabInterface = {
-                    key: generateUUID(),
-                    label: `${tableNameFromURL} preview`,
-                    isSaved: false,
-                    queryId: undefined,
-                    status: 'is_null',
-                    connectionId: '',
-                    description: '',
-                    qualifiedName: '',
-                    parentGuid: '',
-                    parentQualifiedName: '',
-                    isSQLSnippet: false,
-                    savedQueryParentFolderTitle: undefined,
-                    explorer: {
-                        schema: {
-                            connectors: {
-                                attributeName: undefined,
-                                attributeValue: undefined,
-                            },
-                        },
-                        queries: {
-                            connectors: {
-                                connector: undefined,
-                            },
-                            collection: {
-                                guid: '',
-                                qualifiedName: undefined,
-                                parentQualifiedName: undefined,
-                            },
-                        },
-                    },
-                    playground: {
-                        isVQB: openVQB === 'true' ? true : false,
-                        vqb: vqbData,
-                        editor: {
-                            text: '',
-                            context: {
-                                attributeName: undefined,
-                                attributeValue: undefined,
-                            },
-                            dataList: [],
-                            columnList: [],
-                            variables: [],
-                            savedVariables: [],
-                            limitRows: {
-                                checked: false,
-                                rowsCount: -1,
-                            },
-                        },
-                        resultsPane: {
-                            activeTab: 0,
-                            result: {
-                                title: `Result`,
-                                runQueryId: undefined,
-                                isQueryRunning: '',
-                                queryErrorObj: {},
-                                totalRowsCount: -1,
-                                executionTime: -1,
-                                errorDecorations: [],
-                                eventSourceInstance: undefined,
-                                buttonDisable: false,
-                                isQueryAborted: false,
-                            },
-                            metadata: {},
-                            queries: {},
-                            joins: {},
-                            filters: {},
-                            impersonation: {},
-                            downstream: {},
-                            sqlHelp: {},
-                        },
-                    },
-
-                    favico: 'https://atlan.com/favicon.ico',
-                    assetSidebar: {
-                        isVisible: false,
-                        assetInfo: {},
-                        title: '',
-                        id: '',
-                    },
-                }
-
-                let newQuery
-                if (columnNameFromURL) {
-                    // newQuery = `\/* ${tableNameFromURL} preview *\/\nSELECT ${columnNameFromURL} FROM \"${tableNameFromURL}\" LIMIT 50;\n`
-                    newQuery = `-- ${assetQuoteType}${tableNameFromURL}${assetQuoteType} preview \nSELECT ${assetQuoteType}${columnNameFromURL}${assetQuoteType} FROM ${assetQuoteType}${tableNameFromURL}${assetQuoteType} LIMIT 50;\n`
-                } else {
-                    // newQuery = `\/* ${tableNameFromURL} preview *\/\nSELECT * FROM \"${tableNameFromURL}\" LIMIT 50;\n`
-                    newQuery = `-- ${assetQuoteType}${tableNameFromURL}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableNameFromURL}${assetQuoteType} LIMIT 50;\n`
-                }
-
-                const attributeName = 'schemaQualifiedName'
-                const attributeValue = `${databaseQualifiedNameFromURL}/${schemaNameFromURL}`
-
-                // const newText = `${newQuery}${prevText}`
-                if (!(openVQB === 'true')) {
-                    queryTab.playground.editor.text = newQuery
-                }
-
-                queryTab.playground.editor.context = {
-                    attributeName,
-                    attributeValue,
-                }
-
-                queryTab.explorer.schema.connectors = {
-                    attributeName,
-                    attributeValue,
-                }
+                const queryTab = getDetectQueryTab({
+                    databaseQualifiedNameFromURL,
+                    schemaNameFromURL,
+                    tableNameFromURL,
+                    openVQB,
+                    columnNameFromURL,
+                    activeInlineTab,
+                })
 
                 inlineTabAdd(queryTab, tabsArray, activeInlineTabKey)
-
-                // console.log('detect query: ', newQuery)
                 queryRun(
                     activeInlineTab,
                     getData,
                     limitRows,
                     null,
                     null,
-                    newQuery,
+                    queryTab.playground.editor.text,
                     editorInstance,
                     monacoInstance
                 )

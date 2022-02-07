@@ -46,10 +46,12 @@
 
                     <span class="" style="min-width: 20rem">
                         <Truncate
+                            placement="left"
                             :tooltip-text="
                                 stripSlackText(data.message.text ?? '')
                             "
                             width=""
+                            tooltipColor="white"
                         />
                     </span>
 

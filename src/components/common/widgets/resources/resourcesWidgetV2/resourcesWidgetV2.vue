@@ -10,10 +10,10 @@
                     <AtlanButton
                         class="flex-none px-2"
                         size="sm"
-                        color="primary"
+                        color="secondary"
                         padding="compact"
                     >
-                        <AtlanIcon icon="Add" class="" /> Add Resource
+                        <AtlanIcon icon="Add" class="text-gray-400" />
                     </AtlanButton>
                 </template>
             </AddResource>

@@ -8,20 +8,32 @@
             <AddResource @add="addCallback">
                 <template #trigger>
                     <AtlanButton
-                        class="flex-none px-2 rounded-full"
+                        class="flex-none px-2"
                         size="sm"
-                        color="secondary"
+                        color="primary"
                         padding="compact"
                     >
-                        <AtlanIcon icon="Add" class="text-gray-400" />
+                        <AtlanIcon icon="Add" class="" /> Add Resource
                     </AtlanButton>
                 </template>
             </AddResource>
         </div>
         <section>
             <template v-if="!resources?.length">
-                <div class="flex flex-col items-center h-40">
-                    <EmptyScreen desc="No Resources found." />
+                <div
+                    class="flex flex-col items-center justify-center h-40 gap-y-6"
+                >
+                    <div class="w-24">
+                        <AtlanIcon
+                            icon="EmptyResource2"
+                            alt="EmptyResource"
+                            class="w-full h-full"
+                        />
+                    </div>
+                    <p class="text-sm text-center">
+                        Resources is the place to document all <br />knowledge
+                        around the asset
+                    </p>
                 </div>
             </template>
             <template v-else>

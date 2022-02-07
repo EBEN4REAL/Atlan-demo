@@ -32,6 +32,16 @@
                         </a-menu-item>
                     </template>
                 </DeleteResource>
+                <a-menu-item
+                    key="copyLink"
+                    class="px-4 py-2"
+                    @click="handleCopy"
+                >
+                    <div class="flex items-center">
+                        <AtlanIcon icon="CopyOutlined" />
+                        <span class="pl-2 text-sm"> Copy link </span>
+                    </div>
+                </a-menu-item>
             </a-menu>
         </template>
     </a-dropdown>
@@ -39,9 +49,11 @@
 
 <script setup lang="ts">
     import { PropType } from 'vue'
+    import { message } from 'ant-design-vue'
     import EditResource from '@/common/widgets/resources/resourcesWidgetV2/resourceInputModal.vue'
     import DeleteResource from '@/common/widgets/resources/resourcesWidgetV2/misc/deleteResource.vue'
     import { Link } from '~/types/resources.interface'
+    import { copyToClipboard } from '~/utils/clipboard'
 
     const props = defineProps({
         link: {
@@ -49,6 +61,10 @@
             required: true,
         },
     })
+    const handleCopy = async () => {
+        await copyToClipboard(props.link.url)
+        message.success('Link copied!')
+    }
 </script>
 
 <style scoped></style>

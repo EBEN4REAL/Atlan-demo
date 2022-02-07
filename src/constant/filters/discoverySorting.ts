@@ -3,10 +3,10 @@ export const discoverySorting = [
         id: 'default',
         label: 'Relevance',
     },
-    {
-        id: 'popularityScore-desc',
-        label: 'Popularity',
-    },
+    // {
+    //     id: 'popularityScore-desc',
+    //     label: 'Popularity',
+    // },
     {
         id: 'name.keyword-asc',
         label: 'Name(a-z)',

@@ -9,6 +9,7 @@
         <FormItem
             :configMap="localConfig"
             :currentStep="currentStep"
+            :isEdit="isEdit"
         ></FormItem>
     </a-form>
 </template>
@@ -70,13 +71,16 @@
                 type: Object,
                 default: () => {},
             },
+            isEdit: {
+                required: false,
+            },
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
             const formRef = ref()
 
             const { modelValue } = useVModels(props, emit)
-            const { config, currentStep, baseKey, workflowTemplate } =
+            const { config, currentStep, baseKey, workflowTemplate, isEdit } =
                 toRefs(props)
 
             const localConfig = ref(config.value)
@@ -121,6 +125,7 @@
 
                 validateForm,
                 formRef,
+                isEdit,
                 workflowTemplate,
             }
         },

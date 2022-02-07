@@ -67,6 +67,9 @@ export async function savePersona(persona: IPurpose) {
     if(!payload.resources){
         payload.resources = {}
     }
+      if(payload.readme === null){
+        delete payload.readme
+    }
     return updatePersona(payload)
 }
 
@@ -74,6 +77,9 @@ export function discardPersona(type: PolicyType, idx: string) {
     isEditing.value = false
 }
 
+export function updatedSelectedData(data:any) {
+    selectedPersonaDirty.value = data
+}
 export function updateSelectedPersona() {
     selectedPersona.value = JSON.parse(
         JSON.stringify(selectedPersonaDirty.value)

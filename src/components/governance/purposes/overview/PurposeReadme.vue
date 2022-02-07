@@ -23,9 +23,26 @@
                     {{ readMe ? 'Edit' : 'Add a readme' }}
                 </a-button>
                 <template v-else-if="isEditMode">
-                    <a-button @click="handleCancelEdit">Cancel</a-button>
-                    <a-button type="primary" class="ml-2" @click="handleSave"
-                        >Save</a-button
+                    <a-button v-if="!loadingSave" @click="handleCancelEdit"
+                        >Cancel</a-button
+                    >
+                    <a-button
+                        :loading="loadingSave || isLoading"
+                        type="primary"
+                        class="ml-2"
+                        @click="handleSave"
+                    >
+                        <AtlanIcon
+                            v-if="!loadingSave && !isLoading"
+                            icon="Edit"
+                            class="w-auto h-4 mr-1"
+                            :class="{
+                                'ml-2': loadingSave || isLoading,
+                            }"
+                        />
+                        {{
+                            loadingSave || isLoading ? 'Saving' : 'Save'
+                        }}</a-button
                     >
                 </template>
             </div>
@@ -64,6 +81,7 @@
     import {
         savePersona,
         updateSelectedPersona,
+        updatedSelectedData,
     } from '../composables/useEditPurpose'
 
     export default {
@@ -151,14 +169,23 @@
 
             const handleUpdatePueposeReadme = async (dataEditor) => {
                 try {
+                    const payload = { ...purpose.value }
+                    // delete payload.dataPolicies
+                    // delete payload.metadataPolicies
                     await savePersona({
-                        ...purpose.value,
+                        ...payload,
                         readme: dataEditor,
                     })
-                    updateSelectedPersona()
+                    updatedSelectedData({
+                        ...payload,
+                        readme: dataEditor,
+                    })
+                    // updateSelectedPersona()
                     loadingSave.value = false
+                    isEditMode.value = false
                 } catch (error) {
                     loadingSave.value = false
+                    isEditMode.value = false
                     message.error(
                         error?.response?.data?.message ||
                             'Some error occured...Please try again later.'
@@ -194,7 +221,6 @@
                 // })
             }
             const handleSave = () => {
-                isEditMode.value = false
                 loadingSave.value = true
                 if (readMe.value) {
                     handleUpdateReadme()

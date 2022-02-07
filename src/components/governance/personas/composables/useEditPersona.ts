@@ -73,7 +73,14 @@ export async function savePersona(persona: IPersona) {
     if(!payload.resources){
         payload.resources = {}
     }
+    if(payload.readme === null){
+        delete payload.readme
+    }
     return updatePersona(payload)
+}
+
+export function updatedSelectedData(data:any) {
+    selectedPersonaDirty.value = data
 }
 
 export function discardPersona(type: PolicyType, idx: string) {

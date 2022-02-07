@@ -11,7 +11,7 @@
                     class="flex items-center"
                     type="primary"
                     :loading="loadingSave || isLoading"
-                    @click="isEditMode = true"
+                    @click="handleClickModeEdit"
                 >
                     <AtlanIcon
                         icon="Edit"
@@ -23,9 +23,26 @@
                     {{ readMe ? 'Edit' : 'Add a readme' }}
                 </a-button>
                 <template v-else-if="isEditMode">
-                    <a-button @click="handleCancelEdit">Cancel</a-button>
-                    <a-button type="primary" class="ml-2" @click="handleSave"
-                        >Save</a-button
+                    <a-button v-if="!loadingSave" @click="handleCancelEdit"
+                        >Cancel</a-button
+                    >
+                    <a-button
+                        :loading="loadingSave || isLoading"
+                        type="primary"
+                        class="ml-2"
+                        @click="handleSave"
+                    >
+                        <AtlanIcon
+                            v-if="!loadingSave && !isLoading"
+                            icon="Edit"
+                            class="w-auto h-4 mr-1"
+                            :class="{
+                                'ml-2': loadingSave || isLoading,
+                            }"
+                        />
+                        {{
+                            loadingSave || isLoading ? 'Saving' : 'Save'
+                        }}</a-button
                     >
                 </template>
             </div>
@@ -60,10 +77,10 @@
     import { watch, ref, toRefs, onMounted, computed } from 'vue'
     import { message } from 'ant-design-vue'
     import Editor from '@/common/editor/index.vue'
-    import { Files } from '~/services/service/files/index'
     import {
         savePersona,
         updateSelectedPersona,
+        updatedSelectedData,
     } from '../composables/useEditPersona'
 
     export default {
@@ -151,14 +168,23 @@
 
             const handleUpdatePueposeReadme = async (dataEditor) => {
                 try {
+                    const payload = { ...persona.value }
+                    delete payload.dataPolicies
+                    delete payload.metadataPolicies
                     await savePersona({
-                        ...persona.value,
+                        ...payload,
                         readme: dataEditor,
                     })
-                    updateSelectedPersona()
+                    updatedSelectedData({
+                        ...payload,
+                        readme: dataEditor,
+                    })
+                    // updateSelectedPersona()
                     loadingSave.value = false
+                    isEditMode.value = false
                 } catch (error) {
                     loadingSave.value = false
+                    isEditMode.value = false
                     message.error(
                         error?.response?.data?.message ||
                             'Some error occured...Please try again later.'
@@ -194,13 +220,15 @@
                 // })
             }
             const handleSave = () => {
-                isEditMode.value = false
                 loadingSave.value = true
                 if (readMe.value) {
                     handleUpdateReadme()
                 } else {
                     handleAddReadMe()
                 }
+            }
+            const handleClickModeEdit = () => {
+                isEditMode.value = true
             }
             return {
                 isLoading,
@@ -212,6 +240,7 @@
                 loadingSave,
                 readMe,
                 handleSave,
+                handleClickModeEdit,
             }
         },
     }

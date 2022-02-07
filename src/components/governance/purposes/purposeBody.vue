@@ -42,7 +42,7 @@
                 :persona="persona"
                 @editDetails="$emit('editDetails')"
             />
-            <PurposeReadme :purpose="persona" />
+            <PurposeReadme :purpose="selectedPersonaDirty" />
             <div class="p-4 mt-3 bg-white border border-gray-200 rounded">
                 <ResourcesWidget
                     placeholder="Resources is the place to document all knowledge around the purpose"

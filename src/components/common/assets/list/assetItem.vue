@@ -879,6 +879,22 @@
                                 fields</span
                             >
                         </div>
+                        <div
+                            v-if="
+                                ['salesforcedashboard'].includes(
+                                    item.typeName?.toLowerCase()
+                                ) && reportCount(item) !== '0'
+                            "
+                            class="flex ml-2 text-sm text-gray-500"
+                        >
+                            <span class="text-gray-500">
+                                <span
+                                    class="font-semibold tracking-tight text-gray-500"
+                                    >{{ reportCount(item) }}</span
+                                >
+                                reports</span
+                            >
+                        </div>
                     </div>
 
                     <div class="flex flex-wrap gap-x-1">

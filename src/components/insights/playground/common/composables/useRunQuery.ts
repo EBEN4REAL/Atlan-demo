@@ -14,9 +14,9 @@ import { message } from 'ant-design-vue'
 import { useError } from './UseError'
 import { canQueryAbort } from '~/components/insights/common/composables/getDialectInfo'
 
-// import { useTimer } from '~/components/insights/playground/resultsPane/result/timer/useTimer'
+import { useTimer } from '~/components/insights/playground/resultsPane/result/timer/useTimer'
 
-export default function useProject() {
+export default function useRunQuery() {
     const {
         getParsedQuery,
         resetErrorDecorations,
@@ -97,7 +97,7 @@ export default function useProject() {
         const queryExecutionTime = ref(-1)
         const queryErrorObj = ref()
 
-        // const { start, reset } = useTimer(activeInlineTab)
+        const { start, reset } = useTimer(activeInlineTab)
 
         // resetErrorDecorations(activeInlineTab, toRaw(editorInstance.value))
         if (editorInstance?.value) {
@@ -257,7 +257,9 @@ export default function useProject() {
         keys.value = 0
 
         // start timer
-        // start()
+        start()
+
+        activeInlineTab.value.playground.resultsPane.result.abortQueryFn = reset
 
         const {
             eventSource,
@@ -343,7 +345,7 @@ export default function useProject() {
                             if (eventSource.value?.close) {
                                 eventSource.value.close()
                             }
-                            // reset()
+                            reset()
 
                             /* ------------------- */
                         }
@@ -362,7 +364,7 @@ export default function useProject() {
                             if (eventSource.value?.close) {
                                 eventSource.value.close()
                             }
-                            // reset()
+                            reset()
                         }
                     })
                 } else if (
@@ -379,14 +381,14 @@ export default function useProject() {
                     if (eventSource.value?.close) {
                         eventSource.value.close()
                     }
-                    // reset()
+                    reset()
                 }
             } catch (e) {
                 if (onCompletion) onCompletion(activeInlineTab, 'error')
                 if (eventSource.value?.close) {
                     eventSource.value.close()
                 }
-                // reset()
+                reset()
             }
         })
     }
@@ -430,6 +432,13 @@ export default function useProject() {
             // debugger
         }
 
+        // stop timer
+
+        if (activeInlineTab.value.playground.resultsPane.result.abortQueryFn) {
+            activeInlineTab.value.playground.resultsPane.result.abortQueryFn()
+            console.log('clock running abort timer stop 1')
+        }
+
         if (
             canQueryAbort(
                 getConnectorName(
@@ -439,6 +448,8 @@ export default function useProject() {
             ) &&
             activeInlineTab.value.playground.resultsPane.result.runQueryId
         ) {
+            // stop timer
+
             /* Abort Query logic */
             activeInlineTab.value.playground.resultsPane.result.buttonDisable =
                 true
@@ -527,6 +538,12 @@ export default function useProject() {
                 })
         } else {
             // cancel stream query
+            // if (
+            //     activeInlineTab.value.playground.resultsPane.result.abortQueryFn
+            // ) {
+            //     activeInlineTab.value.playground.resultsPane.result.abortQueryFn()
+            //     console.log('clock running abort timer stop 2')
+            // }
             // FIXME: code repetetion
             activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
                 ''

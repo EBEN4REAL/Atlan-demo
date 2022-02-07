@@ -107,30 +107,6 @@
         </div>
 
         <div class="flex flex-col text-sm">
-            <span class="mb-1 text-gray-500">Last updated by</span>
-            <div class="flex flex-col">
-                <div class="flex">
-                    <PopOverUser :item="modifiedBy(selectedAsset)">
-                        <UserPill
-                            :username="modifiedBy(selectedAsset)"
-                            @click="handleClickUser(modifiedBy(selectedAsset))"
-                        ></UserPill
-                    ></PopOverUser>
-                </div>
-            </div>
-        </div>
-        <div class="flex flex-col text-sm">
-            <span class="mb-1 text-gray-500">Last updated at</span>
-            <div class="flex flex-col">
-                <span class="text-sm text-gray-700"
-                    >{{ modifiedAt(selectedAsset, true) }} ({{
-                        modifiedAt(selectedAsset, false)
-                    }})</span
-                >
-            </div>
-        </div>
-
-        <div class="flex flex-col text-sm">
             <div class="flex items-center mb-1 text-gray-500">
                 <span>Unique Identifier</span>
                 <a-tooltip title="Copy">
@@ -171,8 +147,57 @@
             }}</span>
         </div>
 
+        <a-divider dashed class="my-0 border-gray-500"></a-divider>
+
         <div class="flex flex-col text-sm">
-            <span class="mb-1 text-gray-500">Created by</span>
+            <span class="mb-1 text-gray-500">Last updated by (on Atlan)</span>
+            <div class="flex flex-col">
+                <div class="flex">
+                    <PopOverUser :item="modifiedBy(selectedAsset)">
+                        <UserPill
+                            :username="modifiedBy(selectedAsset)"
+                            @click="handleClickUser(modifiedBy(selectedAsset))"
+                        ></UserPill
+                    ></PopOverUser>
+                </div>
+            </div>
+        </div>
+        <div class="flex flex-col text-sm">
+            <span class="mb-1 text-gray-500">Last updated at (on Atlan)</span>
+            <div class="flex flex-col">
+                <span class="text-sm text-gray-700"
+                    >{{ modifiedAt(selectedAsset, true) }} ({{
+                        modifiedAt(selectedAsset, false)
+                    }})</span
+                >
+            </div>
+        </div>
+
+        <div class="flex flex-col text-sm mt-3 mb-3">
+            <span class="mb-1 text-gray-500">Last synced at (on Atlan)</span>
+
+            <div class="flex flex-col">
+                <span class="text-sm text-gray-700"
+                    >{{ lastSyncRunAt(selectedAsset, true) }} ({{
+                        lastSyncRunAt(selectedAsset, false)
+                    }})</span
+                >
+            </div>
+        </div>
+        <div class="flex flex-col text-sm">
+            <span class="mb-1 text-gray-500">Created at (on Atlan)</span>
+
+            <div class="flex flex-col">
+                <span class="text-sm text-gray-700"
+                    >{{ createdAt(selectedAsset, true) }} ({{
+                        createdAt(selectedAsset, false)
+                    }})</span
+                >
+            </div>
+        </div>
+
+        <div class="flex flex-col text-sm">
+            <span class="mb-1 text-gray-500">Created by (on Atlan)</span>
 
             <div class="flex flex-col">
                 <div class="flex">
@@ -185,17 +210,6 @@
                 </div>
             </div>
         </div>
-        <div class="flex flex-col text-sm">
-            <span class="mb-1 text-gray-500">Created at</span>
-
-            <div class="flex flex-col">
-                <span class="text-sm text-gray-700"
-                    >{{ createdAt(selectedAsset, true) }} ({{
-                        createdAt(selectedAsset, false)
-                    }})</span
-                >
-            </div>
-        </div>
     </div>
 </template>
 
@@ -204,6 +218,7 @@
     import ConnectionInfo from '@common/widgets/summary/types/connection.vue'
     import { message } from 'ant-design-vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import map from '~/constant/accessControl/map'
 
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import UserPill from '@/common/pills/user.vue'
@@ -256,6 +271,7 @@
                 resultMakerID,
                 sourceMetadataId,
                 sourceContentMetadataId,
+                lastSyncRunAt,
             } = useAssetInfo()
 
             const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
@@ -295,6 +311,8 @@
                 resultMakerID,
                 sourceMetadataId,
                 sourceContentMetadataId,
+                lastSyncRunAt,
+                map,
             }
         },
     })

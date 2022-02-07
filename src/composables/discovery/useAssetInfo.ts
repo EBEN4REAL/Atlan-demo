@@ -566,6 +566,14 @@ export default function useAssetInfo() {
         }
         return ''
     }
+    const lastSyncRunAt = (asset: assetInterface, raw: boolean = false) => {
+        if (attributes(asset)?.lastSyncRunAt) {
+            return raw
+                ? formatDateTime(attributes(asset)?.lastSyncRunAt) || 'N/A'
+                : useTimeAgo(attributes(asset)?.lastSyncRunAt).value
+        }
+        return ''
+    }
 
     const sourceUpdatedBy = (asset: assetInterface) =>
         attributes(asset)?.sourceUpdatedBy || ''
@@ -1251,5 +1259,6 @@ export default function useAssetInfo() {
         viewCount,
         parentOrganization,
         parentObject,
+        lastSyncRunAt,
     }
 }

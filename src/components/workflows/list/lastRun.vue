@@ -1,21 +1,18 @@
 <template>
-    <div class="flex-col">
-        <div class="flex items-center gap-x-2">
-            <a-tooltip>
-                <div
-                    class="w-2 h-8 p-1 bg-gray-200 rounded shadow-sm"
-                    :class="getRunClass(1)"
-                ></div>
-            </a-tooltip>
-            <div class="flex flex-col" v-if="getRunStatus(1)">
-                <span class="text-sm text-gray-700">
-                    {{ getRunStatus(1) }}</span
-                >
-                <span class="text-xs text-gray-500"
-                    >{{ getRunTime(1) }} ago</span
-                >
-            </div>
-            <div v-else>No run available</div>
+    <div class="flex-col w-full gap-y-1">
+        <div class="flex items-center w-full">
+            <RunWidget
+                :item="item"
+                :workflow="workflow"
+                :runs="runs"
+            ></RunWidget>
+
+            <Ellipsis
+                :tooltip-text="displayName(item, workflow)"
+                classes="text-gray-500"
+                clampPercentage="80%"
+                class="ml-2"
+            ></Ellipsis>
         </div>
     </div>
 </template>
@@ -24,14 +21,27 @@
     import { computed, defineComponent, toRefs } from 'vue'
     import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
     import cronstrue from 'cronstrue'
+    import RunWidget from './run.vue'
+    import Ellipsis from '@/common/ellipsis/index.vue'
 
     export default defineComponent({
+        components: {
+            RunWidget,
+            Ellipsis,
+        },
         props: {
             item: {
                 type: Object,
                 required: false,
                 default() {
                     return {}
+                },
+            },
+            workflow: {
+                type: String,
+                required: false,
+                default() {
+                    return ''
                 },
             },
             runs: {
@@ -43,70 +53,62 @@
             },
         },
         setup(props, { emit }) {
-            const { item, runs } = toRefs(props)
+            const { item, runs, workflow } = toRefs(props)
 
-            const getRunClass = (index) => {
-                const tempStatus = getRunStatus(index)
-                if (tempStatus === 'Succeeded') {
-                    return 'bg-green-500 opacity-75'
-                } else if (tempStatus === 'Failed') {
-                    return 'bg-red-500 opacity-75'
-                } else if (tempStatus === 'Running') {
-                    return 'bg-primary opacity-75 animate-pulse'
-                } else {
-                    return 'bg-gray-200'
-                }
-            }
+            const { packageType, displayName } = useWorkflowInfo()
 
-            const getRunStatus = (index) => {
-                const tempPhase = getRun(index)
-                return tempPhase?._source?.status.phase
-            }
+            // const { getRunClass } = useWorkflowInfo()
 
-            const getRun = (index) => {
-                if (runs.value.length >= index) {
-                    return runs.value[index - 1]
-                }
-                return {}
-            }
+            // // const getRunClass = (index) => {
+            // //     const tempStatus = getRunStatus(index)
+            // //     if (tempStatus === 'Succeeded') {
+            // //         return 'bg-green-500 opacity-75'
+            // //     } else if (tempStatus === 'Failed' || tempStatus === 'Error') {
+            // //         return 'bg-red-500 opacity-75'
+            // //     } else if (tempStatus === 'Running') {
+            // //         return 'bg-primary opacity-75 animate-pulse'
+            // //     } else {
+            // //         return 'bg-gray-200'
+            // //     }
+            // // }
 
-            const getRunTime = (index, relative) => {
-                const tempStatus = getRunStatus(index)
+            // // const getRunStatus = (index) => {
+            // //     const tempPhase = getRun(index)
+            // //     return tempPhase?._source?.status.phase
+            // // }
 
-                if (tempStatus === 'Running') {
-                    return startedAt(getRun(index)?._source, true)
-                } else {
-                    return finishedAt(getRun(index)?._source, true)
-                }
-            }
+            // const getRun = (index) => {
+            //     if (runs.value.length >= index) {
+            //         return runs.value[index - 1]
+            //     }
+            //     return {}
+            // }
 
-            const cron = computed(() => {
-                return item.value.metadata.annotations[
-                    'orchestration.atlan.com/schedule'
-                ]
-            })
+            // const getRunTime = (index, relative) => {
+            //     const tempStatus = getRunStatus(index)
 
-            const cronString = computed(() => {
-                if (cron.value) {
-                    return cronstrue.toString(cron.value)
-                }
-            })
+            //     if (tempStatus === 'Running') {
+            //         return startedAt(getRun(index)?._source, true)
+            //     } else {
+            //         return finishedAt(getRun(index)?._source, true)
+            //     }
+            // }
 
-            const { phase, finishedAt, startedAt } = useWorkflowInfo()
+            // const cron = computed(() => {
+            //     return item.value.metadata.annotations[
+            //         'orchestration.atlan.com/schedule'
+            //     ]
+            // })
 
-            return {
-                item,
-                runs,
-                phase,
-                getRunStatus,
-                getRunClass,
-                cron,
-                cronString,
-                finishedAt,
-                getRun,
-                getRunTime,
-                startedAt,
-            }
+            // const cronString = computed(() => {
+            //     if (cron.value) {
+            //         return cronstrue.toString(cron.value)
+            //     }
+            // })
+
+            // const { phase, finishedAt, startedAt } = useWorkflowInfo()
+
+            return { item, runs, workflow, packageType, displayName }
         },
     })
 </script>

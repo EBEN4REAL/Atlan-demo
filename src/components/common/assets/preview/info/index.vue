@@ -69,7 +69,7 @@
 
         <div
             v-if="isSelectedAssetHaveRowsAndColumns(selectedAsset)"
-            class="flex flex-wrap items-center w-full gap-16 px-5"
+            class="flex flex-wrap items-center w-full gap-x-8 px-5"
         >
             <SQL
                 v-if="
@@ -136,12 +136,12 @@
                 }}</span>
             </div>
             <div
-                v-if="sizeBytes(selectedAsset) > 0"
+                v-if="sizeBytes(selectedAsset) !== '0'"
                 class="flex flex-col text-sm cursor-pointer"
             >
                 <span class="mb-1 text-sm text-gray-500">Size</span>
                 <span class="text-gray-700">{{
-                    sizeBytes(selectedAsset)
+                    sizeBytes(selectedAsset, false)
                 }}</span>
             </div>
         </div>

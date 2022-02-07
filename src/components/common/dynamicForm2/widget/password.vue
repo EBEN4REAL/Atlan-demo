@@ -1,5 +1,6 @@
 <template>
     <a-input-password
+        :class="isEdit ? 'bg-gray-100' : ''"
         v-bind="componentProps"
         v-model:value="formState[property.id]"
     ></a-input-password>
@@ -20,14 +21,17 @@
             modelValue: {
                 required: false,
             },
+            isEdit: {
+                required: false,
+            },
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
-            const { property } = toRefs(props)
+            const { property, isEdit } = toRefs(props)
             const formState = inject('formState')
             const componentProps = computed(() => property.value.ui)
 
-            return { componentProps, formState }
+            return { componentProps, formState, isEdit }
         },
     })
 </script>

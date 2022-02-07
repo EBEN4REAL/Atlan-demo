@@ -1,20 +1,18 @@
-
-
 export const WorkflowTypeList = [
     {
-        id: "metadata",
-        label: "Assets",
+        id: 'metadata',
+        label: 'Connectors',
     },
     {
-        id: "lineage",
-        label: "Lineage",
+        id: 'lineage',
+        label: 'Lineage',
     },
     {
-        id: "adoption",
-        label: "Adoption",
+        id: 'adoption',
+        label: 'Adoption',
     },
     {
-        id: "quality",
-        label: "Quality",
+        id: 'quality',
+        label: 'Quality',
     },
-];
+]

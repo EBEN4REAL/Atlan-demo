@@ -3,7 +3,7 @@
         :id="`${timerId}`"
         class="flex justify-center w-full mt-1 text-sm text-gray-700"
     >
-        00:00:00:000
+        0s
     </div>
 </template>
 

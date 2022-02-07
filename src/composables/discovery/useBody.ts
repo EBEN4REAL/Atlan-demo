@@ -343,6 +343,16 @@ export function useBody(
                 }
                 break
             }
+            case 'organizationQualifiedName': {
+                if (filterObject) {
+                    base.filter(
+                        'term',
+                        'organizationQualifiedName',
+                        filterObject
+                    )
+                }
+                break
+            }
             case 'glossary': {
                 if (filterObject) {
                     base.filter('term', '__glossary', filterObject)

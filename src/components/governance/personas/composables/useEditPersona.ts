@@ -6,6 +6,7 @@ import {
     selectedPersona,
     personaList,
     selectedPersonaId,
+    handleUpdateList
 } from './usePersonaList'
 
 const {
@@ -81,6 +82,7 @@ export async function savePersona(persona: IPersona) {
 
 export function updatedSelectedData(data:any) {
     selectedPersonaDirty.value = data
+      handleUpdateList(data)
 }
 
 export function discardPersona(type: PolicyType, idx: string) {

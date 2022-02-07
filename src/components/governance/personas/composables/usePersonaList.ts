@@ -17,16 +17,28 @@ const {
     mutate: reFetchList,
 } = listPersonas()
 
-const personaList = computed(() => safeArray(list.value?.records))
+const personaList = ref([])
 watch(list, () => {
        personaStore.setList(list.value.records)
+       personaList.value = safeArray(list.value?.records)
+       
 })
+const handleUpdateList = (newVal) => {
+    personaList.value = personaList.value.map((el) => {
+        if(el.id === newVal.id){
+            return newVal
+        }
+            return el
+        
+    })
+}
 export {
     reFetchList,
     personaList,
     isPersonaListReady,
     isPersonaLoading,
     isPersonaError,
+    handleUpdateList
 }
 // Selected Persona Details
 export const selectedPersonaId = ref('')

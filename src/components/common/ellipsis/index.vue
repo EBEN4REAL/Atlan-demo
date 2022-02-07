@@ -100,6 +100,6 @@
         margin-bottom: 0 !important;
     }
     :global(.tooltip-black .ant-tooltip-inner) {
-        @apply p-3 text-gray-700 w-80 whitespace-pre-line;
+        @apply p-3 text-gray-700 whitespace-pre-line;
     }
 </style>

@@ -48,6 +48,21 @@
         </div>
 
         <div
+            v-if="
+                [
+                    'SalesforceOrganization',
+                    'SalesforceReport',
+                    'SalesforceDashboard',
+                ].includes(selectedAsset.typeName)
+            "
+            class="flex flex-col text-sm"
+        >
+            <span class="mb-1 text-gray-500">Source ID</span>
+
+            <span class="text-gray-700">{{ sourceId(selectedAsset) }}</span>
+        </div>
+
+        <div
             v-if="['LookerTile'].includes(selectedAsset.typeName)"
             class="flex flex-col text-sm"
         >
@@ -173,7 +188,7 @@
             </div>
         </div>
 
-        <div class="flex flex-col text-sm mt-3 mb-3">
+        <div class="flex flex-col mt-3 mb-3 text-sm">
             <span class="mb-1 text-gray-500">Last synced at (on Atlan)</span>
 
             <div class="flex flex-col">
@@ -272,6 +287,7 @@
                 sourceMetadataId,
                 sourceContentMetadataId,
                 lastSyncRunAt,
+                sourceId,
             } = useAssetInfo()
 
             const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
@@ -312,6 +328,7 @@
                 sourceMetadataId,
                 sourceContentMetadataId,
                 lastSyncRunAt,
+                sourceId,
                 map,
             }
         },

@@ -14,9 +14,19 @@
                 class="flex flex-col flex-grow px-4 overflow-y-auto text-gray-500"
                 v-else
             >
-                <div v-for="(log, id) in logArray" :key="id">
+                <VirtualList :data="logArray" :data-key="'id'" variable-height>
+                    <template #default="{ item }">
+                        <div>
+                            <span class="font-mono text-xs">
+                                {{ item.text }}</span
+                            >
+                        </div>
+                    </template>
+                </VirtualList>
+
+                <!-- <div v-for="(log, id) in logArray" :key="id">
                     <span class="font-mono text-xs"> {{ log }}</span>
-                </div>
+                </div> -->
                 <div
                     v-if="status == 'CONNECTED'"
                     class="flex items-center justify-center"
@@ -40,6 +50,7 @@
     } from 'vue'
     import useWorkflowLogsDownload from '~/composables/package/useWorkflowLogsDownload'
     import useWorkflowLogsStream from '~/composables/package/useWorkflowLogsStream'
+    import VirtualList from '~/utils/library/virtualList/virtualList.vue'
 
     export default defineComponent({
         // mixins: [WorkflowMixin],
@@ -54,6 +65,9 @@
                 required: false,
                 default: () => ({}),
             },
+        },
+        components: {
+            VirtualList,
         },
 
         setup(props, { emit }) {

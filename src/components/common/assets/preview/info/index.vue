@@ -69,7 +69,7 @@
 
         <div
             v-if="isSelectedAssetHaveRowsAndColumns(selectedAsset)"
-            class="flex flex-wrap items-center w-full gap-x-8 px-5"
+            class="flex flex-wrap items-center w-full px-5 gap-x-8"
         >
             <SQL
                 v-if="
@@ -161,6 +161,12 @@
             class="flex px-5"
         >
             <ParentContext :asset="selectedAsset" />
+        </div>
+        <div
+            v-if="['SalesforceObject'].includes(selectedAsset?.typeName)"
+            class="flex px-5"
+        >
+            <FieldCount :asset="selectedAsset" />
         </div>
 
         <div
@@ -688,6 +694,7 @@
     import SourceCreated from '@/common/widgets/summary/types/sourceCreated.vue'
     import SourceUpdated from '@/common/widgets/summary/types/sourceUpdated.vue'
     import SourceViewCount from '@/common/widgets/summary/types/sourceViewCount.vue'
+    import FieldCount from '@/common/widgets/summary/types/fieldCount.vue'
     import SubFolderCount from '@/common/widgets/summary/types/subFolderCount.vue'
     import ParentContext from '@/common/widgets/summary/types/parentContext.vue'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
@@ -715,6 +722,7 @@
             SourceViewCount,
             SubFolderCount,
             ParentContext,
+            FieldCount,
             SampleDataTable: defineAsyncComponent(
                 () =>
                     import(

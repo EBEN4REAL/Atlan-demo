@@ -641,6 +641,10 @@ export function useBody(
                 if (filterObject !== 'default') {
                     const split = filterObject.split('-')
                     if (split.length > 1) {
+                        if (queryText) {
+                            base.sort('_score', 'desc')
+                        }
+
                         base.sort(split[0], split[1])
                     }
                 }

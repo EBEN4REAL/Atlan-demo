@@ -79,6 +79,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
                     title: `Result`,
                     runQueryId: undefined,
                     isQueryRunning: '',
+                    abortQueryFn: undefined,
                     queryErrorObj: {},
                     totalRowsCount: -1,
                     executionTime: -1,

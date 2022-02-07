@@ -81,9 +81,10 @@ export default function useGroups(
     },
     cacheKey?: string,
     cacheOption = defaultCacheOption,
-    cancelToken = null
+    cancelToken = null,
+    asyncOptions = null
 ) {
-    let cancel = axios.CancelToken.source()
+    const cancel = axios.CancelToken.source()
     // API to get groups based on params groupListAPIParams
     const {
         data,
@@ -97,6 +98,7 @@ export default function useGroups(
         options: {
             cancelToken: cancelToken?.token || cancel.token,
         },
+        asyncOptions,
     })
 
     const { state, STATES } = swrvState(data, error, isValidating)

@@ -156,22 +156,23 @@ ul[data-type="taskList"] {
     li {
         display: flex;
         padding-left: 0 !important;
-        align-items: center;
-        align-content: center;
+        align-items: flex-start;
 
         > label {
             display: flex;
             flex: 0 0 auto;
-            margin-right: 0.5rem;
             user-select: none;
-            margin-top: 0 !important;
-            align-items: center;
-            align-content: center;
+            margin-top: 0.3em !important;
+            justify-items: center;
+            justify-content: center;
+            text-align: center;
         }
 
         > div {
             flex: 1 1 auto;
             margin-bottom: 0 !important;
+            margin-top: 0 !important;
+            margin-left: 0.5rem;
         }
 
         &::before {

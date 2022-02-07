@@ -13,6 +13,7 @@
             entityType="AtlasGlossaryTerm"
             @add="reInitTree"
             :glossary-qualified-name="defaultGlossary"
+            :glossaryName="parentGlossary?.displayText"
         >
             <template #trigger>
                 <div class="flex-grow">
@@ -140,6 +141,10 @@
             const { selectedGlossary } = useAssetInfo()
             const isTreeNodeAnimating = ref(false)
             const glossaryStore = useGlossaryStore()
+            const parentGlossary = computed(() =>
+                glossaryStore.getGlossaryByQualifiedName(defaultGlossary.value)
+            )
+
             const localCheckedNodes = ref([])
             const parentGlossaryGuid = computed(() => {
                 const selectedGtc = glossaryStore.list.find(
@@ -168,7 +173,7 @@
                 dragAndDropNode,
                 nodeToParentKeyMap,
                 allKeys,
-                checkDuplicateCategoryNames
+                checkDuplicateCategoryNames,
             } = useGlossaryTree({
                 emit,
                 parentGlossaryQualifiedName: defaultGlossary,
@@ -196,7 +201,7 @@
             const addGTCNode = (asset, entity = {}) => {
                 console.log(asset, entity)
                 if (entity !== {}) {
-                    console.log("add")
+                    console.log('add')
                     addNode(asset, entity)
                 } else addNode(asset)
             }
@@ -314,7 +319,8 @@
                 handleAddSelectedKey,
                 dragAndDropNode,
                 isTreeNodeAnimating,
-                checkDuplicateCategoryNames
+                checkDuplicateCategoryNames,
+                parentGlossary,
             }
         },
     })

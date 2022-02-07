@@ -64,6 +64,7 @@ export interface activeInlineTabInterface {
                 runQueryId: undefined | string
                 isQueryRunning: string
                 totalRowsCount: number
+                abortQueryFn: Function | undefined
                 executionTime: number
                 queryErrorObj: any
                 errorDecorations: any

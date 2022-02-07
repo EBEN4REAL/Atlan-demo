@@ -621,6 +621,7 @@
                                 executionTime: -1,
                                 errorDecorations: [],
                                 eventSourceInstance: undefined,
+                                abortQueryFn: undefined,
                                 buttonDisable: false,
                                 isQueryAborted: false,
                             },

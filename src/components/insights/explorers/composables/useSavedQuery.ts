@@ -201,6 +201,7 @@ export function useSavedQuery(
                         isQueryAborted: false,
                         queryErrorObj: {},
                         errorDecorations: [],
+                        abortQueryFn: undefined,
                         totalRowsCount: -1,
                         executionTime: -1,
                         runQueryId: undefined,

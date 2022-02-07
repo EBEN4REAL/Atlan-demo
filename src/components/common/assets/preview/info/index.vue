@@ -42,8 +42,8 @@
 
         <Connection
             v-if="selectedAsset.typeName === 'Connection'"
-            :selected-asset="selectedAsset"
             v-model="localSQLQuery"
+            :selected-asset="selectedAsset"
             :edit-permission="editPermission"
             @change="handleSQLQueryUpdate"
         ></Connection>
@@ -69,7 +69,7 @@
 
         <div
             v-if="isSelectedAssetHaveRowsAndColumns(selectedAsset)"
-            class="flex items-center w-full gap-16 px-5"
+            class="flex flex-wrap items-center w-full gap-x-8 px-5"
         >
             <SQL
                 v-if="
@@ -80,8 +80,8 @@
                 :sql="definition(selectedAsset)"
             >
                 <div class="flex flex-col text-sm cursor-pointer">
-                    <span class="mb-2 text-sm text-gray-500">Definition</span>
-                    <span class="text-primary">SQL</span>
+                    <span class="mb-1 text-sm text-gray-500">Definition</span>
+                    <span class="font-semibold text-primary">SQL</span>
                 </div>
                 <template #action>
                     <a-button
@@ -115,7 +115,7 @@
                 :class="isProfile ? '' : 'cursor-pointer'"
                 @click="showSampleDataModal"
             >
-                <span class="mb-2 text-sm text-gray-500">Rows</span>
+                <span class="mb-1 text-sm text-gray-500">Rows</span>
                 <span
                     :class="
                         isProfile
@@ -130,32 +130,32 @@
                 class="flex flex-col text-sm cursor-pointer"
                 @click="switchTab(selectedAsset, 'Columns')"
             >
-                <span class="mb-2 text-sm text-gray-500">Columns</span>
+                <span class="mb-1 text-sm text-gray-500">Columns</span>
                 <span class="font-semibold text-primary">{{
                     columnCount(selectedAsset)
                 }}</span>
             </div>
             <div
-                v-if="sizeBytes(selectedAsset) > 0"
+                v-if="sizeBytes(selectedAsset) !== '0'"
                 class="flex flex-col text-sm cursor-pointer"
             >
-                <span class="mb-2 text-sm text-gray-500">Size</span>
+                <span class="mb-1 text-sm text-gray-500">Size</span>
                 <span class="text-gray-700">{{
-                    sizeBytes(selectedAsset)
+                    sizeBytes(selectedAsset, false)
                 }}</span>
             </div>
         </div>
 
         <div
             v-if="
-                isBiAsset(selectedAsset) &&
+                (isBiAsset(selectedAsset) || isSaasAsset(selectedAsset)) &&
                 ![
                     'PowerBIWorkspace',
                     'TableauSite',
                     'LookerFolder',
                     'LookerProject',
                     'LookerQuery',
-                    'LookerTile',
+                    'SalesforceOrganization',
                 ].includes(selectedAsset?.typeName)
             "
             class="flex px-5"
@@ -207,7 +207,13 @@
             </div>
         </div>
 
-        <div v-if="selectedAsset?.typeName === 'LookerQuery'" class="flex px-5">
+        <div
+            v-if="
+                selectedAsset?.typeName === 'LookerQuery' &&
+                fieldsLookerQuery(selectedAsset).length > 0
+            "
+            class="flex px-5"
+        >
             <div class="flex flex-col text-sm">
                 <span class="mb-1 text-sm text-gray-500">Fields</span>
                 <div
@@ -340,7 +346,7 @@
 
                 <a-button
                     block
-                    class="flex items-center justify-between px-2 shadow-none"
+                    class="flex items-center px-2 shadow-none"
                     :class="
                         !collectionData?.hasCollectionReadPermission &&
                         !collectionData?.hasCollectionWritePermission &&
@@ -356,11 +362,19 @@
                     "
                 >
                     <div class="flex items-center">
-                        <AtlanIcon
+                        <!-- <AtlanIcon
                             icon="CollectionIconSmall"
                             class="mr-1 mb-0.5"
-                        />
-                        <span>
+                        /> -->
+
+                        <span class="w-5 h-5 mr-1 -mt-1 text-lg">{{
+                            collectionData?.collectionInfo?.attributes?.icon
+                                ? collectionData?.collectionInfo?.attributes
+                                      ?.icon
+                                : '🗃'
+                        }}</span>
+
+                        <span class="text-left truncate" style="width: 270px">
                             {{ collectionData?.collectionInfo?.displayText }}
                         </span>
                     </div>
@@ -624,7 +638,10 @@
             >
             </RelatedTerms>
         </div>
-        <div v-if="isBiAsset(selectedAsset)" class="flex flex-col px-5 gap-y-4">
+        <div
+            v-if="isBiAsset(selectedAsset) || isSaasAsset(selectedAsset)"
+            class="flex flex-col px-5 gap-y-4"
+        >
             <SourceUpdated :asset="selectedAsset" />
             <SourceCreated :asset="selectedAsset" />
         </div>
@@ -701,7 +718,7 @@
             SampleDataTable: defineAsyncComponent(
                 () =>
                     import(
-                        '@common/assets/profile/tabs/overview/nonBi/sampleData.vue'
+                        '@common/assets/profile/tabs/overview/sql/sampleData.vue'
                     )
             ),
             AtlanIcon,
@@ -771,6 +788,7 @@
                 externalLocation,
                 externalLocationFormat,
                 isBiAsset,
+                isSaasAsset,
                 getConnectorLabel,
                 fieldsLookerQuery,
                 sourceOwners,
@@ -900,6 +918,7 @@
                 externalLocationFormat,
                 handleCollectionClick,
                 isBiAsset,
+                isSaasAsset,
                 isProfile,
                 getConnectorLabel,
                 fieldsLookerQuery,

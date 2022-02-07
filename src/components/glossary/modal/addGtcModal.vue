@@ -216,6 +216,7 @@
                 glossaryName,
                 categoryName,
             } = toRefs(props)
+            const checkDuplicateCategoryNames = inject('checkDuplicateCategoryNames', (...args) => false)
             // shortcuts for cmnd+enter to save
             const keys = useMagicKeys()
             const { meta, Enter } = keys
@@ -284,7 +285,6 @@
             const defaultRetry = ref(3)
             const handleSave = () => {
                 defaultRetry.value = 2
-                console.log(entity.attributes.name)
                 if (entity.attributes.name) {
                     entity.typeName = localEntityType.value
                     if (typeNameTitle.value === 'Glossary') {
@@ -331,6 +331,11 @@
                     body.value = {
                         entities: [entity],
                     }
+                    const duplicateExists = checkDuplicateCategoryNames(categoryGuid.value, entity.attributes.name)
+                    if(entity.typeName === 'AtlasGlossaryCategory' && duplicateExists) {
+                        message.error(`${entity.attributes.name} already exists on this level!`)
+                        return                    
+                    } 
                     mutateAsset()
                 } else {
                     message.warning(`Please enter the mandatory name`)

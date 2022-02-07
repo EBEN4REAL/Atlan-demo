@@ -49,7 +49,7 @@
 
         <div
             v-if="
-                ['PowerBITile'].includes(asset?.typeName) &&
+                ['PowerBITile', 'LookerTile'].includes(asset?.typeName) &&
                 parentDashboard(asset)?.guid
             "
             class="flex flex-col text-sm"
@@ -159,6 +159,37 @@
         </div>
         <div
             v-if="
+                [
+                    'SalesforceDashboard',
+                    'SalesforceReport',
+                    'SalesforceObject',
+                ].includes(asset?.typeName) && parentOrganization(asset)?.guid
+            "
+            class="flex flex-col text-sm"
+        >
+            <span class="mb-1 text-sm text-gray-500">Organization</span>
+            <span
+                class="font-bold cursor-pointer text-primary hover:underline"
+                @click="handleOpenDrawer(parentOrganization(asset)?.guid)"
+                >{{ parentOrganization(asset)?.attributes?.name }}</span
+            >
+        </div>
+        <div
+            v-if="
+                ['SalesforceField'].includes(asset?.typeName) &&
+                parentObject(asset)?.guid
+            "
+            class="flex flex-col text-sm"
+        >
+            <span class="mb-1 text-sm text-gray-500">Object</span>
+            <span
+                class="font-bold cursor-pointer text-primary hover:underline"
+                @click="handleOpenDrawer(parentObject(asset)?.guid)"
+                >{{ parentObject(asset)?.attributes?.name }}</span
+            >
+        </div>
+        <div
+            v-if="
                 ['LookerExplore'].includes(asset?.typeName) &&
                 parentModel(asset)?.guid
             "
@@ -222,6 +253,8 @@
                 parentReport,
                 parentDashboard,
                 parentDatabase,
+                parentOrganization,
+                parentObject,
             } = useAssetInfo()
 
             const drawerVisible = ref(false)
@@ -249,6 +282,8 @@
                 parentReport,
                 parentDashboard,
                 parentDatabase,
+                parentOrganization,
+                parentObject,
                 guidToFetch,
                 drawerVisible,
                 handleCloseDrawer,

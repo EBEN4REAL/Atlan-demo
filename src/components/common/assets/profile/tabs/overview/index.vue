@@ -9,8 +9,13 @@
         :selected-asset="selectedAsset"
         :readmeEditPermission="readmeEditPermission"
     />
-    <NonBiOverview
-        v-else-if="isNonBiAsset(selectedAsset)"
+    <SaasOverview
+        v-else-if="isSaasAsset(selectedAsset)"
+        :selected-asset="selectedAsset"
+        :readmeEditPermission="readmeEditPermission"
+    />
+    <SQLOverview
+        v-else-if="isSQLAsset(selectedAsset)"
         :selected-asset="selectedAsset"
         :readmeEditPermission="readmeEditPermission"
     />
@@ -25,19 +30,21 @@
     import { defineComponent, PropType, computed, toRefs } from 'vue'
 
     import { assetInterface } from '~/types/assets/asset.interface'
-    import NonBiOverview from './nonBi/index.vue'
+    import SQLOverview from './sql/index.vue'
     import BiOverview from './bi/index.vue'
     import GlossaryOverview from './glossary/index.vue'
+    import SaasOverview from './saas/index.vue'
     import GeneralOverview from './general/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         name: 'OverviewTab',
         components: {
-            NonBiOverview,
+            SQLOverview,
             BiOverview,
             GlossaryOverview,
             GeneralOverview,
+            SaasOverview,
         },
         props: {
             selectedAsset: {
@@ -49,7 +56,8 @@
             const {
                 isBiAsset,
                 isGTC,
-                isNonBiAsset,
+                isSQLAsset,
+                isSaasAsset,
                 selectedAssetUpdatePermission,
                 assetPermission,
             } = useAssetInfo()
@@ -66,7 +74,13 @@
                     ) && assetPermission('CREATE_README')
             )
 
-            return { isBiAsset, isGTC, isNonBiAsset, readmeEditPermission }
+            return {
+                isBiAsset,
+                isGTC,
+                isSQLAsset,
+                isSaasAsset,
+                readmeEditPermission,
+            }
         },
     })
 </script>

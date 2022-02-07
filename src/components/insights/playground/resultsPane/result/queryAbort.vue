@@ -10,7 +10,7 @@
             class="flex flex-col items-center justify-center mt-2"
         >
             <p class="mt-2 mb-0 text-base font-bold text-center text-gray-700">
-                Query aborted
+                Query Aborted
             </p>
         </div>
     </div>

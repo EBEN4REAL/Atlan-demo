@@ -1,7 +1,7 @@
 <template>
     <div class="p-6 bg-gray-100 rounded">
         <div v-if="!run?.status">
-            <a-spin class="mr-2" size="small"></a-spin>Getting Run Details
+            <a-spin class="mt-1 mr-2" size="small"></a-spin>Loading Run Details
         </div>
         <div v-else>
             <div class="flex text-left gap-x-6">
@@ -54,7 +54,7 @@
     import { computed, defineComponent, toRefs } from 'vue'
     import { useTimeAgo } from '@vueuse/core'
     import { formatDateTime } from '~/utils/date'
-    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
+
     export default defineComponent({
         name: 'WorkflowSetupTab',
         props: {
@@ -72,7 +72,7 @@
             const { run, isLoading } = toRefs(props)
 
             const percentage = computed(() => {
-                if (run?.value?.status?.progress.split('/').length > 1) {
+                if (run?.value?.status?.progress?.split('/').length > 1) {
                     return (
                         (100 * run.value.status?.progress.split('/')[0]) /
                         run.value.status?.progress.split('/')[1]
@@ -117,6 +117,5 @@
                 progressStatus,
             }
         },
-        components: { AtlanIcon },
     })
 </script>

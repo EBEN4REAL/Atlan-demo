@@ -2,7 +2,7 @@
     <a-collapse-panel
         class="group"
         :show-arrow="false"
-        :class="isFiltered ? 'bg-white text-primary' : ''"
+        :class="isFiltered ? 'bg-transparent text-primary' : 'bg-transparent'"
     >
         <template #header>
             <div class="select-none">

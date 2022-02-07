@@ -134,7 +134,10 @@
             } = useAssetInfo()
 
             const bgClass = computed(() => {
-                switch (announcementType(selectedAsset.value).toLowerCase()) {
+                if (!announcementType(selectedAsset.value)) {
+                    return ''
+                }
+                switch (announcementType(selectedAsset.value)?.toLowerCase()) {
                     case 'information':
                         return 'information-bg information-border'
                     case 'issue':
@@ -147,7 +150,10 @@
             })
 
             const icon = computed(() => {
-                switch (announcementType(selectedAsset.value).toLowerCase()) {
+                if (!announcementType(selectedAsset.value)) {
+                    return ''
+                }
+                switch (announcementType(selectedAsset.value)?.toLowerCase()) {
                     case 'information':
                         return 'InformationAnnouncement'
                     case 'issue':

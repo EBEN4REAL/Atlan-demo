@@ -353,6 +353,11 @@ export default function useAssetInfo() {
             if (viewGuid) {
                 return `/assets/${viewGuid}/overview?column=${asset?.guid}`
             }
+        } else if (assetType(asset) === 'SalesforceField') {
+            const objectGuid = asset?.attributes?.object?.guid
+            if (objectGuid) {
+                return `/assets/${objectGuid}/overview?field=${asset?.guid}`
+            }
         } else if (isGTC(asset)) {
             return `/glossary/${asset?.guid}`
         } else if (assetType(asset) === 'Query') {

@@ -61,8 +61,8 @@
             @cancel="showAddLineage = false"
         />
         <AssetDrawer
-            :data="selectedAsset"
-            :show-drawer="isDrawerVisible"
+            :guid="selectedAssetGuid"
+            :show-drawer="isDrawerVisible && selectedAssetGuid"
             :show-mask="false"
             :drawer-active-key="drawerActiveKey"
             @close-drawer="onCloseDrawer"
@@ -151,6 +151,8 @@
                         : (loaderCords.value.y || 0) - 148,
                 }
             })
+            const selectedAssetGuid = computed(() => selectedAsset.value?.guid)
+
             /** METHODS */
             // onSelectAsset
             const onSelectAsset = (
@@ -248,7 +250,7 @@
             return {
                 isDrawerVisible,
                 offsetLoaderCords,
-                selectedAsset,
+                selectedAssetGuid,
                 baseEntity,
                 graph,
                 showMinimap,

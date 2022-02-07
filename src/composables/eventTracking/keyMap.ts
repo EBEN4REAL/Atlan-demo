@@ -387,6 +387,33 @@ const keyMap = {
                 action: 'admin_api_key_deleted',
             },
         },
+        integration: {
+            added: {
+                action: 'admin_integration_added',
+                properties: (props: { integration: string, level: string }) => ({
+                    ...props
+                }),
+            },
+            removed: {
+                action: 'admin_integration_removed',
+                properties: (props: { integration: string, level: string }) => ({
+                    ...props
+                }),
+            },
+            share_on_slack: {
+                action: 'integration_slack_asset_shared',
+                properties: (props: { asset_type: string, }) => ({
+                    ...props
+                }),
+            },
+            slack_message_cta: {
+                action: 'integration_slack_message_cta_clicked',
+                properties: (props: { type: string }) => ({
+                    ...props
+                }),
+
+            }
+        }
     },
 }
 export default keyMap

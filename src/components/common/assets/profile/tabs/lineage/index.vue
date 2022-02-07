@@ -79,11 +79,8 @@
 
     // Constants
     import {
-        AssetAttributes,
-        BasicSearchAttributes,
-        SQLAttributes,
         AssetRelationAttributes,
-        InternalAttributes,
+        LineageAttributes,
     } from '~/constant/projection'
 
     // Composables
@@ -135,13 +132,7 @@
                     operator: 'eq',
                     attributeValue: 'ACTIVE',
                 },
-                attributes: [
-                    ...AssetAttributes,
-                    ...SQLAttributes,
-                    ...AssetRelationAttributes,
-                    ...BasicSearchAttributes,
-                    ...customMetadataProjections,
-                ],
+                attributes: LineageAttributes,
             }))
             const preferences = ref({ showArrow: false })
 
@@ -322,10 +313,7 @@
                 const postFilters = ref({
                     typeName: '__all',
                 })
-                const defaultAttributes = ref([
-                    ...InternalAttributes,
-                    ...AssetAttributes,
-                ])
+                const defaultAttributes = ref(LineageAttributes)
 
                 watchOnce(relData, () => {
                     const filters = ref({
@@ -343,6 +331,7 @@
                         relationAttributes,
                         suppressLogs: true,
                     })
+
                     watchOnce(list, () => {
                         relatedBiAssets.value = list.value
                         baseEntityRelData.value = relData.value?.entities[0]

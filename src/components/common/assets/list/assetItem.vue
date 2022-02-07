@@ -863,6 +863,22 @@
                                 </template>
                             </a-tooltip>
                         </div>
+                        <div
+                            v-if="
+                                ['salesforceobject'].includes(
+                                    item.typeName?.toLowerCase()
+                                )
+                            "
+                            class="flex ml-2 text-sm text-gray-500"
+                        >
+                            <span class="text-gray-500">
+                                <span
+                                    class="font-semibold tracking-tight text-gray-500"
+                                    >{{ fieldCount(item) }}</span
+                                >
+                                fields</span
+                            >
+                        </div>
                     </div>
 
                     <div class="flex flex-wrap gap-x-1">
@@ -920,7 +936,9 @@
                                         :term="term"
                                         :loading="termLoading"
                                         :fetched-term="
-                                            getFetchedTerm(term?.guid ?? term?.termGuid)
+                                            getFetchedTerm(
+                                                term?.guid ?? term?.termGuid
+                                            )
                                         "
                                         :error="termError"
                                         trigger="hover"
@@ -1123,6 +1141,7 @@
                 parentObject,
                 sourceViewCount,
                 sourceChildCount,
+                fieldCount,
             } = useAssetInfo()
 
             const handlePreview = (item: any) => {
@@ -1264,6 +1283,7 @@
                 sourceViewCount,
                 sourceChildCount,
                 meanings,
+                fieldCount,
             }
         },
     })

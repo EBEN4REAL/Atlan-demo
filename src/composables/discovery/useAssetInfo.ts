@@ -87,6 +87,9 @@ export default function useAssetInfo() {
     const pageCount = (asset: assetInterface) =>
         getCountString(attributes(asset)?.pageCount, true)
 
+    const fieldCount = (asset: assetInterface) =>
+        getCountString(attributes(asset)?.fieldCount, true)
+
     const title = (asset: assetInterface) =>
         (attributes(asset)?.displayName ||
             attributes(asset)?.name ||
@@ -1264,5 +1267,6 @@ export default function useAssetInfo() {
         parentObject,
         lastSyncRunAt,
         sourceId,
+        fieldCount,
     }
 }

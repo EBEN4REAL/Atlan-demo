@@ -354,6 +354,7 @@ export const summaryVariants = [
         label: 'Object',
         components: [
             'ParentContext',
+            'FieldCount',
             'Connection',
             'SourceCreated',
             'SourceUpdated',

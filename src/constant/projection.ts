@@ -117,6 +117,7 @@ export const AssetAttributes = [
     'tileCount',
     'pageCount',
     'sourceId',
+    'fieldCount',
 ]
 
 export const SQLAttributes = [

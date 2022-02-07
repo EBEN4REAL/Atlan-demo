@@ -242,4 +242,23 @@ export const BasicSearchAttributes = [
     'parent',
 ]
 
+export const LineageAttributes = [
+    // General
+    'qualifiedName',
+    'name',
+    'displayName',
+    'certificateStatus',
+    'link',
+    // Specific - see src/components/common/assets/profile/tabs/lineage/util.js -> childGroupBiAssetMap
+    'workspace',
+    'report',
+    'dashboard',
+    'model',
+    'folder',
+    'project',
+    // SQL
+    'table',
+    'view',
+]
+
 export const ConnectionAttriibutes = [...InternalAttributes, ...AssetAttributes]

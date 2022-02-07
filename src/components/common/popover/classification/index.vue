@@ -1,5 +1,10 @@
 <template>
-    <a-popover placement="left" @click='togglePreview'>
+    <a-popover
+        placement="left"
+        :mouse-enter-delay="mouseEnterDelay"
+        @click="togglePreview"
+        @mouseenter="$emit('mouseEntered')"
+    >
         <template #content>
             <div>
                 <div>
@@ -28,7 +33,7 @@
         @close="togglePreview"
     >
         <ClassificationDrawer
-            :classification-prop='classification'
+            :classification-prop="classification"
             @close="togglePreview"
         />
     </a-drawer>
@@ -43,32 +48,45 @@
     import { ClassificationInterface } from '~/types/classifications/classification.interface'
 
     export default defineComponent({
-        name: "ClassificationPopover",
-        components: { ClassificationBody, ClassificationHead, ClassificationDrawer },
+        name: 'ClassificationPopover',
+        components: {
+            ClassificationBody,
+            ClassificationHead,
+            ClassificationDrawer,
+        },
         props: {
             classification: {
                 type: Object as PropType<ClassificationInterface>,
-                required: true
+                required: true,
             },
             entityGuid: {
                 type: String,
                 required: false,
-                default: ''
-            }
+                default: '',
+            },
+            mouseEnterDelay: {
+                type: Number,
+                required: false,
+                default: 0,
+            },
         },
+        emits: ['mouseEntered'],
         setup(props) {
-            const classification = ref<ClassificationInterface>(props.classification)
+            const classification = ref<ClassificationInterface>(
+                props.classification
+            )
             const showClassificationPreview = ref(false)
 
             const togglePreview = () => {
-                showClassificationPreview.value = !showClassificationPreview.value
+                showClassificationPreview.value =
+                    !showClassificationPreview.value
             }
 
             return {
                 classification,
                 showClassificationPreview,
-                togglePreview
+                togglePreview,
             }
-        }
+        },
     })
 </script>

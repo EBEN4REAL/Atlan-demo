@@ -1,10 +1,33 @@
 <template>
     <div class="w-full space-y-3">
-        <div class="flex justify-between">
+        <div class="flex justify-between gap-x-6">
             <div>
                 <AtlanIcon icon="Resources2" class="w-auto h-8 mr-3" />
                 <span class="text-base font-bold text-gray"> Resources </span>
             </div>
+            <div class="flex-grow"></div>
+            <template
+                v-if="
+                    hasAtleastOneSlackLink &&
+                    !userSlackStatus.configured &&
+                    tenantSlackStatus.configured
+                "
+            >
+                <div
+                    class="flex items-center px-2 text-xs bg-gray-100 border rounded gap-x-2"
+                >
+                    <div class="p-1 bg-white rounded">
+                        <AtlanIcon icon="Slack" class="h-3.5" />
+                    </div>
+                    <span>See rich preview for Slack links.</span>
+                    <span
+                        class="cursor-pointer text-primary hover:underline"
+                        @click="() => openSlackOAuth({ emit: $emit })"
+                    >
+                        Connect
+                    </span>
+                </div>
+            </template>
             <AddResource @add="addCallback">
                 <template #trigger>
                     <AtlanButton
@@ -66,6 +89,7 @@
         provide,
     } from 'vue'
     import { isSlackLink } from '~/composables/integrations/useSlack'
+    import { openSlackOAuth } from '~/composables/integrations/useSlack'
     import EmptyScreen from '@/common/empty/index.vue'
     import LinkPreviewCard from '@/common/widgets/resources/resourcesWidgetV2/linkPreviewCard.vue'
     import SlackPreview from '@/common/widgets/resources/resourcesWidgetV2/slackPreview.vue'
@@ -104,7 +128,8 @@
     })
     const emit = defineEmits(['add', 'update', 'remove'])
 
-    const { addStatus, updateStatus, removeStatus, entityName } = toRefs(props)
+    const { addStatus, resources, updateStatus, removeStatus, entityName } =
+        toRefs(props)
 
     const addCallback = (r) => emit('add', r)
     const updateCallback = (r) => emit('update', r)
@@ -120,6 +145,11 @@
 
     const store = integrationStore()
     const { tenantSlackStatus, userSlackStatus } = toRefs(store)
+
+    const hasAtleastOneSlackLink = computed(() => {
+        const slackLink = resources.value.some((link) => isSlackLink(link.url))
+        return slackLink
+    })
 
     const getPreviewComponent = (url) => {
         if (

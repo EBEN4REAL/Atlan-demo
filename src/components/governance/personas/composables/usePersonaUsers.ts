@@ -5,8 +5,9 @@ import { IPersona, IUser } from '~/types/accessPolicies/personas'
 function usePersonaUserList(persona: Ref<IPersona>, cancelToken) {
     const userListAPIParams: any = {
         sort: 'firstName',
-        filter: { $and: [] },
+        filter: { $or: [] },
     }
+
     const {
         error,
         isLoading,
@@ -14,7 +15,7 @@ function usePersonaUserList(persona: Ref<IPersona>, cancelToken) {
         state,
         STATES,
         getUserList,
-    } = useUsers(userListAPIParams, true, cancelToken)
+    } = useUsers(userListAPIParams, false, cancelToken)
 
     const list: ComputedRef<IUser[]> = computed(() =>
         data.value.map((usr) => getFormattedUser(usr))
@@ -39,7 +40,25 @@ function usePersonaUserList(persona: Ref<IPersona>, cancelToken) {
     )
     watch(
         () => persona.value.id,
-        () => getUserList()
+        () => {
+            userListAPIParams.filter.$or = []
+            persona.value.users?.forEach((id) =>
+                userListAPIParams.filter.$or.push({ id })
+            )
+            getUserList()
+        },
+        { immediate: true }
+    )
+    watch(
+        () => persona.value.users,
+        () => {
+            userListAPIParams.filter.$or = []
+            persona.value.users?.forEach((id) =>
+                userListAPIParams.filter.$or.push({ id })
+            )
+            getUserList()
+        },
+        { deep: true }
     )
 
     return {

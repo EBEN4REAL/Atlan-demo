@@ -1,7 +1,6 @@
 import { Ref, ref, watch } from 'vue'
 import { IPersona, IGroup } from '~/types/accessPolicies/personas'
 import useGroups from '~/composables/group/useGroups'
-import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 
 function usePersonaGroupList(persona: Ref<IPersona>, cancelToken) {
     const params = ref(new URLSearchParams())
@@ -16,27 +15,30 @@ function usePersonaGroupList(persona: Ref<IPersona>, cancelToken) {
     const {
         groupList: data,
         getGroupList,
-        state,
-        STATES,
         isLoading,
         error,
-    } = useGroups(
-        params.value,
-        'LIST_GROUP_PERSONAS',
-        {
-            cacheOptions: {
-                shouldRetryOnError: false,
-                revalidateOnFocus: false,
-                cache: new LocalStorageCache(),
-                dedupingInterval: 1,
-            },
-        },
-        cancelToken
-    )
-
+    } = useGroups(params.value, '', {}, cancelToken, { immediate: false })
     watch(
         () => persona.value.id,
-        () => getGroupList()
+        () => {
+            const groupFilter = { $or: [] }
+            persona.value.groups?.forEach((id) => groupFilter.$or.push({ id }))
+            params.value.delete('filter')
+            params.value.append('filter', JSON.stringify(groupFilter))
+            getGroupList()
+        },
+        { immediate: true }
+    )
+    watch(
+        () => persona.value.groups,
+        () => {
+            const groupFilter = { $or: [] }
+            persona.value.groups?.forEach((id) => groupFilter.$or.push({ id }))
+            params.value.delete('filter')
+            params.value.append('filter', JSON.stringify(groupFilter))
+            getGroupList()
+        },
+        { deep: true }
     )
     const groupList: Ref<IGroup[]> = ref([])
     watch(
@@ -45,7 +47,7 @@ function usePersonaGroupList(persona: Ref<IPersona>, cancelToken) {
             // console.log(data.value, 'data edit first')
             groupList.value = []
             persona.value.groups?.forEach((grpid) => {
-                data.value.forEach((t) => {
+                data?.value?.forEach((t) => {
                     if (t.id === grpid) {
                         groupList.value.push(t)
                     }
@@ -59,8 +61,6 @@ function usePersonaGroupList(persona: Ref<IPersona>, cancelToken) {
     return {
         list: data,
         getGroupList,
-        state,
-        STATES,
         groupList,
         isLoading,
         error,

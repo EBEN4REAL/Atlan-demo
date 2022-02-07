@@ -521,8 +521,7 @@
             } = usePersonaUserList(persona, cancelTokenForUsers.value)
             const {
                 getGroupList,
-                STATES: GROUP_STATES,
-                state: groupState,
+
                 groupList,
                 isLoading: isGroupsLoading,
                 error: groupsError,
@@ -674,8 +673,7 @@
                                 userGroupData.value.ownerUsers ?? []
                             persona.value.groups =
                                 userGroupData.value.ownerGroups ?? []
-                            getUserList()
-                            getGroupList()
+                            // when we change users/groups in a persona, a watch runs to fetch more info for users/groups
                         })
                         .catch((e) => {
                             addUsersLoading.value = false
@@ -734,8 +732,8 @@
                         addUsersLoading.value = false
                         userGroupData.value.ownerUsers = updatedUsersIds
                         userGroupData.value.ownerGroups = updatedGroupIds
-                        getUserList()
-                        getGroupList()
+                        // getUserList()
+                        // getGroupList()
                         persona.value.users = updatedUsersIds
                         persona.value.groups = updatedGroupIds
                     })
@@ -803,8 +801,6 @@
                 enableTabs,
                 getPopoverContent,
                 confirmPopover,
-                groupState,
-                GROUP_STATES,
                 addUsersLoading,
                 handleUpdate,
                 setPopoverState,

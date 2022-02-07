@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs } from 'vue'
+    import { defineComponent, ref, toRefs, watch } from 'vue'
     import Item from './item.vue'
 
     export default defineComponent({
@@ -38,6 +38,16 @@
                 selectedItem.value = item
                 emit('select', item)
             }
+
+            watch(
+                list,
+                () => {
+                    if (list.value?.length > 0) {
+                        handleSelect(list.value[0])
+                    }
+                },
+                { immediate: true }
+            )
 
             const handleDoubleClick = (item) => {
                 emit('dblClick', item)

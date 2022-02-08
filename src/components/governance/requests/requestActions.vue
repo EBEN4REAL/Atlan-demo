@@ -1,5 +1,5 @@
 <template>
-    <div class="flex items-center gap-x-2">
+    <div class="flex items-center p-3 pl-3 pr-0 gap-x-2 bg-primary-light">
         <RequestDropdown
             :type="'reject'"
             :is-loading="loading"
@@ -22,11 +22,11 @@
             v-if="request?.message"
             trigger="hover"
             placement="bottomRight"
-            :align="{ offset: [90, -5] }"
+            :align="{ offset: [60, -5] }"
         >
             <template #content>
                 <div class="px-2 py-3 comment-delete">
-                    <div class="flex">
+                    <div class="flex icon-quotes">
                         <component :is="iconQuotes" class="mr-2.5" />
                         <p>{{ request?.message }}</p>
                     </div>
@@ -120,6 +120,12 @@
             // background: red;
             padding-top: 3px;
             padding-right: 7px;
+        }
+    }
+    .comment-delete {
+        width: 200px;
+        .icon-quotes {
+            // width: 10px !important;
         }
     }
 </style>

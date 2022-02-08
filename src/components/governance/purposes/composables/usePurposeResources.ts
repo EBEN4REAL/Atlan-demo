@@ -26,11 +26,10 @@ const usePersonaResources = (purpose) => {
             reFetchList() // TODO refetch only required purpose
             useAddEvent(
                 'governance',
-                'resource',
-                'created',
+                'purpose',
+                'resource_created',
                 {
                     domain: getDomain(r.url),
-                    asset_type: 'purpose'
                 }
             )
             addStatus.value = 'success'
@@ -55,11 +54,10 @@ const usePersonaResources = (purpose) => {
             reFetchList() // TODO refetch only required purpose
             useAddEvent(
                 'governance',
-                'resource',
-                'updated',
+                'purpose',
+                'resource_updated',
                 {
                     domain: getDomain(r.url),
-                    asset_type: 'purpose'
                 }
             )
             updateStatus.value = 'success'
@@ -83,11 +81,9 @@ const usePersonaResources = (purpose) => {
             reFetchList() // TODO refetch only required purpose
             useAddEvent(
                 'governance',
-                'resource',
-                'deleted',
-                {
-                    asset_type: 'purpose'
-                }
+                'purpose',
+                'resource_deleted',
+                {}
             )
         } catch (e) {
             removeStatus.value = 'error'

@@ -184,9 +184,7 @@
                     // updateSelectedPersona()
                     loadingSave.value = false
                     isEditMode.value = false
-                    useAddEvent('governance', 'readme', 'updated', {
-                        asset_type: 'purpose',
-                    })
+                    useAddEvent('governance', 'purpose', 'readme_updated', {})
                 } catch (error) {
                     loadingSave.value = false
                     isEditMode.value = false

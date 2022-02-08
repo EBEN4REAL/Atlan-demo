@@ -27,11 +27,10 @@ const usePersonaResources = (persona) => {
             reFetchList() // TODO refetch only required persona
             useAddEvent(
                 'governance',
-                'resource',
-                'created',
+                'persona',
+                'resource_created',
                 {
                     domain: getDomain(r.url),
-                    asset_type: 'persona'
                 }
             )
             addStatus.value = 'success'
@@ -56,8 +55,8 @@ const usePersonaResources = (persona) => {
             reFetchList()  // TODO refetch only required persona
             useAddEvent(
                 'governance',
-                'resource',
-                'updated',
+                'persona',
+                'resource_updated',
                 {
                     domain: getDomain(r.url),
                     asset_type: 'persona'
@@ -85,8 +84,8 @@ const usePersonaResources = (persona) => {
             reFetchList() // TODO refetch only required persona
             useAddEvent(
                 'governance',
-                'resource',
-                'deleted',
+                'persona',
+                'resource_deleted',
                 {
                     asset_type: 'persona'
                 }

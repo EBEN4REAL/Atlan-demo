@@ -251,7 +251,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, ref, watch, Ref } from 'vue'
+    import { defineComponent, computed, ref, watch, Ref, onMounted } from 'vue'
     import { useMagicKeys, whenever } from '@vueuse/core'
     import { message } from 'ant-design-vue'
     import { useRequestList } from '~/composables/requests/useRequests'
@@ -328,6 +328,7 @@
                     if (typeof v === 'object' && Object.keys(v).length)
                         return true
                     if (Array.isArray(v) && v.length) return true
+                    if (v && v === 'active') return true
                     return false
                 })
                 return hasValue
@@ -543,6 +544,18 @@
                 //     selectRequest(itemId, idx)
                 // }, 1000)
             }
+            onMounted(() => {
+                // const el = document.getElementsByClassName(
+                //     'refresh-icon-request'
+                // )
+                // if (el) {
+                //     el[0]?.children.forEach((p) => {
+                //         p.setAttribute('style', 'fill:#374151')
+                //         p.setAttribute('style', 'stroke:#374151')
+                //     })
+                // }
+                // console.log('el', el)
+            })
             return {
                 isFilterApplied,
                 mutate,
@@ -695,6 +708,12 @@
         top: -5px;
         height: 30px;
         right: 0;
+    }
+    .refresh-icon-request {
+        // stroke: #374151 !important;
+        // path {
+        //     stroke: #374151 !important;
+        // }
     }
 </style>
 

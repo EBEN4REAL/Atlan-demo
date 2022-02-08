@@ -114,7 +114,22 @@
                         </div>
                     </template>
                     <template v-else-if="column.key === 'data_type'">
-                        <span class="data-type">{{ text?.toUpperCase() }}</span>
+                        <div class="flex items-center data-type">
+                            <span class="mr-1">{{ text?.toUpperCase() }}</span>
+                            <div
+                                v-if="record.lookup.length > 0"
+                                class="flex items-center truncate"
+                            >
+                                (
+                                <div
+                                    v-for="(rec, index) in record.lookup"
+                                    :key="index"
+                                >
+                                    {{ rec }}
+                                </div>
+                                )
+                            </div>
+                        </div>
                     </template>
                     <template v-else-if="column.key === 'description'">
                         <Tooltip :tooltip-text="text" />
@@ -278,7 +293,6 @@
                 ) {
                     facets.value.typeName = 'SalesforceField'
                     facets.value.objectQualifiedName = assetQualifiedName.value
-                    console.log('hello', facets.value)
                 }
             }
 
@@ -362,8 +376,6 @@
                 fieldsData.value = {
                     filteredList: filteredListData,
                 }
-
-                console.log('hello', filteredListData)
             }
 
             const handleListUpdate = (asset: any) => {

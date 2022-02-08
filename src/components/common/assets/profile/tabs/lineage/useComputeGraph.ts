@@ -2,9 +2,6 @@ import { ref } from 'vue'
 import useLineageStore from '~/store/lineage'
 import useGraph from './useGraph'
 import useTransformGraph from './useTransformGraph'
-import { getNodeTypeText, nonBiTypes, childGroupBiAssetMap } from './util.js'
-import { pluralizeString } from '~/utils/string'
-import { findDuplicates } from '~/utils/array'
 
 export default async function useComputeGraph(
     graph,
@@ -34,13 +31,6 @@ export default async function useComputeGraph(
     /* Nodes */
     let columnEntity = {}
     const columnEntityIds = []
-    let biEntity = {}
-    const biEntityIds = []
-
-    const typeNames = Object.values(lineage.value.guidEntityMap).map(
-        (x) => x.typeName
-    )
-    const typeNamesDupArr = findDuplicates(typeNames)
 
     const createNodesFromEntityMap = (lineageData, hasBase = true) => {
         const { relations, childrenCounts, baseEntityGuid } = lineageData
@@ -63,35 +53,6 @@ export default async function useComputeGraph(
                 return
             }
 
-            if (
-                !nonBiTypes.includes(typeName) &&
-                typeNamesDupArr.includes(typeName) &&
-                attributes[childGroupBiAssetMap[typeName]]
-            ) {
-                const parentGuid =
-                    attributes[childGroupBiAssetMap[typeName]].guid
-                if (!biEntity[parentGuid])
-                    biEntity = {
-                        ...biEntity,
-                        [parentGuid]: [ent],
-                    }
-                else biEntity[parentGuid].push(ent)
-                biEntityIds.push(guid)
-
-                if (biEntity[parentGuid].length > 1) return
-
-                const typeCountLength = guidEntityMap.filter(
-                    (x) =>
-                        x?.attributes?.[childGroupBiAssetMap[typeName]]
-                            ?.guid === parentGuid
-                ).length
-                if (typeCountLength > 1)
-                    ent.typeCount = `${pluralizeString(
-                        getNodeTypeText[typeName],
-                        typeCountLength
-                    )}`
-            }
-
             const { nodeData } = createNodeData(
                 ent,
                 relations,
@@ -105,12 +66,6 @@ export default async function useComputeGraph(
             nodes.value.push(nodeData)
         })
 
-        Object.entries(biEntity).forEach(([k, v]) => {
-            const f = [...v]
-            f.shift()
-            biEntity[k] = f
-        })
-
         if (Object.keys(columnEntity).length) {
             Object.entries(columnEntity).forEach(([parentGuid, columns]) => {
                 lineageStore.setNodesColumnList(parentGuid, columns)
@@ -121,9 +76,6 @@ export default async function useComputeGraph(
     createNodesFromEntityMap(lineage.value)
 
     /* Edges */
-    const biEntityIdsBl = Object.values(biEntity)
-        .flat()
-        .map((x) => x.guid)
 
     const createNodeEdges = (lineageData) => {
         const { relations } = lineageData
@@ -138,8 +90,6 @@ export default async function useComputeGraph(
             else fromAndToIdSet.add(fromAndToId)
 
             if (columnEntityIds.find((y) => [from, to].includes(y))) return
-
-            if (biEntityIdsBl.find((y) => to === y)) return
 
             const relation = {
                 id: `${processId}/${from}@${to}`,

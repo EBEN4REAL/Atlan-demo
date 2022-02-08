@@ -148,7 +148,7 @@
     import { integrations } from '~/constant/integrations'
     import { useUsers } from '~/composables/user/useUsers'
     import { useTimeAgo } from '@vueuse/core'
-    import bg from '~/assets/images/admin/integrations/add-slack-bg.svg'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'SlackIntegrationCard',
@@ -329,6 +329,10 @@
                     cancelText: 'Cancel',
                     async onOk() {
                         await disconnect()
+                        useAddEvent('admin', 'integration', 'removed', {
+                            integration: 'slack',
+                            level: 'tenant',
+                        })
                     },
                 })
             }

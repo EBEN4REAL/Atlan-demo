@@ -18,6 +18,7 @@
     import { toRefs, computed, ref } from 'vue'
     import { getDeepLinkFromUserDmLink } from '~/composables/integrations/useSlack'
     import AtlanIcon from '../../icon/atlanIcon.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default {
         name: 'PopoverUser',
@@ -91,6 +92,12 @@
             )
             const handleClick = () => {
                 window.open(slackUrl.value)
+                useAddEvent('admin', 'integration', 'slack_message_cta', {
+                    type:
+                        entity.value.username || !entity.value.alias // logic to check if entity is user or group
+                            ? 'user'
+                            : 'group',
+                })
             }
             return {
                 slackEnabled,

@@ -15,13 +15,14 @@
 </template>
 
 <script setup lang="ts">
-    import { computed, toRefs } from 'vue'
+    import { computed, toRefs, watch } from 'vue'
     import Card from '../card.vue'
     import integrationStore from '~/store/integrations/index'
     import {
         archiveSlack,
         openSlackOAuth,
     } from '~/composables/integrations/useSlack'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
     const emit = defineEmits(['refresh'])
 
     const call = (s) => {
@@ -36,6 +37,14 @@
     const { userSlackStatus, tenantSlackStatus } = toRefs(store)
     const pV = computed(() => ({ id: userSlackStatus.value.id }))
     const { data, isLoading, error, disconnect } = archiveSlack(pV)
+
+    watch([data, error], () => {
+        if (!error.value)
+            useAddEvent('admin', 'integration', 'removed', {
+                integration: 'slack',
+                level: 'user',
+            })
+    })
 </script>
 
 <style scoped></style>

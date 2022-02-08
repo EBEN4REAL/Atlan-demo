@@ -473,6 +473,7 @@
                                     <SlackModal
                                         :link="link"
                                         :asset-i-d="activeInlineTab?.queryId"
+                                        assetType="Query"
                                     >
                                         <div class="flex items-center">
                                             <AtlanIcon icon="Slack" />

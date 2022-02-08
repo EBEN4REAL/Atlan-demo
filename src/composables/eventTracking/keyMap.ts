@@ -255,6 +255,12 @@ const keyMap = {
         },
     },
     governance: {
+        readme: {
+            updated: {
+                action: 'governance_readme_updated',
+                properties: (props) => ({ asset_type: props.asset_type }),
+            },
+        },
         resource: {
             created: {
                 action: 'governance_resource_created',

@@ -83,6 +83,7 @@
         updateSelectedPersona,
         updatedSelectedData,
     } from '../composables/useEditPurpose'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default {
         name: 'PerposeReadme',
@@ -183,6 +184,9 @@
                     // updateSelectedPersona()
                     loadingSave.value = false
                     isEditMode.value = false
+                    useAddEvent('governance', 'readme', 'updated', {
+                        asset_type: 'purpose',
+                    })
                 } catch (error) {
                     loadingSave.value = false
                     isEditMode.value = false

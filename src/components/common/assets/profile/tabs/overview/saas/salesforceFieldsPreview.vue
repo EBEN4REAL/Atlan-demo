@@ -4,7 +4,6 @@
         <div class="w-1/2 mb-3">
             <SearchAdvanced
                 v-model:value="queryText"
-                :autofocus="true"
                 :placeholder="`Search ${totalCount} fields`"
                 size="minimal"
                 @change="handleSearchChange"
@@ -244,7 +243,7 @@
                 isScrubbed,
             } = useAssetInfo()
 
-            const aggregationAttributeName = 'dataType'
+            const aggregationAttributeName = 'fieldDataType'
             const limit = ref(20)
             const offset = ref(0)
             const facets = ref({
@@ -261,7 +260,7 @@
                 ...customMetadataProjections,
             ])
             const preference = ref({
-                sort: 'default',
+                sort: 'order-asc',
             })
             const relationAttributes = ref([...AssetRelationAttributes])
 

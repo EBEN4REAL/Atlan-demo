@@ -840,6 +840,13 @@ export default function useAssetInfo() {
         return false
     }
 
+    const isCustom = (asset: assetInterface) => {
+        if (attributes(asset)?.isCustom) {
+            return true
+        }
+        return false
+    }
+
     const isGTC = (asset: assetInterface) => {
         if (isGTCByType(asset.typeName)) {
             return true
@@ -1137,6 +1144,12 @@ export default function useAssetInfo() {
     const sourceChildCount = (asset: assetInterface) =>
         getCountString(attributes(asset)?.sourceChildCount, true)
 
+    const detailColumns = (asset: assetInterface) =>
+        attributes(asset)?.detailColumns || []
+
+    const picklistValues = (asset: assetInterface) =>
+        attributes(asset)?.picklistValues || []
+
     return {
         attributes,
         title,
@@ -1187,6 +1200,7 @@ export default function useAssetInfo() {
         announcementUpdatedAt,
         announcementUpdatedBy,
         ownerGroups,
+        detailColumns,
         ownerUsers,
         modifiedAt,
         modifiedBy,
@@ -1275,5 +1289,7 @@ export default function useAssetInfo() {
         sourceId,
         fieldCount,
         apiName,
+        isCustom,
+        picklistValues,
     }
 }

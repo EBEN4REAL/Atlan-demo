@@ -120,6 +120,12 @@ export const AssetAttributes = [
     'sourceId',
     'fieldCount',
     'objectQualifiedName',
+    'dashboardType',
+    'reportType',
+    'detailColumns',
+    'isCustom',
+    'inlineHelpText',
+    'picklistValues',
 ]
 
 export const SQLAttributes = [

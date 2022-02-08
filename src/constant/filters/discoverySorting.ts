@@ -18,11 +18,11 @@ export const discoverySorting = [
     {
         id: 'order-asc',
         label: 'Order(Asc)',
-        includes: ['Column'],
+        includes: ['Column', 'SalesforceField'],
     },
     {
         id: 'order-desc',
         label: 'Order(Desc)',
-        includes: ['Column'],
+        includes: ['Column', 'SalesforceField'],
     },
 ]

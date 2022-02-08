@@ -26,7 +26,7 @@
                     @change="setQuery"
                     @blur="onBlur"
                     @focus="onFocus"
-                    @keyup.esc="(e) => e.target.blur()"
+                    @keyup.esc="onEsc"
                 />
             </div>
         </div>
@@ -98,24 +98,32 @@
             })
 
             /** METHODS */
-            const setQuery = (e) => {
+            function setQuery(e) {
                 query.value = e.target.value
             }
 
-            const setSearchItem = (item) => {
+            function setSearchItem(item) {
                 searchItem.value = item.guid
                 onSelectAsset(item, true)
                 emit('select', item.guid)
             }
 
-            const onBlur = () => {
+            function onBlur() {
                 setTimeout(() => {
                     showResults.value = false
                 }, 500)
+
+                if (!query.value) showSearch.value = false
             }
 
-            const onFocus = () => {
+            function onFocus() {
                 showResults.value = true
+            }
+
+            function onEsc(e) {
+                e.target.blur()
+                showResults.value = false
+                showSearch.value = false
             }
 
             const sourceImg = (entity) => {
@@ -143,6 +151,7 @@
                 setSearchItem,
                 onBlur,
                 onFocus,
+                onEsc,
                 searchBar,
                 sourceImg,
                 showSearch,

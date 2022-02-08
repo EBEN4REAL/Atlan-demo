@@ -26,7 +26,10 @@
                     @click.stop
                     @change="(e) => $emit('listItem:check', e, item)"
                 />
-                <div class="flex flex-col flex-1 lg:pr-16">
+                <div
+                    class="flex flex-col flex-1"
+                    :class="{ 'lg:pr-16': !isCompact }"
+                >
                     <div class="flex items-center overflow-hidden">
                         <div
                             v-if="
@@ -884,13 +887,13 @@
                     <div class="flex flex-wrap gap-x-1">
                         <div
                             v-if="
-                                list.length > 0 &&
+                                clsfList.length > 0 &&
                                 preference?.display?.includes('classifications')
                             "
                             class="flex flex-wrap mt-1 gap-x-1"
                         >
                             <template
-                                v-for="classification in list"
+                                v-for="classification in clsfList"
                                 :key="classification.guid"
                             >
                                 <PopoverClassification
@@ -916,15 +919,12 @@
                         </div>
                         <div
                             v-if="
-                                meanings(item).length > 0 &&
+                                terms.length > 0 &&
                                 preference?.display?.includes('terms')
                             "
                             class="flex flex-wrap gap-1 mt-1"
                         >
-                            <template
-                                v-for="term in meanings(item)"
-                                :key="term.guid"
-                            >
+                            <template v-for="term in terms" :key="term.guid">
                                 <div
                                     class="flex flex-wrap"
                                     v-if="
@@ -1060,7 +1060,11 @@
             },
             itemIndex: {
                 type: Number,
-                require: true,
+                required: true,
+            },
+            isCompact: {
+                type: Boolean,
+                default: () => false,
             },
             assetNameTruncatePercentage: {
                 type: String,
@@ -1176,15 +1180,15 @@
                 return item?.value?.guid !== classification.entityGuid
             }
 
-            const list = computed(() => {
-                const { matchingIdsResult } = mergeArray(
-                    classificationList.value,
-                    classifications(item.value),
-                    'name',
-                    'typeName'
+            const clsfList = computed(() =>
+                item.value?.classificationNames?.map((clName) =>
+                    classificationList.value.find(
+                        (clsf) => clsf.name === clName
+                    )
                 )
-                return matchingIdsResult
-            })
+            )
+
+            const terms = computed(() => meanings(item.value))
 
             const termIcon = (term) => {
                 if (
@@ -1256,7 +1260,7 @@
                 categories,
                 parentCategory,
                 isPropagated,
-                list,
+                clsfList,
                 classifications,
                 getProfilePath,
                 showAssetSidebarDrawer,
@@ -1282,7 +1286,7 @@
                 parentObject,
                 sourceViewCount,
                 sourceChildCount,
-                meanings,
+                terms,
                 fieldCount,
             }
         },

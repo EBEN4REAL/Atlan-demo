@@ -69,7 +69,7 @@
                             </ColumnSelector>
                         </div>
 
-                        <div class="item-2">
+                        <div class="item-2" style="min-width: 120px">
                             <!-- Will appear when there is only one column -->
                             <div class="flex items-center text-gray-500">
                                 <AtlanIcon

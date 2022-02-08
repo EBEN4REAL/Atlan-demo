@@ -114,7 +114,22 @@
                         </div>
                     </template>
                     <template v-else-if="column.key === 'data_type'">
-                        <span class="data-type">{{ text?.toUpperCase() }}</span>
+                        <div class="flex items-center data-type">
+                            <span class="mr-1">{{ text?.toUpperCase() }}</span>
+                            <div
+                                v-if="record?.lookup?.length > 0"
+                                class="flex items-center truncate"
+                            >
+                                (
+                                <div
+                                    v-for="(rec, index) in record?.lookup"
+                                    :key="index"
+                                >
+                                    {{ rec }}
+                                </div>
+                                )
+                            </div>
+                        </div>
                     </template>
                     <template v-else-if="column.key === 'description'">
                         <Tooltip :tooltip-text="text" />
@@ -258,6 +273,7 @@
                 ...AssetAttributes,
                 ...SQLAttributes,
                 ...customMetadataProjections,
+                'lookupObjects',
             ])
             const preference = ref({
                 sort: 'order-asc',
@@ -277,7 +293,6 @@
                 ) {
                     facets.value.typeName = 'SalesforceField'
                     facets.value.objectQualifiedName = assetQualifiedName.value
-                    console.log('hello', facets.value)
                 }
             }
 
@@ -349,6 +364,9 @@
                     hash_index: i.attributes.order,
                     field_name: i.attributes.name,
                     data_type: i.attributes.dataType,
+                    lookup: i.attributes?.lookupObjects?.map(
+                        (obj) => obj?.attributes?.name
+                    ),
                     description:
                         i.attributes.userDescription ||
                         i.attributes.description ||
@@ -368,7 +386,7 @@
                     list.value[index] = asset
                 }
 
-                // In case column from url was updated instead of the other list (20 items)
+                // In case field from url was updated instead of the other list (20 items)
                 if (asset.guid === fieldFromUrl.value[0]?.guid) {
                     fieldFromUrl.value[0] = asset
                 }
@@ -399,7 +417,7 @@
             // customRow Antd
             const customRow = (record: { key: null }) => ({
                 onClick: () => {
-                    // Column drawer trigger
+                    // Field drawer trigger
                     if (selectedRow.value === record.key)
                         handleCloseFieldSidebar()
                     else {

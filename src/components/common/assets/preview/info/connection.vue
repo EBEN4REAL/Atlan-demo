@@ -11,7 +11,10 @@
     </div>
 
     <div
-        v-if="attributes(selectedAsset)?.category?.toLowerCase() != 'bi'"
+        v-if="
+            attributes(selectedAsset)?.category?.toLowerCase() != 'bi' &&
+            attributes(selectedAsset)?.category?.toLowerCase() != 'saas'
+        "
         class="flex flex-col"
         @click="handleOpenModal"
     >

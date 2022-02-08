@@ -629,6 +629,17 @@ export function useBody(
                     }
                     break
                 }
+                case 'fieldDataType': {
+                    if (mkey) {
+                        base.aggregation(
+                            'terms',
+                            'dataType.keyword',
+                            { size: 50 },
+                            `${agg_prefix}_${mkey}`
+                        )
+                    }
+                    break
+                }
                 case 'glossary': {
                     if (mkey) {
                         base.aggregation(

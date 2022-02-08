@@ -148,6 +148,74 @@
 
         <div
             v-if="
+                selectedAsset.typeName?.toLowerCase() === 'column' ||
+                selectedAsset.typeName?.toLowerCase() === 'salesforcefield'
+            "
+            class="flex flex-col px-5 text-sm gap-y-4"
+        >
+            <div class="flex flex-col">
+                <span class="mb-1 text-sm text-gray-500">Data Type</span>
+
+                <div class="flex items-center text-gray-700 gap-x-1">
+                    <div class="flex items-center">
+                        <component
+                            :is="dataTypeCategoryImage(selectedAsset)"
+                            class="h-4 mr-0.5 mb-0.5"
+                        />
+                        <span class="text-sm uppercase">{{
+                            dataType(selectedAsset)
+                        }}</span>
+                    </div>
+
+                    <div
+                        v-if="
+                            isPrimary(selectedAsset) ||
+                            isDist(selectedAsset) ||
+                            isPartition(selectedAsset)
+                        "
+                        class="flex"
+                    >
+                        <AtlanIcon
+                            icon="PrimaryKey"
+                            class="mb-0.5 text-yellow-500"
+                        ></AtlanIcon>
+
+                        <span
+                            v-if="isPrimary(selectedAsset)"
+                            class="ml-1 text-sm text-gray-700"
+                            >Primary Key</span
+                        >
+                        <span
+                            v-if="isDist(selectedAsset)"
+                            class="ml-1 text-sm text-gray-700"
+                            >Dist Key</span
+                        >
+                        <span
+                            v-if="isPartition(selectedAsset)"
+                            class="ml-1 text-sm text-gray-700"
+                            >Partition Key</span
+                        >
+                    </div>
+                </div>
+            </div>
+            <div v-if="tableName(selectedAsset)">
+                <div class="mb-1 text-sm text-gray-500">Table</div>
+                <div class="text-sm text-gray-700">
+                    <AtlanIcon icon="TableGray" class="w-auto h-4 mb-0.5" />
+                    {{ tableName(selectedAsset) }}
+                </div>
+            </div>
+            <div v-if="viewName(selectedAsset)">
+                <div class="mb-1 text-sm text-gray-500">View</div>
+                <div class="text-sm text-gray-700">
+                    <AtlanIcon icon="ViewGray" class="w-auto h-4 mb-0.5" />
+                    {{ viewName(selectedAsset) }}
+                </div>
+            </div>
+        </div>
+
+        <div
+            v-if="
                 ['SalesforceObject', 'SalesforceField'].includes(
                     selectedAsset?.typeName
                 ) && apiName(selectedAsset) !== ''
@@ -155,8 +223,56 @@
             class="flex px-5"
         >
             <div class="flex flex-col text-sm">
-                <span class="mb-1 text-sm text-gray-500">Unique Name</span>
+                <span class="mb-1 text-sm text-gray-500">API Name</span>
                 <span class="text-gray-700">{{ apiName(selectedAsset) }}</span>
+            </div>
+        </div>
+
+        <div
+            v-if="
+                [
+                    'SalesforceOrganization',
+                    'SalesforceReport',
+                    'SalesforceDashboard',
+                ].includes(selectedAsset?.typeName)
+            "
+            class="flex flex-col px-5 text-sm"
+        >
+            <span class="mb-1 text-gray-500">Source ID</span>
+
+            <span class="text-gray-700">{{ sourceId(selectedAsset) }}</span>
+        </div>
+
+        <div
+            v-if="
+                ['SalesforceDashboard'].includes(selectedAsset?.typeName) &&
+                selectedAsset?.attributes?.dashboardType
+            "
+            class="flex px-5"
+        >
+            <div class="flex flex-col text-sm">
+                <span class="mb-1 text-sm text-gray-500">Dashboard Type</span>
+                <span class="text-gray-700">{{
+                    selectedAsset?.attributes?.dashboardType
+                }}</span>
+            </div>
+        </div>
+        <div
+            v-if="
+                ['SalesforceReport'].includes(selectedAsset?.typeName) &&
+                selectedAsset?.attributes?.reportType
+            "
+            class="flex px-5"
+        >
+            <div class="flex flex-col text-sm">
+                <div class="mb-1 text-sm text-gray-500">Report Type</div>
+                <div class="text-gray-700">
+                    Label : {{ selectedAsset?.attributes?.reportType?.label }}
+                </div>
+                <div class="text-gray-700">
+                    Type <span class="ml-1">:</span>
+                    {{ selectedAsset?.attributes?.reportType?.type }}
+                </div>
             </div>
         </div>
 
@@ -182,6 +298,42 @@
             class="flex px-5"
         >
             <FieldCount :asset="selectedAsset" />
+        </div>
+
+        <div
+            v-if="
+                ['SalesforceReport'].includes(selectedAsset?.typeName) &&
+                detailColumns(selectedAsset).length > 0
+            "
+            class="flex px-5"
+        >
+            <div class="flex flex-col text-sm">
+                <span class="mb-1 text-sm text-gray-500">Detail Columns</span>
+                <div
+                    v-for="(col, index) in detailColumns(selectedAsset)"
+                    :key="index"
+                >
+                    <span class="font-semibold break-words">{{ col }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div
+            v-if="
+                ['SalesforceField'].includes(selectedAsset?.typeName) &&
+                picklistValues(selectedAsset).length > 0
+            "
+            class="flex px-5"
+        >
+            <div class="flex flex-col text-sm">
+                <span class="mb-1 text-sm text-gray-500">Picklist Values</span>
+                <div
+                    v-for="(val, index) in picklistValues(selectedAsset)"
+                    :key="index"
+                >
+                    <span class="font-semibold break-words">{{ val }}</span>
+                </div>
+            </div>
         </div>
 
         <div
@@ -224,6 +376,15 @@
                 <span class="mb-1 text-sm text-gray-500">Subtitle Text</span>
                 <span class="text-gray-700">{{
                     selectedAsset?.attributes?.subtitleText
+                }}</span>
+            </div>
+        </div>
+
+        <div v-if="selectedAsset?.attributes?.inlineHelpText" class="flex px-5">
+            <div class="flex flex-col text-sm">
+                <span class="mb-1 text-sm text-gray-500">Help Text</span>
+                <span class="text-gray-700">{{
+                    selectedAsset?.attributes?.inlineHelpText
                 }}</span>
             </div>
         </div>
@@ -280,71 +441,6 @@
                 <span class="text-gray-700 break-words">{{
                     externalLocationFormat(selectedAsset)
                 }}</span>
-            </div>
-        </div>
-
-        <div
-            v-if="selectedAsset.typeName?.toLowerCase() === 'column'"
-            class="flex flex-col px-5 text-sm gap-y-4"
-        >
-            <div class="flex flex-col">
-                <span class="mb-1 text-sm text-gray-500">Data Type</span>
-
-                <div class="flex items-center text-gray-700 gap-x-1">
-                    <div class="flex items-center">
-                        <component
-                            :is="dataTypeCategoryImage(selectedAsset)"
-                            class="h-4 mr-0.5 mb-0.5"
-                        />
-                        <span class="text-sm">{{
-                            dataType(selectedAsset)
-                        }}</span>
-                    </div>
-
-                    <div
-                        v-if="
-                            isPrimary(selectedAsset) ||
-                            isDist(selectedAsset) ||
-                            isPartition(selectedAsset)
-                        "
-                        class="flex"
-                    >
-                        <AtlanIcon
-                            icon="PrimaryKey"
-                            class="mb-0.5 text-yellow-500"
-                        ></AtlanIcon>
-
-                        <span
-                            v-if="isPrimary(selectedAsset)"
-                            class="ml-1 text-sm text-gray-700"
-                            >Primary Key</span
-                        >
-                        <span
-                            v-if="isDist(selectedAsset)"
-                            class="ml-1 text-sm text-gray-700"
-                            >Dist Key</span
-                        >
-                        <span
-                            v-if="isPartition(selectedAsset)"
-                            class="ml-1 text-sm text-gray-700"
-                            >Partition Key</span
-                        >
-                    </div>
-                </div>
-            </div>
-            <div v-if="tableName(selectedAsset)">
-                <div class="mb-1 text-sm text-gray-500">Table</div>
-                <div class="text-sm text-gray-700">
-                    <AtlanIcon icon="TableGray" class="w-auto h-4 mb-0.5" />
-                    {{ tableName(selectedAsset) }}
-                </div>
-            </div>
-            <div v-if="viewName(selectedAsset)">
-                <div class="mb-1 text-sm text-gray-500">View</div>
-                <div class="text-sm text-gray-700">
-                    <AtlanIcon icon="ViewGray" class="w-auto h-4 mb-0.5" />
-                    {{ viewName(selectedAsset) }}
-                </div>
             </div>
         </div>
 
@@ -816,6 +912,9 @@
                 fieldsLookerQuery,
                 sourceOwners,
                 apiName,
+                detailColumns,
+                picklistValues,
+                sourceId,
             } = useAssetInfo()
 
             const {
@@ -948,6 +1047,9 @@
                 fieldsLookerQuery,
                 sourceOwners,
                 apiName,
+                detailColumns,
+                picklistValues,
+                sourceId,
             }
         },
     })

@@ -19,6 +19,7 @@
                 ></component>
             </template>
             <FloatingAddAction
+                v-if="!readOnly"
                 @add="(type, panel) => handleAddPanel(type, panel)"
                 :panelInfo="panelInfo"
             />
@@ -65,18 +66,6 @@
             join: defineAsyncComponent(() => import('./panels/join/index.vue')),
         },
         setup(props, { emit }) {
-            // const vqb = ref({
-            //     panels: [
-            //         {
-            //             id: 'columns',
-            //             hide: false,
-            //         },
-            //         {
-            //             id: 'aggregate',
-            //             hide: false,
-            //         },
-            //     ],
-            // })
             const lockVQBScroll = ref(false)
             const activeInlineTab = inject(
                 'activeInlineTab'
@@ -110,12 +99,23 @@
                 )
             }
 
-            // watch(
-            //     () => activeInlineTab.value.playground.vqb.panels,
-            //     () => {
-            //         console.log('vqb update:')
-            //     }
-            // )
+            /* Accesss */
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
+
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser.value
+                    ? false
+                    : hasQueryWritePermission.value
+                    ? false
+                    : true
+            )
 
             /*---------- PROVIDERS FOR CHILDRENS -----------------
             ---Be careful to add a property/function otherwise it will pollute the whole flow for childrens-- */
@@ -128,6 +128,7 @@
 
             return {
                 // vqb,
+                readOnly,
                 activeInlineTab,
                 handleAddPanel,
                 panelInfo,

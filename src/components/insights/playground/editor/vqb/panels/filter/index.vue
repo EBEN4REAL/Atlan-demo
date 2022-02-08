@@ -8,26 +8,28 @@
         :containerHovered="containerHovered"
     >
         <template #panelIcon>
-            <span class="absolute text-sm -right-1 -top-2">
-                <AtlanIcon
-                    v-if="
-                        isFilterIsInteractive(
-                            activeInlineTab.playground.vqb.panels[index]
-                                .subpanels
-                        )
-                    "
-                    icon="GlowFlash"
-                    class="w-4 h-4"
-            /></span>
+            <div class="relative">
+                <span class="absolute text-sm -right-3 -top-3">
+                    <AtlanIcon
+                        v-if="
+                            isFilterIsInteractive(
+                                activeInlineTab.playground.vqb.panels[index]
+                                    .subpanels
+                            )
+                        "
+                        icon="GlowFlash"
+                        class="w-4 h-4"
+                /></span>
 
-            <AtlanIcon
-                icon="FilterFunnel"
-                :class="[
-                    isChecked ? 'text-gray' : 'text-gray-400',
-                    isChecked && expand ? 'text-primary' : '',
-                    'w-4 h-4',
-                ]"
-            />
+                <AtlanIcon
+                    icon="FilterFunnel"
+                    :class="[
+                        isChecked ? 'text-gray' : 'text-gray-400',
+                        isChecked && expand ? 'text-primary' : '',
+                        'w-4 h-4',
+                    ]"
+                />
+            </div>
         </template>
         <template #panelName>
             <span> Filter </span>

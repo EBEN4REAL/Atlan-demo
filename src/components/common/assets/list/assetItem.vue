@@ -120,6 +120,14 @@
                                 class="text-sm tracking-wider text-gray-500 uppercase"
                             >
                                 {{ assetTypeLabel(item) || item.typeName }}
+                                <span
+                                    v-if="
+                                        ['SalesforceObject'].includes(
+                                            item.typeName
+                                        ) && isCustom(item)
+                                    "
+                                    >(custom)</span
+                                >
                             </div>
                         </div>
 
@@ -275,7 +283,11 @@
                         </div>
 
                         <div
-                            v-if="item.typeName?.toLowerCase() === 'column'"
+                            v-if="
+                                item.typeName?.toLowerCase() === 'column' ||
+                                item.typeName?.toLowerCase() ===
+                                    'salesforcefield'
+                            "
                             class="flex items-center mr-2"
                         >
                             <div class="flex items-center">
@@ -284,7 +296,7 @@
                                     class="h-4 text-gray-500 mr-0.5 mb-0.5"
                                 />
                                 <span
-                                    class="text-sm tracking-wider text-gray-500"
+                                    class="text-sm tracking-wider text-gray-500 uppercase"
                                     >{{ dataType(item) }}</span
                                 >
                             </div>
@@ -1158,6 +1170,7 @@
                 sourceViewCount,
                 sourceChildCount,
                 fieldCount,
+                isCustom,
             } = useAssetInfo()
 
             const handlePreview = (item: any) => {
@@ -1300,6 +1313,7 @@
                 sourceChildCount,
                 meanings,
                 fieldCount,
+                isCustom,
             }
         },
     })

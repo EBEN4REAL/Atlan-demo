@@ -2,9 +2,6 @@ import { ref } from 'vue'
 import useLineageStore from '~/store/lineage'
 import useGraph from './useGraph'
 import useTransformGraph from './useTransformGraph'
-import { getNodeTypeText, nonBiTypes, childGroupBiAssetMap } from './util.js'
-import { pluralizeString } from '~/utils/string'
-import { findDuplicates } from '~/utils/array'
 
 export default async function useComputeGraph(
     graph,
@@ -34,13 +31,6 @@ export default async function useComputeGraph(
     /* Nodes */
     let columnEntity = {}
     const columnEntityIds = []
-    let biEntity = {}
-    const biEntityIds = []
-
-    const typeNames = Object.values(lineage.value.guidEntityMap).map(
-        (x) => x.typeName
-    )
-    const typeNamesDupArr = findDuplicates(typeNames)
 
     const createNodesFromEntityMap = (lineageData, hasBase = true) => {
         const { relations, childrenCounts, baseEntityGuid } = lineageData
@@ -63,32 +53,6 @@ export default async function useComputeGraph(
                 return
             }
 
-            if (
-                !nonBiTypes.includes(typeName) &&
-                typeNamesDupArr.includes(typeName)
-            ) {
-                const parentGuid =
-                    attributes[childGroupBiAssetMap[typeName]].guid
-                if (!biEntity[parentGuid])
-                    biEntity = {
-                        ...biEntity,
-                        [parentGuid]: [ent],
-                    }
-                else biEntity[parentGuid].push(ent)
-                biEntityIds.push(guid)
-
-                if (biEntity[parentGuid].length > 1) return
-
-                const typeCountLength = guidEntityMap.filter(
-                    (x) => x?.attributes?.model?.guid === parentGuid
-                ).length
-                if (typeCountLength > 1)
-                    ent.typeCount = `${pluralizeString(
-                        getNodeTypeText[typeName],
-                        typeCountLength
-                    )}`
-            }
-
             const { nodeData } = createNodeData(
                 ent,
                 relations,
@@ -102,12 +66,6 @@ export default async function useComputeGraph(
             nodes.value.push(nodeData)
         })
 
-        Object.entries(biEntity).forEach(([k, v]) => {
-            const f = [...v]
-            f.shift()
-            biEntity[k] = f
-        })
-
         if (Object.keys(columnEntity).length) {
             Object.entries(columnEntity).forEach(([parentGuid, columns]) => {
                 lineageStore.setNodesColumnList(parentGuid, columns)
@@ -118,9 +76,6 @@ export default async function useComputeGraph(
     createNodesFromEntityMap(lineage.value)
 
     /* Edges */
-    const biEntityIdsBl = Object.values(biEntity)
-        .flat()
-        .map((x) => x.guid)
 
     const createNodeEdges = (lineageData) => {
         const { relations } = lineageData
@@ -135,8 +90,6 @@ export default async function useComputeGraph(
             else fromAndToIdSet.add(fromAndToId)
 
             if (columnEntityIds.find((y) => [from, to].includes(y))) return
-
-            if (biEntityIdsBl.find((y) => to === y)) return
 
             const relation = {
                 id: `${processId}/${from}@${to}`,
@@ -171,20 +124,8 @@ export default async function useComputeGraph(
     fit(lineage.value.baseEntityGuid)
     currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
 
-    /* addNewNodesShadow */
-    const addNewNodesShadow = (entityMap) => {
-        Object.keys(entityMap).forEach((guid) => {
-            const ele = document.getElementById(guid)
-            ele?.classList.add('node-added-shadow')
-        })
-    }
-
     /* addSubGraph */
-    const addSubGraph = (
-        data,
-        registerAllListeners,
-        removeAddedNodesShadow
-    ) => {
+    const addSubGraph = (data, registerAllListeners) => {
         const newData = data
         const guidEntityMapArr = Object.keys(newData.guidEntityMap)
         nodes.value.forEach((x) => {
@@ -194,8 +135,6 @@ export default async function useComputeGraph(
         createNodesFromEntityMap(newData, false)
         createNodeEdges(newData)
         renderLayout()
-        removeAddedNodesShadow()
-        addNewNodesShadow(newData.guidEntityMap)
 
         graph.value.getNodes().forEach((n) => {
             const ctaEle = document.getElementById(`node-${n.id}-loadCTA`)

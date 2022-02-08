@@ -311,7 +311,8 @@ export const LineageAttributes = [
     'displayName',
     'certificateStatus',
     'link',
-    // Specific - see src/components/common/assets/profile/tabs/lineage/util.js -> childGroupBiAssetMap
+    'dataType',
+    // BI Relationships
     'workspace',
     'report',
     'dashboard',
@@ -321,6 +322,7 @@ export const LineageAttributes = [
     // SQL
     'table',
     'view',
+    '__customAttributes',
 ]
 
 export const ConnectionAttriibutes = [...InternalAttributes, ...AssetAttributes]

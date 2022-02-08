@@ -1137,6 +1137,9 @@ export default function useAssetInfo() {
     const sourceChildCount = (asset: assetInterface) =>
         getCountString(attributes(asset)?.sourceChildCount, true)
 
+    const detailColumns = (asset: assetInterface) =>
+        attributes(asset)?.detailColumns || []
+
     return {
         attributes,
         title,
@@ -1187,6 +1190,7 @@ export default function useAssetInfo() {
         announcementUpdatedAt,
         announcementUpdatedBy,
         ownerGroups,
+        detailColumns,
         ownerUsers,
         modifiedAt,
         modifiedBy,

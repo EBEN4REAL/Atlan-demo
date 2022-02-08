@@ -122,6 +122,7 @@ export const AssetAttributes = [
     'objectQualifiedName',
     'dashboardType',
     'reportType',
+    'detailColumns',
 ]
 
 export const SQLAttributes = [

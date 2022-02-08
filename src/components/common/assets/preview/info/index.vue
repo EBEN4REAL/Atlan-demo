@@ -218,6 +218,24 @@
 
         <div
             v-if="
+                ['SalesforceReport'].includes(selectedAsset?.typeName) &&
+                detailColumns(selectedAsset).length > 0
+            "
+            class="flex px-5"
+        >
+            <div class="flex flex-col text-sm">
+                <span class="mb-1 text-sm text-gray-500">Detail Columns</span>
+                <div
+                    v-for="(col, index) in detailColumns(selectedAsset)"
+                    :key="index"
+                >
+                    <span class="font-semibold break-words">{{ col }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div
+            v-if="
                 ['LookerDashboard', 'LookerLook'].includes(
                     selectedAsset.typeName
                 )
@@ -848,6 +866,7 @@
                 fieldsLookerQuery,
                 sourceOwners,
                 apiName,
+                detailColumns,
             } = useAssetInfo()
 
             const {
@@ -980,6 +999,7 @@
                 fieldsLookerQuery,
                 sourceOwners,
                 apiName,
+                detailColumns,
             }
         },
     })

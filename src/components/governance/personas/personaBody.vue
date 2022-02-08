@@ -270,6 +270,7 @@
         PolicyType,
         deletePolicyV2,
     } from './composables/useEditPersona'
+    import { refetchPersona } from './composables/usePersonaList'
 
     export default defineComponent({
         name: 'PersonaBody',
@@ -325,7 +326,7 @@
             ]
 
             watch(selectedPersonaDirty, () => {
-                activeTabFilter.value = ''
+                // activeTabFilter.value = ''
                 addpolicyVisible.value = false
             })
             async function savePolicyUI(
@@ -344,6 +345,7 @@
                 try {
                     await action(type, dataPolicy)
                     updateSelectedPersona()
+                    refetchPersona(persona.value.id)
                     addpolicyVisible.value = false
                     // savePolicyLocally(type, id)
                     message.success({
@@ -540,6 +542,7 @@
                 isEdit,
                 loadingPolicy,
                 NoResultIllustration,
+                refetchPersona,
             }
         },
     })

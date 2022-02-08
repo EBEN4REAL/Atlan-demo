@@ -1,9 +1,8 @@
 
 import { defineComponent, PropType, ref, toRefs, h, watch } from 'vue'
 import { getDomain } from '~/utils/url';
-import { reFetchList } from '@/governance/personas/composables/usePersonaList'
+import { handleUpdateList } from '@/governance/personas/composables/usePersonaList'
 import { savePersona } from '@/governance/personas/composables/useEditPersona'
-import usePersona from '~/composables/persona/usePersona'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
 const usePersonaResources = (persona) => {
@@ -20,11 +19,11 @@ const usePersonaResources = (persona) => {
                 ...resources,
                 links: [...(resources?.links ?? []), r],
             }
+            const personaRaw = JSON.parse(JSON.stringify(body))
             delete body.metadataPolicies
             delete body.dataPolicies
             await savePersona(body)
-            usePersona() // update store
-            reFetchList() // TODO refetch only required persona
+            handleUpdateList(personaRaw) // updating list locally on sucess
             useAddEvent(
                 'governance',
                 'persona',
@@ -44,15 +43,17 @@ const usePersonaResources = (persona) => {
         updateStatus.value = 'loading'
         try {
             const body = JSON.parse(JSON.stringify(persona.value))
-            delete body.metadataPolicies
-            delete body.dataPolicies
             const index = body.resources.links.findIndex(
                 (l) => l.qualifiedName === r.qualifiedName
             )
             if (index > -1) body.resources.links[index] = r
+            const personaRaw = JSON.parse(JSON.stringify(body))
+
+            delete body.metadataPolicies
+            delete body.dataPolicies
+
             await savePersona(body)
-            usePersona() // update store
-            reFetchList()  // TODO refetch only required persona
+            handleUpdateList(personaRaw)  // updating list locally on sucess
             useAddEvent(
                 'governance',
                 'persona',
@@ -76,12 +77,13 @@ const usePersonaResources = (persona) => {
             body.resources.links = body.resources.links.filter(
                 (l) => l.qualifiedName !== id
             )
+            const personaRaw = JSON.parse(JSON.stringify(body))
             delete body.metadataPolicies
             delete body.dataPolicies
             await savePersona(body)
+            handleUpdateList(personaRaw)  // updating list locally on sucess
+
             removeStatus.value = 'success'
-            usePersona() // update store
-            reFetchList() // TODO refetch only required persona
             useAddEvent(
                 'governance',
                 'persona',

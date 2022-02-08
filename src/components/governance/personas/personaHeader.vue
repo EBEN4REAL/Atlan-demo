@@ -111,7 +111,7 @@
     } from './composables/useEditPersona'
 
     import Dropdown from '@/UI/dropdown.vue'
-    import { reFetchList } from './composables/usePersonaList'
+    import { handleUpdateList } from './composables/usePersonaList'
     import { formatDateTime } from '~/utils/date'
     import { useTimeAgo } from '@vueuse/core'
     import map from '~/constant/accessControl/map'
@@ -222,7 +222,7 @@
                     })
 
                     isEditing.value = false
-                    reFetchList()
+                    handleUpdateList(body)
                     openEditModal.value = false
                 } catch (error) {
                     message.error({

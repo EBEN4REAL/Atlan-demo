@@ -12,6 +12,9 @@ import {
 const List = (params?: any, options?: useOptions) =>
     useAPI(map.LIST_PERSONAS, 'GET', { params }, options || {})
 
+const getPersonaByID = (id?: string, options?: useOptions) =>
+    useAPI(map.GET_PERSONA_FROM_ID, 'GET', { pathVariables: { id } }, options || {})
+
 const listPersonas = (params: any, options?: any) =>
     useAPI(
         map.LIST_PERSONAS,
@@ -76,6 +79,7 @@ const enableDisablePersona = (id: string, body: IEnableDisablePayload) =>
 
 export const Persona = {
     List,
+    getPersonaByID,
     Create,
     Update,
     updatePersonaUsers,

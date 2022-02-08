@@ -348,6 +348,12 @@ export function useBody(
                 }
                 break
             }
+            case 'objectQualifiedName': {
+                if (filterObject) {
+                    base.filter('term', 'objectQualifiedName', filterObject)
+                }
+                break
+            }
             case 'glossary': {
                 if (filterObject) {
                     base.filter('term', '__glossary', filterObject)

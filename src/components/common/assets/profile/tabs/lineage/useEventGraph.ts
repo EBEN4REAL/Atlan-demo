@@ -290,9 +290,12 @@ export default function useEventGraph(
                 sourcePort: fromEntityId,
                 targetCell,
                 targetPort: toEntityId,
-                stroke: '#5277d7',
             }
-            addEdge(graph, relation)
+
+            addEdge(graph, relation, {
+                stroke: '#5277d7',
+                arrowSize: graphPrefs.value.showArrow ? 12 : 0.1,
+            })
         })
     }
 
@@ -1010,7 +1013,7 @@ export default function useEventGraph(
             const size = val ? 12 : 0.1
             graph.value.getEdges().forEach((edge) => {
                 // Should not be port edge or the current selected edge
-                if (!edge.id.includes('port') && edge.id !== che.value) {
+                if (edge.id !== che.value) {
                     edge.attr('line/targetMarker/height', size)
                     edge.attr('line/targetMarker/width', size)
                 }

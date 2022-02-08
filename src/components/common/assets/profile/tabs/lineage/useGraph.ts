@@ -15,6 +15,11 @@ import {
 import { dataTypeCategoryList } from '~/constant/dataType'
 import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
+interface EdgeStyle {
+    stroke?: string
+    arrowSize?: number
+}
+
 const checkIfLeafNode = (relations, id) => {
     let res = true
     relations.forEach((x) => {
@@ -361,8 +366,8 @@ export default function useGraph() {
         return { portData }
     }
 
-    const createEdgeData = (relation, data = {}) => {
-        const stroke = relation?.stroke
+    const createEdgeData = (relation, data = {}, styles: EdgeStyle = {}) => {
+        const stroke = styles?.stroke
         let edgeData = {
             zIndex: 0,
             id: relation.id,
@@ -385,8 +390,8 @@ export default function useGraph() {
                     targetMarker: {
                         name: 'block',
                         stroke,
-                        width: 0.1,
-                        height: 0.1,
+                        width: styles?.arrowSize || 0.1,
+                        height: styles?.arrowSize || 0.1,
                     },
                 },
             },
@@ -450,13 +455,9 @@ export default function useGraph() {
         }
     }
 
-    const addEdge = (graph, relation, data = {}) => {
-        const { edgeData } = createEdgeData(relation)
+    const addEdge = (graph, relation, styles: EdgeStyle = {}) => {
+        const { edgeData } = createEdgeData(relation, {}, styles)
         graph.value.addEdge(edgeData)
-        if (Object.keys(data).length) {
-            const cell = graph.value.getCellById(edgeData.id)
-            cell.setData(data)
-        }
     }
 
     const removeEdge = (graph, type) => {

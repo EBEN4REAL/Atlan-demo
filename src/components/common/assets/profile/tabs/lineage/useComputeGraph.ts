@@ -97,12 +97,13 @@ export default async function useComputeGraph(
                 sourcePort: `${from}-invisiblePort`,
                 targetCell: to,
                 targetPort: `${to}-invisiblePort`,
-                stroke: '#aaaaaa',
             }
 
             if (x.type) relation.type = x.type
 
-            const { edgeData } = createEdgeData(relation, data)
+            const { edgeData } = createEdgeData(relation, data, {
+                stroke: '#aaaaaa',
+            })
             edges.value.push(edgeData)
         })
     }

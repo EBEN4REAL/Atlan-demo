@@ -20,6 +20,7 @@ const listPersonas = (params: any, options?: any) =>
         {
             options,
             asyncOptions: {
+                immediate: options.immediate,
                 onError: (e) => {
                     throw e
                 },
@@ -31,11 +32,11 @@ const listPersonas = (params: any, options?: any) =>
 const Create = (body: IPersona, options?: useOptions) =>
     useAPI<IPersona>(map.CREATE_PERSONA, 'POST', { body }, options || {})
 
-const createPolicy = ( body: IPersona, id: String) => useAPIPromise(map.CREATE_POLICY({id}), 'POST', { body})
+const createPolicy = (body: IPersona, id: String) => useAPIPromise(map.CREATE_POLICY({ id }), 'POST', { body })
 
-const updatePolicy = ( body: IPersona, idPolicy: String, idPersona: String) => useAPIPromise(map.UPDATE_POLICY({idPolicy, idPersona}), 'POST', { body})
+const updatePolicy = (body: IPersona, idPolicy: String, idPersona: String) => useAPIPromise(map.UPDATE_POLICY({ idPolicy, idPersona }), 'POST', { body })
 
-const deletePolicy = ( idPolicy: String, idPersona: String) => useAPIPromise(map.DELETE_POLICY({idPolicy, idPersona}), 'DELETE', {})
+const deletePolicy = (idPolicy: String, idPersona: String) => useAPIPromise(map.DELETE_POLICY({ idPolicy, idPersona }), 'DELETE', {})
 
 const createPersona = (body: IPersona) =>
     useAPIPromise(map.CREATE_PERSONA(), 'POST', {

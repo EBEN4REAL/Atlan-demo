@@ -1,6 +1,7 @@
 import { Ref, ref, watch, toRaw } from 'vue'
 import { IPersona } from '~/types/accessPolicies/personas'
 import usePersonaService from './usePersonaService'
+import { usePersonaStore } from '~/store/persona'
 import {
     reFetchList,
     selectedPersona,
@@ -28,6 +29,9 @@ export const policyEditMap = ref({
     metadataPolicies: {} as Record<string, boolean>,
 })
 
+const store = usePersonaStore()
+const { updatePersona: updatePersonaStoreList } = store
+
 /* ------------------------------------------ */
 watch(selectedPersona, () => {
     policyEditMap.value = {
@@ -44,7 +48,7 @@ watch(selectedPersona, () => {
     }
 })
 watch(
-    () => selectedPersona.value?.id,
+    () => selectedPersona,
     () => {
         if (selectedPersona.value)
             selectedPersonaDirty.value = JSON.parse(
@@ -52,7 +56,7 @@ watch(
             )
         else selectedPersonaDirty.value = undefined
     },
-    { immediate: true }
+    { immediate: true, deep: true }
 )
 /* ------------------------------------------ */
 
@@ -67,22 +71,22 @@ export function removeEditFlag(type: PolicyType, idx: string) {
 }
 
 export async function savePersona(persona: IPersona) {
-    const payload = {...persona}
-    if(!payload.attributes){
+    const payload = { ...persona }
+    if (!payload.attributes) {
         payload.attributes = {}
     }
-    if(!payload.resources){
+    if (!payload.resources) {
         payload.resources = {}
     }
-    if(payload.readme === null){
+    if (payload.readme === null) {
         delete payload.readme
     }
     return updatePersona(payload)
 }
 
-export function updatedSelectedData(data:any) {
-    selectedPersonaDirty.value = {...selectedPersonaDirty.value, ...data}
-      handleUpdateList(data)
+export function updatedSelectedData(persona) {
+    selectedPersonaDirty.value = { ...selectedPersonaDirty.value, ...persona }
+    handleUpdateList(selectedPersonaDirty.value)
 }
 
 export function discardPersona(type: PolicyType, idx: string) {
@@ -93,7 +97,7 @@ export function updateSelectedPersona() {
     selectedPersona.value = JSON.parse(
         JSON.stringify(selectedPersonaDirty.value)
     )
-    reFetchList()
+    updatePersonaStoreList(selectedPersona.value)
 }
 
 export async function addPolicy(type: String, dataPolicyProp: any) {
@@ -296,13 +300,12 @@ export async function enablePersona(id, isEnabled) {
     }
     await enableDisablePersona(id, payload)
 }
-export function isSavedPolicy() {}
+export function isSavedPolicy() { }
 
 export async function deletePersonaById(id: string) {
+    const personaStore = usePersonaStore()
+    const { removePersona } = personaStore
     await deletePersona(id)
-
-    const personaIdx = personaList.value.findIndex((prs) => prs.id === id)
-    if (personaIdx > -1) personaList.value.splice(personaIdx, 1)
-
+    removePersona(id)
     selectedPersonaId.value = personaList.value[0]?.id || ''
 }

@@ -1,39 +1,28 @@
-// import { invoke, until } from '@vueuse/core'
-import { ref, computed, watch } from 'vue'
-// import { useRoute } from 'vue-router'
-import usePersonaService from './usePersonaService'
+import { ref, computed, watch, toRefs } from 'vue'
 import { safeArray } from '~/utils/array'
 import { usePersonaStore } from '~/store/persona'
+import usePersona from '~/composables/persona/usePersona'
+import { Persona } from '~/services/service/persona'
+
 // TODO make use of store for persona list
 
-// Main Persona List, fetched from API
 const personaStore = usePersonaStore()
-const { listPersonas } = usePersonaService()
-const {
-    data: list,
-    isLoading: isPersonaLoading,
-    error: isPersonaError,
-    isReady: isPersonaListReady,
-    mutate: reFetchList,
-} = listPersonas()
+const { updatePersona: handleUpdateList } = personaStore
+const { getList: personaList } = toRefs(personaStore)
+const { mutate: reFetchList, isLoading: isPersonaLoading, error: isPersonaError, isReady: isPersonaListReady } = usePersona(false)
 
-const personaList = ref([])
-watch(list, () => {
-       personaStore.setList(list.value.records)
-       personaList.value = safeArray(list.value?.records)
-       
-})
-const handleUpdateList = (newVal) => {
-    personaList.value = personaList.value.map((el) => {
-        if(el.id === newVal.id){
-            return {...el, ...newVal}
+const refetchPersona = (id) => {
+    const { data, isLoading, isReady, error, mutate } = Persona.getPersonaByID(id)
+    watch([data, error], () => {
+        if (data?.value) {
+            handleUpdateList(data.value)
         }
-            return el
-        
     })
 }
+
 export {
     reFetchList,
+    refetchPersona,
     personaList,
     isPersonaListReady,
     isPersonaLoading,
@@ -57,7 +46,7 @@ watch(
         selectedPersona.value = undefined
 
     },
-    { immediate: true }
+    { immediate: true, deep: true }
 )
 // Filtered Persona List
 export const searchTerm = ref('')
@@ -73,8 +62,8 @@ export const filteredPersonas = computed(() => {
         result = personaList.value
     }
     return result.sort((a, b) => {
-        const current = a.displayName.toLowerCase()
-        const last = b.displayName.toLowerCase()
+        const current = a?.displayName?.toLowerCase()
+        const last = b?.displayName?.toLowerCase()
         if (current < last) {
             return -1
         }
@@ -84,9 +73,3 @@ export const filteredPersonas = computed(() => {
         return 0
     })
 })
-
-// invoke(async () => {
-//     await until(isPersonaListReady).toBe(true)
-//     if (personaList.value?.length)
-//         selectedPersonaId.value = personaList.value[0].id!
-// })

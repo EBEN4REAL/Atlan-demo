@@ -238,6 +238,24 @@
                     router.replace(`/governance/personas/${id}`)
                 }
             })
+            onMounted(() => {
+                if (personaList?.value?.length) {
+                    if (route.params.id) {
+                        const find = personaList.value.find(
+                            (el) => el.id === route.params.id
+                        )
+                        if (find) {
+                            selectedPersonaId.value = route.params.id
+                        } else {
+                            selectedPersonaId.value =
+                                filteredPersonas.value[0].id!
+                        }
+                    } else {
+                        selectedPersonaId.value = filteredPersonas.value[0].id!
+                    }
+                }
+            })
+
             watch(isPersonaListReady, () => {
                 if (personaList?.value?.length) {
                     if (route.params.id) {

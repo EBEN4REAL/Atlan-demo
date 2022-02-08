@@ -120,6 +120,14 @@
                                 class="text-sm tracking-wider text-gray-500 uppercase"
                             >
                                 {{ assetTypeLabel(item) || item.typeName }}
+                                <span
+                                    v-if="
+                                        ['SalesforceObject'].includes(
+                                            item.typeName
+                                        ) && isCustom(item)
+                                    "
+                                    >(custom)</span
+                                >
                             </div>
                         </div>
 
@@ -1158,6 +1166,7 @@
                 sourceViewCount,
                 sourceChildCount,
                 fieldCount,
+                isCustom,
             } = useAssetInfo()
 
             const handlePreview = (item: any) => {
@@ -1300,6 +1309,7 @@
                 sourceChildCount,
                 meanings,
                 fieldCount,
+                isCustom,
             }
         },
     })

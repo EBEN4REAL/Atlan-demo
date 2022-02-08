@@ -123,6 +123,7 @@ export const AssetAttributes = [
     'dashboardType',
     'reportType',
     'detailColumns',
+    'isCustom',
 ]
 
 export const SQLAttributes = [

@@ -840,6 +840,13 @@ export default function useAssetInfo() {
         return false
     }
 
+    const isCustom = (asset: assetInterface) => {
+        if (attributes(asset)?.isCustom) {
+            return true
+        }
+        return false
+    }
+
     const isGTC = (asset: assetInterface) => {
         if (isGTCByType(asset.typeName)) {
             return true
@@ -1279,5 +1286,6 @@ export default function useAssetInfo() {
         sourceId,
         fieldCount,
         apiName,
+        isCustom,
     }
 }

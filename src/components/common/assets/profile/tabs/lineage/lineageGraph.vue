@@ -492,7 +492,7 @@
             }
 
             & .node-text {
-                @apply text-gray-500 font-bold truncate text-base leading-5;
+                @apply text-gray font-bold truncate text-base leading-5;
             }
 
             & .node-meta {
@@ -501,10 +501,8 @@
                 @apply mt-1;
 
                 &__text {
-                    @apply text-base flex-shrink flex-grow-0;
-                    text-transform: capitalize;
-                    color: #6f7590;
-                    margin: 0 6px;
+                    @apply text-base flex-shrink flex-grow-0 text-gray-500;
+                    margin: 0 3px;
 
                     &.isTypename {
                         @apply flex-shrink-0;

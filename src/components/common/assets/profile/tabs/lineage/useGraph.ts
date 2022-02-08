@@ -147,7 +147,7 @@ export default function useGraph() {
                                             : ''
                                     }
                                 </div>
-                                <div class="node-meta__text  truncate ${
+                                <div class="node-meta__text text-gray  truncate ${
                                     ['Table', 'View'].includes(typeName)
                                         ? ''
                                         : 'hidden'

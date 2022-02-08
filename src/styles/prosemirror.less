@@ -50,6 +50,10 @@
         // left: 0.2142857em;
     }
 
+    blockquote p:first-of-type::before, blockquote p:first-of-type::after {
+        content: none !important;
+    }
+
     ::marker {
         display: none !important;
         font-size: 0;

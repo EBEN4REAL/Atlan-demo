@@ -217,7 +217,10 @@
 
             // computeLineageForChildBiAsset
             const computeLineageForChildBiAsset = (data) => {
-                if (!data.relations.length) {
+                if (
+                    !data.relations.length &&
+                    data.baseEntityGuid !== selectedAsset.value.guid
+                ) {
                     const childParent = relatedBiAssets.value.find(
                         (v) =>
                             childParentBiAssetMap[
@@ -292,6 +295,8 @@
                     if (childParentBiAssetMap[entity.typeName] === v.typeName)
                         parentGuid = v.guid
                 })
+                console.log('relatedBiAssets:', relatedBiAssets.value)
+                console.log('parentGuid:', parentGuid)
                 return parentGuid
             }
 
@@ -338,8 +343,10 @@
 
                         const entity = relData.value?.entities[0]
 
-                        if (childBiAssetArr.includes(typeName))
-                            guid.value = getChildBiAssetParentGuid(entity)
+                        if (childBiAssetArr.includes(typeName)) {
+                            const parentGuid = getChildBiAssetParentGuid(entity)
+                            if (parentGuid) guid.value = parentGuid
+                        }
 
                         initialLoad.value = false
                         mutate()

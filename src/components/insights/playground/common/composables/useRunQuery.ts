@@ -115,7 +115,7 @@ export default function useRunQuery() {
         activeInlineTab.value.playground.resultsPane.result.isQueryAborted =
             false
 
-        activeInlineTab.value.playground.resultsPane.result.tabQueryState = true
+        // activeInlineTab.value.playground.resultsPane.result.tabQueryState = true
 
         const attributeValue =
             activeInlineTab.value?.playground?.editor?.context?.attributeValue
@@ -342,10 +342,10 @@ export default function useRunQuery() {
                             activeInlineTab.value.playground.resultsPane.result.runQueryId =
                                 undefined
 
-                            activeInlineTab.value.playground.resultsPane.result.tabQueryState =
-                                activeTabKey.value === activeInlineTab.value.key
-                                    ? false
-                                    : true
+                            // activeInlineTab.value.playground.resultsPane.result.tabQueryState =
+                            //     activeTabKey.value === activeInlineTab.value.key
+                            //         ? false
+                            //         : true
 
                             let endTime = new Date()
                             activeInlineTab.value.playground.resultsPane.result.executionTime =
@@ -369,10 +369,10 @@ export default function useRunQuery() {
                                 eventSource,
                                 message
                             )
-                            activeInlineTab.value.playground.resultsPane.result.tabQueryState =
-                                activeTabKey.value === activeInlineTab.value.key
-                                    ? false
-                                    : true
+                            // activeInlineTab.value.playground.resultsPane.result.tabQueryState =
+                            //     activeTabKey.value === activeInlineTab.value.key
+                            //         ? false
+                            //         : true
                             /* Callback will be called when request completed */
                             if (onCompletion) {
                                 onCompletion(activeInlineTab, 'error')
@@ -392,12 +392,10 @@ export default function useRunQuery() {
                 ) {
                     const { setStreamErrorInActiveInlineTab } = useError()
                     setStreamErrorInActiveInlineTab(activeInlineTab, error)
-                    activeInlineTab.value.playground.resultsPane.result.tabQueryState =
-                        activeTabKey.value === activeInlineTab.value.key
-                            ? false
-                            : true
-
-                    debugger
+                    // activeInlineTab.value.playground.resultsPane.result.tabQueryState =
+                    //     activeTabKey.value === activeInlineTab.value.key
+                    //         ? false
+                    //         : true
 
                     /* Callback will be called when request completed */
                     if (onCompletion) onCompletion(activeInlineTab, 'error')
@@ -408,10 +406,10 @@ export default function useRunQuery() {
                     reset()
                 }
             } catch (e) {
-                activeInlineTab.value.playground.resultsPane.result.tabQueryState =
-                    activeTabKey.value === activeInlineTab.value.key
-                        ? false
-                        : true
+                // activeInlineTab.value.playground.resultsPane.result.tabQueryState =
+                //     activeTabKey.value === activeInlineTab.value.key
+                //         ? false
+                //         : true
 
                 if (onCompletion) onCompletion(activeInlineTab, 'error')
                 if (eventSource.value?.close) {
@@ -469,8 +467,8 @@ export default function useRunQuery() {
             console.log('clock running abort timer stop 1')
         }
 
-        activeInlineTab.value.playground.resultsPane.result.tabQueryState =
-            false
+        // activeInlineTab.value.playground.resultsPane.result.tabQueryState =
+        //     false
 
         if (
             canQueryAbort(

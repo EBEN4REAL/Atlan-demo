@@ -205,14 +205,13 @@
             const { LINE_ERROR_NAMES, SOURCE_ACCESS_ERROR_NAMES } = useError()
             // let isQueryAborted = ref(false)
 
-            const activeInlineTabKeyCopy = activeInlineTabKey.value
-
-            const tabIndex = inlineTabs.value.findIndex(
-                (tab) => tab.key === activeInlineTabKeyCopy
-            )
-
             const abortRunningQuery = () => {
-                console.log('query abourt: hello')
+                const activeInlineTabKeyCopy = activeInlineTabKey.value
+
+                const tabIndex = inlineTabs.value.findIndex(
+                    (tab) => tab.key === activeInlineTabKeyCopy
+                )
+
                 abortQuery(tabIndex, inlineTabs, editorInstance, monacoInstance)
                 // isQueryAborted.value = true
             }

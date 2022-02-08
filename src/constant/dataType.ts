@@ -7,6 +7,8 @@ import array from '~/assets/images/dataType/array.svg'
 import struct from '~/assets/images/dataType/struct.svg'
 import geography from '~/assets/images/dataType/geography.svg'
 import variant from '~/assets/images/dataType/variant.svg'
+import percent from '~/assets/images/dataType/percent.svg'
+import enum2 from '~/assets/images/dataType/enum2.svg'
 
 export const images = {
     Number: number,
@@ -49,7 +51,6 @@ export const dataTypeCategoryList = [
             'REAL',
             'PRIMITIVE_DOUBLE',
             'Currency',
-            'Percent',
         ],
         image: float1,
         imageText: 'float1',
@@ -123,16 +124,23 @@ export const dataTypeCategoryList = [
     {
         id: 'object',
         label: 'Object',
-        type: [
-            'OBJECT',
-            'STRUCT',
-            'Combobox',
-            'Multipicklist',
-            'Picklist',
-            'Reference',
-        ],
+        type: ['OBJECT', 'STRUCT', 'Combobox', 'Reference'],
         image: struct,
         imageText: 'struct',
+    },
+    {
+        id: 'percent',
+        label: 'Percent',
+        type: ['Percent'],
+        image: percent,
+        imageText: 'percent',
+    },
+    {
+        id: 'enum',
+        label: 'Enum',
+        type: ['Picklist', 'Multipicklist'],
+        image: enum2,
+        imageText: 'enum',
     },
     {
         id: 'geography',

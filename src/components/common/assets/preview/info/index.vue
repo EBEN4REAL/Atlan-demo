@@ -278,6 +278,15 @@
             </div>
         </div>
 
+        <div v-if="selectedAsset?.attributes?.inlineHelpText" class="flex px-5">
+            <div class="flex flex-col text-sm">
+                <span class="mb-1 text-sm text-gray-500">Help Text</span>
+                <span class="text-gray-700">{{
+                    selectedAsset?.attributes?.inlineHelpText
+                }}</span>
+            </div>
+        </div>
+
         <div
             v-if="
                 selectedAsset?.typeName === 'LookerQuery' &&

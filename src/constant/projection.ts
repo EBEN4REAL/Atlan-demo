@@ -124,6 +124,7 @@ export const AssetAttributes = [
     'reportType',
     'detailColumns',
     'isCustom',
+    'inlineHelpText',
 ]
 
 export const SQLAttributes = [

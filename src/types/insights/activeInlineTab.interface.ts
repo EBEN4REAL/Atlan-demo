@@ -67,6 +67,7 @@ export interface activeInlineTabInterface {
                 executionTime: number
                 queryErrorObj: any
                 errorDecorations: any
+                abortQueryFn: Function
                 eventSourceInstance: any
                 buttonDisable: boolean
                 isQueryAborted: boolean

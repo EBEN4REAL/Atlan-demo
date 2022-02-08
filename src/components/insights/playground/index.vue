@@ -208,7 +208,6 @@
     import ResultsPane from '~/components/insights/playground/resultsPane/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import NoActiveInlineTab from './noActiveInlineTab.vue'
-    import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import SaveQueryModal from '~/components/insights/playground/editor/saveQuery/index.vue'
@@ -216,7 +215,7 @@
     import { useUtils } from '~/components/insights/common/composables/useUtils'
     import ResultPaneFooter from '~/components/insights/playground/resultsPane/result/resultPaneFooter.vue'
     import { useRouter, useRoute } from 'vue-router'
-    import { generateUUID } from '~/utils/helper/generator'
+    import { useActiveTab } from '~/components/insights/common/composables/useActiveTab'
 
     // import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
 
@@ -296,131 +295,13 @@
 
             const handleAdd = (isVQB) => {
                 // const key = String(new Date().getTime())
-                const key = generateUUID()
-                const inlineTabData: activeInlineTabInterface = {
+                const { generateNewActiveTab } = useActiveTab()
+                const inlineTabData = generateNewActiveTab({
+                    activeInlineTab,
                     label: `Untitled ${getLastUntitledNumber()}`,
-                    key,
-                    favico: 'https://atlan.com/favicon.ico',
-                    isSaved: false,
-                    queryId: undefined,
-                    status: 'is_null',
-                    connectionId: '',
-                    description: '',
-                    qualifiedName: '',
-                    parentGuid: '',
-                    parentQualifiedName: '',
-                    isSQLSnippet: false,
-                    savedQueryParentFolderTitle: undefined,
-                    collectionQualifiedName: '',
-                    explorer: {
-                        schema: {
-                            connectors: {
-                                attributeName:
-                                    activeInlineTab.value?.explorer?.schema
-                                        ?.connectors?.attributeName,
-                                attributeValue:
-                                    activeInlineTab.value?.explorer?.schema
-                                        ?.connectors?.attributeValue,
-                            },
-                        },
-                        queries: {
-                            connectors: {
-                                connector:
-                                    activeInlineTab.value?.explorer?.queries
-                                        .connectors.connector,
-                            },
-                            collection: {
-                                guid: activeInlineTab.value?.explorer?.queries
-                                    ?.collection?.guid,
-                                qualifiedName:
-                                    activeInlineTab.value?.explorer?.queries
-                                        ?.collection?.qualifiedName,
-                                parentQualifiedName:
-                                    activeInlineTab.value?.explorer?.queries
-                                        ?.collection?.guid,
-                            },
-                        },
-                    },
-
-                    playground: {
-                        isVQB: isVQB,
-                        vqb: {
-                            selectedTables: [],
-                            panels: [
-                                {
-                                    order: 1,
-                                    id: 'columns',
-                                    hide: true,
-                                    subpanels: [
-                                        {
-                                            id: '1',
-                                            tableQualifiedName: undefined,
-                                            columns: ['all'],
-                                            tableData: {
-                                                certificateStatus: undefined,
-                                                assetType: undefined,
-                                                item: {},
-                                            },
-                                            columnsData: [],
-                                        },
-                                    ],
-                                    expand: true,
-                                },
-                            ],
-                        },
-                        editor: {
-                            context: {
-                                attributeName:
-                                    activeInlineTab.value?.playground?.editor
-                                        ?.context?.attributeName,
-                                attributeValue:
-                                    activeInlineTab.value?.playground?.editor
-                                        ?.context?.attributeValue,
-                            },
-                            text: '',
-                            dataList: [],
-                            columnList: [],
-                            variables: [],
-                            savedVariables: [],
-                            limitRows: {
-                                checked: false,
-                                rowsCount: -1,
-                            },
-                        },
-                        resultsPane: {
-                            activeTab:
-                                activeInlineTab.value?.playground?.resultsPane
-                                    ?.activeTab ?? 0,
-                            result: {
-                                title: `${key} Result`,
-                                runQueryId: undefined,
-                                isQueryRunning: '',
-                                queryErrorObj: {},
-                                totalRowsCount: -1,
-                                executionTime: -1,
-                                errorDecorations: [],
-                                eventSourceInstance: undefined,
-                                buttonDisable: false,
-                                isQueryAborted: false,
-                            },
-                            metadata: {},
-                            queries: {},
-                            joins: {},
-                            filters: {},
-                            impersonation: {},
-                            downstream: {},
-                            sqlHelp: {},
-                        },
-                    },
-                    assetSidebar: {
-                        // for taking the previous state from active tab
-                        openingPos: undefined,
-                        isVisible: false,
-                        assetInfo: {},
-                        title: activeInlineTab.value?.assetSidebar.title ?? '',
-                        id: activeInlineTab.value?.assetSidebar.id ?? '',
-                    },
-                }
+                    editorText: '',
+                    isVQB,
+                })
 
                 inlineTabAdd(inlineTabData, tabs, activeInlineTabKey)
                 const queryParams = {}

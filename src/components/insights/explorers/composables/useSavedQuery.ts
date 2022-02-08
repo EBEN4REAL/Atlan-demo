@@ -23,6 +23,7 @@ import useRunQuery from '~/components/insights/playground/common/composables/use
 import useSetClassifications from '~/composables/discovery/useSetClassifications'
 import updateAsset from '~/composables/discovery/updateAsset'
 import { generateSQLQuery } from '~/components/insights/playground/editor/vqb/composables/generateSQLQuery'
+import { useActiveTab } from '~/components/insights/common/composables/useActiveTab'
 
 export function useSavedQuery(
     tabsArray: Ref<activeInlineTabInterface[]>,
@@ -78,6 +79,7 @@ export function useSavedQuery(
     }
 
     const openSavedQueryInNewTab = async (savedQuery: SavedQuery) => {
+        const { generateNewActiveTab } = useActiveTab()
         let decodedVariables = decodeBase64Data(
             savedQuery?.attributes?.variablesSchemaBase64
         ) as CustomVaribaleInterface[]
@@ -95,20 +97,25 @@ export function useSavedQuery(
             defaultSchemaQualifiedName,
             defaultDatabaseQualifiedName
         )
-        console.log(connectors, 'connectors')
-        console.log('saved query: ', savedQuery)
-
         const visualBuilderSchemaBase64 =
             savedQuery?.attributes?.visualBuilderSchemaBase64
         const isVisualQuery = savedQuery?.attributes?.isVisualQuery
 
         let decodedVQB = decodeBase64Data(visualBuilderSchemaBase64)
 
-        const newTab: activeInlineTabInterface = {
-            attributes: savedQuery?.attributes,
+        let newTab = generateNewActiveTab({
+            activeInlineTab,
             label: savedQuery?.attributes?.name ?? '',
+            assetInfo: savedQuery,
+            editorText: savedQuery?.attributes?.rawQuery
+                ? savedQuery?.attributes?.rawQuery
+                : '',
+        })
+
+        newTab = {
+            ...newTab,
+            attributes: savedQuery?.attributes,
             key: savedQuery?.guid,
-            favico: 'https://atlan.com/favicon.ico',
             isSaved: true,
             queryId: savedQuery?.guid,
             updateTime:
@@ -145,6 +152,7 @@ export function useSavedQuery(
                 },
             },
             playground: {
+                ...newTab.playground,
                 isVQB: isVisualQuery ? true : false,
                 vqb: isVisualQuery
                     ? decodedVQB
@@ -191,37 +199,6 @@ export function useSavedQuery(
                         ...connectors,
                     },
                 },
-                resultsPane: {
-                    activeTab:
-                        activeInlineTab.value?.playground.resultsPane
-                            .activeTab ?? 0,
-                    result: {
-                        title: savedQuery?.attributes?.name,
-                        isQueryRunning: '',
-                        isQueryAborted: false,
-                        queryErrorObj: {},
-                        errorDecorations: [],
-                        totalRowsCount: -1,
-                        executionTime: -1,
-                        runQueryId: undefined,
-                        buttonDisable: false,
-                        eventSourceInstance: undefined,
-                    },
-                    metadata: {},
-                    queries: {},
-                    joins: {},
-                    filters: {},
-                    impersonation: {},
-                    downstream: {},
-                    sqlHelp: {},
-                },
-            },
-            assetSidebar: {
-                // for taking the previous state from active tab
-                isVisible: false,
-                assetInfo: savedQuery,
-                title: activeInlineTab.value?.assetSidebar.title ?? '',
-                id: activeInlineTab.value?.assetSidebar.id ?? '',
             },
         }
 

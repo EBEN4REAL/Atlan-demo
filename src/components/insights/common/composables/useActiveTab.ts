@@ -1,6 +1,7 @@
 import { Ref } from 'vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { generateUUID } from '~/utils/helper/generator'
+import { inlineTabsDemoData } from '../dummyData/demoInlineTabData'
 
 export function useActiveTab() {
     function generateNewActiveTab({
@@ -12,6 +13,7 @@ export function useActiveTab() {
         context,
         schemaConnectors,
         queryConnectors,
+        assetInfo,
     }: {
         activeInlineTab: Ref<activeInlineTabInterface>
         label: string
@@ -21,6 +23,7 @@ export function useActiveTab() {
         context?: object
         schemaConnectors?: object
         queryConnectors?: object
+        assetInfo?: object
     }): activeInlineTabInterface {
         let vqbData = {
             panels: [
@@ -64,6 +67,10 @@ export function useActiveTab() {
         if (context) {
             queryConnectorsData = queryConnectors as any
         }
+        let assetInfoData = {}
+        if (assetInfo) {
+            assetInfoData = assetInfo
+        }
 
         const key = generateUUID()
         const activeInlineTabCopy: activeInlineTabInterface = JSON.parse(
@@ -71,19 +78,12 @@ export function useActiveTab() {
         )
 
         // `Copy ${activeInlineTabCopy.label} preview`
-        const inlineTabData: activeInlineTabInterface = {
+
+        let inlineTabData: activeInlineTabInterface = inlineTabsDemoData[0]
+        inlineTabData = {
+            ...inlineTabData,
             label: label,
             key,
-            isSaved: false,
-            queryId: undefined,
-            status: 'is_null',
-            connectionId: '',
-            description: '',
-            qualifiedName: '',
-            parentGuid: '',
-            parentQualifiedName: '',
-            isSQLSnippet: false,
-            savedQueryParentFolderTitle: undefined,
             explorer: {
                 schema: {
                     connectors: schemaConnectorsData,
@@ -104,55 +104,25 @@ export function useActiveTab() {
                 },
             },
             playground: {
+                ...inlineTabData.playground,
                 isVQB: isVQB ? true : false,
                 vqb: vqbData,
                 editor: {
+                    ...inlineTabData.playground.editor,
                     context: contextData,
                     text: editorText ?? '',
-                    dataList: [],
-                    columnList: [],
-                    variables: [],
-                    savedVariables: [],
-                    limitRows: {
-                        checked: false,
-                        rowsCount: -1,
-                    },
-                },
-                resultsPane: {
-                    activeTab:
-                        activeInlineTabCopy.playground?.resultsPane
-                            ?.activeTab ?? 0,
-                    result: {
-                        title: `${key} Result`,
-                        runQueryId: undefined,
-                        isQueryRunning: '',
-                        queryErrorObj: {},
-                        totalRowsCount: -1,
-                        executionTime: -1,
-                        errorDecorations: [],
-                        abortQueryFn: undefined,
-                        eventSourceInstance: undefined,
-                        buttonDisable: false,
-                        isQueryAborted: false,
-                    },
-                    metadata: {},
-                    queries: {},
-                    joins: {},
-                    filters: {},
-                    impersonation: {},
-                    downstream: {},
-                    sqlHelp: {},
                 },
             },
             assetSidebar: {
                 // for taking the previous state from active tab
                 openingPos: undefined,
                 isVisible: false,
-                assetInfo: {},
+                assetInfo: assetInfoData,
                 title: activeInlineTabCopy.assetSidebar.title ?? '',
                 id: activeInlineTabCopy.assetSidebar.id ?? '',
             },
         }
+
         return inlineTabData
     }
     return {

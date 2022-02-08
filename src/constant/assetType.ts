@@ -490,7 +490,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         image: 'Salesforce',
         parents: ['SalesforceObject'],
-        relationships: ['object', 'lookupObjects'],
+        relationships: ['lookupObjects'],
         groupOrder: 6,
         priorityOrder: 2,
     },

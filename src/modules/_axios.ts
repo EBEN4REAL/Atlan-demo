@@ -4,7 +4,8 @@ import { UserModule } from '~/types/vitessg'
 import { getEnv } from '~/modules/__env'
 
 const authInterceptor = (app: any) => (config: AxiosRequestConfig) => {
-    config.headers.Authorization = `Bearer ${app.config.globalProperties.$keycloak?.token}
+    if (app.config.globalProperties.$keycloak?.token)
+        config.headers.Authorization = `Bearer ${app.config.globalProperties.$keycloak?.token}
     `
     return config
 }

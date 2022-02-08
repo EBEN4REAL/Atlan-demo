@@ -244,7 +244,7 @@
                 isScrubbed,
             } = useAssetInfo()
 
-            const aggregationAttributeName = 'dataType'
+            const aggregationAttributeName = 'fieldDataType'
             const limit = ref(20)
             const offset = ref(0)
             const facets = ref({
@@ -345,9 +345,9 @@
             const filterFieldsList = () => {
                 fieldsList.value = [...list.value, ...fieldFromUrl.value]
 
-                const filteredListData = fieldsList.value.map((i) => ({
-                    key: i.attributes.order,
-                    hash_index: i.attributes.order,
+                const filteredListData = fieldsList.value.map((i, index) => ({
+                    key: index + 1,
+                    hash_index: index + 1,
                     field_name: i.attributes.name,
                     data_type: i.attributes.dataType,
                     description:

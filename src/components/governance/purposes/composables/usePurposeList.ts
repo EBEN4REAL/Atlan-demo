@@ -25,7 +25,7 @@ watch(list, () => {
 const handleUpdateList = (newVal) => {
     personaList.value = personaList.value.map((el) => {
         if(el.id === newVal.id){
-            return newVal
+            return {...el, ...newVal}
         }
             return el
         

@@ -81,7 +81,7 @@ export async function savePersona(persona: IPersona) {
 }
 
 export function updatedSelectedData(data:any) {
-    selectedPersonaDirty.value = data
+    selectedPersonaDirty.value = {...selectedPersonaDirty.value, ...data}
       handleUpdateList(data)
 }
 

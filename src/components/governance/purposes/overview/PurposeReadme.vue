@@ -177,7 +177,7 @@
                         readme: dataEditor,
                     })
                     updatedSelectedData({
-                        ...payload,
+                        id: payload.id,
                         readme: dataEditor,
                     })
                     // updateSelectedPersona()

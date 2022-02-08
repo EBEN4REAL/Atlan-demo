@@ -79,7 +79,7 @@ export function discardPersona(type: PolicyType, idx: string) {
 }
 
 export function updatedSelectedData(data:any) {
-    selectedPersonaDirty.value = data 
+    selectedPersonaDirty.value = {...selectedPersonaDirty.value, ...data} 
     handleUpdateList(data)
 }
 export function updateSelectedPersona() {

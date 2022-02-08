@@ -98,12 +98,17 @@ export const pluralizeString = (
     includeCountInString: boolean = true
 ) => {
     if (!string) return ''
+    if (!count) return string
 
     const plural = { y: 'ies', s: 's' }
+    const vowels = ['a', 'e', 'i', 'o', 'u']
 
     if (count > 1) {
         const lastLetter = string[string.length - 1]
-        if (plural[lastLetter]) {
+        const secondTolastLetter = string[string.length - 2]
+        const isVowel = (letter) => vowels.includes(letter)
+
+        if (plural[lastLetter] && !isVowel(secondTolastLetter)) {
             const s = string.slice(0, string.length - 1)
             return `${includeCountInString ? count : ''} ${s}${
                 plural[lastLetter]

@@ -95,6 +95,7 @@ export default function useAssetInfo() {
             attributes(asset)?.name ||
             attributes(asset)?.qualifiedName) ??
         ''
+    const apiName = (asset: assetInterface) => attributes(asset)?.apiName ?? ''
 
     const getConnectorImage = (asset: assetInterface) => {
         const found =
@@ -352,6 +353,11 @@ export default function useAssetInfo() {
             const viewGuid = asset?.attributes?.view?.guid
             if (viewGuid) {
                 return `/assets/${viewGuid}/overview?column=${asset?.guid}`
+            }
+        } else if (assetType(asset) === 'SalesforceField') {
+            const objectGuid = asset?.attributes?.object?.guid
+            if (objectGuid) {
+                return `/assets/${objectGuid}/overview?field=${asset?.guid}`
             }
         } else if (isGTC(asset)) {
             return `/glossary/${asset?.guid}`
@@ -1268,5 +1274,6 @@ export default function useAssetInfo() {
         lastSyncRunAt,
         sourceId,
         fieldCount,
+        apiName,
     }
 }

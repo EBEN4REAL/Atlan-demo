@@ -332,6 +332,7 @@ export const summaryVariants = [
         label: 'Dashboard',
         components: [
             'ParentContext',
+            'ReportCount',
             'Connection',
             'SourceCreated',
             'SourceUpdated',

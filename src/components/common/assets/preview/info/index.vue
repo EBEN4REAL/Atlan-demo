@@ -148,6 +148,20 @@
 
         <div
             v-if="
+                ['SalesforceObject', 'SalesforceField'].includes(
+                    selectedAsset?.typeName
+                ) && apiName(selectedAsset) !== ''
+            "
+            class="flex px-5"
+        >
+            <div class="flex flex-col text-sm">
+                <span class="mb-1 text-sm text-gray-500">Unique Name</span>
+                <span class="text-gray-700">{{ apiName(selectedAsset) }}</span>
+            </div>
+        </div>
+
+        <div
+            v-if="
                 (isBiAsset(selectedAsset) || isSaasAsset(selectedAsset)) &&
                 ![
                     'PowerBIWorkspace',
@@ -162,6 +176,7 @@
         >
             <ParentContext :asset="selectedAsset" />
         </div>
+
         <div
             v-if="['SalesforceObject'].includes(selectedAsset?.typeName)"
             class="flex px-5"
@@ -800,6 +815,7 @@
                 getConnectorLabel,
                 fieldsLookerQuery,
                 sourceOwners,
+                apiName,
             } = useAssetInfo()
 
             const {
@@ -931,6 +947,7 @@
                 getConnectorLabel,
                 fieldsLookerQuery,
                 sourceOwners,
+                apiName,
             }
         },
     })

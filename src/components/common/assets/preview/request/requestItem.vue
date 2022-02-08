@@ -29,13 +29,12 @@
                 </div>
                 <div
                     v-if="item.status === 'active'"
-                    class="flex hover-action linear-gradient"
+                    class="flex -mr-1.5 hover-action linear-gradient"
                 >
                     <RequestDropdown
                         :type="'approve'"
                         :is-loading="loadingApproval"
                         :item-drop-down="'Approve with comment'"
-                        :class="'mr-1'"
                         @submit="(message) => handleApproval(message || '')"
                     >
                         <span class="text-green-500"> Approve </span>
@@ -43,6 +42,7 @@
                     <RequestDropdown
                         :type="'reject'"
                         :is-loading="isLoading"
+                        :class="'mr-cta'"
                         :item-drop-down="'Reject with comment'"
                         @submit="(message) => handleRejection(message || '')"
                     >
@@ -774,6 +774,9 @@
                 }
             }
         }
+    }
+    .mr-cta {
+        margin-left: 8px;
     }
 </style>
 <style lang="less" scoped>

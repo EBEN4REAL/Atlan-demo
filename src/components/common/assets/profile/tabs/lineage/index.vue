@@ -81,31 +81,21 @@
 
             /** DATA */
             const lineage: any = ref({})
-            const computedLineage = ref(null)
-            const depth = ref(1)
             const baseEntity = ref({})
             const guid = ref(route.params?.id || '')
+
+            const depth = ref(1)
             const direction = ref('BOTH')
-            const hideProcess = ref(true)
+
             const loaderText = ref('Fetching Data...')
             const initialLoad = ref(true)
             const selectedAsset = ref(assetStore.getSelectedAsset)
-            const lineageDepths = [
-                { id: 1, label: 'Depth 1' },
-                { id: 2, label: 'Depth 2' },
-                { id: 3, label: 'Depth 3' },
-                { id: 21, label: 'Max. Depth' },
-            ]
-            const lineageDirections = [
-                { id: 'BOTH', label: 'Both Direction' },
-                { id: 'INPUT', label: 'Upstream' },
-                { id: 'OUTPUT', label: 'Downstream' },
-            ]
+
             const config = computed(() => ({
                 depth: depth.value,
                 guid: guid.value,
                 direction: direction.value,
-                hideProcess: hideProcess.value,
+                hideProcess: true,
                 entityFilters: {
                     attributeName: '__state',
                     operator: 'eq',
@@ -137,20 +127,7 @@
 
             // Control
             const control = (type, item = null) => {
-                if (type === 'depth') {
-                    loaderText.value = `Changing lineage to ${
-                        lineageDepths.find((x) => x.id === item)?.label
-                    }...`
-                    depth.value = item
-                }
-                if (type === 'direction') {
-                    loaderText.value = `Changing lineage direction to ${
-                        lineageDirections.find((x) => x.id === item)?.label
-                    }...`
-                    direction.value = item
-                }
                 if (type === 'selectedAsset') selectedAsset.value = item
-                if (['depth', 'direction'].includes(type)) mutate()
             }
 
             /** LIFECYCLES */
@@ -162,10 +139,6 @@
             /** PROVIDERS */
             provide('baseEntity', baseEntity)
             provide('selectedAsset', selectedAsset)
-            provide('depth', depth)
-            provide('direction', direction)
-            provide('lineageDepths', lineageDepths)
-            provide('lineageDirections', lineageDirections)
             provide('config', config)
             provide('control', control)
             provide('preferences', preferences)

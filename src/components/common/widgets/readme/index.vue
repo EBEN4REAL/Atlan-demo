@@ -42,7 +42,7 @@
                     >
 
                     <a-button
-                        class="flex items-center"
+                        class="flex w-28 justify-center items-center"
                         type="primary"
                         :loading="isLoading"
                         @click="handleUpdate"

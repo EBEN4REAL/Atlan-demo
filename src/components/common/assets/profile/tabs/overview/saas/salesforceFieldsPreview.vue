@@ -117,12 +117,12 @@
                         <div class="flex items-center data-type">
                             <span class="mr-1">{{ text?.toUpperCase() }}</span>
                             <div
-                                v-if="record.lookup.length > 0"
+                                v-if="record?.lookup?.length > 0"
                                 class="flex items-center truncate"
                             >
                                 (
                                 <div
-                                    v-for="(rec, index) in record.lookup"
+                                    v-for="(rec, index) in record?.lookup"
                                     :key="index"
                                 >
                                     {{ rec }}
@@ -386,7 +386,7 @@
                     list.value[index] = asset
                 }
 
-                // In case column from url was updated instead of the other list (20 items)
+                // In case field from url was updated instead of the other list (20 items)
                 if (asset.guid === fieldFromUrl.value[0]?.guid) {
                     fieldFromUrl.value[0] = asset
                 }
@@ -417,7 +417,7 @@
             // customRow Antd
             const customRow = (record: { key: null }) => ({
                 onClick: () => {
-                    // Column drawer trigger
+                    // Field drawer trigger
                     if (selectedRow.value === record.key)
                         handleCloseFieldSidebar()
                     else {

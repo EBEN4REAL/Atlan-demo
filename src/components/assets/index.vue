@@ -424,6 +424,9 @@
                 () => {
                     globalState.value = discoveryStore.globalState
                     handleResetEvent()
+                    useAddEvent('discovery', 'filter', 'changed', {
+                        type: 'global',
+                    })
                 },
                 {
                     deep: true,

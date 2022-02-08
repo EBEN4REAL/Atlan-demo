@@ -258,6 +258,7 @@
                 ...AssetAttributes,
                 ...SQLAttributes,
                 ...customMetadataProjections,
+                'lookupObjects',
             ])
             const preference = ref({
                 sort: 'order-asc',
@@ -349,6 +350,9 @@
                     hash_index: i.attributes.order,
                     field_name: i.attributes.name,
                     data_type: i.attributes.dataType,
+                    lookup: i.attributes?.lookupObjects?.map(
+                        (obj) => obj?.attributes?.name
+                    ),
                     description:
                         i.attributes.userDescription ||
                         i.attributes.description ||
@@ -358,6 +362,8 @@
                 fieldsData.value = {
                     filteredList: filteredListData,
                 }
+
+                console.log('hello', filteredListData)
             }
 
             const handleListUpdate = (asset: any) => {

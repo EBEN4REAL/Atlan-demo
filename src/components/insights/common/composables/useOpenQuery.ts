@@ -188,6 +188,7 @@ export default function useOpenQuery({
             modifyActiveInlineTabEditor(
                 activeInlineTabCopy,
                 tabs,
+                false,
                 saveQueryDataInLocalStorage
             )
             setSelection(
@@ -268,7 +269,7 @@ export default function useOpenQuery({
             editorInstance,
             monacoInstance,
             false, // open in vqb
-            activeInlineTabKeyCopy
+            tabs
         )
     }
 

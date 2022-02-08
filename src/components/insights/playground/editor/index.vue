@@ -553,8 +553,8 @@
                 useSavedQuery(inlineTabs, activeInlineTab, activeInlineTabKey)
             const isQueryRunning = computed(
                 () =>
-                    activeInlineTab.value.playground.resultsPane.result
-                        .isQueryRunning
+                    activeInlineTab.value?.playground?.resultsPane?.result
+                        ?.isQueryRunning
             )
             const showSaveQueryModal: Ref<boolean> = ref(false)
             const isUpdating: Ref<boolean> = ref(false)

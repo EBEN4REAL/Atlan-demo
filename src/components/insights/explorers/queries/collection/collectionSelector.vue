@@ -208,16 +208,13 @@
             const selectedValue = ref(
                 activeInlineTab.value.explorer.queries.collection.guid
             )
-            console.log(
-                activeInlineTab.value.explorer.queries.collection.guid,
-                queryCollections,
-                'selectCollections'
-            )
+
             watch(
-                () => activeInlineTab.value.explorer.queries.collection.guid,
+                () =>
+                    activeInlineTab.value?.explorer?.queries?.collection?.guid,
                 () => {
                     selectedValue.value =
-                        activeInlineTab.value.explorer.queries.collection.guid
+                        activeInlineTab.value?.explorer?.queries?.collection?.guid
                 }
             )
 

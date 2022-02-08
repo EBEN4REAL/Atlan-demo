@@ -770,16 +770,11 @@
                     activeInlineTabCopy.playground.editor.columnList =
                         columnList
                     const saveQueryDataInLocalStorage = false
-                    // modifyActiveInlineTabEditor(
-                    //     activeInlineTabCopy,
-                    //     inlineTabs,
-                    //     saveQueryDataInLocalStorage
-                    // )
 
-                    modifyActiveInlineTab(
+                    modifyActiveInlineTabEditor(
                         activeInlineTabCopy,
                         inlineTabs,
-                        activeInlineTabCopy.isSaved,
+                        true,
                         saveQueryDataInLocalStorage
                     )
                     // setSelection(

@@ -782,6 +782,7 @@
                     modifyActiveInlineTabEditor(
                         activeInlineTabCopy,
                         inlineTabs,
+                        false,
                         saveQueryDataInLocalStorage
                     )
                     setSelection(

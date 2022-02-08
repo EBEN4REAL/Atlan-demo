@@ -78,6 +78,8 @@ export function useSavedQuery(
     }
 
     const openSavedQueryInNewTab = async (savedQuery: SavedQuery) => {
+        const key = generateUUID()
+
         let decodedVariables = decodeBase64Data(
             savedQuery?.attributes?.variablesSchemaBase64
         ) as CustomVaribaleInterface[]
@@ -288,7 +290,6 @@ export function useSavedQuery(
         )
 
         setTimeout(() => {
-            console.log('active tab copy: ', activeInlineTab)
             queryRun(
                 tabIndex,
                 getData,

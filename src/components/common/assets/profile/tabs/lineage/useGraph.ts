@@ -98,69 +98,70 @@ export default function useGraph() {
                     const data = node.getData() as any
 
                     return `
-    <div class="flex items-center">
-        <div id="${guid}" class="lineage-node group ${
+                    <div class="flex items-center">
+                    <div id="${guid}" class="lineage-node group ${
                         data?.isHighlightedNode === data?.id
                             ? 'isHighlightedNode'
                             : ''
                     }
-            ${
-                data?.isHighlightedNodePath === data?.id
-                    ? 'isHighlightedNodePath'
-                    : ''
-            }
-            ${data?.isGrayed ? 'isGrayed' : ''}
-            ${isBase ? 'isBase' : ''}
-            ">
-                <div class=" ${isBase ? 'inscr' : 'hidden'}"> 
-                    <span class="inscr-item">BASE</span>
-                </div>
-                <div class=" popover group-hover:visible group-hover:bottom-20 group-hover:opacity-100 group-hover:delay-1000">
-                        ${displayText} 
-                </div>
-                <div>
-                    <div class="node-text">
-                        <span class="relative z-50 block ">
-                            <span class="absolute right-0 justify-end hidden w-6 text-white group-hover:flex caret-bg">${
-                                ['Table', 'View'].includes(typeName)
-                                    ? iconCaretDown
+                            ${
+                                data?.isHighlightedNodePath === data?.id
+                                    ? 'isHighlightedNodePath'
                                     : ''
                             }
-                            </span>
-                        </span>
-                        <div class="flex items-center gap-x-1">
-                            <span class="truncate node-title group-hover:underline">${displayText}</span>
-                            <span class="flex-none mr-1">${status}</span>
+                            ${data?.isGrayed ? 'isGrayed' : ''}
+                            ${isBase ? 'isBase' : ''}
+                            ">
+                        <div class=" ${isBase ? 'inscr' : 'hidden'}">BASE</div>
+                        <div class="popover group-hover:visible group-hover:bottom-20 group-hover:opacity-100 group-hover:delay-1000">
+                            ${displayText}
+                        </div>
+                        <div>
+                            <div class="node-text">
+                                <span class="relative z-50 block ">
+                                    <span class="absolute right-0 justify-end hidden w-6 text-white group-hover:flex caret-bg">${
+                                        ['Table', 'View'].includes(typeName)
+                                            ? iconCaretDown
+                                            : ''
+                                    }
+                                    </span>
+                                </span>
+                                <div class="flex items-center gap-x-1">
+                                    <span class="truncate node-title group-hover:underline">${displayText}</span>
+                                    <span class="flex-none mr-1">${status}</span>
+                                </div>
+                            </div>
+                            <div class="node-meta">
+                                <img class="node-meta__source" src="${img}" />
+                                <div class="truncate node-meta__text isTypename">${typeNameComputed}</div>
+                                <div class="node-meta__text">
+                                    ${
+                                        ['Table', 'View'].includes(typeName) &&
+                                        schemaName
+                                            ? 'in'
+                                            : ''
+                                    }
+                                </div>
+                                <div class="node-meta__text  truncate ${
+                                    ['Table', 'View'].includes(typeName)
+                                        ? ''
+                                        : 'hidden'
+                                }">
+                                    ${schemaName || ''}
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="node-meta">
-                        <img class="node-meta__source" src="${img}" />
-                        <div class="truncate node-meta__text isTypename">${typeNameComputed}</div>
-                        <div class="node-meta__text">
-                            ${
-                                ['Table', 'View'].includes(typeName) &&
-                                schemaName
-                                    ? 'in'
-                                    : ''
-                            } 
-                        </div>
-                        <div class="node-meta__text  truncate ${
-                            ['Table', 'View'].includes(typeName) ? '' : 'hidden'
-                        }">
-                            ${schemaName || ''}
-                        </div>
-                    </div>
-                </div>       
-        </div>
-        <div id="node-${guid}-loadCTA" style="position: absolute;z-index: 99;" class="${
+                    <div id="node-${guid}-loadCTA" style="position: absolute;z-index: 99;" class="${
                         (isRootNode || isLeafNode) && isCtaNode
                             ? 'flex'
                             : 'hidden'
                     } ${
                         isRootNode ? 'l-m20px' : 'r-m20px'
-                    } node-loadCTA h-6 w-6 bg-gray-400 text-white rounded-full  justify-center items-center">${iconPlus}
-        </div>
-    </div>`
+                    } node-loadCTA h-6 w-6 bg-gray-400 text-white rounded-full  justify-center items-center">
+                        ${iconPlus}
+                    </div>
+                </div>`
                 },
                 shouldComponentUpdate(node) {
                     return node.hasChanged('data')

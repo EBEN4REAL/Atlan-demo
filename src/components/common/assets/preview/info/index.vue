@@ -148,6 +148,74 @@
 
         <div
             v-if="
+                selectedAsset.typeName?.toLowerCase() === 'column' ||
+                selectedAsset.typeName?.toLowerCase() === 'salesforcefield'
+            "
+            class="flex flex-col px-5 text-sm gap-y-4"
+        >
+            <div class="flex flex-col">
+                <span class="mb-1 text-sm text-gray-500">Data Type</span>
+
+                <div class="flex items-center text-gray-700 gap-x-1">
+                    <div class="flex items-center">
+                        <component
+                            :is="dataTypeCategoryImage(selectedAsset)"
+                            class="h-4 mr-0.5 mb-0.5"
+                        />
+                        <span class="text-sm uppercase">{{
+                            dataType(selectedAsset)
+                        }}</span>
+                    </div>
+
+                    <div
+                        v-if="
+                            isPrimary(selectedAsset) ||
+                            isDist(selectedAsset) ||
+                            isPartition(selectedAsset)
+                        "
+                        class="flex"
+                    >
+                        <AtlanIcon
+                            icon="PrimaryKey"
+                            class="mb-0.5 text-yellow-500"
+                        ></AtlanIcon>
+
+                        <span
+                            v-if="isPrimary(selectedAsset)"
+                            class="ml-1 text-sm text-gray-700"
+                            >Primary Key</span
+                        >
+                        <span
+                            v-if="isDist(selectedAsset)"
+                            class="ml-1 text-sm text-gray-700"
+                            >Dist Key</span
+                        >
+                        <span
+                            v-if="isPartition(selectedAsset)"
+                            class="ml-1 text-sm text-gray-700"
+                            >Partition Key</span
+                        >
+                    </div>
+                </div>
+            </div>
+            <div v-if="tableName(selectedAsset)">
+                <div class="mb-1 text-sm text-gray-500">Table</div>
+                <div class="text-sm text-gray-700">
+                    <AtlanIcon icon="TableGray" class="w-auto h-4 mb-0.5" />
+                    {{ tableName(selectedAsset) }}
+                </div>
+            </div>
+            <div v-if="viewName(selectedAsset)">
+                <div class="mb-1 text-sm text-gray-500">View</div>
+                <div class="text-sm text-gray-700">
+                    <AtlanIcon icon="ViewGray" class="w-auto h-4 mb-0.5" />
+                    {{ viewName(selectedAsset) }}
+                </div>
+            </div>
+        </div>
+
+        <div
+            v-if="
                 ['SalesforceObject', 'SalesforceField'].includes(
                     selectedAsset?.typeName
                 ) && apiName(selectedAsset) !== ''
@@ -357,71 +425,6 @@
                 <span class="text-gray-700 break-words">{{
                     externalLocationFormat(selectedAsset)
                 }}</span>
-            </div>
-        </div>
-
-        <div
-            v-if="selectedAsset.typeName?.toLowerCase() === 'column'"
-            class="flex flex-col px-5 text-sm gap-y-4"
-        >
-            <div class="flex flex-col">
-                <span class="mb-1 text-sm text-gray-500">Data Type</span>
-
-                <div class="flex items-center text-gray-700 gap-x-1">
-                    <div class="flex items-center">
-                        <component
-                            :is="dataTypeCategoryImage(selectedAsset)"
-                            class="h-4 mr-0.5 mb-0.5"
-                        />
-                        <span class="text-sm">{{
-                            dataType(selectedAsset)
-                        }}</span>
-                    </div>
-
-                    <div
-                        v-if="
-                            isPrimary(selectedAsset) ||
-                            isDist(selectedAsset) ||
-                            isPartition(selectedAsset)
-                        "
-                        class="flex"
-                    >
-                        <AtlanIcon
-                            icon="PrimaryKey"
-                            class="mb-0.5 text-yellow-500"
-                        ></AtlanIcon>
-
-                        <span
-                            v-if="isPrimary(selectedAsset)"
-                            class="ml-1 text-sm text-gray-700"
-                            >Primary Key</span
-                        >
-                        <span
-                            v-if="isDist(selectedAsset)"
-                            class="ml-1 text-sm text-gray-700"
-                            >Dist Key</span
-                        >
-                        <span
-                            v-if="isPartition(selectedAsset)"
-                            class="ml-1 text-sm text-gray-700"
-                            >Partition Key</span
-                        >
-                    </div>
-                </div>
-            </div>
-            <div v-if="tableName(selectedAsset)">
-                <div class="mb-1 text-sm text-gray-500">Table</div>
-                <div class="text-sm text-gray-700">
-                    <AtlanIcon icon="TableGray" class="w-auto h-4 mb-0.5" />
-                    {{ tableName(selectedAsset) }}
-                </div>
-            </div>
-            <div v-if="viewName(selectedAsset)">
-                <div class="mb-1 text-sm text-gray-500">View</div>
-                <div class="text-sm text-gray-700">
-                    <AtlanIcon icon="ViewGray" class="w-auto h-4 mb-0.5" />
-                    {{ viewName(selectedAsset) }}
-                </div>
             </div>
         </div>
 

@@ -124,20 +124,8 @@ export default async function useComputeGraph(
     fit(lineage.value.baseEntityGuid)
     currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
 
-    /* addNewNodesShadow */
-    const addNewNodesShadow = (entityMap) => {
-        Object.keys(entityMap).forEach((guid) => {
-            const ele = document.getElementById(guid)
-            ele?.classList.add('node-added-shadow')
-        })
-    }
-
     /* addSubGraph */
-    const addSubGraph = (
-        data,
-        registerAllListeners,
-        removeAddedNodesShadow
-    ) => {
+    const addSubGraph = (data, registerAllListeners) => {
         const newData = data
         const guidEntityMapArr = Object.keys(newData.guidEntityMap)
         nodes.value.forEach((x) => {
@@ -147,8 +135,6 @@ export default async function useComputeGraph(
         createNodesFromEntityMap(newData, false)
         createNodeEdges(newData)
         renderLayout()
-        removeAddedNodesShadow()
-        addNewNodesShadow(newData.guidEntityMap)
 
         graph.value.getNodes().forEach((n) => {
             const ctaEle = document.getElementById(`node-${n.id}-loadCTA`)

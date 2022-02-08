@@ -609,21 +609,8 @@ export default function useEventGraph(
         }))
         const { data } = useFetchLineage(nodeConfig, true)
         watch(data, async () => {
-            await addSubGraph(
-                data.value,
-                registerAllListeners,
-                removeAddedNodesShadow
-            )
+            await addSubGraph(data.value, registerAllListeners)
             hideLoader()
-        })
-    }
-
-    // removeAddedNodesShadow
-    const removeAddedNodesShadow = () => {
-        const list = document.getElementsByClassName('node-added-shadow')
-        const listArr = Array.from(list)
-        listArr.forEach((ele) => {
-            ele.classList.remove('node-added-shadow')
         })
     }
 
@@ -960,7 +947,6 @@ export default function useEventGraph(
 
     // BLANK - CLICK
     graph.value.on('blank:click', () => {
-        removeAddedNodesShadow()
         resetCHE()
 
         if (chp.value.portId) {
@@ -984,10 +970,6 @@ export default function useEventGraph(
     // CELL - MOUSEWHEEL
     graph.value.on('cell:mousewheel', () => {
         currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
-    })
-
-    graph.value.on('cell:click', () => {
-        removeAddedNodesShadow()
     })
 
     // Set connector for duplicate relations

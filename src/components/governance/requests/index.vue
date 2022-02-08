@@ -545,16 +545,14 @@
                 // }, 1000)
             }
             onMounted(() => {
-                // const el = document.getElementsByClassName(
-                //     'refresh-icon-request'
-                // )
-                // if (el) {
-                //     el[0]?.children.forEach((p) => {
-                //         p.setAttribute('style', 'fill:#374151')
-                //         p.setAttribute('style', 'stroke:#374151')
-                //     })
-                // }
-                // console.log('el', el)
+                const el = document.getElementsByClassName(
+                    'refresh-icon-request'
+                )
+                if (el) {
+                    el[0]?.children.forEach((p) => {
+                        p.setAttribute('fill', '#3e4359')
+                    })
+                }
             })
             return {
                 isFilterApplied,
@@ -708,12 +706,6 @@
         top: -5px;
         height: 30px;
         right: 0;
-    }
-    .refresh-icon-request {
-        // stroke: #374151 !important;
-        // path {
-        //     stroke: #374151 !important;
-        // }
     }
 </style>
 

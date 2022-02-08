@@ -255,31 +255,6 @@ const keyMap = {
         },
     },
     governance: {
-        readme: {
-            updated: {
-                action: 'governance_readme_updated',
-                properties: (props) => ({ asset_type: props.asset_type }),
-            },
-        },
-        resource: {
-            created: {
-                action: 'governance_resource_created',
-                properties: (props) => ({
-                    domain: props.domain,
-                    asset_type: props.asset_type,
-                }),
-            },
-            updated: {
-                action: 'governance_resource_updated',
-                properties: (props) => ({
-                    domain: props.domain,
-                    asset_type: props.asset_type,
-                }),
-            },
-            deleted: {
-                action: 'governance_resource_deleted',
-            },
-        },
         persona: {
             created: {
                 action: 'governance_persona_created',
@@ -307,6 +282,24 @@ const keyMap = {
             },
             policy_deleted: {
                 action: 'governance_persona_policy_deleted',
+            },
+            readme_updated: {
+                action: 'persona_readme_updated',
+            },
+            resource_created: {
+                action: 'persona_resource_created',
+                properties: (props) => ({
+                    domain: props.domain,
+                }),
+            },
+            resource_updated: {
+                action: 'persona_resource_updated',
+                properties: (props) => ({
+                    domain: props.domain,
+                }),
+            },
+            resource_deleted: {
+                action: 'persona_resource_deleted',
             },
         },
         purpose: {
@@ -338,6 +331,24 @@ const keyMap = {
             },
             policy_deleted: {
                 action: 'governance_purpose_policy_deleted',
+            },
+            readme_updated: {
+                action: 'purpose_readme_updated',
+            },
+            resource_created: {
+                action: 'purpose_resource_created',
+                properties: (props) => ({
+                    domain: props.domain,
+                }),
+            },
+            resource_updated: {
+                action: 'purpose_resource_updated',
+                properties: (props) => ({
+                    domain: props.domain,
+                }),
+            },
+            resource_deleted: {
+                action: 'purpose_resource_deleted',
             },
         },
         classification: {

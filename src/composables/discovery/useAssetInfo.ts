@@ -1147,6 +1147,9 @@ export default function useAssetInfo() {
     const detailColumns = (asset: assetInterface) =>
         attributes(asset)?.detailColumns || []
 
+    const picklistValues = (asset: assetInterface) =>
+        attributes(asset)?.picklistValues || []
+
     return {
         attributes,
         title,
@@ -1287,5 +1290,6 @@ export default function useAssetInfo() {
         fieldCount,
         apiName,
         isCustom,
+        picklistValues,
     }
 }

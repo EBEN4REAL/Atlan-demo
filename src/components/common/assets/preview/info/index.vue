@@ -236,6 +236,24 @@
 
         <div
             v-if="
+                ['SalesforceField'].includes(selectedAsset?.typeName) &&
+                picklistValues(selectedAsset).length > 0
+            "
+            class="flex px-5"
+        >
+            <div class="flex flex-col text-sm">
+                <span class="mb-1 text-sm text-gray-500">Picklist Values</span>
+                <div
+                    v-for="(val, index) in picklistValues(selectedAsset)"
+                    :key="index"
+                >
+                    <span class="font-semibold break-words">{{ val }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div
+            v-if="
                 ['LookerDashboard', 'LookerLook'].includes(
                     selectedAsset.typeName
                 )
@@ -876,6 +894,7 @@
                 sourceOwners,
                 apiName,
                 detailColumns,
+                picklistValues,
             } = useAssetInfo()
 
             const {
@@ -1009,6 +1028,7 @@
                 sourceOwners,
                 apiName,
                 detailColumns,
+                picklistValues,
             }
         },
     })

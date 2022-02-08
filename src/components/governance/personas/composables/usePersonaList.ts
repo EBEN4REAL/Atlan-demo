@@ -3,9 +3,11 @@ import { ref, computed, watch } from 'vue'
 // import { useRoute } from 'vue-router'
 import usePersonaService from './usePersonaService'
 import { safeArray } from '~/utils/array'
-
+import { usePersonaStore } from '~/store/persona'
+// TODO make use of store for persona list
 
 // Main Persona List, fetched from API
+const personaStore = usePersonaStore()
 const { listPersonas } = usePersonaService()
 const {
     data: list,
@@ -15,14 +17,28 @@ const {
     mutate: reFetchList,
 } = listPersonas()
 
-// export const modifyPersona()
-const personaList = computed(() => safeArray(list.value?.records))
+const personaList = ref([])
+watch(list, () => {
+       personaStore.setList(list.value.records)
+       personaList.value = safeArray(list.value?.records)
+       
+})
+const handleUpdateList = (newVal) => {
+    personaList.value = personaList.value.map((el) => {
+        if(el.id === newVal.id){
+            return {...el, ...newVal}
+        }
+            return el
+        
+    })
+}
 export {
     reFetchList,
     personaList,
     isPersonaListReady,
     isPersonaLoading,
     isPersonaError,
+    handleUpdateList
 }
 // Selected Persona Details
 export const selectedPersonaId = ref('')
@@ -39,7 +55,7 @@ watch(
             return
         }
         selectedPersona.value = undefined
-        
+
     },
     { immediate: true }
 )
@@ -48,13 +64,13 @@ export const searchTerm = ref('')
 export const filteredPersonas = computed(() => {
     let result = []
     if (searchTerm.value) {
-        result =  personaList.value.filter((ps) =>
+        result = personaList.value.filter((ps) =>
             ps.displayName
                 ?.toLowerCase()
                 .includes(searchTerm.value?.toLowerCase())
         )
     } else {
-        result =  personaList.value
+        result = personaList.value
     }
     return result.sort((a, b) => {
         const current = a.displayName.toLowerCase()

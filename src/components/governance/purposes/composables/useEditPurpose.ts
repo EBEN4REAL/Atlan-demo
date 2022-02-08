@@ -6,6 +6,7 @@ import {
     selectedPersona,
     personaList,
     selectedPersonaId,
+    handleUpdateList
 } from './usePurposeList'
 
 const { updatePersona, deletePersona, enableDisablePurpose } =
@@ -77,6 +78,10 @@ export function discardPersona(type: PolicyType, idx: string) {
     isEditing.value = false
 }
 
+export function updatedSelectedData(data:any) {
+    selectedPersonaDirty.value = {...selectedPersonaDirty.value, ...data} 
+    handleUpdateList(data)
+}
 export function updateSelectedPersona() {
     selectedPersona.value = JSON.parse(
         JSON.stringify(selectedPersonaDirty.value)

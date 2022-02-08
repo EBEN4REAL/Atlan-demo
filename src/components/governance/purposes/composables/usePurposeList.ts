@@ -1,10 +1,10 @@
-import { invoke, until } from '@vueuse/core'
+// import { invoke, until } from '@vueuse/core'
 import { ref, computed, watch } from 'vue'
 import usePurposeService from './usePurposeService'
 import { safeArray } from '~/utils/array'
-
+import { usePurposeStore } from '~/store/purpose'
 // !! THESE ARE ALL PURPOSES, VARIABLE NAMES ARE NEED TO BE CHANGED FROM PERSONA REF TO PURPOSE
-
+// TODO make use of store for list
 const { listPurposes } = usePurposeService()
 const {
     data: list,
@@ -14,13 +14,31 @@ const {
     mutate: reFetchList,
 } = listPurposes()
 
-const personaList = computed(() => safeArray(list.value?.records))
+const purposeStore = usePurposeStore()
+const personaList = ref([])
+
+watch(list, () => {
+    purposeStore.setList(list.value?.records)
+    personaList.value = safeArray(list.value?.records)
+})
+
+const handleUpdateList = (newVal) => {
+    personaList.value = personaList.value.map((el) => {
+        if(el.id === newVal.id){
+            return {...el, ...newVal}
+        }
+            return el
+        
+    })
+}
+
 export {
     reFetchList,
     personaList,
     isPersonaListReady,
     isPersonaLoading,
     isPersonaError,
+    handleUpdateList
 }
 // Selected Persona Details
 export const selectedPersonaId = ref('')
@@ -37,7 +55,7 @@ watch(
             return
         }
         selectedPersona.value = undefined
-        
+
     },
     { immediate: true }
 )

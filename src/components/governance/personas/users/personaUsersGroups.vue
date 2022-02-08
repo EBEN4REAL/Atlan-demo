@@ -832,6 +832,6 @@
         min-height: 10rem;
     }
     .user-group-wrapper {
-        height: 30rem;
+        height: 25rem;
     }
 </style>

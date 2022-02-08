@@ -58,6 +58,20 @@
                 :persona="persona"
                 @editDetails="$emit('editDetails')"
             />
+            <Readme :persona="selectedPersonaDirty" />
+            <div class="p-4 mt-3 bg-white border border-gray-200 rounded">
+                <ResourcesWidget
+                    placeholder="Resources is the place to document all knowledge around the persona"
+                    :entity-name="persona.name"
+                    :resources="persona?.resources?.links ?? []"
+                    :add-status="addStatus"
+                    :update-status="updateStatus"
+                    :remove-status="removeStatus"
+                    @add="handleAddResource"
+                    @update="handleUpdateResource"
+                    @remove="handleRemoveResource"
+                />
+            </div>
         </div>
         <div
             v-if="activeTabKey === 'policies'"
@@ -212,14 +226,23 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref, computed, watch } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        ref,
+        computed,
+        watch,
+        toRefs,
+    } from 'vue'
     import { message } from 'ant-design-vue'
+    import ResourcesWidget from '@common/widgets/resources/resourcesWidgetV2/resourcesWidgetV2.vue'
     import MinimalTab from '@/UI/minimalTab.vue'
     import AtlanBtn from '@/UI/button.vue'
     import PolicyCard from './policies/policyCard.vue'
     import PersonaUsersGroups from './users/personaUsersGroups.vue'
     import DataPolicy from './policies/dataPolicyItem.vue'
     import PersonaMeta from './overview/personaMeta.vue'
+    import Readme from './overview/PersonaReadme.vue'
     import { IPurpose } from '~/types/accessPolicies/purposes'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import NewPolicyIllustration from '~/assets/images/illustrations/new_policy.svg'
@@ -245,10 +268,12 @@
         PolicyType,
         deletePolicyV2,
     } from './composables/useEditPersona'
+    import usePersonaResources from '@/governance/personas/composables/usePersonaResources'
 
     export default defineComponent({
         name: 'PersonaBody',
         components: {
+            ResourcesWidget,
             MinimalTab,
             PolicyCard,
             DataPolicy,
@@ -258,6 +283,7 @@
             SearchAndFilter,
             AggregationTabs,
             Addpolicy,
+            Readme,
         },
         props: {
             persona: {
@@ -270,7 +296,8 @@
             },
         },
         emits: ['selectPolicy'],
-        setup(prop, { emit }) {
+        setup(props, { emit }) {
+            const { persona } = toRefs(props)
             const searchPersona = ref('')
             const activeTabFilter = ref('all Persona')
             const selectedPolicy = ref({})
@@ -468,7 +495,23 @@
             const handleCloseAdd = () => {
                 addpolicyVisible.value = false
             }
+
+            const {
+                addStatus,
+                updateStatus,
+                removeStatus,
+                handleAddResource,
+                handleUpdateResource,
+                handleRemoveResource,
+            } = usePersonaResources(persona)
+
             return {
+                addStatus,
+                updateStatus,
+                removeStatus,
+                handleAddResource,
+                handleUpdateResource,
+                handleRemoveResource,
                 newIdTag,
                 activeTabKey,
                 tabConfig,

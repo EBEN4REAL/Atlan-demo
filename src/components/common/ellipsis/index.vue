@@ -3,8 +3,9 @@
         :title="truncated ? tooltipText : undefined"
         :placement="placement"
         :destroy-tooltip-on-hide="true"
-        :overlay-style="{ maxWidth: width }"
+        :overlay-style="{ maxWidth: width, color: 'red !important;' }"
         :color="tooltipColor"
+        :overlayClassName="tooltipColor === 'white' ? 'tooltip-black' : ''"
         ><div
             :class="classes"
             :style="{ maxWidth: clampPercentage, 'line-break': 'anywhere' }"
@@ -97,5 +98,8 @@
 <style lang="less" scoped>
     :global(div.ant-typography, .ant-typography p) {
         margin-bottom: 0 !important;
+    }
+    :global(.tooltip-black .ant-tooltip-inner) {
+        @apply p-3 text-gray-700 whitespace-pre-line;
     }
 </style>

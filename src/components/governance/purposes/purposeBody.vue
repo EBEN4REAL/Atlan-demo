@@ -42,6 +42,20 @@
                 :persona="persona"
                 @editDetails="$emit('editDetails')"
             />
+            <PurposeReadme :purpose="selectedPersonaDirty" />
+            <div class="p-4 mt-3 bg-white border border-gray-200 rounded">
+                <ResourcesWidget
+                    placeholder="Resources is the place to document all knowledge around the purpose"
+                    :entity-name="persona.name"
+                    :resources="persona?.resources?.links ?? []"
+                    :add-status="addStatus"
+                    :update-status="updateStatus"
+                    :remove-status="removeStatus"
+                    @add="handleAddResource"
+                    @update="handleUpdateResource"
+                    @remove="handleRemoveResource"
+                />
+            </div>
         </div>
         <div
             v-else-if="activeTabKey === 'policies'"
@@ -229,6 +243,7 @@
         watch,
     } from 'vue'
     import { message } from 'ant-design-vue'
+    import ResourcesWidget from '@common/widgets/resources/resourcesWidgetV2/resourcesWidgetV2.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import MinimalTab from '@/UI/minimalTab.vue'
     import AtlanBtn from '@/UI/button.vue'
@@ -240,6 +255,7 @@
     import MetadataPolicy from './policies/metadataPolicyItem.vue'
     import DataPolicy from './policies/dataPolicyItem.vue'
     import PurposeMeta from './overview/purposeMeta.vue'
+    import PurposeReadme from './overview/PurposeReadme.vue'
     import { IPurpose } from '~/types/accessPolicies/purposes'
     import { filterMethod } from '~/utils/helper/search'
     import {
@@ -259,10 +275,12 @@
     import { selectedPersona } from './composables/usePurposeList'
     import AssetList from '@/common/assetList/assetList.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import usePurposeResources from '@/governance/purposes/composables/usePurposeResources'
 
     export default defineComponent({
         name: 'PurposeBody',
         components: {
+            ResourcesWidget,
             MinimalTab,
             PolicyCard,
             MetadataPolicy,
@@ -273,6 +291,7 @@
             AggregationTabs,
             Addpolicy,
             AssetList,
+            PurposeReadme,
         },
         props: {
             persona: {
@@ -317,7 +336,6 @@
                 id: string,
                 isEditMode: boolean
             ) {
-                console.log('savePolicyUI', { type, id, isEditMode })
                 const messageKey = Date.now()
                 message.loading({
                     content: 'Saving policy',
@@ -479,7 +497,23 @@
             const handleCloseAddPolicy = () => {
                 addpolicyVisible.value = false
             }
+
+            const {
+                addStatus,
+                updateStatus,
+                removeStatus,
+                handleAddResource,
+                handleUpdateResource,
+                handleRemoveResource,
+            } = usePurposeResources(persona)
+
             return {
+                addStatus,
+                updateStatus,
+                removeStatus,
+                handleAddResource,
+                handleUpdateResource,
+                handleRemoveResource,
                 filterConfig,
                 newIdTag,
                 userId,

@@ -236,6 +236,8 @@
     } from 'vue'
     import { message } from 'ant-design-vue'
     import ResourcesWidget from '@common/widgets/resources/resourcesWidgetV2/resourcesWidgetV2.vue'
+    import usePersonaResources from '@/governance/personas/composables/usePersonaResources'
+
     import MinimalTab from '@/UI/minimalTab.vue'
     import AtlanBtn from '@/UI/button.vue'
     import PolicyCard from './policies/policyCard.vue'
@@ -268,7 +270,6 @@
         PolicyType,
         deletePolicyV2,
     } from './composables/useEditPersona'
-    import usePersonaResources from '@/governance/personas/composables/usePersonaResources'
 
     export default defineComponent({
         name: 'PersonaBody',

@@ -2,6 +2,8 @@
 import { defineComponent, PropType, ref, toRefs, h, watch } from 'vue'
 import { reFetchList } from '@/governance/purposes/composables/usePurposeList'
 import { savePersona } from '@/governance/purposes/composables/useEditPurpose'
+import { getDomain } from '~/utils/url';
+import useAddEvent from '~/composables/eventTracking/useAddEvent'
 import usePurpose from '~/composables/purpose/usePurpose'
 
 const usePersonaResources = (purpose) => {
@@ -22,6 +24,15 @@ const usePersonaResources = (purpose) => {
             await savePersona(body)
             usePurpose() // update store
             reFetchList() // TODO refetch only required purpose
+            useAddEvent(
+                'governance',
+                'resource',
+                'created',
+                {
+                    domain: getDomain(r.url),
+                    asset_type: 'purpose'
+                }
+            )
             addStatus.value = 'success'
         } catch (e) {
             addStatus.value = 'error'
@@ -42,6 +53,15 @@ const usePersonaResources = (purpose) => {
             await savePersona(body)
             usePurpose() // update store
             reFetchList() // TODO refetch only required purpose
+            useAddEvent(
+                'governance',
+                'resource',
+                'updated',
+                {
+                    domain: getDomain(r.url),
+                    asset_type: 'purpose'
+                }
+            )
             updateStatus.value = 'success'
         } catch (error) {
             updateStatus.value = 'error'
@@ -61,6 +81,14 @@ const usePersonaResources = (purpose) => {
             removeStatus.value = 'success'
             usePurpose() // update store
             reFetchList() // TODO refetch only required purpose
+            useAddEvent(
+                'governance',
+                'resource',
+                'deleted',
+                {
+                    asset_type: 'purpose'
+                }
+            )
         } catch (e) {
             removeStatus.value = 'error'
         }

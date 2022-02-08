@@ -255,6 +255,25 @@ const keyMap = {
         },
     },
     governance: {
+        resource: {
+            created: {
+                action: 'governance_resource_created',
+                properties: (props) => ({
+                    domain: props.domain,
+                    asset_type: props.asset_type,
+                }),
+            },
+            updated: {
+                action: 'governance_resource_updated',
+                properties: (props) => ({
+                    domain: props.domain,
+                    asset_type: props.asset_type,
+                }),
+            },
+            deleted: {
+                action: 'governance_resource_deleted',
+            },
+        },
         persona: {
             created: {
                 action: 'governance_persona_created',

@@ -146,6 +146,7 @@ export default function useOpenQuery({
                         eventSourceInstance: undefined,
                         buttonDisable: false,
                         isQueryAborted: false,
+                        tabQueryState: false,
                     },
                     metadata: {},
                     queries: {},
@@ -251,15 +252,23 @@ export default function useOpenQuery({
             activeInlineTabCopy.isSaved
         )
 
+        const activeInlineTabKeyCopy = activeInlineTabKey.value
+
+        const tabIndex = tabs.value.findIndex(
+            (tab) => tab.key === activeInlineTabKeyCopy
+        )
+
         queryRun(
-            activeInlineTab,
+            tabIndex,
             getData,
             limit,
             null,
             null,
             newText,
             editorInstance,
-            monacoInstance
+            monacoInstance,
+            false, // open in vqb
+            activeInlineTabKeyCopy
         )
     }
 

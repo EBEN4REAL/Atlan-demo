@@ -167,6 +167,11 @@
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
+
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as Ref<string>
+
             const monacoInstance = inject('monacoInstance') as Ref<any>
             const editorInstance = inject('editorInstance') as Ref<any>
             const outputPaneSize = inject('outputPaneSize') as Ref<number>
@@ -200,13 +205,15 @@
             const { LINE_ERROR_NAMES, SOURCE_ACCESS_ERROR_NAMES } = useError()
             // let isQueryAborted = ref(false)
 
+            const activeInlineTabKeyCopy = activeInlineTabKey.value
+
+            const tabIndex = inlineTabs.value.findIndex(
+                (tab) => tab.key === activeInlineTabKeyCopy
+            )
+
             const abortRunningQuery = () => {
-                abortQuery(
-                    activeInlineTab,
-                    inlineTabs,
-                    editorInstance,
-                    monacoInstance
-                )
+                console.log('query abourt: hello')
+                abortQuery(tabIndex, inlineTabs, editorInstance, monacoInstance)
                 // isQueryAborted.value = true
             }
 

@@ -30,7 +30,7 @@ export default function useRunQuery() {
         getConnectionQualifiedName,
         getConnectorName,
     } = useConnector()
-    const { modifyActiveInlineTab } = useInlineTab()
+    const { modifyActiveInlineTab, activeTabKey } = useInlineTab()
 
     const setColumns = (columnList: Ref<any>, columns: any) => {
         // console.log('columns: ', columns)
@@ -56,7 +56,7 @@ export default function useRunQuery() {
     }
 
     const queryRun = (
-        activeInlineTab: Ref<activeInlineTabInterface>,
+        tabIndex: number,
         getData: (
             activeInlineTab,
             rows: any[],
@@ -69,8 +69,13 @@ export default function useRunQuery() {
         selectedText?: string,
         editorInstance: Ref<any>,
         monacoInstance: Ref<any>,
-        showVQB: Ref<Boolean> = ref(false)
+        showVQB: Ref<Boolean> = ref(false),
+        tabsArray: Ref<activeInlineTabInterface[]>
     ) => {
+        // do not change this. This is a workaround for the issue
+        //FIXME:
+        let activeInlineTab = ref(tabsArray.value[tabIndex])
+
         if (
             activeInlineTab.value.playground.resultsPane.result
                 .isQueryRunning === 'loading'
@@ -109,6 +114,9 @@ export default function useRunQuery() {
             'loading'
         activeInlineTab.value.playground.resultsPane.result.isQueryAborted =
             false
+
+        activeInlineTab.value.playground.resultsPane.result.tabQueryState = true
+
         const attributeValue =
             activeInlineTab.value?.playground?.editor?.context?.attributeValue
         let queryText
@@ -334,6 +342,11 @@ export default function useRunQuery() {
                             activeInlineTab.value.playground.resultsPane.result.runQueryId =
                                 undefined
 
+                            activeInlineTab.value.playground.resultsPane.result.tabQueryState =
+                                activeTabKey.value === activeInlineTab.value.key
+                                    ? false
+                                    : true
+
                             let endTime = new Date()
                             activeInlineTab.value.playground.resultsPane.result.executionTime =
                                 endTime - startTime
@@ -356,6 +369,10 @@ export default function useRunQuery() {
                                 eventSource,
                                 message
                             )
+                            activeInlineTab.value.playground.resultsPane.result.tabQueryState =
+                                activeTabKey.value === activeInlineTab.value.key
+                                    ? false
+                                    : true
                             /* Callback will be called when request completed */
                             if (onCompletion) {
                                 onCompletion(activeInlineTab, 'error')
@@ -375,6 +392,13 @@ export default function useRunQuery() {
                 ) {
                     const { setStreamErrorInActiveInlineTab } = useError()
                     setStreamErrorInActiveInlineTab(activeInlineTab, error)
+                    activeInlineTab.value.playground.resultsPane.result.tabQueryState =
+                        activeTabKey.value === activeInlineTab.value.key
+                            ? false
+                            : true
+
+                    debugger
+
                     /* Callback will be called when request completed */
                     if (onCompletion) onCompletion(activeInlineTab, 'error')
                     //IMP: connection need to be closed here
@@ -384,6 +408,11 @@ export default function useRunQuery() {
                     reset()
                 }
             } catch (e) {
+                activeInlineTab.value.playground.resultsPane.result.tabQueryState =
+                    activeTabKey.value === activeInlineTab.value.key
+                        ? false
+                        : true
+
                 if (onCompletion) onCompletion(activeInlineTab, 'error')
                 if (eventSource.value?.close) {
                     eventSource.value.close()
@@ -419,11 +448,12 @@ export default function useRunQuery() {
         }
     }
     const abortQuery = (
-        activeInlineTab: Ref<activeInlineTabInterface>,
+        tabIndex: number,
         inlineTabs: Ref<activeInlineTabInterface[]>,
         editorInstance: Ref<any>,
         monacoInstance: Ref<any>
     ) => {
+        let activeInlineTab = ref(inlineTabs.value[tabIndex])
         if (
             activeInlineTab.value.playground.resultsPane.result
                 .eventSourceInstance?.close
@@ -438,6 +468,9 @@ export default function useRunQuery() {
             activeInlineTab.value.playground.resultsPane.result.abortQueryFn()
             console.log('clock running abort timer stop 1')
         }
+
+        activeInlineTab.value.playground.resultsPane.result.tabQueryState =
+            false
 
         if (
             canQueryAbort(

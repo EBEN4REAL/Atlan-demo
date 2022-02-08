@@ -99,7 +99,8 @@
                         <div class="flex items-center w-11/12">
                             <div class="flex w-full">
                                 <!-- <a-typography-text
-                                    class="w-11/12 text-base font-bold text-gray-700"
+                                    class="text-base font-bold text-gray-700"
+                                    style="max-width: 95%"
                                     :style="ellipsis ? { width: '98%' } : {}"
                                     tooltip-color="#363636"
                                     :ellipsis="
@@ -118,8 +119,19 @@
                                     :tooltip-text="`${selectedCollection?.attributes?.name}`"
                                     classes="cursor-pointer text-base font-bold mr-1
                                 text-gray-700"
-                                />
-                                <div style="width: 8%">
+                                >
+                                    <!-- <template #postfixIcon>
+                                        <AtlanIcon
+                                            icon="ChevronDown"
+                                            class="w-4 h-4 text-gray-500"
+                                        ></AtlanIcon>
+                                    </template> -->
+                                </Tooltip>
+                                <!-- <AtlanIcon
+                                    icon="ChevronDown"
+                                    class="w-4 h-4 text-gray-500"
+                                ></AtlanIcon> -->
+                                <div style="width: 20px">
                                     <AtlanIcon
                                         icon="ChevronDown"
                                         class="w-4 h-4 text-gray-500"

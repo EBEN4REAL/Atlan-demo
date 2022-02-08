@@ -94,6 +94,27 @@
                                                         ? 'text-gray-700'
                                                         : 'text-gray-500'
                                                     : '',
+                                                (tab.playground.resultsPane
+                                                    .result.isQueryAborted ||
+                                                    tab.playground.resultsPane
+                                                        .result
+                                                        .isQueryRunning ===
+                                                        'error') &&
+                                                tab.key !==
+                                                    activeInlineTabKey &&
+                                                tab.playground.resultsPane
+                                                    .result.tabQueryState
+                                                    ? 'text-red-500'
+                                                    : tab.playground.resultsPane
+                                                          .result
+                                                          .isQueryRunning ===
+                                                          'success' &&
+                                                      tab.key !==
+                                                          activeInlineTabKey &&
+                                                      tab.playground.resultsPane
+                                                          .result.tabQueryState
+                                                    ? 'text-green-500'
+                                                    : '',
                                             ]"
                                             >{{ tab.label }}</span
                                         >
@@ -128,8 +149,44 @@
                         </template>
 
                         <template #closeIcon>
+                            <AtlanIcon
+                                v-if="
+                                    (tab.playground.resultsPane.result
+                                        .isQueryAborted ||
+                                        tab.playground.resultsPane.result
+                                            .isQueryRunning === 'error') &&
+                                    tab.key !== activeInlineTabKey &&
+                                    tab.playground.resultsPane.result
+                                        .tabQueryState
+                                "
+                                icon="FailedQuery"
+                                class="absolute w-4 h-4 unsaved-dot right-2 top-1.5"
+                            />
+
+                            <AtlanIcon
+                                v-else-if="
+                                    tab.playground.resultsPane.result
+                                        .isQueryRunning === 'loading' &&
+                                    tab.key !== activeInlineTabKey &&
+                                    tab.playground.resultsPane.result
+                                        .tabQueryState
+                                "
+                                icon="RunningQuery"
+                                class="w-4 h-4 animate-spin unsaved-dot absolute right-2 top-1.5"
+                            />
+                            <AtlanIcon
+                                v-else-if="
+                                    tab.playground.resultsPane.result
+                                        .isQueryRunning === 'success' &&
+                                    tab.key !== activeInlineTabKey &&
+                                    tab.playground.resultsPane.result
+                                        .tabQueryState
+                                "
+                                icon="SuccessQuery"
+                                class="w-3 h-3 unsaved-dot absolute right-2.5 top-2"
+                            />
                             <div
-                                v-if="!tab.isSaved"
+                                v-else-if="!tab.isSaved"
                                 class="flex items-center unsaved-dot"
                             >
                                 <div
@@ -404,6 +461,7 @@
                                 eventSourceInstance: undefined,
                                 buttonDisable: false,
                                 isQueryAborted: false,
+                                tabQueryState: false,
                             },
                             metadata: {},
                             queries: {},
@@ -445,9 +503,21 @@
                     router.push({ path: `insights`, query: queryParams })
                 }
             }
+
             const onTabClick = (activeKey) => {
                 setActiveTabKey(activeKey, activeInlineTabKey)
                 pushGuidToURL(activeInlineTab.value?.queryId)
+
+                if (
+                    activeInlineTab.value.playground.resultsPane.result
+                        .isQueryRunning === 'loading'
+                ) {
+                    // activeInlineTab.value.playground.resultsPane.result.tabQueryState =
+                    //     true
+                } else {
+                    activeInlineTab.value.playground.resultsPane.result.tabQueryState =
+                        false
+                }
             }
             const onEdit = (targetKey: string | MouseEvent, action: string) => {
                 if (action === 'add') {

@@ -142,7 +142,7 @@
                     content: 'Successfully shared.',
                     duration: 2,
                 })
-                useAddEvent('admin', 'integration', 'share_on_slack', {
+                useAddEvent('integration', 'slack', 'asset_shared', {
                     asset_type: assetType.value,
                 })
             } else if (error.value) {

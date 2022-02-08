@@ -399,21 +399,24 @@ const keyMap = {
                 properties: (props: { integration: string, level: string }) => ({
                     ...props
                 }),
-            },
-            share_on_slack: {
+            }
+        }
+    },
+    integration: {
+        slack: {
+            asset_shared: {
                 action: 'integration_slack_asset_shared',
                 properties: (props: { asset_type: string, }) => ({
                     ...props
                 }),
             },
-            slack_message_cta: {
+            message_cta_clicked: {
                 action: 'integration_slack_message_cta_clicked',
                 properties: (props: { type: string }) => ({
                     ...props
                 }),
-
             }
         }
-    },
+    }
 }
 export default keyMap

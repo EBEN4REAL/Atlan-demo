@@ -8,6 +8,14 @@ const keyMap = {
                 }),
             },
         },
+        global: {
+            context_changed: {
+                action: 'discovery_global_context_changed',
+                properties: (props: { type: 'persona' | 'purpose' | 'all_assets' }) => ({
+                    type: props.type,
+                }),
+            }
+        },
         aggregate_tab: {
             changed: {
                 action: 'discovery_aggregate_tab_changed',

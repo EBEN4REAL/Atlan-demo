@@ -424,8 +424,11 @@
                 () => {
                     globalState.value = discoveryStore.globalState
                     handleResetEvent()
-                    useAddEvent('discovery', 'filter', 'changed', {
-                        type: 'global',
+                    useAddEvent('discovery', 'global', 'context_changed', {
+                        type:
+                            discoveryStore.globalState[0] === 'all'
+                                ? 'all_assets'
+                                : discoveryStore.globalState[0],
                     })
                 },
                 {

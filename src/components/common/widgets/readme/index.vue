@@ -1,7 +1,13 @@
 <template>
     <div
+        ref="editorDiv"
         class="flex flex-col p-6 bg-white border border-gray-200 rounded"
         :class="isEditMode ? 'editor-open' : 'editor-close'"
+        @transitionend="
+            () => {
+                editorDiv?.scrollIntoView({ behavior: 'smooth' })
+            }
+        "
     >
         <div class="flex items-center justify-between mb-3">
             <div class="flex items-center">
@@ -26,6 +32,7 @@
                         class="flex items-center"
                         type="primary"
                         @click="handleEditMode"
+                        @transitionend.stop="() => {}"
                     >
                         <AtlanIcon icon="Edit" class="w-auto h-4 mr-1" />Add a
                         readme</a-button
@@ -37,6 +44,7 @@
                         v-if="!isLoading"
                         class="flex items-center"
                         @click="handleCancel"
+                        @transitionend.stop="() => {}"
                     >
                         Cancel</a-button
                     >
@@ -46,6 +54,7 @@
                         type="primary"
                         :loading="isLoading"
                         @click="handleUpdate"
+                        @transitionend.stop="() => {}"
                     >
                         Save</a-button
                     >
@@ -65,6 +74,7 @@
                         class="flex items-center"
                         type="primary"
                         @click="handleEditMode"
+                        @transitionend.stop="() => {}"
                     >
                         <AtlanIcon
                             icon="Edit"
@@ -115,6 +125,7 @@
         },
         setup(props) {
             const { asset, isEdit: isEditAllowed } = toRefs(props)
+            const editorDiv = ref<HTMLElement | null>(null)
 
             const { readmeContent, readmeGuid } = useAssetInfo()
 
@@ -155,6 +166,7 @@
                 localReadmeContent,
                 readmeGuid,
                 isEditAllowed,
+                editorDiv,
             }
         },
     })
@@ -162,7 +174,7 @@
 
 <style lang="less" scoped>
     .editor-open {
-        min-height: 200px;
+        min-height: 75vh;
         transition: min-height 0.3s ease-in-out;
     }
     .editor-close {

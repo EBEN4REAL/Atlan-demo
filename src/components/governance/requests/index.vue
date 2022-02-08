@@ -130,7 +130,7 @@
                         class="flex items-center p-2 py-1 border rounded cursor-pointer reload-button"
                         @click="mutate"
                     >
-                        <AtlanIcon class="text-gray-700" icon="Retry2" />
+                        <AtlanIcon class="text-gray-200" icon="Retry2" />
                     </div>
                 </a-tooltip>
             </div>

@@ -22,7 +22,7 @@
             v-if="request?.message"
             trigger="hover"
             placement="bottomRight"
-            :align="{ offset: [60, -5] }"
+            :align="{ offset: [10, -5] }"
         >
             <template #content>
                 <div class="px-2 py-3 comment-delete">
@@ -123,7 +123,7 @@
         }
     }
     .comment-delete {
-        width: 200px;
+        width: 250px;
         .icon-quotes {
             // width: 10px !important;
         }

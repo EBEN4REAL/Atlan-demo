@@ -62,7 +62,7 @@
 
                     <JoinColumnSelector
                         class="flex-1 item-2"
-                        style="flex: 0.5"
+                        style="flex: 0.5; min-width: 100px"
                         v-model:selectedColumn="subpanel.columnsDataLeft"
                         :panelIndex="Number(panelIndex)"
                         v-model:isAreaFocused="
@@ -120,6 +120,7 @@
 
                     <JoinColumnSelector
                         class="flex-1"
+                        style="min-width: 100px"
                         v-model:selectedColumn="subpanel.columnsDataRight"
                         :panelIndex="Number(panelIndex)"
                         v-model:isAreaFocused="

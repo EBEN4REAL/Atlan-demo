@@ -706,7 +706,7 @@
         },
         setup(props) {
             const { hoverActions } = toRefs(props)
-            const isTabAdded = inject('isTabClosed') as Ref<string | undefined>
+            const isTabAdded = inject('isTabAdded') as Ref<string | undefined>
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >

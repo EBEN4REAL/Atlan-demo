@@ -77,7 +77,11 @@ export function useSavedQuery(
         return false
     }
 
-    const openSavedQueryInNewTab = async (savedQuery: SavedQuery) => {
+    const openSavedQueryInNewTab = async (
+        savedQuery: SavedQuery,
+        isTabAdded: Ref<string>
+    ) => {
+        isTabAdded.value = savedQuery?.guid
         let decodedVariables = decodeBase64Data(
             savedQuery?.attributes?.variablesSchemaBase64
         ) as CustomVaribaleInterface[]
@@ -261,6 +265,7 @@ export function useSavedQuery(
 
     const openSavedQueryInNewTabAndRun = (
         savedQuery,
+        isTabAdded: Ref<string>,
         getData: (
             activeInlineTab,
             rows: any[],
@@ -273,11 +278,15 @@ export function useSavedQuery(
         onRunCompletion,
         onQueryIdGeneration
     ) => {
-        openSavedQueryInNewTab({
-            ...savedQuery?.value,
-            parentTitle:
-                savedQuery?.value?.attributes?.parent?.attributes?.name,
-        })
+        isTabAdded.value = savedQuery?.value?.guid
+        openSavedQueryInNewTab(
+            {
+                ...savedQuery?.value,
+                parentTitle:
+                    savedQuery?.value?.attributes?.parent?.attributes?.name,
+            },
+            isTabAdded
+        )
         setTimeout(() => {
             console.log('active tab copy: ', activeInlineTab)
             queryRun(
@@ -648,6 +657,7 @@ export function useSavedQuery(
 
     const saveQueryToDatabaseAndOpenInNewTab = (
         saveQueryData: any,
+        isTabAdded: Ref<string>,
         editorInstance: Ref<any>,
         saveQueryLoading: Ref<boolean>,
         showSaveQueryModal: Ref<boolean>,
@@ -816,7 +826,7 @@ export function useSavedQuery(
                         router.push({ path: `insights`, query: queryParams })
                     }
 
-                    openSavedQueryInNewTab(savedQuery)
+                    openSavedQueryInNewTab(savedQuery, isTabAdded)
                 } else {
                     if (
                         error?.value?.response?.data?.errorCode ===

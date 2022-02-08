@@ -42,7 +42,7 @@
 
         setup(props, { emit }) {
             const { showQueryPreview } = useVModels(props)
-            const isTabAdded = inject('isTabClosed') as Ref<string | undefined>
+            const isTabAdded = inject('isTabAdded') as Ref<string | undefined>
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>

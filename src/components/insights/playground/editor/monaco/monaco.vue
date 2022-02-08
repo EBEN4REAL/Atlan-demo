@@ -71,7 +71,7 @@
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
             const isTabClosed = inject('isTabClosed') as Ref<string | undefined>
-            const isTabAdded = inject('isTabClosed') as Ref<string | undefined>
+            const isTabAdded = inject('isTabAdded') as Ref<string | undefined>
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as ComputedRef<String>
@@ -100,6 +100,7 @@
 
             watch(isTabClosed, () => {
                 if (isTabClosed.value) clearRemovedTabsModels(isTabClosed.value)
+                console.log(editorStates, 'editorStates')
             })
             watch(isTabAdded, () => {
                 if (isTabAdded.value) addModelForNewTab(isTabAdded.value)

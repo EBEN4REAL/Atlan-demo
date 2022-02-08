@@ -396,12 +396,15 @@
 
             watch(savedQueryInfo, () => {
                 if (savedQueryInfo.value?.guid) {
-                    openSavedQueryInNewTab({
-                        ...savedQueryInfo.value,
-                        parentTitle:
-                            savedQueryInfo.value?.attributes?.parent?.attributes
-                                ?.name,
-                    })
+                    openSavedQueryInNewTab(
+                        {
+                            ...savedQueryInfo.value,
+                            parentTitle:
+                                savedQueryInfo.value?.attributes?.parent
+                                    ?.attributes?.name,
+                        },
+                        isTabAdded
+                    )
 
                     selectFirstCollectionByDefault(
                         queryCollections.value,

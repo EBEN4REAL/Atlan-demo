@@ -247,7 +247,7 @@
             const router = useRouter()
             const isSaving = ref(false)
             const isTabClosed = inject('isTabClosed') as Ref<string | undefined>
-            const isTabAdded = inject('isTabClosed') as Ref<string | undefined>
+            const isTabAdded = inject('isTabAdded') as Ref<string | undefined>
             const showSaveQueryModal = ref(false)
             const saveCloseTabKey = ref()
             const saveQueryLoading = ref(false)
@@ -475,6 +475,7 @@
                             unsavedPopover.value.key = targetKey as string
                             unsavedPopover.value.show = true
                         } else {
+                            isTabClosed.value = targetKey as string
                             /* Delete the tab if content is empty */
                             inlineTabRemove(
                                 targetKey as string,
@@ -484,6 +485,7 @@
                             )
                         }
                     } else {
+                        isTabClosed.value = targetKey as string
                         inlineTabRemove(
                             targetKey as string,
                             tabs,
@@ -566,7 +568,7 @@
                 }
             }
             const saveTabConfirm = (key: string) => {
-                console.log(key, 'keyyy')
+                isTabClosed.value = key
                 /* Saving the key */
                 saveCloseTabKey.value = key
                 let tabData: activeInlineTabInterface | undefined

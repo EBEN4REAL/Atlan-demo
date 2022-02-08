@@ -15,6 +15,7 @@
 
 <script lang="ts">
     import { defineComponent, ref, toRefs, watch } from 'vue'
+    import { useRoute } from 'vue-router'
     import Item from './item.vue'
 
     export default defineComponent({
@@ -38,12 +39,14 @@
                 selectedItem.value = item
                 emit('select', item)
             }
-
+            const route = useRoute()
             watch(
                 list,
                 () => {
                     if (list.value?.length > 0) {
-                        handleSelect(list.value[0])
+                        if (!route.params?.id) {
+                            handleSelect(list.value[0])
+                        }
                     }
                 },
                 { immediate: true }
@@ -57,6 +60,7 @@
                 list,
                 handleSelect,
                 selectedItem,
+                route,
                 handleDoubleClick,
             }
         },

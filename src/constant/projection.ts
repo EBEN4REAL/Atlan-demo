@@ -120,6 +120,8 @@ export const AssetAttributes = [
     'sourceId',
     'fieldCount',
     'objectQualifiedName',
+    'dashboardType',
+    'reportType',
 ]
 
 export const SQLAttributes = [

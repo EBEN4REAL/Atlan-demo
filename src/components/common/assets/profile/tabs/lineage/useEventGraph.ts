@@ -941,8 +941,16 @@ export default function useEventGraph(
         if (chp.value.portId) deselectPort()
         if (che.value) resetCHE()
 
-        onSelectAsset(node.store.data.entity)
-        highlight(node?.id)
+        const { entity } = node.store.data
+
+        if (entity.guid === highlightedNode.value) {
+            onCloseDrawer()
+            assetGuidToHighlight.value = ''
+            return
+        }
+
+        onSelectAsset(entity)
+        highlight(entity?.guid)
     })
 
     // BLANK - CLICK

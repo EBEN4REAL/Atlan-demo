@@ -259,6 +259,7 @@ export const LineageAttributes = [
     // SQL
     'table',
     'view',
+    '__customAttributes',
 ]
 
 export const ConnectionAttriibutes = [...InternalAttributes, ...AssetAttributes]

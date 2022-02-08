@@ -130,7 +130,7 @@
                         class="flex items-center p-2 py-1 border rounded cursor-pointer reload-button"
                         @click="mutate"
                     >
-                        <AtlanIcon class="text-gray-200" icon="Retry2" />
+                        <AtlanIcon class="refresh-icon-request" icon="Retry2" />
                     </div>
                 </a-tooltip>
             </div>
@@ -649,6 +649,9 @@
             box-shadow: none !important;
         }
     }
+</style>
+<style lang="less">
+    // #374151
 </style>
 <style lang="less" scoped>
     .container-empty {

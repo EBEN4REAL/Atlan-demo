@@ -436,6 +436,22 @@
                     <hr v-if="!showVQB" />
                     <!-- Show these options when query is saved -->
                     <div v-if="activeInlineTab?.queryId" class="text-gray-700">
+                        <a-menu-item
+                            @click="queryModalVisible = true"
+                            class="px-4 py-2"
+                        >
+                            Rename query
+                        </a-menu-item>
+                        <a-menu-item
+                            key="editQuery"
+                            class="px-4 py-2"
+                            @click="
+                                () => {
+                                    openEdit()
+                                }
+                            "
+                            >Edit query</a-menu-item
+                        >
                         <a-sub-menu key="shareQueryMenu" class="text-gray-500">
                             <template #title>
                                 <div
@@ -511,6 +527,13 @@
             </template>
         </a-dropdown>
     </div>
+
+    <EditQuery
+        v-if="queryModalVisible"
+        :modalVisible="queryModalVisible"
+        :queryData="{ attributes: activeInlineTab.attributes }"
+        @closeRenameModal="queryModalVisible = false"
+    />
 </template>
 
 <script lang="ts">
@@ -538,9 +561,12 @@
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import SlackModal from '@/common/assets/misc/slackModal.vue'
     import integrationStore from '~/store/integrations/index'
+    import EditQuery from '../editQuery/index.vue'
+    import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
+    import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
 
     export default defineComponent({
-        components: { SlackModal },
+        components: { SlackModal, EditQuery },
         props: {},
         setup(props, { emit }) {
             const router = useRouter()
@@ -705,6 +731,8 @@
                 )
             }
 
+            const queryModalVisible = ref(false)
+
             const duplicateQuery = () => {
                 const activeInlineTabCopy: activeInlineTabInterface =
                     JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
@@ -776,6 +804,36 @@
                 })
                 useAddEvent('insights', 'query', 'link_copied', undefined)
             }
+
+            const { isSameNodeOpenedInSidebar } = useSchema()
+
+            const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
+                tabsArray,
+                activeInlineTab
+            )
+
+            const openEdit = () => {
+                let queryInfo = {
+                    entity: {
+                        attributes: { ...activeInlineTab.value.attributes },
+                        typeName: 'Query',
+                        guid: activeInlineTab.value.attributes.__guid,
+                    },
+                }
+                if (isSameNodeOpenedInSidebar(queryInfo, activeInlineTab)) {
+                    /* Close it if it is already opened */
+                    closeAssetSidebar(activeInlineTab.value)
+                } else {
+                    const activeInlineTabCopy: activeInlineTabInterface =
+                        Object.assign({}, activeInlineTab.value)
+
+                    console.log('query entity1: ', queryInfo.entity)
+                    activeInlineTabCopy.assetSidebar.assetInfo =
+                        queryInfo.entity
+                    activeInlineTabCopy.assetSidebar.isVisible = true
+                    openAssetSidebar(activeInlineTabCopy, 'not_editor')
+                }
+            }
             return {
                 tenantSlackStatus,
                 link,
@@ -804,6 +862,8 @@
                 capitalizeFirstLetter,
                 copyURL,
                 readOnly,
+                queryModalVisible,
+                openEdit,
             }
         },
     })

@@ -163,7 +163,7 @@ export default function useGraph() {
                             : 'hidden'
                     } ${
                         isRootNode ? 'l-m20px' : 'r-m20px'
-                    } node-loadCTA h-6 w-6 bg-gray-400 text-white rounded-full  justify-center items-center">
+                    } node-loadCTA h-6 w-6 bg-gray-400 text-white rounded-full  justify-center items-center cursor-pointer">
                         ${iconPlus}
                     </div>
                 </div>`

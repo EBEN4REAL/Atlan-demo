@@ -613,6 +613,8 @@ export default function useEventGraph(
         const { data } = useFetchLineage(nodeConfig, true)
         watch(data, async () => {
             await addSubGraph(data.value, registerAllListeners)
+            const ucell = graph.value.getCellById(guid)
+            graph.value.scrollToCell(ucell, { animation: { duration: 600 } })
             hideLoader()
         })
     }

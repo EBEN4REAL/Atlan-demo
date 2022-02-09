@@ -26,8 +26,22 @@
             </div>
             <div class="mb-6">
                 <div>Password</div>
-                <a-input v-model:value="tenantInfo.password"></a-input>
+                <a-input-password
+                    v-model:value="tenantInfo.password"
+                ></a-input-password>
             </div>
+            <a-upload
+                accept="image/*"
+                class="cursor-pointer"
+                :custom-request="handleUploadLogo"
+                :show-upload-list="false"
+            >
+                <div
+                    class="w-40 p-1 border border-gray-300 border-dashed rounded"
+                >
+                    Add Org Logo
+                </div>
+            </a-upload>
             <div class="flex justify-end w-full">
                 <AtlanButton padding="compact" size="sm" @click="registerTenant"
                     >Register</AtlanButton
@@ -41,6 +55,7 @@
     import { defineComponent, watch, reactive, inject } from 'vue'
     import { message } from 'ant-design-vue'
     import { Tenant } from '~/services/service/tenant'
+    import getImageInBase64 from '~/utils/library/imageToBase64.ts'
 
     export default defineComponent({
         name: 'SetupAtlan',
@@ -77,8 +92,18 @@
                     { immediate: true }
                 )
             }
+            const setLogoInfo = (base64str) => {
+                if (base64str) {
+                    tenantInfo.logoBase64 = base64str
+                        .replace('data:', '')
+                        .replace(/^.+,/, '')
+                }
+            }
+            const handleUploadLogo = (uploaded) => {
+                if (uploaded.file) getImageInBase64(uploaded.file, setLogoInfo)
+            }
 
-            return { registerTenant, tenantInfo }
+            return { registerTenant, tenantInfo, handleUploadLogo }
         },
     })
 </script>

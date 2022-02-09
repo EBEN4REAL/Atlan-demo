@@ -214,7 +214,10 @@
                 const tree: Record<string, any>[] = []
                 data.forEach((item: any) => {
                     const children =
-                        hidePowerBi.value && item.id === 'powerbi'
+                        hidePowerBi.value &&
+                        (item.id === 'powerbi' ||
+                            item.id === 'looker' ||
+                            item.id === 'tableau')
                             ? []
                             : transformConnectionsToTree(item.id)
                     const treeNodeObj = {

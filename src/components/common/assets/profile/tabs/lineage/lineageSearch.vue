@@ -98,17 +98,17 @@
             })
 
             /** METHODS */
-            function setQuery(e) {
+            const setQuery = (e) => {
                 query.value = e.target.value
             }
 
-            function setSearchItem(item) {
+            const setSearchItem = (item) => {
                 searchItem.value = item.guid
                 onSelectAsset(item, true)
                 emit('select', item.guid)
             }
 
-            function onBlur() {
+            const onBlur = () => {
                 setTimeout(() => {
                     showResults.value = false
                 }, 500)
@@ -116,11 +116,11 @@
                 if (!query.value) showSearch.value = false
             }
 
-            function onFocus() {
+            const onFocus = () => {
                 showResults.value = true
             }
 
-            function onEsc(e) {
+            const onEsc = (e) => {
                 e.target.blur()
                 showResults.value = false
                 showSearch.value = false

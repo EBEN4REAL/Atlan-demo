@@ -48,9 +48,7 @@
                 ></EmptyView>
             </div>
             <div
-                v-else-if="
-                    !isLoading && !isLoadingPackage && (error || errorPackage)
-                "
+                v-else-if="error || errorPackage || errorRun"
                 class="flex items-center justify-center flex-grow"
             >
                 <ErrorView></ErrorView>
@@ -236,20 +234,23 @@
             const dependentKeyRun = ref('')
             const facetRun = ref({})
             const aggregationRun = ref(['status'])
-            const { quickChange: quickChangeRun, runByWorkflowMap } =
-                useRunDiscoverList({
-                    isCache: false,
-                    dependentKey: dependentKeyRun,
-                    facets: facetRun,
-                    limit: ref(0),
-                    offset,
-                    aggregations: aggregationRun,
-                    queryText,
-                    source: ref({
-                        excludes: ['spec'],
-                    }),
-                    preference,
-                })
+            const {
+                quickChange: quickChangeRun,
+                runByWorkflowMap,
+                error: errorRun,
+            } = useRunDiscoverList({
+                isCache: false,
+                dependentKey: dependentKeyRun,
+                facets: facetRun,
+                limit: ref(0),
+                offset,
+                aggregations: aggregationRun,
+                queryText,
+                source: ref({
+                    excludes: ['spec'],
+                }),
+                preference,
+            })
 
             provide('runMap', runByWorkflowMap)
             provide('workflowMap', workflowMapByPackage)
@@ -351,6 +352,7 @@
                 handleNewWorkflow,
                 router,
                 queryText,
+                errorRun,
             }
         },
     })

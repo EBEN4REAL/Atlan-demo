@@ -162,6 +162,9 @@
     import { useConnector } from '~/components/insights/common/composables/useConnector'
     import { getDialectInfo } from '~/components/insights/common/composables/getDialectInfo'
 
+    import { useEditor } from '~/components/insights/common/composables/useEditor'
+    import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
+
     import {
         explorerPaneSize,
         minExplorerSize,
@@ -181,6 +184,8 @@
         setup(props) {
             const observer = ref()
             const splitpaneRef = ref()
+            const isTabClosed: Ref<undefined | string> = ref(undefined)
+            const isTabAdded: Ref<undefined | string> = ref(undefined)
 
             const savedQueryInfo = inject('savedQueryInfo') as Ref<
                 SavedQuery | undefined
@@ -277,8 +282,6 @@
                 activeTabCollection,
             } = useActiveQueryAccess(activeInlineTab)
 
-            // watch(activeInlineTab, () => {})
-
             const sidebarPaneSize = computed(() =>
                 activeInlineTab.value?.assetSidebar?.isVisible
                     ? assetSidebarPaneSize.value
@@ -370,6 +373,8 @@
                 readAccessCollections,
                 writeAccessCollections,
                 limitRows: limitRows,
+                isTabClosed: isTabClosed,
+                isTabAdded: isTabAdded,
                 updateAssetCheck,
             }
             useProvide(provideData)
@@ -378,7 +383,7 @@
             /* Watchers for syncing in localstorage */
             watch(activeInlineTabKey, () => {
                 syncActiveInlineTabKeyInLocalStorage(activeInlineTabKey.value)
-                syncInlineTabsInLocalStorage(tabsArray.value)
+                syncInlineTabsInLocalStorage(toRaw(tabsArray.value))
             })
 
             /* Watcher for all the things changes in activeInline tab */
@@ -386,19 +391,22 @@
                 () => activeInlineTab.value?.playground.vqb,
                 () => {
                     console.log('editor data')
-                    syncInlineTabsInLocalStorage(tabsArray.value)
+                    syncInlineTabsInLocalStorage(toRaw(tabsArray.value))
                 },
                 { deep: true }
             )
 
             watch(savedQueryInfo, () => {
                 if (savedQueryInfo.value?.guid) {
-                    openSavedQueryInNewTab({
-                        ...savedQueryInfo.value,
-                        parentTitle:
-                            savedQueryInfo.value?.attributes?.parent?.attributes
-                                ?.name,
-                    })
+                    openSavedQueryInNewTab(
+                        {
+                            ...savedQueryInfo.value,
+                            parentTitle:
+                                savedQueryInfo.value?.attributes?.parent
+                                    ?.attributes?.name,
+                        },
+                        isTabAdded
+                    )
 
                     selectFirstCollectionByDefault(
                         queryCollections.value,
@@ -410,17 +418,24 @@
 
                     // console.log('run query: ', savedQueryInfo.value)
 
+                    const activeInlineTabKeyCopy = activeInlineTabKey.value
+
+                    const tabIndex = tabsArray.value.findIndex(
+                        (tab) => tab.key === activeInlineTabKeyCopy
+                    )
+
                     if (runQuery.value === 'true') {
                         queryRun(
-                            activeInlineTab,
+                            tabIndex,
                             getData,
                             limitRows,
-                            null,
-                            null,
+                            onRunCompletion,
+                            onQueryIdGeneration,
                             savedQueryInfo.value?.attributes.rawQuery,
                             editorInstance,
                             monacoInstance,
-                            showVQB
+                            showVQB,
+                            tabsArray
                         )
                     }
                 }
@@ -472,27 +487,65 @@
                 }
             }
 
-            const getData = (activeInlineTab, dataList, columnList) => {
+            const getData = (
+                activeInlineTab,
+                dataList,
+                columnList,
+                executionTime,
+                index
+            ) => {
                 if (activeInlineTab && tabsArray?.value) {
-                    const activeInlineTabCopy: activeInlineTabInterface =
-                        JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
-                    activeInlineTabCopy.playground.editor.dataList = dataList
-
-                    activeInlineTabCopy.playground.editor.columnList =
+                    // const activeInlineTabCopy: activeInlineTabInterface =
+                    //     JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
+                    tabsArray.value[index].playground.editor.dataList = dataList
+                    tabsArray.value[index].playground.editor.columnList =
                         columnList
-                    const saveQueryDataInLocalStorage = false
-                    modifyActiveInlineTabEditor(
-                        activeInlineTabCopy,
-                        tabsArray,
-                        saveQueryDataInLocalStorage
-                    )
-                    // setSelection(
-                    //     toRaw(editorInstanceRef.value),
-                    //     toRaw(monacoInstanceRef.value),
-                    //     selectionObject.value
+                    // const saveQueryDataInLocalStorage = false
+                    // modifyActiveInlineTabEditor(
+                    //     activeInlineTabCopy,
+                    //     tabsArray,
+                    //     false,
+                    //     saveQueryDataInLocalStorage
                     // )
-                    // focusEditor(toRaw(editorInstanceRef.value))
                 }
+            }
+
+            const { resetErrorDecorations, setErrorDecorations } = useEditor()
+            const onRunCompletion = (activeInlineTab, status: string) => {
+                if (status === 'success') {
+                    /* Resetting the red dot from the editor if it error is not line type */
+                    resetErrorDecorations(
+                        activeInlineTab,
+                        toRaw(editorInstance.value)
+                    )
+                } else if (status === 'error') {
+                    resetErrorDecorations(
+                        activeInlineTab,
+                        toRaw(editorInstance.value)
+                    )
+                    // console.log('error deco:', status)
+                    /* If it is a line error i,e VALIDATION_ERROR | QUERY_PARSING_ERROR */
+                    const errorName =
+                        activeInlineTab.value?.playground?.resultsPane?.result
+                            ?.queryErrorObj?.errorName
+                    console.log(
+                        'error data: ',
+                        activeInlineTab.value?.playground?.resultsPane?.result
+                            ?.queryErrorObj?.errorName
+                    )
+                    if (LINE_ERROR_NAMES.includes(errorName)) {
+                        setErrorDecorations(
+                            activeInlineTab,
+                            toRaw(editorInstance),
+                            toRaw(monacoInstance)
+                        )
+                    }
+                }
+            }
+            const onQueryIdGeneration = (activeInlineTab, queryId: string) => {
+                /* Setting the particular instance to this tab */
+                activeInlineTab.value.playground.resultsPane.result.runQueryId =
+                    queryId
             }
 
             // FIXME: refactor it
@@ -623,6 +676,7 @@
                                 abortQueryFn: undefined,
                                 buttonDisable: false,
                                 isQueryAborted: false,
+                                tabQueryState: false,
                             },
                             metadata: {},
                             queries: {},
@@ -672,16 +726,24 @@
 
                 inlineTabAdd(queryTab, tabsArray, activeInlineTabKey)
 
+                const activeInlineTabKeyCopy = activeInlineTabKey.value
+
+                const tabIndex = tabsArray.value.findIndex(
+                    (tab) => tab.key === activeInlineTabKeyCopy
+                )
+
                 // console.log('detect query: ', newQuery)
                 queryRun(
-                    activeInlineTab,
+                    tabIndex,
                     getData,
                     limitRows,
-                    null,
-                    null,
+                    onRunCompletion,
+                    onQueryIdGeneration,
                     newQuery,
                     editorInstance,
-                    monacoInstance
+                    monacoInstance,
+                    openVQB,
+                    tabsArray
                 )
             }
 

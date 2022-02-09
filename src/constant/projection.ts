@@ -37,6 +37,7 @@ export const InternalAttributes = [
 export const AssetAttributes = [
     'name',
     'displayName',
+    'apiName',
     'description',
     'displayDescription',
     'userDescription',
@@ -118,6 +119,14 @@ export const AssetAttributes = [
     'pageCount',
     'sourceId',
     'fieldCount',
+    'objectQualifiedName',
+    'dashboardType',
+    'reportType',
+    'detailColumns',
+    'isCustom',
+    'inlineHelpText',
+    'picklistValues',
+    'formula',
 ]
 
 export const SQLAttributes = [
@@ -311,7 +320,8 @@ export const LineageAttributes = [
     'displayName',
     'certificateStatus',
     'link',
-    // Specific - see src/components/common/assets/profile/tabs/lineage/util.js -> childGroupBiAssetMap
+    'dataType',
+    // BI Relationships
     'workspace',
     'report',
     'dashboard',
@@ -321,6 +331,7 @@ export const LineageAttributes = [
     // SQL
     'table',
     'view',
+    '__customAttributes',
 ]
 
 export const ConnectionAttriibutes = [...InternalAttributes, ...AssetAttributes]

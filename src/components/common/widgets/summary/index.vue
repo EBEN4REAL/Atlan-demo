@@ -159,6 +159,9 @@
             FieldCount: defineAsyncComponent(
                 () => import('./types/fieldCount.vue')
             ),
+            ReportCount: defineAsyncComponent(
+                () => import('./types/reportCount.vue')
+            ),
         },
 
         props: {

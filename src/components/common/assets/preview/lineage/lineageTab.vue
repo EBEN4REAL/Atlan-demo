@@ -94,12 +94,7 @@
 
     // Types
     import { assetInterface } from '~/types/assets/asset.interface'
-    import {
-        AssetAttributes,
-        SQLAttributes,
-        GlossaryAttributes,
-        AssetRelationAttributes,
-    } from '~/constant/projection'
+    import { MinimalAttributes } from '~/constant/projection'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     // Services
@@ -156,11 +151,7 @@
                     operator: 'eq',
                     attributeValue: 'ACTIVE',
                 },
-                attributes: [
-                    ...AssetAttributes,
-                    ...SQLAttributes,
-                    ...GlossaryAttributes,
-                ],
+                attributes: MinimalAttributes,
             }))
 
             const {

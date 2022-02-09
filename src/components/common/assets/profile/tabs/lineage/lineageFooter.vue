@@ -34,70 +34,6 @@
                         <div class="px-4 py-3 text-sm">View Options</div>
                         <a-divider class="m-0" />
                         <div class="flex flex-col w-64 p-4 gap-y-4">
-                            <!-- Depth Selector -->
-                            <div class="flex items-center justify-between">
-                                <span class="text-gray-500">Depth</span>
-                                <a-dropdown
-                                    :trigger="['click']"
-                                    :get-popup-container="(e) => e.parentNode"
-                                >
-                                    <span class="lineage-footer-menu">
-                                        {{ currDepth }}
-                                        <AtlanIcon
-                                            icon="CaretRight"
-                                            class="transform rotate-90 outline-none"
-                                        ></AtlanIcon>
-                                    </span>
-                                    <template #overlay>
-                                        <a-menu>
-                                            <a-menu-item
-                                                v-for="item in lineageDepths"
-                                                :key="item.id"
-                                                :class="{
-                                                    'ant-dropdown-menu-item-activee':
-                                                        depth === item.id,
-                                                }"
-                                                @click="onChangeDepth(item.id)"
-                                            >
-                                                {{ item.label }}
-                                            </a-menu-item>
-                                        </a-menu>
-                                    </template>
-                                </a-dropdown>
-                            </div>
-                            <!-- Direction Selector -->
-                            <div class="flex items-center justify-between">
-                                <span class="text-gray-500">Direction</span>
-                                <a-dropdown
-                                    :trigger="['click']"
-                                    :get-popup-container="(e) => e.parentNode"
-                                >
-                                    <span class="lineage-footer-menu">
-                                        {{ currDir }}
-                                        <AtlanIcon
-                                            icon="CaretRight"
-                                            class="transform rotate-90 outline-none"
-                                        ></AtlanIcon>
-                                    </span>
-                                    <template #overlay>
-                                        <a-menu>
-                                            <a-menu-item
-                                                v-for="item in lineageDirections"
-                                                :key="item.id"
-                                                :class="{
-                                                    'ant-dropdown-menu-item-activee':
-                                                        direction === item.id,
-                                                }"
-                                                @click="
-                                                    onChangeDirection(item.id)
-                                                "
-                                            >
-                                                {{ item.label }}
-                                            </a-menu-item>
-                                        </a-menu>
-                                    </template>
-                                </a-dropdown>
-                            </div>
                             <div class="flex items-center justify-between">
                                 <span class="text-gray-500">Show Arrows</span>
                                 <a-switch
@@ -199,7 +135,7 @@
 
 <script lang="ts">
     /** PACKAGES */
-    import { computed, defineComponent, inject, ref, toRefs } from 'vue'
+    import { defineComponent, inject, ref, toRefs } from 'vue'
 
     /** COMPOSABLES */
     import useTransformGraph from './useTransformGraph'
@@ -235,12 +171,7 @@
         emits: ['on-zoom-change', 'on-show-minimap'],
         setup(props, { emit }) {
             /** INJECTIONS */
-            const control = inject('control')
-            const depth = inject('depth')
-            const direction = inject('direction')
             const graphPrefs = inject('preferences', ref({}))
-            const lineageDepths: [] = inject('lineageDepths')
-            const lineageDirections: [] = inject('lineageDirections')
 
             /** DATA */
             const { graph, lineageContainer, graphHeight, graphWidth } =
@@ -250,15 +181,6 @@
             const isExpanded = ref(true)
             const isPreferencesVisible = ref(false)
             const footerRoot = ref<HTMLElement>()
-
-            const currDepth = computed(
-                () => lineageDepths.find((x) => x.id === depth.value)?.label
-            )
-            const currDir = computed(
-                () =>
-                    lineageDirections.find((x) => x.id === direction.value)
-                        ?.label
-            )
 
             /** METHODS */
             // transform
@@ -294,26 +216,11 @@
                 } else isExpanded.value = true
             }
 
-            // onChangeDirection
-            const onChangeDirection = (d) => {
-                control('direction', d)
-            }
-
-            // onChangeDepth
-            const onChangeDepth = (d) => {
-                control('depth', d)
-            }
             return {
                 showMinimap,
                 isFullscreen,
                 isPreferencesVisible,
                 isExpanded,
-                depth,
-                lineageDepths,
-                currDepth,
-                direction,
-                lineageDirections,
-                currDir,
                 footerRoot,
                 graphPrefs,
                 zoom,
@@ -321,8 +228,6 @@
                 onShowMinimap,
                 onFullscreen,
                 toggleControlVisibility,
-                onChangeDirection,
-                onChangeDepth,
             }
         },
     })

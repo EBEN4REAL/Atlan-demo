@@ -7,6 +7,9 @@ import array from '~/assets/images/dataType/array.svg'
 import struct from '~/assets/images/dataType/struct.svg'
 import geography from '~/assets/images/dataType/geography.svg'
 import variant from '~/assets/images/dataType/variant.svg'
+import percent from '~/assets/images/dataType/percent.svg'
+import enum2 from '~/assets/images/dataType/enum2.svg'
+import lookup from '~/assets/images/dataType/lookup.svg'
 
 export const images = {
     Number: number,
@@ -48,6 +51,7 @@ export const dataTypeCategoryList = [
             'DOUBLE PRECISION',
             'REAL',
             'PRIMITIVE_DOUBLE',
+            'Currency',
         ],
         image: float1,
         imageText: 'float1',
@@ -64,6 +68,18 @@ export const dataTypeCategoryList = [
             'VARBINARY',
             'BPCHAR',
             'VARCHAR',
+            'AnyType',
+            'Base64',
+            'Byte',
+            'DataCategoryGroupReference',
+            'Email',
+            'Encrypted String',
+            'ID',
+            'Master record',
+            'Phone',
+            'Textarea',
+            'String',
+            'URL',
         ],
         image: string,
         imageText: 'string',
@@ -88,6 +104,7 @@ export const dataTypeCategoryList = [
             'TIMESTAMPLTZ',
             'TIMESTAMPNTZ',
             'TIMESTAMPTZ',
+            'DateTime',
         ],
         image: date,
         imageText: 'date',
@@ -108,15 +125,36 @@ export const dataTypeCategoryList = [
     {
         id: 'object',
         label: 'Object',
-        type: ['OBJECT', 'STRUCT'],
+        type: ['OBJECT', 'STRUCT', 'Combobox'],
         image: struct,
         imageText: 'struct',
     },
     {
+        id: 'percent',
+        label: 'Percent',
+        type: ['Percent'],
+        image: percent,
+        imageText: 'percent',
+    },
+    {
+        id: 'enum',
+        label: 'Enum',
+        type: ['Picklist', 'Multipicklist'],
+        image: enum2,
+        imageText: 'enum',
+    },
+    {
         id: 'geography',
         label: 'Geography',
-        type: ['GEOGRAPHY'],
+        type: ['GEOGRAPHY', 'Address', 'Location'],
         image: geography,
         imageText: 'geography',
+    },
+    {
+        id: 'lookup',
+        label: 'Lookup',
+        type: ['Lookup', 'Reference'],
+        image: lookup,
+        imageText: 'lookup',
     },
 ]

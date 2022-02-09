@@ -148,7 +148,7 @@
     import { integrations } from '~/constant/integrations'
     import { useUsers } from '~/composables/user/useUsers'
     import { useTimeAgo } from '@vueuse/core'
-    import bg from '~/assets/images/admin/integrations/add-slack-bg.svg'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'SlackIntegrationCard',
@@ -230,9 +230,11 @@
                         duration: 2,
                     })
                 } else {
+                    let updatedChannelCount = channels.value.length
                     if (updateData.value?.failedChannels) {
                         const { failedChannels } = updateData.value
                         handleFailed(failedChannels)
+                        updatedChannelCount -= failedChannels.length
                         message.error({
                             content: `Unable to add some channels: "${failedChannels.join(
                                 ', '
@@ -242,6 +244,15 @@
                         })
                     }
                     refetchIntegration(pV.value.id)
+                    useAddEvent(
+                        'integration',
+                        'slack',
+                        'share_channels_updated',
+                        {
+                            channel_count: updatedChannelCount,
+                        }
+                    )
+
                     message.success({
                         content: 'Updated channels successfully.',
                         key: 'addChannel',
@@ -329,6 +340,10 @@
                     cancelText: 'Cancel',
                     async onOk() {
                         await disconnect()
+                        useAddEvent('admin', 'integration', 'removed', {
+                            integration: 'slack',
+                            level: 'tenant',
+                        })
                     },
                 })
             }

@@ -26,7 +26,10 @@
                     @click.stop
                     @change="(e) => $emit('listItem:check', e, item)"
                 />
-                <div class="flex flex-col flex-1 lg:pr-16">
+                <div
+                    class="flex flex-col flex-1"
+                    :class="{ 'lg:pr-16': !isCompact }"
+                >
                     <div class="flex items-center overflow-hidden">
                         <div
                             v-if="
@@ -120,6 +123,14 @@
                                 class="text-sm tracking-wider text-gray-500 uppercase"
                             >
                                 {{ assetTypeLabel(item) || item.typeName }}
+                                <span
+                                    v-if="
+                                        ['SalesforceObject'].includes(
+                                            item.typeName
+                                        ) && isCustom(item)
+                                    "
+                                    >(custom)</span
+                                >
                             </div>
                         </div>
 
@@ -275,7 +286,11 @@
                         </div>
 
                         <div
-                            v-if="item.typeName?.toLowerCase() === 'column'"
+                            v-if="
+                                item.typeName?.toLowerCase() === 'column' ||
+                                item.typeName?.toLowerCase() ===
+                                    'salesforcefield'
+                            "
                             class="flex items-center mr-2"
                         >
                             <div class="flex items-center">
@@ -284,7 +299,7 @@
                                     class="h-4 text-gray-500 mr-0.5 mb-0.5"
                                 />
                                 <span
-                                    class="text-sm tracking-wider text-gray-500"
+                                    class="text-sm tracking-wider text-gray-500 uppercase"
                                     >{{ dataType(item) }}</span
                                 >
                             </div>
@@ -855,7 +870,7 @@
                                 </div>
                                 <template #title>
                                     <span
-                                        >Object -
+                                        >Parent Object -
                                         {{
                                             parentObject(item)?.attributes?.name
                                         }}</span
@@ -879,18 +894,34 @@
                                 fields</span
                             >
                         </div>
+                        <div
+                            v-if="
+                                ['salesforcedashboard'].includes(
+                                    item.typeName?.toLowerCase()
+                                ) && reportCount(item) !== '0'
+                            "
+                            class="flex ml-2 text-sm text-gray-500"
+                        >
+                            <span class="text-gray-500">
+                                <span
+                                    class="font-semibold tracking-tight text-gray-500"
+                                    >{{ reportCount(item) }}</span
+                                >
+                                reports</span
+                            >
+                        </div>
                     </div>
 
                     <div class="flex flex-wrap gap-x-1">
                         <div
                             v-if="
-                                list.length > 0 &&
+                                clsfList.length > 0 &&
                                 preference?.display?.includes('classifications')
                             "
                             class="flex flex-wrap mt-1 gap-x-1"
                         >
                             <template
-                                v-for="classification in list"
+                                v-for="classification in clsfList"
                                 :key="classification.guid"
                             >
                                 <PopoverClassification
@@ -916,15 +947,12 @@
                         </div>
                         <div
                             v-if="
-                                meanings(item).length > 0 &&
+                                terms.length > 0 &&
                                 preference?.display?.includes('terms')
                             "
                             class="flex flex-wrap gap-1 mt-1"
                         >
-                            <template
-                                v-for="term in meanings(item)"
-                                :key="term.guid"
-                            >
+                            <template v-for="term in terms" :key="term.guid">
                                 <div
                                     class="flex flex-wrap"
                                     v-if="
@@ -1060,7 +1088,11 @@
             },
             itemIndex: {
                 type: Number,
-                require: true,
+                required: true,
+            },
+            isCompact: {
+                type: Boolean,
+                default: () => false,
             },
             assetNameTruncatePercentage: {
                 type: String,
@@ -1142,6 +1174,7 @@
                 sourceViewCount,
                 sourceChildCount,
                 fieldCount,
+                isCustom,
             } = useAssetInfo()
 
             const handlePreview = (item: any) => {
@@ -1176,15 +1209,15 @@
                 return item?.value?.guid !== classification.entityGuid
             }
 
-            const list = computed(() => {
-                const { matchingIdsResult } = mergeArray(
-                    classificationList.value,
-                    classifications(item.value),
-                    'name',
-                    'typeName'
+            const clsfList = computed(() =>
+                item.value?.classificationNames?.map((clName) =>
+                    classificationList.value.find(
+                        (clsf) => clsf.name === clName
+                    )
                 )
-                return matchingIdsResult
-            })
+            )
+
+            const terms = computed(() => meanings(item.value))
 
             const termIcon = (term) => {
                 if (
@@ -1256,7 +1289,7 @@
                 categories,
                 parentCategory,
                 isPropagated,
-                list,
+                clsfList,
                 classifications,
                 getProfilePath,
                 showAssetSidebarDrawer,
@@ -1282,8 +1315,9 @@
                 parentObject,
                 sourceViewCount,
                 sourceChildCount,
-                meanings,
+                terms,
                 fieldCount,
+                isCustom,
             }
         },
     })

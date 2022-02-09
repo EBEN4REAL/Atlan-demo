@@ -116,19 +116,13 @@
                     <template v-else-if="column.key === 'data_type'">
                         <div class="flex items-center data-type">
                             <span class="mr-1">{{ text?.toUpperCase() }}</span>
-                            <div
+
+                            <span
                                 v-if="record?.lookup?.length > 0"
-                                class="flex items-center truncate"
+                                class="truncate"
+                                style="max-width: 10rem"
+                                >({{ record?.lookup?.join(', ') }})</span
                             >
-                                (
-                                <div
-                                    v-for="(rec, index) in record?.lookup"
-                                    :key="index"
-                                >
-                                    {{ rec }}
-                                </div>
-                                )
-                            </div>
                         </div>
                     </template>
                     <template v-else-if="column.key === 'description'">

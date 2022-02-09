@@ -61,7 +61,8 @@ export default function useRunQuery() {
             activeInlineTab,
             rows: any[],
             columns: any[],
-            executionTime: number
+            executionTime: number,
+            tabIndex: number
         ) => void,
         limitRows?: Ref<{ checked: boolean; rowsCount: number }>,
         onCompletion?: Function,
@@ -330,7 +331,8 @@ export default function useRunQuery() {
                                 activeInlineTab,
                                 toRaw(dataList.value),
                                 toRaw(columnList.value),
-                                message?.details.executionTime
+                                message?.details.executionTime,
+                                tabIndex
                             )
                             if (eventSource.value?.close) {
                                 eventSource.value.close()

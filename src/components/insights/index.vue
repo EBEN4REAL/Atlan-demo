@@ -484,27 +484,26 @@
                 }
             }
 
-            const getData = (activeInlineTab, dataList, columnList) => {
+            const getData = (
+                activeInlineTab,
+                dataList,
+                columnList,
+                executionTime,
+                index
+            ) => {
                 if (activeInlineTab && tabsArray?.value) {
-                    const activeInlineTabCopy: activeInlineTabInterface =
-                        JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
-                    activeInlineTabCopy.playground.editor.dataList = dataList
-
-                    activeInlineTabCopy.playground.editor.columnList =
+                    // const activeInlineTabCopy: activeInlineTabInterface =
+                    //     JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
+                    tabsArray.value[index].playground.editor.dataList = dataList
+                    tabsArray.value[index].playground.editor.columnList =
                         columnList
-                    const saveQueryDataInLocalStorage = false
-                    modifyActiveInlineTabEditor(
-                        activeInlineTabCopy,
-                        tabsArray,
-                        false,
-                        saveQueryDataInLocalStorage
-                    )
-                    // setSelection(
-                    //     toRaw(editorInstanceRef.value),
-                    //     toRaw(monacoInstanceRef.value),
-                    //     selectionObject.value
+                    // const saveQueryDataInLocalStorage = false
+                    // modifyActiveInlineTabEditor(
+                    //     activeInlineTabCopy,
+                    //     tabsArray,
+                    //     false,
+                    //     saveQueryDataInLocalStorage
                     // )
-                    // focusEditor(toRaw(editorInstanceRef.value))
                 }
             }
 

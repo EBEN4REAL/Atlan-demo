@@ -80,8 +80,6 @@ export const dataTypeCategoryList = [
             'Textarea',
             'String',
             'URL',
-            'Address',
-            'Location',
         ],
         image: string,
         imageText: 'string',
@@ -148,7 +146,7 @@ export const dataTypeCategoryList = [
     {
         id: 'geography',
         label: 'Geography',
-        type: ['GEOGRAPHY'],
+        type: ['GEOGRAPHY', 'Address', 'Location'],
         image: geography,
         imageText: 'geography',
     },

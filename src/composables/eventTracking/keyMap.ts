@@ -414,7 +414,7 @@ const keyMap = {
         slack: {
             asset_shared: {
                 action: 'integration_slack_asset_shared',
-                properties: (props: { asset_type: string, }) => ({
+                properties: (props: { asset_type: string, has_message: boolean }) => ({
                     ...props
                 }),
             },
@@ -423,7 +423,14 @@ const keyMap = {
                 properties: (props: { type: string }) => ({
                     ...props
                 }),
+            },
+            share_channels_updated: {
+                action: 'integration_slack_share_channels_updated',
+                properties: (props: { channel_count: string }) => ({
+                    ...props
+                }),
             }
+
         }
     }
 }

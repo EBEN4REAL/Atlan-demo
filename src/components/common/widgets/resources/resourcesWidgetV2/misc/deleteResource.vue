@@ -32,7 +32,10 @@
                 padding="compact"
                 size="sm"
                 :loading="removeStatus === 'loading'"
-                @click="() => remove(link.uniqueAttributes.qualifiedName)"
+                @click="
+                    () =>
+                        remove(link.guid || link.uniqueAttributes.qualifiedName)
+                "
             >
                 Delete
             </AtlanButton>

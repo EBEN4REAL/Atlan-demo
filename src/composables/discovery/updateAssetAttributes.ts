@@ -205,9 +205,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             (!localOwners.value?.ownerGroups ||
                 localOwners.value?.ownerGroups.length === 0) */
             ownerUsers(selectedAsset.value)?.sort().toString() ===
-                localOwners.value?.ownerUsers?.sort().toString() &&
+            localOwners.value?.ownerUsers?.sort().toString() &&
             ownerGroups(selectedAsset.value)?.sort().toString() ===
-                localOwners.value?.ownerGroups?.sort().toString()
+            localOwners.value?.ownerGroups?.sort().toString()
         ) {
             isChanged = false
         } else {
@@ -247,9 +247,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
         if (
             adminUsers(selectedAsset.value)?.sort().toString() ===
-                localAdmins.value?.adminUsers?.sort().toString() &&
+            localAdmins.value?.adminUsers?.sort().toString() &&
             adminGroups(selectedAsset.value)?.sort().toString() ===
-                localAdmins.value?.adminGroups?.sort().toString()
+            localAdmins.value?.adminGroups?.sort().toString()
         ) {
             isChanged = false
         } else {
@@ -287,9 +287,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     const handleChangeCertificate = () => {
         if (
             localCertificate.value.certificateStatus !==
-                certificateStatus(selectedAsset.value) ||
+            certificateStatus(selectedAsset.value) ||
             localCertificate.value.certificateStatusMessage !==
-                certificateStatusMessage(selectedAsset.value)
+            certificateStatusMessage(selectedAsset.value)
         ) {
             if (localCertificate.value.certificateStatus === 'VERIFIED') {
                 isConfetti.value = true
@@ -483,7 +483,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     }
 
     // Resource Addition
-    const handleAddResource = () => {
+    const handleAddResource = async () => {
         const resourceEntity = ref<any>({
             typeName: 'Link',
             attributes: {
@@ -502,19 +502,19 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         body.value.entities = [resourceEntity.value]
 
         currentMessage.value = 'A new resource has been added'
-        mutate()
+        await mutate()
         sendTrackEvent('resource', 'created', {
             domain: localResource.value.link.split('/')[2],
         })
     }
 
     // Resource Update
-    const handleUpdateResource = (item) => {
+    const handleUpdateResource = async (item) => {
         const resourceEntity = ref<any>({
             typeName: 'Link',
-            guid: item.value?.guid,
+            guid: item.guid,
             attributes: {
-                qualifiedName: item.value?.uniqueAttributes?.qualifiedName,
+                qualifiedName: item.uniqueAttributes?.qualifiedName,
                 name: localResource.value?.title,
                 link: localResource.value?.link,
                 tenantId: 'default',
@@ -526,30 +526,24 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         currentMessage.value = `Resource ${title(item.value)} of ${title(
             selectedAsset.value
         )} updated`
-        mutate()
+        await mutate()
         sendTrackEvent('resource', 'updated', {
             domain: localResource.value.link.split('/')[2],
         })
     }
 
     // Resource Deletion
-    const handleResourceDelete = (link) => {
-        const { error, isLoading, isReady } = Entity.DeleteEntity(link?.guid)
+    const handleResourceDelete = (_id) => {
+        const { error, isLoading, isReady } = Entity.DeleteEntity(_id)
 
-        whenever(error, () => {
-            message.error(
-                `${error.value?.response?.data?.errorCode} ${
-                    error.value?.response?.data?.errorMessage.split(':')[0]
-                }` ?? 'Something went wrong'
-            )
-        })
         whenever(isReady, () => {
-            message.success(`Resource deleted`)
             guid.value = selectedAsset.value.guid
-
             mutateUpdate()
             sendTrackEvent('resource', 'deleted')
         })
+        return {
+            error, isLoading, isReady
+        }
     }
 
     // Readme Update
@@ -631,8 +625,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         }
 
         message.error(
-            `${error.value?.response?.data?.errorCode} ${
-                error.value?.response?.data?.errorMessage.split(':')[0]
+            `${error.value?.response?.data?.errorCode} ${error.value?.response?.data?.errorMessage.split(':')[0]
             }` ?? 'Something went wrong'
         )
     })
@@ -710,8 +703,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     whenever(isErrorClassification, () => {
         localClassifications.value = classifications(selectedAsset.value)
         message.error(
-            `${error.value?.response?.data?.errorCode} ${
-                error.value?.response?.data?.errorMessage.split(':')[0]
+            `${error.value?.response?.data?.errorCode} ${error.value?.response?.data?.errorMessage.split(':')[0]
             }` ?? 'Something went wrong'
         )
     })

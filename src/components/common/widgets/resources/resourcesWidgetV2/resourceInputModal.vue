@@ -180,11 +180,9 @@
     const setDefalt = () => {
         faviconLink.value = ''
         if (isEdit.value) {
-            const {
-                attributes: { link: url, name },
-            } = link.value
-            localResource.value.link = url
-            localResource.value.title = name
+            const { attributes } = link.value
+            localResource.value.link = attributes.link
+            localResource.value.title = attributes.name
             fetchFaviconLink()
         }
     }

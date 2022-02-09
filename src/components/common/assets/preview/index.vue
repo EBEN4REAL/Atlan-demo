@@ -261,7 +261,10 @@
                 () => import('./relations/index.vue')
             ),
             resources: defineAsyncComponent(
-                () => import('@common/widgets/resources/index.vue')
+                () =>
+                    import(
+                        '@/common/assets/preview/resources/resourcesWrapper.vue'
+                    )
             ),
             lineage: defineAsyncComponent(
                 () => import('./lineage/lineageTab.vue')

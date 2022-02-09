@@ -125,11 +125,22 @@
             type: String,
             required: true,
         },
+        readOnly: {
+            type: Boolean,
+            required: false,
+            default: true,
+        },
     })
     const emit = defineEmits(['add', 'update', 'remove'])
 
-    const { addStatus, resources, updateStatus, removeStatus, entityName } =
-        toRefs(props)
+    const {
+        addStatus,
+        resources,
+        updateStatus,
+        removeStatus,
+        entityName,
+        readOnly,
+    } = toRefs(props)
 
     const addCallback = (r) => emit('add', r)
     const updateCallback = (r) => emit('update', r)
@@ -142,6 +153,7 @@
     provide('remove', removeCallback)
     provide('removeStatus', removeStatus)
     provide('entityName', entityName)
+    provide('readOnly', readOnly)
 
     const store = integrationStore()
     const { tenantSlackStatus, userSlackStatus } = toRefs(store)

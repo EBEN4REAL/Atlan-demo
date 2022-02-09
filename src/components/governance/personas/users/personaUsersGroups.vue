@@ -284,6 +284,11 @@
                                             </template>
                                             <div
                                                 class="text-right text-red-500 cursor-pointer"
+                                                @click="
+                                                    showRemoveUserPopover[
+                                                        item.id
+                                                    ] = true
+                                                "
                                             >
                                                 Remove
                                             </div>
@@ -405,6 +410,12 @@
                                             </template>
                                             <div
                                                 class="text-right text-red-500 cursor-pointer"
+                                                @click="
+                                                    () =>
+                                                        (showRemoveUserPopover[
+                                                            item.id
+                                                        ] = true)
+                                                "
                                             >
                                                 Remove
                                             </div>

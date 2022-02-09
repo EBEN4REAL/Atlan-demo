@@ -14,7 +14,7 @@
             </div>
             <div v-else>
                 <div v-for="(item, index) in list" :key="index" class="mb-3">
-                    <!-- <AssetTitleCtx :item="item" /> -->
+                    <AssetTitleCtx :item="item.attributes.asset" />
                     <component
                         :is="getPreviewComponent(item?.attributes?.link)"
                         :edit-permission="false"
@@ -85,6 +85,7 @@
             const defaultAttributes = ref([
                 ...InternalAttributes,
                 ...AssetAttributes,
+                'asset',
             ])
             const store = integrationStore()
             const hasAtleastOneSlackLink = computed(() => {
@@ -145,6 +146,6 @@
 
 <style lang="less" scoped>
     .resources-container {
-        height: 390px;
+        height: 370px;
     }
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <div class="flex items-center justify-between">
+    <div class="flex items-center">
         <AssetPopover :item="item">
             <router-link :to="getProfilePath(item)" style="max-width: 93%">
                 <a-typography-paragraph
@@ -29,7 +29,7 @@
     import AssetPopover from '@/common/popover/assets/index.vue'
 
     export default defineComponent({
-        name: 'RecentAnnouncements',
+        name: 'AssetTitleCtx',
         components: {
             CertificateBadge,
             AssetPopover,

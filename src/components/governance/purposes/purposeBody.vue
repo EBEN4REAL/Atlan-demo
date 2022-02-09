@@ -354,7 +354,7 @@
                         policyEditMap.value.dataPolicies[id] = false
                     updateSelectedPersona()
                     refetchPurpose(persona.value.id)
-
+                    addpolicyVisible.value = false
                     message.success({
                         content: 'Policy saved',
                         duration: 1.5,

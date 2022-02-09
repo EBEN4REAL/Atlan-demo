@@ -104,11 +104,14 @@
                         const editorText =
                             activeInlineTab.value.playground.editor.text
                         /* [["Line 3", "3"], ["line 3", "3"]] */
+
                         const linesInfo = [
                             ...queryErrorObj.value.errorMessage?.matchAll(
                                 lineRegex
                             ),
                         ]
+                        if (linesInfo?.length < 1 || linesInfo[0]?.length < 1)
+                            return
                         console.log(linesInfo, 'linesInfo')
                         // debugger
                         /* [["column 4", "4"], ["column 7", "7"]]*/

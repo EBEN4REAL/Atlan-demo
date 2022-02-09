@@ -58,15 +58,13 @@
     } from 'vue'
     import { whenever } from '@vueuse/core'
     import CreationModal from '@/admin/common/addModal.vue'
-    import {
-        selectedPurposeId,
-        reFetchList,
-    } from './composables/usePurposeList'
+    import { selectedPurposeId } from './composables/usePurposeList'
     import { IPurpose } from '~/types/accessPolicies/purposes'
     import { generateUUID } from '~/utils/helper/generator'
     import Classification from '@common/input/classification/index.vue'
     import usePurposeService from './composables/usePurposeService'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import { usePurposeStore } from '~/store/purpose'
 
     export default defineComponent({
         name: 'AddPurpose',
@@ -87,6 +85,8 @@
         emits: ['update:visible'],
         setup(props, { emit }) {
             const { createPersona } = usePurposeService()
+            const purposeStore = usePurposeStore()
+            const { updatePurpose } = purposeStore
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
             const rules = ref({
                 selectedClassifications: {
@@ -150,10 +150,10 @@
                     description.value = ''
                     title.value = ''
 
-                    reFetchList().then(() => {
-                        selectedPurposeId.value = newPurpose.id!
-                        modalVisible.value = false
-                    })
+                    updatePurpose(newPurpose)
+                    selectedPurposeId.value = newPurpose.id!
+                    modalVisible.value = false
+
                     useAddEvent('governance', 'purpose', 'created')
                 } catch (error) {
                     message.error({

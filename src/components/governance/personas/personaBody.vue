@@ -542,7 +542,6 @@
                 isEdit,
                 loadingPolicy,
                 NoResultIllustration,
-                refetchPersona,
             }
         },
     })

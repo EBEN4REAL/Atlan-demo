@@ -12,10 +12,10 @@ import {
     selectedPurposeId,
     handleUpdateList
 } from './usePurposeList'
-import { usePersonaStore } from '~/store/persona'
+import { usePurposeStore } from '~/store/purpose'
 
 
-const store = usePersonaStore()
+const store = usePurposeStore()
 const { updatePurpose: updatePurposeStoreList } = store
 
 const { updatePersona, deletePersona, enableDisablePurpose } =

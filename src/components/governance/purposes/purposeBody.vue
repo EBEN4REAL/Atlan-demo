@@ -272,7 +272,10 @@
         PolicyType,
     } from './composables/useEditPurpose'
     import { activeTabKey, tabConfig } from './composables/usePurposeTabs'
-    import { selectedPurpose } from './composables/usePurposeList'
+    import {
+        selectedPurpose,
+        refetchPurpose,
+    } from './composables/usePurposeList'
     import AssetList from '@/common/assetList/assetList.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import usePurposeResources from '@/governance/purposes/composables/usePurposeResources'
@@ -350,8 +353,8 @@
                     else if (type === 'data')
                         policyEditMap.value.dataPolicies[id] = false
                     updateSelectedPersona()
+                    refetchPurpose(persona.value.id)
 
-                    // savePolicyLocally(type, id)
                     message.success({
                         content: 'Policy saved',
                         duration: 1.5,

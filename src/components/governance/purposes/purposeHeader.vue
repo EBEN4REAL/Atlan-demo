@@ -109,14 +109,14 @@
     } from './composables/useEditPurpose'
 
     import Dropdown from '@/UI/dropdown.vue'
-    import { reFetchList } from './composables/usePurposeList'
+    import { handleUpdateList } from './composables/usePurposeList'
     import { formatDateTime } from '~/utils/date'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import map from '~/constant/accessControl/map'
     import AtlanButton from '@/UI/button.vue'
 
     export default defineComponent({
-        name: 'Purpose Header',
+        name: 'PurposeHeader',
         components: { Dropdown, CreationModal, AtlanButton },
         props: {
             persona: {
@@ -159,7 +159,7 @@
                     async onOk() {
                         const msgId = Date.now()
                         try {
-                            await deletePersonaById(persona.value.id!)
+                            await deletePersonaById(persona.value.id)
                             message.success({
                                 content: 'Purpose deleted',
                                 duration: 1.5,
@@ -167,6 +167,7 @@
                             })
                             useAddEvent('governance', 'purpose', 'deleted')
                         } catch (error) {
+                            console.log({ error })
                             message.error({
                                 content: 'Failed to delete purpose',
                                 duration: 1.5,
@@ -201,11 +202,12 @@
                 })
 
                 try {
-                    await savePersona({
+                    const body = {
                         ...persona.value,
                         displayName: selectedPersonaDirty.value?.displayName,
                         description: selectedPersonaDirty.value?.description,
-                    })
+                    }
+                    await savePersona(body)
 
                     message.success({
                         content: `${persona.value?.displayName} purpose updated`,
@@ -214,7 +216,7 @@
                     })
 
                     isEditing.value = false
-                    reFetchList()
+                    handleUpdateList(body)
                     openEditModal.value = false
                 } catch (error) {
                     message.error({

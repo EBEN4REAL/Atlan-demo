@@ -42,11 +42,16 @@
     }
 
     ul > li::before {
+        @apply bg-gray;
         // display: none;
         // height: 0.3571429em;
         // width: 0.3571429em;
         // top: calc(0.8571429em - 0.1785714em);
         // left: 0.2142857em;
+    }
+
+    blockquote p:first-of-type::before, blockquote p:first-of-type::after {
+        content: none !important;
     }
 
     ::marker {
@@ -155,22 +160,23 @@ ul[data-type="taskList"] {
     li {
         display: flex;
         padding-left: 0 !important;
-        align-items: center;
-        align-content: center;
+        align-items: flex-start;
 
         > label {
             display: flex;
             flex: 0 0 auto;
-            margin-right: 0.5rem;
             user-select: none;
-            margin-top: 0 !important;
-            align-items: center;
-            align-content: center;
+            margin-top: 0.38em !important;
+            justify-items: center;
+            justify-content: center;
+            text-align: center;
         }
 
         > div {
             flex: 1 1 auto;
             margin-bottom: 0 !important;
+            margin-top: 0 !important;
+            margin-left: 0.5rem;
         }
 
         &::before {

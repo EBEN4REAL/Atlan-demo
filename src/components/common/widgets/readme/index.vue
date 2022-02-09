@@ -1,16 +1,22 @@
 <template>
     <div
-        class="flex flex-col p-6 bg-white border border-gray-200 rounded"
+        ref="editorDiv"
+        class="flex flex-col bg-white border border-gray-200 rounded-lg"
         :class="isEditMode ? 'editor-open' : 'editor-close'"
+        @transitionend="
+            () => {
+                editorDiv?.scrollIntoView({ behavior: 'smooth' })
+            }
+        "
     >
-        <div class="flex items-center justify-between mb-3">
+        <div class="flex p-4 border-b border-gray-200">
             <div class="flex items-center">
-                <AtlanIcon icon="Readme" class="w-auto h-8 mr-3" /><span
+                <AtlanIcon icon="Readme" class="w-auto h-8 mr-2" /><span
                     class="text-base font-bold text-gray"
                     >Readme</span
                 >
             </div>
-            <div>
+            <div class="ml-auto">
                 <a-tooltip
                     placement="top"
                     :title="
@@ -23,29 +29,35 @@
                     <a-button
                         v-if="!localReadmeContent && !isEditMode"
                         :disabled="!isEdit"
-                        class="flex items-center"
-                        type="primary"
+                        class="flex items-center text-primary border-0 shadow-none"
+                        type="minimal"
                         @click="handleEditMode"
+                        @transitionend.stop="() => {}"
                     >
-                        <AtlanIcon icon="Edit" class="w-auto h-4 mr-1" />Add a
-                        readme</a-button
+                        <AtlanIcon
+                            icon="Add"
+                            class="w-auto h-4 mr-1"
+                        />Add</a-button
                     ></a-tooltip
                 >
 
                 <div v-if="isEdit && isEditMode" class="flex gap-x-2">
                     <a-button
                         v-if="!isLoading"
-                        class="flex items-center"
+                        class="flex items-center border-0 shadow-none"
+                        type="minimal"
                         @click="handleCancel"
+                        @transitionend.stop="() => {}"
                     >
                         Cancel</a-button
                     >
 
                     <a-button
-                        class="flex items-center"
+                        class="flex w-28 justify-center items-center"
                         type="primary"
                         :loading="isLoading"
                         @click="handleUpdate"
+                        @transitionend.stop="() => {}"
                     >
                         Save</a-button
                     >
@@ -62,9 +74,10 @@
                     <a-button
                         v-if="localReadmeContent && !isEditMode"
                         :disabled="!isEdit"
-                        class="flex items-center"
-                        type="primary"
+                        class="flex items-center text-primary border-0 shadow-none"
+                        type="minimal"
                         @click="handleEditMode"
+                        @transitionend.stop="() => {}"
                     >
                         <AtlanIcon
                             icon="Edit"
@@ -74,23 +87,17 @@
                 >
             </div>
         </div>
-
-        <div
-            v-if="!localReadmeContent && !isEditMode"
-            class="text-sm text-gray-500"
-        >
-            {{
-                isEdit
-                    ? 'Add a README with an overview of your asset.'
-                    : `Readme hasn't been added for this asset.`
-            }}
-        </div>
-        <div v-if="isEditMode || readmeGuid(asset)" class="border-0">
+        <div class="border-0 h-full p-6">
             <Editor
                 ref="editor"
                 v-model="localReadmeContent"
                 placeholder="Type '/' for commands"
                 :is-edit-mode="isEditMode"
+                :empty-text="
+                    isEditAllowed
+                        ? 'Add a Readme with an overview of your asset.'
+                        : 'Readme hasn\'t been added for this asset.'
+                "
             />
         </div>
     </div>
@@ -120,7 +127,8 @@
             },
         },
         setup(props) {
-            const { asset } = toRefs(props)
+            const { asset, isEdit: isEditAllowed } = toRefs(props)
+            const editorDiv = ref<HTMLElement | null>(null)
 
             const { readmeContent, readmeGuid } = useAssetInfo()
 
@@ -160,6 +168,8 @@
                 editor,
                 localReadmeContent,
                 readmeGuid,
+                isEditAllowed,
+                editorDiv,
             }
         },
     })
@@ -167,7 +177,7 @@
 
 <style lang="less" scoped>
     .editor-open {
-        min-height: 200px;
+        min-height: 75vh;
         transition: min-height 0.3s ease-in-out;
     }
     .editor-close {

@@ -116,15 +116,11 @@
                         </template>
 
                         <template #closeIcon>
-                            <!-- <AtlanIcon
+                            <AtlanIcon
                                 v-if="
-                                    (tab.playground.resultsPane.result
-                                        .isQueryAborted ||
-                                        tab.playground.resultsPane.result
-                                            .isQueryRunning === 'error') &&
-                                    tab.key !== activeInlineTabKey &&
                                     tab.playground.resultsPane.result
-                                        .tabQueryState
+                                        .isQueryRunning === 'error' &&
+                                    tab.key !== activeInlineTabKey
                                 "
                                 icon="FailedQuery"
                                 class="absolute w-4 h-4 unsaved-dot right-2 top-1.5"
@@ -133,10 +129,7 @@
                             <AtlanIcon
                                 v-else-if="
                                     tab.playground.resultsPane.result
-                                        .isQueryRunning === 'loading' &&
-                                    tab.key !== activeInlineTabKey &&
-                                    tab.playground.resultsPane.result
-                                        .tabQueryState
+                                        .isQueryRunning === 'loading'
                                 "
                                 icon="RunningQuery"
                                 class="w-4 h-4 animate-spin unsaved-dot absolute right-2 top-1.5"
@@ -145,15 +138,13 @@
                                 v-else-if="
                                     tab.playground.resultsPane.result
                                         .isQueryRunning === 'success' &&
-                                    tab.key !== activeInlineTabKey &&
-                                    tab.playground.resultsPane.result
-                                        .tabQueryState
+                                    tab.key !== activeInlineTabKey
                                 "
                                 icon="SuccessQuery"
                                 class="w-3 h-3 unsaved-dot absolute right-2.5 top-2"
-                            /> -->
+                            />
                             <div
-                                v-if="!tab.isSaved"
+                                v-else-if="!tab.isSaved"
                                 class="flex items-center unsaved-dot"
                             >
                                 <div

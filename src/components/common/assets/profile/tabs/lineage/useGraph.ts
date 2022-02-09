@@ -4,7 +4,6 @@ import {
     getSource,
     getSchema,
     getNodeTypeText,
-    childGroupBiAssetMap,
 } from './util.js'
 import {
     iconPlus,
@@ -41,8 +40,6 @@ const hasCTA = (relations, childrenCounts, id) => {
     return res
 }
 
-const childGroupBiAssetTypes = Object.keys(childGroupBiAssetMap)
-
 export default function useGraph() {
     const createNodeData = (
         entity,
@@ -52,7 +49,7 @@ export default function useGraph() {
         dataObj = {}
     ) => {
         const { title } = useAssetInfo()
-        const { guid, typeName, attributes, typeCount } = entity
+        const { guid, typeName, attributes } = entity
         const typeNameComputed = getNodeTypeText[typeName] || typeName
         const { certificateStatus } = attributes
         let status = ''
@@ -64,15 +61,6 @@ export default function useGraph() {
         const isRootNode = checkIfRootNode(relations, guid)
         const isLeafNode = checkIfLeafNode(relations, guid)
         const isCtaNode = hasCTA(relations, childrenCounts, guid)
-        let childGroupBiAsset = ''
-
-        if (Object.keys(childGroupBiAssetMap).includes(typeName)) {
-            childGroupBiAsset =
-                attributes[childGroupBiAssetMap[typeName]]?.attributes?.name ||
-                attributes[
-                    childGroupBiAssetMap[typeName]
-                ]?.uniqueAttributes?.qualifiedName.split('/')[4]
-        }
 
         if (certificateStatus) {
             switch (certificateStatus) {
@@ -102,7 +90,7 @@ export default function useGraph() {
             isBase,
             entity,
             width: 270,
-            height: typeCount ? 50 : 70,
+            height: 70,
             shape: 'html',
             data: computedData,
             html: {
@@ -111,9 +99,7 @@ export default function useGraph() {
 
                     return `
     <div class="flex items-center">
-        <div id="${guid}" class="${
-                        typeCount ? 'isCounter' : ''
-                    } lineage-node group ${
+        <div id="${guid}" class="lineage-node group ${
                         data?.isHighlightedNode === data?.id
                             ? 'isHighlightedNode'
                             : ''
@@ -129,13 +115,11 @@ export default function useGraph() {
                 <div class=" ${isBase ? 'inscr' : 'hidden'}"> 
                     <span class="inscr-item">BASE</span>
                 </div>
-                <div class="${
-                    typeCount ? 'hidden' : ''
-                } popover group-hover:visible group-hover:bottom-20 group-hover:opacity-100 group-hover:delay-1000">
+                <div class=" popover group-hover:visible group-hover:bottom-20 group-hover:opacity-100 group-hover:delay-1000">
                         ${displayText} 
                 </div>
                 <div>
-                    <div class="${typeCount ? 'hidden' : ''} node-text">
+                    <div class="node-text">
                         <span class="relative z-50 block ">
                             <span class="absolute right-0 justify-end hidden w-6 text-white group-hover:flex caret-bg">${
                                 ['Table', 'View'].includes(typeName)
@@ -154,31 +138,16 @@ export default function useGraph() {
                         <div class="truncate node-meta__text isTypename">${typeNameComputed}</div>
                         <div class="node-meta__text">
                             ${
-                                [
-                                    'Table',
-                                    'View',
-                                    ...childGroupBiAssetTypes,
-                                ].includes(typeName) &&
-                                (schemaName || childGroupBiAsset)
+                                ['Table', 'View'].includes(typeName) &&
+                                schemaName
                                     ? 'in'
                                     : ''
                             } 
                         </div>
                         <div class="node-meta__text  truncate ${
-                            [
-                                'Table',
-                                'View',
-                                ...childGroupBiAssetTypes,
-                            ].includes(typeName)
-                                ? ''
-                                : 'hidden'
+                            ['Table', 'View'].includes(typeName) ? '' : 'hidden'
                         }">
-                            ${schemaName || childGroupBiAsset || ''}
-                        </div>
-                        <div class="${
-                            !typeCount ? 'hidden' : 'isCounter'
-                        } node-meta__text">
-                            ${typeCount}
+                            ${schemaName || ''}
                         </div>
                     </div>
                 </div>       
@@ -189,7 +158,7 @@ export default function useGraph() {
                             : 'hidden'
                     } ${
                         isRootNode ? 'l-m20px' : 'r-m20px'
-                    } node-loadCTA h-6 w-6 bg-gray-400 text-white rounded-full  justify-center items-center hidden">${iconPlus}
+                    } node-loadCTA h-6 w-6 bg-gray-400 text-white rounded-full  justify-center items-center">${iconPlus}
         </div>
     </div>`
                 },

@@ -22,8 +22,11 @@
                     <div class="flex items-center">
                         <AtlanIcon
                             :icon="getConnectorImage(item)"
-                            class="h-3 mr-1 mb-0.5"
-                        />{{ item.attributes.name }}
+                            class="h-4 mr-1 mb-0.5"
+                            style="min-width: 1rem"
+                        /><span class="truncate">{{
+                            item.attributes.name
+                        }}</span>
                     </div>
                     <span class="text-xs text-gray-500" v-if="showCount"
                         >{{ item.assetCount }} assets</span

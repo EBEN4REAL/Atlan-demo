@@ -173,7 +173,7 @@
             </div>
         </div>
 
-        <div class="flex flex-col text-sm mt-3 mb-3">
+        <div class="flex flex-col mt-3 mb-3 text-sm">
             <span class="mb-1 text-gray-500">Last synced at (on Atlan)</span>
 
             <div class="flex flex-col">
@@ -272,6 +272,7 @@
                 sourceMetadataId,
                 sourceContentMetadataId,
                 lastSyncRunAt,
+                sourceId,
             } = useAssetInfo()
 
             const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
@@ -312,6 +313,7 @@
                 sourceMetadataId,
                 sourceContentMetadataId,
                 lastSyncRunAt,
+                sourceId,
                 map,
             }
         },

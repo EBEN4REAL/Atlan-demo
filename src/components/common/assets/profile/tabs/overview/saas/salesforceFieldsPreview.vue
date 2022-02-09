@@ -4,7 +4,7 @@
         <div class="w-1/2 mb-3">
             <SearchAdvanced
                 v-model:value="queryText"
-                :placeholder="`Search ${totalCount} columns`"
+                :placeholder="`Search ${totalCount} fields`"
                 size="minimal"
                 @change="handleSearchChange"
             >
@@ -14,7 +14,7 @@
 
                         <Sorting
                             v-model="preference.sort"
-                            asset-type="Column"
+                            asset-type="SalesforceField"
                             @change="handleChangeSort"
                         ></Sorting>
                     </div>
@@ -39,20 +39,20 @@
             </div>
 
             <div
-                v-else-if="columnsList.length === 0 && !isLoading"
+                v-else-if="fieldsList.length === 0 && !isLoading"
                 class="flex-grow"
             >
                 <EmptyView
                     empty-screen="NoAssetsFound"
                     image-class="h-44"
-                    desc="No columns found"
+                    desc="No fields found"
                 ></EmptyView>
             </div>
 
             <a-table
-                v-else-if="columnsList.length > 0 && !isLoading"
+                v-else-if="fieldsList.length > 0 && !isLoading"
                 :columns="columns"
-                :data-source="columnsData.filteredList"
+                :data-source="fieldsData.filteredList"
                 :scroll="{ y: 342, x: true }"
                 :pagination="false"
                 :custom-row="customRow"
@@ -70,7 +70,7 @@
                             {{ text }}
                         </div>
                     </template>
-                    <template v-else-if="column.key === 'column_name'">
+                    <template v-else-if="column.key === 'field_name'">
                         <div
                             :class="{
                                 'flex items-center justify-between':
@@ -114,7 +114,22 @@
                         </div>
                     </template>
                     <template v-else-if="column.key === 'data_type'">
-                        <span class="data-type">{{ text?.toUpperCase() }}</span>
+                        <div class="flex items-center data-type">
+                            <span class="mr-1">{{ text?.toUpperCase() }}</span>
+                            <div
+                                v-if="record?.lookup?.length > 0"
+                                class="flex items-center truncate"
+                            >
+                                (
+                                <div
+                                    v-for="(rec, index) in record?.lookup"
+                                    :key="index"
+                                >
+                                    {{ rec }}
+                                </div>
+                                )
+                            </div>
+                        </div>
                     </template>
                     <template v-else-if="column.key === 'description'">
                         <Tooltip :tooltip-text="text" />
@@ -125,7 +140,7 @@
 
         <!-- Pagination -->
         <div
-            v-if="(columnsList && columnsList.length) || isLoading"
+            v-if="(fieldsList && fieldsList.length) || isLoading"
             class="flex flex-row items-center justify-end w-full mt-4"
         >
             <AtlanBtn
@@ -171,8 +186,8 @@
 
         <AssetDrawer
             :data="selectedRowData"
-            :show-drawer="showColumnSidebar"
-            @closeDrawer="handleCloseColumnSidebar"
+            :show-drawer="showFieldSidebar"
+            @closeDrawer="handleCloseFieldSidebar"
             @update="handleListUpdate"
         />
     </div>
@@ -220,15 +235,16 @@
             AtlanBtn,
             Sorting,
         },
+
         setup() {
             /** DATA */
-            const columnsData = ref({})
+            const fieldsData = ref({})
             const selectedRow = ref(null)
             const selectedRowData = ref({})
-            const showColumnSidebar = ref<boolean>(false)
+            const showFieldSidebar = ref<boolean>(false)
             const queryText = ref('')
-            const columnsList: Ref<assetInterface[]> = ref([])
-            const columnFromUrl: Ref<assetInterface[]> = ref([])
+            const fieldsList: Ref<assetInterface[]> = ref([])
+            const fieldFromUrl: Ref<assetInterface[]> = ref([])
 
             const openDrawerOnLoad = ref<boolean>(false)
 
@@ -242,21 +258,22 @@
                 isScrubbed,
             } = useAssetInfo()
 
-            const aggregationAttributeName = 'dataType'
+            const aggregationAttributeName = 'fieldDataType'
             const limit = ref(20)
             const offset = ref(0)
             const facets = ref({
-                typeName: 'Column',
+                typeName: 'SalesforceField',
             })
             const aggregations = ref([aggregationAttributeName])
             const postFacets = ref({})
-            const dependentKey = ref('DEFAULT_COLUMNS')
+            const dependentKey = ref('DEFAULT_FIELDS')
             const { customMetadataProjections } = useTypedefData()
             const defaultAttributes = ref([
                 ...InternalAttributes,
                 ...AssetAttributes,
                 ...SQLAttributes,
                 ...customMetadataProjections,
+                'lookupObjects',
             ])
             const preference = ref({
                 sort: 'order-asc',
@@ -269,19 +286,13 @@
 
             const updateFacet = () => {
                 facets.value = {}
+
                 if (
-                    selectedAsset?.value.typeName?.toLowerCase() === 'table' ||
                     selectedAsset?.value.typeName?.toLowerCase() ===
-                        'tablepartition'
+                    'salesforceobject'
                 ) {
-                    facets.value.tableQualifiedName = assetQualifiedName.value
-                }
-                if (
-                    selectedAsset?.value.typeName?.toLowerCase() === 'view' ||
-                    selectedAsset?.value.typeName?.toLowerCase() ===
-                        'materialisedview'
-                ) {
-                    facets.value.viewQualifiedName = assetQualifiedName.value
+                    facets.value.typeName = 'SalesforceField'
+                    facets.value.objectQualifiedName = assetQualifiedName.value
                 }
             }
 
@@ -313,7 +324,7 @@
             /** UTILS */
             const route = useRoute()
 
-            const column = computed(() => route?.query?.column || '')
+            const field = computed(() => route?.query?.field || '')
 
             const scrollToElement = () => {
                 const tableRow = document.querySelector(
@@ -328,39 +339,41 @@
                 }
             }
 
-            const handleCloseColumnSidebar = () => {
+            const handleCloseFieldSidebar = () => {
                 selectedRow.value = null
                 selectedRowData.value = {}
-                showColumnSidebar.value = false
+                showFieldSidebar.value = false
             }
-            const openColumnSidebar = (columnOrder) => {
-                selectedRow.value = columnOrder
-                columnsList.value.forEach((singleRow) => {
-                    if (singleRow.attributes.order === columnOrder) {
+            const openFieldSidebar = (fieldOrder) => {
+                selectedRow.value = fieldOrder
+                fieldsList.value.forEach((singleRow) => {
+                    if (singleRow.attributes.order === fieldOrder) {
                         selectedRowData.value = singleRow
                     }
                 })
 
-                showColumnSidebar.value = true
+                showFieldSidebar.value = true
             }
 
-            // filterColumnsList
-            const filterColumnsList = () => {
-                columnsList.value = [...list.value, ...columnFromUrl.value]
+            // filterFieldsList
+            const filterFieldsList = () => {
+                fieldsList.value = [...list.value, ...fieldFromUrl.value]
 
-                const filteredListData = columnsList.value.map((i) => ({
+                const filteredListData = fieldsList.value.map((i) => ({
                     key: i.attributes.order,
                     hash_index: i.attributes.order,
-                    column_name: i.attributes.name,
+                    field_name: i.attributes.name,
                     data_type: i.attributes.dataType,
-                    is_primary: i.attributes.isPrimary,
+                    lookup: i.attributes?.lookupObjects?.map(
+                        (obj) => obj?.attributes?.name
+                    ),
                     description:
                         i.attributes.userDescription ||
                         i.attributes.description ||
                         '---',
                     item: i,
                 }))
-                columnsData.value = {
+                fieldsData.value = {
                     filteredList: filteredListData,
                 }
             }
@@ -373,12 +386,12 @@
                     list.value[index] = asset
                 }
 
-                // In case column from url was updated instead of the other list (20 items)
-                if (asset.guid === columnFromUrl.value[0]?.guid) {
-                    columnFromUrl.value[0] = asset
+                // In case field from url was updated instead of the other list (20 items)
+                if (asset.guid === fieldFromUrl.value[0]?.guid) {
+                    fieldFromUrl.value[0] = asset
                 }
 
-                filterColumnsList()
+                filterFieldsList()
             }
 
             const pagination = computed(() => ({
@@ -404,11 +417,11 @@
             // customRow Antd
             const customRow = (record: { key: null }) => ({
                 onClick: () => {
-                    // Column drawer trigger
+                    // Field drawer trigger
                     if (selectedRow.value === record.key)
-                        handleCloseColumnSidebar()
+                        handleCloseFieldSidebar()
                     else {
-                        openColumnSidebar(record.key)
+                        openFieldSidebar(record.key)
                     }
                 },
             })
@@ -423,27 +436,27 @@
             watch(
                 () => [...list.value],
                 () => {
-                    // If redirected from asset column discovery
-                    if (column.value !== '') {
-                        columnFromUrl.value = []
+                    // If redirected from salesforce fields discovery
+                    if (field.value !== '') {
+                        fieldFromUrl.value = []
                         const limit = ref(1)
                         const offset = ref(0)
                         const facets = ref({
-                            guid: column.value,
+                            guid: field.value,
                         })
                         const fetchKey = computed(() => {
                             if (
                                 combinedList.value.some(
-                                    (item) => item.guid === column.value
+                                    (item) => item.guid === field.value
                                 )
                             ) {
                                 return null
                             }
-                            return column.value
+                            return field.value
                         })
                         const dependentKey = ref(fetchKey.value)
 
-                        const { freshList: urlColumnList } = useDiscoverList({
+                        const { freshList: urlFieldList } = useDiscoverList({
                             isCache: false,
                             dependentKey,
                             facets,
@@ -453,26 +466,26 @@
                             relationAttributes,
                             suppressLogs: true,
                         })
-                        watch([urlColumnList], () => {
-                            columnFromUrl.value = urlColumnList.value
-                            filterColumnsList()
+                        watch([urlFieldList], () => {
+                            fieldFromUrl.value = urlFieldList.value
+                            filterFieldsList()
                         })
                         if (fetchKey.value === null) {
-                            filterColumnsList()
+                            filterFieldsList()
                         }
                     } else {
-                        filterColumnsList()
+                        filterFieldsList()
                     }
                 }
             )
 
             watch(
-                () => [...columnsList.value],
+                () => [...fieldsList.value],
                 () => {
                     if (!openDrawerOnLoad.value) {
-                        columnsList.value?.forEach((singleRow) => {
-                            if (singleRow.guid === column.value) {
-                                openColumnSidebar(singleRow.attributes.order)
+                        fieldsList.value?.forEach((singleRow) => {
+                            if (singleRow.guid === field.value) {
+                                openFieldSidebar(singleRow.attributes.order)
                             }
                         })
                         openDrawerOnLoad.value = true
@@ -489,10 +502,10 @@
                 customRow,
                 handleSearchChange,
                 handleListUpdate,
-                handleCloseColumnSidebar,
+                handleCloseFieldSidebar,
                 isScrubbed,
                 isLoading,
-                columnsList,
+                fieldsList,
                 totalCount,
                 preference,
                 error,
@@ -503,11 +516,11 @@
                 certificateStatusMessage,
                 dataTypeCategoryImage,
                 selectedRow,
-                columnsData,
+                fieldsData,
                 queryText,
                 handlePagination,
                 handleChangeSort,
-                showColumnSidebar,
+                showFieldSidebar,
                 pagination,
                 selectedRowData,
                 columns: [
@@ -520,9 +533,9 @@
                     },
                     {
                         width: 280,
-                        title: 'Column Name',
-                        dataIndex: 'column_name',
-                        key: 'column_name',
+                        title: 'Field Name',
+                        dataIndex: 'field_name',
+                        key: 'field_name',
                     },
                     {
                         width: 150,

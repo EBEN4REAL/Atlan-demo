@@ -74,10 +74,19 @@
                             {{ startedAt(selectedRun, false) }}
                         </p>
 
-                        <p class="text-gray-500">Finished At</p>
-                        <p class="mb-2 text-gray-700">
+                        <p
+                            class="text-gray-500"
+                            v-if="finishedAt(selectedRun, false)"
+                        >
+                            Finished At
+                        </p>
+                        <p
+                            class="mb-2 text-gray-700"
+                            v-if="finishedAt(selectedRun, false)"
+                        >
                             {{ finishedAt(selectedRun, false) }}
                         </p>
+
                         <div class="flex items-center justify-between">
                             <div class="flex flex-col">
                                 <p class="text-gray-500">Duration</p>

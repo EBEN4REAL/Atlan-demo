@@ -640,42 +640,52 @@
                 isReady,
                 termError,
             } = useTermPopover()
-            onMounted(() => {
-                if (
-                    item.value.status === 'approved' ||
-                    item.value.status === 'rejected'
-                ) {
-                    const userId =
-                        item.value.status === 'approved'
-                            ? `${item.value.approvedBy[0].userId}`
-                            : `${item.value.rejectedBy[0].userId}`
-                    const payloadFilter = {
-                        $and: [
-                            {
-                                id: userId,
-                            },
-                        ],
-                    }
-                    const { data } = Users.List(
-                        {
-                            limit: 1,
-                            offset: 0,
-                            filter: JSON.stringify(payloadFilter),
-                        },
-                        { cacheKey: userId }
-                    )
-                    watch(data, () => {
-                        if (!data?.value?.records) {
-                            updatedBy.value = {
-                                username: '',
-                            }
-                        } else {
-                            updatedBy.value = data?.value?.records[0]
-                        }
-                    })
+            // onMounted(() => {
+            //     if (
+            //         item.value.status === 'approved' ||
+            //         item.value.status === 'rejected'
+            //     ) {
+            //         const userId =
+            //             item.value.status === 'approved'
+            //                 ? `${item.value.approvedBy[0].userId}`
+            //                 : `${item.value.rejectedBy[0].userId}`
+            //         const payloadFilter = {
+            //             $and: [
+            //                 {
+            //                     id: userId,
+            //                 },
+            //             ],
+            //         }
+            //         const { data } = Users.List(
+            //             {
+            //                 limit: 1,
+            //                 offset: 0,
+            //                 filter: JSON.stringify(payloadFilter),
+            //             },
+            //             { cacheKey: userId }
+            //         )
+            //         watch(data, () => {
+            //             if (!data?.value?.records) {
+            //                 updatedBy.value = {
+            //                     username: '',
+            //                 }
+            //             } else {
+            //                 updatedBy.value = data?.value?.records[0]
+            //             }
+            //         })
+            //     }
+            // })
+            const nameUpdater = computed(() => {
+                if (item.value.status === 'approved') {
+                    const userUpdater = item.value?.approvedBy || []
+                    return userUpdater[0]?.username || ''
                 }
+                if (item.value.status === 'rejected') {
+                    const userUpdater = item.value?.rejectedBy || []
+                    return userUpdater[0]?.username || ''
+                }
+                return ''
             })
-            const nameUpdater = computed(() => updatedBy?.value?.username)
             return {
                 createdTime,
                 localClassification,

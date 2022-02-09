@@ -30,7 +30,7 @@
 
             <div
                 v-if="isAssets"
-                class="flex items-center ml-3 border-l border-r border-gray-200 h-full hover:bg-primary-menu transition"
+                class="flex items-center h-full ml-3 transition border-l border-r border-gray-200 hover:bg-primary-menu"
             >
                 <GlobalSelection
                     :key="dirtyTimestamp"
@@ -44,7 +44,7 @@
                 @click="handleInfo"
             >
                 <a-tooltip title="Click to view details">
-                    <a-button class="px-2 py-0 leading-none h-6">
+                    <a-button class="h-6 px-2 py-0 leading-none">
                         <AtlanIcon
                             icon="Info"
                             class="text-primary"
@@ -153,9 +153,13 @@
             })
 
             const isAssets = computed(() => {
-                if (currentRoute.path.startsWith('/assets')) {
+                if (
+                    currentRoute.path.startsWith('/assets') &&
+                    !currentRoute.params.id
+                ) {
                     return true
                 }
+
                 return false
             })
 

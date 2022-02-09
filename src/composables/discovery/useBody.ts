@@ -160,6 +160,8 @@ export function useBody(
 
     const state = ref('ACTIVE')
 
+    let connectorName = ''
+
     //filters
     Object.keys(facets ?? {}).forEach((mkey) => {
         const filterObject = facets[mkey]
@@ -171,6 +173,7 @@ export function useBody(
                         'connectorName',
                         filterObject.connectorName
                     )
+                    connectorName = filterObject.connectorName
                 }
                 if (filterObject.connectionQualifiedName) {
                     base.filter('bool', (q) => {
@@ -220,7 +223,9 @@ export function useBody(
             case 'connector': {
                 if (filterObject) {
                     base.filter('term', 'connectorName', filterObject)
+                    connectorName = filterObject.connectorName
                 }
+
                 break
             }
             case 'connection': {
@@ -340,6 +345,12 @@ export function useBody(
             case 'viewQualifiedName': {
                 if (filterObject) {
                     base.filter('term', 'viewQualifiedName', filterObject)
+                }
+                break
+            }
+            case 'objectQualifiedName': {
+                if (filterObject) {
+                    base.filter('term', 'objectQualifiedName', filterObject)
                 }
                 break
             }
@@ -618,6 +629,17 @@ export function useBody(
                     }
                     break
                 }
+                case 'fieldDataType': {
+                    if (mkey) {
+                        base.aggregation(
+                            'terms',
+                            'dataType.keyword',
+                            { size: 50 },
+                            `${agg_prefix}_${mkey}`
+                        )
+                    }
+                    break
+                }
                 case 'glossary': {
                     if (mkey) {
                         base.aggregation(
@@ -641,6 +663,10 @@ export function useBody(
                 if (filterObject !== 'default') {
                     const split = filterObject.split('-')
                     if (split.length > 1) {
+                        if (queryText) {
+                            base.sort('_score', 'desc')
+                        }
+
                         base.sort(split[0], split[1])
                     }
                 }
@@ -657,7 +683,11 @@ export function useBody(
         !facets?.guid
     ) {
         // Global TypeName Filters
-        base.orFilter('terms', '__superTypeNames.keyword', ['SQL', 'BI', 'CRM'])
+        base.orFilter('terms', '__superTypeNames.keyword', [
+            'SQL',
+            'BI',
+            'SaaS',
+        ])
         base.orFilter('terms', '__typeName.keyword', [
             'Query',
             'AtlasGlossaryCategory',
@@ -670,61 +700,128 @@ export function useBody(
 
     const tempQuery = base.build()
 
+    const functionArray = [
+        {
+            filter: {
+                match: {
+                    certificateStatus: 'VERIFIED',
+                },
+            },
+            weight: 5,
+        },
+        {
+            filter: {
+                match: {
+                    certificateStatus: 'DRAFT',
+                },
+            },
+            weight: 4,
+        },
+        {
+            filter: {
+                match: {
+                    __typeName: 'Table',
+                },
+            },
+            weight: 5,
+        },
+        {
+            filter: {
+                match: {
+                    __typeName: 'View',
+                },
+            },
+            weight: 5,
+        },
+        {
+            filter: {
+                match: {
+                    __typeName: 'Column',
+                },
+            },
+            weight: 3,
+        },
+        {
+            filter: {
+                match: {
+                    __typeName: 'AtlasGlossaryTerm',
+                },
+            },
+            weight: 4,
+        },
+    ]
+
+    if (connectorName.toLowerCase() === 'looker') {
+        functionArray.push({
+            filter: {
+                match: {
+                    __typeName: 'LookerDashboard',
+                },
+            },
+            weight: 3,
+        })
+        functionArray.push({
+            filter: {
+                match: {
+                    __typeName: 'LookerExplore',
+                },
+            },
+            weight: 3,
+        })
+        functionArray.push({
+            filter: {
+                match: {
+                    __typeName: 'LookerModel',
+                },
+            },
+            weight: 3,
+        })
+    }
+
+    if (connectorName.toLowerCase() === 'powerbi') {
+        functionArray.push({
+            filter: {
+                match: {
+                    __typeName: 'PowerBIDashboard',
+                },
+            },
+            weight: 3,
+        })
+        functionArray.push({
+            filter: {
+                match: {
+                    __typeName: 'PowerBIReport',
+                },
+            },
+            weight: 3,
+        })
+    }
+
+    if (connectorName.toLowerCase() === 'salesforce') {
+        functionArray.push({
+            filter: {
+                match: {
+                    __typeName: 'SalesforceDashboard',
+                },
+            },
+            weight: 3,
+        })
+        functionArray.push({
+            filter: {
+                match: {
+                    __typeName: 'SalesforceReport',
+                },
+            },
+            weight: 3,
+        })
+    }
+
     const query = {
         ...tempQuery,
         query: {
             function_score: {
                 query: tempQuery.query,
-                functions: [
-                    {
-                        filter: {
-                            match: {
-                                certificateStatus: 'VERIFIED',
-                            },
-                        },
-                        weight: 5,
-                    },
-                    {
-                        filter: {
-                            match: {
-                                certificateStatus: 'DRAFT',
-                            },
-                        },
-                        weight: 4,
-                    },
-                    {
-                        filter: {
-                            match: {
-                                __typeName: 'Table',
-                            },
-                        },
-                        weight: 5,
-                    },
-                    {
-                        filter: {
-                            match: {
-                                __typeName: 'View',
-                            },
-                        },
-                        weight: 5,
-                    },
-                    {
-                        filter: {
-                            match: {
-                                __typeName: 'Column',
-                            },
-                        },
-                        weight: 3,
-                    },
-                    {
-                        filter: {
-                            match: {
-                                __typeName: 'AtlasGlossaryTerm',
-                            },
-                        },
-                        weight: 4,
-                    },
-                ],
+                functions: functionArray,
                 boost_mode: 'sum',
                 score_mode: 'sum',
             },

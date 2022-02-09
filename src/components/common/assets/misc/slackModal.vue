@@ -68,6 +68,7 @@
     import AtlanButton from '@/UI/button.vue'
     import { shareOnSlack } from '~/composables/integrations/useSlack'
     import access from '~/constant/accessControl/map'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     const props = defineProps({
         link: {
@@ -78,6 +79,10 @@
             type: String,
             required: true,
         },
+        assetType: {
+            type: String,
+            required: true,
+        },
     })
 
     const emit = defineEmits(['closeParent'])
@@ -85,6 +90,7 @@
     const store = intStore()
 
     const { tenantSlackStatus } = toRefs(store)
+    const { assetType } = toRefs(props)
 
     const channels = ref([])
 
@@ -135,6 +141,9 @@
                     key: 'shareSlack',
                     content: 'Successfully shared.',
                     duration: 2,
+                })
+                useAddEvent('admin', 'integration', 'share_on_slack', {
+                    asset_type: assetType.value,
                 })
             } else if (error.value) {
                 const errMsg = error.value?.response?.data?.errorMessage

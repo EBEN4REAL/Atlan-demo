@@ -381,7 +381,7 @@ export function generateSQLQuery(
                             subpanel.column?.columnQualifiedName
                     )
 
-                    if (tableName && subpanel.column?.label && order) {
+                    if (tableName && subpanel.column?.label) {
                         if (contextPrefix !== '') {
                             select.order(
                                 `${contextPrefix}.${tableName}.${assetQuoteType}${subpanel.column.label}${assetQuoteType}`,

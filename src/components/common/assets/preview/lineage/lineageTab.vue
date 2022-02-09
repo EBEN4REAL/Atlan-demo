@@ -151,6 +151,11 @@
                 depth: depth.value,
                 guid: guid.value,
                 hideProcess: true,
+                entityFilters: {
+                    attributeName: '__state',
+                    operator: 'eq',
+                    attributeValue: 'ACTIVE',
+                },
                 attributes: [
                     ...AssetAttributes,
                     ...SQLAttributes,

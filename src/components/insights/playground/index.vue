@@ -98,18 +98,6 @@
                                             >{{ tab.label }}</span
                                         >
                                     </div>
-                                    <!-- <div
-                                        v-if="!tab.isSaved"
-                                        class="flex items-center unsaved-dot"
-                                    >
-                                        <div
-                                            v-if="
-                                                tab.playground.editor.text
-                                                    .length > 0 || tab?.queryId
-                                            "
-                                            class="w-1.5 h-1.5 rounded-full bg-primary absolute right-3.5"
-                                        ></div>
-                                    </div> -->
                                 </div>
                                 <template #overlay>
                                     <a-menu>
@@ -128,6 +116,42 @@
                         </template>
 
                         <template #closeIcon>
+                            <!-- <AtlanIcon
+                                v-if="
+                                    (tab.playground.resultsPane.result
+                                        .isQueryAborted ||
+                                        tab.playground.resultsPane.result
+                                            .isQueryRunning === 'error') &&
+                                    tab.key !== activeInlineTabKey &&
+                                    tab.playground.resultsPane.result
+                                        .tabQueryState
+                                "
+                                icon="FailedQuery"
+                                class="absolute w-4 h-4 unsaved-dot right-2 top-1.5"
+                            />
+
+                            <AtlanIcon
+                                v-else-if="
+                                    tab.playground.resultsPane.result
+                                        .isQueryRunning === 'loading' &&
+                                    tab.key !== activeInlineTabKey &&
+                                    tab.playground.resultsPane.result
+                                        .tabQueryState
+                                "
+                                icon="RunningQuery"
+                                class="w-4 h-4 animate-spin unsaved-dot absolute right-2 top-1.5"
+                            />
+                            <AtlanIcon
+                                v-else-if="
+                                    tab.playground.resultsPane.result
+                                        .isQueryRunning === 'success' &&
+                                    tab.key !== activeInlineTabKey &&
+                                    tab.playground.resultsPane.result
+                                        .tabQueryState
+                                "
+                                icon="SuccessQuery"
+                                class="w-3 h-3 unsaved-dot absolute right-2.5 top-2"
+                            /> -->
                             <div
                                 v-if="!tab.isSaved"
                                 class="flex items-center unsaved-dot"
@@ -209,7 +233,6 @@
     import ResultsPane from '~/components/insights/playground/resultsPane/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import NoActiveInlineTab from './noActiveInlineTab.vue'
-    import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import SaveQueryModal from '~/components/insights/playground/editor/saveQuery/index.vue'
@@ -218,6 +241,10 @@
     import ResultPaneFooter from '~/components/insights/playground/resultsPane/result/resultPaneFooter.vue'
     import { useRouter, useRoute } from 'vue-router'
     import { generateUUID } from '~/utils/helper/generator'
+    import {
+        useProvide,
+        provideDataInterface,
+    } from '~/components/insights/common/composables/useProvide'
 
     // import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
 
@@ -244,6 +271,8 @@
             const fullSreenState = inject('fullSreenState') as Ref<boolean>
             const router = useRouter()
             const isSaving = ref(false)
+            const isTabClosed = inject('isTabClosed') as Ref<string | undefined>
+            const isTabAdded = inject('isTabAdded') as Ref<string | undefined>
             const showSaveQueryModal = ref(false)
             const saveCloseTabKey = ref()
             const saveQueryLoading = ref(false)
@@ -298,6 +327,7 @@
             const handleAdd = (isVQB) => {
                 // const key = String(new Date().getTime())
                 const key = generateUUID()
+                isTabAdded.value = key
                 const inlineTabData: activeInlineTabInterface = {
                     label: `Untitled ${getLastUntitledNumber()}`,
                     key,
@@ -404,6 +434,7 @@
                                 eventSourceInstance: undefined,
                                 buttonDisable: false,
                                 isQueryAborted: false,
+                                tabQueryState: false,
                             },
                             metadata: {},
                             queries: {},
@@ -445,9 +476,21 @@
                     router.push({ path: `insights`, query: queryParams })
                 }
             }
+
             const onTabClick = (activeKey) => {
                 setActiveTabKey(activeKey, activeInlineTabKey)
                 pushGuidToURL(activeInlineTab.value?.queryId)
+
+                // if (
+                //     activeInlineTab.value.playground.resultsPane.result
+                //         .isQueryRunning === 'loading'
+                // ) {
+                //     // activeInlineTab.value.playground.resultsPane.result.tabQueryState =
+                //     //     true
+                // } else {
+                //     activeInlineTab.value.playground.resultsPane.result.tabQueryState =
+                //         false
+                // }
             }
             const onEdit = (targetKey: string | MouseEvent, action: string) => {
                 if (action === 'add') {
@@ -471,6 +514,7 @@
                             unsavedPopover.value.key = targetKey as string
                             unsavedPopover.value.show = true
                         } else {
+                            isTabClosed.value = targetKey as string
                             /* Delete the tab if content is empty */
                             inlineTabRemove(
                                 targetKey as string,
@@ -480,6 +524,7 @@
                             )
                         }
                     } else {
+                        isTabClosed.value = targetKey as string
                         inlineTabRemove(
                             targetKey as string,
                             tabs,
@@ -493,6 +538,7 @@
                 showSaveQueryModal.value = true
             }
             const closeTabConfirm = (key: string) => {
+                isTabClosed.value = key
                 console.log(key, 'close')
                 inlineTabRemove(
                     key as string,
@@ -561,7 +607,7 @@
                 }
             }
             const saveTabConfirm = (key: string) => {
-                console.log(key, 'keyyy')
+                isTabClosed.value = key
                 /* Saving the key */
                 saveCloseTabKey.value = key
                 let tabData: activeInlineTabInterface | undefined

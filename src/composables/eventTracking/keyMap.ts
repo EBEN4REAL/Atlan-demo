@@ -8,6 +8,14 @@ const keyMap = {
                 }),
             },
         },
+        global_context: {
+            changed: {
+                action: 'discovery_global_context_changed',
+                properties: (props: { type: 'persona' | 'purpose' | 'all_assets' }) => ({
+                    type: props.type,
+                }),
+            }
+        },
         aggregate_tab: {
             changed: {
                 action: 'discovery_aggregate_tab_changed',
@@ -399,21 +407,31 @@ const keyMap = {
                 properties: (props: { integration: string, level: string }) => ({
                     ...props
                 }),
-            },
-            share_on_slack: {
+            }
+        }
+    },
+    integration: {
+        slack: {
+            asset_shared: {
                 action: 'integration_slack_asset_shared',
-                properties: (props: { asset_type: string, }) => ({
+                properties: (props: { asset_type: string, has_message: boolean }) => ({
                     ...props
                 }),
             },
-            slack_message_cta: {
+            message_cta_clicked: {
                 action: 'integration_slack_message_cta_clicked',
                 properties: (props: { type: string }) => ({
                     ...props
                 }),
-
+            },
+            share_channels_updated: {
+                action: 'integration_slack_share_channels_updated',
+                properties: (props: { channel_count: string }) => ({
+                    ...props
+                }),
             }
+
         }
-    },
+    }
 }
 export default keyMap

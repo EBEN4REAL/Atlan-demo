@@ -579,6 +579,7 @@
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
+            const isTabAdded = inject('isTabAdded') as Ref<string>
             const editorInstanceRef = inject('editorInstance') as Ref<any>
             const activeInlineTab = inject(
                 'activeInlineTab'
@@ -734,6 +735,7 @@
                     case 'play': {
                         openSavedQueryInNewTabAndRun(
                             item,
+                            isTabAdded,
                             getData,
                             limitRows,
                             editorInstance,
@@ -770,16 +772,11 @@
                     activeInlineTabCopy.playground.editor.columnList =
                         columnList
                     const saveQueryDataInLocalStorage = false
-                    // modifyActiveInlineTabEditor(
-                    //     activeInlineTabCopy,
-                    //     inlineTabs,
-                    //     saveQueryDataInLocalStorage
-                    // )
 
-                    modifyActiveInlineTab(
+                    modifyActiveInlineTabEditor(
                         activeInlineTabCopy,
                         inlineTabs,
-                        activeInlineTabCopy.isSaved,
+                        true,
                         saveQueryDataInLocalStorage
                     )
                     // setSelection(

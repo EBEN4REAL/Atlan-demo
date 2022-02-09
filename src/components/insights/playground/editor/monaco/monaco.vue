@@ -27,7 +27,6 @@
     import { languageTokens } from './sqlTokens'
     import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
     import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
-    import fetchColumnList from '~/composables/columns/fetchColumnList'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useEditor } from '~/components/insights/common/composables/useEditor'
     import {
@@ -66,10 +65,16 @@
         props: {},
 
         setup(props, { emit }) {
+            const editorStates = new Map()
             const cancelTokenSource = ref()
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+            const isTabClosed = inject('isTabClosed') as Ref<string | undefined>
+            const isTabAdded = inject('isTabAdded') as Ref<string | undefined>
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as ComputedRef<String>
 
             const toggleCMDK: Function = inject('togglecmdK')
 
@@ -77,12 +82,34 @@
                 'editorConfig'
             ) as Ref<editorConfigInterface>
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
+
+            const clearRemovedTabsModels = (key: string) => {
+                if (editorStates.has(key)) {
+                    editorStates.delete(key)
+                }
+            }
+
+            const addModelForNewTab = (key: string) => {
+                if (!editorStates.has(key)) {
+                    editorStates.set(key, {
+                        model: undefined,
+                        viewState: undefined,
+                    })
+                }
+            }
+
+            watch(isTabClosed, () => {
+                if (isTabClosed.value) clearRemovedTabsModels(isTabClosed.value)
+                console.log(editorStates, 'editorStates')
+            })
+            watch(isTabAdded, () => {
+                if (isTabAdded.value) addModelForNewTab(isTabAdded.value)
+            })
+
             const editorFocused = inject('editorFocused') as Ref<boolean>
             const editorContentSelectionState = inject(
                 'editorContentSelectionState'
             ) as Ref<boolean>
-
-            const toggleRun = inject('toggleRun') as Function
             const runQuery = inject('runQuery') as Function
             const saveOrUpdate = inject('saveOrUpdate') as Function
             const editorPos = inject('editorPos') as Ref<{
@@ -91,26 +118,11 @@
             }>
             const monacoRoot = ref<HTMLElement>()
             const disposable: Ref<monaco.IDisposable | undefined> = ref()
-            const currentPosition: Ref<any> = ref({})
             let editor: monaco.editor.IStandaloneCodeEditor | undefined
             const outputPaneSize = inject('outputPaneSize') as Ref<number>
 
-            const isQueryCreatedByCurrentUser = inject(
-                'isQueryCreatedByCurrentUser'
-            )
-            const hasQueryReadPermission = inject('hasQueryReadPermission')
-            const hasQueryWritePermission = inject('hasQueryWritePermission')
-
-            // console.log('editor permisisons: ', {
-            //     isQueryCreatedByCurrentUser,
-            //     hasQueryReadPermission,
-            //     hasQueryWritePermission,
-            // })
-
             const {
                 clearMoustacheTemplateColor,
-                setErrorDecorations,
-                resetErrorDecorations,
                 toggleGhostCursor,
                 onEditorContentChange,
                 formatter,
@@ -119,7 +131,6 @@
                 findCustomVariableMatches,
                 setMoustacheTemplateColor,
             } = useEditor(tabs, activeInlineTab)
-            const { isLineError } = useResultPane(tabs)
 
             // save custom variable cases
 
@@ -127,32 +138,11 @@
                 'editorInstance'
             ) as Ref<monaco.editor.IStandaloneCodeEditor>
             const monacoInstanceRef = inject('monacoInstance') as Ref<any>
-            // const editorInstance1 = toRaw(editorInstanceRef.value)
-            // const monacoInstance1 = toRaw(monacoInstanceRef.value)
 
-            // console.log('editor: ', {
-            //     editorInstanceRef,
-            //     monacoInstanceRef,
-            //     editorInstance1,
-            //     monacoInstance1,
-            // })
-
-            const { saveVariable, addVariableFromEditor, deleteVariable } =
-                useCustomVariable(editorInstanceRef, monacoInstanceRef)
-
-            // const activeInlineTabKey = inject(
-            //     'activeInlineTabKey'
-            // ) as ComputedRef<activeInlineTabInterface>
-
-            // let sqlVariables: Ref<CustomVaribaleInterface[]> = ref([
-            //     ...activeInlineTab.value.playground.editor.variables,
-            // ])
-
-            // watch(activeInlineTab, () => {
-            //     console.log('active inline tab: ', activeInlineTab.value)
-            //     sqlVariables.value =
-            //         activeInlineTab.value.playground.editor.variables
-            // })
+            const { addVariableFromEditor } = useCustomVariable(
+                editorInstanceRef,
+                monacoInstanceRef
+            )
 
             let timeout = null
 
@@ -226,15 +216,7 @@
                 languageTokens
             )
 
-            const {
-                isPrimary,
-                dataTypeImageForColumn,
-                dataTypeImage,
-                dataType,
-                assetType,
-                title,
-                certificateStatus,
-            } = useAssetInfo()
+            const { assetType, certificateStatus } = useAssetInfo()
 
             const triggerAutoCompletion = (
                 promise: Promise<{
@@ -255,7 +237,6 @@
                             },
                         }
                     )
-                // editor.trigger('', 'showSuggestWidget', suggestions)
 
                 // editor autosuggestion icons
 
@@ -271,10 +252,6 @@
                             'suggest-icon codicon codicon-symbol-keyword'
                         )
 
-                        // console.log('suggestions: ', {
-                        //     data1: data1,
-                        //     data2: data2,
-                        // })
                         for (var i = 0; i < items.length; i++) {
                             let item = items[i].documentation?.entity
 
@@ -340,59 +317,14 @@
                 }, 150)
             }
 
-            // try {
-            //     monaco.languages.registerHoverProvider('atlansql', {
-            //         provideHover(model, position, token) {
-            //             const hoveredWord =
-            //                 model.getWordAtPosition(position).word
-            //             // ignore whitespace
-            //             if (
-            //                 model.getLineContent(position.lineNumber).trim() !==
-            //                     '' &&
-            //                 isSelectedWordIsTableName(hoveredWord)
-            //             ) {
-            //                 console.log(model.getWordAtPosition(position).word)
-            //                 return {
-            //                     contents: [
-            //                         { value: 'Source: Snowflake' },
-            //                         {
-            //                             value: 'Rows: ~51,291, Columns: 24',
-            //                         },
-            //                         {
-            //                             Value: 'Classifications: Master Data, Private, Verified Assets',
-            //                         },
-            //                         {
-            //                             value: turndownService.turndown(
-            //                                 decodeURIComponent(
-            //                                     '%3Ch2%3EGlobal%20Retail%20Sales%3C%2Fh2%3E%3Chr%3E%3Ch3%3E%3Cstrong%3EContext%3C%2Fstrong%3E%3C%2Fh3%3E%3Cp%3EGlobal%20Superstore%20is%20a%20global%20online%20retailer%20based%20in%20New%20York%2C%20boasting%20a%20broad%20product%20catalogue%20and%20aiming%20to%20be%20a%20one-stop-shop%20for%20its%20customers.%20Global%20Superstore%E2%80%99s%20clientele%2C%20hailing%20from%20147%20different%20countries%2C%20can%20browse%20through%20an%20endless%20offering%20with%20more%20than%2010%2C000%20products.%20Superstore%20is%20a%20big%20retail%20chain%20that%20manufactures%20and%20sells%20all%20retail%20products%20across%20the%20globe.%3C%2Fp%3E%3Cp%3EThis%20dataset%20named%3A%26nbsp%3B%3Cstrong%3Esuperstore_sales_data_2016-present%3C%2Fstrong%3E%26nbsp%3Bis%20one%20of%20the%20base%20datasets%20which%20is%20cleaned%2C%20curated%20and%20made%20available%20for%20ingesting%20in%20analytics%20pipelines.%3C%2Fp%3E%3Cp%3E%3C%2Fp%3E%3Cp%3E%3C%2Fp%3E%3Ch3%3E%3Cstrong%3EPurpose%3C%2Fstrong%3E%3C%2Fh3%3E%3Cp%3EThis%20table%20contains%20information%20about%20the%20following%20metrics%20at%20customer%20level%20%3A%3C%2Fp%3E%3Cul%3E%3Cli%3E%3Cp%3E%23sales%3C%2Fp%3E%3C%2Fli%3E%3Cli%3E%3Cp%3E%23quantity%3C%2Fp%3E%3C%2Fli%3E%3Cli%3E%3Cp%3E%23instant%20discounts%3C%2Fp%3E%3C%2Fli%3E%3Cli%3E%3Cp%3E%23shipping%20cost%3C%2Fp%3E%3C%2Fli%3E%3C%2Ful%3E%3Cp%3EYou%20can%20also%20slice%20and%20dice%20these%20metrics%20from%20a%20number%20of%20customer%20dimensions%20like%20%3A%3C%2Fp%3E%3Cul%3E%3Cli%3E%3Cp%3EState%3C%2Fp%3E%3C%2Fli%3E%3Cli%3E%3Cp%3ECity%3C%2Fp%3E%3C%2Fli%3E%3Cli%3E%3Cp%3ESales%20market%3C%2Fp%3E%3C%2Fli%3E%3Cli%3E%3Cp%3EProduct%20Category%3C%2Fp%3E%3C%2Fli%3E%3Cli%3E%3Cp%3EOrder%20Priority%3C%2Fp%3E%3Cp%3E%3C%2Fp%3E%3C%2Fli%3E%3C%2Ful%3E%3Ch3%3E%3Cstrong%3ETime%20Period%20%26amp%3B%20Geography%3C%2Fstrong%3E%3C%2Fh3%3E%3Cul%3E%3Cli%3E%3Cp%3EYears%20covered%3A%202016%20to%20Present%3C%2Fp%3E%3C%2Fli%3E%3Cli%3E%3Cp%3ERegions%20-%20APAC%2C%20EU%20and%20North%20America%3C%2Fp%3E%3C%2Fli%3E%3Cli%3E%3Cp%3ECollated%20data%20asset%20from%20product%20%2B%20Customer%3C%2Fp%3E%3C%2Fli%3E%3C%2Ful%3E%3Cp%3E%3C%2Fp%3E%3Cp%3EWiki%20Link%3A%26nbsp%3B%3Ca%20target%3D%22_blank%22%20href%3D%22https%3A%2F%2Fwiki.atlan.com%22%20rel%3D%22noopener%20noreferrer%20nofollow%22%3Ehttps%3A%2F%2Fwiki.atlan.com%3C%2Fa%3E%3C%2Fp%3E%3Cp%3E%3C%2Fp%3E'
-            //                                 )
-            //                             ),
-            //                         },
-            //                     ],
-            //                 }
-            //             }
-            //         },
-            //     })
-            // } catch (e) {
-            //     console.error(e)
-            // }
             /* ---------------- Autoclosing pairs ------------------*/
             monaco.languages.setLanguageConfiguration(
                 'atlansql',
                 autoclosePairsConfig
             )
-            /* ----------------------------------------------------- */
 
-            const isQueryRunning = computed(
-                () =>
-                    activeInlineTab.value.playground.resultsPane.result
-                        .isQueryRunning
-            )
-            let suggestionsList = ref(null)
-
-            onMounted(() => {
-                loadThemes(monaco)
-                editor = monaco.editor.create(monacoRoot.value as HTMLElement, {
+            function createMonacoInstance() {
+                return monaco.editor.create(monacoRoot.value as HTMLElement, {
                     glyphMargin: false,
                     folding: true,
                     lineDecorationsWidth: 8,
@@ -424,6 +356,30 @@
                         vertical: 'visible',
                         verticalScrollbarSize: 8,
                     },
+                    model: null,
+                })
+            }
+
+            /* ----------------------------------------------------- */
+
+            const isQueryRunning = computed(
+                () =>
+                    activeInlineTab.value.playground.resultsPane.result
+                        .isQueryRunning
+            )
+            let suggestionsList = ref(null)
+
+            onMounted(() => {
+                loadThemes(monaco)
+                editor = createMonacoInstance()
+                const model = monaco.editor.createModel(
+                    String(activeInlineTab.value.playground.editor.text),
+                    'atlansql'
+                )
+                editor.setModel(model)
+                editorStates.set(activeInlineTab.value.key, {
+                    model: model,
+                    viewState: {},
                 })
 
                 editor.onDidChangeCursorSelection((e) => {
@@ -433,14 +389,10 @@
                         e.selection.startColumn === e.selection.endColumn
                     ) {
                         editorContentSelectionState.value = false
-                        // console.log('selection false')
                     } else {
-                        // console.log('selection true')
                         editorContentSelectionState.value = true
                     }
                 })
-                // monaco.editor.remeasureFonts()
-                // monaco.editor.EditorLayoutInfo
                 emit('editorInstance', editor, monaco)
 
                 const lastLineLength = editor?.getModel()?.getLineMaxColumn(1)
@@ -454,13 +406,10 @@
                 if (matches && matches?.length > 0)
                     setMoustacheTemplateColor(editor, monaco, matches)
                 /* ----------------------------------- */
-                // console.log(lastLineLength)
 
                 const modifyLine = (lineCode) => {
                     let startCount = 0
                     let endCount = 0
-
-                    // console.log('line code: ', lineCode)
 
                     while (lineCode.startsWith('\n')) {
                         lineCode = lineCode.slice(1)
@@ -478,8 +427,6 @@
                     } else {
                         lineCode = `--${lineCode}`
                     }
-
-                    // console.log('line code update: ', lineCode)
 
                     for (var i = 0; i < startCount; i++) {
                         lineCode = '\n' + lineCode
@@ -515,12 +462,6 @@
 
                 const multiLineComment = () => {
                     let selection = toRaw(editor)?.getSelection()
-
-                    // let selectedText = toRaw(editor)
-                    //     ?.getModel()
-                    //     ?.getValueInRange(selection)
-
-                    // selectedText = modifyLine(selectedText)
 
                     let lineCount = 0
                     for (
@@ -590,7 +531,6 @@
                     }
                 }
 
-                // emit('editorInstance', editor)
                 /* IMP for cmd+enter/ ctrl+enter to run query when editor is focused */
                 editor?.addCommand(
                     monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter,
@@ -626,23 +566,15 @@
                 })
 
                 editor?.addCommand(monaco.KeyMod.CtrlCmd | 41, function () {
-                    // console.log('cmd+k: ', 'presses')
                     toggleCMDK()
                 })
 
                 /* -------------------------------------------- */
                 editor?.getModel().onDidChangeContent((event) => {
-                    if (isLineError(activeInlineTab)) {
-                        resetErrorDecorations(activeInlineTab, editor)
-                    }
                     const text = editor?.getValue()
                     onEditorContentChange(event, text, editor)
-                    /* ------------- custom variable color change */
                     findAndChangeCustomVariablesColor(false)
-                    /* ------------------------------------------ */
                     const changes = event?.changes[0]
-                    // const lastTypedCharacter = event?.changes[0]?.text
-                    // console.log(changes, 'changes')
                     /* Preventing network request when pasting name of table */
                     const suggestions = useAutoSuggestions(
                         changes,
@@ -656,20 +588,22 @@
                     suggestionsList.value = suggestions
                     triggerAutoCompletion(suggestions)
                 })
-                editor?.onDidChangeCursorPosition(() => {
-                    setEditorPos(editor, editorPos)
-                    setEditorFocusedState(true, editorFocused)
+                editor?.onDidChangeCursorPosition((pos) => {
+                    setEditorPos(pos.position, editorPos)
                 })
+
                 editor?.onDidBlurEditorWidget(() => {
-                    setEditorFocusedState(false, editorFocused)
-                    toggleGhostCursor(true, editor, monaco, editorPos)
+                    toggleGhostCursor(
+                        true,
+                        editor,
+                        monaco,
+                        editor?.getPosition()
+                    )
                 })
                 editor?.onDidFocusEditorWidget(() => {
                     toggleGhostCursor(false, editor, monaco, editorPos)
+                    setEditorFocusedState(true, editorFocused)
                 })
-                setEditorFocusedState(true, editorFocused)
-                editor?.focus()
-                // on mounting
             })
 
             monaco.languages.registerDocumentRangeFormattingEditProvider(
@@ -694,74 +628,85 @@
                 editor?.dispose()
             })
 
-            /*Watcher for changing the content of the editor on activeInlineTab Change*/
+            watch(activeInlineTabKey, (newKey, prevKey) => {
+                addModelForNewTab(newKey)
 
-            // watch(
-            //     hasQueryWritePermission,
-            //     () => {
-            //         console.log(
-            //             'hasQueryWritePermission: ',
-            //             hasQueryWritePermission
-            //         )
-            //         editor?.updateOptions({
-            //             readOnly: hasQueryWritePermission ? false : true,
-            //         })
-            //     }
-            //     // { immediate: true }
-            // )
+                if (tabs.value[newKey]?.playground?.isVQB) {
+                    return
+                } else {
+                    editor?.focus()
 
-            // let s1 = computed(() =>
-            //     document.getElementsByClassName(
-            //         'suggest-icon codicon codicon-symbol-field'
-            //     )
-            // )
-            // let s2 = computed(() =>
-            //     document.getElementsByClassName(
-            //         'suggest-icon codicon codicon-symbol-field'
-            //     )
-            // )
+                    if (!editorStates.get(newKey).viewState) {
+                        setEditorFocusedState(false, editorFocused)
+                        setEditorPos(editor?.getPosition(), editorPos)
+                    }
+                    const viewState = editor?.saveViewState()
+                    if (!viewState?.cursorState?.length) {
+                        setEditorFocusedState(false, editorFocused)
+                    }
+                    editor?.onDidChangeCursorPosition((pos) => {
+                        setEditorPos(pos.position, editorPos)
+                    })
+                    editor?.onDidFocusEditorWidget(() => {
+                        toggleGhostCursor(false, editor, monaco, editorPos)
+                        setEditorPos(editor?.getPosition(), editorPos)
+                        setEditorFocusedState(true, editorFocused)
+                    })
+                    editor?.onDidBlurEditorWidget(() => {
+                        // setEditorFocusedState(false, editorFocused)
+                        toggleGhostCursor(
+                            true,
+                            editor,
+                            monaco,
+                            editor?.getPosition()
+                        )
+                    })
 
-            // watch(
-            //     [s1, s2],
-            //     () => {
-            //         console.log('reset auto')
-            //         if (suggestionsList.value) {
-            //             triggerAutoCompletion(suggestionsList.value)
-            //         }
-            //     },
-            //     { immediate: true }
-            // )
-
-            watch(activeInlineTab, () => {
-                // console.log('editor permisisons: ', {
-                //     isQueryCreatedByCurrentUser,
-                //     hasQueryReadPermission,
-                //     hasQueryWritePermission,
-                // })
-
-                if (activeInlineTab.value) {
-                    editor?.setModel(null)
-                    const model = monaco.editor.createModel(
-                        String(activeInlineTab.value.playground.editor.text),
-                        'atlansql'
+                    // old
+                    const _index = tabs.value.findIndex(
+                        (tab) => tab.key === prevKey
                     )
 
-                    editor?.setModel(model)
-                    /* ------------- custom variable color change */
-                    findAndChangeCustomVariablesColor(true)
-                    /* ------------------------------------------ */
-                    /* ------------- set error decorations */
-                    if (isLineError(activeInlineTab)) {
-                        setErrorDecorations(activeInlineTab, editor, monaco)
+                    if (_index > -1) {
+                        const prevViewState = editor?.saveViewState()
+                        editorStates.set(tabs.value[_index].key, {
+                            model: editorStates.get(tabs.value[_index].key)
+                                .model,
+                            viewState: prevViewState,
+                        })
                     }
-                    // console.log('editor active inline tab change')
-                    /* ------------------------------------------ */
+
+                    //new
+                    const index = tabs.value.findIndex(
+                        (tab) => tab.key === newKey
+                    )
+                    if (!editorStates.get(tabs.value[index].key)?.model) {
+                        const newModel = monaco.editor.createModel(
+                            String(
+                                toRaw(tabs.value)[index].playground.editor.text
+                            ),
+                            'atlansql'
+                        )
+                        editorStates.set(tabs.value[index].key, {
+                            model: newModel,
+                            viewState: {},
+                        })
+                        editor?.setModel(null)
+                        editor?.setModel(newModel)
+                        setEditorPos(editor?.getPosition(), editorPos)
+                    } else {
+                        editor?.setModel(
+                            editorStates.get(tabs.value[index].key).model
+                        )
+
+                        const newViewState = editorStates.get(
+                            tabs.value[index].key
+                        ).viewState
+                        editor?.restoreViewState(newViewState)
+                        setEditorPos(editor?.getPosition(), editorPos)
+                    }
+
                     editor?.getModel()?.onDidChangeContent(async (event) => {
-                        // console.log('editor content change')
-                        if (isLineError(activeInlineTab)) {
-                            resetErrorDecorations(activeInlineTab, editor)
-                        }
-                        // setErrorDecorations(activeInlineTab, editor)
                         const text = editor?.getValue()
                         onEditorContentChange(event, text, editor)
                         const changes = event?.changes[0]
@@ -780,31 +725,24 @@
                         suggestionsList.value = suggestions
                         triggerAutoCompletion(suggestions)
                     })
-                    const range = editor?.getModel().getFullModelRange()
-                    const position = {
-                        column: range?.endColumn,
-                        lineNumber: range?.endLineNumber,
-                    }
-                    if (position?.column && position?.lineNumber)
-                        editor?.setPosition(position)
-                    editor?.onDidChangeCursorPosition(() => {
-                        setEditorPos(editor, editorPos)
-                    })
-                    editor?.onDidChangeCursorPosition(() => {
-                        setEditorPos(editor, editorPos)
-                        setEditorFocusedState(true, editorFocused)
-                    })
-                    editor?.focus()
-                    editor?.onDidBlurEditorWidget(() => {
-                        setEditorFocusedState(false, editorFocused)
-                        toggleGhostCursor(true, editor, monaco, editorPos)
-                    })
-                    editor?.onDidFocusEditorWidget(() => {
-                        toggleGhostCursor(false, editor, monaco, editorPos)
-                    })
-                    emit('editorInstance', editor, monaco)
                 }
             })
+
+            const _index = computed(() =>
+                tabs.value.findIndex(
+                    (tab) => tab.key === activeInlineTabKey.value
+                )
+            )
+
+            watch(
+                () => tabs.value[_index.value].playground.editor,
+                () => {
+                    if (activeInlineTab.value) {
+                        if (tabs.value[_index.value]?.playground?.isVQB) return
+                        findAndChangeCustomVariablesColor(true)
+                    }
+                }
+            )
             watch(outputPaneSize, () => {
                 if (monacoRoot.value) {
                     monacoRoot.value.style.height = `${
@@ -813,24 +751,22 @@
                 }
             })
 
+            onMounted(() => {
+                tabs.value.forEach((tab) => {
+                    editorStates.set(tab.key, {
+                        model: undefined,
+                        viewState: undefined,
+                    })
+                })
+            })
+
             return {
+                editorStates,
                 outputPaneSize,
                 monacoRoot,
             }
         },
     })
-    // document.fonts.ready.then(function (fontFaceSetEvent) {
-    //     alert('All fonts in use by visible text have loaded.')
-    //     console.log('Hack loaded? ' + Object.keys(fontFaceSetEvent)) // true
-    // })
-
-    // document.fonts.onloadingdone = function (fontFaceSetEvent) {
-    //     alert(
-    //         'onloadingdone we have ' +
-    //             fontFaceSetEvent.fontfaces.length +
-    //             ' font faces loaded'
-    //     )
-    // }
 </script>
 
 <style lang="less" scoped>
@@ -844,35 +780,6 @@
     .c {
         font-family: 'Courier New', Courier, monospace;
     }
-
-    // @font-face {
-    //     font-family: 'Hack';
-    //     src: url('~/assets/fonts/hack/Hack-BoldItalic.ttf');
-    //     font-weight: bold;
-    //     font-style: italic;
-    // }
-    // @font-face {
-    //     font-family: 'Hack';
-    //     src: url('~/assets/fonts/hack/Hack-Italic.ttf');
-    //     font-style: italic;
-    //     font-weight: normal;
-    // }
-    // @font-face {
-    //     font-family: 'Hack';
-    //     src: url('~/assets/fonts/hack/Hack-Bold.ttf');
-    //     font-weight: bold;
-    //     font-style: normal;
-    // }
-    // @font-face {
-    //     font-family: 'Hack';
-    //     src: url('~/assets/fonts/hack/Hack-Regular.ttf');
-    //     font-style: normal;
-    //     font-weight: normal;
-    // }
-    // html,
-    // body {
-    //     font-family: 'Hack', sans-serif;
-    // }
 </style>
 <style lang="less">
     .moustacheDecoration {

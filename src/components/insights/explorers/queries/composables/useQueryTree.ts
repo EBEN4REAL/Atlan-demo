@@ -53,6 +53,7 @@ interface useSavedQueriesTreeProps {
     queryFolderNamespace: Ref<Folder>
     permissions: { [index: string]: string | undefined }
     collection: ComputedRef<QueryCollection>
+    isTabAdded: Ref<string>
 }
 
 const useQueryTree = ({
@@ -66,6 +67,7 @@ const useQueryTree = ({
     queryFolderNamespace,
     permissions,
     collection,
+    isTabAdded,
 }: useSavedQueriesTreeProps) => {
     // A map of node guids to the guid of their parent. Used for traversing the tree while doing local update
     const nodeToParentKeyMap: Record<string, string> = {}
@@ -374,7 +376,7 @@ const useQueryTree = ({
             immediateParentFolderQF.value = item.attributes.parentQualifiedName
             immediateParentGuid.value = nodeToParentKeyMap[item.guid]
 
-            openSavedQueryInNewTab({ ...item, parentTitle })
+            openSavedQueryInNewTab({ ...item, parentTitle }, isTabAdded)
 
             selectedKeys.value.push(item.guid)
             if (pushGuidToURL) {

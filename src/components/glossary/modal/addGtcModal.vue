@@ -16,7 +16,10 @@
             <div class="flex items-center justify-between mb-1">
                 <div class="flex items-center">
                     <div
-                        v-if="!glossaryQualifiedName"
+                        v-if="
+                            entityType === 'AtlasGlossary' ||
+                            (!glossaryQualifiedName && !showGlossarySelect)
+                        "
                         class="flex items-center uppercase"
                     >
                         <AtlanIcon
@@ -25,81 +28,129 @@
                         ></AtlanIcon>
                         New Glossary
                     </div>
-                    <GTCSelect
-                        v-else
-                        class="p-1 mr-3 bg-gray-100 rounded"
-                        v-model="localEntityType"
-                    ></GTCSelect>
 
-                    <div v-if="glossaryName" class="flex items-center mr-2">
-                        <AtlanIcon
-                            icon="Glossary"
-                            class="self-center pr-1"
-                        ></AtlanIcon>
-                        {{ glossaryName }}
+                    <div
+                        v-if="showGlossarySelect && !glossaryQualifiedName"
+                        class="border px-1 py-0.5 rounded flex align-center"
+                    >
+                        <GlossarySelect
+                            v-model="parentGlossary"
+                            @change="handleSelectGlossary"
+                            :showAllGlossary="false"
+                            size="small"
+                        ></GlossarySelect>
                     </div>
+                    <atlan-icon
+                        v-if="showGlossarySelect && !glossaryQualifiedName"
+                        icon="CaretRight"
+                        class="mx-2"
+                    />
+                    <div
+                        v-if="glossaryName && entityType !== 'AtlasGlossary'"
+                        class="flex items-center border rounded py-0.5 px-1"
+                        style="max-width: 150px"
+                    >
+                        <div class="w-4 mb-0.5">
+                            <AtlanIcon
+                                icon="Glossary"
+                                class="self-center"
+                            ></AtlanIcon>
+                        </div>
+                        <Tooltip
+                            :tooltip-text="`${glossaryName}`"
+                            :classes="'pr-1 pl-0.5'"
+                        />
+                    </div>
+                    <atlan-icon
+                        v-if="glossaryName && entityType !== 'AtlasGlossary'"
+                        icon="CaretRight"
+                        class="px-2"
+                    />
                     <div
                         v-if="glossaryName && categoryName && categoryGuid"
-                        class="flex items-center"
+                        class="flex items-center border rounded py-0.5 px-1"
+                        style="max-width: 150px"
+                    >
+                        <div class="w-4 mb-0.5">
+                            <AtlanIcon
+                                icon="Category"
+                                class="self-center"
+                            ></AtlanIcon>
+                        </div>
+                        <Tooltip
+                            :tooltip-text="`${categoryName}`"
+                            :classes="'pr-1 pl-0.5'"
+                        />
+                    </div>
+                    <atlan-icon
+                        v-if="glossaryName && categoryName && categoryGuid"
+                        icon="CaretRight"
+                        class="px-2"
+                    />
+
+                    <GTCSelect
+                        v-if="
+                            (showGlossarySelect || glossaryQualifiedName) &&
+                            entityType !== 'AtlasGlossary'
+                        "
+                        class="p-1 mr-3 bg-white border rounded"
+                        v-model="localEntityType"
+                    ></GTCSelect>
+                </div>
+                <a-dropdown
+                    placement="bottomLeft"
+                    :trigger="['click']"
+                    @click.stop="() => {}"
+                >
+                    <template #overlay>
+                        <a-menu>
+                            <a-menu-item
+                                v-for="item in ListForSidebar"
+                                :key="item.id"
+                                @click="handleStatusChange(item)"
+                            >
+                                <div
+                                    class="flex items-center space-x-2 text-xs"
+                                >
+                                    <component
+                                        :is="item.icon"
+                                        class="w-auto h-4 ml-1 mr-2 pushtop"
+                                    />
+                                    {{ item.label }}
+                                </div>
+                            </a-menu-item>
+                        </a-menu>
+                    </template>
+                    <div
+                        class="flex flex-row-reverse text-xs"
+                        style="width: 140px"
                     >
                         <AtlanIcon
-                            icon="Category"
-                            class="self-center pr-1"
+                            icon="CaretDown"
+                            class="w-4 h-4 ml-1"
                         ></AtlanIcon>
-                        {{ categoryName }}
+                        <StatusBadge
+                            :status-id="entity.attributes.certificateStatus"
+                            :show-chip-style-status="false"
+                            :show-no-status="true"
+                            :show-label="true"
+                            :is-tree="false"
+                            class="p-0 cursor-pointer"
+                        ></StatusBadge>
                     </div>
-                </div>
-                <div class="text-xs">
-                    <a-dropdown
-                        placement="bottomLeft"
-                        :trigger="['click']"
-                        @click.stop="() => {}"
-                    >
-                        <template #overlay>
-                            <a-menu>
-                                <a-menu-item
-                                    v-for="item in ListForSidebar"
-                                    :key="item.id"
-                                    @click="handleStatusChange(item)"
-                                >
-                                    <div class="flex items-center space-x-2">
-                                        <component
-                                            :is="item.icon"
-                                            class="w-auto h-4 ml-1 mr-2 pushtop"
-                                        />
-                                        {{ item.label }}
-                                    </div>
-                                </a-menu-item>
-                            </a-menu>
-                        </template>
-                        <div class="flex flex-row-reverse" style="width: 140px">
-                            <AtlanIcon
-                                icon="CaretDown"
-                                class="w-4 h-4 ml-1"
-                            ></AtlanIcon>
-                            <StatusBadge
-                                :status-id="entity.attributes.certificateStatus"
-                                :show-chip-style-status="false"
-                                :show-no-status="true"
-                                :show-label="true"
-                                :is-tree="false"
-                                class="p-0 cursor-pointer"
-                            ></StatusBadge>
-                        </div>
-                    </a-dropdown>
-                </div>
+                </a-dropdown>
             </div>
             <!-- header ends here  -->
             <a-input
                 ref="titleBar"
                 v-model:value="entity.attributes.name"
-                :placeholder="`Untitled ${typeNameTitle}`"
+                :placeholder="`Name`"
                 class="text-lg font-bold text-gray-700 border-0 shadow-none outline-none"
                 :class="$style.titleInput"
             />
             <a-textarea
                 v-model:value="entity.attributes.userDescription"
-                placeholder="Add description..."
+                placeholder="Description"
                 class="text-gray-500 border-0 shadow-none outline-none"
                 :rows="2"
             />
@@ -147,8 +198,10 @@
     } from 'vue'
 
     import { useMagicKeys, whenever } from '@vueuse/core'
+    import { useRouter, useRoute } from 'vue-router'
     import { message } from 'ant-design-vue'
     import StatusBadge from '@common/badge/status/index.vue'
+    import Tooltip from '@/common/ellipsis/index.vue'
     import { ListForSidebar } from '~/constant/status'
 
     import updateAsset from '~/composables/discovery/updateAsset'
@@ -159,6 +212,7 @@
     import GlossaryPopoverSelect from '@/common/popover/glossarySelect/index.vue'
     import AddOwners from '@/glossary/modal/addOwners.vue'
     import GTCSelect from '@/common/popover/gtcSelect/index.vue'
+    import GlossarySelect from '@/common/popover/glossarySelect/index.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
@@ -168,6 +222,8 @@
             GTCSelect,
             StatusBadge,
             AddOwners,
+            GlossarySelect,
+            Tooltip,
         },
         props: {
             entityType: {
@@ -206,6 +262,11 @@
                     return ''
                 },
             },
+            showGlossarySelect: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['add', 'update:visible'],
         setup(props, { emit }) {
@@ -216,19 +277,35 @@
                 glossaryName,
                 categoryName,
             } = toRefs(props)
-            const checkDuplicateCategoryNames = inject('checkDuplicateCategoryNames', (...args) => false)
+            const checkDuplicateCategoryNames = inject(
+                'checkDuplicateCategoryNames',
+                (...args) => false
+            )
             // shortcuts for cmnd+enter to save
             const keys = useMagicKeys()
             const { meta, Enter } = keys
 
+            const router = useRouter()
             const localEntityType = ref(entityType.value)
             watch(entityType, () => {
                 localEntityType.value = entityType.value
             })
 
-            const { getGlossaryByQF } = useGlossaryData()
+            const { getGlossaryByQF, selectedGlossary } = useGlossaryData()
+            const parentGlossaryQf = computed(() =>
+                selectedGlossary.value?.typeName === 'AtlasGlossary'
+                    ? selectedGlossary.value?.attributes?.qualifiedName
+                    : selectedGlossary?.value?.attributes?.anchor
+                          ?.uniqueAttributes?.qualifiedName
+            )
+            const parentGlossary = ref(parentGlossaryQf.value)
             const visible = ref(false)
             const isCreateMore = ref<boolean>()
+            const anchorQf = computed(() =>
+                glossaryQualifiedName.value.length
+                    ? glossaryQualifiedName.value
+                    : parentGlossary.value
+            )
             const entity = reactive({
                 attributes: {
                     userDescription: '',
@@ -300,16 +377,14 @@
                         entity.relationshipAttributes = {
                             anchor: {
                                 typeName: 'AtlasGlossary',
-                                guid: getGlossaryByQF(
-                                    glossaryQualifiedName.value
-                                )?.guid,
+                                guid: getGlossaryByQF(anchorQf.value)?.guid,
                             },
                         }
+                        console.log(entity)
                         if (
                             categoryGuid.value &&
                             categoryGuid.value !==
-                                getGlossaryByQF(glossaryQualifiedName.value)
-                                    ?.guid
+                                getGlossaryByQF(anchorQf.value)?.guid
                         ) {
                             if (typeNameTitle.value === 'Category') {
                                 entity.relationshipAttributes.parentCategory = {
@@ -331,14 +406,22 @@
                     body.value = {
                         entities: [entity],
                     }
-                    const duplicateExists = checkDuplicateCategoryNames(categoryGuid.value, entity.attributes.name)
-                    if(entity.typeName === 'AtlasGlossaryCategory' && duplicateExists) {
-                        message.error(`${entity.attributes.name} already exists on this level!`)
-                        return                    
-                    } 
+                    const duplicateExists = checkDuplicateCategoryNames(
+                        categoryGuid.value,
+                        entity.attributes.name
+                    )
+                    if (
+                        entity.typeName === 'AtlasGlossaryCategory' &&
+                        duplicateExists
+                    ) {
+                        message.error(
+                            `${entity.attributes.name} already exists on this level!`
+                        )
+                        return
+                    }
                     mutateAsset()
                 } else {
-                    message.warning(`Please enter the mandatory name`)
+                    message.warning(`Please enter a name`)
                 }
             }
 
@@ -393,6 +476,7 @@
                 entity.attributes.ownerGroups =
                     selectedValue?.value?.ownerGroups
             }
+
             whenever(error, () => {
                 if (error.value) {
                     if (error.value.response?.status === 409) {
@@ -409,7 +493,15 @@
 
             whenever(isUpdateReady, () => {
                 if (asset.value?.attributes?.qualifiedName) {
-                    emit('add', asset.value)
+                    if (props.showGlossarySelect)
+                        emit(
+                            'add',
+                            asset.value,
+                            getGlossaryByQF(anchorQf.value)
+                        )
+                    else emit('add', asset.value)
+                    if(asset?.value?.guid)
+                    router.push(`/glossary/${asset?.value?.guid}/overview`)
                 } else if (defaultRetry.value > 0) {
                     defaultRetry.value -= 1
                     mutateUpdate()
@@ -422,6 +514,20 @@
                     if (entity.attributes.name) handleSave()
                 }
             })
+
+            watch(selectedGlossary, () => {
+                parentGlossary.value = parentGlossaryQf.value
+                console.log(parentGlossaryQf.value)
+            })
+            const handleSelectGlossary = (val) => {
+                console.log(glossaryQualifiedName.value.length)
+                console.log(
+                    glossaryQualifiedName.value.length
+                        ? glossaryQualifiedName.value
+                        : parentGlossary.value
+                )
+                console.log(glossaryQualifiedName.value || parentGlossary.value)
+            }
 
             return {
                 visible,
@@ -452,6 +558,8 @@
                 ListForSidebar,
                 handleStatusChange,
                 handleOwnersChange,
+                parentGlossary,
+                handleSelectGlossary,
             }
         },
     })

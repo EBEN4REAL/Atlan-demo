@@ -89,7 +89,7 @@
                                         >
                                         <AtlanIcon
                                             icon="AddAssetName"
-                                            class="w-4 h-4 my-auto"
+                                            class="w-4 h-4 my-auto focus:outline-none"
                                             :class="
                                                 item?.selected
                                                     ? 'tree-light-color'
@@ -229,7 +229,7 @@
                                         >
                                         <AtlanIcon
                                             icon="AddAssetName"
-                                            class="w-4 h-4 my-auto"
+                                            class="w-4 h-4 my-auto focus:outline-none"
                                             :class="
                                                 item?.selected
                                                     ? 'tree-light-color'
@@ -405,7 +405,7 @@
                                             <div class="flex items-center h-8">
                                                 <AtlanIcon
                                                     icon="AddAssetName"
-                                                    class="w-4 h-4 my-auto mr-1.5"
+                                                    class="w-4 h-4 my-auto mr-1.5 focus:outline-none"
                                                 ></AtlanIcon>
                                                 <span
                                                     >Place name in editor</span
@@ -485,7 +485,7 @@
                                     >
                                     <AtlanIcon
                                         icon="AddAssetName"
-                                        class="w-4 h-4 my-auto"
+                                        class="w-4 h-4 my-auto focus:outline-none"
                                         :class="
                                             item?.selected
                                                 ? 'tree-light-color'
@@ -706,6 +706,7 @@
         },
         setup(props) {
             const { hoverActions } = toRefs(props)
+            const isTabAdded = inject('isTabAdded') as Ref<string | undefined>
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
@@ -769,6 +770,7 @@
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as Ref<string>
+
             const getData = (activeInlineTab, dataList, columnList) => {
                 if (activeInlineTab && inlineTabs?.value) {
                     const activeInlineTabCopy: activeInlineTabInterface =
@@ -781,6 +783,7 @@
                     modifyActiveInlineTabEditor(
                         activeInlineTabCopy,
                         inlineTabs,
+                        false,
                         saveQueryDataInLocalStorage
                     )
                     setSelection(
@@ -950,7 +953,7 @@
                             )
                             let activeInlineTabCopy: activeInlineTabInterface =
                                 Object.assign({}, activeInlineTab.value)
-                            playQuery(newQuery, newQuery, activeInlineTabCopy)
+                            playQuery(newQuery, newQuery, activeInlineTab)
                             return
                         }
 
@@ -1001,7 +1004,7 @@
                                     playQuery(
                                         newQuery,
                                         newText,
-                                        activeInlineTabCopy
+                                        activeInlineTab
                                     )
 
                                     return
@@ -1010,7 +1013,7 @@
                                     playQuery(
                                         newQuery,
                                         newText,
-                                        activeInlineTabCopy
+                                        activeInlineTab
                                     )
                                     return
                                 }
@@ -1065,7 +1068,7 @@
                                         playQuery(
                                             newQuery,
                                             newText,
-                                            activeInlineTabCopy
+                                            activeInlineTab
                                         )
                                         return
                                     } else {
@@ -1078,7 +1081,7 @@
                                             playQuery(
                                                 newQuery,
                                                 newText,
-                                                activeInlineTabCopy
+                                                activeInlineTab
                                             )
                                             return
                                         }
@@ -1091,7 +1094,7 @@
                                     playQuery(
                                         newQuery,
                                         newText,
-                                        activeInlineTabCopy
+                                        activeInlineTab
                                     )
                                     return
                                 }
@@ -1149,7 +1152,7 @@
                                         playQuery(
                                             newQuery,
                                             newText,
-                                            activeInlineTabCopy
+                                            activeInlineTab
                                         )
                                         return
                                     } else {
@@ -1162,7 +1165,7 @@
                                             playQuery(
                                                 newQuery,
                                                 newText,
-                                                activeInlineTabCopy
+                                                activeInlineTab
                                             )
                                             return
                                         } else {
@@ -1175,7 +1178,7 @@
                                                 playQuery(
                                                     newQuery,
                                                     newText,
-                                                    activeInlineTabCopy
+                                                    activeInlineTab
                                                 )
                                                 return
                                             }
@@ -1191,7 +1194,7 @@
                                     playQuery(
                                         newQuery,
                                         newText,
-                                        activeInlineTabCopy
+                                        activeInlineTab
                                     )
                                     return
                                 }
@@ -1270,14 +1273,13 @@
                 }
             }
 
-            const playQuery = (newQuery, newText, activeInlineTabCopy) => {
+            const playQuery = (
+                newQuery,
+                newText,
+                activeInlineTab: Ref<activeInlineTabInterface>
+            ) => {
                 if (!readOnly.value) {
-                    activeInlineTabCopy.playground.editor.text = newText
-                    modifyActiveInlineTab(
-                        activeInlineTabCopy,
-                        inlineTabs,
-                        activeInlineTabCopy.isSaved
-                    )
+                    activeInlineTab.value.playground.editor.text = newText
                     selectionObject.value.startLineNumber = 2
                     selectionObject.value.startColumnNumber = 1
                     selectionObject.value.endLineNumber = 2
@@ -1287,17 +1289,26 @@
                         toRaw(monacoInstanceRef.value),
                         selectionObject.value
                     )
+                    toRaw(editorInstanceRef.value).getModel().setValue(newText)
                 }
 
+                const activeInlineTabKeyCopy = activeInlineTabKey.value
+
+                const tabIndex = inlineTabs.value.findIndex(
+                    (tab) => tab.key === activeInlineTabKeyCopy
+                )
+
                 queryRun(
-                    activeInlineTab,
+                    tabIndex,
                     getData,
                     limitRows,
                     null,
                     null,
                     newText,
                     editorInstance,
-                    monacoInstance
+                    monacoInstance,
+                    false,
+                    inlineTabs
                 )
             }
 
@@ -1360,6 +1371,7 @@
                 previewItem
             ) => {
                 const key = generateUUID()
+                isTabAdded.value = key
                 const inlineTabData: activeInlineTabInterface = {
                     label: `${previewItem.title} preview`,
                     key,
@@ -1454,6 +1466,7 @@
                                 eventSourceInstance: undefined,
                                 buttonDisable: false,
                                 isQueryAborted: false,
+                                tabQueryState: false,
                             },
                             metadata: {},
                             queries: {},
@@ -1474,25 +1487,6 @@
                     },
                 }
                 inlineTabAdd(inlineTabData, tabs, activeInlineTabKey)
-                // selectionObject.value.startLineNumber = 2
-                // selectionObject.value.startColumnNumber = 1
-                // selectionObject.value.endLineNumber = 2
-                // selectionObject.value.endColumnNumber = query.length + 1 // +1 for semicolon
-                // setSelection(
-                //     toRaw(editorInstanceRef.value),
-                //     toRaw(monacoInstanceRef.value),
-                //     selectionObject.value
-                // )
-                // queryRun(
-                //     activeInlineTab,
-                //     getData,
-                //     limitRows,
-                //     null,
-                //     null,
-                //     query,
-                //     editorInstance,
-                //     monacoInstance
-                // )
             }
 
             const setContextInEditor = (item) => {

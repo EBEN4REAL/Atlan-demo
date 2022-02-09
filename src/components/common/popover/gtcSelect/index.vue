@@ -10,7 +10,7 @@
             <template #content>
                 <div class="px-2 py-1">
                     <div
-                        class="flex items-center p-1 cursor-pointer hover:bg-primary-light grou"
+                        class="flex items-center p-1 cursor-pointer hover:bg-primary-light group"
                         @click="handleSelect('AtlasGlossaryTerm')"
                     >
                         <AtlanIcon

@@ -21,13 +21,23 @@
             >
                 <AtlanIcon icon="Add" class="text-white" />
             </div>
-            <AssetPreview
-                :selected-asset="drawerData"
-                :is-drawer="true"
-                :drawer-active-key="drawerActiveKey"
-                @closeDrawer="$emit('closeDrawer')"
-            ></AssetPreview> </a-drawer
-    ></teleport>
+            <transition name="fade">
+                <div
+                    v-if="deferredLoading"
+                    class="flex items-center justify-center w-full h-full"
+                >
+                    <AtlanLoader class="h-12 mx-auto my-auto" />
+                </div>
+                <AssetPreview
+                    v-else
+                    :selected-asset="drawerData"
+                    :is-drawer="true"
+                    :drawer-active-key="drawerActiveKey"
+                    @closeDrawer="$emit('closeDrawer')"
+                ></AssetPreview>
+            </transition>
+        </a-drawer>
+    </teleport>
 </template>
 
 <script lang="ts">
@@ -94,6 +104,7 @@
 
             const visible = ref(false)
             const drawerData = ref(data.value)
+            const deferredLoading = ref(false)
 
             const updateDrawerList = (asset) => {
                 emit('update', asset)
@@ -123,7 +134,7 @@
             ])
             const relationAttributes = ref([...AssetRelationAttributes])
 
-            const { list, fetch } = useDiscoverList({
+            const { list, fetch, isLoading } = useDiscoverList({
                 isCache: false,
                 dependentKey,
                 facets,
@@ -137,17 +148,15 @@
                 if (
                     (guid.value !== '' || qualifiedName.value !== '') &&
                     showDrawer.value
-                ) {
+                )
                     fetch()
-                } else {
-                    visible.value = showDrawer.value
-                }
+
+                visible.value = showDrawer.value
             })
 
             watch(list, () => {
                 if (list.value.length > 0) {
                     drawerData.value = list.value[0]
-                    visible.value = true
                 }
             })
 
@@ -155,7 +164,15 @@
                 drawerData.value = data.value
             })
 
-            return { visible, drawerData }
+            watch(isLoading, () => {
+                if (isLoading.value) {
+                    setTimeout(() => {
+                        deferredLoading.value = isLoading.value
+                    }, 300)
+                } else deferredLoading.value = isLoading.value
+            })
+
+            return { visible, drawerData, deferredLoading, isLoading }
         },
     })
 </script>
@@ -172,7 +189,16 @@
     }
 </style>
 
-<style lang="less" scoped>
+<style scoped>
+    .fade-enter-active,
+    .fade-leave-active {
+        transition: opacity 0.1s ease;
+    }
+
+    .fade-enter-from,
+    .fade-leave-to {
+        opacity: 0.2;
+    }
     .close-btn {
         height: 32px;
         width: 32px;

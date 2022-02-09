@@ -88,6 +88,7 @@ import GlossaryInactive from '~/assets/images/icons/glossary_inactive.svg'
 import GlossaryDeprecated from '~/assets/images/icons/glossary-deprecated.svg'
 import GlossaryVerified from '~/assets/images/icons/glossary-verified.svg'
 import GlossaryDraft from '~/assets/images/icons/glossary-wip.svg'
+import GlossaryGray from '~/assets/images/icons/glossary-gray.svg'
 import KebabMenu from '~/assets/images/icons/kebab-menu-new.svg'
 import Overview from '~/assets/images/icons/overview.svg'
 import OverviewActive from '~/assets/images/icons/overview_active.svg'
@@ -781,6 +782,7 @@ export default {
     ThreeDots,
     Request,
     RequestActive,
+    GlossaryGray,
     FilterFunnelDot,
     Comment,
     EmptyRequest,

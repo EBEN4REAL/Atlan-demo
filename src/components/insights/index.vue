@@ -181,6 +181,8 @@
         setup(props) {
             const observer = ref()
             const splitpaneRef = ref()
+            const isTabClosed: Ref<undefined | string> = ref(undefined)
+            const isTabAdded: Ref<undefined | string> = ref(undefined)
 
             const savedQueryInfo = inject('savedQueryInfo') as Ref<
                 SavedQuery | undefined
@@ -277,8 +279,6 @@
                 activeTabCollection,
             } = useActiveQueryAccess(activeInlineTab)
 
-            // watch(activeInlineTab, () => {})
-
             const sidebarPaneSize = computed(() =>
                 activeInlineTab.value?.assetSidebar?.isVisible
                     ? assetSidebarPaneSize.value
@@ -370,6 +370,8 @@
                 readAccessCollections,
                 writeAccessCollections,
                 limitRows: limitRows,
+                isTabClosed: isTabClosed,
+                isTabAdded: isTabAdded,
                 updateAssetCheck,
             }
             useProvide(provideData)
@@ -378,7 +380,7 @@
             /* Watchers for syncing in localstorage */
             watch(activeInlineTabKey, () => {
                 syncActiveInlineTabKeyInLocalStorage(activeInlineTabKey.value)
-                syncInlineTabsInLocalStorage(tabsArray.value)
+                syncInlineTabsInLocalStorage(toRaw(tabsArray.value))
             })
 
             /* Watcher for all the things changes in activeInline tab */
@@ -386,19 +388,22 @@
                 () => activeInlineTab.value?.playground.vqb,
                 () => {
                     console.log('editor data')
-                    syncInlineTabsInLocalStorage(tabsArray.value)
+                    syncInlineTabsInLocalStorage(toRaw(tabsArray.value))
                 },
                 { deep: true }
             )
 
             watch(savedQueryInfo, () => {
                 if (savedQueryInfo.value?.guid) {
-                    openSavedQueryInNewTab({
-                        ...savedQueryInfo.value,
-                        parentTitle:
-                            savedQueryInfo.value?.attributes?.parent?.attributes
-                                ?.name,
-                    })
+                    openSavedQueryInNewTab(
+                        {
+                            ...savedQueryInfo.value,
+                            parentTitle:
+                                savedQueryInfo.value?.attributes?.parent
+                                    ?.attributes?.name,
+                        },
+                        isTabAdded
+                    )
 
                     selectFirstCollectionByDefault(
                         queryCollections.value,

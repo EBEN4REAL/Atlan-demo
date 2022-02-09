@@ -92,7 +92,7 @@
             )
             const handleClick = () => {
                 window.open(slackUrl.value)
-                useAddEvent('admin', 'integration', 'slack_message_cta', {
+                useAddEvent('integration', 'slack', 'message_cta_clicked', {
                     type:
                         entity.value.username || !entity.value.alias // logic to check if entity is user or group
                             ? 'user'

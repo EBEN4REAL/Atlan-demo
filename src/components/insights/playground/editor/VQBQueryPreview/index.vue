@@ -42,6 +42,7 @@
 
         setup(props, { emit }) {
             const { showQueryPreview } = useVModels(props)
+            const isTabAdded = inject('isTabAdded') as Ref<string | undefined>
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
@@ -60,6 +61,7 @@
             //FIXME: This should be a composable, writing it here for temperory purpose
             const handleAddNewTab = () => {
                 const key = generateUUID()
+                isTabAdded.value = key
                 const activeInlineTabCopy: activeInlineTabInterface =
                     JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
                 const inlineTabData: activeInlineTabInterface = {

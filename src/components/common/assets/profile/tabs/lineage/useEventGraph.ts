@@ -10,8 +10,6 @@ import useGraph from './useGraph'
 import fetchColumns from './fetchColumns'
 import fetchAsset from './fetchAsset'
 
-import { childGroupBiAssetMap } from './util.js'
-
 const { highlightNodes, highlightEdges } = useUpdateGraph()
 const { useFetchLineage } = useLineageService()
 const { createPortData, createCustomPortData, toggleNodesEdges, addEdge } =
@@ -292,9 +290,12 @@ export default function useEventGraph(
                 sourcePort: fromEntityId,
                 targetCell,
                 targetPort: toEntityId,
-                stroke: '#5277d7',
             }
-            addEdge(graph, relation)
+
+            addEdge(graph, relation, {
+                stroke: '#5277d7',
+                arrowSize: graphPrefs.value.showArrow ? 12 : 0.1,
+            })
         })
     }
 
@@ -611,21 +612,8 @@ export default function useEventGraph(
         }))
         const { data } = useFetchLineage(nodeConfig, true)
         watch(data, async () => {
-            await addSubGraph(
-                data.value,
-                registerAllListeners,
-                removeAddedNodesShadow
-            )
+            await addSubGraph(data.value, registerAllListeners)
             hideLoader()
-        })
-    }
-
-    // removeAddedNodesShadow
-    const removeAddedNodesShadow = () => {
-        const list = document.getElementsByClassName('node-added-shadow')
-        const listArr = Array.from(list)
-        listArr.forEach((ele) => {
-            ele.classList.remove('node-added-shadow')
         })
     }
 
@@ -956,53 +944,20 @@ export default function useEventGraph(
         if (chp.value.portId) deselectPort()
         if (che.value) resetCHE()
 
-        if (node?.store?.data?.entity?.typeCount) {
-            // const edges = graph.value.getIncomingEdges(node)
-            // const sNode = edges[0]?.getSourceNode()
-            // if (sNode) {
-            //     onSelectAsset(sNode.store.data.entity)
-            //     highlight(node?.id)
-            //     setTimeout(() => {
-            //         drawerActiveKey.value = 'Relations'
-            //     }, 500)
-            //     selectedTypeInRelationDrawer.value =
-            //         node.store.data.entity.typeName
-            // }
+        const { entity } = node.store.data
 
-            const { entity } = node.store.data
-
-            if (entity.guid === highlightedNode.value) {
-                onCloseDrawer()
-                assetGuidToHighlight.value = ''
-                return
-            }
-
-            const targetEntityId =
-                entity.attributes?.[childGroupBiAssetMap[entity.typeName]]?.guid
-
-            if (targetEntityId) {
-                onCloseDrawer()
-                showLoader(e)
-                const { data } = fetchAsset(targetEntityId)
-                watchOnce(data, () => {
-                    highlight(entity?.guid)
-                    onSelectAsset(data.value)
-                    selectedTypeInRelationDrawer.value =
-                        node.store.data.entity.typeName
-                    setTimeout(() => {
-                        drawerActiveKey.value = 'Relations'
-                    }, 500)
-                })
-            }
-        } else {
-            onSelectAsset(node.store.data.entity)
-            highlight(node?.id)
+        if (entity.guid === highlightedNode.value) {
+            onCloseDrawer()
+            assetGuidToHighlight.value = ''
+            return
         }
+
+        onSelectAsset(entity)
+        highlight(entity?.guid)
     })
 
     // BLANK - CLICK
     graph.value.on('blank:click', () => {
-        removeAddedNodesShadow()
         resetCHE()
 
         if (chp.value.portId) {
@@ -1026,10 +981,6 @@ export default function useEventGraph(
     // CELL - MOUSEWHEEL
     graph.value.on('cell:mousewheel', () => {
         currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
-    })
-
-    graph.value.on('cell:click', () => {
-        removeAddedNodesShadow()
     })
 
     // Set connector for duplicate relations
@@ -1062,7 +1013,7 @@ export default function useEventGraph(
             const size = val ? 12 : 0.1
             graph.value.getEdges().forEach((edge) => {
                 // Should not be port edge or the current selected edge
-                if (!edge.id.includes('port') && edge.id !== che.value) {
+                if (edge.id !== che.value) {
                     edge.attr('line/targetMarker/height', size)
                     edge.attr('line/targetMarker/width', size)
                 }

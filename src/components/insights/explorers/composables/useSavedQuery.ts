@@ -77,9 +77,11 @@ export function useSavedQuery(
         return false
     }
 
-    const openSavedQueryInNewTab = async (savedQuery: SavedQuery) => {
-        const key = generateUUID()
-
+    const openSavedQueryInNewTab = async (
+        savedQuery: SavedQuery,
+        isTabAdded: Ref<string>
+    ) => {
+        isTabAdded.value = savedQuery?.guid
         let decodedVariables = decodeBase64Data(
             savedQuery?.attributes?.variablesSchemaBase64
         ) as CustomVaribaleInterface[]
@@ -148,31 +150,32 @@ export function useSavedQuery(
             },
             playground: {
                 isVQB: isVisualQuery ? true : false,
-                vqb: isVisualQuery
-                    ? decodedVQB
-                    : {
-                          selectedTables: [],
-                          panels: [
-                              {
-                                  order: 1,
-                                  id: 'columns',
-                                  hide: true,
-                                  subpanels: [
-                                      {
-                                          id: '1',
-                                          columns: ['all'],
-                                          tableData: {
-                                              certificateStatus: undefined,
-                                              assetType: undefined,
-                                              item: {},
+                vqb:
+                    isVisualQuery && decodedVQB
+                        ? decodedVQB
+                        : {
+                              selectedTables: [],
+                              panels: [
+                                  {
+                                      order: 1,
+                                      id: 'columns',
+                                      hide: true,
+                                      subpanels: [
+                                          {
+                                              id: '1',
+                                              columns: ['all'],
+                                              tableData: {
+                                                  certificateStatus: undefined,
+                                                  assetType: undefined,
+                                                  item: {},
+                                              },
+                                              columnsData: [],
                                           },
-                                          columnsData: [],
-                                      },
-                                  ],
-                                  expand: true,
-                              },
-                          ],
-                      },
+                                      ],
+                                      expand: true,
+                                  },
+                              ],
+                          },
                 editor: {
                     text: savedQuery?.attributes?.rawQuery
                         ? savedQuery?.attributes?.rawQuery
@@ -265,6 +268,7 @@ export function useSavedQuery(
 
     const openSavedQueryInNewTabAndRun = (
         savedQuery,
+        isTabAdded: Ref<string>,
         getData: (
             activeInlineTab,
             rows: any[],
@@ -277,18 +281,21 @@ export function useSavedQuery(
         onRunCompletion,
         onQueryIdGeneration
     ) => {
-        openSavedQueryInNewTab({
-            ...savedQuery?.value,
-            parentTitle:
-                savedQuery?.value?.attributes?.parent?.attributes?.name,
-        })
+        isTabAdded.value = savedQuery?.value?.guid
+        openSavedQueryInNewTab(
+            {
+                ...savedQuery?.value,
+                parentTitle:
+                    savedQuery?.value?.attributes?.parent?.attributes?.name,
+            },
+            isTabAdded
+        )
 
         const activeInlineTabKeyCopy = activeInlineTabKey.value
 
         const tabIndex = tabsArray.value.findIndex(
             (tab) => tab.key === activeInlineTabKeyCopy
         )
-
         setTimeout(() => {
             queryRun(
                 tabIndex,
@@ -659,6 +666,7 @@ export function useSavedQuery(
 
     const saveQueryToDatabaseAndOpenInNewTab = (
         saveQueryData: any,
+        isTabAdded: Ref<string>,
         editorInstance: Ref<any>,
         saveQueryLoading: Ref<boolean>,
         showSaveQueryModal: Ref<boolean>,
@@ -827,7 +835,7 @@ export function useSavedQuery(
                         router.push({ path: `insights`, query: queryParams })
                     }
 
-                    openSavedQueryInNewTab(savedQuery)
+                    openSavedQueryInNewTab(savedQuery, isTabAdded)
                 } else {
                     if (
                         error?.value?.response?.data?.errorCode ===

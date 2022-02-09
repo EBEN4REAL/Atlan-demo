@@ -1,7 +1,5 @@
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { editorConfigInterface } from '~/types/insights/editoConfig.interface'
-import dayjs from 'dayjs'
-import { message } from 'ant-design-vue'
 
 const InsightsLocalStorageKeys = {
     inlinetabs: 'insights_inlinetabs',

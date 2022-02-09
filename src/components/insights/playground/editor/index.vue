@@ -313,7 +313,13 @@
                         </div>
                     </div>
                     <div class="flex items-center">
-                        <div class="flex" v-if="editorFocused">
+                        <div
+                            class="flex"
+                            v-if="
+                                editorFocused &&
+                                !activeInlineTab.playground?.isVQB
+                            "
+                        >
                             <span class="mr-2"
                                 >Ln:&nbsp;{{ editorPos.lineNumber }}</span
                             >

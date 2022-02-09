@@ -274,6 +274,7 @@
         emits: ['folderChange'],
         setup(props, { emit }) {
             const route = useRoute()
+            const isTabAdded = inject('isTabAdded') as Ref<string>
             const permissions = inject('permissions') as ComputedRef<any>
             const router = useRouter()
             const { connector, savedQueryType, parentFolder } = toRefs(props)
@@ -517,6 +518,7 @@
                 pushGuidToURL,
                 connector,
                 queryFolderNamespace,
+                isTabAdded,
                 permissions: {
                     readQueries: permissions.value.public.readQueries,
                     readFolders: permissions.value.public.readFolders,

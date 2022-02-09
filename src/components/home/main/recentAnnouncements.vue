@@ -1,17 +1,15 @@
 <template>
     <!--h2 class="mb-3 text-xl font-bold">Relevant for you</h2-->
     <div v-if="list.length">
-        <h2 class="mb-3 text-lg font-bold text-gray-600">
+        <h2 class="mb-3 text-lg font-bold text-gray-500">
             Recent announcements
         </h2>
         <div v-if="isLoading">
             <AtlanLoader class="h-10" />
         </div>
         <div v-else class="overflow-y-auto resources-container">
-            <div v-for="(item, index) in list" :key="index" class="mb-3">
-                {{ item }}
-                <!-- :selected-asset="selectedAsset" -->
-                <!-- {{ item }} -->
+            <div v-for="(item, index) in list" :key="index" class="mb-4">
+                <AssetTitleCtx :item="item" />
                 <AnnouncementWidget :selectedAsset="item" />
             </div>
         </div>
@@ -33,10 +31,19 @@
         AssetRelationAttributes,
     } from '~/constant/projection'
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import CertificateBadge from '@/common/badge/certificate/index.vue'
+    import AssetPopover from '@/common/popover/assets/index.vue'
+    import AssetTitleCtx from '@/home/shared/assetTitleContext.vue'
 
     export default defineComponent({
         name: 'RecentAnnouncements',
-        components: { AnnouncementWidget },
+        components: {
+            AnnouncementWidget,
+            CertificateBadge,
+            AssetPopover,
+            AssetTitleCtx,
+        },
         setup() {
             const dependentKey = ref('HOME_RECENTS_ANNOUNCEMENTS')
             const limit = ref(10)
@@ -90,9 +97,25 @@
                 relationAttributes,
                 suppressLogs: true,
             })
+
+            const {
+                title,
+                certificateStatus,
+                certificateUpdatedAt,
+                certificateUpdatedBy,
+                certificateStatusMessage,
+                getProfilePath,
+            } = useAssetInfo()
+
             return {
                 isLoading,
                 list,
+                title,
+                certificateStatus,
+                certificateUpdatedAt,
+                certificateUpdatedBy,
+                certificateStatusMessage,
+                getProfilePath,
             }
         },
     })

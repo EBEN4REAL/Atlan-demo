@@ -1,7 +1,6 @@
 <template>
-    <!--h2 class="mb-3 text-xl font-bold">Relevant for you</h2-->
     <div v-if="list.length">
-        <h2 class="mb-3 text-lg font-bold text-gray-600">Recent resources</h2>
+        <h2 class="mb-3 text-lg font-bold text-gray-500">Recent resources</h2>
         <div v-if="isLoading">
             <AtlanLoader class="h-10" />
         </div>
@@ -15,7 +14,7 @@
             </div>
             <div v-else>
                 <div v-for="(item, index) in list" :key="index" class="mb-3">
-                    <!-- :selected-asset="selectedAsset" -->
+                    <!-- <AssetTitleCtx :item="item" /> -->
                     <component
                         :is="getPreviewComponent(item?.attributes?.link)"
                         :edit-permission="false"
@@ -47,10 +46,12 @@
         getChannelAndMessageIdFromSlackLink,
     } from '~/composables/integrations/useSlack'
     import integrationStore from '~/store/integrations/index'
+    import AssetTitleCtx from '@/home/shared/assetTitleContext.vue'
 
     export default defineComponent({
         name: 'RecentResources',
         components: {
+            AssetTitleCtx,
             slackLinkPreview: defineAsyncComponent(
                 () =>
                     import(

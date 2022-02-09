@@ -284,11 +284,7 @@
             <div class="flex flex-col text-sm">
                 <div class="mb-1 text-sm text-gray-500">Report Type</div>
                 <div class="text-gray-700">
-                    Label : {{ selectedAsset?.attributes?.reportType?.label }}
-                </div>
-                <div class="text-gray-700">
-                    Type <span class="ml-1">:</span>
-                    {{ selectedAsset?.attributes?.reportType?.type }}
+                    {{ selectedAsset?.attributes?.reportType?.label }}
                 </div>
             </div>
         </div>

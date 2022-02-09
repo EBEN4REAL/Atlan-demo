@@ -48,21 +48,6 @@
         </div>
 
         <div
-            v-if="
-                [
-                    'SalesforceOrganization',
-                    'SalesforceReport',
-                    'SalesforceDashboard',
-                ].includes(selectedAsset.typeName)
-            "
-            class="flex flex-col text-sm"
-        >
-            <span class="mb-1 text-gray-500">Source ID</span>
-
-            <span class="text-gray-700">{{ sourceId(selectedAsset) }}</span>
-        </div>
-
-        <div
             v-if="['LookerTile'].includes(selectedAsset.typeName)"
             class="flex flex-col text-sm"
         >

@@ -123,6 +123,14 @@
                                 class="text-sm tracking-wider text-gray-500 uppercase"
                             >
                                 {{ assetTypeLabel(item) || item.typeName }}
+                                <span
+                                    v-if="
+                                        ['SalesforceObject'].includes(
+                                            item.typeName
+                                        ) && isCustom(item)
+                                    "
+                                    >(custom)</span
+                                >
                             </div>
                         </div>
 
@@ -278,7 +286,11 @@
                         </div>
 
                         <div
-                            v-if="item.typeName?.toLowerCase() === 'column'"
+                            v-if="
+                                item.typeName?.toLowerCase() === 'column' ||
+                                item.typeName?.toLowerCase() ===
+                                    'salesforcefield'
+                            "
                             class="flex items-center mr-2"
                         >
                             <div class="flex items-center">
@@ -287,7 +299,7 @@
                                     class="h-4 text-gray-500 mr-0.5 mb-0.5"
                                 />
                                 <span
-                                    class="text-sm tracking-wider text-gray-500"
+                                    class="text-sm tracking-wider text-gray-500 uppercase"
                                     >{{ dataType(item) }}</span
                                 >
                             </div>
@@ -882,6 +894,22 @@
                                 fields</span
                             >
                         </div>
+                        <div
+                            v-if="
+                                ['salesforcedashboard'].includes(
+                                    item.typeName?.toLowerCase()
+                                ) && reportCount(item) !== '0'
+                            "
+                            class="flex ml-2 text-sm text-gray-500"
+                        >
+                            <span class="text-gray-500">
+                                <span
+                                    class="font-semibold tracking-tight text-gray-500"
+                                    >{{ reportCount(item) }}</span
+                                >
+                                reports</span
+                            >
+                        </div>
                     </div>
 
                     <div class="flex flex-wrap gap-x-1">
@@ -1146,6 +1174,7 @@
                 sourceViewCount,
                 sourceChildCount,
                 fieldCount,
+                isCustom,
             } = useAssetInfo()
 
             const handlePreview = (item: any) => {
@@ -1288,6 +1317,7 @@
                 sourceChildCount,
                 terms,
                 fieldCount,
+                isCustom,
             }
         },
     })

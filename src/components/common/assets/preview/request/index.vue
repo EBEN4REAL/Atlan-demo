@@ -60,7 +60,7 @@
             <div class="flex flex-col items-center">
                 <AtlanIcon icon="EmptyRequest" style="height: 165px" />
                 <div class="px-10 mx-10 mt-2 text-center text-gray-500">
-                    There are no requests for this asset right now
+                    Requests for this  asset will appear here
                 </div>
             </div>
         </div>

@@ -95,6 +95,7 @@ export default function useAssetInfo() {
             attributes(asset)?.name ||
             attributes(asset)?.qualifiedName) ??
         ''
+    const apiName = (asset: assetInterface) => attributes(asset)?.apiName ?? ''
 
     const getConnectorImage = (asset: assetInterface) => {
         const found =
@@ -352,6 +353,11 @@ export default function useAssetInfo() {
             const viewGuid = asset?.attributes?.view?.guid
             if (viewGuid) {
                 return `/assets/${viewGuid}/overview?column=${asset?.guid}`
+            }
+        } else if (assetType(asset) === 'SalesforceField') {
+            const objectGuid = asset?.attributes?.object?.guid
+            if (objectGuid) {
+                return `/assets/${objectGuid}/overview?field=${asset?.guid}`
             }
         } else if (isGTC(asset)) {
             return `/glossary/${asset?.guid}`
@@ -834,6 +840,13 @@ export default function useAssetInfo() {
         return false
     }
 
+    const isCustom = (asset: assetInterface) => {
+        if (attributes(asset)?.isCustom) {
+            return true
+        }
+        return false
+    }
+
     const isGTC = (asset: assetInterface) => {
         if (isGTCByType(asset.typeName)) {
             return true
@@ -1131,6 +1144,12 @@ export default function useAssetInfo() {
     const sourceChildCount = (asset: assetInterface) =>
         getCountString(attributes(asset)?.sourceChildCount, true)
 
+    const detailColumns = (asset: assetInterface) =>
+        attributes(asset)?.detailColumns || []
+
+    const picklistValues = (asset: assetInterface) =>
+        attributes(asset)?.picklistValues || []
+
     return {
         attributes,
         title,
@@ -1181,6 +1200,7 @@ export default function useAssetInfo() {
         announcementUpdatedAt,
         announcementUpdatedBy,
         ownerGroups,
+        detailColumns,
         ownerUsers,
         modifiedAt,
         modifiedBy,
@@ -1268,5 +1288,8 @@ export default function useAssetInfo() {
         lastSyncRunAt,
         sourceId,
         fieldCount,
+        apiName,
+        isCustom,
+        picklistValues,
     }
 }

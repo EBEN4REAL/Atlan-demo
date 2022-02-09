@@ -31,6 +31,7 @@
                     <SlackModal
                         :link="link"
                         :asset-i-d="asset.guid"
+                        :assetType="asset.typeName"
                         @closeParent="closeMenu"
                     >
                         <div class="flex items-center">

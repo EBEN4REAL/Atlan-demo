@@ -451,6 +451,7 @@ export const assetTypeList: {
         image: 'Salesforce',
         relationships: ['reports', 'objects', 'dashboards'],
         groupOrder: 6,
+        priorityOrder: 5,
     },
     {
         id: 'SalesforceDashboard',
@@ -460,6 +461,7 @@ export const assetTypeList: {
         parents: ['SalesforceOrganization'],
         relationships: ['reports', 'organization'],
         groupOrder: 6,
+        priorityOrder: 4,
     },
 
     {
@@ -470,6 +472,7 @@ export const assetTypeList: {
         parents: ['SalesforceOrganization'],
         relationships: ['dashboards', 'organization'],
         groupOrder: 6,
+        priorityOrder: 3,
     },
     {
         id: 'SalesforceObject',
@@ -477,8 +480,9 @@ export const assetTypeList: {
         isDiscoverable: true,
         image: 'Salesforce',
         parents: ['SalesforceOrganization'],
-        relationships: ['fields', 'lookupFields', 'organization'],
+        relationships: ['lookupFields', 'organization'],
         groupOrder: 6,
+        priorityOrder: 1,
     },
     {
         id: 'SalesforceField',
@@ -486,7 +490,8 @@ export const assetTypeList: {
         isDiscoverable: true,
         image: 'Salesforce',
         parents: ['SalesforceObject'],
-        relationships: ['object', 'lookupObjects'],
+        relationships: ['lookupObjects'],
         groupOrder: 6,
+        priorityOrder: 2,
     },
 ]

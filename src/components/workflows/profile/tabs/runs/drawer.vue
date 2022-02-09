@@ -68,7 +68,10 @@
                 </div>
             </div>
         </div>
-        <div class="flex flex-col gap-y-2">
+        <div
+            class="flex flex-col gap-y-2"
+            v-if="selectedPod?.finishedAt && selectedPod?.startedAt"
+        >
             <div class="flex flex-col">
                 <p class="text-gray-500">Duration</p>
                 <p class="mb-2 text-gray-700">
@@ -86,7 +89,7 @@
                     {{ formatDate(selectedPod?.startedAt) }}
                 </p>
             </div>
-            <div class="flex flex-col">
+            <div class="flex flex-col" v-if="selectedPod?.finishedAt">
                 <p class="text-gray-500">Finished At</p>
                 <p class="mb-2 text-gray-700">
                     {{ formatDate(selectedPod?.finishedAt) }}

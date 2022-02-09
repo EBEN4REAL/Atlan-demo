@@ -190,6 +190,18 @@ export default function useComputeGraph(
 <path d="M9.43112 8.03763C10.1719 8.46535 10.1719 9.53465 9.43112 9.96237L4.43052 12.8495C3.68969 13.2772 2.76365 12.7425 2.76365 11.8871L2.76365 6.1129C2.76365 5.25747 3.68969 4.72282 4.43052 5.15054L9.43112 8.03763Z" fill="#6F7590"/>
 </svg></div>
                             </div>   
+                            <div class="flex items-center justify-between border w-full h-full bg-transparent rounded border-gray-500 ${phase} ${
+                        ['Pending'].includes(phase) ? 'block' : 'hidden'
+                    }">
+                                     
+                                    <div class=" font-bold text-gray-500 pl-2 truncate">${displayNameTrunc}</div>
+                                    <div class="pr-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
+<path d="M11.5993 2.28943H6.32862C5.48759 2.28943 4.94747 3.18284 5.33827 3.92755L7.7274 8.48027C7.89817 8.8057 7.89817 9.19425 7.7274 9.51968L5.33827 14.0724C4.94747 14.8171 5.48759 15.7105 6.32862 15.7105H11.6714C12.5125 15.7105 13.0526 14.8171 12.6618 14.0724L10.2691 9.5126C10.1004 9.19111 10.0983 8.80773 10.2633 8.48438L12.5954 3.9164C12.9753 3.17225 12.4348 2.28943 11.5993 2.28943Z" stroke="#EFAC00" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M10.5 11.4999H7.50003L5.21146 14.1443L6.21138 15.1443L12 15.4999L12.5001 14.1443L10.5 11.4999Z" fill="#EFAC00"/>
+</svg>
+                                 </div>
+                                    </div>  
                             <div class="flex items-center bg-primary-menu justify-between border-primary border-l-4 w-full h-full bg-transparent rounded border-r border-t border-b truncate ${
                                 ['Running'].includes(phase) ? 'block' : 'hidden'
                             }">

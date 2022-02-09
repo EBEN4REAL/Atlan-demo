@@ -348,6 +348,12 @@ export function useBody(
                 }
                 break
             }
+            case 'objectQualifiedName': {
+                if (filterObject) {
+                    base.filter('term', 'objectQualifiedName', filterObject)
+                }
+                break
+            }
             case 'glossary': {
                 if (filterObject) {
                     base.filter('term', '__glossary', filterObject)
@@ -617,6 +623,17 @@ export function useBody(
                         base.aggregation(
                             'terms',
                             'dataType',
+                            { size: 50 },
+                            `${agg_prefix}_${mkey}`
+                        )
+                    }
+                    break
+                }
+                case 'fieldDataType': {
+                    if (mkey) {
+                        base.aggregation(
+                            'terms',
+                            'dataType.keyword',
                             { size: 50 },
                             `${agg_prefix}_${mkey}`
                         )

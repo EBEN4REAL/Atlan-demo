@@ -37,6 +37,7 @@ export const InternalAttributes = [
 export const AssetAttributes = [
     'name',
     'displayName',
+    'apiName',
     'description',
     'displayDescription',
     'userDescription',
@@ -118,6 +119,13 @@ export const AssetAttributes = [
     'pageCount',
     'sourceId',
     'fieldCount',
+    'objectQualifiedName',
+    'dashboardType',
+    'reportType',
+    'detailColumns',
+    'isCustom',
+    'inlineHelpText',
+    'picklistValues',
 ]
 
 export const SQLAttributes = [

@@ -37,7 +37,6 @@
                 :disabled="isEditing"
                 :list="filteredPersonas"
                 data-key="id"
-                :key="`${selectedPersonaId}${selectedPersona?.users?.length}${selectedPersona?.groups?.length}`"
             >
                 <template #default="{ item, isSelected }">
                     <div class="flex items-center justify-between w-full">

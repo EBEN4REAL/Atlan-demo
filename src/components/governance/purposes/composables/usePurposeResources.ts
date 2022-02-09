@@ -27,7 +27,7 @@ const usePersonaResources = (purpose) => {
                 'purpose',
                 'resource_created',
                 {
-                    domain: getDomain(r.url),
+                    domain: getDomain(r.attributes.link),
                 }
             )
             addStatus.value = 'success'
@@ -54,7 +54,7 @@ const usePersonaResources = (purpose) => {
                 'purpose',
                 'resource_updated',
                 {
-                    domain: getDomain(r.url),
+                    domain: getDomain(r.attributes.link),
                 }
             )
             updateStatus.value = 'success'

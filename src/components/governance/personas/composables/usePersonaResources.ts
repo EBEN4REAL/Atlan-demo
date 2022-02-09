@@ -29,11 +29,12 @@ const usePersonaResources = (persona) => {
                 'persona',
                 'resource_created',
                 {
-                    domain: getDomain(r.url),
+                    domain: getDomain(r.attributes.link),
                 }
             )
             addStatus.value = 'success'
         } catch (e) {
+            console.log({ e })
             addStatus.value = 'error'
         }
     }
@@ -59,7 +60,7 @@ const usePersonaResources = (persona) => {
                 'persona',
                 'resource_updated',
                 {
-                    domain: getDomain(r.url),
+                    domain: getDomain(r.attributes.link),
                     asset_type: 'persona'
                 }
             )

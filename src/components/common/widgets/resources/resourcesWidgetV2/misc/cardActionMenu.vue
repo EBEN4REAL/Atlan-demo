@@ -62,7 +62,7 @@
         },
     })
     const handleCopy = async () => {
-        await copyToClipboard(props.link.url)
+        await copyToClipboard(props.link.attributes.link)
         message.success('Link copied!')
     }
 </script>

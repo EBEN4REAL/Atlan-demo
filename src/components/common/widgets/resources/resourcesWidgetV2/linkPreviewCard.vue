@@ -2,17 +2,20 @@
     <div
         class="flex justify-between p-2 border rounded cursor-pointer hover:bg-gray-100"
     >
-        <div class="flex items-center flex-1" @click="openLink(link.url)">
+        <div
+            class="flex items-center flex-1"
+            @click="openLink(link.attributes.link)"
+        >
             <div class="mr-2 min-w-link-left-col">
                 <AtlanIcon
-                    v-if="defaultIcon || link.url === ''"
+                    v-if="defaultIcon || link.attributes.link === ''"
                     icon="Link"
                     class="w-auto h-7"
                 />
                 <img
                     v-else
                     :src="`https://www.google.com/s2/favicons?domain=${getDomain(
-                        link.url
+                        link.attributes.link
                     )}&sz=64`"
                     alt=""
                     class="h-7"
@@ -20,22 +23,37 @@
                 />
             </div>
             <div class="flex flex-col w-full">
-                <a :href="`${link.url}`" target="_blank" rel="noreferrer">
+                <a
+                    :href="`${link.attributes.link}`"
+                    target="_blank"
+                    rel="noreferrer"
+                >
                     <Tooltip
-                        :tooltip-text="link.name || link.url"
+                        :tooltip-text="
+                            link.attributes.name || link.attributes.link
+                        "
                         classes="hover:text-primary font-bold cursor-pointer hover:underline"
                     />
                 </a>
                 <div
-                    v-if="link.updatedBy && link.updatedAt"
+                    v-if="
+                        link.attributes.__modifiedBy &&
+                        link.attributes.__modificationTimestamp
+                    "
                     class="text-xs text-gray-500"
                 >
-                    Edited by {{ link.updatedBy }}
-                    {{ useTimeAgo(new Date(link.updatedAt)).value }}
+                    Edited by {{ link.attributes.__modifiedBy }}
+                    {{
+                        useTimeAgo(
+                            new Date(link.attributes.__modificationTimestamp)
+                        ).value
+                    }}
                 </div>
                 <div v-else class="text-xs text-gray-500">
-                    Added by {{ link.createdBy }}
-                    {{ useTimeAgo(new Date(link.createdAt)).value }}
+                    Added by {{ link.attributes.__createdBy }}
+                    {{
+                        useTimeAgo(new Date(link.attributes.__timestamp)).value
+                    }}
                 </div>
             </div>
         </div>

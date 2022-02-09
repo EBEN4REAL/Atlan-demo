@@ -12,8 +12,9 @@
         <div class="p-3">
             <p class="mb-1 font-bold text-md">Delete Resource</p>
             <p class="text-md">
-                Are you sure you want to delete the resource "{{ link.name }}"
-                of <span class="font-bold">{{ entityName }} </span>?
+                Are you sure you want to delete the resource "{{
+                    link.attributes.name
+                }}" of <span class="font-bold">{{ entityName }} </span>?
             </p>
         </div>
 
@@ -31,7 +32,7 @@
                 padding="compact"
                 size="sm"
                 :loading="removeStatus === 'loading'"
-                @click="() => remove(link.qualifiedName)"
+                @click="() => remove(link.uniqueAttributes.qualifiedName)"
             >
                 Delete
             </AtlanButton>
@@ -66,24 +67,24 @@
 
             const visible = ref<boolean>(false)
 
-            const remove: Function = inject('remove')
+            const remove: Function = inject('remove') as Function
             const removeStatus: Ref = inject('removeStatus') ?? ref('')
             const entityName = inject('entityName')
 
             watch(removeStatus, (v) => {
                 // FIXME this watcher is running multiple times, ???!
                 if (v === 'success') {
-                    if (link.value?.name)
+                    if (link.value?.attributes?.name)
                         message.success({
-                            content: `Successfully removed resource "${link.value.name}"`,
+                            content: `Successfully removed resource "${link.value.attributes.name}"`,
                             duration: 1.5,
                             key: 'update',
                         })
                     visible.value = false
                 } else if (v === 'error') {
-                    if (link.value?.name)
+                    if (link.value?.attributes?.name)
                         message.error({
-                            content: `Failed to removed resource "${link.value.name}"`,
+                            content: `Failed to removed resource "${link.value.attributes.name}"`,
                             duration: 1.5,
                             key: 'error',
                         })

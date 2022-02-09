@@ -118,10 +118,10 @@
         }
     }
 
-    const add: Function = inject('add')
-    const addStatus: Ref = inject('addStatus')
-    const update: Function = inject('update')
-    const updateStatus: Ref = inject('updateStatus')
+    const add = inject('add') as Function
+    const addStatus: Ref = inject('addStatus') as Ref
+    const update: Function = inject('update') as Function
+    const updateStatus = inject('updateStatus') as Ref
 
     watch(addStatus, (v) => {
         if (v === 'success') {
@@ -180,7 +180,9 @@
     const setDefalt = () => {
         faviconLink.value = ''
         if (isEdit.value) {
-            const { url, name } = link.value
+            const {
+                attributes: { link: url, name },
+            } = link.value
             localResource.value.link = url
             localResource.value.title = name
             fetchFaviconLink()
@@ -220,21 +222,26 @@
     // Generate a resource object for each link in the list of links.
     const generateResourceEntity = (r): Link => ({
         typeName: 'Link',
-        qualifiedName: generateUUID(),
-        name: r.title,
-        url: r.link,
-        createdAt: timestamp.value,
-        createdBy: username.value,
+        attributes: {
+            name: r.title,
+            link: r.link,
+            __timestamp: timestamp.value,
+            __createdBy: username.value,
+        },
+        uniqueAttributes: { qualifiedName: generateUUID() },
     })
 
     // The `generateResourceUpdateEntity` function takes a resource and returns a new resource with the
     // updatedAt and updatedBy fields set to the current timestamp and username.
     const generateResourceUpdateEntity = (r): Link => ({
         ...link.value,
-        name: r.title,
-        url: r.link,
-        updatedAt: timestamp.value,
-        updatedBy: username.value,
+        attributes: {
+            ...link.value.attributes,
+            name: r.title,
+            link: r.url,
+            __modificationTimestamp: timestamp.value,
+            __modifiedBy: username.value,
+        },
     })
 
     const handleSubmit = () => {

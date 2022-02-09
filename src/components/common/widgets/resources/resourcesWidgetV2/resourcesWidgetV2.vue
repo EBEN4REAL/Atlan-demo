@@ -147,7 +147,9 @@
     const { tenantSlackStatus, userSlackStatus } = toRefs(store)
 
     const hasAtleastOneSlackLink = computed(() => {
-        const slackLink = resources.value.some((link) => isSlackLink(link.url))
+        const slackLink = resources.value.some((link) =>
+            isSlackLink(link.attributes.link)
+        )
         return slackLink
     })
 

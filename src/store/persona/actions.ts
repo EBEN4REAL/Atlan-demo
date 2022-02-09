@@ -17,6 +17,6 @@ export const actions: Actions = {
         else this.list.push(persona)
     },
     removePersona(_id) {
-        this.list.filter((p) => p.id !== _id)
+        this.list = this.list.filter((p) => p.id !== _id)
     }
 }

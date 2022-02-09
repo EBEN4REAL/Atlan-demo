@@ -164,7 +164,7 @@
                     async onOk() {
                         const msgId = Date.now()
                         try {
-                            await deletePersonaById(persona.value.id!)
+                            await deletePersonaById(persona.value.id)
                             message.success({
                                 content: 'Persona deleted',
                                 duration: 1.5,

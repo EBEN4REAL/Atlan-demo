@@ -399,6 +399,7 @@
                 try {
                     await deletePolicy(type, id)
                     updateSelectedPersona()
+                    refetchPurpose(persona.value.id)
                     message.success({
                         content: 'Policy deleted',
                         duration: 1.5,

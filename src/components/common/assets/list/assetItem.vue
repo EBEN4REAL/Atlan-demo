@@ -1006,19 +1006,9 @@
                             </template>
 
                             <div
-                                class="flex items-center mr-3 text-sm gap-x-1 border rounded-full bg-white px-2 text-primary py-1 hover:bg-primary hover:text-white mt-1"
+                                class="flex items-center mr-3 text-sm gap-x-1 border rounded-full bg-white px-2 text-primary py-1 hover:bg-primary hover:text-white mt-1 cursor-pointer"
                             >
-                                <AtlanIcon
-                                    icon="Category"
-                                    class="h-4"
-                                ></AtlanIcon>
-
-                                in {{ categories(item)?.slice(2)?.length }}
-                                {{
-                                    categories(item)?.length === 1
-                                        ? 'Category'
-                                        : 'Categories'
-                                }}
+                               + {{ categories(item)?.slice(2)?.length }} more
                             </div>
                         </a-popover>
                     </div>

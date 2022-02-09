@@ -162,6 +162,9 @@
     import { useConnector } from '~/components/insights/common/composables/useConnector'
     import { getDialectInfo } from '~/components/insights/common/composables/getDialectInfo'
 
+    import { useEditor } from '~/components/insights/common/composables/useEditor'
+    import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
+
     import {
         explorerPaneSize,
         minExplorerSize,
@@ -426,8 +429,8 @@
                             tabIndex,
                             getData,
                             limitRows,
-                            null,
-                            null,
+                            onRunCompletion,
+                            onQueryIdGeneration,
                             savedQueryInfo.value?.attributes.rawQuery,
                             editorInstance,
                             monacoInstance,
@@ -484,28 +487,65 @@
                 }
             }
 
-            const getData = (activeInlineTab, dataList, columnList) => {
+            const getData = (
+                activeInlineTab,
+                dataList,
+                columnList,
+                executionTime,
+                index
+            ) => {
                 if (activeInlineTab && tabsArray?.value) {
-                    const activeInlineTabCopy: activeInlineTabInterface =
-                        JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
-                    activeInlineTabCopy.playground.editor.dataList = dataList
-
-                    activeInlineTabCopy.playground.editor.columnList =
+                    // const activeInlineTabCopy: activeInlineTabInterface =
+                    //     JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
+                    tabsArray.value[index].playground.editor.dataList = dataList
+                    tabsArray.value[index].playground.editor.columnList =
                         columnList
-                    const saveQueryDataInLocalStorage = false
-                    modifyActiveInlineTabEditor(
-                        activeInlineTabCopy,
-                        tabsArray,
-                        false,
-                        saveQueryDataInLocalStorage
-                    )
-                    // setSelection(
-                    //     toRaw(editorInstanceRef.value),
-                    //     toRaw(monacoInstanceRef.value),
-                    //     selectionObject.value
+                    // const saveQueryDataInLocalStorage = false
+                    // modifyActiveInlineTabEditor(
+                    //     activeInlineTabCopy,
+                    //     tabsArray,
+                    //     false,
+                    //     saveQueryDataInLocalStorage
                     // )
-                    // focusEditor(toRaw(editorInstanceRef.value))
                 }
+            }
+
+            const { resetErrorDecorations, setErrorDecorations } = useEditor()
+            const onRunCompletion = (activeInlineTab, status: string) => {
+                if (status === 'success') {
+                    /* Resetting the red dot from the editor if it error is not line type */
+                    resetErrorDecorations(
+                        activeInlineTab,
+                        toRaw(editorInstance.value)
+                    )
+                } else if (status === 'error') {
+                    resetErrorDecorations(
+                        activeInlineTab,
+                        toRaw(editorInstance.value)
+                    )
+                    // console.log('error deco:', status)
+                    /* If it is a line error i,e VALIDATION_ERROR | QUERY_PARSING_ERROR */
+                    const errorName =
+                        activeInlineTab.value?.playground?.resultsPane?.result
+                            ?.queryErrorObj?.errorName
+                    console.log(
+                        'error data: ',
+                        activeInlineTab.value?.playground?.resultsPane?.result
+                            ?.queryErrorObj?.errorName
+                    )
+                    if (LINE_ERROR_NAMES.includes(errorName)) {
+                        setErrorDecorations(
+                            activeInlineTab,
+                            toRaw(editorInstance),
+                            toRaw(monacoInstance)
+                        )
+                    }
+                }
+            }
+            const onQueryIdGeneration = (activeInlineTab, queryId: string) => {
+                /* Setting the particular instance to this tab */
+                activeInlineTab.value.playground.resultsPane.result.runQueryId =
+                    queryId
             }
 
             // FIXME: refactor it
@@ -697,8 +737,8 @@
                     tabIndex,
                     getData,
                     limitRows,
-                    null,
-                    null,
+                    onRunCompletion,
+                    onQueryIdGeneration,
                     newQuery,
                     editorInstance,
                     monacoInstance,

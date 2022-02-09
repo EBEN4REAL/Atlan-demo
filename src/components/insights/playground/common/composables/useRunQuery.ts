@@ -61,7 +61,8 @@ export default function useRunQuery() {
             activeInlineTab,
             rows: any[],
             columns: any[],
-            executionTime: number
+            executionTime: number,
+            tabIndex: number
         ) => void,
         limitRows?: Ref<{ checked: boolean; rowsCount: number }>,
         onCompletion?: Function,
@@ -77,7 +78,7 @@ export default function useRunQuery() {
         let activeInlineTab = ref(tabsArray.value[tabIndex])
 
         if (
-            activeInlineTab.value.playground.resultsPane.result
+            tabsArray.value[tabIndex].playground.resultsPane.result
                 .isQueryRunning === 'loading'
         ) {
             message.info('A query is in progress in current tab')
@@ -109,20 +110,23 @@ export default function useRunQuery() {
             resetErrorDecorations(activeInlineTab, toRaw(editorInstance.value))
             resetLineDecorations(editorInstance.value)
         }
-        // console.log('inside run query: ', activeInlineTab.value)
-        activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
+        // console.log('inside run query: ', tabsArray.value[tabIndex])
+        tabsArray.value[tabIndex].playground.resultsPane.result.isQueryRunning =
             'loading'
-        activeInlineTab.value.playground.resultsPane.result.isQueryAborted =
+        tabsArray.value[tabIndex].playground.resultsPane.result.isQueryAborted =
             false
 
         // activeInlineTab.value.playground.resultsPane.result.tabQueryState = true
 
         const attributeValue =
-            activeInlineTab.value?.playground?.editor?.context?.attributeValue
+            tabsArray.value[tabIndex]?.playground?.editor?.context
+                ?.attributeValue
         let queryText
         /* Setting it undefined for new run */
-        if (activeInlineTab.value.playground.resultsPane.result.runQueryId) {
-            activeInlineTab.value.playground.resultsPane.result.runQueryId =
+        if (
+            tabsArray.value[tabIndex].playground.resultsPane.result.runQueryId
+        ) {
+            tabsArray.value[tabIndex].playground.resultsPane.result.runQueryId =
                 undefined
         }
 
@@ -134,20 +138,21 @@ export default function useRunQuery() {
             console.log('no semi colon')
             if (showVQB.value) {
                 queryText = selectedText
-                activeInlineTab.value.playground.editor.text = getParsedQuery(
-                    activeInlineTab.value.playground.editor.variables,
-                    queryText
-                )
+                tabsArray.value[tabIndex].playground.editor.text =
+                    getParsedQuery(
+                        tabsArray.value[tabIndex].playground.editor.variables,
+                        queryText
+                    )
             } else {
                 if (selectedText && selectedText !== '') {
                     queryText = getParsedQuery(
-                        activeInlineTab.value.playground.editor.variables,
+                        tabsArray.value[tabIndex].playground.editor.variables,
                         selectedText
                     )
                 } else {
                     queryText = getParsedQuery(
-                        activeInlineTab.value.playground.editor.variables,
-                        activeInlineTab.value.playground.editor.text
+                        tabsArray.value[tabIndex].playground.editor.variables,
+                        tabsArray.value[tabIndex].playground.editor.text
                     )
                 }
             }
@@ -156,7 +161,7 @@ export default function useRunQuery() {
                 queryText = selectedText
             } else {
                 queryText = getParsedQuery(
-                    activeInlineTab.value.playground.editor.variables,
+                    tabsArray.value[tabIndex].playground.editor.variables,
                     selectedText
                 )
                 var count = 0
@@ -181,10 +186,10 @@ export default function useRunQuery() {
                     queryText = '\n' + queryText
                 }
             }
-        } else if (activeInlineTab.value.playground.editor.text !== '') {
+        } else if (tabsArray.value[tabIndex].playground.editor.text !== '') {
             let queryData = getParsedQueryCursor(
-                activeInlineTab.value.playground.editor.variables,
-                activeInlineTab.value.playground.editor.text,
+                tabsArray.value[tabIndex].playground.editor.variables,
+                tabsArray.value[tabIndex].playground.editor.text,
                 'auto',
                 editorInstance.value,
                 monacoInstance.value
@@ -198,13 +203,13 @@ export default function useRunQuery() {
 
             if (selectedQuery && selectedQuery.length) {
                 queryText = getParsedQuery(
-                    activeInlineTab.value.playground.editor.variables,
+                    tabsArray.value[tabIndex].playground.editor.variables,
                     selectedQuery
                 )
             } else {
                 queryText = getParsedQuery(
-                    activeInlineTab.value.playground.editor.variables,
-                    activeInlineTab.value.playground.editor.text
+                    tabsArray.value[tabIndex].playground.editor.variables,
+                    tabsArray.value[tabIndex].playground.editor.text
                 )
             }
         } else {
@@ -221,8 +226,9 @@ export default function useRunQuery() {
         } catch (error) {
             // console.log('query error: ', error)
             if (error) {
-                activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
-                    ''
+                tabsArray.value[
+                    tabIndex
+                ].playground.resultsPane.result.isQueryRunning = ''
                 message.error('Query format not supported')
             }
             return
@@ -242,8 +248,8 @@ export default function useRunQuery() {
             sqlBody.defaultSchema = getSchemaWithDataSourceName(attributeValue)
         }
         /* This means it is a saved query */
-        if (activeInlineTab.value?.queryId) {
-            params.savedQueryId = activeInlineTab.value?.queryId
+        if (tabsArray.value[tabIndex]?.queryId) {
+            params.savedQueryId = tabsArray.value[tabIndex]?.queryId
         }
         /* Adding a limit param if limit rows is checked and limit is passed*/
         if (limitRows?.value && limitRows?.value?.checked) {
@@ -252,7 +258,7 @@ export default function useRunQuery() {
 
         useAddEvent('insights', 'query', 'run', {
             saved_query: !!params.savedQueryId,
-            visual_query: activeInlineTab.value.playground.isVQB,
+            visual_query: tabsArray.value[tabIndex].playground.isVQB,
             limit_100: !!params.limit,
         })
 
@@ -267,7 +273,8 @@ export default function useRunQuery() {
         // start timer
         start()
 
-        activeInlineTab.value.playground.resultsPane.result.abortQueryFn = reset
+        tabsArray.value[tabIndex].playground.resultsPane.result.abortQueryFn =
+            reset
 
         const {
             eventSource,
@@ -280,15 +287,16 @@ export default function useRunQuery() {
             pathVariables,
             body: sqlBody,
         })
-        activeInlineTab.value.playground.resultsPane.result.eventSourceInstance =
-            eventSource.value
+        tabsArray.value[
+            tabIndex
+        ].playground.resultsPane.result.eventSourceInstance = eventSource.value
 
         watch([isLoading, error], () => {
             try {
                 if (!isLoading.value && error.value === undefined) {
                     // if query aborted then don't show the midway fetched data
                     if (
-                        activeInlineTab.value.playground.resultsPane.result
+                        tabsArray.value[tabIndex].playground.resultsPane.result
                             .isQueryAborted
                     )
                         return
@@ -298,10 +306,12 @@ export default function useRunQuery() {
                         /* Saving the queryId */
                         if (
                             message?.queryId &&
-                            !activeInlineTab.value.playground.resultsPane.result
-                                .runQueryId
+                            !tabsArray.value[tabIndex].playground.resultsPane
+                                .result.runQueryId
                         ) {
-                            activeInlineTab.value.playground.resultsPane.result.runQueryId =
+                            tabsArray.value[
+                                tabIndex
+                            ].playground.resultsPane.result.runQueryId =
                                 message?.queryId
                             if (onQueryIdGeneration)
                                 onQueryIdGeneration(
@@ -321,34 +331,46 @@ export default function useRunQuery() {
                                 activeInlineTab,
                                 toRaw(dataList.value),
                                 toRaw(columnList.value),
-                                message?.details.executionTime
+                                message?.details.executionTime,
+                                tabIndex
                             )
                             if (eventSource.value?.close) {
                                 eventSource.value.close()
                             }
                             /* Query related data */
-                            activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
+                            tabsArray.value[
+                                tabIndex
+                            ].playground.resultsPane.result.isQueryRunning =
                                 'success'
-                            activeInlineTab.value.playground.resultsPane.result.executionTime =
+                            tabsArray.value[
+                                tabIndex
+                            ].playground.resultsPane.result.executionTime =
                                 message?.details.executionTime
-                            activeInlineTab.value.playground.resultsPane.result.totalRowsCount =
+                            tabsArray.value[
+                                tabIndex
+                            ].playground.resultsPane.result.totalRowsCount =
                                 message?.details.totalRowsStreamed
-                            activeInlineTab.value.playground.resultsPane.result.errorDecorations =
-                                []
-                            activeInlineTab.value.playground.resultsPane.result.queryErrorObj =
-                                {}
+                            tabsArray.value[
+                                tabIndex
+                            ].playground.resultsPane.result.errorDecorations = []
+                            tabsArray.value[
+                                tabIndex
+                            ].playground.resultsPane.result.queryErrorObj = {}
                             /* Setting it undefined for new run */
 
-                            activeInlineTab.value.playground.resultsPane.result.runQueryId =
-                                undefined
+                            tabsArray.value[
+                                tabIndex
+                            ].playground.resultsPane.result.runQueryId = undefined
 
-                            // activeInlineTab.value.playground.resultsPane.result.tabQueryState =
-                            //     activeTabKey.value === activeInlineTab.value.key
+                            // tabsArray.value[tabIndex].playground.resultsPane.result.tabQueryState =
+                            //     activeTabKey.value === tabsArray.value[tabIndex].key
                             //         ? false
                             //         : true
 
                             let endTime = new Date()
-                            activeInlineTab.value.playground.resultsPane.result.executionTime =
+                            tabsArray.value[
+                                tabIndex
+                            ].playground.resultsPane.result.executionTime =
                                 endTime - startTime
 
                             if (onCompletion) {
@@ -369,8 +391,8 @@ export default function useRunQuery() {
                                 eventSource,
                                 message
                             )
-                            // activeInlineTab.value.playground.resultsPane.result.tabQueryState =
-                            //     activeTabKey.value === activeInlineTab.value.key
+                            // tabsArray.value[tabIndex].playground.resultsPane.result.tabQueryState =
+                            //     activeTabKey.value === tabsArray.value[tabIndex].key
                             //         ? false
                             //         : true
                             /* Callback will be called when request completed */
@@ -387,13 +409,13 @@ export default function useRunQuery() {
                 } else if (
                     !isLoading.value &&
                     error.value !== undefined &&
-                    !activeInlineTab.value.playground.resultsPane.result
+                    !tabsArray.value[tabIndex].playground.resultsPane.result
                         .isQueryAborted
                 ) {
                     const { setStreamErrorInActiveInlineTab } = useError()
                     setStreamErrorInActiveInlineTab(activeInlineTab, error)
-                    // activeInlineTab.value.playground.resultsPane.result.tabQueryState =
-                    //     activeTabKey.value === activeInlineTab.value.key
+                    // tabsArray.value[tabIndex].playground.resultsPane.result.tabQueryState =
+                    //     activeTabKey.value === tabsArray.value[tabIndex].key
                     //         ? false
                     //         : true
 
@@ -406,8 +428,8 @@ export default function useRunQuery() {
                     reset()
                 }
             } catch (e) {
-                // activeInlineTab.value.playground.resultsPane.result.tabQueryState =
-                //     activeTabKey.value === activeInlineTab.value.key
+                // tabsArray.value[tabIndex].playground.resultsPane.result.tabQueryState =
+                //     activeTabKey.value === tabsArray.value[tabIndex].key
                 //         ? false
                 //         : true
 

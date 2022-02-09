@@ -457,6 +457,12 @@
                 height: 50px !important;
             }
 
+            & .popover {
+                @apply invisible opacity-0 absolute bottom-16 left-0 py-1 px-2 text-sm;
+                @apply delay-75 transition-all;
+                @apply rounded-md shadow-md bg-black bg-opacity-70 text-white;
+            }
+
             &.isBase {
                 border-top-left-radius: 0;
                 border: 1px solid #5277d7 !important;
@@ -467,29 +473,26 @@
                 }
 
                 .inscr {
-                    position: relative;
-                    width: 100%;
-                    z-index: 99;
-                    display: block;
+                    line-height: 22px;
+                    background: #ffffff;
+                    color: #5277d7;
+                    position: fixed;
+                    border: 1px solid #5277d7;
+                    border-bottom: 0;
+                    top: -26px;
+                    padding: 3px 8px 0px 8px;
+                    left: 0;
+                    border-top-right-radius: 4px;
+                    border-top-left-radius: 4px;
+                }
 
-                    &-item {
-                        line-height: 22px;
-                        background: #ffffff;
-                        color: #5277d7;
-                        position: fixed;
-                        border: 1px solid #5277d7;
-                        border-bottom: 0;
-                        top: -26px;
-                        padding: 3px 8px 0px 8px;
-                        left: 0;
-                        border-top-right-radius: 4px;
-                        border-top-left-radius: 4px;
-                    }
+                .popover {
+                    left: 60px;
                 }
             }
 
             & .node-text {
-                @apply text-gray-500 font-bold truncate text-base leading-5;
+                @apply text-gray font-bold truncate text-base leading-5;
             }
 
             & .node-meta {
@@ -498,10 +501,8 @@
                 @apply mt-1;
 
                 &__text {
-                    @apply text-base flex-shrink flex-grow-0;
-                    text-transform: capitalize;
-                    color: #6f7590;
-                    margin: 0 6px;
+                    @apply text-base flex-shrink flex-grow-0 text-gray-500;
+                    margin: 0 3px;
 
                     &.isTypename {
                         @apply flex-shrink-0;
@@ -525,11 +526,6 @@
                     margin-bottom: 0.2rem;
                     margin-right: 2px;
                 }
-            }
-            & .popover {
-                @apply invisible opacity-0 absolute bottom-16 left-0 py-1 px-2 text-sm;
-                @apply delay-75 transition-all;
-                @apply rounded-md shadow-md bg-white text-gray-500;
             }
         }
 

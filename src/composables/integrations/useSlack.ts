@@ -57,7 +57,7 @@ function getTimestampFromSlackMessageId(id) {
 
 export const shareOnSlack = ({
     assetID,
-    // integrationId,
+    integrationId,
     channelAlias,
     message,
     link,

@@ -424,6 +424,12 @@
                 () => {
                     globalState.value = discoveryStore.globalState
                     handleResetEvent()
+                    useAddEvent('discovery', 'global_context', 'changed', {
+                        type:
+                            discoveryStore.globalState[0] === 'all'
+                                ? 'all_assets'
+                                : discoveryStore.globalState[0],
+                    })
                 },
                 {
                     deep: true,
@@ -481,10 +487,33 @@
                 useAddEvent('discovery', 'search', 'changed')
             }, 600)
 
+            // analytic key for connection filter should be different based on the level of filter selected
+            const getAnalyticKey = (k) => {
+                if (k === 'connection') {
+                    if (
+                        facets.value.hierarchy?.attributeName ===
+                        'schemaQualifiedName'
+                    )
+                        return 'schema'
+                    if (
+                        facets.value.hierarchy?.attributeName ===
+                        'databaseQualifiedName'
+                    )
+                        return 'database'
+                    if (facets.value.hierarchy?.connectionQualifiedName)
+                        return 'connection'
+                    if (facets.value.hierarchy?.connectorName)
+                        return 'connector'
+                }
+                return k
+            }
             const sendFilterEvent = useDebounceFn((filterItem) => {
                 if (filterItem && filterItem.analyticsKey) {
+                    const parsedAnalyticKey = getAnalyticKey(
+                        filterItem.analyticsKey
+                    )
                     useAddEvent('discovery', 'filter', 'changed', {
-                        type: filterItem.analyticsKey,
+                        type: parsedAnalyticKey,
                     })
                 }
             }, 600)
@@ -513,10 +542,10 @@
             }, 100)
 
             const handleFilterChange = (filterItem) => {
-                sendFilterEvent(filterItem)
                 offset.value = 0
                 quickChange()
                 discoveryStore.setActiveFacet(facets.value)
+                sendFilterEvent(filterItem)
             }
 
             const handleAssetTypeChange = (tabName) => {

@@ -1,5 +1,5 @@
 <template>
-    <div class="tedt">
+    <div class="w-full">
         <a-popover
             overlayClassName="glossarySelectPopover"
             :get-popup-container="(target) => target.parentNode"
@@ -8,16 +8,16 @@
             trigger="['click']"
         >
             <template #content>
-                <div class="px-3 py-1 border-b">
+                <div v-if="showAllGlossary" class="px-3 py-1 border-b">
                     <div
                         class="flex items-center py-1 cursor-pointer hover:bg-primary-light grou"
                         @click="handleSelect('')"
                     >
                         <AtlanIcon
-                            icon="Glossary"
+                            icon="GlossaryGray"
                             class="self-center pr-1"
                         ></AtlanIcon>
-                        <div class="overflow-ellipsis group-hover:text-primary">
+                        <div class="overflow-ellipsis group-hover:text-primary ">
                             All Glossaries
                         </div>
                     </div>
@@ -37,9 +37,14 @@
                         >
                             <div class="w-4 mr-1">
                                 <AtlanIcon
-                                    icon="Glossary"
-                                    class="self-center"
-                                ></AtlanIcon>
+                                    :icon="
+                                        getEntityStatusIcon(
+                                            item.typeName,
+                                            certificateStatus(item)
+                                        )
+                                    "
+                                    class="self-center align-text-bottom"
+                                />
                             </div>
                             <Tooltip
                                 :tooltip-text="`${
@@ -56,21 +61,29 @@
                 class="flex items-center cursor-pointer hover:text-primary"
                 style="max-width: 80%"
             >
-                <div class="w-4 mr-1">
+            <div class="w-4" :class="size==='default'?'mr-2':'mr-1'">
                     <AtlanIcon
-                        icon="Glossary"
-                        class="self-center h-4 mr-1"
+                        :icon="
+                            displayText === 'All Glossaries'
+                                ? 'GlossaryGray'
+                                : getEntityStatusIcon(
+                                      'AtlasGlossary',
+                                      certificateStatus(selectedGlossary)
+                                  )
+                        "
+                        class="self-center"
+                        :class="size==='default'?'h-5':'h-4'"
                     ></AtlanIcon>
                 </div>
                 <Tooltip
                     :tooltip-text="`${displayText}`"
-                    :classes="'w-full font-bold'"
+                    :classes="`  hover:text-primary  align-text-bottom ${size==='default'?'text-base font-bold  mt-0.5':'text-sm'}`"
                 />
 
-                <div class="w-4 mr-1">
+                <div class="w-4 mr-1 " :classes="{'mt-0.5':size==='default'}">
                     <AtlanIcon
                         icon="ChevronDown"
-                        class="self-center h-3 ml-1 text-primary"
+                        class="h-3 ml-2 hover:text-primary"
                     ></AtlanIcon>
                 </div>
             </div>
@@ -88,7 +101,9 @@
         onMounted,
         watch,
     } from 'vue'
-    import useGlossaryData from '~/composables/glossary/useGlossaryData'
+    import useGlossaryData from '~/composables/glossary2/useGlossaryData'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
+
     import Tooltip from '@/common/ellipsis/index.vue'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
 
@@ -105,16 +120,30 @@
                     return ''
                 },
             },
+            showAllGlossary: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
+            size:{
+                type:String,
+                required:false,
+                default:()=>"default"
+            }
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const localValue = ref(props.modelValue)
 
-            const { glossaryList } = useGlossaryData()
-            const queryText = ref('')
+            const { glossaryList, getEntityStatusIcon } = useGlossaryData()
             const displayText = ref('')
             const isVisible = ref(false)
-
+            const { certificateStatus } = useAssetInfo()
+            const selectedGlossary = computed(() =>
+                filteredList.value.find(
+                    (i) => i.attributes.qualifiedName === localValue.value
+                )
+            )
             const changeDisplayText = () => {
                 const item = filteredList.value.find(
                     (i) => i.attributes.qualifiedName === localValue.value
@@ -132,30 +161,12 @@
                 changeDisplayText()
             })
 
-            const filteredList = computed(() =>
-                glossaryList.value
-                    .filter((i) => {
-                        if (queryText?.value !== '') {
-                            return (
-                                i.attributes?.name
-                                    ?.toLowerCase()
-                                    .includes(queryText.value.toLowerCase()) ||
-                                i.attributes?.displayName
-                                    ?.toLowerCase()
-                                    .includes(queryText.value.toLowerCase())
-                            )
-                        }
-                        return true
-                    })
-                    .sort((a, b) =>
-                        // eslint-disable-next-line no-nested-ternary
-                        a.termsCount < b.termsCount
-                            ? 1
-                            : b.termsCount < a.termsCount
-                            ? -1
-                            : 0
-                    )
-            )
+            const filteredList = computed(() => {
+                const sortedList = glossaryList.value
+                return sortedList.sort((a, b) =>
+                    a?.displayText > b?.displayText ? 1 : -1
+                )
+            })
 
             const handleSelect = (key) => {
                 localValue.value = key
@@ -173,14 +184,19 @@
                 }
             )
 
+            watch(selectedGlossary , () => {
+                changeDisplayText()
+            })
             return {
                 filteredList,
-                queryText,
                 handleSelect,
                 displayText,
                 glossaryList,
                 isVisible,
                 changeDisplayText,
+                getEntityStatusIcon,
+                certificateStatus,
+                selectedGlossary,
             }
         },
     })

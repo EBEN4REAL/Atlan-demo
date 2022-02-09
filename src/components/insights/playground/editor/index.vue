@@ -313,7 +313,13 @@
                         </div>
                     </div>
                     <div class="flex items-center">
-                        <div class="flex" v-if="editorFocused">
+                        <div
+                            class="flex"
+                            v-if="
+                                editorFocused &&
+                                !activeInlineTab.playground?.isVQB
+                            "
+                        >
                             <span class="mr-2"
                                 >Ln:&nbsp;{{ editorPos.lineNumber }}</span
                             >
@@ -553,8 +559,8 @@
                 useSavedQuery(inlineTabs, activeInlineTab, activeInlineTabKey)
             const isQueryRunning = computed(
                 () =>
-                    activeInlineTab.value.playground.resultsPane.result
-                        .isQueryRunning
+                    activeInlineTab.value?.playground?.resultsPane?.result
+                        ?.isQueryRunning
             )
             const showSaveQueryModal: Ref<boolean> = ref(false)
             const isUpdating: Ref<boolean> = ref(false)
@@ -572,9 +578,11 @@
                 executionTime
             ) => {
                 console.log(queryExecutionTime, executionTime, 'extime')
+
                 if (activeInlineTab && inlineTabs?.value) {
                     const activeInlineTabCopy: activeInlineTabInterface =
                         JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
+
                     activeInlineTabCopy.playground.editor.dataList = dataList
 
                     activeInlineTabCopy.playground.editor.columnList =
@@ -627,7 +635,16 @@
                     queryId
             }
             function toggleRun() {
-                const activeInlineTabCopy = ref(activeInlineTab.value)
+                // const activeInlineTabCopy = ref(activeInlineTab.value)
+                // const activeInlineTabCopy: activeInlineTabInterface =
+                //     JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
+
+                const activeInlineTabKeyCopy = activeInlineTabKey.value
+
+                const tabIndex = inlineTabs.value.findIndex(
+                    (tab) => tab.key === activeInlineTabKeyCopy
+                )
+
                 const currState =
                     activeInlineTab.value.playground.resultsPane.result
                         .isQueryRunning === 'loading'
@@ -643,7 +660,7 @@
                     let selectedText = ''
                     if (showVQB.value) {
                         selectedText = generateSQLQuery(
-                            activeInlineTabCopy.value,
+                            activeInlineTab.value,
                             limitRows.value
                         )
                     } else {
@@ -657,7 +674,7 @@
 
                     console.log('query selected: ', selectedText)
                     queryRun(
-                        activeInlineTabCopy,
+                        tabIndex,
                         getData,
                         limitRows,
                         onRunCompletion,
@@ -665,11 +682,12 @@
                         selectedText,
                         editorInstance,
                         monacoInstance,
-                        showVQB
+                        showVQB,
+                        inlineTabs
                     )
                 } else if (currState === 'abort') {
                     abortQuery(
-                        activeInlineTabCopy,
+                        tabIndex,
                         inlineTabs,
                         editorInstance,
                         monacoInstance
@@ -701,8 +719,17 @@
                                 toRaw(editorInstance.value).getSelection()
                             )
                     }
+
+                    const activeInlineTabKeyCopy = activeInlineTabKey.value
+
+                    const tabIndex = inlineTabs.value.findIndex(
+                        (tab) => tab.key === activeInlineTabKeyCopy
+                    )
+
+                    // const activeInlineTabCopy: activeInlineTabInterface =
+                    //     JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
                     queryRun(
-                        activeInlineTab,
+                        tabIndex,
                         getData,
                         limitRows,
                         onRunCompletion,
@@ -710,7 +737,8 @@
                         selectedText,
                         editorInstance,
                         monacoInstance,
-                        showVQB
+                        showVQB,
+                        inlineTabs
                     )
                 }
             }

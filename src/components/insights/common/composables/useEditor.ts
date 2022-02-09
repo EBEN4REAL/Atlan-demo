@@ -13,11 +13,11 @@ export function useEditor(
     let decorations = []
     let cursorDecorations = []
     function setEditorPos(
-        editorInstance: any,
+        positon: any,
         editorPos: Ref<{ column: number; lineNumber: number }>
     ) {
-        const pos = editorInstance.getPosition()
-        editorPos.value = pos
+        // const pos = editorInstance.getPosition()
+        editorPos.value = positon
     }
     function setEditorFocusedState(
         state: boolean,
@@ -32,13 +32,7 @@ export function useEditor(
         editorText: string,
         editorInstance: any
     ) {
-        if (activeInlineTab?.value && tabs?.value) {
-            // const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
-            //     {},
-            //     activeInlineTab.value
-            // )
-            // activeInlineTabCopy.playground.editor.text = editorText
-            // modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
+        if (activeInlineTab?.value) {
             activeInlineTab.value.playground.editor.text = editorText
         }
     }
@@ -90,7 +84,6 @@ export function useEditor(
         variables: CustomVaribaleInterface[],
         query: string
     ) {
-        
         if (
             variables.length > 0 &&
             query?.match(/{{\s*[\w\.]+\s*}}/g)?.length > 0
@@ -132,9 +125,7 @@ export function useEditor(
     //     return query
     // }
 
-    const resetLineDecorations = (
-        editorInstance
-    ) => {
+    const resetLineDecorations = (editorInstance) => {
         decorations = toRaw(editorInstance).deltaDecorations(
             decorations ?? [],
             []
@@ -468,17 +459,17 @@ export function useEditor(
         isVisible: boolean,
         editorInstance: any,
         monacoInstance,
-        editorPos: Ref<{
+        editorPos: {
             column: number
             lineNumber: number
-        }>
+        }
     ) => {
         const t = {
             range: new monacoInstance.Range(
-                editorPos.value.lineNumber,
-                editorPos.value.column - 1,
-                editorPos.value.lineNumber,
-                editorPos.value.column
+                editorPos.lineNumber,
+                editorPos.column - 1,
+                editorPos.lineNumber,
+                editorPos.column
             ),
             options: { inlineClassName: 'ghostCursor' },
         }
@@ -583,6 +574,6 @@ export function useEditor(
         onEditorContentChange,
         getParsedQuery,
         getParsedQueryCursor,
-        resetLineDecorations
+        resetLineDecorations,
     }
 }

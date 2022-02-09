@@ -6,7 +6,7 @@
             size="minimal"
         >
             <template #filter>
-                <Preferences v-model:display="preference" />
+                <Preferences v-model:display="preference.display" />
             </template>
         </SearchAndFilter>
     </div>
@@ -22,11 +22,14 @@
         class="overflow-y-auto"
         :list="filteredAssets"
     >
-        <template v-slot:default="{ item }">
+        <template #default="{ item, itemIndex }">
             <AssetItem
                 :item="item"
+                :item-index="itemIndex"
                 :preference="preference"
-                class="mx-4"
+                :enable-sidebar-drawer="true"
+                class="mx-3"
+                isCompact
             ></AssetItem>
         </template>
     </AssetList>
@@ -37,8 +40,10 @@
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import Preferences from '../preferences.vue'
 
-    import AssetList from './assetList.vue'
-    import AssetItem from './assetItem.vue'
+    // import AssetList from './assetList.vue'
+    // import AssetItem from './assetItem.vue'
+    import AssetList from '@/common/assets/list/index.vue'
+    import AssetItem from '@/common/assets/list/assetItem.vue'
 
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -68,15 +73,14 @@
             const queryText = ref('')
             const selectedType = ref('__all')
 
-            const preference = ref([])
+            const preference = ref({ display: [] })
 
             const { title } = useAssetInfo()
 
             const discoveryStore = useAssetStore()
 
             if (discoveryStore.preferences) {
-                preference.value =
-                    discoveryStore.preferences.display || preference.value
+                preference.value = discoveryStore.preferences
             }
 
             const searchedAssets = computed(() => {

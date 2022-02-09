@@ -71,6 +71,7 @@ export interface activeInlineTabInterface {
                 eventSourceInstance: any
                 buttonDisable: boolean
                 isQueryAborted: boolean
+                tabQueryState: boolean
             }
             metadata: Object
             queries: Object

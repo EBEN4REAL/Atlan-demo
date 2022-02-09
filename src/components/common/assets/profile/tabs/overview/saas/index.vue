@@ -11,12 +11,6 @@
                 v-if="['SalesforceObject'].includes(selectedAsset.typeName)"
                 class="flex flex-col w-full mt-4"
             >
-                <RaisedTab
-                    v-model:active="activePreviewTabKey"
-                    class="flex-none flex-grow-0 mb-4 mr-auto"
-                    :data="tabConfig"
-                />
-
                 <FieldsPreview />
             </div>
         </Summary>
@@ -25,7 +19,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref, Ref } from 'vue'
+    import { defineComponent, PropType } from 'vue'
 
     import Summary from '@common/widgets/summary/index.vue'
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
@@ -35,7 +29,12 @@
 
     export default defineComponent({
         name: 'SaasOverview',
-        components: { AnnouncementWidget, Readme, Summary, FieldsPreview },
+        components: {
+            AnnouncementWidget,
+            Readme,
+            Summary,
+            FieldsPreview,
+        },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -46,14 +45,6 @@
                 required: false,
                 default: false,
             },
-        },
-        setup() {
-            const activePreviewTabKey: Ref<'field'> = ref('field')
-            const tabConfig = [{ key: 'field', label: 'Field Preview' }]
-            return {
-                activePreviewTabKey,
-                tabConfig,
-            }
         },
     })
 </script>

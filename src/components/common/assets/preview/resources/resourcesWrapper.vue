@@ -1,5 +1,6 @@
 <template>
     <ResourcesWidget
+        class="px-5 pt-4"
         :resources="resources"
         :add-status="addStatus"
         :update-status="updateStatus"
@@ -11,7 +12,14 @@
         @add="handleAdd"
         @update="handleUpdate"
         @remove="handleRemove"
-    />
+    >
+        <template #title>
+            <span class="font-semibold text-gray-500"> Resources </span>
+        </template>
+        <template #placeholder>
+            <Placeholder />
+        </template>
+    </ResourcesWidget>
 </template>
 
 <script setup lang="ts">
@@ -25,6 +33,7 @@
     } from 'vue'
     import { whenever } from '@vueuse/core'
     import ResourcesWidget from '@/common/widgets/resources/resourcesWidgetV2/resourcesWidgetV2.vue'
+    import Placeholder from '@/common/assets/preview/resources/placeholder.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'

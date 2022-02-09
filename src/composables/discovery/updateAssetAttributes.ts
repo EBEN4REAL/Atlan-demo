@@ -501,7 +501,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         })
         body.value.entities = [resourceEntity.value]
 
-        currentMessage.value = 'A new resource has been added'
+
         await mutate()
         sendTrackEvent('resource', 'created', {
             domain: localResource.value.link.split('/')[2],

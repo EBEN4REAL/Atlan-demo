@@ -397,8 +397,14 @@ import Request from '~/assets/images/icons/Request.svg'
 import RequestActive from '~/assets/images/icons/RequestActive.svg'
 import FilterFunnelDot from '~/assets/images/icons/filterFunnelDot.svg'
 import Comment from '~/assets/images/icons/Comment.svg'
+import RunningQuery from '~/assets/images/icons/tabs/Running.svg'
+import FailedQuery from '~/assets/images/icons/tabs/Error.svg'
+import SuccessQuery from '~/assets/images/icons/tabs/success-check.svg'
 
 export default {
+    RunningQuery,
+    FailedQuery,
+    SuccessQuery,
     IntegrationsActive,
     Integrations,
     SlackToken,

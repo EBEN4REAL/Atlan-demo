@@ -87,6 +87,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
                     eventSourceInstance: undefined,
                     buttonDisable: false,
                     isQueryAborted: false,
+                    tabQueryState: false,
                 },
                 metadata: {},
                 queries: {},

@@ -146,6 +146,6 @@
 
 <style lang="less" scoped>
     .resources-container {
-        height: 370px;
+        height: 360px;
     }
 </style>

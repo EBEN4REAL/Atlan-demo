@@ -3,7 +3,7 @@
         <AssetPopover :item="item">
             <router-link :to="getProfilePath(item)" style="max-width: 93%">
                 <a-typography-paragraph
-                    class="mb-0 font-bold cursor-pointer text-md text-primary hover:underline"
+                    class="mb-0 text-sm font-bold cursor-pointer text-primary hover:underline"
                     :ellipsis="{
                         rows: 1,
                         onEllipsis: true,

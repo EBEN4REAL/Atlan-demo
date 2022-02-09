@@ -38,7 +38,11 @@
             </div>
         </div>
         <div>
-            <a-dropdown trigger="click" placement="bottomRight">
+            <a-dropdown
+                trigger="click"
+                placement="bottomRight"
+                v-if="editPermission"
+            >
                 <div>
                     <AtlanIcon
                         icon="KebabMenu"

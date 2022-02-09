@@ -207,13 +207,15 @@
 
                 try {
                     const body = {
-                        ...persona.value,
+                        ...JSON.parse(JSON.stringify(persona.value)),
                         displayName: selectedPersonaDirty.value?.displayName,
                         description: selectedPersonaDirty.value?.description,
                     }
+                    const personaRaw = JSON.parse(JSON.stringify(body))
                     delete body.metadataPolicies
                     delete body.dataPolicies
                     await savePersona(body)
+                    handleUpdateList(personaRaw)
 
                     message.success({
                         content: `${persona.value?.displayName} persona updated`,
@@ -222,7 +224,7 @@
                     })
 
                     isEditing.value = false
-                    handleUpdateList(body)
+
                     openEditModal.value = false
                 } catch (error) {
                     message.error({

@@ -203,10 +203,11 @@
 
                 try {
                     const body = {
-                        ...persona.value,
+                        ...JSON.parse(JSON.stringify(persona.value)),
                         displayName: selectedPersonaDirty.value?.displayName,
                         description: selectedPersonaDirty.value?.description,
                     }
+                    // const purposeRaw = JSON.parse(JSON.stringify(body))
                     await savePersona(body)
 
                     message.success({

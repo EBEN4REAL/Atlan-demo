@@ -12,6 +12,7 @@ export default async function useComputeGraph(
     isComputeDone,
     emit
 ) {
+    const { DagreLayout } = window.layout
     const lineageStore = useLineageStore()
     lineageStore.nodesColumnList = {}
     lineageStore.columnsLineage = {}
@@ -117,6 +118,27 @@ export default async function useComputeGraph(
             nodes: nodes.value,
         })
         graph.value.fromJSON(model.value)
+
+        graphLayout.value = new DagreLayout({
+            type: 'dagre',
+            rankdir: 'LR',
+            controlPoints: true,
+            nodesepFunc(x) {
+                // vertical spacing btw nodes
+                return 20
+            },
+            ranksepFunc(x) {
+                // horizontal spacing btw nodes
+                return 190
+            },
+            preset: {
+                nodes: model.value?.nodes?.map((node) => ({
+                    id: node.id,
+                    _order: node._order,
+                })),
+            },
+        })
+        // debugger
     }
     renderLayout()
     isComputeDone.value = true

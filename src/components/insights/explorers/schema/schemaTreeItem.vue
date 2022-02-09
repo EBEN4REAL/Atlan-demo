@@ -89,7 +89,7 @@
                                         >
                                         <AtlanIcon
                                             icon="AddAssetName"
-                                            class="w-4 h-4 my-auto"
+                                            class="w-4 h-4 my-auto focus:outline-none"
                                             :class="
                                                 item?.selected
                                                     ? 'tree-light-color'
@@ -229,7 +229,7 @@
                                         >
                                         <AtlanIcon
                                             icon="AddAssetName"
-                                            class="w-4 h-4 my-auto"
+                                            class="w-4 h-4 my-auto focus:outline-none"
                                             :class="
                                                 item?.selected
                                                     ? 'tree-light-color'
@@ -405,7 +405,7 @@
                                             <div class="flex items-center h-8">
                                                 <AtlanIcon
                                                     icon="AddAssetName"
-                                                    class="w-4 h-4 my-auto mr-1.5"
+                                                    class="w-4 h-4 my-auto mr-1.5 focus:outline-none"
                                                 ></AtlanIcon>
                                                 <span
                                                     >Place name in editor</span
@@ -485,7 +485,7 @@
                                     >
                                     <AtlanIcon
                                         icon="AddAssetName"
-                                        class="w-4 h-4 my-auto"
+                                        class="w-4 h-4 my-auto focus:outline-none"
                                         :class="
                                             item?.selected
                                                 ? 'tree-light-color'

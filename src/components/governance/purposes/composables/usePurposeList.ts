@@ -47,7 +47,7 @@ watch(
         selectedPurpose.value = undefined
 
     },
-    { immediate: true }
+    { immediate: true, deep: true }
 )
 // Filtered Purpose List
 export const searchTerm = ref('')

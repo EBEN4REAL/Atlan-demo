@@ -32,14 +32,10 @@
                         </a-menu-item>
                     </template>
                 </DeleteResource>
-                <a-menu-item
-                    key="copyLink"
-                    class="px-4 py-2"
-                    @click="handleCopy"
-                >
+                <a-menu-item key="copyLink" class="py-2" @click="handleCopy">
                     <div class="flex items-center">
                         <AtlanIcon icon="CopyOutlined" />
-                        <span class="pl-2 text-sm"> Copy link </span>
+                        <span class="pl-2 text-sm">Copy link</span>
                     </div>
                 </a-menu-item>
             </a-menu>

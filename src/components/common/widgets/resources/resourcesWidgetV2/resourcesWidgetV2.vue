@@ -13,8 +13,7 @@
                 v-if="
                     hasAtleastOneSlackLink &&
                     !userSlackStatus.configured &&
-                    tenantSlackStatus.configured &&
-                    $refs.wrapper?.clientWidth >= 500
+                    tenantSlackStatus.configured
                 "
             >
                 <SlackConnect />
@@ -63,14 +62,8 @@
                 </div>
             </template>
             <template v-else>
-                <div
-                    class="grid gap-3"
-                    :class="{
-                        'grid-cols-1': $refs.wrapper?.clientWidth < 500,
-                        'grid-cols-2': $refs.wrapper?.clientWidth >= 500,
-                    }"
-                >
-                    <template
+                <div class="grid grid-cols-2 gap-3">
+                    <!-- <template
                         v-if="
                             hasAtleastOneSlackLink &&
                             !userSlackStatus.configured &&
@@ -79,7 +72,7 @@
                         "
                     >
                         <SlackConnect />
-                    </template>
+                    </template> -->
                     <div
                         v-for="l in resources"
                         :key="l.qualifiedName"

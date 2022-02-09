@@ -870,7 +870,7 @@
                                 </div>
                                 <template #title>
                                     <span
-                                        >Object -
+                                        >Parent Object -
                                         {{
                                             parentObject(item)?.attributes?.name
                                         }}</span

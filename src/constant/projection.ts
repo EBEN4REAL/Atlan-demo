@@ -126,6 +126,7 @@ export const AssetAttributes = [
     'isCustom',
     'inlineHelpText',
     'picklistValues',
+    'formula',
 ]
 
 export const SQLAttributes = [

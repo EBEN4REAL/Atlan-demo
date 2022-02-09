@@ -181,7 +181,7 @@
             "
             class="flex flex-col text-sm"
         >
-            <span class="mb-1 text-sm text-gray-500">Object</span>
+            <span class="mb-1 text-sm text-gray-500">Parent Object</span>
             <span
                 class="font-bold cursor-pointer text-primary hover:underline"
                 @click="handleOpenDrawer(parentObject(asset)?.guid)"

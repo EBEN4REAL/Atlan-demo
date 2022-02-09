@@ -230,6 +230,23 @@
 
         <div
             v-if="
+                ['SalesforceField'].includes(selectedAsset?.typeName) &&
+                formula(selectedAsset) &&
+                formula(selectedAsset) !== ''
+            "
+            class="flex px-5"
+        >
+            <div class="flex flex-col w-full text-sm">
+                <span class="mb-1 text-sm text-gray-500">Formula</span>
+                <DetailsContainer
+                    :text="formula(selectedAsset)"
+                    class="rounded-lg"
+                />
+            </div>
+        </div>
+
+        <div
+            v-if="
                 [
                     'SalesforceOrganization',
                     'SalesforceReport',
@@ -267,11 +284,7 @@
             <div class="flex flex-col text-sm">
                 <div class="mb-1 text-sm text-gray-500">Report Type</div>
                 <div class="text-gray-700">
-                    Label : {{ selectedAsset?.attributes?.reportType?.label }}
-                </div>
-                <div class="text-gray-700">
-                    Type <span class="ml-1">:</span>
-                    {{ selectedAsset?.attributes?.reportType?.type }}
+                    {{ selectedAsset?.attributes?.reportType?.label }}
                 </div>
             </div>
         </div>
@@ -307,14 +320,12 @@
             "
             class="flex px-5"
         >
-            <div class="flex flex-col text-sm">
+            <div class="flex flex-col w-full text-sm">
                 <span class="mb-1 text-sm text-gray-500">Detail Columns</span>
-                <div
-                    v-for="(col, index) in detailColumns(selectedAsset)"
-                    :key="index"
-                >
-                    <span class="font-semibold break-words">{{ col }}</span>
-                </div>
+                <DetailsContainer
+                    :array="detailColumns(selectedAsset)"
+                    class="rounded-lg"
+                />
             </div>
         </div>
 
@@ -325,14 +336,12 @@
             "
             class="flex px-5"
         >
-            <div class="flex flex-col text-sm">
+            <div class="flex flex-col w-full text-sm">
                 <span class="mb-1 text-sm text-gray-500">Picklist Values</span>
-                <div
-                    v-for="(val, index) in picklistValues(selectedAsset)"
-                    :key="index"
-                >
-                    <span class="font-semibold break-words">{{ val }}</span>
-                </div>
+                <DetailsContainer
+                    :array="picklistValues(selectedAsset)"
+                    class="rounded-lg"
+                />
             </div>
         </div>
 
@@ -396,14 +405,13 @@
             "
             class="flex px-5"
         >
-            <div class="flex flex-col text-sm">
+            <div class="flex flex-col w-full text-sm">
                 <span class="mb-1 text-sm text-gray-500">Fields</span>
-                <div
-                    v-for="(field, index) in fieldsLookerQuery(selectedAsset)"
-                    :key="index"
-                >
-                    <span class="font-semibold break-words">{{ field }}</span>
-                </div>
+
+                <DetailsContainer
+                    :array="fieldsLookerQuery(selectedAsset)"
+                    class="rounded-lg"
+                />
             </div>
         </div>
 
@@ -809,6 +817,7 @@
     import SubFolderCount from '@/common/widgets/summary/types/subFolderCount.vue'
     import ParentContext from '@/common/widgets/summary/types/parentContext.vue'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
+    import DetailsContainer from '@common/assets/misc/detailsOverflowContainer.vue'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -834,6 +843,7 @@
             SubFolderCount,
             ParentContext,
             FieldCount,
+            DetailsContainer,
             SampleDataTable: defineAsyncComponent(
                 () =>
                     import(
@@ -915,6 +925,7 @@
                 detailColumns,
                 picklistValues,
                 sourceId,
+                formula,
             } = useAssetInfo()
 
             const {
@@ -1050,6 +1061,7 @@
                 detailColumns,
                 picklistValues,
                 sourceId,
+                formula,
             }
         },
     })

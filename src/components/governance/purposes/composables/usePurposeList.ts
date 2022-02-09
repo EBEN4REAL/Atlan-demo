@@ -1,79 +1,64 @@
-// import { invoke, until } from '@vueuse/core'
-import { ref, computed, watch } from 'vue'
-import usePurposeService from './usePurposeService'
-import { safeArray } from '~/utils/array'
+import { ref, computed, watch, toRefs } from 'vue'
 import { usePurposeStore } from '~/store/purpose'
-// !! THESE ARE ALL PURPOSES, VARIABLE NAMES ARE NEED TO BE CHANGED FROM PERSONA REF TO PURPOSE
-// TODO make use of store for list
-const { listPurposes } = usePurposeService()
-const {
-    data: list,
-    isLoading: isPersonaLoading,
-    error: isPersonaError,
-    isReady: isPersonaListReady,
-    mutate: reFetchList,
-} = listPurposes()
+import usePurpose from '~/composables/purpose/usePurpose'
+import { Purpose } from '~/services/service/purpose'
+
 
 const purposeStore = usePurposeStore()
-const personaList = ref([])
+const { updatePurpose: handleUpdateList } = purposeStore
+const { getList: purposeList } = toRefs(purposeStore)
 
-watch(list, () => {
-    purposeStore.setList(list.value?.records)
-    personaList.value = safeArray(list.value?.records)
-})
+const { mutate: reFetchList, isLoading: isPurposeLoading, error: isPurposeError, isReady: isPurposeListReady } = usePurpose(false)
 
-const handleUpdateList = (newVal) => {
-    personaList.value = personaList.value.map((el) => {
-        if(el.id === newVal.id){
-            return {...el, ...newVal}
+const refetchPurpose = (id) => {
+    const { data, isLoading, isReady, error, mutate } = Purpose.getPurposeByID(id)
+    watch([data, error], () => {
+        if (data?.value) {
+            handleUpdateList(data.value)
         }
-            return el
-        
     })
 }
 
+
 export {
     reFetchList,
-    personaList,
-    isPersonaListReady,
-    isPersonaLoading,
-    isPersonaError,
+    refetchPurpose,
+    purposeList,
+    isPurposeListReady,
+    isPurposeLoading,
+    isPurposeError,
     handleUpdateList
 }
-// Selected Persona Details
-export const selectedPersonaId = ref('')
-export const selectedPersona = ref()
+
+// Selected purpose Details
+export const selectedPurposeId = ref('')
+export const selectedPurpose = ref()
 watch(
-    [selectedPersonaId, personaList],
+    [selectedPurposeId, purposeList],
     () => {
-        if (selectedPersonaId.value) {
-            const t = personaList.value?.find(
-                (ps) => ps.id == selectedPersonaId.value
+        if (selectedPurposeId.value) {
+            const t = purposeList.value?.find(
+                (ps) => ps.id == selectedPurposeId.value
             )
-            if (!t) selectedPersona.value = undefined
-            selectedPersona.value = { ...t }
+            if (!t) selectedPurpose.value = undefined
+            selectedPurpose.value = { ...t }
             return
         }
-        selectedPersona.value = undefined
+        selectedPurpose.value = undefined
 
     },
     { immediate: true }
 )
-// Filtered Persona List
+// Filtered Purpose List
 export const searchTerm = ref('')
-export const filteredPersonas = computed(() => {
+export const filteredPurposes = computed(() => {
     if (searchTerm.value) {
-        return personaList.value.filter((ps) =>
+        return purposeList.value.filter((ps) =>
             ps.displayName
                 ?.toLowerCase()
                 .includes(searchTerm.value?.toLowerCase())
         )
     }
-    return personaList.value
+    return purposeList.value
 })
 
-// invoke(async () => {
-//     await until(isPersonaListReady).toBe(true)
-//     if (personaList.value?.length)
-//         selectedPersonaId.value = personaList.value[0].id!
-// })

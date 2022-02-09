@@ -136,7 +136,7 @@
     } from '../composables/useEditPurpose'
     import { setActiveTab } from '../composables/usePurposeTabs'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
-    import { selectedPersona } from '../composables/usePurposeList'
+    import { selectedPurpose } from '../composables/usePurposeList'
     import PopOverUser from '@/common/popover/user/user.vue'
     import UserPill from '@/common/pills/user.vue'
     import { formatDateTime } from '~/utils/date'
@@ -205,7 +205,7 @@
                     })
                 } catch (error) {
                     selectedPersonaDirty.value = {
-                        ...JSON.parse(JSON.stringify(selectedPersona.value)),
+                        ...JSON.parse(JSON.stringify(selectedPurpose.value)),
                     }
                     selectedClassifications.value = [
                         ...toRaw(mapClassificationsFromNames.value),
@@ -219,7 +219,7 @@
                 }
             }
 
-            watch(selectedPersona, () => {
+            watch(selectedPurpose, () => {
                 selectedClassifications.value =
                     mapClassificationsFromNames.value
             })
@@ -296,7 +296,7 @@
             }
             return {
                 timeStamp,
-                selectedPersona,
+                selectedPurpose,
                 updateClassifications,
                 selectedPersonaDirty,
                 selectedClassifications,

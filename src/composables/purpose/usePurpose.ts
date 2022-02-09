@@ -3,16 +3,16 @@ import Qs from 'qs'
 import { Purpose } from '~/services/service/purpose'
 import { usePurposeStore } from '~/store/purpose'
 
-export default function usePurpose() {
+export default function usePurpose(immediate = true) {
 
-    const { data } = Purpose.List({
-        columns: ['attributes', 'createdAt', 'createdBy', 'dataPolicies', 'description', 'displayName', 'enabled', 'id', 'isActive', 'level', 'metadataPolicies', 'name', 'resources', 'tags', 'updatedAt', 'version']
-    }, { 
+    const { data, isLoading, isReady, error, mutate } = Purpose.List({
+        columns: ['attributes', 'readme', 'createdAt', 'createdBy', 'dataPolicies', 'description', 'displayName', 'enabled', 'id', 'isActive', 'level', 'metadataPolicies', 'name', 'resources', 'tags', 'updatedAt', 'version']
+    }, {
+        asyncOptions: { immediate },
         options: {
-            paramsSerializer:  (params) => Qs.stringify(params, {arrayFormat: 'repeat'})
-
-            }
+            paramsSerializer: (params) => Qs.stringify(params, { arrayFormat: 'repeat' })
         }
+    }
     )
     const purposeStore = usePurposeStore()
     watch(data, () => {
@@ -20,6 +20,6 @@ export default function usePurpose() {
         // console.log(tenantStore.tenantRaw)
     })
     return {
-        data,
+        data, isLoading, isReady, error, mutate
     }
 }

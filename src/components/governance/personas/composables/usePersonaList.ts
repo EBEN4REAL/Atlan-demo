@@ -3,8 +3,6 @@ import { usePersonaStore } from '~/store/persona'
 import usePersona from '~/composables/persona/usePersona'
 import { Persona } from '~/services/service/persona'
 
-// TODO make use of store for persona list
-
 const personaStore = usePersonaStore()
 const { updatePersona: handleUpdateList } = personaStore
 const { getList: personaList } = toRefs(personaStore)

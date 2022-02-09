@@ -59,7 +59,7 @@
     import { whenever } from '@vueuse/core'
     import CreationModal from '@/admin/common/addModal.vue'
     import {
-        selectedPersonaId,
+        selectedPurposeId,
         reFetchList,
     } from './composables/usePurposeList'
     import { IPurpose } from '~/types/accessPolicies/purposes'
@@ -151,7 +151,7 @@
                     title.value = ''
 
                     reFetchList().then(() => {
-                        selectedPersonaId.value = newPurpose.id!
+                        selectedPurposeId.value = newPurpose.id!
                         modalVisible.value = false
                     })
                     useAddEvent('governance', 'purpose', 'created')

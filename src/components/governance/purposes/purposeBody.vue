@@ -272,7 +272,7 @@
         PolicyType,
     } from './composables/useEditPurpose'
     import { activeTabKey, tabConfig } from './composables/usePurposeTabs'
-    import { selectedPersona } from './composables/usePurposeList'
+    import { selectedPurpose } from './composables/usePurposeList'
     import AssetList from '@/common/assetList/assetList.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import usePurposeResources from '@/governance/purposes/composables/usePurposeResources'
@@ -517,7 +517,7 @@
                 filterConfig,
                 newIdTag,
                 userId,
-                selectedPersona,
+                selectedPurpose,
                 activeTabKey,
                 tabConfig,
                 selectedPersonaDirty,

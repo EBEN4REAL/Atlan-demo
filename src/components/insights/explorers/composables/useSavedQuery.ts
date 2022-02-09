@@ -78,6 +78,8 @@ export function useSavedQuery(
     }
 
     const openSavedQueryInNewTab = async (savedQuery: SavedQuery) => {
+        const key = generateUUID()
+
         let decodedVariables = decodeBase64Data(
             savedQuery?.attributes?.variablesSchemaBase64
         ) as CustomVaribaleInterface[]
@@ -207,6 +209,7 @@ export function useSavedQuery(
                         runQueryId: undefined,
                         buttonDisable: false,
                         eventSourceInstance: undefined,
+                        tabQueryState: false,
                     },
                     metadata: {},
                     queries: {},
@@ -279,10 +282,16 @@ export function useSavedQuery(
             parentTitle:
                 savedQuery?.value?.attributes?.parent?.attributes?.name,
         })
+
+        const activeInlineTabKeyCopy = activeInlineTabKey.value
+
+        const tabIndex = tabsArray.value.findIndex(
+            (tab) => tab.key === activeInlineTabKeyCopy
+        )
+
         setTimeout(() => {
-            console.log('active tab copy: ', activeInlineTab)
             queryRun(
-                activeInlineTab,
+                tabIndex,
                 getData,
                 limitRows,
                 onRunCompletion,
@@ -290,7 +299,8 @@ export function useSavedQuery(
                 savedQuery.value?.attributes.rawQuery,
                 editorInstance,
                 monacoInstance,
-                activeInlineTab?.value?.playground?.isVQB
+                ref(activeInlineTab?.value?.playground?.isVQB),
+                tabsArray
             )
         }, 250)
     }

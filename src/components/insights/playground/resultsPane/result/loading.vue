@@ -26,8 +26,8 @@
             ) as Ref<activeInlineTabInterface>
             const isQueryRunning = computed(
                 () =>
-                    activeInlineTab.value.playground.resultsPane.result
-                        .isQueryRunning
+                    activeInlineTab.value?.playground?.resultsPane?.result
+                        ?.isQueryRunning
             )
             return {
                 isQueryRunning,

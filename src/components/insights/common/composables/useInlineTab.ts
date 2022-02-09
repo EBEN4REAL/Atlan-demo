@@ -247,6 +247,8 @@ export function useInlineTab(
         tabsArray.value.find((tab) => tab.key === activeInlineTabKey.value)
     )
 
+    const activeTabKey = computed(() => setActiveInlineTabKey())
+
     const setVQBInInlineTab = (
         activeTab: activeInlineTabInterface,
         tabsArray: Ref<activeInlineTabInterface[]>,
@@ -279,5 +281,6 @@ export function useInlineTab(
         overwriteInlineTab,
         changeInlineTabeKey,
         setVQBInInlineTab,
+        activeTabKey,
     }
 }

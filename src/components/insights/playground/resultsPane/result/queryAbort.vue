@@ -30,20 +30,20 @@
             ) as Ref<activeInlineTabInterface>
             const isQueryRunning = computed(
                 () =>
-                    activeInlineTab.value.playground.resultsPane.result
-                        .isQueryRunning
+                    activeInlineTab.value?.playground?.resultsPane?.result
+                        ?.isQueryRunning
             )
 
             const isQueryAborted = computed(
                 () =>
-                    activeInlineTab.value.playground.resultsPane.result
-                        .isQueryAborted
+                    activeInlineTab.value?.playground?.resultsPane?.result
+                        ?.isQueryAborted
             )
 
             const queryErrorObj = computed(
                 () =>
-                    activeInlineTab.value.playground.resultsPane.result
-                        .queryErrorObj
+                    activeInlineTab.value?.playground?.resultsPane?.result
+                        ?.queryErrorObj
             )
 
             return {

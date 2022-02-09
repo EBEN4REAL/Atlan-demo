@@ -410,9 +410,15 @@
 
                     // console.log('run query: ', savedQueryInfo.value)
 
+                    const activeInlineTabKeyCopy = activeInlineTabKey.value
+
+                    const tabIndex = tabsArray.value.findIndex(
+                        (tab) => tab.key === activeInlineTabKeyCopy
+                    )
+
                     if (runQuery.value === 'true') {
                         queryRun(
-                            activeInlineTab,
+                            tabIndex,
                             getData,
                             limitRows,
                             null,
@@ -420,7 +426,8 @@
                             savedQueryInfo.value?.attributes.rawQuery,
                             editorInstance,
                             monacoInstance,
-                            showVQB
+                            showVQB,
+                            tabsArray
                         )
                     }
                 }
@@ -484,6 +491,7 @@
                     modifyActiveInlineTabEditor(
                         activeInlineTabCopy,
                         tabsArray,
+                        false,
                         saveQueryDataInLocalStorage
                     )
                     // setSelection(
@@ -623,6 +631,7 @@
                                 abortQueryFn: undefined,
                                 buttonDisable: false,
                                 isQueryAborted: false,
+                                tabQueryState: false,
                             },
                             metadata: {},
                             queries: {},
@@ -672,16 +681,24 @@
 
                 inlineTabAdd(queryTab, tabsArray, activeInlineTabKey)
 
+                const activeInlineTabKeyCopy = activeInlineTabKey.value
+
+                const tabIndex = tabsArray.value.findIndex(
+                    (tab) => tab.key === activeInlineTabKeyCopy
+                )
+
                 // console.log('detect query: ', newQuery)
                 queryRun(
-                    activeInlineTab,
+                    tabIndex,
                     getData,
                     limitRows,
                     null,
                     null,
                     newQuery,
                     editorInstance,
-                    monacoInstance
+                    monacoInstance,
+                    openVQB,
+                    tabsArray
                 )
             }
 

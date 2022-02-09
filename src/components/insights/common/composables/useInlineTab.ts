@@ -250,7 +250,7 @@ export function useInlineTab(
         )
     })
 
-    const activeTabKey = computed(() => setActiveInlineTabKey())
+    // const activeTabKey = computed(() => setActiveInlineTabKey())
 
     const setVQBInInlineTab = (
         activeTab: activeInlineTabInterface,
@@ -284,6 +284,6 @@ export function useInlineTab(
         overwriteInlineTab,
         changeInlineTabeKey,
         setVQBInInlineTab,
-        activeTabKey,
+        // activeTabKey,
     }
 }

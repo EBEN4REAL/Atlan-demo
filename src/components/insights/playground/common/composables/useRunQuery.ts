@@ -30,7 +30,7 @@ export default function useRunQuery() {
         getConnectionQualifiedName,
         getConnectorName,
     } = useConnector()
-    const { modifyActiveInlineTab, activeTabKey } = useInlineTab()
+    // const { modifyActiveInlineTab, activeTabKey } = useInlineTab()
 
     const setColumns = (columnList: Ref<any>, columns: any) => {
         // console.log('columns: ', columns)

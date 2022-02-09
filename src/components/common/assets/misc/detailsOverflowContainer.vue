@@ -1,17 +1,19 @@
 <template>
     <div class="relative">
         <div
-            class="max-w-full p-4 overflow-x-auto overflow-y-auto rounded"
+            class="max-w-full p-4 overflow-y-auto rounded"
             :class="background === '' ? 'bg-gray-100' : background"
             style="max-height: 220px"
         >
-            <template v-if="text !== ''">{{ text }}</template>
+            <template v-if="text !== ''" class="text-gray-700">{{
+                text
+            }}</template>
 
-            <template v-else-if="array.length > 0"
-                ><div v-for="(str, index) in array" :key="index">
-                    <span class="font-semibold break-words">{{ str }}</span>
-                </div></template
-            >
+            <div v-else-if="array.length > 0" class="flex flex-col gap-y-1">
+                <span v-for="(str, index) in array" :key="index">
+                    <span class="text-gray-700 break-words">{{ str }}</span>
+                </span>
+            </div>
         </div>
         <div
             class="absolute px-1 py-0.5 bg-white rounded shadow cursor-pointer top-3 right-3"
@@ -68,9 +70,3 @@
         },
     })
 </script>
-<style lang="less"></style>
-<style lang="less" scoped>
-    .keep-spaces {
-        white-space: pre-wrap;
-    }
-</style>

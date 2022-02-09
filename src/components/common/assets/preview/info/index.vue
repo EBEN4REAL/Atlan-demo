@@ -230,6 +230,23 @@
 
         <div
             v-if="
+                ['SalesforceField'].includes(selectedAsset?.typeName) &&
+                formula(selectedAsset) &&
+                formula(selectedAsset) !== ''
+            "
+            class="flex px-5"
+        >
+            <div class="flex flex-col w-full text-sm">
+                <span class="mb-1 text-sm text-gray-500">Formula</span>
+                <DetailsContainer
+                    :text="formula(selectedAsset)"
+                    class="rounded-lg"
+                />
+            </div>
+        </div>
+
+        <div
+            v-if="
                 [
                     'SalesforceOrganization',
                     'SalesforceReport',
@@ -912,6 +929,7 @@
                 detailColumns,
                 picklistValues,
                 sourceId,
+                formula,
             } = useAssetInfo()
 
             const {
@@ -1047,6 +1065,7 @@
                 detailColumns,
                 picklistValues,
                 sourceId,
+                formula,
             }
         },
     })

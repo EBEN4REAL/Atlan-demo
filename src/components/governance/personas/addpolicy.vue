@@ -86,7 +86,7 @@
                         :whitelisted-connections="
                             isEdit ? null : whitelistedConnectionIds
                         "
-                        :hide-power-bi="isEdit ? false : type === 'data' ? true : false"
+                        :filterSourceIds="policyType !== 'meta' ? BItypes : []"
                         :show-empty-parents="isEdit ? true : false"
                         class="mb-6"
                         :class="isEdit ? 'edit-connector' : ''"
@@ -447,6 +447,7 @@
     import DataMaskingSelector from './policies/dataMaskingSelector.vue'
     import { IPersona } from '~/types/accessPolicies/personas'
     import useScopeService from './composables/useScopeService'
+    import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
 
     export default defineComponent({
         name: 'AddPolicy',
@@ -513,6 +514,7 @@
             const { showDrawer, type, isEdit, selectedPolicy } = toRefs(props)
             const policy = ref({})
             const connectionStore = useConnectionStore()
+            const BItypes = getBISourceTypes()
 
             const rules = ref({
                 policyName: {
@@ -548,6 +550,7 @@
                     policy.value.connectionId = found?.guid
                 },
             })
+
             const assets = computed({
                 get: () => {
                     if (policy.value.assets.length > 0)
@@ -801,6 +804,7 @@
                 handleChangeAssets,
                 canEdit,
                 disabledForm,
+                BItypes,
             }
         },
     })

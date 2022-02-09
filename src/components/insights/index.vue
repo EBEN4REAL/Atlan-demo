@@ -181,6 +181,8 @@
         setup(props) {
             const observer = ref()
             const splitpaneRef = ref()
+            const isTabClosed: Ref<undefined | string> = ref(undefined)
+            const isTabAdded: Ref<undefined | string> = ref(undefined)
 
             const savedQueryInfo = inject('savedQueryInfo') as Ref<
                 SavedQuery | undefined
@@ -277,8 +279,6 @@
                 activeTabCollection,
             } = useActiveQueryAccess(activeInlineTab)
 
-            // watch(activeInlineTab, () => {})
-
             const sidebarPaneSize = computed(() =>
                 activeInlineTab.value?.assetSidebar?.isVisible
                     ? assetSidebarPaneSize.value
@@ -370,6 +370,8 @@
                 readAccessCollections,
                 writeAccessCollections,
                 limitRows: limitRows,
+                isTabClosed: isTabClosed,
+                isTabAdded: isTabAdded,
                 updateAssetCheck,
             }
             useProvide(provideData)
@@ -378,7 +380,7 @@
             /* Watchers for syncing in localstorage */
             watch(activeInlineTabKey, () => {
                 syncActiveInlineTabKeyInLocalStorage(activeInlineTabKey.value)
-                syncInlineTabsInLocalStorage(tabsArray.value)
+                syncInlineTabsInLocalStorage(toRaw(tabsArray.value))
             })
 
             /* Watcher for all the things changes in activeInline tab */
@@ -386,19 +388,22 @@
                 () => activeInlineTab.value?.playground.vqb,
                 () => {
                     console.log('editor data')
-                    syncInlineTabsInLocalStorage(tabsArray.value)
+                    syncInlineTabsInLocalStorage(toRaw(tabsArray.value))
                 },
                 { deep: true }
             )
 
             watch(savedQueryInfo, () => {
                 if (savedQueryInfo.value?.guid) {
-                    openSavedQueryInNewTab({
-                        ...savedQueryInfo.value,
-                        parentTitle:
-                            savedQueryInfo.value?.attributes?.parent?.attributes
-                                ?.name,
-                    })
+                    openSavedQueryInNewTab(
+                        {
+                            ...savedQueryInfo.value,
+                            parentTitle:
+                                savedQueryInfo.value?.attributes?.parent
+                                    ?.attributes?.name,
+                        },
+                        isTabAdded
+                    )
 
                     selectFirstCollectionByDefault(
                         queryCollections.value,
@@ -410,9 +415,15 @@
 
                     // console.log('run query: ', savedQueryInfo.value)
 
+                    const activeInlineTabKeyCopy = activeInlineTabKey.value
+
+                    const tabIndex = tabsArray.value.findIndex(
+                        (tab) => tab.key === activeInlineTabKeyCopy
+                    )
+
                     if (runQuery.value === 'true') {
                         queryRun(
-                            activeInlineTab,
+                            tabIndex,
                             getData,
                             limitRows,
                             null,
@@ -420,7 +431,8 @@
                             savedQueryInfo.value?.attributes.rawQuery,
                             editorInstance,
                             monacoInstance,
-                            showVQB
+                            showVQB,
+                            tabsArray
                         )
                     }
                 }
@@ -484,6 +496,7 @@
                     modifyActiveInlineTabEditor(
                         activeInlineTabCopy,
                         tabsArray,
+                        false,
                         saveQueryDataInLocalStorage
                     )
                     // setSelection(
@@ -623,6 +636,7 @@
                                 abortQueryFn: undefined,
                                 buttonDisable: false,
                                 isQueryAborted: false,
+                                tabQueryState: false,
                             },
                             metadata: {},
                             queries: {},
@@ -672,16 +686,24 @@
 
                 inlineTabAdd(queryTab, tabsArray, activeInlineTabKey)
 
+                const activeInlineTabKeyCopy = activeInlineTabKey.value
+
+                const tabIndex = tabsArray.value.findIndex(
+                    (tab) => tab.key === activeInlineTabKeyCopy
+                )
+
                 // console.log('detect query: ', newQuery)
                 queryRun(
-                    activeInlineTab,
+                    tabIndex,
                     getData,
                     limitRows,
                     null,
                     null,
                     newQuery,
                     editorInstance,
-                    monacoInstance
+                    monacoInstance,
+                    openVQB,
+                    tabsArray
                 )
             }
 

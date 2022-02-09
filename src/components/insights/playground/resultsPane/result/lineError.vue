@@ -104,11 +104,14 @@
                         const editorText =
                             activeInlineTab.value.playground.editor.text
                         /* [["Line 3", "3"], ["line 3", "3"]] */
+
                         const linesInfo = [
                             ...queryErrorObj.value.errorMessage?.matchAll(
                                 lineRegex
                             ),
                         ]
+                        if (linesInfo?.length < 1 || linesInfo[0]?.length < 1)
+                            return
                         console.log(linesInfo, 'linesInfo')
                         // debugger
                         /* [["column 4", "4"], ["column 7", "7"]]*/
@@ -117,11 +120,14 @@
                                 columnRegex
                             ),
                         ]
-                        pos.value = {
-                            startLine: linesInfo[0][1],
-                            startColumn: columnsInfo[0][1],
-                            endLine: undefined,
-                            endColumn: undefined,
+                        // console.log('error: ', queryErrorObj)
+                        if (linesInfo.length > 0) {
+                            pos.value = {
+                                startLine: linesInfo[0][1],
+                                startColumn: columnsInfo[0][1],
+                                endLine: undefined,
+                                endColumn: undefined,
+                            }
                         }
 
                         if (linesInfo.length > 1) {

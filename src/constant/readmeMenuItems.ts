@@ -13,7 +13,7 @@ export interface CommandItem {
 
 export const blockMenu: CommandItem[] = [
     {
-        title: 'H1',
+        title: 'Heading 1',
         key: 'heading-1',
         level: 1,
         helpText: '',
@@ -30,7 +30,7 @@ export const blockMenu: CommandItem[] = [
                 : editor.chain().focus().toggleHeading({ level: 1 }).run(),
     },
     {
-        title: 'H2',
+        title: 'Heading 2',
         key: 'heading-2',
         level: 2,
         helpText: '',
@@ -47,7 +47,7 @@ export const blockMenu: CommandItem[] = [
                 : editor.chain().focus().toggleHeading({ level: 2 }).run(),
     },
     {
-        title: 'H3',
+        title: 'Heading 3',
         key: 'heading-3',
         level: 3,
         icon: 'HThree',
@@ -66,7 +66,7 @@ export const blockMenu: CommandItem[] = [
     },
 
     {
-        title: 'Unordered List',
+        title: 'Bulleted List',
         key: 'bulletList',
         helpText: '',
         icon: 'BulletList',
@@ -83,7 +83,7 @@ export const blockMenu: CommandItem[] = [
                 : editor.chain().focus().toggleBulletList().run(),
     },
     {
-        title: 'Ordered List',
+        title: 'Numbered List',
         key: 'orderedList',
         helpText: '',
         icon: 'NumberedList',
@@ -102,7 +102,7 @@ export const blockMenu: CommandItem[] = [
     },
 
     {
-        title: 'TaskList',
+        title: 'Checklist',
         key: 'taskList',
         helpText: '',
         icon: 'TaskList',
@@ -118,7 +118,7 @@ export const blockMenu: CommandItem[] = [
                 : editor.chain().focus().toggleTaskList().run(),
     },
     {
-        title: 'Blockquote',
+        title: 'Quote',
         key: 'blockquote',
         helpText: '',
         icon: 'Quotes',
@@ -134,7 +134,7 @@ export const blockMenu: CommandItem[] = [
                 : editor.chain().focus().toggleBlockquote().run(),
     },
     {
-        title: 'Code Block',
+        title: 'Code',
         key: 'codeBlock',
         helpText: '',
         icon: 'Code',
@@ -151,7 +151,7 @@ export const blockMenu: CommandItem[] = [
                 : editor.chain().focus().toggleImageBlock().run(),
     },
     {
-        title: 'Image Block',
+        title: 'Image',
         key: 'uploadimage',
         helpText: '',
         icon: 'ReadmeImage',

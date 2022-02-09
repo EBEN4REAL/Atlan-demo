@@ -230,9 +230,11 @@
                         duration: 2,
                     })
                 } else {
+                    let updatedChannelCount = channels.value.length
                     if (updateData.value?.failedChannels) {
                         const { failedChannels } = updateData.value
                         handleFailed(failedChannels)
+                        updatedChannelCount -= failedChannels.length
                         message.error({
                             content: `Unable to add some channels: "${failedChannels.join(
                                 ', '
@@ -242,6 +244,15 @@
                         })
                     }
                     refetchIntegration(pV.value.id)
+                    useAddEvent(
+                        'integration',
+                        'slack',
+                        'share_channels_updated',
+                        {
+                            channel_count: updatedChannelCount,
+                        }
+                    )
+
                     message.success({
                         content: 'Updated channels successfully.',
                         key: 'addChannel',

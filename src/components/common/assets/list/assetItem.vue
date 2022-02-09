@@ -942,9 +942,9 @@
                                 </div>
                             </template>
                         </div>
-                        <div v-if="categories(item)?.length === 1">
+                        <div v-if="categories(item)?.length > 0" class="flex items-center gap-x-2">
                             <div
-                                v-for="cat in categories(item)"
+                                v-for="cat in categories(item).slice(0,2)"
                                 :key="cat.guid"
                                 class="flex items-center border rounded-full bg-white px-2 py-1 text-primary mt-1 group hover:text-white hover:bg-primary"
                                 style="max-width: 200px"
@@ -969,7 +969,7 @@
                         <a-popover
                             trigger="hover"
                             placement="bottomLeft"
-                            v-if="categories(item)?.length > 1"
+                            v-if="categories(item)?.slice(2)?.length > 0"
                             overlayClassName="max-w-xs"
                         >
                             <template #content>
@@ -977,7 +977,7 @@
                                     class="flex items-center flex-wrap gap-x-2 gap-y-2 px-2 py-2"
                                 >
                                     <div
-                                        v-for="cat in categories(item)"
+                                        v-for="cat in categories(item)?.slice(2)"
                                         :key="cat.guid"
                                         class="flex items-center border rounded-full bg-white px-2 py-1 text-primary hover:text-white hover:bg-primary group"
                                         style="max-width: 200px"
@@ -1013,7 +1013,7 @@
                                     class="h-4"
                                 ></AtlanIcon>
 
-                                in {{ categories(item)?.length }}
+                                in {{ categories(item)?.slice(2)?.length }}
                                 {{
                                     categories(item)?.length === 1
                                         ? 'Category'

@@ -1,7 +1,7 @@
 <template>
     <div
         ref="editorDiv"
-        class="flex flex-col p-6 bg-white border border-gray-200 rounded"
+        class="flex flex-col bg-white border border-gray-200 rounded-lg"
         :class="isEditMode ? 'editor-open' : 'editor-close'"
         @transitionend="
             () => {
@@ -9,14 +9,14 @@
             }
         "
     >
-        <div class="flex items-center justify-between mb-3">
+        <div class="flex p-4 border-b border-gray-200">
             <div class="flex items-center">
-                <AtlanIcon icon="Readme" class="w-auto h-8 mr-3" /><span
+                <AtlanIcon icon="Readme" class="w-auto h-8 mr-2" /><span
                     class="text-base font-bold text-gray"
                     >Readme</span
                 >
             </div>
-            <div>
+            <div class="ml-auto">
                 <a-tooltip
                     placement="top"
                     :title="
@@ -29,20 +29,23 @@
                     <a-button
                         v-if="!localReadmeContent && !isEditMode"
                         :disabled="!isEdit"
-                        class="flex items-center"
-                        type="primary"
+                        class="flex items-center text-primary border-0 shadow-none"
+                        type="minimal"
                         @click="handleEditMode"
                         @transitionend.stop="() => {}"
                     >
-                        <AtlanIcon icon="Edit" class="w-auto h-4 mr-1" />Add a
-                        readme</a-button
+                        <AtlanIcon
+                            icon="Add"
+                            class="w-auto h-4 mr-1"
+                        />Add</a-button
                     ></a-tooltip
                 >
 
                 <div v-if="isEdit && isEditMode" class="flex gap-x-2">
                     <a-button
                         v-if="!isLoading"
-                        class="flex items-center"
+                        class="flex items-center border-0 shadow-none"
+                        type="minimal"
                         @click="handleCancel"
                         @transitionend.stop="() => {}"
                     >
@@ -71,8 +74,8 @@
                     <a-button
                         v-if="localReadmeContent && !isEditMode"
                         :disabled="!isEdit"
-                        class="flex items-center"
-                        type="primary"
+                        class="flex items-center text-primary border-0 shadow-none"
+                        type="minimal"
                         @click="handleEditMode"
                         @transitionend.stop="() => {}"
                     >
@@ -84,7 +87,7 @@
                 >
             </div>
         </div>
-        <div class="border-0 h-full">
+        <div class="border-0 h-full p-6">
             <Editor
                 ref="editor"
                 v-model="localReadmeContent"

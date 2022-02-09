@@ -133,45 +133,6 @@
 
                         <div class="flex items-center">
                             <div
-                                v-if="categories(item)?.length > 0"
-                                class="flex items-center mr-3 text-sm text-gray-500 gap-x-1"
-                            >
-                                in
-                                <div
-                                    v-for="(cat, index) in categories(item)"
-                                    v-if="
-                                        ['atlasglossaryterm'].includes(
-                                            item.typeName?.toLowerCase()
-                                        )
-                                    "
-                                    :key="cat.guid"
-                                    class="flex"
-                                >
-                                    <AtlanIcon
-                                        icon="Category"
-                                        class="h-4 mt-0.5 mr-1"
-                                    ></AtlanIcon>
-                                    {{ cat.attributes?.name }}
-                                    <span
-                                        v-if="
-                                            index ===
-                                                categories(item).length - 2 &&
-                                            categories(item).length > 1
-                                        "
-                                        class="ml-1"
-                                    >
-                                        and
-                                    </span>
-                                    <span
-                                        v-else-if="
-                                            index !==
-                                            categories(item).length - 1
-                                        "
-                                        >,</span
-                                    >
-                                </div>
-                            </div>
-                            <div
                                 v-if="parentCategory(item)"
                                 class="flex items-center mr-3 text-sm text-gray-500 gap-x-1"
                             >
@@ -980,6 +941,29 @@
                                     </TermPopover>
                                 </div>
                             </template>
+                        </div>
+                        <div
+                            v-if="categories(item)?.length > 0"
+                            class="flex items-center mr-3 text-sm gap-x-1 border rounded-full bg-white px-2 text-primary py-1 hover:bg-primary hover:text-white"
+                        >
+                            <AtlanIcon
+                                icon="Category"
+                                class="h-4 "
+                            ></AtlanIcon>
+
+                            in {{ categories(item)?.length }}
+                            {{
+                                categories(item)?.length === 1
+                                    ? 'Category'
+                                    : 'Categories'
+                            }}
+                            <!-- <div -->
+                            <!--     v-for="(cat, index) in categories(item)" -->
+                            <!--     :key="cat.guid" -->
+                            <!--     class="flex" -->
+                            <!-- > -->
+                            <!--     {{ cat.attributes?.name }} -->
+                            <!-- </div> -->
                         </div>
                     </div>
                 </div>

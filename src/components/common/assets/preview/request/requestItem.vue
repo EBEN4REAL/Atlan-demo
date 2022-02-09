@@ -29,7 +29,7 @@
                 </div>
                 <div
                     v-if="item.status === 'active'"
-                    class="flex hover-action bg-primary-light"
+                    class="flex -mr-1.5 hover-action linear-gradient"
                 >
                     <RequestDropdown
                         :type="'approve'"
@@ -42,6 +42,7 @@
                     <RequestDropdown
                         :type="'reject'"
                         :is-loading="isLoading"
+                        :class="'mr-cta'"
                         :item-drop-down="'Reject with comment'"
                         @submit="(message) => handleRejection(message || '')"
                     >
@@ -52,7 +53,7 @@
                     v-if="
                         item.status === 'rejected' || item.status === 'approved'
                     "
-                    class="flex items-center justify-end font-light whitespace-nowrap hover-reject-approve bg-primary-light"
+                    class="flex items-center justify-end font-light whitespace-nowrap hover-reject-approve linear-gradient"
                     :class="
                         item.status === 'approved'
                             ? 'text-success'
@@ -229,7 +230,16 @@
                         </div>
                     </a-popover>
                     <div class="ml-auto text-sm text-right text-gray-500">
-                        {{ createdTime(item.createdAt) }}
+                        <a-tooltip placement="topLeft">
+                            <template #title>
+                                <span>{{
+                                    dayjs(item.createdAt).format(
+                                        'MMM DD, YYYY, hh:mm:ss a'
+                                    )
+                                }}</span>
+                            </template>
+                            {{ createdTime(item.createdAt) }}
+                        </a-tooltip>
                     </div>
                 </div>
             </div>
@@ -488,7 +498,7 @@
             </a-dropdown>
         </div> -->
         </div>
-        <div class="mx-4 mt-1 border-b border-gray-300" />
+        <div class="mx-4 mt-1 border-b border-gray-light" />
     </div>
 </template>
 
@@ -504,6 +514,7 @@
     import { useTimeAgo, useTimeAgo } from '@vueuse/core'
     import { message } from 'ant-design-vue'
     import CertificateBadge from '@common/badge/certificate/index.vue'
+    import dayjs from 'dayjs'
     import atlanLogo from '~/assets/images/atlan-logo.png'
     import Pill from '~/components/UI/pill/pill.vue'
     import ClassificationPill from '@/common/pills/classification.vue'
@@ -705,6 +716,7 @@
                 messageUpdate,
                 nameUpdater,
                 loadingApproval,
+                dayjs,
             }
         },
     })
@@ -763,6 +775,9 @@
             }
         }
     }
+    .mr-cta {
+        margin-left: 8px;
+    }
 </style>
 <style lang="less" scoped>
     .chevron-icon {
@@ -805,5 +820,13 @@
         position: absolute !important;
         right: 15px;
         padding-left: 20px;
+    }
+    .linear-gradient {
+        background: rgb(244, 246, 253);
+        background: linear-gradient(
+            90deg,
+            rgba(244, 246, 253, 0.8183648459383753) 6%,
+            rgba(244, 246, 253, 1) 16%
+        );
     }
 </style>

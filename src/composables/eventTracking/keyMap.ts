@@ -8,8 +8,8 @@ const keyMap = {
                 }),
             },
         },
-        global: {
-            context_changed: {
+        global_context: {
+            changed: {
                 action: 'discovery_global_context_changed',
                 properties: (props: { type: 'persona' | 'purpose' | 'all_assets' }) => ({
                     type: props.type,

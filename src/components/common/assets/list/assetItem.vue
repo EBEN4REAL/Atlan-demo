@@ -870,7 +870,7 @@
                         </div>
                     </div>
 
-                    <div class="flex flex-wrap gap-x-1">
+                    <div class="flex flex-wrap gap-x-1 items-center">
                         <div
                             v-if="
                                 list.length > 0 &&
@@ -942,29 +942,80 @@
                                 </div>
                             </template>
                         </div>
-                        <div
-                            v-if="categories(item)?.length > 0"
-                            class="flex items-center mr-3 text-sm gap-x-1 border rounded-full bg-white px-2 text-primary py-1 hover:bg-primary hover:text-white"
-                        >
-                            <AtlanIcon
-                                icon="Category"
-                                class="h-4 "
-                            ></AtlanIcon>
-
-                            in {{ categories(item)?.length }}
-                            {{
-                                categories(item)?.length === 1
-                                    ? 'Category'
-                                    : 'Categories'
-                            }}
-                            <!-- <div -->
-                            <!--     v-for="(cat, index) in categories(item)" -->
-                            <!--     :key="cat.guid" -->
-                            <!--     class="flex" -->
-                            <!-- > -->
-                            <!--     {{ cat.attributes?.name }} -->
-                            <!-- </div> -->
+                        <div v-if="categories(item)?.length === 1">
+                            <div
+                                v-for="cat in categories(item)"
+                                :key="cat.guid"
+                                class="flex items-center border rounded-full bg-white px-2 py-1 text-primary mt-1 group hover:text-white hover:bg-primary"
+                                style="max-width: 200px"
+                            >
+                                <div class="w-4 mr-1">
+                                    <AtlanIcon
+                                        icon="Category"
+                                        class="h-4"
+                                    ></AtlanIcon>
+                                </div>
+                                <Tooltip
+                                    :tooltip-text="cat.attributes?.name"
+                                    :route-to="`/glossary/${cat?.guid}`"
+                                    classes="cursor-pointer   hover:text-white text-primary group-hover:text-white"
+                                    :should-open-in-new-tab="true"
+                                    @click="(e) => e.stopPropagation()"
+                                    placement="bottom"
+                                />
+                            </div>
                         </div>
+
+                        <a-popover
+                            trigger="hover"
+                            placement="bottomLeft"
+                            v-if="categories(item)?.length > 1"
+                            overlayClassName="max-w-xs"
+                        >
+                            <template #content>
+                                <div
+                                    class="flex items-center flex-wrap gap-x-2 gap-y-2 px-2 py-2"
+                                >
+                                    <div
+                                        v-for="cat in categories(item)"
+                                        :key="cat.guid"
+                                        class="flex items-center border rounded-full bg-white px-2 py-1 text-primary hover:text-white hover:bg-primary group"
+                                        style="max-width: 200px"
+                                    >
+                                        <div class="w-4 mr-1">
+                                            <AtlanIcon
+                                                icon="Category"
+                                                class="h-4"
+                                            ></AtlanIcon>
+                                        </div>
+                                        <Tooltip
+                                            :tooltip-text="cat.attributes?.name"
+                                            :route-to="`/glossary/${cat?.guid}`"
+                                            classes="cursor-pointer  text-primary hover:text-white group-hover:text-white"
+                                            :should-open-in-new-tab="true"
+                                            @click="(e) => e.stopPropagation()"
+                                            placement="bottom"
+                                        />
+                                    </div>
+                                </div>
+                            </template>
+
+                            <div
+                                class="flex items-center mr-3 text-sm gap-x-1 border rounded-full bg-white px-2 text-primary py-1 hover:bg-primary hover:text-white mt-1"
+                            >
+                                <AtlanIcon
+                                    icon="Category"
+                                    class="h-4"
+                                ></AtlanIcon>
+
+                                in {{ categories(item)?.length }}
+                                {{
+                                    categories(item)?.length === 1
+                                        ? 'Category'
+                                        : 'Categories'
+                                }}
+                            </div>
+                        </a-popover>
                     </div>
                 </div>
                 <slot name="cta"></slot>

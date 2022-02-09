@@ -112,13 +112,13 @@
 
             const isQueryRunning = computed(
                 () =>
-                    activeInlineTab.value.playground.resultsPane.result
-                        .isQueryRunning
+                    activeInlineTab.value?.playground?.resultsPane?.result
+                        ?.isQueryRunning
             )
             const queryExecutionTime = computed(
                 () =>
-                    activeInlineTab.value.playground.resultsPane.result
-                        .executionTime
+                    activeInlineTab.value?.playground?.resultsPane?.result
+                        ?.executionTime
             )
             return {
                 queryExecutionTime,

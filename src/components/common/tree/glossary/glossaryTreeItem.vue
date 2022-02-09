@@ -107,7 +107,7 @@
                             )
                         "
                         :style="iconSize"
-                        class="self-center align-text-bottom"
+                        class="self-center align-text-bottom text-gray-500"
                     />
                 </div>
                 <Tooltip

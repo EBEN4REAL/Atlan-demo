@@ -984,7 +984,12 @@
                                     >
                                         <div class="w-4 mr-1">
                                             <AtlanIcon
-                                                icon="Category"
+                                                :icon="
+                                                    getEntityStatusIcon(
+                                                        'AtlasGlossaryCategory',
+                                                        certificateStatus(cat)
+                                                    )
+                                                "
                                                 class="h-4"
                                             ></AtlanIcon>
                                         </div>
@@ -1052,6 +1057,7 @@
     import TermPill from '@/common/pills/term.vue'
     import useTermPopover from '@/common/popover/term/useTermPopover'
     import AtlanIcon from '@/common/icon/atlanIcon.vue'
+    import useGlossaryData from '~/composables/glossary2/useGlossaryData'
 
     export default defineComponent({
         name: 'AssetListItem',
@@ -1148,6 +1154,7 @@
                 itemIndex,
             } = toRefs(props)
 
+            const { getEntityStatusIcon } = useGlossaryData()
             const showAssetSidebarDrawer = ref(false)
             const selectedAssetDrawerData = ref({})
 
@@ -1349,6 +1356,7 @@
                 meanings,
                 fieldCount,
                 isCustom,
+                getEntityStatusIcon,
             }
         },
     })

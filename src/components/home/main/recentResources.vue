@@ -1,17 +1,29 @@
 <template>
     <!--h2 class="mb-3 text-xl font-bold">Relevant for you</h2-->
-    <div v-if="isLoading">
-        <AtlanLoader class="h-10" />
-    </div>
-    <div v-else class="overflow-y-auto resources-container">
-        <div v-for="(item, index) in list" :key="index" class="mb-3">
-            <!-- :selected-asset="selectedAsset" -->
-            <component
-                :is="getPreviewComponent(item?.attributes?.link)"
-                :edit-permission="false"
-                :item="item"
-                class=""
-            />
+    <div v-if="list.length">
+        <h2 class="mb-3 text-lg font-bold text-gray-600">Recent resources</h2>
+        <div v-if="isLoading">
+            <AtlanLoader class="h-10" />
+        </div>
+        <div v-else class="overflow-y-auto resources-container">
+            <div v-if="!list.length" class="flex flex-col">
+                <AtlanIcon
+                    icon="EmptyResource2"
+                    alt="EmptyResource"
+                    class="w-auto h-32"
+                />
+            </div>
+            <div v-else>
+                <div v-for="(item, index) in list" :key="index" class="mb-3">
+                    <!-- :selected-asset="selectedAsset" -->
+                    <component
+                        :is="getPreviewComponent(item?.attributes?.link)"
+                        :edit-permission="false"
+                        :item="item"
+                        class=""
+                    />
+                </div>
+            </div>
         </div>
     </div>
 </template>

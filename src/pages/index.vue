@@ -28,23 +28,15 @@
             </section-->
             </div>
         </div>
-        <aside
-            class="flex flex-col w-48 col-span-2 mt-8 mb-24 ml-8 xl:w-80 gap-y-12 lg:w-56"
-        >
+        <aside class="flex flex-col col-span-2 mt-8 mb-24 ml-8 gap-y-12 pr-9">
             <!-- <section>
                 <YourWorkspace />
             </section> -->
             <!-- TODO: Hidden for paytm rollout, will enable it back -->
             <section>
-                <h2 class="mb-3 text-lg font-bold text-gray-600">
-                    Recent resources
-                </h2>
                 <RecentResources />
             </section>
             <section>
-                <h2 class="mb-3 text-lg font-bold text-gray-600">
-                    Recent announcements
-                </h2>
                 <RecentAnnouncements />
             </section>
         </aside>

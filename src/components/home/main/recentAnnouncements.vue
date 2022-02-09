@@ -1,13 +1,19 @@
 <template>
     <!--h2 class="mb-3 text-xl font-bold">Relevant for you</h2-->
-    <div v-if="isLoading">
-        <AtlanLoader class="h-10" />
-    </div>
-    <div v-else class="overflow-y-auto resources-container">
-        <div v-for="(item, index) in list" :key="index" class="mb-3">
-            <!-- :selected-asset="selectedAsset" -->
-            <!-- {{ item }} -->
-            <AnnouncementWidget :selectedAsset="item" />
+    <div v-if="list.length">
+        <h2 class="mb-3 text-lg font-bold text-gray-600">
+            Recent announcements
+        </h2>
+        <div v-if="isLoading">
+            <AtlanLoader class="h-10" />
+        </div>
+        <div v-else class="overflow-y-auto resources-container">
+            <div v-for="(item, index) in list" :key="index" class="mb-3">
+                {{ item }}
+                <!-- :selected-asset="selectedAsset" -->
+                <!-- {{ item }} -->
+                <AnnouncementWidget :selectedAsset="item" />
+            </div>
         </div>
     </div>
 </template>
@@ -36,11 +42,21 @@
             const limit = ref(10)
             const offset = ref(0)
             const queryText = ref('')
-            const facets = ref({})
+
+            const facets = ref([
+                {
+                    announcementTitle: [
+                        {
+                            operator: 'isNotNull',
+                            operand: 'announcementTitle',
+                        },
+                    ],
+                },
+            ])
+
             const postFacets = ref({})
             const aggregations = ref(['typeName'])
             const preference = ref({
-                // sort: 'name.keyword-desc',
                 sort: 'announcementUpdatedAt-desc',
                 display: [],
             })

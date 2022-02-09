@@ -66,7 +66,7 @@ export const blockMenu: CommandItem[] = [
     },
 
     {
-        title: 'Bullet List',
+        title: 'Bulleted List',
         key: 'bulletList',
         helpText: '',
         icon: 'BulletList',

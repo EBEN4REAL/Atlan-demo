@@ -156,6 +156,7 @@
                             result: {
                                 title: `${key} Result`,
                                 runQueryId: undefined,
+                                abortQueryFn: undefined,
                                 isQueryRunning: '',
                                 queryErrorObj: {},
                                 totalRowsCount: -1,
@@ -164,6 +165,7 @@
                                 eventSourceInstance: undefined,
                                 buttonDisable: false,
                                 isQueryAborted: false,
+                                tabQueryState: false,
                             },
                             metadata: {},
                             queries: {},

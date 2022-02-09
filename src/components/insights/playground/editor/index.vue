@@ -559,8 +559,8 @@
                 useSavedQuery(inlineTabs, activeInlineTab, activeInlineTabKey)
             const isQueryRunning = computed(
                 () =>
-                    activeInlineTab.value.playground.resultsPane.result
-                        .isQueryRunning
+                    activeInlineTab.value?.playground?.resultsPane?.result
+                        ?.isQueryRunning
             )
             const showSaveQueryModal: Ref<boolean> = ref(false)
             const isUpdating: Ref<boolean> = ref(false)
@@ -578,9 +578,11 @@
                 executionTime
             ) => {
                 console.log(queryExecutionTime, executionTime, 'extime')
+
                 if (activeInlineTab && inlineTabs?.value) {
                     const activeInlineTabCopy: activeInlineTabInterface =
                         JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
+
                     activeInlineTabCopy.playground.editor.dataList = dataList
 
                     activeInlineTabCopy.playground.editor.columnList =
@@ -633,7 +635,16 @@
                     queryId
             }
             function toggleRun() {
-                const activeInlineTabCopy = ref(activeInlineTab.value)
+                // const activeInlineTabCopy = ref(activeInlineTab.value)
+                // const activeInlineTabCopy: activeInlineTabInterface =
+                //     JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
+
+                const activeInlineTabKeyCopy = activeInlineTabKey.value
+
+                const tabIndex = inlineTabs.value.findIndex(
+                    (tab) => tab.key === activeInlineTabKeyCopy
+                )
+
                 const currState =
                     activeInlineTab.value.playground.resultsPane.result
                         .isQueryRunning === 'loading'
@@ -649,7 +660,7 @@
                     let selectedText = ''
                     if (showVQB.value) {
                         selectedText = generateSQLQuery(
-                            activeInlineTabCopy.value,
+                            activeInlineTab.value,
                             limitRows.value
                         )
                     } else {
@@ -663,7 +674,7 @@
 
                     console.log('query selected: ', selectedText)
                     queryRun(
-                        activeInlineTabCopy,
+                        tabIndex,
                         getData,
                         limitRows,
                         onRunCompletion,
@@ -671,11 +682,12 @@
                         selectedText,
                         editorInstance,
                         monacoInstance,
-                        showVQB
+                        showVQB,
+                        inlineTabs
                     )
                 } else if (currState === 'abort') {
                     abortQuery(
-                        activeInlineTabCopy,
+                        tabIndex,
                         inlineTabs,
                         editorInstance,
                         monacoInstance
@@ -707,8 +719,17 @@
                                 toRaw(editorInstance.value).getSelection()
                             )
                     }
+
+                    const activeInlineTabKeyCopy = activeInlineTabKey.value
+
+                    const tabIndex = inlineTabs.value.findIndex(
+                        (tab) => tab.key === activeInlineTabKeyCopy
+                    )
+
+                    // const activeInlineTabCopy: activeInlineTabInterface =
+                    //     JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
                     queryRun(
-                        activeInlineTab,
+                        tabIndex,
                         getData,
                         limitRows,
                         onRunCompletion,
@@ -716,7 +737,8 @@
                         selectedText,
                         editorInstance,
                         monacoInstance,
-                        showVQB
+                        showVQB,
+                        inlineTabs
                     )
                 }
             }
@@ -868,73 +890,31 @@
                         // console.log('running: ', isQueryRunning.value)
 
                         if (
-                            !isQueryCreatedByCurrentUser &&
-                            !hasQueryReadPermission &&
-                            !hasQueryWritePermission
+                            isQueryRunning.value == '' ||
+                            isQueryRunning.value == 'success' ||
+                            isQueryRunning.value == 'error'
                         ) {
-                            if (
-                                isQueryRunning.value == '' ||
-                                isQueryRunning.value == 'success' ||
-                                isQueryRunning.value == 'error'
-                            ) {
-                                runQuery()
-                            }
+                            runQuery()
                         }
                     }
                     //prevent the default action
                 }
-                if (e.key === 'S') {
+                if (e.key === 'S' || e.key === 's') {
                     if (e.metaKey || e.ctrlKey) {
+                        console.log('save key')
                         e.preventDefault()
                         saveOrUpdate()
                     }
                     //prevent the default action
                 }
-
-                /* Toggle VQB CODE */
-                // if (e.key === 'Q' || e.key === 'q') {
-                //     if (e.ctrlKey) {
-                //         e.preventDefault()
-                //         if (vqbQueryRoute.value) {
-                //             // showVQB.value = !showVQB.value
-                //             const activeInlineTabCopy: activeInlineTabInterface =
-                //                 Object.assign({}, activeInlineTab.value)
-
-                //             activeInlineTabCopy.playground.isVQB =
-                //                 !activeInlineTabCopy?.playground?.isVQB
-
-                //             setVQBInInlineTab(
-                //                 activeInlineTabCopy,
-                //                 inlineTabs,
-                //                 true
-                //             )
-                //         }
-                //     }
-                //     //prevent the default action
-                // }
-                /* ----------------------------- */
             }
+
             onMounted(() => {
                 window.addEventListener('keydown', _keyListener)
             })
             onUnmounted(() => {
                 window.removeEventListener('keydown', _keyListener)
             })
-
-            /* Handlng the Fullscreen esc key logic */
-            // const _keyListener = (e) => {
-            //     if (e.key === 'Escape') {
-            //         setFullScreenState(false, fullSreenState)
-            //         console.log('key pressed', e.key, e)
-            //         //prevent the default action
-            //     }
-            // }
-            // onMounted(() => {
-            //     window.addEventListener('keydown', _keyListener)
-            // })
-            // onUnmounted(() => {
-            //     window.removeEventListener('keydown', _keyListener)
-            // })
 
             /* ------------------------------------------ */
             return {

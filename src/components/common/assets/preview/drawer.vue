@@ -44,6 +44,7 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     export default defineComponent({
+        name: 'AssetDrawer',
         components: {
             AssetPreview,
         },

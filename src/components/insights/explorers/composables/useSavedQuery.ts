@@ -205,11 +205,13 @@ export function useSavedQuery(
                         isQueryAborted: false,
                         queryErrorObj: {},
                         errorDecorations: [],
+                        abortQueryFn: undefined,
                         totalRowsCount: -1,
                         executionTime: -1,
                         runQueryId: undefined,
                         buttonDisable: false,
                         eventSourceInstance: undefined,
+                        tabQueryState: false,
                     },
                     metadata: {},
                     queries: {},
@@ -287,10 +289,15 @@ export function useSavedQuery(
             },
             isTabAdded
         )
+
+        const activeInlineTabKeyCopy = activeInlineTabKey.value
+
+        const tabIndex = tabsArray.value.findIndex(
+            (tab) => tab.key === activeInlineTabKeyCopy
+        )
         setTimeout(() => {
-            console.log('active tab copy: ', activeInlineTab)
             queryRun(
-                activeInlineTab,
+                tabIndex,
                 getData,
                 limitRows,
                 onRunCompletion,
@@ -298,7 +305,8 @@ export function useSavedQuery(
                 savedQuery.value?.attributes.rawQuery,
                 editorInstance,
                 monacoInstance,
-                activeInlineTab?.value?.playground?.isVQB
+                ref(activeInlineTab?.value?.playground?.isVQB),
+                tabsArray
             )
         }, 250)
     }

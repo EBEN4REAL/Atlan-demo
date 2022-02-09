@@ -120,11 +120,14 @@
                                 columnRegex
                             ),
                         ]
-                        pos.value = {
-                            startLine: linesInfo[0][1],
-                            startColumn: columnsInfo[0][1],
-                            endLine: undefined,
-                            endColumn: undefined,
+                        // console.log('error: ', queryErrorObj)
+                        if (linesInfo.length > 0) {
+                            pos.value = {
+                                startLine: linesInfo[0][1],
+                                startColumn: columnsInfo[0][1],
+                                endLine: undefined,
+                                endColumn: undefined,
+                            }
                         }
 
                         if (linesInfo.length > 1) {

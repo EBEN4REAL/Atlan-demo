@@ -98,18 +98,6 @@
                                             >{{ tab.label }}</span
                                         >
                                     </div>
-                                    <!-- <div
-                                        v-if="!tab.isSaved"
-                                        class="flex items-center unsaved-dot"
-                                    >
-                                        <div
-                                            v-if="
-                                                tab.playground.editor.text
-                                                    .length > 0 || tab?.queryId
-                                            "
-                                            class="w-1.5 h-1.5 rounded-full bg-primary absolute right-3.5"
-                                        ></div>
-                                    </div> -->
                                 </div>
                                 <template #overlay>
                                     <a-menu>
@@ -128,6 +116,42 @@
                         </template>
 
                         <template #closeIcon>
+                            <!-- <AtlanIcon
+                                v-if="
+                                    (tab.playground.resultsPane.result
+                                        .isQueryAborted ||
+                                        tab.playground.resultsPane.result
+                                            .isQueryRunning === 'error') &&
+                                    tab.key !== activeInlineTabKey &&
+                                    tab.playground.resultsPane.result
+                                        .tabQueryState
+                                "
+                                icon="FailedQuery"
+                                class="absolute w-4 h-4 unsaved-dot right-2 top-1.5"
+                            />
+
+                            <AtlanIcon
+                                v-else-if="
+                                    tab.playground.resultsPane.result
+                                        .isQueryRunning === 'loading' &&
+                                    tab.key !== activeInlineTabKey &&
+                                    tab.playground.resultsPane.result
+                                        .tabQueryState
+                                "
+                                icon="RunningQuery"
+                                class="w-4 h-4 animate-spin unsaved-dot absolute right-2 top-1.5"
+                            />
+                            <AtlanIcon
+                                v-else-if="
+                                    tab.playground.resultsPane.result
+                                        .isQueryRunning === 'success' &&
+                                    tab.key !== activeInlineTabKey &&
+                                    tab.playground.resultsPane.result
+                                        .tabQueryState
+                                "
+                                icon="SuccessQuery"
+                                class="w-3 h-3 unsaved-dot absolute right-2.5 top-2"
+                            /> -->
                             <div
                                 v-if="!tab.isSaved"
                                 class="flex items-center unsaved-dot"
@@ -160,6 +184,7 @@
             v-if="activeInlineTabKey"
             class="w-full"
             style="max-height: 100%; min-height: 92%; height: 100%"
+            :class="$style.splitspane_playground"
         >
             <splitpanes horizontal :push-other-panes="false">
                 <pane
@@ -400,6 +425,7 @@
                             result: {
                                 title: `${key} Result`,
                                 runQueryId: undefined,
+                                abortQueryFn: undefined,
                                 isQueryRunning: '',
                                 queryErrorObj: {},
                                 totalRowsCount: -1,
@@ -408,6 +434,7 @@
                                 eventSourceInstance: undefined,
                                 buttonDisable: false,
                                 isQueryAborted: false,
+                                tabQueryState: false,
                             },
                             metadata: {},
                             queries: {},
@@ -449,9 +476,21 @@
                     router.push({ path: `insights`, query: queryParams })
                 }
             }
+
             const onTabClick = (activeKey) => {
                 setActiveTabKey(activeKey, activeInlineTabKey)
                 pushGuidToURL(activeInlineTab.value?.queryId)
+
+                // if (
+                //     activeInlineTab.value.playground.resultsPane.result
+                //         .isQueryRunning === 'loading'
+                // ) {
+                //     // activeInlineTab.value.playground.resultsPane.result.tabQueryState =
+                //     //     true
+                // } else {
+                //     activeInlineTab.value.playground.resultsPane.result.tabQueryState =
+                //         false
+                // }
             }
             const onEdit = (targetKey: string | MouseEvent, action: string) => {
                 if (action === 'add') {
@@ -791,6 +830,46 @@
     // :global(.unsaved-dot) {
     //     visibility: hidden !important;
     // }
+    .splitspane_playground {
+        :global(.splitpanes--horizontal > .splitpanes__splitter) {
+            position: relative;
+            margin-top: -1px;
+            box-sizing: border-box;
+            position: relative;
+            touch-action: none;
+            @apply border-t !important;
+            &:hover {
+                // border-width: 1.5px !important;
+                @apply bg-primary !important;
+                &:before {
+                    content: '';
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    -webkit-transition: background-color 0.3s;
+                    transition: background-color 0.3s;
+                    margin-top: -2px;
+                    transform: translateX(-50%);
+                    width: 100%;
+                    height: 2px;
+                    @apply z-50 bg-primary !important;
+                }
+                &:after {
+                    content: '';
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    @apply z-50 bg-transparent !important;
+                    -webkit-transition: background-color 0.3s;
+                    transition: background-color 0.3s;
+                    margin-top: -2px;
+                    transform: translateX(-50%);
+                    width: 100%;
+                    height: 8px;
+                }
+            }
+        }
+    }
     :global(.ant-tabs-dropdown-menu-item-remove) {
         visibility: hidden !important;
     }

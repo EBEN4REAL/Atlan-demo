@@ -130,7 +130,7 @@
                         class="flex items-center p-2 py-1 border rounded cursor-pointer reload-button"
                         @click="mutate"
                     >
-                        <AtlanIcon class="text-gray-700" icon="Retry2" />
+                        <AtlanIcon class="refresh-icon-request" icon="Retry2" />
                     </div>
                 </a-tooltip>
             </div>
@@ -251,7 +251,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, ref, watch, Ref } from 'vue'
+    import { defineComponent, computed, ref, watch, Ref, onMounted } from 'vue'
     import { useMagicKeys, whenever } from '@vueuse/core'
     import { message } from 'ant-design-vue'
     import { useRequestList } from '~/composables/requests/useRequests'
@@ -328,6 +328,7 @@
                     if (typeof v === 'object' && Object.keys(v).length)
                         return true
                     if (Array.isArray(v) && v.length) return true
+                    if (v && v === 'active') return true
                     return false
                 })
                 return hasValue
@@ -462,7 +463,7 @@
                 const status = facetsValue.statusRequest
                     ? facetsValue.statusRequest
                     : []
-                const createdBy = facetsValue?.requestor?.ownerUsers || []
+                const createdBy = facetsValue?.owners?.ownerUsers || []
                 // const typeName = facetsValue.__traitNames.classifications || []
                 const filterMerge = {
                     ...filters.value,
@@ -543,6 +544,16 @@
                 //     selectRequest(itemId, idx)
                 // }, 1000)
             }
+            onMounted(() => {
+                const el = document.getElementsByClassName(
+                    'refresh-icon-request'
+                )
+                if (el) {
+                    el[0]?.children.forEach((p) => {
+                        p.setAttribute('fill', '#3e4359')
+                    })
+                }
+            })
             return {
                 isFilterApplied,
                 mutate,
@@ -649,6 +660,9 @@
             box-shadow: none !important;
         }
     }
+</style>
+<style lang="less">
+    // #374151
 </style>
 <style lang="less" scoped>
     .container-empty {

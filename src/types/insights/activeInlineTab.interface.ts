@@ -64,12 +64,14 @@ export interface activeInlineTabInterface {
                 runQueryId: undefined | string
                 isQueryRunning: string
                 totalRowsCount: number
+                abortQueryFn: Function | undefined
                 executionTime: number
                 queryErrorObj: any
                 errorDecorations: any
                 eventSourceInstance: any
                 buttonDisable: boolean
                 isQueryAborted: boolean
+                tabQueryState: boolean
             }
             metadata: Object
             queries: Object

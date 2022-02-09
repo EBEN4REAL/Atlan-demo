@@ -770,6 +770,7 @@
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as Ref<string>
+
             const getData = (activeInlineTab, dataList, columnList) => {
                 if (activeInlineTab && inlineTabs?.value) {
                     const activeInlineTabCopy: activeInlineTabInterface =
@@ -782,6 +783,7 @@
                     modifyActiveInlineTabEditor(
                         activeInlineTabCopy,
                         inlineTabs,
+                        false,
                         saveQueryDataInLocalStorage
                     )
                     setSelection(
@@ -1290,15 +1292,23 @@
                     toRaw(editorInstanceRef.value).getModel().setValue(newText)
                 }
 
+                const activeInlineTabKeyCopy = activeInlineTabKey.value
+
+                const tabIndex = inlineTabs.value.findIndex(
+                    (tab) => tab.key === activeInlineTabKeyCopy
+                )
+
                 queryRun(
-                    activeInlineTab,
+                    tabIndex,
                     getData,
                     limitRows,
                     null,
                     null,
                     newText,
                     editorInstance,
-                    monacoInstance
+                    monacoInstance,
+                    false,
+                    inlineTabs
                 )
             }
 
@@ -1447,6 +1457,7 @@
                             result: {
                                 title: `${key} Result`,
                                 runQueryId: undefined,
+                                abortQueryFn: undefined,
                                 isQueryRunning: '',
                                 queryErrorObj: {},
                                 totalRowsCount: -1,
@@ -1455,6 +1466,7 @@
                                 eventSourceInstance: undefined,
                                 buttonDisable: false,
                                 isQueryAborted: false,
+                                tabQueryState: false,
                             },
                             metadata: {},
                             queries: {},
@@ -1475,25 +1487,6 @@
                     },
                 }
                 inlineTabAdd(inlineTabData, tabs, activeInlineTabKey)
-                // selectionObject.value.startLineNumber = 2
-                // selectionObject.value.startColumnNumber = 1
-                // selectionObject.value.endLineNumber = 2
-                // selectionObject.value.endColumnNumber = query.length + 1 // +1 for semicolon
-                // setSelection(
-                //     toRaw(editorInstanceRef.value),
-                //     toRaw(monacoInstanceRef.value),
-                //     selectionObject.value
-                // )
-                // queryRun(
-                //     activeInlineTab,
-                //     getData,
-                //     limitRows,
-                //     null,
-                //     null,
-                //     query,
-                //     editorInstance,
-                //     monacoInstance
-                // )
             }
 
             const setContextInEditor = (item) => {

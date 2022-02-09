@@ -1,14 +1,15 @@
 <template>
     <div>
-        <div class="flex justify-between p-4">
+        <div class="flex items-center justify-between p-4">
             <p class="font-semibold text-gray-500">Requests</p>
             <a-dropdown trigger="click" placement="bottomRight">
                 <template #overlay>
-                    <a-menu class="p-1">
+                    <a-menu class="p-1 request-preview">
                         <a-menu-item
                             v-for="stat in listStatus"
                             :key="stat.key"
-                            @click="selctedFilter = stat"
+                            :class="'hover:bg-primary-light'"
+                            @click="selectedFilter = stat"
                         >
                             <div
                                 class="flex items-center rounded hover:bg-primary-light menu-status"
@@ -21,7 +22,7 @@
                                 /> -->
                                 {{ stat.name }}
                                 <AtlanIcon
-                                    v-if="selctedFilter.key === stat.key"
+                                    v-if="selectedFilter.key === stat.key"
                                     icon="Check"
                                     class="ml-auto text-primary"
                                 />
@@ -37,11 +38,11 @@
                     <div class="flex items-center">
                         <!-- <div
                             :style="{
-                                background: selctedFilter.color,
+                                background: selectedFilter.color,
                             }"
                             class="mr-2 dot"
                         /> -->
-                        {{ selctedFilter.name }}
+                        {{ selectedFilter.name }}
                     </div>
                     <AtlanIcon icon="ChevronDown" :class="'icon-drop'" />
                 </AtlanButton>
@@ -60,7 +61,7 @@
             <div class="flex flex-col items-center">
                 <AtlanIcon icon="EmptyRequest" style="height: 165px" />
                 <div class="px-10 mx-10 mt-2 text-center text-gray-500">
-                    There are no requests for this asset right now
+                    Requests for this  asset will appear here
                 </div>
             </div>
         </div>
@@ -145,7 +146,7 @@
         },
         setup(props) {
             const { selectedAsset } = toRefs(props)
-            const selctedFilter = ref(listStatus[0])
+            const selectedFilter = ref(listStatus[0])
             const list = ref([])
             const resPagination = ref({
                 filterRecord: 0,
@@ -161,13 +162,13 @@
                 selectedAsset.value.typeName,
                 filterStatus
             )
-            watch(selctedFilter, () => {
+            watch(selectedFilter, () => {
                 list.value = []
-                if (selctedFilter.value.key === 'all') {
+                if (selectedFilter.value.key === 'all') {
                     filterStatus.value = {}
                 } else {
                     filterStatus.value = {
-                        status: selctedFilter.value.key,
+                        status: selectedFilter.value.key,
                     }
                 }
                 pagination.value.offset = 0
@@ -195,7 +196,7 @@
                 handleLoadMore,
                 pagination,
                 listStatus,
-                selctedFilter,
+                selectedFilter,
             }
         },
     })
@@ -210,6 +211,7 @@
     }
     .filter-status {
         width: 90px;
+        height: 32px !important;
     }
 </style>
 <style lang="less" scoped>

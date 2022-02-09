@@ -14,9 +14,9 @@ import { message } from 'ant-design-vue'
 import { useError } from './UseError'
 import { canQueryAbort } from '~/components/insights/common/composables/getDialectInfo'
 
-// import { useTimer } from '~/components/insights/playground/resultsPane/result/timer/useTimer'
+import { useTimer } from '~/components/insights/playground/resultsPane/result/timer/useTimer'
 
-export default function useProject() {
+export default function useRunQuery() {
     const {
         getParsedQuery,
         resetErrorDecorations,
@@ -30,7 +30,7 @@ export default function useProject() {
         getConnectionQualifiedName,
         getConnectorName,
     } = useConnector()
-    const { modifyActiveInlineTab } = useInlineTab()
+    const { modifyActiveInlineTab, activeTabKey } = useInlineTab()
 
     const setColumns = (columnList: Ref<any>, columns: any) => {
         // console.log('columns: ', columns)
@@ -56,7 +56,7 @@ export default function useProject() {
     }
 
     const queryRun = (
-        activeInlineTab: Ref<activeInlineTabInterface>,
+        tabIndex: number,
         getData: (
             activeInlineTab,
             rows: any[],
@@ -69,8 +69,13 @@ export default function useProject() {
         selectedText?: string,
         editorInstance: Ref<any>,
         monacoInstance: Ref<any>,
-        showVQB: Ref<Boolean> = ref(false)
+        showVQB: Ref<Boolean> = ref(false),
+        tabsArray: Ref<activeInlineTabInterface[]>
     ) => {
+        // do not change this. This is a workaround for the issue
+        //FIXME:
+        let activeInlineTab = ref(tabsArray.value[tabIndex])
+
         if (
             activeInlineTab.value.playground.resultsPane.result
                 .isQueryRunning === 'loading'
@@ -97,7 +102,7 @@ export default function useProject() {
         const queryExecutionTime = ref(-1)
         const queryErrorObj = ref()
 
-        // const { start, reset } = useTimer(activeInlineTab)
+        const { start, reset } = useTimer(activeInlineTab)
 
         // resetErrorDecorations(activeInlineTab, toRaw(editorInstance.value))
         if (editorInstance?.value) {
@@ -109,6 +114,9 @@ export default function useProject() {
             'loading'
         activeInlineTab.value.playground.resultsPane.result.isQueryAborted =
             false
+
+        // activeInlineTab.value.playground.resultsPane.result.tabQueryState = true
+
         const attributeValue =
             activeInlineTab.value?.playground?.editor?.context?.attributeValue
         let queryText
@@ -257,7 +265,9 @@ export default function useProject() {
         keys.value = 0
 
         // start timer
-        // start()
+        start()
+
+        activeInlineTab.value.playground.resultsPane.result.abortQueryFn = reset
 
         const {
             eventSource,
@@ -332,6 +342,11 @@ export default function useProject() {
                             activeInlineTab.value.playground.resultsPane.result.runQueryId =
                                 undefined
 
+                            // activeInlineTab.value.playground.resultsPane.result.tabQueryState =
+                            //     activeTabKey.value === activeInlineTab.value.key
+                            //         ? false
+                            //         : true
+
                             let endTime = new Date()
                             activeInlineTab.value.playground.resultsPane.result.executionTime =
                                 endTime - startTime
@@ -343,7 +358,7 @@ export default function useProject() {
                             if (eventSource.value?.close) {
                                 eventSource.value.close()
                             }
-                            // reset()
+                            reset()
 
                             /* ------------------- */
                         }
@@ -354,6 +369,10 @@ export default function useProject() {
                                 eventSource,
                                 message
                             )
+                            // activeInlineTab.value.playground.resultsPane.result.tabQueryState =
+                            //     activeTabKey.value === activeInlineTab.value.key
+                            //         ? false
+                            //         : true
                             /* Callback will be called when request completed */
                             if (onCompletion) {
                                 onCompletion(activeInlineTab, 'error')
@@ -362,7 +381,7 @@ export default function useProject() {
                             if (eventSource.value?.close) {
                                 eventSource.value.close()
                             }
-                            // reset()
+                            reset()
                         }
                     })
                 } else if (
@@ -373,20 +392,30 @@ export default function useProject() {
                 ) {
                     const { setStreamErrorInActiveInlineTab } = useError()
                     setStreamErrorInActiveInlineTab(activeInlineTab, error)
+                    // activeInlineTab.value.playground.resultsPane.result.tabQueryState =
+                    //     activeTabKey.value === activeInlineTab.value.key
+                    //         ? false
+                    //         : true
+
                     /* Callback will be called when request completed */
                     if (onCompletion) onCompletion(activeInlineTab, 'error')
                     //IMP: connection need to be closed here
                     if (eventSource.value?.close) {
                         eventSource.value.close()
                     }
-                    // reset()
+                    reset()
                 }
             } catch (e) {
+                // activeInlineTab.value.playground.resultsPane.result.tabQueryState =
+                //     activeTabKey.value === activeInlineTab.value.key
+                //         ? false
+                //         : true
+
                 if (onCompletion) onCompletion(activeInlineTab, 'error')
                 if (eventSource.value?.close) {
                     eventSource.value.close()
                 }
-                // reset()
+                reset()
             }
         })
     }
@@ -417,11 +446,12 @@ export default function useProject() {
         }
     }
     const abortQuery = (
-        activeInlineTab: Ref<activeInlineTabInterface>,
+        tabIndex: number,
         inlineTabs: Ref<activeInlineTabInterface[]>,
         editorInstance: Ref<any>,
         monacoInstance: Ref<any>
     ) => {
+        let activeInlineTab = ref(inlineTabs.value[tabIndex])
         if (
             activeInlineTab.value.playground.resultsPane.result
                 .eventSourceInstance?.close
@@ -429,6 +459,16 @@ export default function useProject() {
             activeInlineTab.value.playground.resultsPane.result.eventSourceInstance?.close()
             // debugger
         }
+
+        // stop timer
+
+        if (activeInlineTab.value.playground.resultsPane.result.abortQueryFn) {
+            activeInlineTab.value.playground.resultsPane.result.abortQueryFn()
+            console.log('clock running abort timer stop 1')
+        }
+
+        // activeInlineTab.value.playground.resultsPane.result.tabQueryState =
+        //     false
 
         if (
             canQueryAbort(
@@ -439,6 +479,8 @@ export default function useProject() {
             ) &&
             activeInlineTab.value.playground.resultsPane.result.runQueryId
         ) {
+            // stop timer
+
             /* Abort Query logic */
             activeInlineTab.value.playground.resultsPane.result.buttonDisable =
                 true
@@ -527,6 +569,12 @@ export default function useProject() {
                 })
         } else {
             // cancel stream query
+            // if (
+            //     activeInlineTab.value.playground.resultsPane.result.abortQueryFn
+            // ) {
+            //     activeInlineTab.value.playground.resultsPane.result.abortQueryFn()
+            //     console.log('clock running abort timer stop 2')
+            // }
             // FIXME: code repetetion
             activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
                 ''

@@ -1,5 +1,5 @@
 <template>
-    <div class="table_height">
+    <div class="table_height" ref="tableHeightRef">
         <regular-table
             ref="tableRef"
             :class="$style.regular_table"
@@ -21,6 +21,7 @@
         watch,
         ref,
         onMounted,
+        onUnmounted,
     } from 'vue'
 
     import Tooltip from '@common/ellipsis/index.vue'
@@ -69,6 +70,7 @@
         setup(props) {
             const { dataList, columns } = toRefs(props)
             const tableRef = ref(null)
+            const tableHeightRef = ref(null)
             const variantTypeIndexes = ref<String[]>([])
             const selectedData = ref('')
             const showExpand = ref('')
@@ -299,13 +301,18 @@
                             //     getDataType(columns.value[x].data_type)
                             // )
 
-                            td.style.setProperty(
-                                'text-align',
-                                alignment(
-                                    getDataType(columns.value[x].data_type)
-                                ),
-                                'important'
-                            )
+                            if (
+                                columns.value[x] &&
+                                columns.value[x]?.data_type
+                            ) {
+                                td.style.setProperty(
+                                    'text-align',
+                                    alignment(
+                                        getDataType(columns.value[x].data_type)
+                                    ),
+                                    'important'
+                                )
+                            }
                         }
                     })
                 })
@@ -318,11 +325,13 @@
                         const column = columns.value[x]
                         // console.log('x: ', x)
 
-                        th.style.setProperty(
-                            'text-align',
-                            alignment(getDataType(column.data_type)),
-                            'important'
-                        )
+                        if (column?.data_type) {
+                            th.style.setProperty(
+                                'text-align',
+                                alignment(getDataType(column.data_type)),
+                                'important'
+                            )
+                        }
 
                         // console.log(
                         //     'header: ',
@@ -330,10 +339,10 @@
                         // )
 
                         if (
-                            column.data_type.toLowerCase() === 'any' ||
-                            column.data_type.toLowerCase() === 'variant' ||
-                            column.data_type.toLowerCase() === 'object' ||
-                            column.data_type.toLowerCase() === 'struct'
+                            column?.data_type?.toLowerCase() === 'any' ||
+                            column?.data_type?.toLowerCase() === 'variant' ||
+                            column?.data_type?.toLowerCase() === 'object' ||
+                            column?.data_type?.toLowerCase() === 'struct'
                         ) {
                             rows.forEach((element, i) => {
                                 if (element?.children?.length - 1 > x) {
@@ -365,9 +374,9 @@
                             const span = document.createElement('span')
                             span.setAttribute('id', 'icon')
                             span.innerHTML = `<img data-tooltip=${
-                                column.data_type
+                                column?.data_type
                             }  class="cursor-pointer inline-flex w-4 h-4 mr-1 mb-0.5" text-gray-500 src="${
-                                imageMap[getDataType(column.data_type)]
+                                imageMap[getDataType(column?.data_type)]
                             }">`
 
                             if (!th.querySelector('#icon > img')) {
@@ -406,12 +415,28 @@
                 table?.draw()
             }
 
-            onMounted(() => {
+            // const tableHeight = document.getElementsByClassName('table_height')[0]
+
+            let observer = ref()
+
+            const onResize = () => {
+                console.log('resize')
                 init()
+            }
+
+            onMounted(() => {
+                observer.value = new ResizeObserver(onResize).observe(
+                    tableHeightRef.value
+                )
+            })
+
+            onUnmounted(() => {
+                observer?.value?.unobserve(tableHeightRef?.value)
             })
 
             return {
                 tableRef,
+                tableHeightRef,
                 images,
                 getDataType,
                 variantTypeIndexes,

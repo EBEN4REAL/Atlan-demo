@@ -63,6 +63,7 @@
     import suggestion from './extensions/slashCommands/suggestion'
     import ImageUpload from './extensions/imageUpload/extension'
     import CustomImage from './extensions/image/extension'
+    import { TrailingNode } from '@common/editor/extensions/trailingNode'
 
     import LinkPreview from './extensions/linkPreview/linkPreview'
 
@@ -114,12 +115,13 @@
                 editable: isEditMode.value,
                 editorProps: {
                     attributes: {
-                        class: 'prose prose-sm w-full',
+                        class: 'prose prose-sm w-full h-full',
                     },
                 },
                 autofocus: true,
                 extensions: [
                     StarterKit,
+                    TrailingNode,
                     Underline,
                     Link,
                     TaskList,

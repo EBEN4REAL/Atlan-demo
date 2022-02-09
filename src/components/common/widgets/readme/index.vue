@@ -84,7 +84,7 @@
                 >
             </div>
         </div>
-        <div class="border-0">
+        <div class="border-0 h-full">
             <Editor
                 ref="editor"
                 v-model="localReadmeContent"

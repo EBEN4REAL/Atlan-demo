@@ -1,5 +1,4 @@
 import { ref, computed, watch, toRefs } from 'vue'
-import { safeArray } from '~/utils/array'
 import { usePersonaStore } from '~/store/persona'
 import usePersona from '~/composables/persona/usePersona'
 import { Persona } from '~/services/service/persona'

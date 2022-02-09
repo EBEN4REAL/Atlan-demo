@@ -43,8 +43,14 @@
                 </div>
             </a-upload>
             <div class="flex justify-end w-full">
-                <AtlanButton padding="compact" size="sm" @click="registerTenant"
-                    >Register</AtlanButton
+                <AtlanButton
+                    padding="compact"
+                    size="sm"
+                    :is-loading="isRegisteringTenant"
+                    @click="registerTenant"
+                >
+                    <span v-if="isRegisteringTenant">Registering</span
+                    ><span v-else>Register</span></AtlanButton
                 >
             </div>
         </div>
@@ -52,7 +58,7 @@
 </template>
 
 <script>
-    import { defineComponent, watch, reactive, inject } from 'vue'
+    import { defineComponent, watch, reactive, inject, ref } from 'vue'
     import { message } from 'ant-design-vue'
     import { Tenant } from '~/services/service/tenant'
     import getImageInBase64 from '~/utils/library/imageToBase64.ts'
@@ -61,6 +67,7 @@
         name: 'SetupAtlan',
         setup() {
             const keycloak = inject('$keycloak')
+            const isRegisteringTenant = ref(false)
 
             const tenantInfo = reactive({
                 tenantName: '',
@@ -76,9 +83,11 @@
             const registerTenant = () => {
                 const { data, isReady, error, isLoading } =
                     Tenant.RegisterTenant(tenantInfo)
+
                 watch(
                     [data, isReady, error, isLoading],
                     () => {
+                        isRegisteringTenant.value = isLoading.value
                         if (isReady && !error.value && !isLoading.value) {
                             message.success('Tenant registered successfully.')
                             /** route to login page */
@@ -103,7 +112,12 @@
                 if (uploaded.file) getImageInBase64(uploaded.file, setLogoInfo)
             }
 
-            return { registerTenant, tenantInfo, handleUploadLogo }
+            return {
+                registerTenant,
+                tenantInfo,
+                handleUploadLogo,
+                isRegisteringTenant,
+            }
         },
     })
 </script>

@@ -2,18 +2,18 @@
     <transition v-if="list.length" name="fade">
         <div>
             <h2 class="mb-3 text-sm font-semibold text-gray-500">
-                <AtlanIcon icon="Link"></AtlanIcon> Recent resources
+                <AtlanIcon icon="Link"></AtlanIcon> Recent Resources
             </h2>
             <div
                 v-if="isLoading"
-                class="border border-gray-200 rounded flex items-center justify-center"
+                class="flex items-center justify-center border border-gray-200 rounded"
                 style="min-height: 150px"
             >
-                <AtlanLoader class="h-10 w-full" />
+                <AtlanLoader class="w-full h-10" />
             </div>
             <div
                 v-else
-                class="overflow-y-auto resources-container border border-gray-200 rounded"
+                class="overflow-y-auto border border-gray-200 rounded resources-container"
                 style="min-height: 150px"
             >
                 <div

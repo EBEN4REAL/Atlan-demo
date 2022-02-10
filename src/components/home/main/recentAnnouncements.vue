@@ -48,7 +48,7 @@
         },
         setup() {
             const dependentKey = ref('HOME_RECENTS_ANNOUNCEMENTS')
-            const limit = ref(10)
+            const limit = ref(15)
             const offset = ref(0)
             const queryText = ref('')
 

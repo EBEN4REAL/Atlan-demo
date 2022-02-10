@@ -75,7 +75,7 @@
         },
         setup() {
             const dependentKey = ref('HOME_RECENTS_ASSETS')
-            const limit = ref(20)
+            const limit = ref(15)
             const offset = ref(0)
             const queryText = ref('')
             const facets = ref({

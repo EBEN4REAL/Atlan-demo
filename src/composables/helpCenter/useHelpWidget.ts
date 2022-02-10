@@ -3,18 +3,20 @@ import { getLabelsForZendeskArticles } from '~/utils/helper/labelsForZendeskArti
 import useUserData from '~/composables/user/useUserData'
 
 export default function useHelpWidget() {
+
+
     const route = useRoute()
     const setZendeskArticleSuggestions = () => {
         // set help desk article suggestions relevant to page
         const labels = getLabelsForZendeskArticles(route?.path ?? '')
-        zE('webWidget', 'helpCenter:setSuggestions', {
+        window.zE('webWidget', 'helpCenter:setSuggestions', {
             labels,
         })
     }
     const prefillEmailField = () => {
         // prefill email field in zendesk form; the field is hidden
         const { email } = useUserData()
-        zE('webWidget', 'prefill', {
+        window.zE('webWidget', 'prefill', {
             email: {
                 value: email,
                 readOnly: true, // optional
@@ -24,12 +26,12 @@ export default function useHelpWidget() {
     const toggleHelpWidget = () => {
         setZendeskArticleSuggestions()
         prefillEmailField()
-        zE('webWidget', 'toggle')
+        window.zE('webWidget', 'toggle')
     }
     const openHelpWidget = () => {
         setZendeskArticleSuggestions()
         prefillEmailField()
-        zE('webWidget', 'open')
+        window.zE('webWidget', 'open')
     }
     return {
         toggleHelpWidget,

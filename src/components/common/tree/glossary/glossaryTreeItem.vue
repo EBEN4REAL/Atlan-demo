@@ -110,12 +110,14 @@
                         class="self-center align-text-bottom"
                     />
                 </div>
-                <div v-if="isEditMode">
-                    {{ isEditMode }}
-                    <Name v-model="isEditMode" :selected-asset="item" />
+                <div v-show="isEditMode">
+                    <Name
+                        v-model="isEditMode"
+                        :selected-asset="item"
+                    />
                 </div>
                 <Tooltip
-                    v-else
+                v-if="!isEditMode"
                     :tooltip-text="`${title(item)}`"
                     :classes="'w-full '"
                 />

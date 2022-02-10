@@ -483,7 +483,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     }
 
     // Resource Addition
-    const handleAddResource = async () => {
+    const handleAddResource = () => {
         const resourceEntity = ref<any>({
             typeName: 'Link',
             attributes: {
@@ -501,20 +501,20 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         })
         body.value.entities = [resourceEntity.value]
 
-
-        await mutate()
+        currentMessage.value = 'A new resource has been added'
+        mutate()
         sendTrackEvent('resource', 'created', {
             domain: localResource.value.link.split('/')[2],
         })
     }
 
     // Resource Update
-    const handleUpdateResource = async (item) => {
+    const handleUpdateResource = (item) => {
         const resourceEntity = ref<any>({
             typeName: 'Link',
-            guid: item.guid,
+            guid: item.value?.guid,
             attributes: {
-                qualifiedName: item.uniqueAttributes?.qualifiedName,
+                qualifiedName: item.value?.uniqueAttributes?.qualifiedName,
                 name: localResource.value?.title,
                 link: localResource.value?.link,
                 tenantId: 'default',
@@ -526,24 +526,29 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         currentMessage.value = `Resource ${title(item.value)} of ${title(
             selectedAsset.value
         )} updated`
-        await mutate()
+        mutate()
         sendTrackEvent('resource', 'updated', {
             domain: localResource.value.link.split('/')[2],
         })
     }
 
     // Resource Deletion
-    const handleResourceDelete = (_id) => {
-        const { error, isLoading, isReady } = Entity.DeleteEntity(_id)
+    const handleResourceDelete = (link) => {
+        const { error, isLoading, isReady } = Entity.DeleteEntity(link?.guid)
 
+        whenever(error, () => {
+            message.error(
+                `${error.value?.response?.data?.errorCode} ${error.value?.response?.data?.errorMessage.split(':')[0]
+                }` ?? 'Something went wrong'
+            )
+        })
         whenever(isReady, () => {
+            message.success(`Resource deleted`)
             guid.value = selectedAsset.value.guid
+
             mutateUpdate()
             sendTrackEvent('resource', 'deleted')
         })
-        return {
-            error, isLoading, isReady
-        }
     }
 
     // Readme Update

@@ -76,7 +76,7 @@ const usePersonaResources = (persona) => {
         try {
             const body = JSON.parse(JSON.stringify(persona.value))
             body.resources.links = body.resources.links.filter(
-                (l) => l.qualifiedName !== id
+                (l) => l.uniqueAttributes.qualifiedName !== id
             )
             const personaRaw = JSON.parse(JSON.stringify(body))
             delete body.metadataPolicies

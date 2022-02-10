@@ -69,7 +69,7 @@ const usePersonaResources = (purpose) => {
         try {
             const body = JSON.parse(JSON.stringify(purpose.value))
             body.resources.links = body.resources.links.filter(
-                (l) => l.qualifiedName !== id
+                (l) => l.uniqueAttributes.qualifiedName !== id
             )
             body.readme = body.readme ?? '' // TODO
             await savePersona(body)

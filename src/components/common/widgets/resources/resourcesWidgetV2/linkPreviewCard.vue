@@ -18,7 +18,8 @@
                         link.attributes.link
                     )}&sz=64`"
                     alt=""
-                    class="h-7"
+                    class=""
+                    style="max-width: 32px; max-height: 32px"
                     @error="defaultIcon = true"
                 />
             </div>

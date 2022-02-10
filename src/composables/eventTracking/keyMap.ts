@@ -205,6 +205,9 @@ const keyMap = {
     },
     insights: {
         query: {
+            renamed: {
+                action: 'insights_query_renamed',
+            },
             deleted: {
                 action: 'inights_query_deleted',
             },

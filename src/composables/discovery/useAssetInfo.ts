@@ -1150,6 +1150,8 @@ export default function useAssetInfo() {
     const picklistValues = (asset: assetInterface) =>
         attributes(asset)?.picklistValues || []
 
+    const formula = (asset: assetInterface) => attributes(asset)?.formula
+
     return {
         attributes,
         title,
@@ -1291,5 +1293,6 @@ export default function useAssetInfo() {
         apiName,
         isCustom,
         picklistValues,
+        formula,
     }
 }

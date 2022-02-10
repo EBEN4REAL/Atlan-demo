@@ -48,7 +48,10 @@
                         ></AtlanIcon
                     ></a-tooltip>
                 </div>
-                <div class="flex items-center mt-1 gap-x-3">
+                <div
+                    class="flex items-center gap-x-3"
+                    :class="isGTC(item) ? 'mt-0' : 'mt-1'"
+                >
                     <div class="flex items-center">
                         <a-tooltip
                             v-if="
@@ -84,6 +87,14 @@
                             class="text-sm tracking-wider text-gray-500 uppercase"
                         >
                             {{ assetTypeLabel(item) || item?.typeName }}
+                            <span
+                                v-if="
+                                    ['SalesforceObject'].includes(
+                                        item.typeName
+                                    ) && isCustom(item)
+                                "
+                                >(custom)</span
+                            >
                         </div>
                         <div
                             v-else
@@ -420,6 +431,7 @@
                 assetTypeLabel,
                 webURL,
                 sourceURL,
+                isCustom,
             } = useAssetInfo()
 
             const router = useRouter()
@@ -523,6 +535,7 @@
                 getConnectorLabel,
                 isEditMode,
                 handleEdit,
+                isCustom,
             }
         },
     })

@@ -142,8 +142,9 @@
                     content: 'Successfully shared.',
                     duration: 2,
                 })
-                useAddEvent('admin', 'integration', 'share_on_slack', {
+                useAddEvent('integration', 'slack', 'asset_shared', {
                     asset_type: assetType.value,
+                    has_message: !!message.value,
                 })
             } else if (error.value) {
                 const errMsg = error.value?.response?.data?.errorMessage

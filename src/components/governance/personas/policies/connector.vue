@@ -108,16 +108,12 @@
                 type: String,
                 default: '',
             },
-            hidePowerBi: {
-                type: Boolean,
-                default: false,
-            },
         },
         emits: ['change', 'update:data', 'blur', 'changeConnector'],
         setup(props, { emit }) {
             const treeSelectRef = ref()
             const { getConnectorName, getConnectorImage } = useAssetInfo()
-            const { data, filterSourceIds, hidePowerBi } = toRefs(props)
+            const { data, filterSourceIds } = toRefs(props)
 
             const connector = computed(() => {
                 if (data.value?.attributeName === 'connectorName')
@@ -213,10 +209,7 @@
             const transformConnectorToTree = (data: any) => {
                 const tree: Record<string, any>[] = []
                 data.forEach((item: any) => {
-                    const children =
-                        hidePowerBi.value && item.id === 'powerbi'
-                            ? []
-                            : transformConnectionsToTree(item.id)
+                    const children = transformConnectionsToTree(item.id)
                     const treeNodeObj = {
                         value: item.id,
                         key: item.id,

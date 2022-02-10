@@ -1,13 +1,14 @@
 <template>
     <div>
-        <div class="flex justify-between p-4">
+        <div class="flex items-center justify-between p-4">
             <p class="font-semibold text-gray-500">Requests</p>
             <a-dropdown trigger="click" placement="bottomRight">
                 <template #overlay>
-                    <a-menu class="p-1">
+                    <a-menu class="p-1 request-preview">
                         <a-menu-item
                             v-for="stat in listStatus"
                             :key="stat.key"
+                            :class="'hover:bg-primary-light'"
                             @click="selectedFilter = stat"
                         >
                             <div
@@ -210,6 +211,7 @@
     }
     .filter-status {
         width: 90px;
+        height: 32px !important;
     }
 </style>
 <style lang="less" scoped>

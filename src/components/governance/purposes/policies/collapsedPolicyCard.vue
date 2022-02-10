@@ -219,6 +219,7 @@
                     maskPurpose.find((el) => el.value === policy.value.mask)
                         ?.label
             )
+            const visibleDelete = ref(false)
             return {
                 editToggle,
                 splitAssets,
@@ -230,7 +231,8 @@
                 actions,
                 handleClickPlicyCard,
                 permissions,
-                maskComputed
+                maskComputed,
+                visibleDelete,
             }
         },
     })

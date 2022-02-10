@@ -26,7 +26,7 @@
                     @change="setQuery"
                     @blur="onBlur"
                     @focus="onFocus"
-                    @keyup.esc="(e) => e.target.blur()"
+                    @keyup.esc="onEsc"
                 />
             </div>
         </div>
@@ -112,10 +112,18 @@
                 setTimeout(() => {
                     showResults.value = false
                 }, 500)
+
+                if (!query.value) showSearch.value = false
             }
 
             const onFocus = () => {
                 showResults.value = true
+            }
+
+            const onEsc = (e) => {
+                e.target.blur()
+                showResults.value = false
+                showSearch.value = false
             }
 
             const sourceImg = (entity) => {
@@ -143,6 +151,7 @@
                 setSearchItem,
                 onBlur,
                 onFocus,
+                onEsc,
                 searchBar,
                 sourceImg,
                 showSearch,

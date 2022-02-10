@@ -279,6 +279,8 @@ export function usePackageBody(
                                                         'metadata.creationTimestamp':
                                                             {
                                                                 order: 'desc',
+                                                                unmapped_type:
+                                                                    'long',
                                                             },
                                                     },
                                                 ],

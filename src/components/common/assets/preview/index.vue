@@ -260,6 +260,12 @@
             relations: defineAsyncComponent(
                 () => import('./relations/index.vue')
             ),
+            // resources: defineAsyncComponent(
+            //     () =>
+            //         import(
+            //             '@/common/assets/preview/resources/resourcesWrapper.vue'
+            //         )
+            // ),
             resources: defineAsyncComponent(
                 () => import('@common/widgets/resources/index.vue')
             ),
@@ -385,10 +391,18 @@
                 (prev) => {
                     if (prev) {
                         if (
-                            authStore?.evaluations?.some(
-                                (ev) =>
-                                    ev?.entityGuid === selectedAsset.value?.guid
-                            )
+                            (!isDrawer.value &&
+                                authStore?.evaluations?.some(
+                                    (ev) =>
+                                        ev?.entityGuid ===
+                                        selectedAsset.value?.guid
+                                )) ||
+                            (isDrawer.value &&
+                                authStore?.secondaryEvaluations?.some(
+                                    (ev) =>
+                                        ev?.entityGuid ===
+                                        selectedAsset.value?.guid
+                                ))
                         ) {
                             return
                         }

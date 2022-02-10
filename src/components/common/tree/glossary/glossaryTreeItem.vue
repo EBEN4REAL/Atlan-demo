@@ -5,9 +5,10 @@
     >
         <div
             v-if="item?.typeName === 'cta'"
-            class="flex flex-col"
-            :class="!hasCreateAccess ? '' : 'space-y-2'"
+            class="flex items-center"
+            :class="!hasCreateAccess ? '' : 'space-y-0'"
         >
+            <span v-if="!checkable" class="pr-1"> Add a </span>
             <AddGtcModal
                 v-if="!checkable"
                 entityType="AtlasGlossaryTerm"
@@ -24,13 +25,15 @@
                         >
                             <AtlanIcon
                                 icon="Term"
-                                class="m-0 mr-1 align-text-bottom"
+                                class="m-0 mr-0.5 align-text-bottom"
                             />
-                            <p class="p-0 m-0">+ Term</p>
+                            <p class="p-0 m-0">Term</p>
                         </div>
                     </div>
                 </template>
             </AddGtcModal>
+            <span v-if="!checkable" class="px-1">or </span>
+
             <AddGtcModal
                 v-if="!checkable"
                 entityType="AtlasGlossaryCategory"

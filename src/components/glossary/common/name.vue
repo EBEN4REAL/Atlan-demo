@@ -73,6 +73,7 @@
                 console.log('esc')
                 if (modelValue.value) {
                     modelValue.value = false
+                    localValue.value = title(props.selectedAsset)
                 }
             }
             watchEffect(() => {
@@ -87,6 +88,7 @@
                     console.log(nameRef.value)
                     await nextTick()
                     nameRef?.value?.focus()
+                    localValue.value = title(props.selectedAsset)
                     isCancelled.value = false
                 }
             })

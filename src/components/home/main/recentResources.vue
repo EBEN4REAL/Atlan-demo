@@ -1,31 +1,42 @@
 <template>
     <transition v-if="list.length" name="fade">
         <div>
-            <h2 class="mb-3 text-lg font-bold text-gray-500">
-                Recent resources
+            <h2 class="mb-3 text-sm font-semibold text-gray-500">
+                <AtlanIcon icon="Link"></AtlanIcon> Recent resources
             </h2>
-            <div v-if="isLoading">
-                <AtlanLoader class="h-10" />
+            <div
+                v-if="isLoading"
+                class="border border-gray-200 rounded flex items-center justify-center"
+                style="min-height: 150px"
+            >
+                <AtlanLoader class="h-10 w-full" />
             </div>
-            <div v-else class="overflow-y-auto resources-container">
-                <div v-if="!list.length" class="flex flex-col">
+            <div
+                v-else
+                class="overflow-y-auto resources-container border border-gray-200 rounded"
+                style="min-height: 150px"
+            >
+                <div
+                    v-if="list.length == 0"
+                    class="flex flex-col items-center justify-center h-full"
+                >
                     <AtlanIcon
                         icon="EmptyResource2"
                         alt="EmptyResource"
                         class="w-auto h-32"
                     />
                 </div>
-                <div v-else>
+                <div class="flex flex-col" v-else>
                     <div
                         v-for="(item, index) in list"
                         :key="index"
-                        class="mb-3"
+                        class="border-b last:border-0"
                     >
-                        <AssetTitleCtx :item="item.attributes.asset" />
                         <component
                             :is="getPreviewComponent(item?.attributes?.link)"
                             :edit-permission="false"
                             :item="item"
+                            :showAssetName="true"
                             class=""
                         />
                     </div>
@@ -63,13 +74,13 @@
             slackLinkPreview: defineAsyncComponent(
                 () =>
                     import(
-                        '@/common/widgets/resources/previews/slackLinkPreviewCard.vue'
+                        '@/common/widgets/resources/previews/slackLinkPreviewCardHome.vue'
                     )
             ),
             linkPreview: defineAsyncComponent(
                 () =>
                     import(
-                        '@/common/widgets/resources/previews/linkPreviewCard.vue'
+                        '@/common/widgets/resources/previews/linkPreviewCardHome.vue'
                     )
             ),
         },
@@ -91,8 +102,12 @@
                 display: [],
             })
             const defaultAttributes = ref([
-                ...InternalAttributes,
-                ...AssetAttributes,
+                'link',
+                '__createdBy',
+                '__timestamp',
+                '__modificationTimestamp',
+                '__modifiedBy',
+                '__guid',
                 'asset',
             ])
             const store = integrationStore()
@@ -105,8 +120,10 @@
             })
             const { tenantSlackStatus, userSlackStatus } = toRefs(store)
             const relationAttributes = ref([
-                ...AssetRelationAttributes,
-                ...AssetAttributes,
+                'name',
+                'certificateStatus',
+                'certificateUpdatedAt',
+                'certificateUpdatedBy',
             ])
             function getPreviewComponent(url) {
                 if (

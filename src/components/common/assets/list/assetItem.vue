@@ -18,14 +18,26 @@
             ]"
         >
             <div class="flex items-start flex-1 px-3 py-3 asset-card">
-                <a-checkbox
-                    v-if="showCheckBox"
-                    :checked="isChecked"
-                    class="ml-2 mr-3 opacity-60 hover:opacity-100"
-                    :class="bulkSelectMode ? 'opacity-100' : 'opacity-0'"
-                    @click.stop
-                    @change="(e) => $emit('listItem:check', e, item)"
-                />
+                <a-tooltip
+                    placement="leftTop"
+                    :title="
+                        isScrubbed(item) && disableCheckboxForScrubbed
+                            ? `You don't have permission to link this asset to a term`
+                            : ''
+                    "
+                    :mouse-enter-delay="0.2"
+                >
+                    <a-checkbox
+                        v-if="showCheckBox"
+                        :checked="isChecked"
+                        :disabled="
+                            isScrubbed(item) && disableCheckboxForScrubbed
+                        "
+                        class="ml-2 mr-3 opacity-60 hover:opacity-100"
+                        :class="bulkSelectMode ? 'opacity-100' : 'opacity-0'"
+                        @click.stop
+                        @change="(e) => $emit('listItem:check', e, item)"
+                /></a-tooltip>
                 <div
                     class="flex flex-col flex-1"
                     :class="{ 'lg:pr-16': !isCompact }"
@@ -1102,6 +1114,11 @@
             openAssetProfileInNewTab: {
                 type: Boolean,
                 default: false,
+            },
+            disableCheckboxForScrubbed: {
+                type: Boolean,
+                default: false,
+                required: false,
             },
         },
         emits: ['listItem:check', 'unlinkAsset', 'preview', 'updateDrawer'],

@@ -94,6 +94,9 @@
                             @listItem:check="
                                 (e, item) => $emit('listItem:check', item)
                             "
+                            :disableCheckboxForScrubbed="
+                                disableCheckboxForScrubbed
+                            "
                         >
                             <template #cta>
                                 <slot :item="item" name="assetItemCta"> </slot>
@@ -238,6 +241,11 @@
             searchBarSize: {
                 type: String,
                 default: 'large',
+                required: false,
+            },
+            disableCheckboxForScrubbed: {
+                type: Boolean,
+                default: false,
                 required: false,
             },
         },

@@ -4,19 +4,19 @@
         <div>
             <h2 class="mb-3 text-sm font-semibold text-gray-500">
                 <AtlanIcon icon="InformationAnnouncement"></AtlanIcon> Recent
-                announcements
+                Announcements
             </h2>
 
             <div
                 v-if="isLoading"
-                class="border border-gray-200 rounded flex items-center justify-center"
+                class="flex items-center justify-center border border-gray-200 rounded"
                 style="min-height: 150px"
             >
-                <AtlanLoader class="h-10 w-full" />
+                <AtlanLoader class="w-full h-10" />
             </div>
             <div
                 v-else
-                class="overflow-y-auto resources-container border border-gray-200 rounded"
+                class="overflow-y-auto border border-gray-200 rounded resources-container"
                 style="min-height: 150px"
             >
                 <div v-for="(item, index) in list" :key="index" class="">
@@ -25,6 +25,7 @@
                         :selectedAsset="item"
                         :noBorder="true"
                         :showAssetName="true"
+                        class="mb-1 last:mb-0"
                     />
                 </div>
             </div>

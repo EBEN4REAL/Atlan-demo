@@ -59,7 +59,7 @@
             </div>
             <div class="flex text-gray-500" v-if="isEditVisible">
                 <AtlanIcon
-                    icon="Lock"
+                    icon="Lock2"
                     class="h-5 mr-1 text-yellow-500"
                 ></AtlanIcon>
                 Sensitive details are not displayed for security reasons. Any
@@ -99,7 +99,7 @@
                         <div class="text-gray-500">Auth Type</div>
                         <div class="text-gray-700 capitalize">
                             <AtlanIcon
-                                icon="Lock"
+                                icon="Lock2"
                                 class="mb-0.5 text-yellow-400"
                             ></AtlanIcon>
                             {{ authType(credential) }}

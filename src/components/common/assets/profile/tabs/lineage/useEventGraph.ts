@@ -744,6 +744,8 @@ export default function useEventGraph(
 
     // selectPort
     const selectPort = (node, e, portId) => {
+        showLoader(e)
+
         resetPortStyle(chp.value.node, chp.value.portId)
 
         if (chp.value.portId || che.value) removeCHPEdges()
@@ -767,7 +769,6 @@ export default function useEventGraph(
             if (port.id === portId) setPortStyle(node, portId, 'select')
             else resetPortStyle(node, port.id)
         })
-        showLoader(e)
 
         const { relations } = lineage.value
         const rel = relations.find((x) => x.fromEntityId === portId)

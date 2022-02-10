@@ -499,11 +499,13 @@ export default function useGraph() {
 
     const toggleNodesEdges = (graph, visible) => {
         const graphEdges = graph.value.getEdges()
+        graph.value.freeze('toggleNodesEdges')
         graphEdges.forEach((x) => {
             const cell = graph.value.getCellById(x.id)
             cell.attr('line/stroke', visible ? '#aaaaaa' : '#dce0e5')
             cell.toBack()
         })
+        graph.value.unfreeze('toggleNodesEdges')
     }
 
     return {

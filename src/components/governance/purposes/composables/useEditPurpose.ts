@@ -1,12 +1,22 @@
 import { Ref, ref, watch, toRaw } from 'vue'
 import { IPurpose } from '~/types/accessPolicies/purposes'
 import usePurposeService from './usePurposeService'
+
+
+
+
 import {
     reFetchList,
-    selectedPersona,
-    personaList,
-    selectedPersonaId,
+    selectedPurpose,
+    purposeList,
+    selectedPurposeId,
+    handleUpdateList
 } from './usePurposeList'
+import { usePurposeStore } from '~/store/purpose'
+
+
+const store = usePurposeStore()
+const { updatePurpose: updatePurposeStoreList } = store
 
 const { updatePersona, deletePersona, enableDisablePurpose } =
     usePurposeService()
@@ -18,15 +28,15 @@ export const isEditing = ref(false)
 export const selectedPersonaDirty: Ref<IPurpose | undefined> = ref(undefined)
 
 watch(
-    () => selectedPersona.value?.id,
+    selectedPurpose,
     () => {
-        if (selectedPersona.value)
+        if (selectedPurpose.value)
             selectedPersonaDirty.value = JSON.parse(
-                JSON.stringify(toRaw(selectedPersona.value))
+                JSON.stringify(toRaw(selectedPurpose.value))
             )
         else selectedPersonaDirty.value = undefined
     },
-    { immediate: true }
+    { immediate: true, deep: true }
 )
 
 export const policyEditMap = ref({
@@ -34,15 +44,15 @@ export const policyEditMap = ref({
     metadataPolicies: {} as Record<string, boolean>,
 })
 
-watch(selectedPersona, () => {
+watch(selectedPurpose, () => {
     policyEditMap.value = {
         dataPolicies:
-            selectedPersona.value?.dataPolicies?.reduce((acc, curr) => {
+            selectedPurpose.value?.dataPolicies?.reduce((acc, curr) => {
                 acc[curr.id!] = false
                 return acc
             }, {}) || {},
         metadataPolicies:
-            selectedPersona.value?.metadataPolicies?.reduce((acc, curr) => {
+            selectedPurpose.value?.metadataPolicies?.reduce((acc, curr) => {
                 acc[curr.id!] = false
                 return acc
             }, {}) || {},
@@ -60,14 +70,14 @@ export function removeEditFlag(type: PolicyType, idx: string) {
 }
 
 export async function savePersona(persona: IPurpose) {
-    const payload = {...persona}
-    if(!payload.attributes){
+    const payload = { ...persona }
+    if (!payload.attributes) {
         payload.attributes = {}
     }
-    if(!payload.resources){
+    if (!payload.resources) {
         payload.resources = {}
     }
-      if(payload.readme === null){
+    if (payload.readme === null) {
         delete payload.readme
     }
     return updatePersona(payload)
@@ -77,12 +87,18 @@ export function discardPersona(type: PolicyType, idx: string) {
     isEditing.value = false
 }
 
+export function updatedSelectedData(purpose: any) {
+    selectedPersonaDirty.value = { ...selectedPersonaDirty.value, ...purpose }
+    handleUpdateList(selectedPersonaDirty.value)
+}
+
 export function updateSelectedPersona() {
-    selectedPersona.value = JSON.parse(
+    selectedPurpose.value = JSON.parse(
         JSON.stringify(selectedPersonaDirty.value)
     )
-    reFetchList()
+    updatePurposeStoreList(selectedPurpose.value)
 }
+
 export async function enablePurpose(id, isEnabled) {
     selectedPersonaDirty.value!.enabled = isEnabled
     const payload = {
@@ -125,7 +141,7 @@ export function addPolicy(type: PolicyType) {
 }
 
 export async function deletePolicy(type: PolicyType, id: string) {
-    const tempPersona = { ...JSON.parse(JSON.stringify(selectedPersona.value)) }
+    const tempPersona = { ...JSON.parse(JSON.stringify(selectedPurpose.value)) }
     if (type === 'meta') {
         const policyIndex =
             selectedPersonaDirty.value?.metadataPolicies?.findIndex(
@@ -148,44 +164,44 @@ export async function deletePolicy(type: PolicyType, id: string) {
 }
 
 export function saveClassifications() {
-    const tempPersona = { ...JSON.parse(JSON.stringify(selectedPersona.value)) }
+    const tempPersona = { ...JSON.parse(JSON.stringify(selectedPurpose.value)) }
     tempPersona.tags = [...toRaw(selectedPersonaDirty.value).tags]
     return savePersona(tempPersona)
 }
 export function savePolicy(type: PolicyType, dataPolicy: Object) {
     const tempPersona = {
-        ...JSON.parse(JSON.stringify(toRaw(selectedPersona.value))),
+        ...JSON.parse(JSON.stringify(toRaw(selectedPurpose.value))),
     }
     if (dataPolicy?.isNew) {
         delete dataPolicy?.isNew
         delete dataPolicy?.id
-    } 
-    if(dataPolicy.actions.includes('entity-update-classification')){
+    }
+    if (dataPolicy.actions.includes('entity-update-classification')) {
         dataPolicy.actions.push('entity-add-classification')
         dataPolicy.actions.push('entity-remove-classification')
     }
     if (type === 'meta') {
-        if(dataPolicy.id){
+        if (dataPolicy.id) {
             tempPersona.metadataPolicies = tempPersona.metadataPolicies.map((el) => {
-                if(el.id === dataPolicy.id){
+                if (el.id === dataPolicy.id) {
                     return dataPolicy
                 }
-                    return el
+                return el
             })
         } else {
-            tempPersona.metadataPolicies.push({...dataPolicy, type: 'metadata'})
+            tempPersona.metadataPolicies.push({ ...dataPolicy, type: 'metadata' })
         }
     }
     if (type === 'data') {
-        if(dataPolicy.id){
+        if (dataPolicy.id) {
             tempPersona.dataPolicies = tempPersona.dataPolicies.map((el) => {
-                if(el.id === dataPolicy.id){
-                    return {...dataPolicy, type: dataPolicy.mask === "null" ? "access" : 'masking'}
+                if (el.id === dataPolicy.id) {
+                    return { ...dataPolicy, type: dataPolicy.mask === "null" ? "access" : 'masking' }
                 }
-                    return { ...el, type: el.mask === "null" ? "access" :'masking'}
-            }) 
+                return { ...el, type: el.mask === "null" ? "access" : 'masking' }
+            })
         } else {
-            tempPersona.dataPolicies.push({...dataPolicy, type: dataPolicy.mask === "null" ? "access" : 'masking'})
+            tempPersona.dataPolicies.push({ ...dataPolicy, type: dataPolicy.mask === "null" ? "access" : 'masking' })
         }
     }
     return savePersona(tempPersona)
@@ -227,7 +243,7 @@ export function discardPolicy(type: PolicyType, id: string) {
     } else {
         if (type === 'meta') {
             const policyIndex =
-                selectedPersona.value?.metadataPolicies?.findIndex(
+                selectedPurpose.value?.metadataPolicies?.findIndex(
                     (pol) => pol.id === id
                 ) ?? -1
             const dirtyPolicyIndex =
@@ -236,7 +252,7 @@ export function discardPolicy(type: PolicyType, id: string) {
                 ) ?? -1
 
             if (dirtyPolicyIndex > -1 && policyIndex > -1) {
-                const policy = toRaw(selectedPersona.value)?.metadataPolicies?.[
+                const policy = toRaw(selectedPurpose.value)?.metadataPolicies?.[
                     policyIndex
                 ]
 
@@ -252,7 +268,7 @@ export function discardPolicy(type: PolicyType, id: string) {
         }
         if (type === 'data') {
             const policyIndex =
-                selectedPersona.value?.dataPolicies?.findIndex(
+                selectedPurpose.value?.dataPolicies?.findIndex(
                     (pol) => pol.id === id
                 ) ??
                 -1 ??
@@ -264,7 +280,7 @@ export function discardPolicy(type: PolicyType, id: string) {
                 ) ?? -1
 
             if (dirtyPolicyIndex > -1 && policyIndex > -1) {
-                const policy = toRaw(selectedPersona.value)?.dataPolicies?.[
+                const policy = toRaw(selectedPurpose.value)?.dataPolicies?.[
                     policyIndex
                 ]
                 const copySelectedPersonaDirty = JSON.parse(
@@ -284,13 +300,15 @@ export function discardPolicy(type: PolicyType, id: string) {
 export function enablePersona(isEnabled) {
     selectedPersonaDirty.value!.enabled = isEnabled
 }
-export function isSavedPolicy() {}
+export function isSavedPolicy() { }
 
 export async function deletePersonaById(id: string) {
+    const { removePurpose } = store
     await deletePersona(id)
+    removePurpose(id)
 
-    const personaIdx = personaList.value.findIndex((prs) => prs.id === id)
-    if (personaIdx > -1) personaList.value.splice(personaIdx, 1)
+    const personaIdx = purposeList.value.findIndex((prs) => prs.id === id)
+    if (personaIdx > -1) purposeList.value.splice(personaIdx, 1)
 
-    selectedPersonaId.value = personaList.value[0]?.id || ''
+    selectedPurposeId.value = purposeList.value[0]?.id || ''
 }

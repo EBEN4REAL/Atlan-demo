@@ -6,12 +6,11 @@
     >
         <div
             v-if="!isComputeDone"
-            class="flex items-center justify-center bg-white w-100"
+            class="flex flex-col items-center justify-center bg-white w-100"
             style="height: 80vh"
         >
-            <div>
-                <a-spin tip="Rendering graph..." />
-            </div>
+            <AtlanLoader class="h-10" />
+            <span class="mt-1 text-sm">Rendering graph...</span>
         </div>
 
         <AtlanLoader
@@ -186,7 +185,14 @@
                 )
 
                 // useComputeGraph
-                const { addSubGraph } = await useComputeGraph(
+                const {
+                    addSubGraph,
+                    renderLayout,
+                    mergedLineageData,
+                    sameSourceCount,
+                    nodes,
+                    edges,
+                } = await useComputeGraph(
                     graph,
                     graphLayout,
                     lineage,
@@ -210,9 +216,14 @@
                     selectedTypeInRelationDrawer,
                     config,
                     graphPrefs,
+                    mergedLineageData,
+                    sameSourceCount,
+                    nodes,
+                    edges,
                     onSelectAsset,
                     onCloseDrawer,
-                    addSubGraph
+                    addSubGraph,
+                    renderLayout
                 )
             }
 
@@ -453,8 +464,13 @@
                 align-items: center;
             }
 
-            &.isCounter {
+            &.isVpNode {
                 height: 50px !important;
+                background-color: #f3f6fc !important;
+                padding: unset !important;
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
             }
 
             & .popover {

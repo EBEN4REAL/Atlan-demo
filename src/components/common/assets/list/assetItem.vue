@@ -1209,13 +1209,15 @@
                 return item?.value?.guid !== classification.entityGuid
             }
 
-            const clsfList = computed(() =>
-                item.value?.classificationNames?.map((clName) =>
-                    classificationList.value.find(
-                        (clsf) => clsf.name === clName
-                    )
+            const clsfList = computed(() => {
+                const { matchingIdsResult } = mergeArray(
+                    classificationList.value,
+                    classifications(item.value),
+                    'name',
+                    'typeName'
                 )
-            )
+                return matchingIdsResult
+            })
 
             const terms = computed(() => meanings(item.value))
 

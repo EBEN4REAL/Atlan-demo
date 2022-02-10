@@ -47,7 +47,10 @@
                         placement="right"
                     >
                         <span
-                            ><AtlanIcon icon="Info" class="ml-1 mb-0.5"></AtlanIcon
+                            ><AtlanIcon
+                                icon="Info"
+                                class="ml-1 mb-0.5"
+                            ></AtlanIcon
                         ></span>
                     </a-tooltip>
                 </div>
@@ -108,7 +111,7 @@
     } from './composables/useEditPersona'
 
     import Dropdown from '@/UI/dropdown.vue'
-    import { reFetchList } from './composables/usePersonaList'
+    import { handleUpdateList } from './composables/usePersonaList'
     import { formatDateTime } from '~/utils/date'
     import { useTimeAgo } from '@vueuse/core'
     import map from '~/constant/accessControl/map'
@@ -161,7 +164,7 @@
                     async onOk() {
                         const msgId = Date.now()
                         try {
-                            await deletePersonaById(persona.value.id!)
+                            await deletePersonaById(persona.value.id)
                             message.success({
                                 content: 'Persona deleted',
                                 duration: 1.5,
@@ -198,16 +201,21 @@
                 const messageKey = Date.now()
                 message.loading({
                     content: 'Working on it...',
-                    duration: 0,
+                    duration: 1.5,
                     key: messageKey,
                 })
 
                 try {
-                    await savePersona({
-                        ...persona.value,
+                    const body = {
+                        ...JSON.parse(JSON.stringify(persona.value)),
                         displayName: selectedPersonaDirty.value?.displayName,
                         description: selectedPersonaDirty.value?.description,
-                    })
+                    }
+                    const personaRaw = JSON.parse(JSON.stringify(body))
+                    delete body.metadataPolicies
+                    delete body.dataPolicies
+                    await savePersona(body)
+                    handleUpdateList(personaRaw)
 
                     message.success({
                         content: `${persona.value?.displayName} persona updated`,
@@ -216,7 +224,7 @@
                     })
 
                     isEditing.value = false
-                    reFetchList()
+
                     openEditModal.value = false
                 } catch (error) {
                     message.error({

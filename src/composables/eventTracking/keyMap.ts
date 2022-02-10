@@ -205,6 +205,9 @@ const keyMap = {
     },
     insights: {
         query: {
+            renamed: {
+                action: 'insights_query_renamed',
+            },
             deleted: {
                 action: 'inights_query_deleted',
             },
@@ -291,6 +294,24 @@ const keyMap = {
             policy_deleted: {
                 action: 'governance_persona_policy_deleted',
             },
+            readme_updated: {
+                action: 'persona_readme_updated',
+            },
+            resource_created: {
+                action: 'persona_resource_created',
+                properties: (props) => ({
+                    domain: props.domain,
+                }),
+            },
+            resource_updated: {
+                action: 'persona_resource_updated',
+                properties: (props) => ({
+                    domain: props.domain,
+                }),
+            },
+            resource_deleted: {
+                action: 'persona_resource_deleted',
+            },
         },
         purpose: {
             created: {
@@ -321,6 +342,24 @@ const keyMap = {
             },
             policy_deleted: {
                 action: 'governance_purpose_policy_deleted',
+            },
+            readme_updated: {
+                action: 'purpose_readme_updated',
+            },
+            resource_created: {
+                action: 'purpose_resource_created',
+                properties: (props) => ({
+                    domain: props.domain,
+                }),
+            },
+            resource_updated: {
+                action: 'purpose_resource_updated',
+                properties: (props) => ({
+                    domain: props.domain,
+                }),
+            },
+            resource_deleted: {
+                action: 'purpose_resource_deleted',
             },
         },
         classification: {

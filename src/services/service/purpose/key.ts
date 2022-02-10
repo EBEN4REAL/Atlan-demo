@@ -5,9 +5,11 @@ export const LIST_PURPOSE = 'LIST_PURPOSE'
 export const CREATE_PURPOSE = 'CREATE_PURPOSE'
 export const UPDATE_PURPOSE = 'UPDATE_PURPOSE'
 export const ENABLE_DISABLE_PURPOSE = 'ENABLE_DISABLE_PURPOSE'
+export const GET_PURPOSE_FROM_ID = 'GET_PURPOSE_FROM_ID'
 
 export const map = {
     LIST_PURPOSE: () => getAPIPath('/service', '/purposes'),
+    [GET_PURPOSE_FROM_ID]: ({ id }: PathParams) => getAPIPath('/service', `/purposes/${id}`),
     CREATE_PURPOSE: () => getAPIPath('/service', '/purposes'),
     UPDATE_PURPOSE: ({ guid }: PathParams) =>
         getAPIPath('/service', `/purposes/${guid}`),

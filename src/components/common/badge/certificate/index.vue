@@ -25,8 +25,9 @@
         </template>
         <component
             :is="icon"
-            class="inline-flex self-center w-4 h-4"
+            class="inline-flex self-center"
             style="min-width: 1rem"
+            :class="size == 'small' ? 'w-3 h-3' : 'w-4 h-4'"
         />
     </a-tooltip>
 </template>
@@ -64,6 +65,11 @@
                 type: String,
                 required: false,
                 default: () => 'right',
+            },
+            size: {
+                type: String,
+                required: false,
+                default: () => 'default',
             },
         },
         setup(props) {

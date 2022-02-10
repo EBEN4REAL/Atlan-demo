@@ -941,7 +941,9 @@
 
                                 useAddEvent(
                                     'insights',
-                                    'folder',
+                                    item.value.typeName === 'Query'
+                                        ? 'query'
+                                        : 'folder',
                                     'renamed',
                                     undefined
                                 )

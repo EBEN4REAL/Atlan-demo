@@ -151,7 +151,6 @@
 
     import { TabInterface } from '~/types/insights/tab.interface'
     import { SavedQuery } from '~/types/insights/savedQuery.interface'
-    import { QueryCollection } from '~/types/insights/savedQuery.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
     import { generateUUID } from '~/utils/helper/generator'
@@ -161,6 +160,8 @@
     import useActiveQueryAccess from '~/components/insights/explorers/queries/composables/useActiveQueryAccess'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
     import { getDialectInfo } from '~/components/insights/common/composables/getDialectInfo'
+
+    import { useRunQueryUtils } from '~/components/insights/common/composables/useRunQueryUtils'
 
     import {
         explorerPaneSize,
@@ -297,6 +298,11 @@
             const editorInstance: Ref<any> = ref()
             const monacoInstance: Ref<any> = ref()
 
+            const { onRunCompletion, onQueryIdGeneration } = useRunQueryUtils(
+                editorInstance,
+                monacoInstance
+            )
+
             const editorContentSelectionState: Ref<boolean> = ref(false)
 
             const limitRows = ref({
@@ -426,8 +432,8 @@
                             tabIndex,
                             getData,
                             limitRows,
-                            null,
-                            null,
+                            onRunCompletion,
+                            onQueryIdGeneration,
                             savedQueryInfo.value?.attributes.rawQuery,
                             editorInstance,
                             monacoInstance,
@@ -484,27 +490,26 @@
                 }
             }
 
-            const getData = (activeInlineTab, dataList, columnList) => {
+            const getData = (
+                activeInlineTab,
+                dataList,
+                columnList,
+                executionTime,
+                index
+            ) => {
                 if (activeInlineTab && tabsArray?.value) {
-                    const activeInlineTabCopy: activeInlineTabInterface =
-                        JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
-                    activeInlineTabCopy.playground.editor.dataList = dataList
-
-                    activeInlineTabCopy.playground.editor.columnList =
+                    // const activeInlineTabCopy: activeInlineTabInterface =
+                    //     JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
+                    tabsArray.value[index].playground.editor.dataList = dataList
+                    tabsArray.value[index].playground.editor.columnList =
                         columnList
-                    const saveQueryDataInLocalStorage = false
-                    modifyActiveInlineTabEditor(
-                        activeInlineTabCopy,
-                        tabsArray,
-                        false,
-                        saveQueryDataInLocalStorage
-                    )
-                    // setSelection(
-                    //     toRaw(editorInstanceRef.value),
-                    //     toRaw(monacoInstanceRef.value),
-                    //     selectionObject.value
+                    // const saveQueryDataInLocalStorage = false
+                    // modifyActiveInlineTabEditor(
+                    //     activeInlineTabCopy,
+                    //     tabsArray,
+                    //     false,
+                    //     saveQueryDataInLocalStorage
                     // )
-                    // focusEditor(toRaw(editorInstanceRef.value))
                 }
             }
 
@@ -693,16 +698,18 @@
                 )
 
                 // console.log('detect query: ', newQuery)
+
+                let vqb = openVQB === 'true' ? true : false
                 queryRun(
                     tabIndex,
                     getData,
                     limitRows,
-                    null,
-                    null,
+                    onRunCompletion,
+                    onQueryIdGeneration,
                     newQuery,
                     editorInstance,
                     monacoInstance,
-                    openVQB,
+                    ref(vqb),
                     tabsArray
                 )
             }

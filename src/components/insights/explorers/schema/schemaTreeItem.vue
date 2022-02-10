@@ -575,69 +575,6 @@
             </div>
         </div>
     </div>
-
-    <!-- <template>
-        <a-modal
-            :visible="showContextModal"
-            :closable="false"
-            :class="$style.input"
-            :footer="null"
-            width="450px"
-        >
-            <div class="w-full p-4 text-gray-500 bg-white rounded">
-                <div class="w-full">
-                    <div>
-                        Current Tab connection context doesn't match your
-                        preview table connection context. Previewing in same tab
-                        will rewrite the context.
-                    </div>
-
-                    <div
-                        class="flex items-center justify-between text-gray-700cursor-pointer"
-                    >
-                        <AtlanBtn
-                            size="sm"
-                            color="secondary"
-                            padding="compact"
-                            class="flex items-center justify-between h-4 p-0 py-1 border-none hover:text-primary"
-                            @click="closeContextModal"
-                        >
-                            <span>Cancel</span>
-                        </AtlanBtn>
-
-                        <div class="flex items-center">
-                            <AtlanBtn
-                                size="sm"
-                                color="secondary"
-                                padding="compact"
-                                class="flex items-center justify-between h-6 p-0 py-1 ml-2 border-none "
-                                @click="openInCurrentTab"
-                            >
-                                <div
-                                    class="flex items-center rounded text-primary"
-                                >
-                                    <span>Open in current tab</span>
-                                </div>
-                            </AtlanBtn>
-                            <AtlanBtn
-                                size="sm"
-                                color="secondary"
-                                padding="compact"
-                                class="flex items-center justify-between h-6 p-0 py-1 ml-2 border-none "
-                                @click="openInNewTab"
-                            >
-                                <div
-                                    class="flex items-center rounded text-primary"
-                                >
-                                    <span>Open in new tab</span>
-                                </div>
-                            </AtlanBtn>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </a-modal>
-    </template> -->
 </template>
 
 <script lang="ts">
@@ -671,6 +608,8 @@
     import ColumnKeys from '~/components/common/column/columnKeys.vue'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
     import { getDialectInfo } from '~/components/insights/common/composables/getDialectInfo'
+    import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
+    import { useRunQueryUtils } from '~/components/insights/common/composables/useRunQueryUtils'
 
     export function getLastMappedKeyword(
         token_param: string[],
@@ -1272,42 +1211,50 @@
                     }
                 }
             }
+            const { onRunCompletion, onQueryIdGeneration } = useRunQueryUtils(
+                editorInstance,
+                monacoInstance
+            )
 
             const playQuery = (
                 newQuery,
                 newText,
                 activeInlineTab: Ref<activeInlineTabInterface>
             ) => {
+                const activeInlineTabKeyCopy = activeInlineTabKey.value
+
+                const tabIndex = inlineTabs.value.findIndex(
+                    (tab) => tab.key === activeInlineTabKeyCopy
+                )
                 if (!readOnly.value) {
                     activeInlineTab.value.playground.editor.text = newText
                     selectionObject.value.startLineNumber = 2
                     selectionObject.value.startColumnNumber = 1
                     selectionObject.value.endLineNumber = 2
                     selectionObject.value.endColumnNumber = newQuery.length + 1 // +1 for semicolon
-                    setSelection(
-                        toRaw(editorInstanceRef.value),
-                        toRaw(monacoInstanceRef.value),
-                        selectionObject.value
-                    )
-                    toRaw(editorInstanceRef.value).getModel().setValue(newText)
+                    setTimeout(() => {
+                        toRaw(editorInstanceRef.value)
+                            .getModel()
+                            .setValue(newText)
+                        // models[tabIndex].setValue(newText)
+                        setSelection(
+                            toRaw(editorInstanceRef.value),
+                            toRaw(monacoInstanceRef.value),
+                            selectionObject.value
+                        )
+                    }, 100)
                 }
-
-                const activeInlineTabKeyCopy = activeInlineTabKey.value
-
-                const tabIndex = inlineTabs.value.findIndex(
-                    (tab) => tab.key === activeInlineTabKeyCopy
-                )
 
                 queryRun(
                     tabIndex,
                     getData,
                     limitRows,
-                    null,
-                    null,
+                    onRunCompletion,
+                    onQueryIdGeneration,
                     newText,
                     editorInstance,
                     monacoInstance,
-                    false,
+                    ref(false),
                     inlineTabs
                 )
             }

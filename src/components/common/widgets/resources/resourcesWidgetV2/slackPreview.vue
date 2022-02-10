@@ -14,7 +14,7 @@
     <template v-else>
         <div
             class="flex p-2 border rounded cursor-pointer hover:bg-gray-100"
-            @click="openLink(link.url)"
+            @click="openLink(link.attributes.link)"
         >
             <template v-if="data">
                 <div class="relative h-8 mr-3 min-w-link-left-col">
@@ -30,7 +30,7 @@
                     ></AtlanIcon>
                 </div>
 
-                <div class="flex flex-col">
+                <div class="flex flex-col flex-grow">
                     <div class="flex items-center">
                         <!-- sender -->
                         <b class="mr-2 font-bold">{{ data.user.real_name }}</b>
@@ -44,7 +44,7 @@
 
                     <!-- <ShowLess :text="stripSlackText(data.message.text ?? '')" /> -->
 
-                    <span class="" style="min-width: 20rem">
+                    <span class="" style="">
                         <Truncate
                             placement="left"
                             :tooltip-text="
@@ -67,8 +67,7 @@
                         <span v-else> Private dm</span>
                     </div>
                 </div>
-                <div class="flex-grow"></div>
-                <div class="">
+                <div v-if="!readOnly">
                     <CardActions v-bind="props">
                         <div @click="(e) => e.stopPropagation()">
                             <AtlanIcon
@@ -84,7 +83,7 @@
 </template>
 
 <script setup lang="ts">
-    import { PropType, ref, provide, toRefs, computed, watch } from 'vue'
+    import { PropType, toRefs, computed, watch, inject } from 'vue'
     import { useTimeAgo } from '@vueuse/core'
     import { Link } from '~/types/resources.interface'
     import LinkPreview from '@/common/widgets/resources/resourcesWidgetV2/linkPreviewCard.vue'
@@ -108,9 +107,11 @@
     })
 
     const { link } = toRefs(props)
+    const readOnly = inject('readOnly')
+
     const body = computed(() => {
         const { channelId, messageId } = getChannelAndMessageIdFromSlackLink(
-            link.value.url
+            link.value.attributes.link
         )
         return {
             conversationId: channelId,
@@ -123,7 +124,7 @@
     })
 
     watch(
-        () => link.value.url,
+        () => link.value.attributes.link,
         () => {
             mutate()
         }

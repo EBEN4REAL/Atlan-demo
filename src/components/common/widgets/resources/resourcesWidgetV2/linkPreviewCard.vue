@@ -12,11 +12,16 @@
                     icon="Link"
                     class="w-auto h-7"
                 />
+
                 <img
                     v-else
-                    :src="`https://www.google.com/s2/favicons?domain=${getDomain(
-                        link.attributes.link
-                    )}&sz=64`"
+                    :src="
+                        getDomain(link.attributes.link) !== 'atlan.com'
+                            ? `https://www.google.com/s2/favicons?domain=${getDomain(
+                                  link.attributes.link
+                              )}&sz=64`
+                            : '/ico.ico'
+                    "
                     alt=""
                     class=""
                     style="max-width: 32px; max-height: 32px"
@@ -58,7 +63,7 @@
                 </div>
             </div>
         </div>
-        <div>
+        <div v-if="!readOnly">
             <CardActions v-bind="props">
                 <div>
                     <AtlanIcon

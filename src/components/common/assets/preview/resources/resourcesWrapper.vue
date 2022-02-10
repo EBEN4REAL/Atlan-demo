@@ -108,7 +108,6 @@
     }
     const removeStatus = ref('')
     const handleRemove = async (link) => {
-        debugger
         const { error, isLoading, isReady } = handleResourceDelete(link)
         removeStatus.value = 'loading'
         whenever(error, () => {

@@ -1221,25 +1221,29 @@
                 newText,
                 activeInlineTab: Ref<activeInlineTabInterface>
             ) => {
+                const activeInlineTabKeyCopy = activeInlineTabKey.value
+
+                const tabIndex = inlineTabs.value.findIndex(
+                    (tab) => tab.key === activeInlineTabKeyCopy
+                )
                 if (!readOnly.value) {
                     activeInlineTab.value.playground.editor.text = newText
                     selectionObject.value.startLineNumber = 2
                     selectionObject.value.startColumnNumber = 1
                     selectionObject.value.endLineNumber = 2
                     selectionObject.value.endColumnNumber = newQuery.length + 1 // +1 for semicolon
-                    setSelection(
-                        toRaw(editorInstanceRef.value),
-                        toRaw(monacoInstanceRef.value),
-                        selectionObject.value
-                    )
-                    toRaw(editorInstanceRef.value).getModel().setValue(newText)
+                    setTimeout(() => {
+                        toRaw(editorInstanceRef.value)
+                            .getModel()
+                            .setValue(newText)
+                        // models[tabIndex].setValue(newText)
+                        setSelection(
+                            toRaw(editorInstanceRef.value),
+                            toRaw(monacoInstanceRef.value),
+                            selectionObject.value
+                        )
+                    }, 100)
                 }
-
-                const activeInlineTabKeyCopy = activeInlineTabKey.value
-
-                const tabIndex = inlineTabs.value.findIndex(
-                    (tab) => tab.key === activeInlineTabKeyCopy
-                )
 
                 queryRun(
                     tabIndex,

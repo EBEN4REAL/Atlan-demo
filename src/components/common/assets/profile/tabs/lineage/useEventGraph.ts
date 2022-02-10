@@ -62,6 +62,15 @@ export default function useEventGraph(
         loaderCords.value = {}
     }
 
+    const handleError = (err) => {
+        let msg = err.message
+        const status = err?.response?.status
+
+        if (status === 403) {
+            msg = "Sorry, you don't have access to this asset"
+        }
+        message.error(msg)
+    }
     // getHighlights
     const getHighlights = (guid) => {
         let nodesToHighlight = []
@@ -470,9 +479,14 @@ export default function useEventGraph(
             direction,
             hideProcess: true,
         }))
-        const { data } = useFetchLineage(portConfig, true)
+        const { data, error } = useFetchLineage(portConfig, true)
 
-        watch(data, () => {
+        watchOnce(error, () => {
+            handleError(error.value)
+            hideLoader()
+        })
+
+        watchOnce(data, () => {
             if (!data.value?.relations.length) {
                 toggleNodesEdges(graph, true)
                 hideLoader()
@@ -622,8 +636,15 @@ export default function useEventGraph(
             direction: isLeafNode ? 'OUTPUT' : 'INPUT',
             hideProcess: true,
         }))
-        const { data } = useFetchLineage(nodeConfig, true)
-        watch(data, async () => {
+
+        const { data, error } = useFetchLineage(nodeConfig, true)
+
+        watchOnce(error, () => {
+            handleError(error.value)
+            hideLoader()
+        })
+
+        watchOnce(data, async () => {
             await addSubGraph(data.value, registerAllListeners)
             const ucell = graph.value.getCellById(guid)
             graph.value.scrollToCell(ucell, { animation: { duration: 600 } })
@@ -843,7 +864,7 @@ export default function useEventGraph(
      * Check if an edge is clickable in the current context
      * @param edge - The edge whose interactivity is to be checked
      */
-    function isEdgeClickable(edge) {
+    const isEdgeClickable = (edge) => {
         // No interaction for related edges
         if (edge.id.includes('related')) return false
 
@@ -861,7 +882,7 @@ export default function useEventGraph(
      * Check if an edge is hoverable in the current context
      * @param edge - The edge whose interactivity is to be checked
      */
-    function isEdgeHoverable(edge) {
+    const isEdgeHoverable = (edge) => {
         // No interaction for related edges
         if (edge.id.includes('related')) return false
 

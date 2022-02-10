@@ -260,6 +260,12 @@
             relations: defineAsyncComponent(
                 () => import('./relations/index.vue')
             ),
+            // resources: defineAsyncComponent(
+            //     () =>
+            //         import(
+            //             '@/common/assets/preview/resources/resourcesWrapper.vue'
+            //         )
+            // ),
             resources: defineAsyncComponent(
                 () => import('@common/widgets/resources/index.vue')
             ),

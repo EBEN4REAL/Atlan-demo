@@ -151,7 +151,6 @@
 
     import { TabInterface } from '~/types/insights/tab.interface'
     import { SavedQuery } from '~/types/insights/savedQuery.interface'
-    import { QueryCollection } from '~/types/insights/savedQuery.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
     import { generateUUID } from '~/utils/helper/generator'
@@ -162,8 +161,7 @@
     import { useConnector } from '~/components/insights/common/composables/useConnector'
     import { getDialectInfo } from '~/components/insights/common/composables/getDialectInfo'
 
-    import { useEditor } from '~/components/insights/common/composables/useEditor'
-    import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
+    import { useRunQueryUtils } from '~/components/insights/common/composables/useRunQueryUtils'
 
     import {
         explorerPaneSize,
@@ -299,6 +297,11 @@
             }
             const editorInstance: Ref<any> = ref()
             const monacoInstance: Ref<any> = ref()
+
+            const { onRunCompletion, onQueryIdGeneration } = useRunQueryUtils(
+                editorInstance,
+                monacoInstance
+            )
 
             const editorContentSelectionState: Ref<boolean> = ref(false)
 
@@ -510,44 +513,6 @@
                 }
             }
 
-            const { resetErrorDecorations, setErrorDecorations } = useEditor()
-            const onRunCompletion = (activeInlineTab, status: string) => {
-                if (status === 'success') {
-                    /* Resetting the red dot from the editor if it error is not line type */
-                    resetErrorDecorations(
-                        activeInlineTab,
-                        toRaw(editorInstance.value)
-                    )
-                } else if (status === 'error') {
-                    resetErrorDecorations(
-                        activeInlineTab,
-                        toRaw(editorInstance.value)
-                    )
-                    // console.log('error deco:', status)
-                    /* If it is a line error i,e VALIDATION_ERROR | QUERY_PARSING_ERROR */
-                    const errorName =
-                        activeInlineTab.value?.playground?.resultsPane?.result
-                            ?.queryErrorObj?.errorName
-                    console.log(
-                        'error data: ',
-                        activeInlineTab.value?.playground?.resultsPane?.result
-                            ?.queryErrorObj?.errorName
-                    )
-                    if (LINE_ERROR_NAMES.includes(errorName)) {
-                        setErrorDecorations(
-                            activeInlineTab,
-                            toRaw(editorInstance),
-                            toRaw(monacoInstance)
-                        )
-                    }
-                }
-            }
-            const onQueryIdGeneration = (activeInlineTab, queryId: string) => {
-                /* Setting the particular instance to this tab */
-                activeInlineTab.value.playground.resultsPane.result.runQueryId =
-                    queryId
-            }
-
             // FIXME: refactor it
 
             const detectQuery = () => {
@@ -733,6 +698,8 @@
                 )
 
                 // console.log('detect query: ', newQuery)
+
+                let vqb = openVQB === 'true' ? true : false
                 queryRun(
                     tabIndex,
                     getData,
@@ -742,7 +709,7 @@
                     newQuery,
                     editorInstance,
                     monacoInstance,
-                    openVQB,
+                    ref(vqb),
                     tabsArray
                 )
             }

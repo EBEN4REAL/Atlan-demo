@@ -495,7 +495,7 @@ export function useEditor(
                     activeInlineTab.value.playground.resultsPane.result
                         .errorDecorations,
                     []
-                )
+                ) ?? []
         }
     }
 

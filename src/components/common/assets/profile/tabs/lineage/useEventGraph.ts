@@ -206,8 +206,6 @@ export default function useEventGraph(
         if (!node || !portId) return
         node.setPortProp(portId, 'attrs/portBody', {
             fill: '#ffffff',
-        })
-        node.setPortProp(portId, 'attrs/portBody', {
             stroke: '#e6e6eb',
         })
     }
@@ -263,6 +261,7 @@ export default function useEventGraph(
                 const { portData } = createPortData(x)
                 return portData
             })
+            graph.value.freeze('controlPorts')
             ports.forEach((x) => {
                 if (portExist(x.id)) {
                     const parentNode = getPortNode(x.id)
@@ -282,6 +281,7 @@ export default function useEventGraph(
                         setPortStyle(node, port.id, 'highlight')
                 })
             }
+            graph.value.unfreeze('controlPorts')
             translateSubsequentNodes(node)
         }
     }
@@ -736,10 +736,12 @@ export default function useEventGraph(
     const removeCHPEdges = () => {
         const graphEdges = graph.value.getEdges()
         const edges = graphEdges.filter((x) => x.id.includes('port'))
+        graph.value.freeze('removeCHPEdges')
         edges.forEach((edge) => {
             const cell = graph.value.getCellById(edge.id)
             cell.remove()
         })
+        graph.value.unfreeze('removeCHPEdges')
     }
 
     // selectPort
@@ -750,6 +752,7 @@ export default function useEventGraph(
 
         if (chp.value.portId || che.value) removeCHPEdges()
         activeNodesToggled.value = {}
+
         chp.value.expandedNodes.forEach((x) => {
             if (x.id === node.id) return
             const ports = x.getPorts()
@@ -760,15 +763,20 @@ export default function useEventGraph(
             }
             translateExpandedNodesToDefault(x)
         })
+
         chp.value.node = getPortNode(portId)
         chp.value.portId = portId
         chp.value.expandedNodes = []
+
         const nodePorts = node.getPorts()
         nodePorts.shift()
+
+        graph.value.freeze('nodePortOp')
         nodePorts.forEach((port) => {
             if (port.id === portId) setPortStyle(node, portId, 'select')
             else resetPortStyle(node, port.id)
         })
+        graph.value.unfreeze('nodePortOp')
 
         const { relations } = lineage.value
         const rel = relations.find((x) => x.fromEntityId === portId)
@@ -789,6 +797,8 @@ export default function useEventGraph(
         removeCHPEdges()
 
         activeNodesToggled.value = {}
+
+        graph.value.freeze('deselectPort')
         chp.value.expandedNodes.forEach((x) => {
             const caretElement = getCaretElement(x.id)
             controlCaret(x.id, caretElement)
@@ -799,6 +809,7 @@ export default function useEventGraph(
             }
             translateExpandedNodesToDefault(x)
         })
+        graph.value.unfreeze('deselectPort')
 
         chp.value.node = null
         chp.value.portId = ''
@@ -1002,9 +1013,7 @@ export default function useEventGraph(
                 const { edgeData } = createEdgeData(
                     relation,
                     {},
-                    {
-                        stroke: '#aaaaaa',
-                    }
+                    { stroke: '#aaaaaa' }
                 )
                 edges.value.push(edgeData)
                 addEdge(graph, relation)
@@ -1049,9 +1058,7 @@ export default function useEventGraph(
             const { edgeData } = createEdgeData(
                 relation,
                 {},
-                {
-                    stroke: '#aaaaaa',
-                }
+                { stroke: '#aaaaaa' }
             )
             edges.value.push(edgeData)
             addEdge(graph, relation)

@@ -477,7 +477,7 @@ export default function useGraph() {
         }
     }
 
-    const addEdge = (graph, relation, data = {}, styles: EdgeStyle = {}) => {
+    const addEdge = (graph, relation, styles: EdgeStyle = {}) => {
         const graphEdges = graph.value.getEdges()
         const exists = graphEdges.find((x) => x.id === relation.id)
         if (exists) return

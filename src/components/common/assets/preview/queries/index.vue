@@ -67,6 +67,7 @@
                             :asset-name-truncate-percentage="'93%'"
                             class="mx-3"
                             @updateDrawer="handleListUpdate"
+                            isCompact
                     /></Popover>
                 </template>
             </AssetList>

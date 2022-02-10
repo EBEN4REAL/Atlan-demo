@@ -2,7 +2,7 @@
     <a-select
         placeholder="Select a run"
         v-model:value="selectedValue"
-        :allowClear="true"
+        :allowClear="false"
         :showSearch="true"
         :filterOption="false"
         @search="handleSearch"
@@ -16,33 +16,20 @@
         <template v-for="item in list" :key="item.metadata?.name">
             <a-select-option :value="item.metadata?.name">
                 <div class="flex flex-col">
-                    {{ shortName(item.metadata?.name) }}
                     <div class="flex items-center mb-0">
                         <div
-                            class="w-4 h-4 p-1 bg-gray-200 rounded shadow"
+                            class="w-4 h-4 p-1 mr-1 bg-gray-200 rounded shadow"
                             :class="getRunClass(item)"
                         ></div>
 
-                        <div class="flex flex-col flex-grow ml-2">
-                            {{ phase(item) }}
-                        </div>
-                    </div>
-                    <div class="text-gray-500" v-if="phase(item) === 'Running'">
-                        <span> {{ startedAt(item, true) }} ago </span>
-                    </div>
-                    <div class="text-gray-700" v-else>
-                        <span
-                            >{{ finishedAt(item, true) }} ago ({{
-                                duration(item)
-                            }})</span
-                        >
+                        {{ startedAt(item, false) }}
                     </div>
 
                     <div class="text-gray-500" v-if="isCronRun(item)">
                         <span>via <span>Schedule</span></span>
                     </div>
-                    <div>
-                        {{ item.metadata.name }}
+                    <div class="text-gray-500" v-else>
+                        manually run by {{ creatorUsername(item) }}
                     </div>
                 </div>
             </a-select-option>
@@ -52,7 +39,7 @@
 
 <script lang="ts">
     import { useVModels } from '@vueuse/core'
-    import { computed, defineComponent, ref, toRefs } from 'vue'
+    import { computed, defineComponent, ref, toRefs, watch } from 'vue'
     import { useRunDiscoverList } from '~/composables/package/useRunDiscoverList'
     import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
     import Ellipsis from '@/common/ellipsis/index.vue'
@@ -124,6 +111,15 @@
                 return ''
             }
 
+            watch(list, () => {
+                if (!selectedValue.value) {
+                    if (list.value?.length > 0) {
+                        selectedValue.value = list.value[0].metadata?.name
+                        handleChange(list.value[0].metadata?.name)
+                    }
+                }
+            })
+
             const {
                 creationTimestamp,
                 isCronRun,
@@ -134,11 +130,11 @@
                 duration,
                 startedAt,
                 name,
+                creatorUsername,
             } = useWorkflowInfo()
 
             return {
                 list,
-
                 selectedValue,
                 handleChange,
                 handleSearch,
@@ -156,6 +152,7 @@
                 duration,
                 startedAt,
                 shortName,
+                creatorUsername,
             }
         },
     })

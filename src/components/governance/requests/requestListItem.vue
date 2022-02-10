@@ -153,7 +153,7 @@
                                 :is-pill="false"
                                 :default-name="'Atlan Bot'"
                             />
-                            <div class="font-light text-gray-500">
+                            <div class="text-xs font-light text-gray-500">
                                 {{ createdAt }}
                             </div>
                             <!-- <DatePiece
@@ -348,42 +348,52 @@
                 }
                 state.isLoading = false
             }
-            onMounted(() => {
-                if (
-                    request.value.status === 'approved' ||
-                    request.value.status === 'rejected'
-                ) {
-                    const userId =
-                        request.value.status === 'approved'
-                            ? `${request.value.approvedBy[0].userId}`
-                            : `${request.value.rejectedBy[0].userId}`
-                    const payloadFilter = {
-                        $and: [
-                            {
-                                id: userId,
-                            },
-                        ],
-                    }
-                    const { data } = Users.List(
-                        {
-                            limit: 1,
-                            offset: 0,
-                            filter: JSON.stringify(payloadFilter),
-                        },
-                        { cacheKey: userId }
-                    )
-                    watch(data, () => {
-                        if (!data?.value?.records) {
-                            updatedBy.value = {
-                                username: '',
-                            }
-                        } else {
-                            updatedBy.value = data?.value?.records[0]
-                        }
-                    })
+            // onMounted(() => {
+            //     if (
+            //         request.value.status === 'approved' ||
+            //         request.value.status === 'rejected'
+            //     ) {
+            //         const userId =
+            //             request.value.status === 'approved'
+            //                 ? `${request.value.approvedBy[0].userId}`
+            //                 : `${request.value.rejectedBy[0].userId}`
+            //         const payloadFilter = {
+            //             $and: [
+            //                 {
+            //                     id: userId,
+            //                 },
+            //             ],
+            //         }
+            //         const { data } = Users.List(
+            //             {
+            //                 limit: 1,
+            //                 offset: 0,
+            //                 filter: JSON.stringify(payloadFilter),
+            //             },
+            //             { cacheKey: userId }
+            //         )
+            //         watch(data, () => {
+            //             if (!data?.value?.records) {
+            //                 updatedBy.value = {
+            //                     username: '',
+            //                 }
+            //             } else {
+            //                 updatedBy.value = data?.value?.records[0]
+            //             }
+            //         })
+            //     }
+            // })
+            const nameUpdater = computed(() => {
+                if (request.value.status === 'approved') {
+                    const userUpdater = request.value?.approvedBy || []
+                    return userUpdater[0]?.username || ''
                 }
+                if (request.value.status === 'rejected') {
+                    const userUpdater = request.value?.rejectedBy || []
+                    return userUpdater[0]?.username || ''
+                }
+                return ''
             })
-            const nameUpdater = computed(() => updatedBy?.value?.username)
             const timeUpdated = computed(() => {
                 if (request.value.status === 'approved') {
                     const time = request.value?.approvedBy || []

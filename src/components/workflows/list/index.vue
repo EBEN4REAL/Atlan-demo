@@ -1,5 +1,7 @@
 <template>
-    <div class="grid w-full grid-cols-3 gap-4 grid-flow-cols auto-rows-min">
+    <div
+        class="grid w-full gap-4 md:grid-cols-3 sm:grid-cols-2 grid-flow-cols auto-rows-min"
+    >
         <Item
             v-for="item in list"
             :key="item.name"
@@ -12,7 +14,8 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs } from 'vue'
+    import { defineComponent, ref, toRefs, watch } from 'vue'
+    import { useRunDiscoverList } from '~/composables/package/useRunDiscoverList'
     import Item from './item.vue'
 
     export default defineComponent({
@@ -44,8 +47,16 @@
                 emit('select', item)
             }
 
+            watch(
+                list,
+                () => {
+                    if (list.value?.length > 0) {
+                        handleSelect(list.value[0])
+                    }
+                },
+                { immediate: true }
+            )
             const getPackage = (item) => {
-                console.log(item)
                 const packageName =
                     item.metadata.annotations['package.argoproj.io/name']
                 return packageList.value.find(

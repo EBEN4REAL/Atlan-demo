@@ -1,5 +1,5 @@
 <template>
-    <div class="table_height">
+    <div class="table_height" ref="tableHeightRef">
         <regular-table
             ref="tableRef"
             :class="$style.regular_table"
@@ -21,6 +21,7 @@
         watch,
         ref,
         onMounted,
+        onUnmounted,
     } from 'vue'
 
     import Tooltip from '@common/ellipsis/index.vue'
@@ -69,6 +70,7 @@
         setup(props) {
             const { dataList, columns } = toRefs(props)
             const tableRef = ref(null)
+            const tableHeightRef = ref(null)
             const variantTypeIndexes = ref<String[]>([])
             const selectedData = ref('')
             const showExpand = ref('')
@@ -235,7 +237,7 @@
             })
 
             const alignment = (data_type) => {
-                let align = 'text-align: left !important'
+                let align = 'left'
                 // console.log('datatype: ', data_type)
 
                 switch (data_type) {
@@ -244,14 +246,14 @@
                     case 'Geography':
                     case 'Decimal':
                     case 'Boolean':
-                        align = 'text-align: right !important'
+                        align = 'right'
                         break
 
                     case 'Text':
                     case 'Array':
                     case 'Object':
                     case 'Variant':
-                        align = 'text-align: left !important'
+                        align = 'left'
                         break
                 }
                 return align
@@ -295,8 +297,16 @@
                         if (i !== 0) {
                             const { x } = window.regularTable.getMeta(td)
 
-                            td.style = alignment(
-                                getDataType(columns.value[x].data_type)
+                            // td.style.textAlign = alignment(
+                            //     getDataType(columns.value[x].data_type)
+                            // )
+
+                            td.style.setProperty(
+                                'text-align',
+                                alignment(
+                                    getDataType(columns.value[x].data_type)
+                                ),
+                                'important'
                             )
                         }
                     })
@@ -310,7 +320,16 @@
                         const column = columns.value[x]
                         // console.log('x: ', x)
 
-                        th.style = alignment(getDataType(column.data_type))
+                        th.style.setProperty(
+                            'text-align',
+                            alignment(getDataType(column.data_type)),
+                            'important'
+                        )
+
+                        // console.log(
+                        //     'header: ',
+                        //     alignment(getDataType(column.data_type))
+                        // )
 
                         if (
                             column.data_type.toLowerCase() === 'any' ||
@@ -389,12 +408,28 @@
                 table?.draw()
             }
 
-            onMounted(() => {
+            // const tableHeight = document.getElementsByClassName('table_height')[0]
+
+            let observer = ref()
+
+            const onResize = () => {
+                console.log('resize')
                 init()
+            }
+
+            onMounted(() => {
+                observer.value = new ResizeObserver(onResize).observe(
+                    tableHeightRef.value
+                )
+            })
+
+            onUnmounted(() => {
+                observer?.value?.unobserve(tableHeightRef?.value)
             })
 
             return {
                 tableRef,
+                tableHeightRef,
                 images,
                 getDataType,
                 variantTypeIndexes,

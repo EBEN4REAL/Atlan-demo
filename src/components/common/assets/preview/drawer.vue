@@ -1,6 +1,7 @@
 <template>
     <teleport to="#overAssetSidebar">
         <a-drawer
+            v-if="visible"
             :key="data?.guid"
             v-model:visible="visible"
             placement="right"
@@ -21,7 +22,6 @@
                 <AtlanIcon icon="Add" class="text-white" />
             </div>
             <AssetPreview
-                v-if="visible"
                 :selected-asset="drawerData"
                 :is-drawer="true"
                 :drawer-active-key="drawerActiveKey"
@@ -44,6 +44,7 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     export default defineComponent({
+        name: 'AssetDrawer',
         components: {
             AssetPreview,
         },
@@ -68,7 +69,7 @@
             drawerActiveKey: {
                 type: String,
                 required: false,
-                default: 'info',
+                default: 'Overview',
             },
             showCloseBtn: {
                 type: Boolean,

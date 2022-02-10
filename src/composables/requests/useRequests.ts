@@ -15,7 +15,7 @@ function generateRequestListFilters(
     const filter: Record<string, any> = {}
     if (searchTerm) {
         filter.$or = [
-            { destination_qualified_name: { $ilike: `%${searchTerm}%` } },
+            { destinationQualifiedName: { $ilike: `%${searchTerm}%` } },
         ]
     }
     for (const [key, value] of Object.entries(filters)) {

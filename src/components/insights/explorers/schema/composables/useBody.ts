@@ -46,10 +46,18 @@ export function useBody(
     limit?: any,
     facets?: object,
     sortOrderTable?: string,
-    sortOrderColumn?:string
+    sortOrderColumn?: string
     // searchResultType?: string
 ) {
     const base = bodybuilder()
+
+    // {
+    //     term: {
+    //         __state: 'ACTIVE',
+    //     },
+    // },
+
+    base.filter('term', '__state', 'ACTIVE')
 
     appliedFilters.forEach((filter, i) => {
         if (i == 0) {
@@ -60,9 +68,8 @@ export function useBody(
             if (Array.isArray(typeName)) {
                 base.filter('terms', '__typeName.keyword', typeName)
                 addQueryTextFilter(base, queryText)
-            }
-            else {
-                if (queryText && typeName==='Database')
+            } else {
+                if (queryText && typeName === 'Database')
                     addQueryTextFilter(base, queryText)
                 base.filter('term', '__typeName.keyword', typeName)
             }
@@ -74,27 +81,26 @@ export function useBody(
     base.from(offset || 0)
     base.size(limit || 0)
 
-    if(typeName==='Column') {
-        
-        if(sortOrderColumn && sortOrderColumn.length) {
+    if (typeName === 'Column') {
+        if (sortOrderColumn && sortOrderColumn.length) {
             let sortData = sortOrderColumn.split('-')
             base.sort(`${sortData[0]}`, { order: sortData[1] })
         } else {
             // base.sort('order', { order: sort })
-
         }
     } else {
-        if((typeName==='Table' || Array.isArray(typeName)) && sortOrderTable && sortOrderTable.length) {
-            
-            if(queryText?.length) {
-
+        if (
+            (typeName === 'Table' || Array.isArray(typeName)) &&
+            sortOrderTable &&
+            sortOrderTable.length
+        ) {
+            if (queryText?.length) {
             } else {
                 let sortData = sortOrderTable.split('-')
                 base.sort(`${sortData[0]}`, { order: sortData[1] })
             }
         } else {
-            if(queryText?.length) {
-
+            if (queryText?.length) {
             } else {
                 base.sort('name.keyword', { order: sort })
             }
@@ -102,8 +108,8 @@ export function useBody(
     }
 
     const existsValue = 'NONE'
-      //facet filters
-    if((typeName==='Table' || Array.isArray(typeName))) {
+    //facet filters
+    if (typeName === 'Table' || Array.isArray(typeName)) {
         Object.keys(facets ?? {}).forEach((mkey) => {
             let filterObject = facets[mkey]
             switch (mkey) {
@@ -132,21 +138,24 @@ export function useBody(
                 }
                 case 'connection': {
                     if (filterObject) {
-                        base.filter('term', 'connectionQualifiedName', filterObject)
+                        base.filter(
+                            'term',
+                            'connectionQualifiedName',
+                            filterObject
+                        )
                     }
                     break
                 }
                 case 'certificateStatus': {
                     if (filterObject) {
                         if (filterObject.length > 0) {
-
                             // replace null
                             let filter = [...filterObject]
 
-                            for(var i=0;i<filter.length;i++) {
+                            for (var i = 0; i < filter.length; i++) {
                                 if (filter[i] == null) {
-                                    filter[i] = "NONE";
-                                  }
+                                    filter[i] = 'NONE'
+                                }
                             }
 
                             const index = filter.indexOf(existsValue)
@@ -165,7 +174,7 @@ export function useBody(
                                             temp
                                         )
                                     }
-    
+
                                     q.orFilter('bool', (query) => {
                                         return query.notFilter(
                                             'exists',
@@ -194,7 +203,7 @@ export function useBody(
                                     'ownerUsers',
                                     filterObject.ownerUsers
                                 )
-    
+
                             if (filterObject.ownerGroups?.length > 0)
                                 q.orFilter(
                                     'terms',
@@ -205,7 +214,10 @@ export function useBody(
                                 q.orFilter('bool', (query) => {
                                     return query.filter('bool', (query2) => {
                                         query2.notFilter('exists', 'ownerUsers')
-                                        query2.notFilter('exists', 'ownerGroups')
+                                        query2.notFilter(
+                                            'exists',
+                                            'ownerGroups'
+                                        )
                                         return query2
                                     })
                                 })
@@ -213,13 +225,17 @@ export function useBody(
                             return q
                         })
                     }
-    
+
                     break
                 }
                 case 'typeName': {
                     if (filterObject) {
                         if (filterObject !== '__all') {
-                            base.filter('term', '__typeName.keyword', filterObject)
+                            base.filter(
+                                'term',
+                                '__typeName.keyword',
+                                filterObject
+                            )
                         }
                     }
                     break
@@ -239,11 +255,14 @@ export function useBody(
                                     '__traitNames',
                                     filterObject.classifications
                                 )
-    
+
                             if (filterObject.empty === true) {
                                 q.orFilter('bool', (query) => {
                                     return query.filter('bool', (query2) => {
-                                        query2.notFilter('exists', '__traitNames')
+                                        query2.notFilter(
+                                            'exists',
+                                            '__traitNames'
+                                        )
                                         return query2
                                     })
                                 })
@@ -251,7 +270,7 @@ export function useBody(
                             return q
                         })
                     }
-    
+
                     break
                 }
                 case 'tableQualifiedName': {
@@ -296,7 +315,7 @@ export function useBody(
                     }
                     break
                 }
-    
+
                 case 'parentCategory': {
                     if (filterObject) {
                         base.orFilter('term', '__categories', filterObject)
@@ -354,7 +373,10 @@ export function useBody(
                                         )
                                     }
                                     if (element.operator === 'isNull') {
-                                        base.notFilter('exists', element.operand)
+                                        base.notFilter(
+                                            'exists',
+                                            element.operand
+                                        )
                                     }
                                     if (element.operator === 'isNotNull') {
                                         base.filter('exists', element.operand)
@@ -364,7 +386,9 @@ export function useBody(
                                             gt: element.value,
                                         })
                                     }
-                                    if (element.operator === 'greaterThanEqual') {
+                                    if (
+                                        element.operator === 'greaterThanEqual'
+                                    ) {
                                         base.filter('range', element.operand, {
                                             gte: element.value,
                                         })
@@ -395,8 +419,6 @@ export function useBody(
             }
         })
     }
-    
-
 
     base.filterMinimumShouldMatch(1)
 
@@ -479,7 +501,7 @@ export function useBody(
                             },
                         },
                         weight: 8,
-                    }
+                    },
                 ],
                 boost_mode: 'sum',
                 score_mode: 'sum',

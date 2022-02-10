@@ -1,15 +1,18 @@
 <template>
     <div
-        class="flex items-center py-1 pl-2 pr-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer hover:bg-purple hover:border-purple group hover:shadow hover:text-white"
+        class="flex items-center py-1 pl-2 pr-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer hover:bg-purple hover:border-purple hover:shadow hover:text-white"
+        @mouseenter="() => (pillColor = 'text-white')"
+        @mouseleave="() => (pillColor = 'text-purple')"
     >
         <AtlanIcon
             :icon="icon(term)"
-            class="group-hover:text-white text-purple"
+            class="hover:text-white"
+            :class="pillColor"
             @click="$emit('toggleDrawer', term)"
         ></AtlanIcon>
 
         <div
-            class="ml-1 truncate group-hover:text-white overflow-ellipsis"
+            class="ml-1 truncate overflow-ellipsis peer"
             style="max-width: 150px"
             @click="$emit('toggleDrawer', term)"
         >
@@ -19,14 +22,15 @@
         <div class="flex" @click="handleRemove" v-if="allowDelete">
             <AtlanIcon
                 icon="Cross"
-                class="h-3 ml-2 text-gray-500 group-hover:text-white"
+                :class="pillColor==='text-purple'?'text-gray-500':'text-white'"
+                class="h-3 ml-2"
             ></AtlanIcon>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { toRefs, computed, defineComponent } from 'vue'
+    import { toRefs, computed, defineComponent, ref } from 'vue'
 
     export default defineComponent({
         props: {
@@ -45,6 +49,7 @@
         emits: ['delete', 'toggleDrawer'],
         setup(props, { emit }) {
             const { term } = toRefs(props)
+            const pillColor = ref('text-purple')
 
             const handleRemove = () => {
                 emit('delete', props.term)
@@ -75,9 +80,8 @@
             return {
                 handleRemove,
                 icon,
+                pillColor,
             }
         },
     })
 </script>
-
-<style></style>

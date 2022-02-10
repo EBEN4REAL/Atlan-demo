@@ -1,6 +1,6 @@
 <template>
     <div class="flex items-center justify-between w-full h-full">
-        <div class="flex">
+        <div class="flex items-center h-full">
             <AtlanIcon
                 icon="Dots"
                 v-if="!isHome"
@@ -8,12 +8,14 @@
                 :class="{ 'text-primary': isSidebarActive }"
                 @click="$emit('toggleNavbar')"
             />
-
-            <div v-if="logoUrl && !logoNotFound" class="mt-1">
+            <div
+                v-if="logoUrl && !logoNotFound"
+                class="mb-0.5 flex items-center"
+            >
                 <router-link to="/">
                     <img
                         :src="logoUrl"
-                        class="w-auto h-4 cursor-pointer select-none"
+                        class="w-auto h-6 cursor-pointer select-none"
                         :alt="defaultLogo"
                         @error="onLogoNotFound"
                     />
@@ -21,19 +23,37 @@
             </div>
             <p
                 v-else
-                class="text-lg font-bold text-gray-600 bg-white cursor-pointer hover:text-primary"
+                class="text-lg font-bold text-gray-600 bg-white cursor-pointer hover:text-primary mt-0.5"
             >
                 {{ logoName }}
             </p>
 
-            <div v-if="isAssets" class="flex items-center ml-1 gap-x-1">
-                <AtlanIcon icon="ChevronRight"></AtlanIcon>
+            <div
+                v-if="isAssets"
+                class="flex items-center h-full ml-3 transition border-l border-r border-gray-200 hover:bg-primary-menu"
+            >
                 <GlobalSelection
                     :key="dirtyTimestamp"
                     v-model="globalState"
                     @change="handleGlobalStateChange"
                 ></GlobalSelection>
             </div>
+            <!-- <div
+                class="ml-3"
+                v-if="isAssets && globalState?.length > 1"
+                @click="handleInfo"
+            >
+                <a-tooltip title="Click to view details">
+                    <a-button class="h-6 px-2 py-0 leading-none">
+                        <AtlanIcon
+                            icon="Info"
+                            class="text-primary"
+                        ></AtlanIcon></a-button
+                ></a-tooltip>
+                <a-modal v-model:visible="infoVisible" :footer="null">
+                    <ContextModal :context="globalState"></ContextModal>
+                </a-modal>
+            </div> -->
         </div>
         <div class="flex items-center h-full cursor-pointer justify-self-end">
             <a-dropdown placement="bottomRight">
@@ -91,9 +111,11 @@
     import UserPersonalAvatar from '@/common/avatar/me.vue'
     import GlobalSelection from '@/common/cascade/global.vue'
     import { useTenantStore } from '~/store/tenant'
+    import ContextModal from '@/common/modal/context.vue'
+
     import { useRoute, useRouter } from 'vue-router'
     import defaultLogo from '~/assets/images/your_company.png'
-    import AtlanIcon from '../icon/atlanIcon.vue'
+
     import AssetMenu from '../assets/profile/header/assetMenu.vue'
     import map from '~/constant/accessControl/map'
     import useAssetStore from '~/store/asset'
@@ -102,7 +124,7 @@
         name: 'Navigation Menu',
         components: {
             UserPersonalAvatar,
-            AtlanIcon,
+            ContextModal,
             AssetMenu,
             GlobalSelection,
         },
@@ -121,6 +143,8 @@
             const currentRoute = useRoute()
             const logoNotFound = ref(false)
 
+            const infoVisible = ref(false)
+
             const isHome = computed(() => {
                 if (currentRoute.name === 'index') {
                     return true
@@ -129,9 +153,13 @@
             })
 
             const isAssets = computed(() => {
-                if (currentRoute.path.startsWith('/assets')) {
+                if (
+                    currentRoute.path.startsWith('/assets') &&
+                    !currentRoute.params.id
+                ) {
                     return true
                 }
+
                 return false
             })
 
@@ -168,6 +196,10 @@
                 assetStore.setGlobalState(globalState.value)
             }
 
+            const handleInfo = () => {
+                infoVisible.value = !infoVisible.value
+            }
+
             return {
                 page,
                 isHome,
@@ -183,6 +215,8 @@
                 globalState,
                 isAssets,
                 dirtyTimestamp,
+                handleInfo,
+                infoVisible,
             }
         },
     })

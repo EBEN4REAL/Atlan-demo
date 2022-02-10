@@ -39,8 +39,18 @@
                 </template>
             </div>
             <div
-                class="flex items-center justify-between px-4"
+                v-if="isLoading && userList.length < 2"
+                class="flex items-center justify-center h-full"
+            >
+                <AtlanIcon
+                    icon="CircleLoader"
+                    class="mr-1 text-primary animate-spin mb-0.5"
+                />
+                Loading users
+            </div>
+            <div
                 v-if="userList.length > 0"
+                class="flex items-center justify-between px-4"
             >
                 <p class="mt-1 text-xs text-gray-500">
                     {{ userList.length }} of {{ filterTotal }} users

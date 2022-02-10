@@ -46,7 +46,7 @@
             const { property } = toRefs(props)
             const componentProps = computed(() => property.value.ui)
 
-            const localValue = ref(modelValue.value.toString())
+            const localValue = ref(modelValue.value?.toString())
 
             const handleChange = () => {
                 if (localValue.value === 'true') modelValue.value = true

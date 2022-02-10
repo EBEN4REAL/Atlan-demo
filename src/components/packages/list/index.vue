@@ -1,5 +1,5 @@
 <template>
-    <div class="grid w-full grid-cols-3 gap-4 grid-flow-cols auto-rows-min">
+    <div class="grid w-full grid-cols-4 gap-4 grid-flow-cols auto-rows-min">
         <Item
             style="height: 150px"
             v-for="item in list"
@@ -8,12 +8,14 @@
             :selectedItem="selectedItem"
             @click="handleSelect(item)"
             @dblclick="handleDoubleClick(item)"
+            @select="handleDoubleClick(item)"
         ></Item>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs } from 'vue'
+    import { defineComponent, ref, toRefs, watch } from 'vue'
+    import { useRoute } from 'vue-router'
     import Item from './item.vue'
 
     export default defineComponent({
@@ -37,6 +39,18 @@
                 selectedItem.value = item
                 emit('select', item)
             }
+            const route = useRoute()
+            watch(
+                list,
+                () => {
+                    if (list.value?.length > 0) {
+                        if (!route.params?.id) {
+                            handleSelect(list.value[0])
+                        }
+                    }
+                },
+                { immediate: true }
+            )
 
             const handleDoubleClick = (item) => {
                 emit('dblClick', item)
@@ -46,6 +60,7 @@
                 list,
                 handleSelect,
                 selectedItem,
+                route,
                 handleDoubleClick,
             }
         },

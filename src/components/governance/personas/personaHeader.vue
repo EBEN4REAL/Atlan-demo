@@ -47,7 +47,7 @@
                         placement="right"
                     >
                         <span
-                            ><AtlanIcon icon="Info" class="ml-1"></AtlanIcon
+                            ><AtlanIcon icon="Info" class="ml-1 mb-0.5"></AtlanIcon
                         ></span>
                     </a-tooltip>
                 </div>

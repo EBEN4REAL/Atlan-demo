@@ -65,6 +65,7 @@
     import { useVModels } from '@vueuse/core'
     import { useColumn } from '~/components/insights/playground/editor/vqb/composables/useColumn'
     import { useAssetListing } from '~/components/insights/common/composables/useAssetListing'
+    import { pluralizeString } from '~/utils/string'
 
     export default defineComponent({
         name: 'Sub panel',
@@ -103,8 +104,8 @@
             const { selectedColumn } = useVModels(props)
             const { getDataTypeImage } = useColumn()
             const isAreaFocused = inject('isAreaFocused') as Ref<Boolean>
-            const totalTablesCount = inject('totalTablesCount') as Ref<Number>
-            const totalColumnsCount = inject('totalColumnsCount') as Ref<Number>
+            const totalTablesCount = inject('totalTablesCount') as Ref<number>
+            const totalColumnsCount = inject('totalColumnsCount') as Ref<number>
             const isColumnLoading = inject('isColumnLoading') as Ref<Boolean>
             const isTableLoading = inject('isTableLoading') as Ref<Boolean>
             const isTableSelected = inject('isTableSelected') as Ref<Boolean>
@@ -118,11 +119,19 @@
             const placeholder = computed(() => {
                 let data = !isTableSelected.value
                     ? isTableLoading.value
-                        ? 'Loading...'
-                        : `Select from ${totalTablesCount.value} tables`
+                        ? 'Loading tables...'
+                        : `${totalTablesCount.value} ${pluralizeString(
+                              'table',
+                              totalTablesCount.value,
+                              false
+                          )} available`
                     : isColumnLoading.value
-                    ? 'Loading...'
-                    : `Select from ${totalColumnsCount.value} columns`
+                    ? 'Loading columns...'
+                    : `Select from ${pluralizeString(
+                          'column',
+                          totalColumnsCount.value,
+                          false
+                      )}`
 
                 return data
             })

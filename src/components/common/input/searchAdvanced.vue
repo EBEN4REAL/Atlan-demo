@@ -7,9 +7,10 @@
         data-test-id="input-text"
         type="text"
         :class="{
-            [$style.transparent]: true,
+            [$style.transparent]: !noBorder,
             [allowTabShortcut]: true,
             [$style.inputBox]: true,
+            [$style.no_border]: noBorder,
         }"
         class="px-0 text-sm text-gray-500 bg-transparent rounded-none focus:outline-none"
         @change="handleChange"
@@ -91,6 +92,8 @@
                 default: () => '',
             },
             connectorName: { type: String, default: () => '' },
+            customClass: { type: String, default: '' },
+            noBorder: { type: Boolean, default: false },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
@@ -195,6 +198,37 @@
 
             &:global(.ant-input-affix-wrapper-focused) {
                 @apply border-primary border-b  border-solid border-t-0 border-l-0 border-r-0  !important;
+
+                :global(.focusIcon) {
+                    @apply text-primary !important;
+                }
+            }
+        }
+
+        &:global(.ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover) {
+            border-right-width: 0px !important;
+        }
+
+        :global(.ant-input) {
+            @apply bg-transparent;
+        }
+    }
+
+    .no_border {
+        -webkit-transition: border 500ms ease-out;
+        -moz-transition: border 500ms ease-out;
+        -o-transition: border 500ms ease-out;
+        transition: border 500ms ease-out;
+        &:global(.ant-input:focus) {
+            @apply border-0 shadow-none  !important;
+            outline: 0 !important;
+        }
+
+        &:global(.ant-input-affix-wrapper) {
+            @apply border-gray-300 border-b shadow-none border-solid border-t-0 border-l-0 border-r-0 !important;
+
+            &:global(.ant-input-affix-wrapper-focused) {
+                @apply border-b-0  border-solid border-t-0 border-l-0 border-r-0  !important;
 
                 :global(.focusIcon) {
                     @apply text-primary !important;

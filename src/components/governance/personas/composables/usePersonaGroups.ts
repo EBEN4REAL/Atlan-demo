@@ -2,7 +2,7 @@ import { Ref, ref, watch } from 'vue'
 import { IPersona, IGroup } from '~/types/accessPolicies/personas'
 import useGroups from '~/composables/group/useGroups'
 
-function usePersonaGroupList(persona: Ref<IPersona>) {
+function usePersonaGroupList(persona: Ref<IPersona>, cancelToken) {
     const params = ref(new URLSearchParams())
     // this is needed as there are multiple keys with the same param name
     params.value.append('limit', '20')
@@ -15,39 +15,45 @@ function usePersonaGroupList(persona: Ref<IPersona>) {
     const {
         groupList: data,
         getGroupList,
-        state,
-        STATES,
         isLoading,
         error,
-    } = useGroups(params.value)
-
-    watch(
-        () => persona.value.id,
-        () => getGroupList()
-    )
+    } = useGroups(params.value, '', {}, cancelToken, { immediate: false })
     const groupList: Ref<IGroup[]> = ref([])
+
+    const fetchGroups = () => {
+        const groupFilter = { $or: [] }
+        persona.value.groups?.forEach((id) => groupFilter.$or.push({ id }))
+        params.value.delete('filter')
+        params.value.append('filter', JSON.stringify(groupFilter))
+        getGroupList()
+    }
+    /* Fetching group subjects of the persona if there are any. */
+    const fetchPersonaGroupSubjects = () => {
+        if (persona?.value?.groups?.length) fetchGroups()
+        else groupList.value = []
+    }
     watch(
         data,
         () => {
-            // console.log(data.value, 'data edit first')
             groupList.value = []
             persona.value.groups?.forEach((grpid) => {
-                data.value.forEach((t) => {
+                data?.value?.forEach((t) => {
                     if (t.id === grpid) {
                         groupList.value.push(t)
                     }
                 })
             })
-            // console.log(data.value, 'data edit end')
         },
         { immediate: true }
     )
-
+    watch(
+        () => [persona?.value?.id, persona?.value?.groups],
+        fetchPersonaGroupSubjects,
+        { immediate: true }
+    )
     return {
         list: data,
-        getGroupList,
-        state,
-        STATES,
+        fetchPersonaGroupSubjects,
         groupList,
         isLoading,
         error,

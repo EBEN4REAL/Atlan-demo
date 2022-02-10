@@ -60,6 +60,15 @@ export default function useAssetInfo() {
 
     const parentSite = (asset: assetInterface) => attributes(asset)?.site
 
+    const parentFolder = (asset: assetInterface) => attributes(asset)?.folder
+
+    const parentModel = (asset: assetInterface) => attributes(asset)?.model
+
+    const parentOrganization = (asset: assetInterface) =>
+        attributes(asset)?.organization
+
+    const parentObject = (asset: assetInterface) => attributes(asset)?.object
+
     const reportCount = (asset: assetInterface) =>
         getCountString(attributes(asset)?.reportCount, true)
 
@@ -78,12 +87,27 @@ export default function useAssetInfo() {
     const pageCount = (asset: assetInterface) =>
         getCountString(attributes(asset)?.pageCount, true)
 
+    const fieldCount = (asset: assetInterface) =>
+        getCountString(attributes(asset)?.fieldCount, true)
+
     const title = (asset: assetInterface) =>
-        (attributes(asset)?.displayName || attributes(asset)?.name) ?? ''
+        (attributes(asset)?.displayName ||
+            attributes(asset)?.name ||
+            attributes(asset)?.qualifiedName) ??
+        ''
+    const apiName = (asset: assetInterface) => attributes(asset)?.apiName ?? ''
 
     const getConnectorImage = (asset: assetInterface) => {
         const found =
             connectionStore.getConnectorImageMapping[
+                attributes(asset)?.connectorName?.toLowerCase()
+            ]
+        return found
+    }
+
+    const getConnectorLabel = (asset: assetInterface) => {
+        const found =
+            connectionStore.getConnectorLabelMapping[
                 attributes(asset)?.connectorName?.toLowerCase()
             ]
         return found
@@ -148,6 +172,9 @@ export default function useAssetInfo() {
 
     const databaseName = (asset: assetInterface) =>
         attributes(asset)?.databaseName ?? ''
+
+    const parentDatabase = (asset: assetInterface) =>
+        attributes(asset)?.database
 
     const schemaName = (asset: assetInterface) =>
         attributes(asset)?.schemaName ?? ''
@@ -327,6 +354,11 @@ export default function useAssetInfo() {
             if (viewGuid) {
                 return `/assets/${viewGuid}/overview?column=${asset?.guid}`
             }
+        } else if (assetType(asset) === 'SalesforceField') {
+            const objectGuid = asset?.attributes?.object?.guid
+            if (objectGuid) {
+                return `/assets/${objectGuid}/overview?field=${asset?.guid}`
+            }
         } else if (isGTC(asset)) {
             return `/glossary/${asset?.guid}`
         } else if (assetType(asset) === 'Query') {
@@ -467,6 +499,16 @@ export default function useAssetInfo() {
             ? attributes(asset)?.columnCount?.toLocaleString() || 'N/A'
             : getCountString(attributes(asset)?.columnCount, true)
 
+    const tableCount = (asset: assetInterface, raw: boolean = false) =>
+        raw
+            ? attributes(asset)?.tableCount?.toLocaleString() || 'N/A'
+            : getCountString(attributes(asset).tableCount, false)
+
+    const viewCount = (asset: assetInterface, raw: boolean = false) =>
+        raw
+            ? attributes(asset)?.viewsCount?.toLocaleString() || 'N/A'
+            : getCountString(attributes(asset).viewsCount, false)
+
     const termsCount = (asset: assetInterface, raw: boolean = false) =>
         raw
             ? asset?.termsCount?.toLocaleString() || 'N/A'
@@ -530,6 +572,14 @@ export default function useAssetInfo() {
             return raw
                 ? formatDateTime(attributes(asset)?.sourceCreatedAt) || 'N/A'
                 : useTimeAgo(attributes(asset)?.sourceCreatedAt).value
+        }
+        return ''
+    }
+    const lastSyncRunAt = (asset: assetInterface, raw: boolean = false) => {
+        if (attributes(asset)?.lastSyncRunAt) {
+            return raw
+                ? formatDateTime(attributes(asset)?.lastSyncRunAt) || 'N/A'
+                : useTimeAgo(attributes(asset)?.lastSyncRunAt).value
         }
         return ''
     }
@@ -712,8 +762,11 @@ export default function useAssetInfo() {
             assetType(asset)?.includes('Looker')
         )
     }
+    const isSaasAsset = (asset: assetInterface) => {
+        return assetType(asset)?.includes('Salesforce')
+    }
 
-    const isNonBiAsset = (asset: assetInterface) => {
+    const isSQLAsset = (asset: assetInterface) => {
         return (
             assetType(asset) === 'Table' ||
             assetType(asset) === 'View' ||
@@ -782,6 +835,13 @@ export default function useAssetInfo() {
                 'AtlasGlossaryCategory',
             ].includes(typeName)
         ) {
+            return true
+        }
+        return false
+    }
+
+    const isCustom = (asset: assetInterface) => {
+        if (attributes(asset)?.isCustom) {
             return true
         }
         return false
@@ -1060,6 +1120,36 @@ export default function useAssetInfo() {
     const externalLocationFormat = (asset: assetInterface) =>
         attributes(asset)?.externalLocationFormat || ''
 
+    const sourceId = (asset: assetInterface) =>
+        attributes(asset)?.sourceId || '-'
+
+    const fieldsLookerQuery = (asset: assetInterface) =>
+        attributes(asset)?.fields || []
+
+    const sourceOwners = (asset: assetInterface) =>
+        attributes(asset)?.sourceOwners
+
+    const resultMakerID = (asset: assetInterface) =>
+        attributes(asset)?.resultMakerID || '-'
+
+    const sourceMetadataId = (asset: assetInterface) =>
+        attributes(asset)?.sourceMetadataId || '-'
+
+    const sourceContentMetadataId = (asset: assetInterface) =>
+        attributes(asset)?.sourceContentMetadataId || '-'
+
+    const sourceViewCount = (asset: assetInterface) =>
+        getCountString(attributes(asset)?.sourceViewCount, true)
+
+    const sourceChildCount = (asset: assetInterface) =>
+        getCountString(attributes(asset)?.sourceChildCount, true)
+
+    const detailColumns = (asset: assetInterface) =>
+        attributes(asset)?.detailColumns || []
+
+    const picklistValues = (asset: assetInterface) =>
+        attributes(asset)?.picklistValues || []
+
     return {
         attributes,
         title,
@@ -1110,6 +1200,7 @@ export default function useAssetInfo() {
         announcementUpdatedAt,
         announcementUpdatedBy,
         ownerGroups,
+        detailColumns,
         ownerUsers,
         modifiedAt,
         modifiedBy,
@@ -1124,6 +1215,7 @@ export default function useAssetInfo() {
         categoryCount,
         termsCount,
         getConnectorImageMap,
+        getConnectorLabel,
         anchorAttributes,
         readmeGuid,
         getConnectorsNameFromQualifiedName,
@@ -1136,16 +1228,19 @@ export default function useAssetInfo() {
         webURL,
         isBiAsset,
         selectedGlossary,
+        fieldsLookerQuery,
         isForeign,
         categories,
         seeAlso,
         parentCategory,
+        sourceOwners,
         isGTC,
         getProfilePath,
         isGTCByType,
         getAnchorQualifiedName,
         selectedAssetUpdatePermission,
-        isNonBiAsset,
+        isSQLAsset,
+        isSaasAsset,
         getLineagePath,
         isUserDescription,
         isScrubbed,
@@ -1178,5 +1273,23 @@ export default function useAssetInfo() {
         parentWorkbook,
         sourceURL,
         parentSite,
+        resultMakerID,
+        sourceMetadataId,
+        sourceContentMetadataId,
+        sourceViewCount,
+        parentFolder,
+        parentModel,
+        parentDatabase,
+        sourceChildCount,
+        tableCount,
+        viewCount,
+        parentOrganization,
+        parentObject,
+        lastSyncRunAt,
+        sourceId,
+        fieldCount,
+        apiName,
+        isCustom,
+        picklistValues,
     }
 }

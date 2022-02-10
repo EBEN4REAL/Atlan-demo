@@ -113,6 +113,7 @@
                                 `${item.attribute}`,
                                 asset.value[item.attribute]
                             )
+                            .filter('term', '__state', 'ACTIVE')
                             .filter('term', '__typeName.keyword', typeName)
                             .size(100)
                             .build()
@@ -126,6 +127,7 @@
                         ?.join('/')
 
                     return bodybuilder()
+                        .filter('term', '__state', 'ACTIVE')
                         .filter(
                             'term',
                             'connectionQualifiedName',

@@ -11,7 +11,10 @@
     </div>
 
     <div
-        v-if="!qualifiedName(selectedAsset).includes('powerbi')"
+        v-if="
+            attributes(selectedAsset)?.category?.toLowerCase() != 'bi' &&
+            attributes(selectedAsset)?.category?.toLowerCase() != 'saas'
+        "
         class="flex flex-col"
         @click="handleOpenModal"
     >
@@ -29,7 +32,7 @@
                 <div class="flex items-center mb-3 gap-x-6">
                     <p class="flex items-center text-gray-500">
                         <AtlanIcon
-                            icon="Approve"
+                            icon="RunSuccess"
                             class="mr-1"
                             v-if="allowQuery(selectedAsset)"
                         ></AtlanIcon>
@@ -38,12 +41,12 @@
                             class="mr-1"
                             v-else
                         ></AtlanIcon>
-                        Query
+                        Allow Query
                     </p>
 
                     <p class="flex items-center text-gray-500">
                         <AtlanIcon
-                            icon="Approve"
+                            icon="RunSuccess"
                             class="mr-1"
                             v-if="allowQueryPreview(selectedAsset)"
                         ></AtlanIcon>
@@ -52,7 +55,7 @@
                             class="mr-1"
                             v-else
                         ></AtlanIcon>
-                        Preview
+                        Allow Preview
                     </p>
                 </div>
 

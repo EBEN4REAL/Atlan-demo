@@ -245,7 +245,9 @@
             </div>
             <a-button-group>
                 <a-tooltip
-                    v-if="!isGTC(item) && !isBiAsset(item)"
+                    v-if="
+                        !isGTC(item) && !isBiAsset(item) && !isSaasAsset(item)
+                    "
                     title="Query"
                 >
                     <QueryDropdown
@@ -273,7 +275,10 @@
                 </a-tooltip>
 
                 <a-button
-                    v-if="isBiAsset(item) && webURL(item)"
+                    v-if="
+                        (isBiAsset(item) || isSaasAsset(item)) &&
+                        (webURL(item) || sourceURL(item))
+                    "
                     block
                     @click="handleBIRedirect"
                     ><div class="flex items-center justify-center px-1">
@@ -281,7 +286,8 @@
                             :icon="getConnectorImage(item)"
                             class="h-4 mr-1"
                         />
-                        Open in PowerBI
+                        Open in
+                        {{ getConnectorLabel(item) }}
                     </div>
                 </a-button>
 
@@ -371,6 +377,7 @@
             const {
                 title,
                 getConnectorImage,
+                getConnectorLabel,
                 assetType,
                 rowCount,
                 sizeBytes,
@@ -396,8 +403,10 @@
                 selectedAssetUpdatePermission,
                 isGTC,
                 isBiAsset,
+                isSaasAsset,
                 assetTypeLabel,
                 webURL,
+                sourceURL,
             } = useAssetInfo()
 
             const router = useRouter()
@@ -445,7 +454,11 @@
             }
 
             const handleBIRedirect = () => {
-                window.open(webURL(item.value), '_blank').focus()
+                if (webURL(item.value)) {
+                    window.open(webURL(item.value), '_blank').focus()
+                } else {
+                    window.open(sourceURL(item.value), '_blank').focus()
+                }
             }
 
             /*  whenever(and(Escape, notUsingInput), (v) => {
@@ -486,9 +499,12 @@
                 map,
                 checkAccess,
                 isBiAsset,
+                isSaasAsset,
                 webURL,
                 handleBIRedirect,
                 handleClick,
+                sourceURL,
+                getConnectorLabel,
             }
         },
     })

@@ -1,31 +1,5 @@
 <template>
     <div class="flex flex-col">
-        <div
-            class="px-4 pt-2 pb-2.5 text-sm bg-white border-b shadow-sm filter-head"
-        >
-            <div
-                v-if="totalFilteredCount > 0"
-                class="flex items-center justify-between"
-            >
-                <span>
-                    {{ totalFilteredCount }}
-                    {{ totalFilteredCount > 1 ? 'filters' : 'filter' }}</span
-                >
-                <div class="flex font-medium text-gray-500">
-                    <span class="text-gray-500" @click="handleResetAll">
-                        <span class="text-sm cursor-pointer hover:text-primary"
-                            >Clear All</span
-                        >
-                    </span>
-                </div>
-            </div>
-            <div
-                v-else
-                class="flex items-center justify-between text-gray-500 no-filter"
-            >
-                <span> {{ noFilterTitle }}</span>
-            </div>
-        </div>
         <slot></slot>
 
         <div class="overflow-y-auto">
@@ -34,6 +8,7 @@
                 :accordion="isAccordion"
                 expand-icon-position="right"
                 :bordered="false"
+                class="bg-transparent"
                 @change="handleActiveKeyChange"
             >
                 <template

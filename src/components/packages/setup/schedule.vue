@@ -2,7 +2,7 @@
     <a-form layout="vertical">
         <div class="grid grid-cols-12 gap-x-4">
             <div class="col-span-4">
-                <a-form-item label="Schedule" class="mb-2">
+                <a-form-item label="Frequency" class="mb-2">
                     <Frequency
                         v-model="schedule.frequency"
                         placeholder="None"
@@ -136,8 +136,6 @@
 
             const getCronFrequency = (cronString) => {
                 const interval = parser.parseExpression(cronString)
-
-                console.log(interval)
 
                 if (
                     interval.fields.hour.length === 24 &&

@@ -8,7 +8,7 @@
             style="z-index: 600"
         />
         <div class="flex items-center justify-between px-5 pt-4">
-            <span class="text-base font-bold text-gray-500">Lineage</span>
+            <span class="text-sm font-bold text-gray-500">Lineage</span>
 
             <AtlanButton
                 v-if="isWithGraph"
@@ -151,6 +151,11 @@
                 depth: depth.value,
                 guid: guid.value,
                 hideProcess: true,
+                entityFilters: {
+                    attributeName: '__state',
+                    operator: 'eq',
+                    attributeValue: 'ACTIVE',
+                },
                 attributes: [
                     ...AssetAttributes,
                     ...SQLAttributes,

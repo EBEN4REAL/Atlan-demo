@@ -7,6 +7,7 @@ import useIntegrations, {
     archiveIntegration,
     refetchIntegration,
 } from '~/composables/integrations/useIntegrations'
+import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
 
 const { origin } = window.location
@@ -56,7 +57,7 @@ function getTimestampFromSlackMessageId(id) {
 
 export const shareOnSlack = ({
     assetID,
-    integrationId,
+    // integrationId,
     channelAlias,
     message,
     link,
@@ -128,14 +129,29 @@ export const userLevelOauthUrl = computed(() => {
     return slackOauth
 })
 
+const trackAddEvent = (tenant) => {
+    if (tenant)
+        useAddEvent('admin', 'integration', 'added', {
+            integration: 'slack',
+            level: 'tenant'
+        })
+    else
+        useAddEvent('admin', 'integration', 'added', {
+            integration: 'slack',
+            level: 'user'
+        })
+}
+
 const handlePopupClose = async (userSlackStatus, tenantSlackStatus, callback, tenant) => {
     console.log('popup window closed');
     // ? recall all integration, (better (when filter support added): use filter and fetch only slack user level integration and update store)
     const { call } = useIntegrations(false)
     await call()
     // callback with status
-    if ((!tenant && userSlackStatus.value.configured) || (tenant && tenantSlackStatus.value.configured))
+    if ((!tenant && userSlackStatus.value.configured) || (tenant && tenantSlackStatus.value.configured)) {
         callback('success')
+        trackAddEvent(tenant)
+    }
     else callback('failure')
 }
 
@@ -160,7 +176,6 @@ export function openSlackOAuth({ w = 500, h = 600, tenant = false, callback = (s
         if (new_window?.closed) {
             clearInterval(timer);
             handlePopupClose(userSlackStatus, tenantSlackStatus, callback, tenant)
-
         }
     }, 500);
 }

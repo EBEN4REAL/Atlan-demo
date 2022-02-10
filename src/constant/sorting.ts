@@ -9,10 +9,6 @@ export const sortList = [
         label: 'Relevance',
     },
     {
-        id: 'popularity',
-        label: 'Popularity',
-    },
-    {
         id: 'a-z',
         label: 'A-Z',
     },

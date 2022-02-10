@@ -127,29 +127,8 @@
             ParentGlossary: defineAsyncComponent(
                 () => import('./types/parentGlossary.vue')
             ),
-            ParentWorkspace: defineAsyncComponent(
-                () => import('./types/parentWorkspace.vue')
-            ),
-            ParentReport: defineAsyncComponent(
-                () => import('./types/parentReport.vue')
-            ),
-            ParentDashboard: defineAsyncComponent(
-                () => import('./types/parentDashboard.vue')
-            ),
-            ParentDataset: defineAsyncComponent(
-                () => import('./types/parentDataset.vue')
-            ),
-            ParentProject: defineAsyncComponent(
-                () => import('./types/parentProject.vue')
-            ),
-            ParentWorkbook: defineAsyncComponent(
-                () => import('./types/parentWorkbook.vue')
-            ),
-            ParentSite: defineAsyncComponent(
-                () => import('./types/parentSite.vue')
-            ),
-            ParentDatasource: defineAsyncComponent(
-                () => import('./types/parentDatasource.vue')
+            ParentContext: defineAsyncComponent(
+                () => import('./types/parentContext.vue')
             ),
             Connection: defineAsyncComponent(
                 () => import('./types/connection.vue')
@@ -164,6 +143,24 @@
             ),
             SourceUpdated: defineAsyncComponent(
                 () => import('./types/sourceUpdated.vue')
+            ),
+            SourceViewCount: defineAsyncComponent(
+                () => import('./types/sourceViewCount.vue')
+            ),
+            SubFolderCount: defineAsyncComponent(
+                () => import('./types/subFolderCount.vue')
+            ),
+            TableCount: defineAsyncComponent(
+                () => import('./types/tableCount.vue')
+            ),
+            ViewCount: defineAsyncComponent(
+                () => import('./types/viewCount.vue')
+            ),
+            FieldCount: defineAsyncComponent(
+                () => import('./types/fieldCount.vue')
+            ),
+            ReportCount: defineAsyncComponent(
+                () => import('./types/reportCount.vue')
             ),
         },
 

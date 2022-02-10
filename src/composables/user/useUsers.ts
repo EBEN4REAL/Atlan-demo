@@ -16,8 +16,9 @@ export const getUserName = (user: any) => {
     /** remove ` (me) string if present from last name`; we add it here @see {@link src/composables/user/useFacetUsers.ts} */
     const lastNameArray = lastName?.split(' ') || []
     if (firstName && lastName) {
-        return `${firstName} ${lastNameArray.length ? lastNameArray[0] || '' : lastName
-            }`
+        return `${firstName} ${
+            lastNameArray.length ? lastNameArray[0] || '' : lastName
+        }`
     }
     return user.username
 }
@@ -132,11 +133,15 @@ const defaultCacheOption = {
         dedupingInterval: 0,
     },
 }
-export const useUsers = (userListAPIParams, immediate = true) => {
+export const useUsers = (
+    userListAPIParams,
+    immediate = true,
+    cancelToken = null
+) => {
     const options: useOptions = {}
     let cancel = axios.CancelToken.source()
     options.options = ref({
-        cancelToken: cancel.token,
+        cancelToken: cancelToken?.token || cancel.token,
     })
 
     options.asyncOptions = ref({
@@ -156,8 +161,8 @@ export const useUsers = (userListAPIParams, immediate = true) => {
         if (data?.value?.records) {
             const escapedData = data?.value?.records
                 ? data?.value?.records?.map((user: any) =>
-                    getFormattedUser(user)
-                )
+                      getFormattedUser(user)
+                  )
                 : [] // to prevent maping undefined
             userList.value = escapedData
 

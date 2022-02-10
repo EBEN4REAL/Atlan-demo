@@ -159,7 +159,6 @@ export function useError() {
         activeInlineTab.value.playground.resultsPane.result.executionTime = -1
         activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
             'error'
-        debugger
         /* ------------------- */
         /* USE SSE ERROR */
         if (error.value?.statusText) {

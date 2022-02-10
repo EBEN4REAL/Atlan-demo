@@ -60,7 +60,7 @@ export const getTruncatedStringFromArray = (
         // length of name and 'x others(s)'
         const lastElm =
             truncated.length === 1 &&
-                truncated[0].length < `${truncated.length} other(s)`.length
+            truncated[0].length < `${truncated.length} other(s)`.length
                 ? `${truncated[0]}`
                 : `${truncated.length} other(s)`
 
@@ -85,23 +85,39 @@ export const getTruncatedStringFromArray = (
 }
 
 /**
- *
- * @param string - String to be pluralised ex- term/asset w
- * @param count - Count to check if the string passed as first param should be singular or plural
- * @param includeCountInString - If the result string should have the count ex- if string is asset -> 2 assets or assets
- * @returns pluralised string based on count
+ * If the string ends in a y, add an ies. If the string ends in a s, add an s. If the string ends in
+ * anything else, add an s. If the count is greater than 1, add an s
+ * @param {string} string - The string to be pluralized.
+ * @param {number} count - The number of items.
+ * @param {boolean} [includeCountInString=true] - If the result string should have the count ex- if string is asset -> 2 assets or assets
+ * @returns The pluralized string.
  */
 export const pluralizeString = (
     string: string,
     count: number,
     includeCountInString: boolean = true
 ) => {
-    if (string) {
-        if (includeCountInString)
-            return count === 1 ? `${count} ${string}` : `${count} ${string}s`
-        return count === 1 ? `${string}` : `${string}s`
+    if (!string) return ''
+    if (!count) return string
+
+    const plural = { y: 'ies', s: 's' }
+    const vowels = ['a', 'e', 'i', 'o', 'u']
+
+    if (count > 1) {
+        const lastLetter = string[string.length - 1]
+        const secondTolastLetter = string[string.length - 2]
+        const isVowel = (letter) => vowels.includes(letter)
+
+        if (plural[lastLetter] && !isVowel(secondTolastLetter)) {
+            const s = string.slice(0, string.length - 1)
+            return `${includeCountInString ? count : ''} ${s}${
+                plural[lastLetter]
+            }`
+        }
+        return `${includeCountInString ? count : ''} ${string}s`
     }
-    return ''
+
+    return `${includeCountInString ? count : ''} ${string}`
 }
 
 /**
@@ -140,9 +156,12 @@ export const getNameInitials = (name: string) => {
     return ''
 }
 
+export const getValidStringUsingCount = (count: number, str: string) => {
+    if (count === 0) return ''
+    return str
+}
 
 export const truncate = (string, len) => {
-    const myTruncatedString = string.substring(0, len);
-    return `${myTruncatedString
-        }...`
-} 
+    const myTruncatedString = string.substring(0, len)
+    return `${myTruncatedString}...`
+}

@@ -254,9 +254,11 @@ import TaskList from '~/assets/images/readme/TaskList.svg'
 import Running from '~/assets/images/icons/running.svg'
 import ExclaimCircle from '~/assets/images/icons/exclaimCircle.svg'
 import Refresh from '~/assets/images/icons/Refresh.svg'
+import PlusWhite from '~/assets/images/icons/plus-white.svg'
 import WFEmptyTab from '~/assets/images/workflows/empty-tab.svg'
 import CreateWF from '~/assets/images/workflows/createWF.svg'
 import NoRuns from '~/assets/images/workflows/noRuns.svg'
+
 import Error from '~/assets/images/error.svg'
 import Warning from '~/assets/images/warning.svg'
 import ErrorLogs from '~/assets/images/workflows/error-logs-state.svg'
@@ -297,10 +299,7 @@ import AddColumn from '~/assets/images/icons/add-column.svg'
 
 import ClassificationShield from '~/assets/images/classifications/shield.svg'
 import ClassificationAtlan from '~/assets/images/classifications/atlan.svg'
-import ClassificationAtlanHollow from '~/assets/images/classifications/atlan-hollow.svg'
 import ClassificationPropagated from '~/assets/images/classifications/propagated.svg'
-import ClassificationPoliciesGray from '~/assets/images/classifications/policies-gray.svg'
-import ClassificationPoliciesActive from '~/assets/images/classifications/policies-active.svg'
 
 // source list
 import NoWf from '~/assets/images/icons/no-wf.svg'
@@ -317,6 +316,7 @@ import Databricks from '~/assets/images/source/svg/Databricks.svg'
 import PowerBI from '~/assets/images/source/svg/PowerBI.svg'
 import BigQuery from '~/assets/images/source/svg/Bigquery.svg'
 import Looker from '~/assets/images/source/svg/Looker.svg'
+import Salesforce from '~/assets/images/source/svg/Salesforce.svg'
 
 import Schema2Active from '~/assets/images/icons/schema2Active.svg'
 import QueriesActive from '~/assets/images/icons/queriesActive.svg'
@@ -376,7 +376,6 @@ import InnerJoinInfo from '~/assets/images/illustrations/InnerJoinInfo.svg'
 import LeftJoinInfo from '~/assets/images/illustrations/LeftJoinInfo.svg'
 import RightJoinInfo from '~/assets/images/illustrations/RightJoinInfo.svg'
 import OuterJoinInfo from '~/assets/images/illustrations/OuterJoinInfo.svg'
-import PlusWhite from '~/assets/images/icons/plus-white.svg'
 
 import LockedFile from '~/assets/images/illustrations/lockedFile.svg'
 import Quotes2 from '~/assets/images/icons/Quotes.svg'
@@ -692,6 +691,7 @@ export default {
     Redshift,
     BigQuery,
     Looker,
+    Salesforce,
     SSO,
     SMTP,
     APIKey,
@@ -755,9 +755,6 @@ export default {
     ClassificationShield,
     ClassificationAtlan,
     ClassificationPropagated,
-    ClassificationAtlanHollow,
-    ClassificationPoliciesGray,
-    ClassificationPoliciesActive,
     OuterJoin,
     InnerJoinInfo,
     LeftJoinInfo,
@@ -779,7 +776,7 @@ export default {
     Request,
     RequestActive,
     FilterFunnelDot,
-    PlusWhite,
     Comment,
     EmptyRequest,
+    PlusWhite,
 }

@@ -473,6 +473,7 @@
                                     <SlackModal
                                         :link="link"
                                         :asset-i-d="activeInlineTab?.queryId"
+                                        assetType="Query"
                                     >
                                         <div class="flex items-center">
                                             <AtlanIcon icon="Slack" />
@@ -712,6 +713,37 @@
                 activeInlineTabCopy.queryId = undefined
                 activeInlineTabCopy.qualifiedName = ''
                 activeInlineTabCopy.attributes = undefined
+                activeInlineTabCopy.playground.editor.dataList = []
+                activeInlineTabCopy.playground.editor.columnList = []
+                activeInlineTabCopy.playground.editor.limitRows = {
+                    checked: false,
+                    rowsCount: -1,
+                }
+
+                activeInlineTabCopy.playground.resultsPane = {
+                    activeTab:
+                        activeInlineTab.value?.playground.resultsPane
+                            .activeTab ?? 0,
+                    result: {
+                        title: '',
+                        isQueryRunning: '',
+                        isQueryAborted: false,
+                        queryErrorObj: {},
+                        errorDecorations: [],
+                        totalRowsCount: -1,
+                        executionTime: -1,
+                        runQueryId: undefined,
+                        buttonDisable: false,
+                        eventSourceInstance: undefined,
+                    },
+                    metadata: {},
+                    queries: {},
+                    joins: {},
+                    filters: {},
+                    impersonation: {},
+                    downstream: {},
+                    sqlHelp: {},
+                }
 
                 /* CAREFUL:-------Order is important here------ */
                 inlineTabAdd(activeInlineTabCopy, tabsArray, activeInlineTabKey)

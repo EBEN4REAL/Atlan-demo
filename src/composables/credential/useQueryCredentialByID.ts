@@ -1,0 +1,49 @@
+import { Ref, ref } from 'vue'
+
+import axios from 'axios'
+
+import { Credential } from '~/services/service/credentials'
+import { useOptions } from '~/services/api/common'
+
+export function useQueryCredentialByID(path: any, body: any, immediate) {
+    const options: useOptions = {}
+    let cancel = axios.CancelToken.source()
+    options.options = ref({
+        cancelToken: cancel.token,
+    })
+
+    options.asyncOptions = ref({
+        immediate,
+    })
+
+    const { data, mutate, error, isLoading, isValidating, isReady } =
+        Credential.QueryByID(path, body, options)
+
+    const cancelRequest = () => {
+        if (cancel) {
+            cancel.cancel('operation cancelled')
+        }
+        cancel = axios.CancelToken.source()
+        options.options.value = {
+            cancelToken: cancel.token,
+        }
+    }
+
+    const refresh = () => {
+        cancelRequest()
+        mutate()
+    }
+
+    return {
+        data,
+        options,
+        cancel,
+        mutate,
+        refresh,
+        isReady,
+        error,
+        isLoading,
+        isValidating,
+        cancelRequest,
+    }
+}

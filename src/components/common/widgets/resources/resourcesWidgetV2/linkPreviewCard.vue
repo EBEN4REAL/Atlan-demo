@@ -77,7 +77,7 @@
 </template>
 
 <script setup lang="ts">
-    import { PropType, ref, provide, toRefs } from 'vue'
+    import { PropType, ref, provide, toRefs, inject } from 'vue'
     import { useTimeAgo } from '@vueuse/core'
     import { getDomain } from '~/utils/url'
     import { Link } from '~/types/resources.interface'
@@ -92,6 +92,8 @@
     })
 
     const defaultIcon = ref(false)
+
+    const readOnly = inject('readOnly')
 
     const openLink = (url) => {
         if (url) window.open(url)

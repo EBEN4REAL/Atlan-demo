@@ -55,7 +55,7 @@
                         />
                     </span>
 
-                    <div class="flex text-sm text-gray-500">
+                    <div class="flex text-xs text-gray-500">
                         <span v-if="data.message.reply_count" class="">
                             {{ data.message.reply_count }}
                             replies

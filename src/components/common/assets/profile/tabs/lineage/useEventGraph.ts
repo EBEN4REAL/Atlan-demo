@@ -542,6 +542,7 @@ export default function useEventGraph(
             depth,
             guid: portId,
             direction,
+            attributes: ['dataType', 'qualifiedName', 'certificateStatus'],
             hideProcess: true,
         }))
         const { data, error } = useFetchLineage(portConfig, true)
@@ -598,8 +599,8 @@ export default function useEventGraph(
 
         edge.attr('line/strokeDasharray', reset ? 0 : 5)
 
-        edge.toFront()
         controlLabelStyle(edge, reset)
+        edge.toFront()
     }
 
     const controlPortEdgeHighlight = (edge, reset: boolean) => {
@@ -611,8 +612,8 @@ export default function useEventGraph(
         edge.attr('line/targetMarker/width', reset ? 0.1 : 12)
         edge.attr('line/strokeDasharray', reset ? 0 : 5)
 
-        edge.toFront()
         controlLabelStyle(edge, reset)
+        edge.toFront()
     }
 
     const animateEdge = (edge, animate = true) => {

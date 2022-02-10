@@ -23,7 +23,9 @@ export default async function useComputeGraph(
     const model = ref(null)
     const edges = ref([])
     const nodes = ref([])
+    const mergedLineageData = ref()
 
+    mergedLineageData.value = { ...lineage.value }
     searchItems.value = []
     model.value = null
     edges.value = []
@@ -33,13 +35,77 @@ export default async function useComputeGraph(
     let columnEntity = {}
     const columnEntityIds = []
 
-    const createNodesFromEntityMap = (lineageData, hasBase = true) => {
+    const sameSourceCount = ref({})
+
+    const isNodeExist = (id) => nodes.value.find((x) => x.id === id)
+
+    const createNodesFromEntityMap = (data, hasBase = true) => {
+        const lineageData = { ...data }
         const { relations, childrenCounts, baseEntityGuid } = lineageData
+
+        const getAsset = (id) => lineageData.guidEntityMap[id]
+
+        relations.forEach((x) => {
+            const { fromEntityId: from, toEntityId: to } = x
+
+            const { typeName: fromTypeName } = getAsset(from)
+            const { typeName: toTypeName } = getAsset(to)
+
+            if ([fromTypeName, toTypeName].includes('column')) return
+
+            if (sameSourceCount.value[from]) {
+                sameSourceCount.value[from].count += 1
+
+                if (sameSourceCount.value[from].count <= 2)
+                    sameSourceCount.value[from].targetsVisible = [
+                        ...sameSourceCount.value[from].targetsVisible,
+                        getAsset(to),
+                    ]
+                else {
+                    sameSourceCount.value[from].targetsHidden = [
+                        ...sameSourceCount.value[from].targetsHidden,
+                        getAsset(to),
+                    ]
+                }
+            } else
+                sameSourceCount.value = {
+                    ...sameSourceCount.value,
+                    [from]: {
+                        count: 1,
+                        targetsVisible: [getAsset(to)],
+                        targetsHidden: [],
+                    },
+                }
+        })
+
+        Object.entries(sameSourceCount.value).forEach(([k, v]) => {
+            if (v.count < 3) return
+            if (!v.targetsHidden.length) return
+            lineageData.guidEntityMap = {
+                ...lineageData.guidEntityMap,
+                [`vpNode/${k}`]: {
+                    typeName: 'vpNode',
+                    guid: `vpNode/${k}`,
+                    attributes: {
+                        name: `view 2/${v.targetsHidden.length} more`,
+                    },
+                },
+            }
+        })
+
+        const y = Object.values(sameSourceCount.value)
+        const z = y.map((x) => x.targetsHidden).flat()
+        const allTargetsHiddenIds = z.map((x) => x.guid)
+
         const guidEntityMap = Object.values(lineageData.guidEntityMap)
 
         guidEntityMap.forEach((entity) => {
             const ent = { ...entity }
             const { attributes, typeName, guid } = ent
+
+            if (isNodeExist(guid)) return
+
+            if (allTargetsHiddenIds.includes(entity.guid)) return
 
             if (typeName === 'Column') {
                 const parentGuid = attributes.table.guid
@@ -78,19 +144,39 @@ export default async function useComputeGraph(
 
     /* Edges */
 
-    const createNodeEdges = (lineageData) => {
+    const createNodeEdges = (data) => {
+        const lineageData = { ...data }
+
         const { relations } = lineageData
 
         const fromAndToIdSet = new Set()
+
+        Object.entries(sameSourceCount.value).forEach(([k, v]) => {
+            if (v.count < 3) return
+            if (!v.targetsHidden.length) return
+
+            lineageData.relations.push({
+                fromEntityId: k,
+                processId: 'vpNodeProcessId',
+                toEntityId: `vpNode/${k}`,
+            })
+        })
+
+        const y = Object.values(sameSourceCount.value)
+        const z = y.map((x) => x.targetsHidden).flat()
+        const allTargetsHiddenIds = z.map((x) => x.guid)
+
         relations.forEach((x) => {
             const { fromEntityId: from, toEntityId: to, processId } = x
 
-            let data = {}
+            if (columnEntityIds.find((y) => [from, to].includes(y))) return
+
+            let edgeExtraData = {}
             const fromAndToId = `${from}@${to}`
-            if (fromAndToIdSet.has(fromAndToId)) data = { isDup: true }
+            if (fromAndToIdSet.has(fromAndToId)) edgeExtraData = { isDup: true }
             else fromAndToIdSet.add(fromAndToId)
 
-            if (columnEntityIds.find((y) => [from, to].includes(y))) return
+            if (allTargetsHiddenIds.find((y) => [from, to].includes(y))) return
 
             const relation = {
                 id: `${processId}/${from}@${to}`,
@@ -100,9 +186,13 @@ export default async function useComputeGraph(
                 targetPort: `${to}-invisiblePort`,
             }
 
+            const exists = edges.value.find((x) => x.id === relation.id)
+
+            if (exists) return
+
             if (x.type) relation.type = x.type
 
-            const { edgeData } = createEdgeData(relation, data, {
+            const { edgeData } = createEdgeData(relation, edgeExtraData, {
                 stroke: '#aaaaaa',
             })
             edges.value.push(edgeData)
@@ -112,7 +202,7 @@ export default async function useComputeGraph(
     createNodeEdges(lineage.value)
 
     /* Render */
-    const renderLayout = () => {
+    const renderLayout = (registerAllListeners) => {
         model.value = graphLayout.value?.layout({
             edges: edges.value,
             nodes: nodes.value,
@@ -138,26 +228,6 @@ export default async function useComputeGraph(
                 })),
             },
         })
-        // debugger
-    }
-    renderLayout()
-    isComputeDone.value = true
-
-    /* Transformations */
-    fit(lineage.value.baseEntityGuid)
-    currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
-
-    /* addSubGraph */
-    const addSubGraph = (data, registerAllListeners) => {
-        const newData = data
-        const guidEntityMapArr = Object.keys(newData.guidEntityMap)
-        nodes.value.forEach((x) => {
-            if (guidEntityMapArr.includes(x.id))
-                delete newData.guidEntityMap[x.id]
-        })
-        createNodesFromEntityMap(newData, false)
-        createNodeEdges(newData)
-        renderLayout()
 
         graph.value.getNodes().forEach((n) => {
             const ctaEle = document.getElementById(`node-${n.id}-loadCTA`)
@@ -167,10 +237,75 @@ export default async function useComputeGraph(
             if (isRootNode || isLeafNode) return
             ctaEle?.remove()
         })
-        registerAllListeners()
+
+        if (typeof registerAllListeners === 'function') registerAllListeners()
+    }
+    renderLayout(null)
+
+    isComputeDone.value = true
+
+    /* Transformations */
+    fit(lineage.value.baseEntityGuid)
+    currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
+
+    /* addSubGraph */
+    const addSubGraph = (data, registerAllListeners) => {
+        const newData = data
+        createNodesFromEntityMap(newData, false)
+        createNodeEdges(newData)
+        renderLayout(registerAllListeners)
+
+        if (!mergedLineageData.value) mergedLineageData.value = lineage.value
+
+        const {
+            baseEntityGuid,
+            limit,
+            lineageDepth,
+            lineageDirection,
+            childrenCounts: cc1,
+            guidEntityMap: gem1,
+            relations: rel1,
+        } = mergedLineageData.value
+
+        const {
+            childrenCounts: cc2,
+            guidEntityMap: gem2,
+            relations: rel2,
+        } = data
+
+        const childrenCounts = { ...cc1, ...cc2 }
+        const guidEntityMap = { ...gem1, ...gem2 }
+        const allRelations = [...rel1, ...rel2]
+
+        const relations = []
+        allRelations.forEach((x) => {
+            const exists = relations.find(
+                (y) =>
+                    x.fromEntityId === y.fromEntityId &&
+                    x.processId === y.processId &&
+                    x.toEntityId === y.toEntityId
+            )
+            if (exists) return
+            relations.push(x)
+        })
+
+        mergedLineageData.value = {
+            baseEntityGuid,
+            limit,
+            lineageDepth,
+            lineageDirection,
+            childrenCounts,
+            guidEntityMap,
+            relations,
+        }
     }
 
     return {
         addSubGraph,
+        renderLayout,
+        mergedLineageData,
+        sameSourceCount,
+        nodes,
+        edges,
     }
 }

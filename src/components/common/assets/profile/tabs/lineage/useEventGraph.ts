@@ -227,8 +227,6 @@ export default function useEventGraph(
 
         node.setPortProp(portId, 'attrs/portBody', {
             fill,
-        })
-        node.setPortProp(portId, 'attrs/portBody', {
             stroke: '#5277d7',
         })
     }
@@ -303,10 +301,12 @@ export default function useEventGraph(
                 attrs: {
                     portBody: {
                         event: 'allCols:click',
+                        rx: 4,
                     },
                     portNameLabel: {
                         text: 'Show more columns',
                         event: 'allCols:click',
+                        fill: '#5277d7',
                     },
                 },
             })

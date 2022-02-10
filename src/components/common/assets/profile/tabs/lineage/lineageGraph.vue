@@ -6,12 +6,11 @@
     >
         <div
             v-if="!isComputeDone"
-            class="flex items-center justify-center bg-white w-100"
+            class="flex flex-col items-center justify-center bg-white w-100"
             style="height: 80vh"
         >
-            <div>
-                <a-spin tip="Rendering graph..." />
-            </div>
+            <AtlanLoader class="h-10" />
+            <span class="mt-1 text-sm">Rendering graph...</span>
         </div>
 
         <AtlanLoader

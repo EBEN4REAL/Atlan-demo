@@ -27,10 +27,11 @@
                 class="relative bg-white"
             >
                 <div
-                    class="absolute flex items-center justify-center bg-white"
+                    class="absolute flex flex-col items-center justify-center bg-white"
                     style="top: 0; left: 0; height: 80vh; width: 100%"
                 >
-                    <a-spin tip="Computing data..." />
+                    <AtlanLoader class="h-10" />
+                    <span class="mt-1 text-sm">Computing data...</span>
                 </div>
             </div>
             <LineageGraph

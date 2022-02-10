@@ -18,7 +18,16 @@
                             class="h-4 text-gray-500 mb-0.5"
                         />
                     </div>
+                    <div v-show="isEditMode">
+                        <Name
+                            v-model="isEditMode"
+                            :selected-asset="item"
+                            classes="text-base font-bold text-gray-700  mb-0"
+                        />
+                    </div>
+
                     <Tooltip
+                        v-if="!isEditMode"
                         :tooltip-text="`${title(item)}`"
                         classes="text-base font-bold text-gray-700  mb-0"
                     />
@@ -297,6 +306,7 @@
                     </a-button>
                 </ShareMenu>
                 <AssetMenu
+                    @edit="handleEdit"
                     :asset="item"
                     :edit-permission="selectedAssetUpdatePermission(item)"
                 >
@@ -338,7 +348,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, computed, toRefs } from 'vue'
+    import { defineComponent, PropType, computed, toRefs, ref } from 'vue'
     import { useMagicKeys, useActiveElement, whenever, and } from '@vueuse/core'
     import { useRouter } from 'vue-router'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -352,6 +362,7 @@
     import useAuth from '~/composables/auth/useAuth'
     import Tooltip from '@/common/ellipsis/index.vue'
     import QueryDropdown from '@/common/query/queryDropdown.vue'
+    import Name from '@/glossary/common/name.vue'
 
     export default defineComponent({
         name: 'AssetHeader',
@@ -362,6 +373,7 @@
             AssetMenu,
             Tooltip,
             QueryDropdown,
+            Name,
         },
         props: {
             item: {
@@ -374,6 +386,7 @@
         },
         setup(props) {
             const { item } = toRefs(props)
+            const isEditMode = ref(false)
             const {
                 title,
                 getConnectorImage,
@@ -465,6 +478,9 @@
                 if (v) back()
             }) */
             const { checkAccess } = useAuth()
+            const handleEdit = (asset) => {
+                isEditMode.value = true
+            }
 
             return {
                 title,
@@ -505,6 +521,8 @@
                 handleClick,
                 sourceURL,
                 getConnectorLabel,
+                isEditMode,
+                handleEdit,
             }
         },
     })

@@ -1,16 +1,20 @@
 <template>
-    <a-input
-        ref="nameRef"
-        v-model:value="localValue"
-        tabindex="0"
-        :rows="4"
-        @blur="handleBlur"
-        @keyup.esc="handleEditCancel"
-    ></a-input>
+    <div :class="$style.input">
+        <a-input
+            ref="nameRef"
+            v-model:value="localValue"
+            tabindex="0"
+            :rows="4"
+            @blur="handleBlur"
+            @keyup.esc="handleEditCancel"
+            class="p-0 m-0 border-0 outline-none bg-transparent"
+            :class="classes"
+        ></a-input>
+    </div>
 </template>
 <script lang="ts">
     // library
-    import { defineComponent, ref, watchEffect, watch ,nextTick} from 'vue'
+    import { defineComponent, ref, watchEffect, watch, nextTick } from 'vue'
     import { useMagicKeys, useVModels, whenever, toRefs } from '@vueuse/core'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
@@ -25,21 +29,27 @@
                 type: Boolean,
                 required: true,
             },
+            classes: {
+                type: String,
+                required: false,
+                default: '',
+            },
         },
-        emits: ['update:isEditMode','update:modelValue'],
+        emits: ['update:isEditMode', 'update:modelValue'],
         setup(props, { emit }) {
             // data
-            const { enter, esc } = useMagicKeys()
+            const { enter, escape } = useMagicKeys()
             const { modelValue } = useVModels(props, emit)
             const { selectedAsset } = toRefs(props)
-            const localValue = ref(props.selectedAsset?.displayText)
             const nameRef = ref(null)
+            const isCancelled = ref(false)
             const { handleChangeName, localName } =
                 updateAssetAttributes(selectedAsset)
 
             const { title, getAnchorQualifiedName, getAnchorName } =
                 useAssetInfo()
 
+            const localValue = ref(title(props.selectedAsset))
             const handleNameChange = () => {
                 console.log('name chnage ', localValue.value)
                 localName.value = localValue.value
@@ -47,11 +57,16 @@
             }
 
             const handleBlur = () => {
-                if (enter.value) {
+                console.log(escape.value)
+                if (enter.value || escape.value) {
                     return
                 }
-                handleNameChange()
-                handleEditCancel()
+                setTimeout(() => {
+                    if (!isCancelled.value) {
+                        handleNameChange()
+                        handleEditCancel()
+                    }
+                }, 300)
             }
 
             const handleEditCancel = () => {
@@ -67,16 +82,20 @@
                     handleNameChange()
                 }
             })
-            watchEffect(async() => {
+            watchEffect(async () => {
                 if (modelValue.value) {
                     console.log(nameRef.value)
                     await nextTick()
                     nameRef?.value?.focus()
+                    isCancelled.value = false
                 }
             })
 
-            whenever(esc, () => {
-                handleEditCancel()
+            whenever(escape, () => {
+                if (escape.value) {
+                    isCancelled.value = true
+                    handleEditCancel()
+                }
             })
 
             return {
@@ -91,4 +110,21 @@
         },
     })
 </script>
-<style lang="less" module></style>
+
+<style lang="less" module>
+    .input {
+        :global(.ant-input:focus, .ant-input:hover, .ant-input::selection, .focus-visible) {
+            @apply shadow-none outline-none border-0 border-transparent border-r-0 !important;
+        }
+        :global(.ant-input):focus,
+        :global(.ant-input):hover {
+            @apply shadow-none outline-none border-0 border-transparent border-r-0 !important;
+        }
+        :global(.ant-input) {
+            @apply shadow-none outline-none px-0 border-0 !important;
+        }
+        :global(.ant-modal-content) {
+            @apply rounded-md  !important;
+        }
+    }
+</style>

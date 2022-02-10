@@ -85,6 +85,18 @@
                         </div>
                     </a-menu-item>
                 </a-sub-menu>-->
+                <a-menu-item v-if="isGTC(asset)" key="edit" @click="closeMenu"
+                    class="px-4 py-2"
+                    >
+                    <div
+                        class="flex items-center"
+                        @click="$emit('edit', asset)"
+                    >
+                        <AtlanIcon icon="Pencil" class="ml-1 mr-2" />
+                        <p class="p-0 m-0">Rename</p>
+                    </div>
+                </a-menu-item>
+
                 <a-menu-item
                     v-if="editPermission"
                     class="px-4 py-2"
@@ -213,6 +225,7 @@
                 default: false,
             },
         },
+        emit:['edit'],
         setup(props) {
             // data
             const isVisible = ref(false)

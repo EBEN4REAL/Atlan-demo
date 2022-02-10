@@ -12,8 +12,15 @@ import fetchAsset from './fetchAsset'
 
 const { highlightNodes, highlightEdges } = useUpdateGraph()
 const { useFetchLineage } = useLineageService()
-const { createPortData, createCustomPortData, toggleNodesEdges, addEdge } =
-    useGraph()
+const {
+    createPortData,
+    createCustomPortData,
+    toggleNodesEdges,
+    addNode,
+    addEdge,
+    createEdgeData,
+    createNodeData,
+} = useGraph()
 const lineageStore = useLineageStore()
 
 export default function useEventGraph(
@@ -29,9 +36,14 @@ export default function useEventGraph(
     selectedTypeInRelationDrawer: Ref<string>,
     config,
     graphPrefs,
+    mergedLineageData,
+    sameSourceCount,
+    nodes,
+    edges,
     onSelectAsset,
     onCloseDrawer,
-    addSubGraph
+    addSubGraph,
+    renderLayout
 ) {
     /** DATA */
     const edgesHighlighted = ref([])
@@ -946,6 +958,116 @@ export default function useEventGraph(
     graph.value.on('node:mouseup', ({ e, node }) => {
         if (chp.value.portId) deselectPort()
         if (che.value) resetCHE()
+
+        if (node.id.includes('vpNode')) {
+            const sourceId = node.id.split('/')[1]
+            const data = sameSourceCount.value[sourceId]
+            const { targetsHidden } = data
+
+            const nodesHidden = [...targetsHidden]
+            const nodesToAdd = nodesHidden.splice(0, 4)
+            sameSourceCount.value[sourceId].targetsHidden = nodesHidden
+
+            const { relations, childrenCounts } = mergedLineageData.value
+
+            nodesToAdd.forEach((x) => {
+                const { nodeData } = createNodeData(
+                    x,
+                    relations,
+                    childrenCounts,
+                    true
+                )
+                nodes.value.push(nodeData)
+                addNode(graph, relations, childrenCounts, x)
+            })
+
+            const nodesToAddIds = nodesToAdd.map((x) => x.guid)
+            const edgesToAdd = relations.filter((x) =>
+                nodesToAddIds.includes(x.toEntityId)
+            )
+
+            edgesToAdd.forEach((x) => {
+                const { fromEntityId: from, toEntityId: to, processId } = x
+                const relation = {
+                    id: `${processId}/${from}@${to}`,
+                    sourceCell: from,
+                    sourcePort: `${from}-invisiblePort`,
+                    targetCell: to,
+                    targetPort: `${to}-invisiblePort`,
+                }
+                const exists = edges.value.find((x) => x.id === relation.id)
+
+                if (exists) return
+
+                const { edgeData } = createEdgeData(
+                    relation,
+                    {},
+                    {
+                        stroke: '#aaaaaa',
+                    }
+                )
+                edges.value.push(edgeData)
+                addEdge(graph, relation)
+            })
+
+            nodes.value = nodes.value.filter((x) => x.id !== node.id)
+            edges.value = edges.value.filter(
+                (x) => x.id !== `vpNodeProcessId/${sourceId}@${node.id}`
+            )
+
+            renderLayout(registerAllListeners)
+
+            if (nodesHidden.length === 0) return
+
+            // add back vp node
+            const { nodeData } = createNodeData(
+                node.store.data.entity,
+                relations,
+                childrenCounts,
+                true
+            )
+            nodeData.data.updatedDisplayText =
+                nodesHidden.length > 4
+                    ? `view 4/${nodesHidden.length} more`
+                    : `view ${nodesHidden.length} more`
+            nodes.value.push(nodeData)
+            addNode(graph, relations, childrenCounts, nodeData.entity)
+
+            // add back vp edge
+            const from = sourceId
+            const processId = 'vpNodeProcessId'
+            const to = node.id
+
+            const relation = {
+                id: `${processId}/${from}@${to}`,
+                sourceCell: from,
+                sourcePort: `${from}-invisiblePort`,
+                targetCell: to,
+                targetPort: `${to}-invisiblePort`,
+            }
+
+            const { edgeData } = createEdgeData(
+                relation,
+                {},
+                {
+                    stroke: '#aaaaaa',
+                }
+            )
+            edges.value.push(edgeData)
+            addEdge(graph, relation)
+            renderLayout(registerAllListeners)
+
+            const cell = graph.value.getCellById(node.id)
+            const updatedData = {
+                updatedDisplayText:
+                    nodesHidden.length > 4
+                        ? `view 4/${nodesHidden.length} more`
+                        : `view ${nodesHidden.length} more`,
+            }
+            cell.updateData({ ...updatedData })
+
+            return
+        }
 
         const { entity } = node.store.data
 

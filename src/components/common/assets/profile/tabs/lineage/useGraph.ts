@@ -56,7 +56,7 @@ export default function useGraph() {
         const { title } = useAssetInfo()
         const { guid, typeName, attributes } = entity
         const typeNameComputed = getNodeTypeText[typeName] || typeName
-        const { certificateStatus } = attributes
+        const certificateStatus = attributes?.certificateStatus
         let status = ''
         const displayText = title(entity)
         const source = getSource(entity)
@@ -66,6 +66,7 @@ export default function useGraph() {
         const isRootNode = checkIfRootNode(relations, guid)
         const isLeafNode = checkIfLeafNode(relations, guid)
         const isCtaNode = hasCTA(relations, childrenCounts, guid)
+        const isVpNode = typeName === 'vpNode'
 
         if (certificateStatus) {
             switch (certificateStatus) {
@@ -85,6 +86,7 @@ export default function useGraph() {
             isHighlightedNode: null,
             isHighlightedNodePath: null,
             isGrayed: false,
+            updatedDisplayText: '',
             ...dataObj,
         }
 
@@ -94,8 +96,10 @@ export default function useGraph() {
             source,
             isBase,
             entity,
+            isCtaNode,
+            isVpNode,
             width: 270,
-            height: 70,
+            height: isVpNode ? 50 : 70,
             shape: 'html',
             data: computedData,
             html: {
@@ -103,8 +107,10 @@ export default function useGraph() {
                     const data = node.getData() as any
 
                     return `
-                    <div class="flex items-center">
-                    <div id="${guid}" class="lineage-node group ${
+    <div class="flex items-center">
+        <div id="${guid}" class="lineage-node group ${
+                        isVpNode ? 'isVpNode' : ''
+                    } ${
                         data?.isHighlightedNode === data?.id
                             ? 'isHighlightedNode'
                             : ''
@@ -118,7 +124,9 @@ export default function useGraph() {
                             ${isBase ? 'isBase' : ''}
                             ">
                         <div class=" ${isBase ? 'inscr' : 'hidden'}">BASE</div>
-                        <div class="popover group-hover:visible group-hover:bottom-20 group-hover:opacity-100 group-hover:delay-1000">
+                        <div class="${
+                            isVpNode ? 'hidden' : ''
+                        } popover group-hover:visible group-hover:bottom-20 group-hover:opacity-100 group-hover:delay-1000">
                             ${displayText}
                         </div>
                         <div>
@@ -132,11 +140,13 @@ export default function useGraph() {
                                     </span>
                                 </span>
                                 <div class="flex items-center gap-x-1">
-                                    <span class="truncate node-title group-hover:underline">${displayText}</span>
+                                    <span class="truncate node-title group-hover:underline">${
+                                        data?.updatedDisplayText || displayText
+                                    }</span>
                                     <span class="flex-none mr-1">${status}</span>
                                 </div>
                             </div>
-                            <div class="node-meta">
+                            <div class="node-meta ${isVpNode ? 'hidden' : ''}">
                                 <img class="node-meta__source" src="${img}" />
                                 <div class="truncate node-meta__text isTypename">${typeNameComputed}</div>
                                 <div class="node-meta__text">
@@ -282,10 +292,22 @@ export default function useGraph() {
         return { nodeData }
     }
 
-    const addNode = async (graph, entity, data = {}) => {
+    const addNode = async (
+        graph,
+        relations,
+        childrenCounts,
+        entity,
+        data = {}
+    ) => {
         const graphNodes = graph.value.getNodes()
         const baseEntityGuid = graphNodes.find((x) => x.store.data.isBase).id
-        const { nodeData } = createNodeData(entity, baseEntityGuid)
+        const { nodeData } = createNodeData(
+            entity,
+            relations,
+            childrenCounts,
+            baseEntityGuid,
+            data
+        )
         graph.value.addNode(nodeData)
     }
 
@@ -455,7 +477,11 @@ export default function useGraph() {
         }
     }
 
-    const addEdge = (graph, relation, styles: EdgeStyle = {}) => {
+    const addEdge = (graph, relation, data = {}, styles: EdgeStyle = {}) => {
+        const graphEdges = graph.value.getEdges()
+        const exists = graphEdges.find((x) => x.id === relation.id)
+        if (exists) return
+
         const { edgeData } = createEdgeData(relation, {}, styles)
         graph.value.addEdge(edgeData)
     }

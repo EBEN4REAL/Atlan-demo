@@ -186,7 +186,14 @@
                 )
 
                 // useComputeGraph
-                const { addSubGraph } = await useComputeGraph(
+                const {
+                    addSubGraph,
+                    renderLayout,
+                    mergedLineageData,
+                    sameSourceCount,
+                    nodes,
+                    edges,
+                } = await useComputeGraph(
                     graph,
                     graphLayout,
                     lineage,
@@ -210,9 +217,14 @@
                     selectedTypeInRelationDrawer,
                     config,
                     graphPrefs,
+                    mergedLineageData,
+                    sameSourceCount,
+                    nodes,
+                    edges,
                     onSelectAsset,
                     onCloseDrawer,
-                    addSubGraph
+                    addSubGraph,
+                    renderLayout
                 )
             }
 
@@ -453,8 +465,13 @@
                 align-items: center;
             }
 
-            &.isCounter {
+            &.isVpNode {
                 height: 50px !important;
+                background-color: #f3f6fc !important;
+                padding: unset !important;
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
             }
 
             & .popover {

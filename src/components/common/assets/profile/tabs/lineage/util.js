@@ -73,6 +73,8 @@ export const getNodeSourceImage = {
 
 // FIXME: Shall we use the connectorName attribute here?
 export const getSource = (entity) => {
+    if (entity.typeName === 'vpNode') return null
+
     const item =
         entity.attributes?.qualifiedName?.split('/') ||
         entity.uniqueAttributes?.qualifiedName?.split('/')

@@ -538,8 +538,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
         whenever(error, () => {
             message.error(
-                `${error.value?.response?.data?.errorCode} ${error.value?.response?.data?.errorMessage.split(':')[0]
-                }` ?? 'Something went wrong'
+                'Something went wrong'
             )
         })
         whenever(isReady, () => {

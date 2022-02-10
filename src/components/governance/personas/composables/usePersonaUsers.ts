@@ -53,7 +53,10 @@ function usePersonaUserList(persona: Ref<IPersona>, cancelToken) {
     )
     watch(
         () => [persona?.value?.id, persona?.value?.users],
-        fetchPersonaUserSubjects,
+        (n, o) => {
+            if (JSON.stringify(n) !== JSON.stringify(o))
+                fetchPersonaUserSubjects()
+        },
         { immediate: true }
     )
     return {

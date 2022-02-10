@@ -2,14 +2,14 @@
     <ExplorerLayout
         title="Purpose"
         sub-title=""
-        :sidebar-visibility="Boolean(selectedPersonaId)"
+        :sidebar-visibility="Boolean(selectedPurposeId)"
     >
         <template #sidebar>
             <div class="flex items-center px-4 mb-3">
                 <SearchAndFilter
                     v-model:value="searchTerm"
                     :placeholder="`Search ${
-                        filteredPersonas?.length ?? 0
+                        filteredPurposes?.length ?? 0
                     } purposes`"
                     class="mt-0 bg-white"
                     :autofocus="true"
@@ -32,10 +32,10 @@
             </div>
 
             <ExplorerList
-                v-model:selected="selectedPersonaId"
+                v-model:selected="selectedPurposeId"
                 type="purposes"
                 :disabled="isEditing"
-                :list="filteredPersonas"
+                :list="filteredPurposes"
                 data-key="id"
             >
                 <template #default="{ item, isSelected }">
@@ -101,18 +101,18 @@
 
         <AddPurpose
             v-model:visible="modalVisible"
-            v-model:persona="selectedPersona"
-            :persona-list="personaList"
+            v-model:persona="selectedPurpose"
+            :persona-list="purposeList"
         />
 
-        <a-spin v-if="isPersonaLoading" class="mx-auto my-auto" size="large" />
-        <template v-else-if="selectedPersona">
+        <a-spin v-if="isPurposeLoading" class="mx-auto my-auto" size="large" />
+        <template v-else-if="selectedPurpose">
             <PurposeHeader
                 v-model:openEditModal="openEditModal"
-                :persona="selectedPersona"
+                :persona="selectedPurpose"
             />
             <PurposeBody
-                v-model:persona="selectedPersona"
+                v-model:persona="selectedPurpose"
                 :whitelisted-connection-ids="whitelistedConnectionIds"
                 @selectPolicy="handleSelectPolicy"
                 @editDetails="openEditModal = true"
@@ -120,7 +120,7 @@
         </template>
         <div
             v-else-if="
-                filteredPersonas?.length == 0 && isPersonaError === undefined
+                filteredPurposes?.length == 0 && isPurposeError === undefined
             "
             class="flex flex-col items-center justify-center h-full"
         >
@@ -142,7 +142,7 @@
                 Add new purpose
             </AtlanBtn>
         </div>
-        <ErrorView v-else :error="isPersonaError">
+        <ErrorView v-else :error="isPurposeError">
             <div class="mt-3">
                 <a-button
                     data-test-id="try-again"
@@ -176,14 +176,14 @@
     import AddPurpose from './addPurpose.vue'
     import {
         reFetchList,
-        personaList,
-        filteredPersonas,
+        purposeList,
+        filteredPurposes,
         searchTerm,
-        selectedPersona,
-        selectedPersonaId,
-        isPersonaListReady,
-        isPersonaLoading,
-        isPersonaError,
+        selectedPurpose,
+        selectedPurposeId,
+        isPurposeListReady,
+        isPurposeLoading,
+        isPurposeError,
     } from './composables/usePurposeList'
     import { isEditing } from './composables/useEditPurpose'
     import AddPersonaIllustration from '~/assets/images/illustrations/add_user.svg'
@@ -224,26 +224,31 @@
             const handleSelectPurpose = (purpose) => {
                 router.replace(`/governance/purposes/${purpose.id}`)
             }
-            watch(isPersonaListReady, () => {
-                if (personaList?.value?.length) {
-                    const findedPurpose = personaList.value.find(
-                        (el) => el.id === route.params.id
-                    )
-                    if (findedPurpose) {
-                        selectedPersonaId.value = findedPurpose.id
-                    } else {
-                        selectedPersonaId.value = personaList.value[0].id
-                        router.replace(
-                            `/governance/purposes/${personaList.value[0].id}`
+            watch(
+                isPurposeListReady,
+                () => {
+                    if (purposeList?.value?.length) {
+                        const findedPurpose = purposeList.value.find(
+                            (el) => el.id === route.params.id
                         )
+                        if (findedPurpose) {
+                            selectedPurposeId.value = findedPurpose.id
+                        } else {
+                            selectedPurposeId.value = purposeList.value[0].id
+                            router.replace(
+                                `/governance/purposes/${purposeList.value[0].id}`
+                            )
+                        }
                     }
-                }
-            })
+                },
+                { immediate: true }
+            )
+
             onMounted(() => {
-                if (isPersonaListReady.value) {
-                    selectedPersonaId.value = personaList.value[0].id
+                if (isPurposeListReady.value) {
+                    selectedPurposeId.value = purposeList.value[0].id
                     router.replace(
-                        `/governance/purposes/${personaList.value[0].id}`
+                        `/governance/purposes/${purposeList.value[0].id}`
                     )
                 }
             })
@@ -268,18 +273,18 @@
             )
             return {
                 reFetchList,
-                personaList,
-                filteredPersonas,
-                selectedPersona,
-                selectedPersonaId,
+                purposeList,
+                filteredPurposes,
+                selectedPurpose,
+                selectedPurposeId,
                 searchTerm,
                 modalVisible,
-                isPersonaLoading,
-                isPersonaError,
+                isPurposeLoading,
+                isPurposeError,
                 // createNewPersona,
                 isEditing,
                 AddPersonaIllustration,
-                isPersonaListReady,
+                isPurposeListReady,
                 ErrorIllustration,
                 handleCloseModalDetailPolicy,
                 handleSelectPolicy,

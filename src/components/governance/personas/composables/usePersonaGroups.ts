@@ -48,7 +48,11 @@ function usePersonaGroupList(persona: Ref<IPersona>, cancelToken) {
     )
     watch(
         () => [persona?.value?.id, persona?.value?.groups],
-        fetchPersonaGroupSubjects,
+        (n, o) => {
+            if (JSON.stringify(n) !== JSON.stringify(o))
+                fetchPersonaGroupSubjects();
+
+        },
         { immediate: true }
     )
     return {

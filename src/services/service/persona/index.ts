@@ -12,13 +12,18 @@ import {
 const List = (params?: any, options?: useOptions) =>
     useAPI(map.LIST_PERSONAS, 'GET', { params }, options || {})
 
-const listPersonas = () =>
+const getPersonaByID = (id?: string, options?: useOptions) =>
+    useAPI(map.GET_PERSONA_FROM_ID, 'GET', { pathVariables: { id } }, options || {})
+
+const listPersonas = (params: any, options?: any) =>
     useAPI(
         map.LIST_PERSONAS,
         'GET',
-        { initialState: [] },
+        { initialState: [], params },
         {
+            options,
             asyncOptions: {
+                immediate: options.immediate,
                 onError: (e) => {
                     throw e
                 },
@@ -30,11 +35,11 @@ const listPersonas = () =>
 const Create = (body: IPersona, options?: useOptions) =>
     useAPI<IPersona>(map.CREATE_PERSONA, 'POST', { body }, options || {})
 
-const createPolicy = ( body: IPersona, id: String) => useAPIPromise(map.CREATE_POLICY({id}), 'POST', { body})
+const createPolicy = (body: IPersona, id: String) => useAPIPromise(map.CREATE_POLICY({ id }), 'POST', { body })
 
-const updatePolicy = ( body: IPersona, idPolicy: String, idPersona: String) => useAPIPromise(map.UPDATE_POLICY({idPolicy, idPersona}), 'POST', { body})
+const updatePolicy = (body: IPersona, idPolicy: String, idPersona: String) => useAPIPromise(map.UPDATE_POLICY({ idPolicy, idPersona }), 'POST', { body })
 
-const deletePolicy = ( idPolicy: String, idPersona: String) => useAPIPromise(map.DELETE_POLICY({idPolicy, idPersona}), 'DELETE', {})
+const deletePolicy = (idPolicy: String, idPersona: String) => useAPIPromise(map.DELETE_POLICY({ idPolicy, idPersona }), 'DELETE', {})
 
 const createPersona = (body: IPersona) =>
     useAPIPromise(map.CREATE_PERSONA(), 'POST', {
@@ -74,6 +79,7 @@ const enableDisablePersona = (id: string, body: IEnableDisablePayload) =>
 
 export const Persona = {
     List,
+    getPersonaByID,
     Create,
     Update,
     updatePersonaUsers,

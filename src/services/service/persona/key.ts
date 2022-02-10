@@ -8,6 +8,7 @@ export const ENABLE_DISABLE_PERSONA = 'ENABLE_DISABLE_PERSONA'
 
 export const map = {
     LIST_PERSONAS: () => getAPIPath('/service', '/personas'),
+    GET_PERSONA_FROM_ID: ({ id }: PathParams) => getAPIPath('/service', `/personas/${id}`),
     CREATE_PERSONA: () => getAPIPath('/service', '/personas'),
     UPDATE_PERSONA: ({ guid }: PathParams) =>
         getAPIPath('/service', `/personas/${guid}`),

@@ -360,6 +360,7 @@ export default function useEventGraph(
     ) => {
         if (!relations?.length) return
 
+        graph.value.freeze('renderColumnLineage')
         trNodes.forEach((node) => {
             if (node.getPorts().length > 1) {
                 const ports = node.getPorts()
@@ -377,6 +378,7 @@ export default function useEventGraph(
             createRelations(rel)
             translateSubsequentNodes(node)
         })
+        graph.value.unfreeze('renderColumnLineage')
     }
 
     const getPortsForNode = (node, isFetchMore = false) => {
@@ -1128,10 +1130,7 @@ export default function useEventGraph(
                 childrenCounts,
                 true
             )
-            nodeData.data.updatedDisplayText =
-                nodesHidden.length > 4
-                    ? `view 4/${nodesHidden.length} more`
-                    : `view ${nodesHidden.length} more`
+            nodeData.data.hiddenCount = nodesHidden.length
             nodes.value.push(nodeData)
             addNode(graph, relations, childrenCounts, nodeData.entity)
 
@@ -1159,10 +1158,7 @@ export default function useEventGraph(
 
             const cell = graph.value.getCellById(node.id)
             const updatedData = {
-                updatedDisplayText:
-                    nodesHidden.length > 4
-                        ? `view 4/${nodesHidden.length} more`
-                        : `view ${nodesHidden.length} more`,
+                hiddenCount: nodesHidden.length,
             }
             cell.updateData({ ...updatedData })
 

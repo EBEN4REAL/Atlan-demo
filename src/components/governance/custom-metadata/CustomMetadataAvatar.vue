@@ -6,7 +6,11 @@
         <a-spin v-if="isUpdating" />
         <template v-else>
             <div
-                v-if="metadata?.options?.imageId || metadata?.options?.emoji"
+                v-if="
+                    metadata?.options?.imageId ||
+                    metadata.options.logoUrl ||
+                    metadata?.options?.emoji
+                "
                 class=""
                 @click="popOverVisible = !popOverVisible"
             >
@@ -14,7 +18,7 @@
                     <img
                         :src="imageUrl"
                         alt=""
-                        class="object-cover w-full"
+                        class="object-contain w-full"
                         :style="{ height: size }"
                     />
                 </template>

@@ -121,6 +121,7 @@ export const dataTypeCategoryList = [
         label: 'Variant',
         type: ['VARIANT', 'ANY'],
         image: variant,
+        imageText: 'variant',
     },
     {
         id: 'object',

@@ -82,6 +82,7 @@
                                     }"
                                     @mouseenter="setTabHover(tab)"
                                     @mouseleave="setTabHover(null)"
+                                    @contextmenu.prevent="showContextMenu"
                                 >
                                     <div
                                         class="flex items-center text-gray-700"
@@ -484,6 +485,7 @@
                 // }
             }
             const onEdit = (targetKey: string | MouseEvent, action: string) => {
+                console.log('edit triggered: ')
                 if (action === 'add') {
                     handleAdd(false)
                 } else {
@@ -642,6 +644,10 @@
                     tabHover.value = null
                 }
             }
+            const contentMenu = ref(true)
+            const showContextMenu = () => {
+                contentMenu.value = true
+            }
 
             return {
                 fullSreenState,
@@ -665,6 +671,8 @@
                 setTabHover,
                 tabHover,
                 isSaving,
+                showContextMenu,
+                contentMenu,
             }
         },
     })

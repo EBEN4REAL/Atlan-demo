@@ -452,6 +452,16 @@
                             "
                             >Edit query</a-menu-item
                         >
+                        <a-menu-item
+                            key="deleteQueryEditor"
+                            class="px-4 py-2 text-red-600"
+                            @click="
+                                () => {
+                                    showDeletePopover = true
+                                }
+                            "
+                            >Delete query</a-menu-item
+                        >
                         <a-sub-menu key="shareQueryMenu" class="text-gray-500">
                             <template #title>
                                 <div
@@ -534,6 +544,14 @@
         :queryData="{ attributes: activeInlineTab.attributes }"
         @closeRenameModal="queryModalVisible = false"
     />
+
+    <TreeDeletePopover
+        :item="{ attributes: activeInlineTab.attributes }"
+        @cancel="showDeletePopover = false"
+        @delete="() => deleteQuery()"
+        :isSaving="isDeleteLoading"
+        :showDeletePopover="showDeletePopover"
+    />
 </template>
 
 <script lang="ts">
@@ -546,6 +564,7 @@
         inject,
         Ref,
         toRaw,
+        watch,
     } from 'vue'
     import { editorConfigInterface } from '~/types/insights/editoConfig.interface'
     import { useEditorPreference } from '~/components/insights/common/composables/useEditorPreference'
@@ -564,9 +583,11 @@
     import EditQuery from '../editQuery/index.vue'
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
+    import TreeDeletePopover from '~/components/insights/common/treeDeletePopover.vue'
+    import { Insights } from '~/services/meta/insights/index'
 
     export default defineComponent({
-        components: { SlackModal, EditQuery },
+        components: { SlackModal, EditQuery, TreeDeletePopover },
         props: {},
         setup(props, { emit }) {
             const router = useRouter()
@@ -579,7 +600,8 @@
             } = useEditorPreference()
 
             const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
-            const { inlineTabAdd, setVQBInInlineTab } = useInlineTab()
+            const { inlineTabAdd, setVQBInInlineTab, inlineTabRemove } =
+                useInlineTab()
             const store = integrationStore()
             const { tenantSlackStatus } = toRefs(store)
 
@@ -834,6 +856,62 @@
                     openAssetSidebar(activeInlineTabCopy, 'not_editor')
                 }
             }
+
+            const refreshQueryTree = inject<
+                (guid: string, type: 'query' | 'Folder') => void
+            >('refreshQueryTree', () => {})
+
+            const showDeletePopover = ref(false)
+            const isDeleteLoading = ref(false)
+
+            const pushGuidToURL = (guid: string | undefined) => {
+                const queryParams = {}
+                if (route?.query?.vqb) queryParams.vqb = true
+                if (guid) {
+                    queryParams.id = guid
+                    router.push({ path: `insights`, query: queryParams })
+                } else {
+                    router.push({ path: `insights`, query: queryParams })
+                }
+            }
+
+            const deleteQuery = () => {
+                let item = {
+                    attributes: activeInlineTab.value.attributes,
+                    guid: activeInlineTab.value.attributes.__guid,
+                }
+                let key = item.guid
+                let parentGuid = item?.attributes?.parent?.guid
+                console.log('delete item: ', item)
+                const { data, error, isLoading } = Insights.DeleteEntity(
+                    item.guid,
+                    {}
+                )
+                isDeleteLoading.value = true
+
+                watch([data, error, isLoading], ([newData, newError]) => {
+                    isDeleteLoading.value = isLoading.value
+                    console.log('delete: ', isLoading.value)
+                    if (newData && !newError) {
+                        showDeletePopover.value = false
+
+                        inlineTabRemove(
+                            key,
+                            tabsArray,
+                            activeInlineTabKey,
+                            pushGuidToURL
+                        )
+
+                        refreshQueryTree(parentGuid, 'query')
+
+                        message.success({
+                            content: `${item?.attributes?.name} deleted!`,
+                        })
+                        useAddEvent('insights', 'query', 'deleted', undefined)
+                    }
+                })
+            }
+
             return {
                 tenantSlackStatus,
                 link,
@@ -864,6 +942,9 @@
                 readOnly,
                 queryModalVisible,
                 openEdit,
+                showDeletePopover,
+                deleteQuery,
+                isDeleteLoading,
             }
         },
     })

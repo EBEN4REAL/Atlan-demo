@@ -4,10 +4,13 @@
         :closable="false"
         width="576px"
         :destroyOnClose="true"
+        :class="[$style.input, $style.titleInput]"
     >
         <template #title>
             <div class="flex items-center justify-between w-full">
-                <div class="flex items-center mr-1 cursor-pointer">
+                <div
+                    class="flex items-center mr-1 text-lg font-bold cursor-pointer"
+                >
                     Rename Query
                 </div>
             </div>
@@ -70,12 +73,14 @@
         toRefs,
         watch,
         ComputedRef,
+        toRaw,
     } from 'vue'
     import AtlanBtn from '~/components/UI/button.vue'
     import { message } from 'ant-design-vue'
     import { Insights } from '~/services/meta/insights/index'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
 
     export default defineComponent({
         name: 'EditQuery',
@@ -108,7 +113,6 @@
 
             const closeModal = () => {
                 emit('closeRenameModal')
-                console.log('query data: ', queryData?.value)
             }
 
             const clearData = () => {
@@ -124,6 +128,10 @@
 
             const renameLoading = ref(false)
 
+            const { modifyActiveInlineTab } = useInlineTab()
+
+            const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
+
             const renameQuery = () => {
                 renameLoading.value = true
                 queryData.value.attributes.name = name.value
@@ -138,7 +146,6 @@
                 )
 
                 watch(isLoading, () => {
-                    console.log('rename loading: ', renameLoading?.value)
                     renameLoading.value = isLoading.value
                 })
                 watch(
@@ -159,13 +166,33 @@
                     message.success('Query renamed successfully')
 
                     let parentGuid = queryData.value.attributes.parent.guid
-                    console.log('rename parent: ', parentGuid)
 
                     refreshQueryTree(parentGuid, 'query')
 
                     if (activeInlineTab.value.attributes) {
-                        activeInlineTab.value.attributes.name = name.value
-                        activeInlineTab.value.label = name.value
+                        let activeInlineTabCopy: activeInlineTabInterface =
+                            JSON.parse(
+                                JSON.stringify(toRaw(activeInlineTab.value))
+                            )
+                        activeInlineTabCopy.attributes.name = name.value
+                        activeInlineTabCopy.label = name.value
+
+                        if (
+                            activeInlineTabCopy?.assetSidebar?.assetInfo
+                                ?.attributes?.__guid ===
+                            queryData?.value?.attributes?.__guid
+                        ) {
+                            activeInlineTabCopy.assetSidebar.assetInfo.attributes.name =
+                                name.value
+                            activeInlineTabCopy.assetSidebar.assetInfo.displayText =
+                                name.value
+                        }
+                        modifyActiveInlineTab(
+                            activeInlineTabCopy,
+                            tabs,
+                            activeInlineTabCopy.isSaved,
+                            true
+                        )
                     }
 
                     closeModal()
@@ -208,4 +235,26 @@
         border-radius: 4 px !important;
     }
 </style>
-<style lang="less" module></style>
+<style lang="less" module>
+    .input {
+        :global(.ant-input:focus, .ant-input:hover, .ant-input::selection, .focus-visible) {
+            @apply shadow-none outline-none border-0 border-transparent border-r-0 !important;
+        }
+        :global(.ant-input):focus,
+        :global(.ant-input):hover {
+            @apply shadow-none outline-none border-0 border-transparent border-r-0 !important;
+        }
+        :global(.ant-input) {
+            @apply shadow-none outline-none px-0 border-0 !important;
+        }
+    }
+
+    .titleInput {
+        :global(.ant-input) {
+            @apply text-gray-700 !important;
+            &::placeholder {
+                @apply text-gray-500 !important;
+            }
+        }
+    }
+</style>

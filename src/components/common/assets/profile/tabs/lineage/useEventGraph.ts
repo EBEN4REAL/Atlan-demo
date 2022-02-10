@@ -384,9 +384,11 @@ export default function useEventGraph(
         const { typeName, attributes } = asset
 
         if (lineageStore.hasColumnList(node.id) && !isFetchMore) {
-            const columnList = lineageStore.getNodesColumnList(node.id)
+            const { assets: columnList, total } =
+                lineageStore.getNodesColumnList(node.id)
+
             controlPorts(node, columnList, [])
-            controlShowMorePorts(node)
+            if (columnList.length < total) controlShowMorePorts(node)
             translateSubsequentNodes(node)
             chp.value.expandedNodes.push(node)
             hideLoader()
@@ -410,7 +412,9 @@ export default function useEventGraph(
 
         if (isFetchMore) {
             if (lineageStore.hasColumnList(node.id)) {
-                offset = lineageStore.getNodesColumnList(node.id)?.length || 0
+                offset =
+                    lineageStore.getNodesColumnList(node.id)?.assets?.length ||
+                    0
             }
         }
 
@@ -439,15 +443,18 @@ export default function useEventGraph(
                 }
 
                 if (!lineageStore.hasColumnList(node.id))
-                    lineageStore.setNodesColumnList(node.id, columns)
+                    lineageStore.setNodesColumnList(node.id, columns, count)
                 else {
-                    const prevCols = lineageStore.getNodesColumnList(node.id)
-                    lineageStore.setNodesColumnList(node.id, [
-                        ...prevCols,
-                        ...columns,
-                    ])
+                    const prevCols = lineageStore.getNodesColumnList(
+                        node.id
+                    )?.assets
+                    lineageStore.setNodesColumnList(
+                        node.id,
+                        [...prevCols, ...columns],
+                        count
+                    )
                 }
-                const allCols = lineageStore.getNodesColumnList(node.id)
+                const allCols = lineageStore.getNodesColumnList(node.id)?.assets
                 controlShowMorePorts(node, false)
                 controlPorts(node, allCols, [], true)
                 translateSubsequentNodes(node)
@@ -537,11 +544,10 @@ export default function useEventGraph(
             controlTranslate(portId, lineage)
             return
         }
-        const { depth, direction } = config.value
         const portConfig = computed(() => ({
-            depth,
+            depth: 20,
             guid: portId,
-            direction,
+            direction: 'BOTH',
             attributes: ['dataType', 'qualifiedName', 'certificateStatus'],
             hideProcess: true,
         }))

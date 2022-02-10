@@ -353,91 +353,30 @@ export default function useEventGraph(
         return rel
     }
 
-    // getNodesColumnList
-    const getNodeColumnList = (nodes, allRelations = []) => {
-        const viewQualifiedName = ['def']
-        const tableQualifiedName = ['def']
+    const renderColumnLineage = (
+        trNodes,
+        relations,
+        parentMap: Map<string, any[]>
+    ) => {
+        if (!relations?.length) return
 
-        nodes.forEach((node) => {
-            const asset = node.store.data.entity
-            const { typeName, attributes } = asset
-
+        trNodes.forEach((node) => {
             if (node.getPorts().length > 1) {
                 const ports = node.getPorts()
                 ports.shift()
                 node.removePorts(ports)
                 translateExpandedNodesToDefault(node)
-                hideLoader()
-                if (!allRelations.length) return
             }
 
-            if (lineageStore.hasColumnList(node.id)) {
-                const columnList = lineageStore.getNodesColumnList(node.id)
-                if (columnList[0]?.text) {
-                    const { text } = columnList[0]
-                    const { portData } = createCustomPortData(node.id, text)
-                    node.addPort(portData)
-                } else {
-                    const override = !!allRelations.length
-                    controlPorts(node, columnList, allRelations, override)
-                    controlShowMorePorts(node)
-                }
+            if (parentMap.get(node.id)?.length)
+                controlPorts(node, parentMap.get(node.id), relations, true)
 
-                const rel = getValidPortRelations(allRelations)
-                createRelations(rel)
-                translateSubsequentNodes(node)
-                hideLoader()
-                return
-            }
+            controlShowMorePorts(node)
 
-            if (typeName.toLowerCase() === 'view')
-                viewQualifiedName.push(attributes.qualifiedName)
-            else if (typeName.toLowerCase() === 'table')
-                tableQualifiedName.push(attributes.qualifiedName)
+            const rel = getValidPortRelations(relations)
+            createRelations(rel)
+            translateSubsequentNodes(node)
         })
-
-        if (tableQualifiedName.length === 1 && viewQualifiedName.length === 1) {
-            hideLoader()
-            return
-        }
-
-        const { list } = fetchColumns({
-            viewQualifiedName,
-            tableQualifiedName,
-        })
-
-        watch(
-            list,
-            () => {
-                if (!list.value) {
-                    const node = nodes[0]
-                    const caretElement = getCaretElement(node.id)
-                    controlCaret(node.id, caretElement)
-                    hideLoader()
-                    message.info('No column with lineage found for this node')
-                    return
-                }
-                nodes.forEach((node) => {
-                    const asset = node.store.data.entity
-                    const guid = node.id
-                    const assetType = asset.typeName.toLowerCase()
-                    const columns = list.value.filter(
-                        (column) =>
-                            column.attributes?.[assetType]?.guid === guid
-                    )
-                    const override = !!allRelations.length
-                    controlPorts(node, columns, allRelations, override)
-                    controlShowMorePorts(node)
-                    if (!lineageStore.hasColumnList(node.id))
-                        lineageStore.setNodesColumnList(node.id, columns)
-                    const rel = getValidPortRelations(allRelations)
-                    createRelations(rel)
-                    translateSubsequentNodes(node)
-                })
-                hideLoader()
-            },
-            { deep: true }
-        )
     }
 
     const getPortsForNode = (node, isFetchMore = false) => {
@@ -533,9 +472,12 @@ export default function useEventGraph(
         showLoader(e)
         getPortsForNode(node, true)
     })
+
     // controlTranslate
     const controlTranslate = (portId, lineage) => {
         const translateCandidates = []
+        const parentMap = new Map<string, any[]>()
+
         Object.entries(lineage.guidEntityMap).forEach(([k, v]) => {
             if (k !== portId) {
                 const qnArr = v.attributes.qualifiedName.split('/')
@@ -550,10 +492,19 @@ export default function useEventGraph(
                 const parentNodeExists = translateCandidates.find(
                     (x) => x?.id === parentNode?.id
                 )
-                if (parentNode && !parentNodeExists)
+
+                if (parentNode && !parentNodeExists) {
                     translateCandidates.push(parentNode)
+                    parentMap.set(parentNode.id, [v])
+                } else if (parentNode && parentMap.has(parentNode.id)) {
+                    parentMap.set(parentNode.id, [
+                        ...parentMap.get(parentNode.id),
+                        v,
+                    ])
+                }
             }
         })
+
         toggleNodesEdges(graph, false)
 
         if (!translateCandidates.length) {
@@ -574,8 +525,8 @@ export default function useEventGraph(
             controlCaret(x.id, caretElement, true)
         })
 
-        getNodeColumnList(translateCandidates, lineage.relations)
-
+        renderColumnLineage(translateCandidates, lineage.relations, parentMap)
+        hideLoader()
         chp.value.expandedNodes = translateCandidates
     }
 

@@ -422,9 +422,7 @@
     } from '~/components/insights/common/composables/useProvide'
     import { useTimeAgo } from '@vueuse/core'
     import { useAccess } from '~/components/insights/common/composables/useAccess'
-    import { useEditor } from '~/components/insights/common/composables/useEditor'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
-    import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
     import EditorContext from '~/components/insights/playground/editor/context/index.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import VQBSQLPreview from '~/components/insights/playground/editor/VQBQueryPreview/index.vue'
@@ -475,7 +473,6 @@
             const { canUserUpdateQuery } = useAccess()
             const { getConnectorName } = useConnector()
             const { isFilterIsInteractive } = useFilter()
-            const { resetErrorDecorations, setErrorDecorations } = useEditor()
             const { resultsPaneSizeToggle, explorerPaneToggle } = useHotKeys()
             const { queryRun, abortQuery } = useRunQuery()
             const { modifyActiveInlineTabEditor } = useInlineTab()

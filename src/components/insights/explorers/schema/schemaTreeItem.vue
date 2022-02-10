@@ -680,12 +680,7 @@
                 certificateStatus,
             } = useAssetInfo()
             const { isSameNodeOpenedInSidebar } = useSchema()
-            const {
-                focusEditor,
-                setSelection,
-                resetErrorDecorations,
-                setErrorDecorations,
-            } = useEditor()
+            const { focusEditor, setSelection } = useEditor()
             const { getConnectorName } = useConnector()
 
             const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(

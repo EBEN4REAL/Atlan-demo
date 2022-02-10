@@ -33,12 +33,7 @@ export default function useOpenQuery({
     )
 
     const { queryRun } = useRunQuery()
-    const {
-        focusEditor,
-        setSelection,
-        resetErrorDecorations,
-        setErrorDecorations,
-    } = useEditor()
+    const { focusEditor, setSelection } = useEditor()
 
     let query = item?.value?._source?.message?.userSqlQuery
     let metadata = item?.value?._source?.message?.queryMetadata

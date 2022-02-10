@@ -3,7 +3,7 @@
         :title="truncated ? tooltipText : undefined"
         :placement="placement"
         :destroy-tooltip-on-hide="true"
-        :overlay-style="{ maxWidth: width, color: 'red !important;' }"
+        :overlay-style="{ maxWidth: width }"
         :color="tooltipColor"
         :overlayClassName="tooltipColor === 'white' ? 'tooltip-black' : ''"
         ><div

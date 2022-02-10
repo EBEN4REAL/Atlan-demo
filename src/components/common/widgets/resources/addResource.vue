@@ -61,7 +61,7 @@
                                 <img
                                     :src="faviconLink"
                                     alt=""
-                                    @`error`="onImageError"
+                                    @error="onImageError"
                                     @load="onImageLoad"
                                 />
                                 <!-- <div class="absolute left-0 z-10 emoji-wrapper">

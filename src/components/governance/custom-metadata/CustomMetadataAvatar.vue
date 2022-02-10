@@ -8,7 +8,7 @@
             <div
                 v-if="
                     metadata?.options?.imageId ||
-                    metadata.options.logoUrl ||
+                    metadata?.options?.logoUrl ||
                     metadata?.options?.emoji
                 "
                 class=""

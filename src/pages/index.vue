@@ -12,13 +12,13 @@
                     <SearchAndStats />
                     <Announcements class="mt-6" />
                 </div>
-
+                <!-- 
                 <div class="mt-6">
                     <Persona></Persona>
                 </div>
                 <div class="mt-6">
                     <Purpose></Purpose>
-                </div>
+                </div> -->
                 <div class="mt-6">
                     <Relevant />
                 </div>

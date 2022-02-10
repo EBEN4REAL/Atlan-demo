@@ -2,16 +2,30 @@
     <!--h2 class="mb-3 text-xl font-bold">Relevant for you</h2-->
     <transition v-if="list.length" name="fade">
         <div>
-            <h2 class="mb-3 text-lg font-bold text-gray-500">
-                Recent announcements
+            <h2 class="mb-3 text-sm font-semibold text-gray-500">
+                <AtlanIcon icon="InformationAnnouncement"></AtlanIcon> Recent
+                announcements
             </h2>
-            <div v-if="isLoading">
-                <AtlanLoader class="h-10" />
+
+            <div
+                v-if="isLoading"
+                class="border border-gray-200 rounded flex items-center justify-center"
+                style="min-height: 150px"
+            >
+                <AtlanLoader class="h-10 w-full" />
             </div>
-            <div v-else class="overflow-y-auto resources-container">
-                <div v-for="(item, index) in list" :key="index" class="mb-4">
-                    <AssetTitleCtx :item="item" />
-                    <AnnouncementWidget :selectedAsset="item" />
+            <div
+                v-else
+                class="overflow-y-auto resources-container border border-gray-200 rounded"
+                style="min-height: 150px"
+            >
+                <div v-for="(item, index) in list" :key="index" class="">
+                    <!-- <AssetTitleCtx :item="item" /> -->
+                    <AnnouncementWidget
+                        :selectedAsset="item"
+                        :noBorder="true"
+                        :showAssetName="true"
+                    />
                 </div>
             </div>
         </div>

@@ -4,7 +4,7 @@
         <div>
             <h2 class="mb-3 text-sm font-semibold text-gray-500">
                 <AtlanIcon icon="InformationAnnouncement"></AtlanIcon> Recent
-                announcements
+                Announcements
             </h2>
 
             <div

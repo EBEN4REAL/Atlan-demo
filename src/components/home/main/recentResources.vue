@@ -2,7 +2,7 @@
     <transition v-if="list.length" name="fade">
         <div>
             <h2 class="mb-3 text-sm font-semibold text-gray-500">
-                <AtlanIcon icon="Link"></AtlanIcon> Recent resources
+                <AtlanIcon icon="Link"></AtlanIcon> Recent Resources
             </h2>
             <div
                 v-if="isLoading"

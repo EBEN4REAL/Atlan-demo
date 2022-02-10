@@ -1,19 +1,21 @@
 <template>
     <!--h2 class="mb-3 text-xl font-bold">Relevant for you</h2-->
-    <div v-if="list.length">
-        <h2 class="mb-3 text-lg font-bold text-gray-500">
-            Recent announcements
-        </h2>
-        <div v-if="isLoading">
-            <AtlanLoader class="h-10" />
-        </div>
-        <div v-else class="overflow-y-auto resources-container">
-            <div v-for="(item, index) in list" :key="index" class="mb-4">
-                <AssetTitleCtx :item="item" />
-                <AnnouncementWidget :selectedAsset="item" />
+    <transition v-if="list.length" name="fade">
+        <div>
+            <h2 class="mb-3 text-lg font-bold text-gray-500">
+                Recent announcements
+            </h2>
+            <div v-if="isLoading">
+                <AtlanLoader class="h-10" />
+            </div>
+            <div v-else class="overflow-y-auto resources-container">
+                <div v-for="(item, index) in list" :key="index" class="mb-4">
+                    <AssetTitleCtx :item="item" />
+                    <AnnouncementWidget :selectedAsset="item" />
+                </div>
             </div>
         </div>
-    </div>
+    </transition>
 </template>
 
 <script lang="ts">
@@ -124,5 +126,14 @@
 <style lang="less" scoped>
     .resources-container {
         height: 390px;
+    }
+    .fade-enter-active,
+    .fade-leave-active {
+        transition: opacity 0.5s ease;
+    }
+
+    .fade-enter-from,
+    .fade-leave-to {
+        opacity: 0;
     }
 </style>

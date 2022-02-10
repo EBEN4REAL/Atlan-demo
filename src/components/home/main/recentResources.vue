@@ -1,30 +1,38 @@
 <template>
-    <div v-if="list.length">
-        <h2 class="mb-3 text-lg font-bold text-gray-500">Recent resources</h2>
-        <div v-if="isLoading">
-            <AtlanLoader class="h-10" />
-        </div>
-        <div v-else class="overflow-y-auto resources-container">
-            <div v-if="!list.length" class="flex flex-col">
-                <AtlanIcon
-                    icon="EmptyResource2"
-                    alt="EmptyResource"
-                    class="w-auto h-32"
-                />
+    <transition v-if="list.length" name="fade">
+        <div>
+            <h2 class="mb-3 text-lg font-bold text-gray-500">
+                Recent resources
+            </h2>
+            <div v-if="isLoading">
+                <AtlanLoader class="h-10" />
             </div>
-            <div v-else>
-                <div v-for="(item, index) in list" :key="index" class="mb-3">
-                    <AssetTitleCtx :item="item.attributes.asset" />
-                    <component
-                        :is="getPreviewComponent(item?.attributes?.link)"
-                        :edit-permission="false"
-                        :item="item"
-                        class=""
+            <div v-else class="overflow-y-auto resources-container">
+                <div v-if="!list.length" class="flex flex-col">
+                    <AtlanIcon
+                        icon="EmptyResource2"
+                        alt="EmptyResource"
+                        class="w-auto h-32"
                     />
+                </div>
+                <div v-else>
+                    <div
+                        v-for="(item, index) in list"
+                        :key="index"
+                        class="mb-3"
+                    >
+                        <AssetTitleCtx :item="item.attributes.asset" />
+                        <component
+                            :is="getPreviewComponent(item?.attributes?.link)"
+                            :edit-permission="false"
+                            :item="item"
+                            class=""
+                        />
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </transition>
 </template>
 
 <script lang="ts">
@@ -96,7 +104,10 @@
                 return slackLink
             })
             const { tenantSlackStatus, userSlackStatus } = toRefs(store)
-            const relationAttributes = ref([...AssetRelationAttributes])
+            const relationAttributes = ref([
+                ...AssetRelationAttributes,
+                ...AssetAttributes,
+            ])
             function getPreviewComponent(url) {
                 if (
                     isSlackLink(url) &&
@@ -147,5 +158,14 @@
 <style lang="less" scoped>
     .resources-container {
         height: 360px;
+    }
+    .fade-enter-active,
+    .fade-leave-active {
+        transition: opacity 0.5s ease;
+    }
+
+    .fade-enter-from,
+    .fade-leave-to {
+        opacity: 0;
     }
 </style>

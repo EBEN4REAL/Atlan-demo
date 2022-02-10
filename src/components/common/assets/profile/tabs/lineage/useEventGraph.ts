@@ -964,7 +964,7 @@ export default function useEventGraph(
             const { targetsHidden } = data
 
             const nodesHidden = [...targetsHidden]
-            const nodesToAdd = nodesHidden.splice(0, 2)
+            const nodesToAdd = nodesHidden.splice(0, 4)
             sameSourceCount.value[sourceId].targetsHidden = nodesHidden
 
             const { relations, childrenCounts } = mergedLineageData.value
@@ -1026,8 +1026,8 @@ export default function useEventGraph(
                 true
             )
             nodeData.data.updatedDisplayText =
-                nodesHidden.length > 2
-                    ? `view 2/${nodesHidden.length} more`
+                nodesHidden.length > 4
+                    ? `view 4/${nodesHidden.length} more`
                     : `view ${nodesHidden.length} more`
             nodes.value.push(nodeData)
             addNode(graph, relations, childrenCounts, nodeData.entity)
@@ -1059,8 +1059,8 @@ export default function useEventGraph(
             const cell = graph.value.getCellById(node.id)
             const updatedData = {
                 updatedDisplayText:
-                    nodesHidden.length > 2
-                        ? `view 2/${nodesHidden.length} more`
+                    nodesHidden.length > 4
+                        ? `view 4/${nodesHidden.length} more`
                         : `view ${nodesHidden.length} more`,
             }
             cell.updateData({ ...updatedData })

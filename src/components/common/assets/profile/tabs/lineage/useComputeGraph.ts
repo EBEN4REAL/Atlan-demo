@@ -56,7 +56,7 @@ export default async function useComputeGraph(
             if (sameSourceCount.value[from]) {
                 sameSourceCount.value[from].count += 1
 
-                if (sameSourceCount.value[from].count <= 2)
+                if (sameSourceCount.value[from].count <= 4)
                     sameSourceCount.value[from].targetsVisible = [
                         ...sameSourceCount.value[from].targetsVisible,
                         getAsset(to),
@@ -79,7 +79,7 @@ export default async function useComputeGraph(
         })
 
         Object.entries(sameSourceCount.value).forEach(([k, v]) => {
-            if (v.count < 3) return
+            if (v.count < 5) return
             if (!v.targetsHidden.length) return
             lineageData.guidEntityMap = {
                 ...lineageData.guidEntityMap,
@@ -87,7 +87,10 @@ export default async function useComputeGraph(
                     typeName: 'vpNode',
                     guid: `vpNode/${k}`,
                     attributes: {
-                        name: `view 2/${v.targetsHidden.length} more`,
+                        name:
+                            v.targetsHidden.length > 4
+                                ? `view 4/${v.targetsHidden.length} more`
+                                : `view ${v.targetsHidden.length} more`,
                     },
                 },
             }
@@ -152,7 +155,7 @@ export default async function useComputeGraph(
         const fromAndToIdSet = new Set()
 
         Object.entries(sameSourceCount.value).forEach(([k, v]) => {
-            if (v.count < 3) return
+            if (v.count < 5) return
             if (!v.targetsHidden.length) return
 
             lineageData.relations.push({

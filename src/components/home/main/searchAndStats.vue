@@ -37,12 +37,12 @@
         </template>
     </a-input>
 
-    <div class="flex items-center justify-end gap-1 mt-2">
+    <!-- <div class="flex items-center justify-end gap-1 mt-2">
         <router-link to="/assets" class="font-bold cursor-pointer text-primary">
             Discover all assets
             <AtlanIcon icon="ArrowRight" />
         </router-link>
-    </div>
+    </div> -->
 </template>
 
 <script lang="ts">

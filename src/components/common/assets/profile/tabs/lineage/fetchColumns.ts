@@ -1,4 +1,4 @@
-import { ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import bodybuilder from 'bodybuilder'
 import { assetInterface } from '~/types/assets/asset.interface'
 import useIndexSearch from '~/composables/discovery/useIndexSearch'
@@ -6,6 +6,8 @@ import useIndexSearch from '~/composables/discovery/useIndexSearch'
 export default function fetchColumns({
     viewQualifiedName,
     tableQualifiedName,
+    offset = 0,
+    limit = 2000,
 }) {
     const attributes = [
         'dataType',
@@ -16,8 +18,6 @@ export default function fetchColumns({
     ]
     const relationAttributes = []
     const base = bodybuilder()
-    const offset = 0
-    const limit = 20000
     const preference = { sort: 'order-asc' }
     const [name, type] = preference.sort.split('-')
     const facets = [
@@ -83,14 +83,11 @@ export default function fetchColumns({
         false,
         1
     )
-    const list = ref([])
-
-    watch(data, () => {
-        if (data?.value?.entities) list.value = data?.value?.entities
-        else list.value = null
-    })
+    const list = computed(() => data?.value?.entities || [])
+    const count = computed(() => data?.value?.approximateCount)
 
     return {
         list,
+        count,
     }
 }

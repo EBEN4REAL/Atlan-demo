@@ -608,7 +608,7 @@ export default function useEventGraph(
         edge.attr('line/strokeDasharray', reset ? 0 : 5)
 
         controlLabelStyle(edge, reset)
-        edge.toFront()
+        if (!reset) edge.toFront()
     }
 
     const controlPortEdgeHighlight = (edge, reset: boolean) => {
@@ -621,7 +621,7 @@ export default function useEventGraph(
         edge.attr('line/strokeDasharray', reset ? 0 : 5)
 
         controlLabelStyle(edge, reset)
-        edge.toFront()
+        if (!reset) edge.toFront()
     }
 
     const animateEdge = (edge, animate = true) => {

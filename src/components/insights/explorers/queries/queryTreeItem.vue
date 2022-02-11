@@ -579,7 +579,6 @@
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
-            const isTabAdded = inject('isTabAdded') as Ref<string>
             const editorInstanceRef = inject('editorInstance') as Ref<any>
             const activeInlineTab = inject(
                 'activeInlineTab'
@@ -735,7 +734,6 @@
                     case 'play': {
                         openSavedQueryInNewTabAndRun(
                             item,
-                            isTabAdded,
                             getData,
                             limitRows,
                             editorInstance,

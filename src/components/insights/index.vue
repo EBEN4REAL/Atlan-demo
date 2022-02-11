@@ -184,8 +184,6 @@
         setup(props) {
             const observer = ref()
             const splitpaneRef = ref()
-            const isTabClosed: Ref<undefined | string> = ref(undefined)
-            const isTabAdded: Ref<undefined | string> = ref(undefined)
 
             const savedQueryInfo = inject('savedQueryInfo') as Ref<
                 SavedQuery | undefined
@@ -376,8 +374,6 @@
                 readAccessCollections,
                 writeAccessCollections,
                 limitRows: limitRows,
-                isTabClosed: isTabClosed,
-                isTabAdded: isTabAdded,
                 updateAssetCheck,
             }
             useProvide(provideData)
@@ -401,15 +397,12 @@
 
             watch(savedQueryInfo, () => {
                 if (savedQueryInfo.value?.guid) {
-                    openSavedQueryInNewTab(
-                        {
-                            ...savedQueryInfo.value,
-                            parentTitle:
-                                savedQueryInfo.value?.attributes?.parent
-                                    ?.attributes?.name,
-                        },
-                        isTabAdded
-                    )
+                    openSavedQueryInNewTab({
+                        ...savedQueryInfo.value,
+                        parentTitle:
+                            savedQueryInfo.value?.attributes?.parent?.attributes
+                                ?.name,
+                    })
 
                     selectFirstCollectionByDefault(
                         queryCollections.value,

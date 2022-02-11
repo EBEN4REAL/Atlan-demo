@@ -387,7 +387,6 @@
         },
         setup(props, { emit }) {
             let { reset, resetParentGuid, resetType } = toRefs(props)
-            const isTabAdded = inject('isTabAdded') as Ref<string>
             const route =
                 useRoute() /* FIXME: Hardcoded error object error for collection request get's failed */
             const errorObjectForCollection = ref({
@@ -889,7 +888,6 @@
                     readQueries: permissions.value.public.readQueries,
                     readFolders: permissions.value.public.readFolders,
                 },
-                isTabAdded,
                 collection: selectedCollection,
             })
 
@@ -929,7 +927,6 @@
                         assetTerms,
                         assetClassification,
                     },
-                    isTabAdded,
                     editorInstance,
                     saveQueryLoading,
                     showSaveQueryModal,

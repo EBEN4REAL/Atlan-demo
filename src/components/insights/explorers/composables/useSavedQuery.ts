@@ -239,7 +239,6 @@ export function useSavedQuery(
 
     const openSavedQueryInNewTabAndRun = (
         savedQuery,
-        isTabAdded: Ref<string>,
         getData: (
             activeInlineTab,
             rows: any[],
@@ -252,15 +251,11 @@ export function useSavedQuery(
         onRunCompletion,
         onQueryIdGeneration
     ) => {
-        isTabAdded.value = savedQuery?.value?.guid
-        openSavedQueryInNewTab(
-            {
-                ...savedQuery?.value,
-                parentTitle:
-                    savedQuery?.value?.attributes?.parent?.attributes?.name,
-            },
-            isTabAdded
-        )
+        openSavedQueryInNewTab({
+            ...savedQuery?.value,
+            parentTitle:
+                savedQuery?.value?.attributes?.parent?.attributes?.name,
+        })
 
         const activeInlineTabKeyCopy = activeInlineTabKey.value
 
@@ -637,7 +632,6 @@ export function useSavedQuery(
 
     const saveQueryToDatabaseAndOpenInNewTab = (
         saveQueryData: any,
-        isTabAdded: Ref<string>,
         editorInstance: Ref<any>,
         saveQueryLoading: Ref<boolean>,
         showSaveQueryModal: Ref<boolean>,
@@ -806,7 +800,7 @@ export function useSavedQuery(
                         router.push({ path: `insights`, query: queryParams })
                     }
 
-                    openSavedQueryInNewTab(savedQuery, isTabAdded)
+                    openSavedQueryInNewTab(savedQuery)
                 } else {
                     if (
                         error?.value?.response?.data?.errorCode ===

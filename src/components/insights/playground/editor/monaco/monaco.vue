@@ -74,8 +74,6 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
-            const isTabClosed = inject('isTabClosed') as Ref<string | undefined>
-            const isTabAdded = inject('isTabAdded') as Ref<string | undefined>
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as ComputedRef<String>
@@ -87,14 +85,7 @@
             ) as Ref<editorConfigInterface>
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
 
-            // watch(isTabClosed, () => {
-            //     if (isTabClosed.value) clearRemovedTabsModels(isTabClosed.value)
-            //     console.log(editorStates.value, 'editorStates.value')
-            // })
-
-            // watch(isTabAdded, () => {
-            //     if (isTabAdded.value) addModelForNewTab(isTabAdded.value)
-            // })
+    
 
             const editorFocused = inject('editorFocused') as Ref<boolean>
             const editorContentSelectionState = inject(

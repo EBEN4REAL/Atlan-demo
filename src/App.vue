@@ -24,39 +24,44 @@
             const { locale, t } = useI18n({
                 inheritLocale: true,
             })
-
             const authStore = useAuthStore()
-            authStore.setUserDetails()
 
-            // permissions
-            usePermissions()
+            const bootstrapApp = () => {
+                authStore.setUserDetails()
 
-            // tenant
-            useTenant()
+                // permissions
+                usePermissions()
 
-            // typedefs
-            useTypedefs()
+                // tenant
+                useTenant()
 
-            // // connections
-            useConnection()
+                // typedefs
+                useTypedefs()
 
-            // // glossary list
-            useGlossary()
+                // // connections
+                useConnection()
 
-            const { call } = useIntegration(true)
-            // if (!route.fullPath.includes('/admin/integrations')) call()
+                // // glossary list
+                useGlossary()
 
-            usePersona()
+                const { call } = useIntegration(true)
+                // if (!route.fullPath.includes('/admin/integrations')) call()
 
-            usePurpose()
+                usePersona()
 
-            // watch([data], () => {
-            //     isPermissionsReady.value = true
-            // })
-            // watch([typedef], () => {
-            //     isTypedefReady.value = true
-            // })
+                usePurpose()
 
+                // watch([data], () => {
+                //     isPermissionsReady.value = true
+                // })
+                // watch([typedef], () => {
+                //     isTypedefReady.value = true
+                // })
+            }
+
+            if (authStore.isAuthenticated) {
+                bootstrapApp()
+            }
             return { locale, t }
         },
     })

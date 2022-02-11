@@ -9,6 +9,7 @@ import geography from '~/assets/images/dataType/geography.svg'
 import variant from '~/assets/images/dataType/variant.svg'
 import percent from '~/assets/images/dataType/percent.svg'
 import enum2 from '~/assets/images/dataType/enum2.svg'
+import lookup from '~/assets/images/dataType/lookup.svg'
 
 export const images = {
     Number: number,
@@ -120,11 +121,12 @@ export const dataTypeCategoryList = [
         label: 'Variant',
         type: ['VARIANT', 'ANY'],
         image: variant,
+        imageText: 'variant',
     },
     {
         id: 'object',
         label: 'Object',
-        type: ['OBJECT', 'STRUCT', 'Combobox', 'Reference'],
+        type: ['OBJECT', 'STRUCT', 'Combobox'],
         image: struct,
         imageText: 'struct',
     },
@@ -145,8 +147,15 @@ export const dataTypeCategoryList = [
     {
         id: 'geography',
         label: 'Geography',
-        type: ['GEOGRAPHY'],
+        type: ['GEOGRAPHY', 'Address', 'Location'],
         image: geography,
         imageText: 'geography',
+    },
+    {
+        id: 'lookup',
+        label: 'Lookup',
+        type: ['Lookup', 'Reference'],
+        image: lookup,
+        imageText: 'lookup',
     },
 ]

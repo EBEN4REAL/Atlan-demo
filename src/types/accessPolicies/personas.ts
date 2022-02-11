@@ -20,14 +20,14 @@ export interface DataPolicies {
     description: string
     connectionId: string
     maskType:
-        | 'null'
-        | 'MASK_REDACT'
-        | 'MASK_HASH'
-        | 'MASK_SHOW_LAST_4'
-        | 'MASK_SHOW_FIRST_4'
-        | 'MASK_NULL'
-        | 'MASK_NONE'
-        | 'MASK_DATE_SHOW_YEAR'
+    | 'null'
+    | 'MASK_REDACT'
+    | 'MASK_HASH'
+    | 'MASK_SHOW_LAST_4'
+    | 'MASK_SHOW_FIRST_4'
+    | 'MASK_NULL'
+    | 'MASK_NONE'
+    | 'MASK_DATE_SHOW_YEAR'
     name: string
     isNew?: boolean
     createdBy: string
@@ -43,6 +43,7 @@ export interface IPersona {
     personaType?: 'persona'
     users?: string[]
     groups?: string[]
+    resources?: Resources
     metadataPolicies?: MetadataPolicies[]
     // Will be camel cased from BE
     dataPolicies?: DataPolicies[]

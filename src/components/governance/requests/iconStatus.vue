@@ -109,7 +109,7 @@
 <style lang="less" scoped>
     .comment-delete {
         // height: 90px;
-        width: 200px;
+        width: 200px !important;
         padding: 12px 12px;
         border-radius: 8px !important;
     }

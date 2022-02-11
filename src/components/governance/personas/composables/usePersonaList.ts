@@ -1,28 +1,30 @@
-// import { invoke, until } from '@vueuse/core'
-import { ref, computed, watch } from 'vue'
-// import { useRoute } from 'vue-router'
-import usePersonaService from './usePersonaService'
-import { safeArray } from '~/utils/array'
+import { ref, computed, watch, toRefs } from 'vue'
+import { usePersonaStore } from '~/store/persona'
+import usePersona from '~/composables/persona/usePersona'
+import { Persona } from '~/services/service/persona'
 
+const personaStore = usePersonaStore()
+const { updatePersona: handleUpdateList } = personaStore
+const { getList: personaList } = toRefs(personaStore)
+const { mutate: reFetchList, isLoading: isPersonaLoading, error: isPersonaError, isReady: isPersonaListReady } = usePersona(false)
 
-// Main Persona List, fetched from API
-const { listPersonas } = usePersonaService()
-const {
-    data: list,
-    isLoading: isPersonaLoading,
-    error: isPersonaError,
-    isReady: isPersonaListReady,
-    mutate: reFetchList,
-} = listPersonas()
+const refetchPersona = (id) => {
+    const { data, isLoading, isReady, error, mutate } = Persona.getPersonaByID(id)
+    watch([data, error], () => {
+        if (data?.value) {
+            handleUpdateList(data.value)
+        }
+    })
+}
 
-// export const modifyPersona()
-const personaList = computed(() => safeArray(list.value?.records))
 export {
     reFetchList,
+    refetchPersona,
     personaList,
     isPersonaListReady,
     isPersonaLoading,
     isPersonaError,
+    handleUpdateList
 }
 // Selected Persona Details
 export const selectedPersonaId = ref('')
@@ -39,26 +41,26 @@ watch(
             return
         }
         selectedPersona.value = undefined
-        
+
     },
-    { immediate: true }
+    { immediate: true, deep: true }
 )
 // Filtered Persona List
 export const searchTerm = ref('')
 export const filteredPersonas = computed(() => {
     let result = []
     if (searchTerm.value) {
-        result =  personaList.value.filter((ps) =>
+        result = personaList.value.filter((ps) =>
             ps.displayName
                 ?.toLowerCase()
                 .includes(searchTerm.value?.toLowerCase())
         )
     } else {
-        result =  personaList.value
+        result = personaList.value
     }
     return result.sort((a, b) => {
-        const current = a.displayName.toLowerCase()
-        const last = b.displayName.toLowerCase()
+        const current = a?.displayName?.toLowerCase()
+        const last = b?.displayName?.toLowerCase()
         if (current < last) {
             return -1
         }
@@ -68,9 +70,3 @@ export const filteredPersonas = computed(() => {
         return 0
     })
 })
-
-// invoke(async () => {
-//     await until(isPersonaListReady).toBe(true)
-//     if (personaList.value?.length)
-//         selectedPersonaId.value = personaList.value[0].id!
-// })

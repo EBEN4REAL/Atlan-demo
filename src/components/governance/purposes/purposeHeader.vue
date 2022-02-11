@@ -40,9 +40,9 @@
                         >
                     </div>
                     <a-tooltip
+                        v-if="persona.description"
                         tabindex="-1"
                         :title="persona.description"
-                        v-if="persona.description"
                         placement="right"
                     >
                         <span
@@ -50,7 +50,7 @@
                         ></span>
                     </a-tooltip>
                 </div>
-                <div class="flex text-gray-500" v-if="persona.updatedBy">
+                <div v-if="persona.updatedBy" class="flex text-gray-500">
                     last updated by {{ persona.updatedBy }},
                     <a-tooltip
                         class="ml-1"
@@ -62,27 +62,27 @@
             </div>
             <a-button-group>
                 <!-- Edit -->
-                <a-tooltip placement="bottom" v-auth="map.UPDATE_PURPOSE">
+                <a-tooltip v-auth="map.UPDATE_PURPOSE" placement="bottom">
                     <template #title>
                         <span>Edit Purpose</span>
                     </template>
                     <AtlanButton
                         class="flex items-center justify-center h-8 px-5 border border-r-0 rounded rounded-r-none cursor-pointer customShadow"
-                        @click="isEditing = true"
                         color="secondary"
+                        @click="isEditing = true"
                     >
                         <AtlanIcon icon="Edit"></AtlanIcon>
                     </AtlanButton>
                 </a-tooltip>
                 <!-- Delete  -->
-                <a-tooltip placement="bottom" v-auth="map.DELETE_PURPOSE">
+                <a-tooltip v-auth="map.DELETE_PURPOSE" placement="bottom">
                     <template #title>
                         <span>Delete Purpose</span>
                     </template>
                     <AtlanButton
                         class="flex items-center justify-center h-8 px-5 border rounded rounded-l-none cursor-pointer customShadow text-error"
-                        @click="deletePurpose"
                         color="secondary"
+                        @click="deletePurpose"
                     >
                         <AtlanIcon icon="Delete"></AtlanIcon>
                     </AtlanButton>
@@ -96,6 +96,7 @@
 <script lang="ts">
     import { defineComponent, PropType, computed, toRefs, h, watch } from 'vue'
     import { message, Modal } from 'ant-design-vue'
+    import { useTimeAgo, useVModels } from '@vueuse/core'
     import CreationModal from '@/admin/common/addModal.vue'
 
     import { IPurpose } from '~/types/accessPolicies/purposes'
@@ -108,16 +109,14 @@
     } from './composables/useEditPurpose'
 
     import Dropdown from '@/UI/dropdown.vue'
-    import { reFetchList } from './composables/usePurposeList'
+    import { handleUpdateList } from './composables/usePurposeList'
     import { formatDateTime } from '~/utils/date'
-    import { useTimeAgo } from '@vueuse/core'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
-    import { useVModels } from '@vueuse/core'
     import map from '~/constant/accessControl/map'
     import AtlanButton from '@/UI/button.vue'
 
     export default defineComponent({
-        name: 'Purpose Header',
+        name: 'PurposeHeader',
         components: { Dropdown, CreationModal, AtlanButton },
         props: {
             persona: {
@@ -137,8 +136,8 @@
                 Modal.confirm({
                     title: `Delete purpose`,
                     class: 'delete-purpose-modal',
-                    content: () => {
-                        return h('div', [
+                    content: () =>
+                        h('div', [
                             'Are you sure you want to delete purpose',
                             h('span', [' ']),
                             h(
@@ -149,8 +148,7 @@
                                 [`${persona.value.displayName}`]
                             ),
                             h('span', '?'),
-                        ])
-                    },
+                        ]),
                     okType: 'danger',
                     autoFocusButton: null,
                     okButtonProps: {
@@ -161,7 +159,7 @@
                     async onOk() {
                         const msgId = Date.now()
                         try {
-                            await deletePersonaById(persona.value.id!)
+                            await deletePersonaById(persona.value.id)
                             message.success({
                                 content: 'Purpose deleted',
                                 duration: 1.5,
@@ -169,6 +167,7 @@
                             })
                             useAddEvent('governance', 'purpose', 'deleted')
                         } catch (error) {
+                            console.log({ error })
                             message.error({
                                 content: 'Failed to delete purpose',
                                 duration: 1.5,
@@ -203,24 +202,26 @@
                 })
 
                 try {
-                    await savePersona({
-                        ...persona.value,
+                    const body = {
+                        ...JSON.parse(JSON.stringify(persona.value)),
                         displayName: selectedPersonaDirty.value?.displayName,
                         description: selectedPersonaDirty.value?.description,
-                    })
+                    }
+                    // const purposeRaw = JSON.parse(JSON.stringify(body))
+                    await savePersona(body)
 
                     message.success({
-                        content: `${persona.value?.displayName} persona updated`,
+                        content: `${persona.value?.displayName} purpose updated`,
                         duration: 1.5,
                         key: messageKey,
                     })
 
                     isEditing.value = false
-                    reFetchList()
+                    handleUpdateList(body)
                     openEditModal.value = false
                 } catch (error) {
                     message.error({
-                        content: 'Failed to update persona',
+                        content: 'Failed to update purpose',
                         duration: 1.5,
                         key: messageKey,
                     })

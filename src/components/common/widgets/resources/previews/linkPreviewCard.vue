@@ -11,9 +11,13 @@
                 />
                 <img
                     v-else
-                    :src="`https://www.google.com/s2/favicons?domain=${getDomain(
-                        link(item)
-                    )}&sz=64`"
+                    :src="
+                        getDomain(link(item)) !== 'atlan.com'
+                            ? `https://www.google.com/s2/favicons?domain=${getDomain(
+                                  link(item)
+                              )}&sz=64`
+                            : '/ico.ico'
+                    "
                     alt=""
                     :onerror="imageLoadOnError"
                     class="h-7"
@@ -38,7 +42,11 @@
             </div>
         </div>
         <div>
-            <a-dropdown trigger="click" placement="bottomRight">
+            <a-dropdown
+                trigger="click"
+                placement="bottomRight"
+                v-if="editPermission"
+            >
                 <div>
                     <AtlanIcon
                         icon="KebabMenu"

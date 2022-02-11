@@ -7,10 +7,12 @@ export default function useGetNodes(graph, guid) {
 
     graphNodes.forEach((x) => {
         const cell = getCell(x.id)
-        const isPredecessor = graph.value.isPredecessor(baseCell, cell)
-        const isSuccessor = graph.value.isSuccessor(baseCell, cell)
-        if (isPredecessor) predecessors.push(x.id)
-        if (isSuccessor) successors.push(x.id)
+        if (cell) {
+            const isPredecessor = graph.value.isPredecessor(baseCell, cell)
+            const isSuccessor = graph.value.isSuccessor(baseCell, cell)
+            if (isPredecessor) predecessors.push(x.id)
+            if (isSuccessor) successors.push(x.id)
+        }
     })
 
     return {

@@ -12,13 +12,13 @@
                     <SearchAndStats />
                     <Announcements class="mt-6" />
                 </div>
-
+                <!-- 
                 <div class="mt-6">
                     <Persona></Persona>
                 </div>
                 <div class="mt-6">
                     <Purpose></Purpose>
-                </div>
+                </div> -->
                 <div class="mt-6">
                     <Relevant />
                 </div>
@@ -28,58 +28,16 @@
             </section-->
             </div>
         </div>
-        <aside
-            class="flex flex-col w-48 col-span-2 mt-8 mb-24 ml-8 xl:w-64 gap-y-12 lg:w-56"
-        >
-            <section>
+        <aside class="flex flex-col col-span-2 mt-8 mb-24 ml-8 gap-y-12 pr-9">
+            <!-- <section>
                 <YourWorkspace />
-            </section>
+            </section> -->
             <!-- TODO: Hidden for paytm rollout, will enable it back -->
             <section>
-                <h2 class="mb-3 text-xl font-bold">Helpful links</h2>
-                <a :href="documentationLink" target="_blank">
-                    <div
-                        class="flex items-center p-2 mb-1 cursor-pointer span-2 gap-x-5 group hover:shadow hover:border-1"
-                    >
-                        <AtlanIcon class="h-9" icon="AtlanIcon" />
-                        <span class="flex flex-col text-gray-700">
-                            <div class="flex items-center text-base">
-                                Atlan Documentation
-                                <AtlanIcon
-                                    icon="External"
-                                    class="mb-1 ml-2 opacity-0 text-primary group-hover:opacity-100"
-                                />
-                            </div>
-                        </span>
-                    </div>
-                </a>
-
-                <div
-                    class="relative flex items-center w-full p-2 mb-1 cursor-pointer span-2 gap-x-5 group hover:shadow hover:border-1"
-                    @click="toggleHelpWidget"
-                >
-                    <AtlanIcon class="h-9" icon="CallIcon" />
-                    <span class="flex flex-col text-gray-700">
-                        <div class="text-base">
-                            Support
-                            <AtlanIcon
-                                class="absolute opacity-0 right-3 text-primary top-4 group-hover:opacity-100"
-                                icon="ArrowRight"
-                            />
-                        </div>
-                    </span>
-                </div>
-
-                <!-- <router-link to="//notion.so" target="_blank" replace>
-                    <div
-                        class="flex items-center p-2 cursor-pointer span-2 gap-x-5 group hover:shadow hover:border-1"
-                    >
-                        <AtlanIcon class="h-12" icon="FeedbackIcon" />
-                        <span class="flex flex-col text-gray-700">
-                            <h3 class="text-base">Share Feedback</h3>
-                        </span>
-                    </div>
-                </router-link> -->
+                <RecentResources />
+            </section>
+            <section>
+                <RecentAnnouncements />
             </section>
         </aside>
     </div>
@@ -99,6 +57,8 @@
     import YourWorkspace from '@/home/aside/YourWorkspace.vue'
     import { helpCenterList } from '~/constant/navigation/helpCentre'
     import useHelpWidget from '~/composables/helpCenter/useHelpWidget'
+    import RecentResources from '@/home/main/recentResources.vue'
+    import RecentAnnouncements from '@/home/main/recentAnnouncements.vue'
 
     export default defineComponent({
         name: 'HomePage',
@@ -110,6 +70,8 @@
             YourOrgs,
             Persona,
             Purpose,
+            RecentResources,
+            RecentAnnouncements,
         },
         props: {},
         setup() {

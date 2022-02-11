@@ -2,27 +2,19 @@ import { ref, watch } from 'vue'
 import bodybuilder from 'bodybuilder'
 import { assetInterface } from '~/types/assets/asset.interface'
 import useIndexSearch from '~/composables/discovery/useIndexSearch'
-import {
-    AssetRelationAttributes,
-    InternalAttributes,
-    SQLAttributes,
-    AssetAttributes,
-} from '~/constant/projection'
-import useTypedefData from '~/composables/typedefs/useTypedefData'
 
 export default function fetchColumns({
     viewQualifiedName,
     tableQualifiedName,
 }) {
-    const { customMetadataProjections } = useTypedefData()
-
     const attributes = [
-        ...InternalAttributes,
-        ...SQLAttributes,
-        ...AssetAttributes,
-        ...customMetadataProjections,
+        'dataType',
+        'qualifiedName',
+        'certificateStatus',
+        'table',
+        'view',
     ]
-    const relationAttributes = [...AssetRelationAttributes]
+    const relationAttributes = []
     const base = bodybuilder()
     const offset = 0
     const limit = 20000
@@ -82,6 +74,7 @@ export default function fetchColumns({
         dsl,
         attributes,
         relationAttributes,
+        suppressLogs: true,
     }
     const { data } = useIndexSearch<assetInterface>(
         body,

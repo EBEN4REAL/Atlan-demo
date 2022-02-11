@@ -45,10 +45,6 @@
             OwnersFacet,
         },
         props: {
-            selectedAsset: {
-                type: Object as PropType<assetInterface>,
-                required: true,
-            },
             selectedOwnerUsers: {
                 type: Object,
                 required: true,

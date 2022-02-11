@@ -119,7 +119,8 @@
         </template>
         <div
             v-else-if="
-                filteredPersonas?.length == 0 && isPersonaError === undefined
+                (filteredPersonas === null || filteredPersonas?.length == 0) &&
+                isPersonaError === undefined
             "
             class="flex flex-col items-center justify-center h-full"
         >

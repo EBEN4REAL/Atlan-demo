@@ -1,7 +1,7 @@
 <template>
     <a-input
         ref="searchBar"
-        :placeholder="placeholder"
+        :placeholder="placeholderDynamic"
         v-model:value="localValue"
         :size="size"
         data-test-id="input-text"
@@ -97,11 +97,13 @@
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const { autofocus, connectorName, size } = toRefs(props)
+            const { autofocus, connectorName, size, placeholder } =
+                toRefs(props)
 
             const { modelValue } = useVModels(props, emit)
 
-            const { getConnectorImageMap } = useAssetInfo()
+            const { getConnectorImageMap, getConnectorLabelByName } =
+                useAssetInfo()
 
             const searchBar: Ref<null | HTMLInputElement> = ref(null)
             const localValue = ref(modelValue.value)
@@ -113,6 +115,15 @@
             const forceFocus = () => {
                 start()
             }
+
+            const placeholderDynamic = computed(() => {
+                if (getConnectorLabelByName(connectorName.value)) {
+                    return `Search ${getConnectorLabelByName(
+                        connectorName.value
+                    )} assets`
+                }
+                return placeholder.value
+            })
 
             // computed({
             //     get: () => modelValue.value,
@@ -164,7 +175,9 @@
                 getConnectorImageMap,
                 capitalizeFirstLetter,
                 focusInput,
+                getConnectorLabelByName,
                 allowTabShortcut,
+                placeholderDynamic,
             }
         },
     })

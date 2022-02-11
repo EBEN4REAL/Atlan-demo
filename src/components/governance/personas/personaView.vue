@@ -232,6 +232,7 @@
             }
             const whitelistedConnectionIds = ref([])
             onMounted(() => {
+                console.log('rohan', filteredPersonas?.value?.length)
                 if (!route.params.id && filteredPersonas?.value?.length) {
                     const id = filteredPersonas.value[0].id!
                     selectedPersonaId.value = id
@@ -250,12 +251,16 @@
                             if (find) {
                                 selectedPersonaId.value = route.params.id
                             } else {
+                                if (filteredPersonas?.value?.length) {
+                                    selectedPersonaId.value =
+                                        filteredPersonas.value[0].id!
+                                }
+                            }
+                        } else {
+                            if (filteredPersonas?.value?.length) {
                                 selectedPersonaId.value =
                                     filteredPersonas.value[0].id!
                             }
-                        } else {
-                            selectedPersonaId.value =
-                                filteredPersonas.value[0].id!
                         }
                     }
                 },

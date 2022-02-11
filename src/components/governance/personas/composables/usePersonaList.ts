@@ -61,7 +61,7 @@ export const filteredPersonas = computed(() => {
                 .includes(searchTerm.value?.toLowerCase())
         )
     } else {
-        result = personaList.value
+        result = personaList.value || []
     }
     return result.sort((a, b) => {
         const current = a?.displayName?.toLowerCase()

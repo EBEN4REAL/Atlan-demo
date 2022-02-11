@@ -8,7 +8,7 @@
                 <div class="flex items-center">
                     <div
                         v-if="type === 'meta'"
-                        class="p-2 mr-2 rounded-full bg-primary-light"
+                        class="p-2.5 mr-2 rounded-full bg-primary-light"
                     >
                         <AtlanIcon icon="Policies" class="icon-blue" />
                     </div>
@@ -18,11 +18,11 @@
                     >
                         <AtlanIcon icon="QueryGrey" />
                     </div>
-                    <span class="ml-1 font-semibold"
+                    <span class="ml-1 text-base font-bold"
                         >{{
                             policyType === 'meta'
-                                ? 'Metadata Policy'
-                                : 'Data Policy'
+                                ? 'New Metadata Policy'
+                                : 'New Data Policy'
                         }}
                     </span>
                     <!-- <div class="ml-1 font-semibold">
@@ -30,8 +30,9 @@
                     </div> -->
                     <div v-if="isEdit ? canEdit : true" class="flex ml-auto">
                         <AtlanBtn
-                            size="sm"
+                            size="md"
                             padding="compact"
+                            class="px-6 py-0.5"
                             :disabled="
                                 isLoading ||
                                 !connectorData.attributeValue ||
@@ -64,7 +65,7 @@
             </div>
             <div class="px-4 bg-gray-100">
                 <div class="relative mt-2 bg-white shadow-section">
-                    <div class="p-3 text-base font-bold text-gray-700 border-b">
+                    <div class="p-3 text-sm font-bold text-gray-700 border-b">
                         Overview
                     </div>
                     <div class="p-3">
@@ -153,7 +154,7 @@
                 >
                     <div class="flex items-center justify-between p-3 border-b">
                         <div class="text-base font-bold text-gray-700">
-                            Asset selector to allow Query
+                            Asset selector
 
                             <span v-if="policyType === 'data'" class=""
                                 >to allow <b>Query</b>
@@ -194,13 +195,18 @@
                             <div
                                 v-for="asset in policy.assets"
                                 :key="asset"
-                                class="flex items-center justify-between px-2 py-1 border border-gray-200 rounded wrapper-asset"
+                                class="flex items-center justify-between px-2 py-1 border border-gray-200 rounded-full wrapper-asset"
                                 :class="
                                     disabledForm
                                         ? ''
                                         : 'hover:bg-primary-light cursor-pointer'
                                 "
                             >
+                                <AtlanIcon
+                                    v-if="splitName(asset) === 'All assets'"
+                                    icon="AssetsInactiveLight"
+                                    class="h-4 mr-1"
+                                />
                                 <span class="asset-name">
                                     {{ splitName(asset) }}
                                 </span>

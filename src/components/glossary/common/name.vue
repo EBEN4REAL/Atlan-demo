@@ -35,7 +35,7 @@
                 default: '',
             },
         },
-        emits: ['update:isEditMode', 'update:modelValue'],
+        emits: ['update:isEditMode', 'update:modelValue','updateName'],
         setup(props, { emit }) {
             // data
             const { enter, escape } = useMagicKeys()
@@ -53,6 +53,7 @@
             const handleNameChange = () => {
                 console.log('name chnage ', localValue.value)
                 localName.value = localValue.value
+                emit('updateName',localValue.value)
                 handleChangeName()
             }
 

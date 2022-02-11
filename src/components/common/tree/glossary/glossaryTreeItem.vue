@@ -115,13 +115,14 @@
                 </div>
                 <div v-show="isEditMode">
                     <Name
+                        @updateName="handleNameUpdate"
                         v-model="isEditMode"
                         :selected-asset="item"
                     />
                 </div>
                 <Tooltip
-                v-if="!isEditMode"
-                    :tooltip-text="`${title(item)}`"
+                    v-if="!isEditMode"
+                    :tooltip-text="entityTitle"
                     :classes="'w-full '"
                 />
             </div>
@@ -228,6 +229,7 @@
                 getAnchorName,
             } = useAssetInfo()
 
+            const entityTitle = ref(title(item.value))
             const iconSize = computed(() => {
                 if (item.value.typeName === 'AtlasGlossary') {
                     return 'height: 16px !important'
@@ -285,7 +287,9 @@
             watch(profileId, () => {
                 addSelectedKey()
             })
-
+            watch(item, () => {
+                entityTitle.value = title(item.value)
+            })
             const hasCreateAccess = computed(() =>
                 checkAccess([map.CREATE_TERM, map.CREATE_CATEGORY], 'or')
             )
@@ -298,7 +302,10 @@
                     isEditMode.value = false
                 }
             }
-
+            const handleNameUpdate = (val) => {
+                entityTitle.value = val
+                console.log(val)
+            }
             return {
                 getEntityStatusIcon,
                 certificateStatus,
@@ -317,6 +324,8 @@
                 handleEdit,
                 isEditMode,
                 handleEditCancel,
+                handleNameUpdate,
+                entityTitle,
             }
         },
     })

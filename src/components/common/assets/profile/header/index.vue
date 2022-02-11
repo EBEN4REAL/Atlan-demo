@@ -13,6 +13,7 @@
                         v-model="isEditMode"
                         :selected-asset="item"
                         classes="text-base font-bold text-gray-700  mb-0"
+                        @updateName="handleNameUpdate"
                     />
                 </div>
 
@@ -30,7 +31,7 @@
                         />
                     </div>
                     <Tooltip
-                        :tooltip-text="`${title(item)}`"
+                        :tooltip-text="entityTitle"
                         classes="text-base font-bold text-gray-700  mb-0"
                     />
 
@@ -361,7 +362,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, computed, toRefs, ref } from 'vue'
+    import { defineComponent, PropType, computed, toRefs, ref ,watch} from 'vue'
     import { useMagicKeys, useActiveElement, whenever, and } from '@vueuse/core'
     import { useRouter } from 'vue-router'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -436,6 +437,7 @@
                 isCustom,
             } = useAssetInfo()
 
+            const entityTitle = ref(title(item.value))
             const router = useRouter()
 
             const goToInsights = (openVQB) => {
@@ -495,6 +497,14 @@
             const handleEdit = (asset) => {
                 isEditMode.value = true
             }
+            watch(item, () => {
+                entityTitle.value = title(item.value)
+            })
+
+            const handleNameUpdate = (val) => {
+                entityTitle.value = val
+                console.log(val)
+            }
 
             return {
                 title,
@@ -538,6 +548,8 @@
                 isEditMode,
                 handleEdit,
                 isCustom,
+                handleNameUpdate,
+entityTitle 
             }
         },
     })

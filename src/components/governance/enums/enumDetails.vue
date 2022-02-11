@@ -10,7 +10,7 @@
                 </div>
                 <div>
                     <a-button
-                        v-if="!isEditing"
+                        v-if="!isEditing && !viewOnly"
                         v-auth="map.UPDATE_ENUM"
                         shape="circle"
                         class="flex items-center justify-center rounded-md ant-btn ant-btn-primary"
@@ -100,6 +100,9 @@
             // Component state essentials
             const localEnum = reactive({ ...props.selectedEnum })
             const isEditing = ref(props.isNew || false)
+            const viewOnly = ref(
+                props.selectedEnum.options?.isLocked === 'true'
+            )
             // const accessStore = useAccessStore()
             // const editPermission = computed(() =>
             //     accessStore.checkPermission('UPDATE_BUSINESS_METADATA')
@@ -157,6 +160,7 @@
                 showUserPreview({ allowed: ['about'] })
             }
             return {
+                viewOnly,
                 isEditing,
                 isReady,
                 localEnum,

@@ -177,6 +177,11 @@ export const ATTRIBUTE_TYPES = [
         id: 'url',
         icon: 'Link',
     },
+    {
+        label: 'SQL',
+        id: 'SQL',
+        icon: 'Query',
+    },
 
 ]
 

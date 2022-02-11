@@ -52,6 +52,11 @@
     import ViewDeprecated from '~/assets/images/insights/autocomplete/ViewDeprecated.png'
     import ViewDraft from '~/assets/images/insights/autocomplete/ViewDraft.png'
     import ViewVerified from '~/assets/images/insights/autocomplete/ViewVerified.png'
+    import {
+        editorStates,
+        updateEditorModelOnTabOpen,
+        updateEditorModel,
+    } from '~/components/insights/playground/editor/monaco/useModel'
 
     // @ts-ignore
     self.MonacoEnvironment = {
@@ -65,7 +70,6 @@
         props: {},
 
         setup(props, { emit }) {
-            const editorStates = new Map()
             const cancelTokenSource = ref()
             const activeInlineTab = inject(
                 'activeInlineTab'
@@ -83,28 +87,14 @@
             ) as Ref<editorConfigInterface>
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
 
-            const clearRemovedTabsModels = (key: string) => {
-                if (editorStates.has(key)) {
-                    editorStates.delete(key)
-                }
-            }
+            // watch(isTabClosed, () => {
+            //     if (isTabClosed.value) clearRemovedTabsModels(isTabClosed.value)
+            //     console.log(editorStates.value, 'editorStates.value')
+            // })
 
-            const addModelForNewTab = (key: string) => {
-                if (!editorStates.has(key)) {
-                    editorStates.set(key, {
-                        model: undefined,
-                        viewState: undefined,
-                    })
-                }
-            }
-
-            watch(isTabClosed, () => {
-                if (isTabClosed.value) clearRemovedTabsModels(isTabClosed.value)
-                console.log(editorStates, 'editorStates')
-            })
-            watch(isTabAdded, () => {
-                if (isTabAdded.value) addModelForNewTab(isTabAdded.value)
-            })
+            // watch(isTabAdded, () => {
+            //     if (isTabAdded.value) addModelForNewTab(isTabAdded.value)
+            // })
 
             const editorFocused = inject('editorFocused') as Ref<boolean>
             const editorContentSelectionState = inject(
@@ -377,7 +367,7 @@
                     'atlansql'
                 )
                 editor.setModel(model)
-                editorStates.set(activeInlineTab.value.key, {
+                updateEditorModel(editorStates, activeInlineTab.value.key, {
                     model: model,
                     viewState: {},
                 })
@@ -629,7 +619,7 @@
             })
 
             watch(activeInlineTabKey, (newKey, prevKey) => {
-                addModelForNewTab(newKey)
+                // updateEditorModelOnTabOpen(editorStates, newKey as string)
 
                 if (tabs.value[newKey]?.playground?.isVQB) {
                     return
@@ -669,13 +659,17 @@
 
                     if (_index > -1) {
                         const prevViewState = editor?.saveViewState()
-                        editorStates.set(tabs.value[_index].key, {
-                            model: editorStates.get(tabs.value[_index].key)
-                                .model,
-                            viewState: prevViewState,
-                        })
-                    }
 
+                        updateEditorModel(
+                            editorStates,
+                            tabs.value[_index].key,
+                            {
+                                model: editorStates.get(tabs.value[_index].key)
+                                    .model,
+                                viewState: prevViewState,
+                            }
+                        )
+                    }
                     //new
                     const index = tabs.value.findIndex(
                         (tab) => tab.key === newKey
@@ -687,10 +681,12 @@
                             ),
                             'atlansql'
                         )
-                        editorStates.set(tabs.value[index].key, {
+
+                        updateEditorModel(editorStates, tabs.value[index].key, {
                             model: newModel,
                             viewState: {},
                         })
+
                         editor?.setModel(null)
                         editor?.setModel(newModel)
                         setEditorPos(editor?.getPosition(), editorPos)
@@ -702,7 +698,7 @@
                         const newViewState = editorStates.get(
                             tabs.value[index].key
                         ).viewState
-                        editor?.restoreViewState(newViewState)
+                        if (newViewState) editor?.restoreViewState(newViewState)
                         setEditorPos(editor?.getPosition(), editorPos)
                     }
 
@@ -753,10 +749,19 @@
 
             onMounted(() => {
                 tabs.value.forEach((tab) => {
-                    editorStates.set(tab.key, {
-                        model: undefined,
-                        viewState: undefined,
-                    })
+                    const newModel = monaco.editor.createModel(
+                        tab.playground.editor.text,
+                        'atlansql'
+                    )
+                    updateEditorModel(
+                        editorStates,
+                        tab.key,
+                        {
+                            model: newModel,
+                            viewState: undefined,
+                        },
+                        tabs
+                    )
                 })
             })
 

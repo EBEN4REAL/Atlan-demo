@@ -1232,17 +1232,13 @@
                     selectionObject.value.startColumnNumber = 1
                     selectionObject.value.endLineNumber = 2
                     selectionObject.value.endColumnNumber = newQuery.length + 1 // +1 for semicolon
-                    setTimeout(() => {
-                        toRaw(editorInstanceRef.value)
-                            .getModel()
-                            .setValue(newText)
-                        // models[tabIndex].setValue(newText)
-                        setSelection(
-                            toRaw(editorInstanceRef.value),
-                            toRaw(monacoInstanceRef.value),
-                            selectionObject.value
-                        )
-                    }, 100)
+                    toRaw(editorInstanceRef.value).getModel().setValue(newText)
+                    // models[tabIndex].setValue(newText)
+                    setSelection(
+                        toRaw(editorInstanceRef.value),
+                        toRaw(monacoInstanceRef.value),
+                        selectionObject.value
+                    )
                 }
 
                 queryRun(
@@ -1318,7 +1314,6 @@
                 previewItem
             ) => {
                 const key = generateUUID()
-                isTabAdded.value = key
                 const inlineTabData: activeInlineTabInterface = {
                     label: `${previewItem.title} preview`,
                     key,

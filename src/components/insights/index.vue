@@ -162,6 +162,7 @@
     import { getDialectInfo } from '~/components/insights/common/composables/getDialectInfo'
 
     import { useRunQueryUtils } from '~/components/insights/common/composables/useRunQueryUtils'
+    import { instances } from '~/components/insights/playground/editor/monaco/useMonaco'
 
     import {
         explorerPaneSize,
@@ -314,11 +315,8 @@
                 editorInstanceParam: any,
                 monacoInstanceParam?: any
             ) => {
-                console.log(
-                    editorInstanceParam,
-                    monacoInstanceParam,
-                    'settingInstance'
-                )
+                instances.monaco = monacoInstanceParam
+                instances.editor = editorInstanceParam
                 editorInstance.value = editorInstanceParam
                 if (monacoInstanceParam)
                     monacoInstance.value = monacoInstanceParam

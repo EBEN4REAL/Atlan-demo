@@ -78,31 +78,140 @@
             class="flex flex-col px-6 pt-6"
             style="height: calc(100% - 155px)"
         >
-            <div class="mb-3">
-                <div class="flex items-center justify-between">
-                    <div class="w-1/2 pr-3">
-                        <div
-                            v-if="totalPolicy !== 0"
-                            class="px-1 container-tabs"
-                        >
-                            <a-radio-group
-                                v-model:value="activeTabFilter"
-                                class="flex flex-grow"
+            <div class="p-4 bg-white rounded">
+                <div class="mb-3">
+                    <div class="flex items-center justify-between">
+                        <div class="w-1/2 pr-3">
+                            <div
+                                v-if="totalPolicy !== 0"
+                                class="px-1 container-tabs"
                             >
-                                <a-radio-button value="all Persona"
-                                    >All</a-radio-button
+                                <a-radio-group
+                                    v-model:value="activeTabFilter"
+                                    class="flex flex-grow"
                                 >
-                                <a-radio-button value="metaData"
-                                    >Metadata</a-radio-button
-                                >
-                                <a-radio-button value="data"
-                                    >Data</a-radio-button
-                                >
-                            </a-radio-group>
+                                    <a-radio-button value="all Persona"
+                                        >All</a-radio-button
+                                    >
+                                    <a-radio-button value="metaData"
+                                        >Metadata</a-radio-button
+                                    >
+                                    <a-radio-button value="data"
+                                        >Data</a-radio-button
+                                    >
+                                </a-radio-group>
+                            </div>
                         </div>
+                        <a-dropdown v-if="!isEmpty" trigger="click">
+                            <a-button type="primary">
+                                <div class="flex items-center gap-x-1">
+                                    New Policy
+
+                                    <AtlanIcon
+                                        icon="ChevronDown"
+                                        class="text-white"
+                                    />
+                                </div>
+                            </a-button>
+
+                            <template #overlay>
+                                <a-menu>
+                                    <a-menu-item
+                                        v-for="(
+                                            option, index
+                                        ) in addPolicyDropdownConfig"
+                                        :key="index"
+                                        @click="option.handleClick()"
+                                    >
+                                        <div class="flex items-center">
+                                            <AtlanIcon
+                                                v-if="option.icon"
+                                                class="w-4 h-4 text-gray-700"
+                                                :icon="option.icon"
+                                            />
+                                            <span class="pl-2 text-sm">{{
+                                                option.title
+                                            }}</span>
+                                        </div>
+                                    </a-menu-item>
+                                </a-menu>
+                            </template>
+                        </a-dropdown>
                     </div>
-                    <a-dropdown v-if="!isEmpty" trigger="click">
-                        <a-button type="primary">
+                </div>
+                <div
+                    v-if="
+                        metaDataComputed.length > 0 ||
+                        dataPolicyComputed.length > 0
+                    "
+                    class="flex flex-col flex-grow overflow-y-auto gap-y-3"
+                >
+                    <template
+                        v-for="(policy, idx) in metaDataComputed"
+                        :key="idx"
+                    >
+                        <PolicyCard
+                            :policy="policy"
+                            type="meta"
+                            :selected-policy="selectedPolicy"
+                            :whitelisted-connection-ids="
+                                whitelistedConnectionIds
+                            "
+                            @edit="setEditFlag('meta', policy.id!)"
+                            @delete="deletePolicyUI(policy.id)"
+                            @cancel="discardPolicy('meta', policy.id)"
+                            @clickCard="handleSelectPolicy"
+                        />
+                    </template>
+                    <template
+                        v-for="(policy, idx) in dataPolicyComputed"
+                        :key="idx"
+                    >
+                        <PolicyCard
+                            :policy="policy"
+                            type="data"
+                            :selected-policy="selectedPolicy"
+                            :whitelisted-connection-ids="
+                                whitelistedConnectionIds
+                            "
+                            @edit="setEditFlag('data', policy.id!)"
+                            @delete="deletePolicyUI(policy.id)"
+                            @cancel="discardPolicy('data', policy.id!)"
+                            @clickCard="handleSelectPolicy"
+                        />
+                    </template>
+                </div>
+                <div
+                    v-if="
+                        (activeTabFilter === 'meta' &&
+                            metaDataComputed.length === 0) ||
+                        (activeTabFilter === 'data' &&
+                            dataPolicyComputed.length === 0)
+                    "
+                    class="flex flex-col items-center justify-center h-full"
+                >
+                    <component :is="NoResultIllustration"></component>
+                    <span class="text-sm font-bold text-gray">
+                        Sorry, we couldn’t find the policy you were looking
+                        for</span
+                    >
+                </div>
+
+                <div
+                    v-if="isEmpty"
+                    class="flex flex-col items-center justify-center wrapper-empty-data"
+                >
+                    <component :is="NewPolicyIllustration"></component>
+                    <span class="mt-10 text-2xl font-bold text-gray">
+                        Create Policies
+                    </span>
+                    <div
+                        class="mt-1 text-lg text-center text-gray-500 sub-title-empty"
+                    >
+                        Create policies to manage metadata and data access
+                    </div>
+                    <a-dropdown trigger="click">
+                        <a-button type="primary" class="mt-7">
                             <div class="flex items-center gap-x-1">
                                 New Policy
 
@@ -136,105 +245,9 @@
                             </a-menu>
                         </template>
                     </a-dropdown>
-                </div>
-            </div>
-            <div
-                v-if="
-                    metaDataComputed.length > 0 || dataPolicyComputed.length > 0
-                "
-                class="flex flex-col flex-grow overflow-y-auto gap-y-3"
-            >
-                <template v-for="(policy, idx) in metaDataComputed" :key="idx">
-                    <PolicyCard
-                        :policy="policy"
-                        type="meta"
-                        :selected-policy="selectedPolicy"
-                        :whitelisted-connection-ids="whitelistedConnectionIds"
-                        @edit="setEditFlag('meta', policy.id!)"
-                        @delete="deletePolicyUI(policy.id)"
-                        @cancel="discardPolicy('meta', policy.id)"
-                        @clickCard="handleSelectPolicy"
-                    />
-                </template>
-                <template
-                    v-for="(policy, idx) in dataPolicyComputed"
-                    :key="idx"
-                >
-                    <PolicyCard
-                        :policy="policy"
-                        type="data"
-                        :selected-policy="selectedPolicy"
-                        :whitelisted-connection-ids="whitelistedConnectionIds"
-                        @edit="setEditFlag('data', policy.id!)"
-                        @delete="deletePolicyUI(policy.id)"
-                        @cancel="discardPolicy('data', policy.id!)"
-                        @clickCard="handleSelectPolicy"
-                    />
-                </template>
-            </div>
-            <div
-                v-if="
-                    (activeTabFilter === 'meta' &&
-                        metaDataComputed.length === 0) ||
-                    (activeTabFilter === 'data' &&
-                        dataPolicyComputed.length === 0)
-                "
-                class="flex flex-col items-center justify-center h-full"
-            >
-                <component :is="NoResultIllustration"></component>
-                <span class="text-sm font-bold text-gray">
-                    Sorry, we couldn’t find the policy you were looking
-                    for</span
-                >
-            </div>
-
-            <div
-                v-if="isEmpty"
-                class="flex flex-col items-center justify-center wrapper-empty-data"
-            >
-                <component :is="NewPolicyIllustration"></component>
-                <span class="mt-10 text-2xl font-bold text-gray">
-                    Create Policies
-                </span>
-                <div
-                    class="mt-1 text-lg text-center text-gray-500 sub-title-empty"
-                >
-                    Create policies to manage metadata and data access
-                </div>
-                <a-dropdown trigger="click">
-                    <a-button type="primary" class="mt-7">
-                        <div class="flex items-center gap-x-1">
-                            New Policy
-
-                            <AtlanIcon icon="ChevronDown" class="text-white" />
-                        </div>
-                    </a-button>
-
-                    <template #overlay>
-                        <a-menu>
-                            <a-menu-item
-                                v-for="(
-                                    option, index
-                                ) in addPolicyDropdownConfig"
-                                :key="index"
-                                @click="option.handleClick()"
-                            >
-                                <div class="flex items-center">
-                                    <AtlanIcon
-                                        v-if="option.icon"
-                                        class="w-4 h-4 text-gray-700"
-                                        :icon="option.icon"
-                                    />
-                                    <span class="pl-2 text-sm">{{
-                                        option.title
-                                    }}</span>
-                                </div>
-                            </a-menu-item>
-                        </a-menu>
-                    </template>
-                </a-dropdown>
-                <div class="mt-6 cursor-pointer text-primary">
-                    Learn More <AtlanIcon icon="ArrowRight" />
+                    <div class="mt-6 cursor-pointer text-primary">
+                        Learn More <AtlanIcon icon="ArrowRight" />
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,7 +1,5 @@
 <template>
-    <div
-        class="relative bg-white border border-gray-300 rounded container-policy-card"
-    >
+    <div class="relative bg-white rounded container-policy-card">
         <div
             class="flex flex-col px-3 py-3 rounded cursor-pointer group hover:bg-gray-100 card-policy"
             :class="selectedPolicy.id === policy.id ? 'outline-primary' : ''"

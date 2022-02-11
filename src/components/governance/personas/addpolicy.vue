@@ -957,6 +957,7 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        overflow: scroll;
     }
     .button-container {
         justify-content: flex-end;

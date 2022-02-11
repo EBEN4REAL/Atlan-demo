@@ -186,7 +186,7 @@
                 "
                 class="flex flex-col items-center justify-center h-full"
             >
-                <component :is="NewPolicyIllustration"></component>
+                <component :is="EmptyPolicyIllustration"></component>
                 <span class="text-2xl font-bold text-gray">
                     Create Policies</span
                 >
@@ -248,7 +248,7 @@
     import MinimalTab from '@/UI/minimalTab.vue'
     import AtlanBtn from '@/UI/button.vue'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
-    import NewPolicyIllustration from '~/assets/images/illustrations/new_policy.svg'
+    import EmptyPolicyIllustration from '~/assets/images/illustrations/empty_policy.svg'
     import NoResultIllustration from '~/assets/images/illustrations/Illustration_no_search_results.svg'
     import Addpolicy from './addpolicy.vue'
     import PolicyCard from './policies/collapsedPolicyCard.vue'
@@ -532,7 +532,7 @@
                 savePolicyUI,
                 deletePolicyUI,
                 discardPolicy,
-                NewPolicyIllustration,
+                EmptyPolicyIllustration,
                 totalPolicy,
                 searchPersona,
                 activeTabFilter,

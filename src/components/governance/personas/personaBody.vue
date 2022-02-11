@@ -78,7 +78,7 @@
             class="flex flex-col px-6 pt-6"
             style="height: calc(100% - 155px)"
         >
-            <div class="p-4 bg-white rounded">
+            <div class="p-4 rounded bg-primary-light">
                 <div class="mb-3">
                     <div class="flex items-center justify-between">
                         <div class="w-1/2 pr-3">
@@ -201,7 +201,7 @@
                     v-if="isEmpty"
                     class="flex flex-col items-center justify-center wrapper-empty-data"
                 >
-                    <component :is="NewPolicyIllustration"></component>
+                    <component :is="EmptyPolicyIllustration"></component>
                     <span class="mt-10 text-xl font-bold text-gray">
                         Create Policies
                     </span>
@@ -296,7 +296,7 @@
     import Readme from './overview/PersonaReadme.vue'
     import { IPurpose } from '~/types/accessPolicies/purposes'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-    import NewPolicyIllustration from '~/assets/images/empty_policy.svg'
+    import EmptyPolicyIllustration from '~/assets/images/empty_policy.svg'
     import NoResultIllustration from '~/assets/images/illustrations/Illustration_no_search_results.svg'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import { filterMethod, sortMethodArrOfObject } from '~/utils/helper/search'
@@ -581,7 +581,7 @@
                 savePolicyUI,
                 deletePolicyUI,
                 discardPolicy,
-                NewPolicyIllustration,
+                EmptyPolicyIllustration,
                 searchPersona,
                 tabFilterList,
                 activeTabFilter,

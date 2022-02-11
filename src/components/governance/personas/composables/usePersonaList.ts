@@ -6,10 +6,16 @@ import { Persona } from '~/services/service/persona'
 const personaStore = usePersonaStore()
 const { updatePersona: handleUpdateList } = personaStore
 const { getList: personaList } = toRefs(personaStore)
-const { mutate: reFetchList, isLoading: isPersonaLoading, error: isPersonaError, isReady: isPersonaListReady } = usePersona(false)
+const {
+    mutate: reFetchList,
+    isLoading: isPersonaLoading,
+    error: isPersonaError,
+    isReady: isPersonaListReady,
+} = usePersona(false)
 
 const refetchPersona = (id) => {
-    const { data, isLoading, isReady, error, mutate } = Persona.getPersonaByID(id)
+    const { data, isLoading, isReady, error, mutate } =
+        Persona.getPersonaByID(id)
     watch([data, error], () => {
         if (data?.value) {
             handleUpdateList(data.value)
@@ -24,7 +30,7 @@ export {
     isPersonaListReady,
     isPersonaLoading,
     isPersonaError,
-    handleUpdateList
+    handleUpdateList,
 }
 // Selected Persona Details
 export const selectedPersonaId = ref('')
@@ -41,7 +47,6 @@ watch(
             return
         }
         selectedPersona.value = undefined
-
     },
     { immediate: true, deep: true }
 )

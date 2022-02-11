@@ -101,7 +101,7 @@
                             </a-radio-group>
                         </div>
                     </div>
-                    <a-dropdown trigger="click">
+                    <a-dropdown v-if="!isEmpty" trigger="click">
                         <a-button type="primary">
                             <div class="flex items-center gap-x-1">
                                 New Policy
@@ -189,17 +189,53 @@
             </div>
 
             <div
-                v-if="
-                    !selectedPersonaDirty.metadataPolicies?.length &&
-                    !selectedPersonaDirty.dataPolicies?.length &&
-                    !searchPersona
-                "
+                v-if="isEmpty"
                 class="flex flex-col items-center justify-center wrapper-empty-data"
             >
                 <component :is="NewPolicyIllustration"></component>
-                <span class="text-2xl font-bold text-gray">
-                    Create Policies</span
+                <span class="mt-10 text-2xl font-bold text-gray">
+                    Create Policies
+                </span>
+                <div
+                    class="mt-1 text-lg text-center text-gray-500 sub-title-empty"
                 >
+                    Create policies to manage metadata and data access
+                </div>
+                <a-dropdown trigger="click">
+                    <a-button type="primary" class="mt-7">
+                        <div class="flex items-center gap-x-1">
+                            New Policy
+
+                            <AtlanIcon icon="ChevronDown" class="text-white" />
+                        </div>
+                    </a-button>
+
+                    <template #overlay>
+                        <a-menu>
+                            <a-menu-item
+                                v-for="(
+                                    option, index
+                                ) in addPolicyDropdownConfig"
+                                :key="index"
+                                @click="option.handleClick()"
+                            >
+                                <div class="flex items-center">
+                                    <AtlanIcon
+                                        v-if="option.icon"
+                                        class="w-4 h-4 text-gray-700"
+                                        :icon="option.icon"
+                                    />
+                                    <span class="pl-2 text-sm">{{
+                                        option.title
+                                    }}</span>
+                                </div>
+                            </a-menu-item>
+                        </a-menu>
+                    </template>
+                </a-dropdown>
+                <div class="mt-6 cursor-pointer text-primary">
+                    Learn More <AtlanIcon icon="ArrowRight" />
+                </div>
             </div>
         </div>
     </template>
@@ -208,7 +244,7 @@
         :closable="false"
         :visible="addpolicyVisible"
         :width="450"
-        :mask="false"
+        class="drawer-add-persona"
         @close="handleCloseAddPolicy"
     >
         <Addpolicy
@@ -247,7 +283,7 @@
     import Readme from './overview/PersonaReadme.vue'
     import { IPurpose } from '~/types/accessPolicies/purposes'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-    import NewPolicyIllustration from '~/assets/images/illustrations/new_policy.svg'
+    import NewPolicyIllustration from '~/assets/images/empty_policy.svg'
     import NoResultIllustration from '~/assets/images/illustrations/Illustration_no_search_results.svg'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import { filterMethod, sortMethodArrOfObject } from '~/utils/helper/search'
@@ -499,7 +535,12 @@
             const handleCloseAdd = () => {
                 addpolicyVisible.value = false
             }
-
+            const isEmpty = computed(
+                () =>
+                    !selectedPersonaDirty.value.metadataPolicies?.length &&
+                    !selectedPersonaDirty.value.dataPolicies?.length &&
+                    !searchPersona.value
+            )
             const {
                 addStatus,
                 updateStatus,
@@ -543,11 +584,23 @@
                 isEdit,
                 loadingPolicy,
                 NoResultIllustration,
+                isEmpty,
             }
         },
     })
 </script>
 
+<style lang="less">
+    .drawer-add-persona {
+        .ant-drawer-content {
+            overflow: visible !important;
+        }
+        .close-btn-sidebar {
+            position: absolute !important;
+            background: white !important;
+        }
+    }
+</style>
 <style lang="less" module>
     .container-tabs {
         .assetbar {
@@ -558,6 +611,9 @@
     }
 </style>
 <style scoped lang="less">
+    .sub-title-empty {
+        max-width: 250px;
+    }
     .content-wrapper {
         height: inherit;
     }

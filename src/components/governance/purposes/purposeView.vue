@@ -120,7 +120,8 @@
         </template>
         <div
             v-else-if="
-                filteredPurposes?.length == 0 && isPurposeError === undefined
+                (filteredPurposes === null || filteredPurposes?.length == 0) &&
+                isPurposeError === undefined
             "
             class="flex flex-col items-center justify-center h-full"
         >

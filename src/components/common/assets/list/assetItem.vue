@@ -946,19 +946,19 @@
                             <div
                                 v-for="cat in categories(item).slice(0,2)"
                                 :key="cat.guid"
-                                class="flex items-center border rounded-full bg-white px-2 py-1 text-primary mt-1 group hover:text-white hover:bg-primary"
+                                class="flex items-center border rounded-full bg-white px-2 py-1  mt-1 group hover:text-white hover:bg-primary "
                                 style="max-width: 200px"
                             >
                                 <div class="w-4 mr-1">
                                     <AtlanIcon
                                         icon="Category"
-                                        class="h-4"
+                                        class="h-4 text-purple  group-hover:text-white"
                                     ></AtlanIcon>
                                 </div>
                                 <Tooltip
                                     :tooltip-text="cat.attributes?.name"
                                     :route-to="`/glossary/${cat?.guid}`"
-                                    classes="cursor-pointer   hover:text-white text-primary group-hover:text-white"
+                                    classes="cursor-pointer   hover:text-white  group-hover:text-white"
                                     :should-open-in-new-tab="true"
                                     @click="(e) => e.stopPropagation()"
                                     placement="bottom"
@@ -979,7 +979,7 @@
                                     <div
                                         v-for="cat in categories(item)?.slice(2)"
                                         :key="cat.guid"
-                                        class="flex items-center border rounded-full bg-white px-2 py-1 text-primary hover:text-white hover:bg-primary group"
+                                        class="flex items-center border rounded-full bg-white px-2 py-1  hover:text-white hover:bg-primary group"
                                         style="max-width: 200px"
                                     >
                                         <div class="w-4 mr-1">
@@ -990,13 +990,13 @@
                                                         certificateStatus(cat)
                                                     )
                                                 "
-                                                class="h-4"
+                                                class="h-4 text-purple group-hover:text-white"
                                             ></AtlanIcon>
                                         </div>
                                         <Tooltip
                                             :tooltip-text="cat.attributes?.name"
                                             :route-to="`/glossary/${cat?.guid}`"
-                                            classes="cursor-pointer  text-primary hover:text-white group-hover:text-white"
+                                            classes="cursor-pointer   hover:text-white group-hover:text-white"
                                             :should-open-in-new-tab="true"
                                             @click="(e) => e.stopPropagation()"
                                             placement="bottom"
@@ -1006,7 +1006,7 @@
                             </template>
 
                             <div
-                                class="flex items-center mr-3 text-sm gap-x-1 border rounded-full bg-white px-2 text-primary py-1 hover:bg-primary hover:text-white mt-1 cursor-pointer"
+                                class="flex items-center mr-3 text-sm gap-x-1  bg-transparent px-2 text-primary py-1  mt-1 cursor-pointer"
                             >
                                + {{ categories(item)?.slice(2)?.length }} more
                             </div>

@@ -240,6 +240,12 @@ export const MinimalAttributes = [
     'viewsCount',
     'fieldCount',
     'isCustom',
+    'isPartition',
+    'isSort',
+    'isIndexed',
+    'isForeign',
+    'isDist',
+    'order',
 ]
 
 export const BasicSearchAttributes = [

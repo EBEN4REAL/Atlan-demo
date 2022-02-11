@@ -110,11 +110,19 @@
                             )
                         "
                         :style="iconSize"
-                        class="self-center align-text-bottom"
+                        class="self-center align-text-bottom text-gray-500"
+                    />
+                </div>
+                <div v-show="isEditMode">
+                    <Name
+                        @updateName="handleNameUpdate"
+                        v-model="isEditMode"
+                        :selected-asset="item"
                     />
                 </div>
                 <Tooltip
-                    :tooltip-text="`${title(item)}`"
+                    v-if="!isEditMode"
+                    :tooltip-text="entityTitle"
                     :classes="'w-full '"
                 />
             </div>
@@ -139,6 +147,7 @@
                     :categoryName="title(item)"
                     :categoryGuid="categoryId"
                     :entity="item"
+                    @edit="handleEdit"
                 ></Actions>
             </div>
         </div>
@@ -155,13 +164,24 @@
         ref,
         watch,
         onMounted,
+        watchEffect,
     } from 'vue'
+    import {
+        and,
+        useActiveElement,
+        useMagicKeys,
+        useTimeoutFn,
+        useVModels,
+        whenever,
+    } from '@vueuse/core'
+
+    import { useRouter, useRoute } from 'vue-router'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useGlossaryData from '~/composables/glossary2/useGlossaryData'
     import Actions from './actions.vue'
     import AddGtcModal from '@/glossary/modal/addGtcModal.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
-    import { useRouter, useRoute } from 'vue-router'
+    import Name from '@/glossary/common/name.vue'
 
     import {
         Glossary,
@@ -173,7 +193,7 @@
     import useAuth from '~/composables/auth/useAuth'
 
     export default defineComponent({
-        components: { Actions, AtlanIcon, AddGtcModal, Tooltip },
+        components: { Actions, AtlanIcon, AddGtcModal, Tooltip, Name },
         props: {
             item: {
                 type: Object as PropType<Glossary | Term | Category>,
@@ -198,6 +218,7 @@
             const route = useRoute()
             const router = useRouter()
             const profileId = computed(() => route?.params?.id || null)
+            const isEditMode = ref(false)
             const { checkAccess } = useAuth()
 
             const { getEntityStatusIcon } = useGlossaryData()
@@ -208,6 +229,7 @@
                 getAnchorName,
             } = useAssetInfo()
 
+            const entityTitle = ref(title(item.value))
             const iconSize = computed(() => {
                 if (item.value.typeName === 'AtlasGlossary') {
                     return 'height: 16px !important'
@@ -265,10 +287,25 @@
             watch(profileId, () => {
                 addSelectedKey()
             })
-
+            watch(item, () => {
+                entityTitle.value = title(item.value)
+            })
             const hasCreateAccess = computed(() =>
                 checkAccess([map.CREATE_TERM, map.CREATE_CATEGORY], 'or')
             )
+
+            const handleEdit = (asset) => {
+                isEditMode.value = true
+            }
+            const handleEditCancel = () => {
+                if (isEditMode.value) {
+                    isEditMode.value = false
+                }
+            }
+            const handleNameUpdate = (val) => {
+                entityTitle.value = val
+                console.log(val)
+            }
             return {
                 getEntityStatusIcon,
                 certificateStatus,
@@ -284,6 +321,11 @@
                 ctaToProfile,
                 map,
                 hasCreateAccess,
+                handleEdit,
+                isEditMode,
+                handleEditCancel,
+                handleNameUpdate,
+                entityTitle,
             }
         },
     })

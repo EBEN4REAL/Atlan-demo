@@ -18,14 +18,26 @@
             ]"
         >
             <div class="flex items-start flex-1 px-3 py-3 asset-card">
-                <a-checkbox
-                    v-if="showCheckBox"
-                    :checked="isChecked"
-                    class="ml-2 mr-3 opacity-60 hover:opacity-100"
-                    :class="bulkSelectMode ? 'opacity-100' : 'opacity-0'"
-                    @click.stop
-                    @change="(e) => $emit('listItem:check', e, item)"
-                />
+                <a-tooltip
+                    placement="leftTop"
+                    :title="
+                        isScrubbed(item) && disableCheckboxForScrubbed
+                            ? `You don't have permission to link this asset to a term`
+                            : ''
+                    "
+                    :mouse-enter-delay="0.2"
+                >
+                    <a-checkbox
+                        v-if="showCheckBox"
+                        :checked="isChecked"
+                        :disabled="
+                            isScrubbed(item) && disableCheckboxForScrubbed
+                        "
+                        class="ml-2 mr-3 opacity-60 hover:opacity-100"
+                        :class="bulkSelectMode ? 'opacity-100' : 'opacity-0'"
+                        @click.stop
+                        @change="(e) => $emit('listItem:check', e, item)"
+                /></a-tooltip>
                 <div
                     class="flex flex-col flex-1"
                     :class="{ 'lg:pr-16': !isCompact }"
@@ -135,45 +147,6 @@
                         </div>
 
                         <div class="flex items-center">
-                            <div
-                                v-if="categories(item)?.length > 0"
-                                class="flex items-center mr-3 text-sm text-gray-500 gap-x-1"
-                            >
-                                in
-                                <div
-                                    v-for="(cat, index) in categories(item)"
-                                    v-if="
-                                        ['atlasglossaryterm'].includes(
-                                            item.typeName?.toLowerCase()
-                                        )
-                                    "
-                                    :key="cat.guid"
-                                    class="flex"
-                                >
-                                    <AtlanIcon
-                                        icon="Category"
-                                        class="h-4 mt-0.5 mr-1"
-                                    ></AtlanIcon>
-                                    {{ cat.attributes?.name }}
-                                    <span
-                                        v-if="
-                                            index ===
-                                                categories(item).length - 2 &&
-                                            categories(item).length > 1
-                                        "
-                                        class="ml-1"
-                                    >
-                                        and
-                                    </span>
-                                    <span
-                                        v-else-if="
-                                            index !==
-                                            categories(item).length - 1
-                                        "
-                                        >,</span
-                                    >
-                                </div>
-                            </div>
                             <div
                                 v-if="parentCategory(item)"
                                 class="flex items-center mr-3 text-sm text-gray-500 gap-x-1"
@@ -912,7 +885,7 @@
                         </div>
                     </div>
 
-                    <div class="flex flex-wrap gap-x-1">
+                    <div class="flex flex-wrap gap-x-1 items-center">
                         <div
                             v-if="
                                 clsfList.length > 0 &&
@@ -981,6 +954,75 @@
                                 </div>
                             </template>
                         </div>
+                        <div v-if="categories(item)?.length > 0" class="flex items-center gap-x-2">
+                            <div
+                                v-for="cat in categories(item).slice(0,3)"
+                                :key="cat.guid"
+                                class="flex items-center border rounded-full bg-white px-2 py-1  mt-1 group hover:text-white hover:bg-primary "
+                                style="max-width: 200px"
+                            >
+                                <div class="w-4 mr-1">
+                                    <AtlanIcon
+                                        icon="Category"
+                                        class="h-4 text-purple  group-hover:text-white"
+                                    ></AtlanIcon>
+                                </div>
+                                <Tooltip
+                                    :tooltip-text="cat.attributes?.name"
+                                    :route-to="`/glossary/${cat?.guid}`"
+                                    classes="cursor-pointer   hover:text-white  group-hover:text-white"
+                                    :should-open-in-new-tab="true"
+                                    @click="(e) => e.stopPropagation()"
+                                    placement="bottom"
+                                />
+                            </div>
+                        </div>
+
+                        <a-popover
+                            trigger="hover"
+                            placement="bottomLeft"
+                            v-if="categories(item)?.slice(3)?.length > 0"
+                            overlayClassName="max-w-xs"
+                        >
+                            <template #content>
+                                <div
+                                    class="flex items-center flex-wrap gap-x-2 gap-y-2 px-2 py-2"
+                                >
+                                    <div
+                                        v-for="cat in categories(item)?.slice(3)"
+                                        :key="cat.guid"
+                                        class="flex items-center border rounded-full bg-white px-2 py-1  hover:text-white hover:bg-primary group"
+                                        style="max-width: 200px"
+                                    >
+                                        <div class="w-4 mr-1">
+                                            <AtlanIcon
+                                                :icon="
+                                                    getEntityStatusIcon(
+                                                        'AtlasGlossaryCategory',
+                                                        certificateStatus(cat)
+                                                    )
+                                                "
+                                                class="h-4 text-purple group-hover:text-white"
+                                            ></AtlanIcon>
+                                        </div>
+                                        <Tooltip
+                                            :tooltip-text="cat.attributes?.name"
+                                            :route-to="`/glossary/${cat?.guid}`"
+                                            classes="cursor-pointer   hover:text-white group-hover:text-white"
+                                            :should-open-in-new-tab="true"
+                                            @click="(e) => e.stopPropagation()"
+                                            placement="bottom"
+                                        />
+                                    </div>
+                                </div>
+                            </template>
+
+                            <div
+                                class="flex items-center mr-3 text-sm gap-x-1  bg-transparent px-2 text-primary py-1  mt-1 cursor-pointer"
+                            >
+                               + {{ categories(item)?.slice(3)?.length }} more
+                            </div>
+                        </a-popover>
                     </div>
                 </div>
                 <slot name="cta"></slot>
@@ -993,7 +1035,7 @@
             "
         />
         <AssetDrawer
-            :data="selectedAssetDrawerData"
+            :guid="selectedAssetDrawerGuid"
             :show-drawer="showAssetSidebarDrawer"
             @closeDrawer="handleCloseDrawer"
             @update="handleListUpdate"
@@ -1017,6 +1059,7 @@
     import TermPill from '@/common/pills/term.vue'
     import useTermPopover from '@/common/popover/term/useTermPopover'
     import AtlanIcon from '@/common/icon/atlanIcon.vue'
+    import useGlossaryData from '~/composables/glossary2/useGlossaryData'
 
     export default defineComponent({
         name: 'AssetListItem',
@@ -1103,6 +1146,11 @@
                 type: Boolean,
                 default: false,
             },
+            disableCheckboxForScrubbed: {
+                type: Boolean,
+                default: false,
+                required: false,
+            },
         },
         emits: ['listItem:check', 'unlinkAsset', 'preview', 'updateDrawer'],
         setup(props, { emit }) {
@@ -1117,8 +1165,9 @@
                 itemIndex,
             } = toRefs(props)
 
+            const { getEntityStatusIcon } = useGlossaryData()
             const showAssetSidebarDrawer = ref(false)
-            const selectedAssetDrawerData = ref({})
+            const selectedAssetDrawerGuid = ref('')
 
             const {
                 title,
@@ -1180,20 +1229,19 @@
             const handlePreview = (item: any) => {
                 if (enableSidebarDrawer.value === true) {
                     showAssetSidebarDrawer.value = true
-                    selectedAssetDrawerData.value = item
+                    selectedAssetDrawerGuid.value = item?.guid
                 } else {
                     emit('preview', item, itemIndex.value)
                 }
             }
 
             const handleCloseDrawer = () => {
-                selectedAssetDrawerData.value = {}
+                selectedAssetDrawerGuid.value = ''
                 showAssetSidebarDrawer.value = false
             }
 
             const handleListUpdate = (asset) => {
                 emit('updateDrawer', asset)
-                selectedAssetDrawerData.value = asset
             }
 
             const isSelected = computed(() => {
@@ -1295,7 +1343,7 @@
                 classifications,
                 getProfilePath,
                 showAssetSidebarDrawer,
-                selectedAssetDrawerData,
+                selectedAssetDrawerGuid,
                 handleCloseDrawer,
                 isUserDescription,
                 isScrubbed,
@@ -1320,6 +1368,7 @@
                 terms,
                 fieldCount,
                 isCustom,
+                getEntityStatusIcon,
             }
         },
     })

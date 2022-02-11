@@ -125,7 +125,7 @@
                 </a-button>
             </div>
         </div>
-        <div v-else class="flex flex-col items-center">
+        <div v-else class="flex flex-col items-center justify-center h-full">
             <EmptyScreen
                 empty-screen="NoAssetsFound"
                 image-class="h-44"

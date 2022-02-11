@@ -178,7 +178,7 @@ export const AssetRelationAttributes = [
     '__createdBy',
 ]
 
-export const DefaultRelationAttributes = []
+export const DefaultRelationAttributes = ['name', 'qualifiedName']
 
 // For just asset list display
 export const MinimalAttributes = [
@@ -238,6 +238,8 @@ export const MinimalAttributes = [
     'database',
     'tableCount',
     'viewsCount',
+    'fieldCount',
+    'isCustom',
 ]
 
 export const BasicSearchAttributes = [

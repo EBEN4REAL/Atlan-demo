@@ -31,9 +31,18 @@
                         ><AtlanIcon icon="Search" class="h-8 text-gray"
                     /></template>
                     <template #title="item">
-                        <div class="flex items-center space-x-1">
-                            <AtlanIcon :icon="icon(item.node)" />
-                            <span>{{ item.title }}</span>
+                        <div
+                            class="flex items-center space-x-1"
+                            style="max-width: 200px"
+                        >
+                            <div class="w-4">
+                                <AtlanIcon :icon="icon(item)" />
+                            </div>
+                            <Tooltip
+                                :tooltip-text="item.title"
+                                classes="cursor-pointer   "
+                                @click="(e) => e.stopPropagation()"
+                            />
                         </div>
                     </template>
                 </a-tree-select>
@@ -56,15 +65,19 @@
             <template v-for="category in checkedKeys" :key="category.value">
                 <div
                     class="flex items-center py-0.5 pl-1 pr-2 text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer hover:bg-purple hover:border-purple group hover:shadow hover:text-white"
+                    style="max-width: 200px"
                 >
-                    <AtlanIcon
-                        :icon="icon(category)"
-                        class="group-hover:text-white text-purple mb-0.5"
-                    ></AtlanIcon>
-
-                    <div class="ml-1 group-hover:text-white">
-                        {{ category.label }}
+                    <div class="w-4">
+                        <AtlanIcon
+                            :icon="icon(category)"
+                            class="group-hover:text-white text-primary mb-0.5"
+                        ></AtlanIcon>
                     </div>
+                    <Tooltip
+                        :tooltip-text="category.label"
+                        classes="cursor-pointer text-gray-700 hover:text-white ml-0.5"
+                        @click="(e) => e.stopPropagation()"
+                    />
 
                     <div
                         v-if="allowDelete"
@@ -104,10 +117,11 @@
     import GlossaryTree from '~/components/glossary/index.vue'
     import useCategoriesWidget from './useCategoriesWidget'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import Tooltip from '@common/ellipsis/index.vue'
 
     export default defineComponent({
         name: 'CategoriesWidget',
-        components: { GlossaryTree },
+        components: { GlossaryTree, Tooltip },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,

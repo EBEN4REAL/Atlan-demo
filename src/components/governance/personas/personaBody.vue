@@ -202,11 +202,11 @@
                     class="flex flex-col items-center justify-center wrapper-empty-data"
                 >
                     <component :is="NewPolicyIllustration"></component>
-                    <span class="mt-10 text-2xl font-bold text-gray">
+                    <span class="mt-10 text-xl font-bold text-gray">
                         Create Policies
                     </span>
                     <div
-                        class="mt-1 text-lg text-center text-gray-500 sub-title-empty"
+                        class="mt-1 text-base text-center text-gray-500 sub-title-empty"
                     >
                         Create policies to manage metadata and data access
                     </div>

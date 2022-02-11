@@ -84,7 +84,6 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
                     totalRowsCount: -1,
                     executionTime: -1,
                     errorDecorations: [],
-                    abortQueryFn: undefined,
                     eventSourceInstance: undefined,
                     buttonDisable: false,
                     isQueryAborted: false,

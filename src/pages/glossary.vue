@@ -114,8 +114,10 @@
                 localSelected.value = selectedGlossary.value
             }
             const handlePreview = (asset) => {
-                localSelected.value = asset
-                glossaryStore.setSelectedGTC(asset)
+                if (id?.value === asset?.guid) {
+                    localSelected.value = asset
+                    glossaryStore.setSelectedGTC(asset)
+                }
             }
 
             watch(selectedGlossary, () => {

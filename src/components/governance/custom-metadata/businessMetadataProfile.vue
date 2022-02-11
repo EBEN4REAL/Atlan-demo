@@ -68,6 +68,7 @@
                         </div>
                     </div>
                     <a-button
+                        v-if="localBm.options?.isLocked !== 'true'"
                         v-auth="map.UPDATE_BUSINESS_METADATA"
                         class=""
                         type="primary"

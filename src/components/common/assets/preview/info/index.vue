@@ -60,7 +60,7 @@
                     <AtlanIcon
                         :icon="getConnectorImage(selectedAsset)"
                         class="h-4 mr-1"
-                    />Open in
+                    />View in
                     {{ getConnectorLabel(selectedAsset) }}
                 </div>
                 <AtlanIcon icon="External" />
@@ -255,7 +255,24 @@
             "
             class="flex flex-col px-5 text-sm"
         >
-            <span class="mb-1 text-gray-500">Source ID</span>
+            <div class="flex items-center mb-1 text-gray-500">
+                <span>Source ID</span>
+                <a-tooltip title="Copy">
+                    <div
+                        v-if="sourceId(selectedAsset) !== '-'"
+                        @click="
+                            handleCopyValue(
+                                sourceId(selectedAsset),
+                                'Source ID'
+                            )
+                        "
+                    >
+                        <AtlanIcon
+                            icon="CopyOutlined"
+                            class="w-auto ml-1 cursor-pointer mb-0.5"
+                        /></div
+                ></a-tooltip>
+            </div>
 
             <span class="text-gray-700">{{ sourceId(selectedAsset) }}</span>
         </div>
@@ -790,8 +807,6 @@
         inject,
         ref,
         toRefs,
-        watch,
-        computed,
     } from 'vue'
     import SavedQuery from '@common/hovercards/savedQuery.vue'
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
@@ -818,6 +833,8 @@
     import ParentContext from '@/common/widgets/summary/types/parentContext.vue'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import DetailsContainer from '@common/assets/misc/detailsOverflowContainer.vue'
+    import { copyToClipboard } from '~/utils/clipboard'
+    import { message } from 'ant-design-vue'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -991,10 +1008,16 @@
                 window.open(URL, '_blank')?.focus()
             }
 
+            const handleCopyValue = async (value, type) => {
+                await copyToClipboard(value)
+                message.success(`${type} copied!`)
+            }
+
             return {
                 localDescription,
                 selectedAsset,
                 isLoadingClassification,
+                handleCopyValue,
                 localClassifications,
                 handleClassificationChange,
                 isSelectedAssetHaveRowsAndColumns,

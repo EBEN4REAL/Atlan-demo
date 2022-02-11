@@ -51,6 +51,7 @@
                                 v-model:value="form.displayName"
                                 type="text"
                                 class=""
+                                :disabled="viewOnly"
                             />
                         </a-form-item>
                         <a-form-item
@@ -107,7 +108,7 @@
                                 no-results-text="No enum found"
                                 placeholder="Select enum"
                                 :options="finalEnumsList"
-                                :disabled="isEdit"
+                                :disabled="isEdit || viewOnly"
                                 @change="handleEnumSelect"
                                 @search="handleEnumSearch"
                             >
@@ -139,28 +140,30 @@
                                 <div class="mb-2 font-normal font-size-sm">
                                     Enum options:
                                 </div>
-                                <span
-                                    v-auth="access.UPDATE_ENUM"
-                                    v-if="!enumEdit"
-                                    class="cursor-pointer hover:underline text-primary"
-                                    @click="handleEditEnum"
-                                    >Edit</span
-                                >
+                                <template v-if="!viewOnly">
+                                    <span
+                                        v-if="!enumEdit"
+                                        v-auth="access.UPDATE_ENUM"
+                                        class="cursor-pointer text-primary"
+                                        @click="handleEditEnum"
+                                        >Edit</span
+                                    >
 
-                                <div v-else class="space-x-3">
-                                    <span
-                                        v-auth="access.UPDATE_ENUM"
-                                        class="cursor-pointer hover:underline text-primary"
-                                        @click="discardEnumEdit"
-                                        >Cancel</span
-                                    >
-                                    <span
-                                        v-auth="access.UPDATE_ENUM"
-                                        class="cursor-pointer hover:underline text-primary"
-                                        @click="saveChanges"
-                                        >Save</span
-                                    >
-                                </div>
+                                    <div v-else class="space-x-3">
+                                        <span
+                                            v-auth="access.UPDATE_ENUM"
+                                            class="cursor-pointer hover:underline text-primary"
+                                            @click="discardEnumEdit"
+                                            >Cancel</span
+                                        >
+                                        <span
+                                            v-auth="access.UPDATE_ENUM"
+                                            class="cursor-pointer hover:underline text-primary"
+                                            @click="saveChanges"
+                                            >Save</span
+                                        >
+                                    </div>
+                                </template>
                             </div>
                             <template v-if="enumEdit">
                                 <MultiInput
@@ -246,6 +249,7 @@
                                 <div class="w-100">
                                     <div ref="typeTreeSelect">
                                         <a-tree-select
+                                            :disabled="viewOnly"
                                             :value="
                                                 form.options
                                                     .customApplicableEntityTypes
@@ -369,24 +373,6 @@
                                     />
                                 </div>
                             </a-form-item>
-                            <!-- <a-form-item class="mb-0">
-                                <div class="flex justify-between">
-                                    <label :for="`${form.name}-isBadge`">
-                                        <span class="flex items-center">
-                                            Allow search
-                                        </span>
-                                    </label>
-                                    <a-switch
-                                        :id="`${form.name}-isBadge`"
-                                        v-model:checked="
-                                            form.options.allowSearch
-                                        "
-                                        class=""
-                                        :name="`${form.name}-isBadge`"
-                                        size="small"
-                                    />
-                                </div>
-                            </a-form-item> -->
                         </div>
                     </div>
                 </a-form>
@@ -479,6 +465,9 @@
             const typeTreeSelect = ref(null)
             const enumSearchValue = ref('')
             const oldEnumSeardValue = ref('')
+            const viewOnly = computed(
+                () => props.metadata.options?.isLocked === 'true'
+            )
             const { metadata } = toRefs(props)
 
             const attributesTypes = reactive(
@@ -935,6 +924,7 @@
             })
 
             return {
+                viewOnly,
                 discardEnumEdit,
                 handleEditEnum,
                 saveChanges,

@@ -69,7 +69,7 @@
 
         <div
             v-if="isSelectedAssetHaveRowsAndColumns(selectedAsset)"
-            class="flex flex-wrap items-center w-full gap-x-8 px-5"
+            class="flex flex-wrap items-center w-full px-5 gap-x-8"
         >
             <SQL
                 v-if="
@@ -148,122 +148,9 @@
 
         <div
             v-if="
-                (isBiAsset(selectedAsset) || isSaasAsset(selectedAsset)) &&
-                ![
-                    'PowerBIWorkspace',
-                    'TableauSite',
-                    'LookerFolder',
-                    'LookerProject',
-                    'LookerQuery',
-                    'SalesforceOrganization',
-                ].includes(selectedAsset?.typeName)
+                selectedAsset.typeName?.toLowerCase() === 'column' ||
+                selectedAsset.typeName?.toLowerCase() === 'salesforcefield'
             "
-            class="flex px-5"
-        >
-            <ParentContext :asset="selectedAsset" />
-        </div>
-
-        <div
-            v-if="
-                ['LookerDashboard', 'LookerLook'].includes(
-                    selectedAsset.typeName
-                )
-            "
-            class="flex px-5"
-        >
-            <SourceViewCount :asset="selectedAsset" />
-        </div>
-        <div
-            v-if="['LookerFolder'].includes(selectedAsset.typeName)"
-            class="flex px-5"
-        >
-            <SubFolderCount :asset="selectedAsset" />
-        </div>
-
-        <div v-if="sourceOwners(selectedAsset)" class="flex px-5">
-            <div class="flex flex-col text-sm">
-                <span class="mb-1 text-sm text-gray-500">Source Owner</span>
-                <span class="text-gray-700">{{
-                    sourceOwners(selectedAsset)
-                }}</span>
-            </div>
-        </div>
-
-        <div v-if="selectedAsset?.attributes?.noteText" class="flex px-5">
-            <div class="flex flex-col text-sm">
-                <span class="mb-1 text-sm text-gray-500">Note</span>
-                <span class="text-gray-700">{{
-                    selectedAsset?.attributes?.noteText
-                }}</span>
-            </div>
-        </div>
-
-        <div v-if="selectedAsset?.attributes?.subtitleText" class="flex px-5">
-            <div class="flex flex-col text-sm">
-                <span class="mb-1 text-sm text-gray-500">Subtitle Text</span>
-                <span class="text-gray-700">{{
-                    selectedAsset?.attributes?.subtitleText
-                }}</span>
-            </div>
-        </div>
-
-        <div
-            v-if="
-                selectedAsset?.typeName === 'LookerQuery' &&
-                fieldsLookerQuery(selectedAsset).length > 0
-            "
-            class="flex px-5"
-        >
-            <div class="flex flex-col text-sm">
-                <span class="mb-1 text-sm text-gray-500">Fields</span>
-                <div
-                    v-for="(field, index) in fieldsLookerQuery(selectedAsset)"
-                    :key="index"
-                >
-                    <span class="font-semibold break-words">{{ field }}</span>
-                </div>
-            </div>
-        </div>
-
-        <div
-            v-if="
-                isSelectedAssetHaveRowsAndColumns(selectedAsset) &&
-                externalLocation(selectedAsset)
-            "
-            class="flex px-5"
-        >
-            <div class="flex flex-col text-sm cursor-pointer">
-                <span class="mb-2 text-sm text-gray-500"
-                    >External Location</span
-                >
-                <span class="font-semibold break-words">{{
-                    externalLocation(selectedAsset)
-                }}</span>
-            </div>
-        </div>
-
-        <div
-            v-if="
-                isSelectedAssetHaveRowsAndColumns(selectedAsset) &&
-                externalLocation(selectedAsset)
-            "
-            class="flex px-5"
-        >
-            <div
-                v-if="externalLocationFormat(selectedAsset)"
-                class="flex flex-col text-sm cursor-pointer"
-            >
-                <span class="mb-2 text-sm text-gray-500"
-                    >External Location Format</span
-                >
-                <span class="text-gray-700 break-words">{{
-                    externalLocationFormat(selectedAsset)
-                }}</span>
-            </div>
-        </div>
-
-        <div
-            v-if="selectedAsset.typeName?.toLowerCase() === 'column'"
             class="flex flex-col px-5 text-sm gap-y-4"
         >
             <div class="flex flex-col">
@@ -275,7 +162,7 @@
                             :is="dataTypeCategoryImage(selectedAsset)"
                             class="h-4 mr-0.5 mb-0.5"
                         />
-                        <span class="text-sm">{{
+                        <span class="text-sm uppercase">{{
                             dataType(selectedAsset)
                         }}</span>
                     </div>
@@ -324,6 +211,244 @@
                     <AtlanIcon icon="ViewGray" class="w-auto h-4 mb-0.5" />
                     {{ viewName(selectedAsset) }}
                 </div>
+            </div>
+        </div>
+
+        <div
+            v-if="
+                ['SalesforceObject', 'SalesforceField'].includes(
+                    selectedAsset?.typeName
+                ) && apiName(selectedAsset) !== ''
+            "
+            class="flex px-5"
+        >
+            <div class="flex flex-col text-sm">
+                <span class="mb-1 text-sm text-gray-500">API Name</span>
+                <span class="text-gray-700">{{ apiName(selectedAsset) }}</span>
+            </div>
+        </div>
+
+        <div
+            v-if="
+                ['SalesforceField'].includes(selectedAsset?.typeName) &&
+                formula(selectedAsset) &&
+                formula(selectedAsset) !== ''
+            "
+            class="flex px-5"
+        >
+            <div class="flex flex-col w-full text-sm">
+                <span class="mb-1 text-sm text-gray-500">Formula</span>
+                <DetailsContainer
+                    :text="formula(selectedAsset)"
+                    class="rounded-lg"
+                />
+            </div>
+        </div>
+
+        <div
+            v-if="
+                [
+                    'SalesforceOrganization',
+                    'SalesforceReport',
+                    'SalesforceDashboard',
+                ].includes(selectedAsset?.typeName)
+            "
+            class="flex flex-col px-5 text-sm"
+        >
+            <span class="mb-1 text-gray-500">Source ID</span>
+
+            <span class="text-gray-700">{{ sourceId(selectedAsset) }}</span>
+        </div>
+
+        <div
+            v-if="
+                ['SalesforceDashboard'].includes(selectedAsset?.typeName) &&
+                selectedAsset?.attributes?.dashboardType
+            "
+            class="flex px-5"
+        >
+            <div class="flex flex-col text-sm">
+                <span class="mb-1 text-sm text-gray-500">Dashboard Type</span>
+                <span class="text-gray-700">{{
+                    selectedAsset?.attributes?.dashboardType
+                }}</span>
+            </div>
+        </div>
+        <div
+            v-if="
+                ['SalesforceReport'].includes(selectedAsset?.typeName) &&
+                selectedAsset?.attributes?.reportType
+            "
+            class="flex px-5"
+        >
+            <div class="flex flex-col text-sm">
+                <div class="mb-1 text-sm text-gray-500">Report Type</div>
+                <div class="text-gray-700">
+                    {{ selectedAsset?.attributes?.reportType?.label }}
+                </div>
+            </div>
+        </div>
+
+        <div
+            v-if="
+                (isBiAsset(selectedAsset) || isSaasAsset(selectedAsset)) &&
+                ![
+                    'PowerBIWorkspace',
+                    'TableauSite',
+                    'LookerFolder',
+                    'LookerProject',
+                    'LookerQuery',
+                    'SalesforceOrganization',
+                ].includes(selectedAsset?.typeName)
+            "
+            class="flex px-5"
+        >
+            <ParentContext :asset="selectedAsset" />
+        </div>
+
+        <div
+            v-if="['SalesforceObject'].includes(selectedAsset?.typeName)"
+            class="flex px-5"
+        >
+            <FieldCount :asset="selectedAsset" />
+        </div>
+
+        <div
+            v-if="
+                ['SalesforceReport'].includes(selectedAsset?.typeName) &&
+                detailColumns(selectedAsset).length > 0
+            "
+            class="flex px-5"
+        >
+            <div class="flex flex-col w-full text-sm">
+                <span class="mb-1 text-sm text-gray-500">Detail Columns</span>
+                <DetailsContainer
+                    :array="detailColumns(selectedAsset)"
+                    class="rounded-lg"
+                />
+            </div>
+        </div>
+
+        <div
+            v-if="
+                ['SalesforceField'].includes(selectedAsset?.typeName) &&
+                picklistValues(selectedAsset).length > 0
+            "
+            class="flex px-5"
+        >
+            <div class="flex flex-col w-full text-sm">
+                <span class="mb-1 text-sm text-gray-500">Picklist Values</span>
+                <DetailsContainer
+                    :array="picklistValues(selectedAsset)"
+                    class="rounded-lg"
+                />
+            </div>
+        </div>
+
+        <div
+            v-if="
+                ['LookerDashboard', 'LookerLook'].includes(
+                    selectedAsset.typeName
+                )
+            "
+            class="flex px-5"
+        >
+            <SourceViewCount :asset="selectedAsset" />
+        </div>
+        <div
+            v-if="['LookerFolder'].includes(selectedAsset.typeName)"
+            class="flex px-5"
+        >
+            <SubFolderCount :asset="selectedAsset" />
+        </div>
+
+        <div v-if="sourceOwners(selectedAsset)" class="flex px-5">
+            <div class="flex flex-col text-sm">
+                <span class="mb-1 text-sm text-gray-500">Source Owner</span>
+                <span class="text-gray-700">{{
+                    sourceOwners(selectedAsset)
+                }}</span>
+            </div>
+        </div>
+
+        <div v-if="selectedAsset?.attributes?.noteText" class="flex px-5">
+            <div class="flex flex-col text-sm">
+                <span class="mb-1 text-sm text-gray-500">Note</span>
+                <span class="text-gray-700">{{
+                    selectedAsset?.attributes?.noteText
+                }}</span>
+            </div>
+        </div>
+
+        <div v-if="selectedAsset?.attributes?.subtitleText" class="flex px-5">
+            <div class="flex flex-col text-sm">
+                <span class="mb-1 text-sm text-gray-500">Subtitle Text</span>
+                <span class="text-gray-700">{{
+                    selectedAsset?.attributes?.subtitleText
+                }}</span>
+            </div>
+        </div>
+
+        <div v-if="selectedAsset?.attributes?.inlineHelpText" class="flex px-5">
+            <div class="flex flex-col text-sm">
+                <span class="mb-1 text-sm text-gray-500">Help Text</span>
+                <span class="text-gray-700">{{
+                    selectedAsset?.attributes?.inlineHelpText
+                }}</span>
+            </div>
+        </div>
+
+        <div
+            v-if="
+                selectedAsset?.typeName === 'LookerQuery' &&
+                fieldsLookerQuery(selectedAsset).length > 0
+            "
+            class="flex px-5"
+        >
+            <div class="flex flex-col w-full text-sm">
+                <span class="mb-1 text-sm text-gray-500">Fields</span>
+
+                <DetailsContainer
+                    :array="fieldsLookerQuery(selectedAsset)"
+                    class="rounded-lg"
+                />
+            </div>
+        </div>
+
+        <div
+            v-if="
+                isSelectedAssetHaveRowsAndColumns(selectedAsset) &&
+                externalLocation(selectedAsset)
+            "
+            class="flex px-5"
+        >
+            <div class="flex flex-col text-sm cursor-pointer">
+                <span class="mb-2 text-sm text-gray-500"
+                    >External Location</span
+                >
+                <span class="font-semibold break-words">{{
+                    externalLocation(selectedAsset)
+                }}</span>
+            </div>
+        </div>
+
+        <div
+            v-if="
+                isSelectedAssetHaveRowsAndColumns(selectedAsset) &&
+                externalLocation(selectedAsset)
+            "
+            class="flex px-5"
+        >
+            <div
+                v-if="externalLocationFormat(selectedAsset)"
+                class="flex flex-col text-sm cursor-pointer"
+            >
+                <span class="mb-2 text-sm text-gray-500"
+                    >External Location Format</span
+                >
+                <span class="text-gray-700 break-words">{{
+                    externalLocationFormat(selectedAsset)
+                }}</span>
             </div>
         </div>
 
@@ -688,9 +813,11 @@
     import SourceCreated from '@/common/widgets/summary/types/sourceCreated.vue'
     import SourceUpdated from '@/common/widgets/summary/types/sourceUpdated.vue'
     import SourceViewCount from '@/common/widgets/summary/types/sourceViewCount.vue'
+    import FieldCount from '@/common/widgets/summary/types/fieldCount.vue'
     import SubFolderCount from '@/common/widgets/summary/types/subFolderCount.vue'
     import ParentContext from '@/common/widgets/summary/types/parentContext.vue'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
+    import DetailsContainer from '@common/assets/misc/detailsOverflowContainer.vue'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -715,6 +842,8 @@
             SourceViewCount,
             SubFolderCount,
             ParentContext,
+            FieldCount,
+            DetailsContainer,
             SampleDataTable: defineAsyncComponent(
                 () =>
                     import(
@@ -792,6 +921,11 @@
                 getConnectorLabel,
                 fieldsLookerQuery,
                 sourceOwners,
+                apiName,
+                detailColumns,
+                picklistValues,
+                sourceId,
+                formula,
             } = useAssetInfo()
 
             const {
@@ -923,6 +1057,11 @@
                 getConnectorLabel,
                 fieldsLookerQuery,
                 sourceOwners,
+                apiName,
+                detailColumns,
+                picklistValues,
+                sourceId,
+                formula,
             }
         },
     })

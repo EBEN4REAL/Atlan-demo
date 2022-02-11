@@ -5,8 +5,15 @@
                 <AnnouncementWidget
                     :selected-asset="selectedAsset"
                     class="mb-4"
-                ></AnnouncementWidget> </template
-        ></Summary>
+                ></AnnouncementWidget>
+            </template>
+            <div
+                v-if="['SalesforceObject'].includes(selectedAsset.typeName)"
+                class="flex flex-col w-full mt-4"
+            >
+                <FieldsPreview />
+            </div>
+        </Summary>
         <Readme :asset="selectedAsset" :isEdit="readmeEditPermission" />
     </div>
 </template>
@@ -18,10 +25,16 @@
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import Readme from '@/common/widgets/readme/index.vue'
+    import FieldsPreview from './salesforceFieldsPreview.vue'
 
     export default defineComponent({
         name: 'SaasOverview',
-        components: { AnnouncementWidget, Readme, Summary },
+        components: {
+            AnnouncementWidget,
+            Readme,
+            Summary,
+            FieldsPreview,
+        },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,

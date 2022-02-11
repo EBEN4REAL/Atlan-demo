@@ -98,18 +98,6 @@
                                             >{{ tab.label }}</span
                                         >
                                     </div>
-                                    <!-- <div
-                                        v-if="!tab.isSaved"
-                                        class="flex items-center unsaved-dot"
-                                    >
-                                        <div
-                                            v-if="
-                                                tab.playground.editor.text
-                                                    .length > 0 || tab?.queryId
-                                            "
-                                            class="w-1.5 h-1.5 rounded-full bg-primary absolute right-3.5"
-                                        ></div>
-                                    </div> -->
                                 </div>
                                 <template #overlay>
                                     <a-menu>
@@ -128,8 +116,35 @@
                         </template>
 
                         <template #closeIcon>
+                            <AtlanIcon
+                                v-if="
+                                    tab.playground.resultsPane.result
+                                        .isQueryRunning === 'error' &&
+                                    tab.key !== activeInlineTabKey
+                                "
+                                icon="FailedQuery"
+                                class="absolute w-4 h-4 unsaved-dot right-2 top-1.5"
+                            />
+
+                            <AtlanIcon
+                                v-else-if="
+                                    tab.playground.resultsPane.result
+                                        .isQueryRunning === 'loading'
+                                "
+                                icon="RunningQuery"
+                                class="w-4 h-4 animate-spin unsaved-dot absolute right-2 top-1.5"
+                            />
+                            <AtlanIcon
+                                v-else-if="
+                                    tab.playground.resultsPane.result
+                                        .isQueryRunning === 'success' &&
+                                    tab.key !== activeInlineTabKey
+                                "
+                                icon="SuccessQuery"
+                                class="w-3 h-3 unsaved-dot absolute right-2.5 top-2"
+                            />
                             <div
-                                v-if="!tab.isSaved"
+                                v-else-if="!tab.isSaved"
                                 class="flex items-center unsaved-dot"
                             >
                                 <div
@@ -160,6 +175,7 @@
             v-if="activeInlineTabKey"
             class="w-full"
             style="max-height: 100%; min-height: 92%; height: 100%"
+            :class="$style.splitspane_playground"
         >
             <splitpanes horizontal :push-other-panes="false">
                 <pane
@@ -195,162 +211,194 @@
 </template>
 
 <script lang="ts">
-    import {
-        watch,
-        ComputedRef,
-        defineComponent,
-        computed,
-        Ref,
-        inject,
-        ref,
-    } from 'vue'
-    import Editor from '~/components/insights/playground/editor/index.vue'
-    import ResultsPane from '~/components/insights/playground/resultsPane/index.vue'
-    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
-    import NoActiveInlineTab from './noActiveInlineTab.vue'
-    import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
-    import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
-    import SaveQueryModal from '~/components/insights/playground/editor/saveQuery/index.vue'
-    import UnsavedPopover from '~/components/insights/common/unsavedPopover/index.vue'
-    import { useUtils } from '~/components/insights/common/composables/useUtils'
-    import ResultPaneFooter from '~/components/insights/playground/resultsPane/result/resultPaneFooter.vue'
-    import { useRouter, useRoute } from 'vue-router'
-    import { useActiveTab } from '~/components/insights/common/composables/useActiveTab'
+        import {
+            watch,
+            ComputedRef,
+            defineComponent,
+            computed,
+            Ref,
+            inject,
+            ref,
+        } from 'vue'
+        import Editor from '~/components/insights/playground/editor/index.vue'
+        import ResultsPane from '~/components/insights/playground/resultsPane/index.vue'
+        import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+        import NoActiveInlineTab from './noActiveInlineTab.vue'
+        import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
+        import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
+        import SaveQueryModal from '~/components/insights/playground/editor/saveQuery/index.vue'
+        import UnsavedPopover from '~/components/insights/common/unsavedPopover/index.vue'
+        import { useUtils } from '~/components/insights/common/composables/useUtils'
+        import ResultPaneFooter from '~/components/insights/playground/resultsPane/result/resultPaneFooter.vue'
+        import { useRouter, useRoute } from 'vue-router'
+    <<<<<<< HEAD
+        import { useActiveTab } from '~/components/insights/common/composables/useActiveTab'
+    =======
+        import { generateUUID } from '~/utils/helper/generator'
+        import {
+            useProvide,
+            provideDataInterface,
+        } from '~/components/insights/common/composables/useProvide'
+    >>>>>>> INSIG-454
 
-    // import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
+        // import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
 
-    export default defineComponent({
-        components: {
-            Editor,
-            ResultsPane,
-            NoActiveInlineTab,
-            UnsavedPopover,
-            SaveQueryModal,
-            ResultPaneFooter,
-        },
-        props: {
-            activeInlineTabKey: {
-                type: String,
-                required: true,
+        export default defineComponent({
+            components: {
+                Editor,
+                ResultsPane,
+                NoActiveInlineTab,
+                UnsavedPopover,
+                SaveQueryModal,
+                ResultPaneFooter,
             },
-            refreshQueryTree: {
-                type: Function,
+            props: {
+                activeInlineTabKey: {
+                    type: String,
+                    required: true,
+                },
+                refreshQueryTree: {
+                    type: Function,
+                },
             },
-        },
-        setup(props, { emit }) {
-            const route = useRoute()
-            const fullSreenState = inject('fullSreenState') as Ref<boolean>
-            const router = useRouter()
-            const isSaving = ref(false)
-            const showSaveQueryModal = ref(false)
-            const saveCloseTabKey = ref()
-            const saveQueryLoading = ref(false)
-            const saveModalRef = ref()
-            const saveQueryData = ref()
-            const limitRows = inject('limitRows') as Ref<{
-                checked: boolean
-                rowsCount: number
-            }>
+            setup(props, { emit }) {
+                const route = useRoute()
+                const fullSreenState = inject('fullSreenState') as Ref<boolean>
+                const router = useRouter()
+                const isSaving = ref(false)
+                const isTabClosed = inject('isTabClosed') as Ref<string | undefined>
+                const isTabAdded = inject('isTabAdded') as Ref<string | undefined>
+                const showSaveQueryModal = ref(false)
+                const saveCloseTabKey = ref()
+                const saveQueryLoading = ref(false)
+                const saveModalRef = ref()
+                const saveQueryData = ref()
+                const limitRows = inject('limitRows') as Ref<{
+                    checked: boolean
+                    rowsCount: number
+                }>
 
-            const { getFirstQueryConnection } = useUtils()
-            const { inlineTabRemove, inlineTabAdd, setActiveTabKey } =
-                useInlineTab()
+                const { getFirstQueryConnection } = useUtils()
+                const { inlineTabRemove, inlineTabAdd, setActiveTabKey } =
+                    useInlineTab()
 
-            const unsavedPopover = ref({
-                show: false,
-                key: undefined,
-            })
-            const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
-            const outputPaneSize = inject('outputPaneSize') as Ref<number>
-            const activeInlineTab = inject(
-                'activeInlineTab'
-            ) as ComputedRef<activeInlineTabInterface>
-            const editorInstance = inject('editorInstance') as Ref<any>
-            const activeInlineTabKey = inject(
-                'activeInlineTabKey'
-            ) as Ref<string>
-            const isActiveInlineTabSaved = computed(
-                () => activeInlineTab.value.isSaved
-            )
-            const { updateSavedQuery, saveQueryToDatabase } = useSavedQuery(
-                tabs,
-                activeInlineTab,
-                activeInlineTabKey
-            )
-            const checkIfItsAFirstTab = () => {
-                if (tabs.value.length < 1) return true
-                return false
-            }
-            const getLastUntitledNumber = () => {
-                let max_number = 1
-                const untitledRegex = /(?:Untitled )([0-9]+)/gim
-                tabs.value?.forEach((tab) => {
-                    const d = [...tab.label.matchAll(untitledRegex)]
-                    if (d.length > 0) {
-                        max_number = Math.max(Number(d[0][1]) + 1, 1)
-                    }
+                const unsavedPopover = ref({
+                    show: false,
+                    key: undefined,
                 })
-                return max_number
-            }
-
-            const handleAdd = (isVQB) => {
-                // const key = String(new Date().getTime())
-                const { generateNewActiveTab } = useActiveTab()
-                const inlineTabData = generateNewActiveTab({
+                const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
+                const outputPaneSize = inject('outputPaneSize') as Ref<number>
+                const activeInlineTab = inject(
+                    'activeInlineTab'
+                ) as ComputedRef<activeInlineTabInterface>
+                const editorInstance = inject('editorInstance') as Ref<any>
+                const activeInlineTabKey = inject(
+                    'activeInlineTabKey'
+                ) as Ref<string>
+                const isActiveInlineTabSaved = computed(
+                    () => activeInlineTab.value.isSaved
+                )
+                const { updateSavedQuery, saveQueryToDatabase } = useSavedQuery(
+                    tabs,
                     activeInlineTab,
-                    label: `Untitled ${getLastUntitledNumber()}`,
-                    editorText: '',
-                    isVQB,
-                })
-
-                inlineTabAdd(inlineTabData, tabs, activeInlineTabKey)
-                const queryParams = {}
-                // if (route?.query?.vqb) queryParams.vqb = true
-                if (isVQB) queryParams.vqb = true
-
-                router.push({ path: `insights`, query: queryParams })
-            }
-
-            const pushGuidToURL = (guid: string | undefined) => {
-                const queryParams = {}
-                let isVQB = activeInlineTab.value.playground.isVQB
-                if (isVQB) queryParams.vqb = true
-                // if (route?.query?.vqb) queryParams.vqb = true
-
-                if (guid) {
-                    queryParams.id = guid
-                    router.push({ path: `insights`, query: queryParams })
-                } else {
-                    router.push({ path: `insights`, query: queryParams })
+                    activeInlineTabKey
+                )
+                const checkIfItsAFirstTab = () => {
+                    if (tabs.value.length < 1) return true
+                    return false
                 }
-            }
-            const onTabClick = (activeKey) => {
-                setActiveTabKey(activeKey, activeInlineTabKey)
-                pushGuidToURL(activeInlineTab.value?.queryId)
-            }
-            const onEdit = (targetKey: string | MouseEvent, action: string) => {
-                if (action === 'add') {
-                    handleAdd(false)
-                } else {
-                    /* For closing the tab */
-                    console.log(targetKey)
-                    let crossedTabState: boolean = false
-                    tabs.value.forEach((tab) => {
-                        if (tab.key === targetKey) {
-                            crossedTabState = tab.isSaved
+                const getLastUntitledNumber = () => {
+                    let max_number = 1
+                    const untitledRegex = /(?:Untitled )([0-9]+)/gim
+                    tabs.value?.forEach((tab) => {
+                        const d = [...tab.label.matchAll(untitledRegex)]
+                        if (d.length > 0) {
+                            max_number = Math.max(Number(d[0][1]) + 1, 1)
                         }
                     })
-                    /* If it is unsaved then show popover confirm */
-                    if (!crossedTabState) {
-                        /* If content is empty */
-                        const tab = tabs.value.find(
-                            (tab) => tab.key === targetKey
-                        )
-                        if (tab?.playground?.editor?.text?.length > 0) {
-                            unsavedPopover.value.key = targetKey as string
-                            unsavedPopover.value.show = true
+                    return max_number
+                }
+
+                const handleAdd = (isVQB) => {
+                    // const key = String(new Date().getTime())
+                    const { generateNewActiveTab } = useActiveTab()
+                    const inlineTabData = generateNewActiveTab({
+                        activeInlineTab,
+                        label: `Untitled ${getLastUntitledNumber()}`,
+                        editorText: '',
+                        isVQB,
+                    })
+
+                    inlineTabAdd(inlineTabData, tabs, activeInlineTabKey)
+                    const queryParams = {}
+                    // if (route?.query?.vqb) queryParams.vqb = true
+                    if (isVQB) queryParams.vqb = true
+
+                    router.push({ path: `insights`, query: queryParams })
+                }
+
+                const pushGuidToURL = (guid: string | undefined) => {
+                    const queryParams = {}
+                    let isVQB = activeInlineTab.value.playground.isVQB
+                    if (isVQB) queryParams.vqb = true
+                    // if (route?.query?.vqb) queryParams.vqb = true
+
+                    if (guid) {
+                        queryParams.id = guid
+                        router.push({ path: `insights`, query: queryParams })
+                    } else {
+                        router.push({ path: `insights`, query: queryParams })
+                    }
+                }
+
+                const onTabClick = (activeKey) => {
+                    setActiveTabKey(activeKey, activeInlineTabKey)
+                    pushGuidToURL(activeInlineTab.value?.queryId)
+
+                    // if (
+                    //     activeInlineTab.value.playground.resultsPane.result
+                    //         .isQueryRunning === 'loading'
+                    // ) {
+                    //     // activeInlineTab.value.playground.resultsPane.result.tabQueryState =
+                    //     //     true
+                    // } else {
+                    //     activeInlineTab.value.playground.resultsPane.result.tabQueryState =
+                    //         false
+                    // }
+                }
+                const onEdit = (targetKey: string | MouseEvent, action: string) => {
+                    if (action === 'add') {
+                        handleAdd(false)
+                    } else {
+                        /* For closing the tab */
+                        console.log(targetKey)
+                        let crossedTabState: boolean = false
+                        tabs.value.forEach((tab) => {
+                            if (tab.key === targetKey) {
+                                crossedTabState = tab.isSaved
+                            }
+                        })
+                        /* If it is unsaved then show popover confirm */
+                        if (!crossedTabState) {
+                            /* If content is empty */
+                            const tab = tabs.value.find(
+                                (tab) => tab.key === targetKey
+                            )
+                            if (tab?.playground?.editor?.text?.length > 0) {
+                                unsavedPopover.value.key = targetKey as string
+                                unsavedPopover.value.show = true
+                            } else {
+                                isTabClosed.value = targetKey as string
+                                /* Delete the tab if content is empty */
+                                inlineTabRemove(
+                                    targetKey as string,
+                                    tabs,
+                                    activeInlineTabKey,
+                                    pushGuidToURL
+                                )
+                            }
                         } else {
-                            /* Delete the tab if content is empty */
+                            isTabClosed.value = targetKey as string
                             inlineTabRemove(
                                 targetKey as string,
                                 tabs,
@@ -358,158 +406,151 @@
                                 pushGuidToURL
                             )
                         }
-                    } else {
-                        inlineTabRemove(
-                            targetKey as string,
-                            tabs,
-                            activeInlineTabKey,
-                            pushGuidToURL
-                        )
                     }
                 }
-            }
-            const openSaveQueryModal = () => {
-                showSaveQueryModal.value = true
-            }
-            const closeTabConfirm = (key: string) => {
-                console.log(key, 'close')
-                inlineTabRemove(
-                    key as string,
-                    tabs,
-                    activeInlineTabKey,
-                    pushGuidToURL
-                )
-                unsavedPopover.value.key = undefined
-                unsavedPopover.value.show = false
-            }
-            const closePopOver = () => {
-                if (unsavedPopover?.value?.show) {
-                    unsavedPopover.value.key = undefined
-                    unsavedPopover.value.show = false
+                const openSaveQueryModal = () => {
+                    showSaveQueryModal.value = true
                 }
-            }
-
-            const saveQueryOnCloseTab = (
-                saveQueryDataParam: any,
-                assetTerms: any,
-                assetClassification: any
-            ) => {
-                saveQueryData.value = saveQueryDataParam
-                const key = saveCloseTabKey.value
-                let tabData: activeInlineTabInterface | undefined
-                tabs.value.forEach((tab) => {
-                    if (tab.key === key) {
-                        tabData = tab
-                    }
-                })
-                const tabRemoveCallbackFunction = (error: any) => {
-                    if (!error) {
-                        inlineTabRemove(
-                            key as string,
-                            tabs,
-                            activeInlineTabKey,
-                            pushGuidToURL
-                        )
-                        saveCloseTabKey.value = undefined
-                    }
-                }
-                if (saveQueryData.value) {
-                    saveQueryToDatabase(
-                        {
-                            ...saveQueryData.value,
-                            assetTerms,
-                            assetClassification,
-                        },
-                        saveQueryLoading,
-                        showSaveQueryModal,
-                        saveModalRef,
-                        router,
-                        route,
-                        'personal',
-                        saveQueryData.value.parentQF,
-                        saveQueryData.value.parentGuid,
-                        tabData as activeInlineTabInterface,
-                        limitRows,
-                        tabRemoveCallbackFunction,
-                        false
-                    )
-                    props.refreshQueryTree(
-                        saveQueryData.value.parentGuid,
-                        'query'
-                    )
-                }
-            }
-            const saveTabConfirm = (key: string) => {
-                console.log(key, 'keyyy')
-                /* Saving the key */
-                saveCloseTabKey.value = key
-                let tabData: activeInlineTabInterface | undefined
-                tabs.value.forEach((tab) => {
-                    if (tab.key === key) {
-                        tabData = tab
-                    }
-                })
-
-                if (tabData?.queryId) {
-                    console.log(tabData, key, 'updayte')
-                    /* If this tab already saved to database */
-                    updateSavedQuery(
-                        editorInstance,
-                        isSaving,
-                        tabData,
-                        limitRows
-                    )
+                const closeTabConfirm = (key: string) => {
+                    isTabClosed.value = key
+                    console.log(key, 'close')
                     inlineTabRemove(
                         key as string,
                         tabs,
                         activeInlineTabKey,
                         pushGuidToURL
                     )
-                } else {
-                    /* If this tab need to save into database */
                     unsavedPopover.value.key = undefined
                     unsavedPopover.value.show = false
-                    openSaveQueryModal()
+                }
+                const closePopOver = () => {
+                    if (unsavedPopover?.value?.show) {
+                        unsavedPopover.value.key = undefined
+                        unsavedPopover.value.show = false
+                    }
                 }
 
-                console.log('save', key)
-            }
-
-            let tabHover = ref(null)
-            const setTabHover = (val) => {
-                // console.log('tab: ', val)
-                if (val) {
-                    tabHover.value = val.key
-                } else {
-                    tabHover.value = null
+                const saveQueryOnCloseTab = (
+                    saveQueryDataParam: any,
+                    assetTerms: any,
+                    assetClassification: any
+                ) => {
+                    saveQueryData.value = saveQueryDataParam
+                    const key = saveCloseTabKey.value
+                    let tabData: activeInlineTabInterface | undefined
+                    tabs.value.forEach((tab) => {
+                        if (tab.key === key) {
+                            tabData = tab
+                        }
+                    })
+                    const tabRemoveCallbackFunction = (error: any) => {
+                        if (!error) {
+                            inlineTabRemove(
+                                key as string,
+                                tabs,
+                                activeInlineTabKey,
+                                pushGuidToURL
+                            )
+                            saveCloseTabKey.value = undefined
+                        }
+                    }
+                    if (saveQueryData.value) {
+                        saveQueryToDatabase(
+                            {
+                                ...saveQueryData.value,
+                                assetTerms,
+                                assetClassification,
+                            },
+                            saveQueryLoading,
+                            showSaveQueryModal,
+                            saveModalRef,
+                            router,
+                            route,
+                            'personal',
+                            saveQueryData.value.parentQF,
+                            saveQueryData.value.parentGuid,
+                            tabData as activeInlineTabInterface,
+                            limitRows,
+                            tabRemoveCallbackFunction,
+                            false
+                        )
+                        props.refreshQueryTree(
+                            saveQueryData.value.parentGuid,
+                            'query'
+                        )
+                    }
                 }
-            }
+                const saveTabConfirm = (key: string) => {
+                    isTabClosed.value = key
+                    /* Saving the key */
+                    saveCloseTabKey.value = key
+                    let tabData: activeInlineTabInterface | undefined
+                    tabs.value.forEach((tab) => {
+                        if (tab.key === key) {
+                            tabData = tab
+                        }
+                    })
 
-            return {
-                fullSreenState,
-                saveModalRef,
-                saveQueryLoading,
-                showSaveQueryModal,
-                openSaveQueryModal,
-                saveQueryOnCloseTab,
-                saveTabConfirm,
-                closeTabConfirm,
-                closePopOver,
-                unsavedPopover,
-                isActiveInlineTabSaved,
-                activeInlineTab,
-                tabs,
-                activeInlineTabKey,
-                outputPaneSize,
-                handleAdd,
-                onEdit,
-                onTabClick,
-                setTabHover,
-                tabHover,
-                isSaving,
-            }
-        },
-    })
+                    if (tabData?.queryId) {
+                        console.log(tabData, key, 'updayte')
+                        /* If this tab already saved to database */
+                        updateSavedQuery(
+                            editorInstance,
+                            isSaving,
+                            tabData,
+                            limitRows
+                        )
+                        inlineTabRemove(
+                            key as string,
+                            tabs,
+                            activeInlineTabKey,
+                            pushGuidToURL
+                        )
+                    } else {
+                        /* If this tab need to save into database */
+                        unsavedPopover.value.key = undefined
+                        unsavedPopover.value.show = false
+                        openSaveQueryModal()
+                    }
+
+                    console.log('save', key)
+                }
+
+                let tabHover = ref(null)
+                const setTabHover = (val) => {
+                    // console.log('tab: ', val)
+                    if (val) {
+                        tabHover.value = val.key
+                    } else {
+                        tabHover.value = null
+                    }
+                }
+
+                return {
+                    fullSreenState,
+                    saveModalRef,
+                    saveQueryLoading,
+                    showSaveQueryModal,
+                    openSaveQueryModal,
+                    saveQueryOnCloseTab,
+                    saveTabConfirm,
+                    closeTabConfirm,
+                    closePopOver,
+                    unsavedPopover,
+                    isActiveInlineTabSaved,
+                    activeInlineTab,
+                    tabs,
+                    activeInlineTabKey,
+                    outputPaneSize,
+                    handleAdd,
+                    onEdit,
+                    onTabClick,
+                    setTabHover,
+                    tabHover,
+                    isSaving,
+                }
+            },
+        })
 </script>
 <style lang="less">
     .insights-tabs {
@@ -663,6 +704,46 @@
     // :global(.unsaved-dot) {
     //     visibility: hidden !important;
     // }
+    .splitspane_playground {
+        :global(.splitpanes--horizontal > .splitpanes__splitter) {
+            position: relative;
+            margin-top: -1px;
+            box-sizing: border-box;
+            position: relative;
+            touch-action: none;
+            @apply border-t !important;
+            &:hover {
+                // border-width: 1.5px !important;
+                @apply bg-primary !important;
+                &:before {
+                    content: '';
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    -webkit-transition: background-color 0.3s;
+                    transition: background-color 0.3s;
+                    margin-top: -2px;
+                    transform: translateX(-50%);
+                    width: 100%;
+                    height: 2px;
+                    @apply z-50 bg-primary !important;
+                }
+                &:after {
+                    content: '';
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    @apply z-50 bg-transparent !important;
+                    -webkit-transition: background-color 0.3s;
+                    transition: background-color 0.3s;
+                    margin-top: -2px;
+                    transform: translateX(-50%);
+                    width: 100%;
+                    height: 8px;
+                }
+            }
+        }
+    }
     :global(.ant-tabs-dropdown-menu-item-remove) {
         visibility: hidden !important;
     }

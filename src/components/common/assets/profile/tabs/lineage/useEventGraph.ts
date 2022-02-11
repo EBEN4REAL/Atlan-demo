@@ -10,12 +10,17 @@ import useGraph from './useGraph'
 import fetchColumns from './fetchColumns'
 import fetchAsset from './fetchAsset'
 
-import { childGroupBiAssetMap } from './util.js'
-
 const { highlightNodes, highlightEdges } = useUpdateGraph()
 const { useFetchLineage } = useLineageService()
-const { createPortData, createCustomPortData, toggleNodesEdges, addEdge } =
-    useGraph()
+const {
+    createPortData,
+    createCustomPortData,
+    toggleNodesEdges,
+    addNode,
+    addEdge,
+    createEdgeData,
+    createNodeData,
+} = useGraph()
 const lineageStore = useLineageStore()
 
 export default function useEventGraph(
@@ -31,9 +36,14 @@ export default function useEventGraph(
     selectedTypeInRelationDrawer: Ref<string>,
     config,
     graphPrefs,
+    mergedLineageData,
+    sameSourceCount,
+    nodes,
+    edges,
     onSelectAsset,
     onCloseDrawer,
-    addSubGraph
+    addSubGraph,
+    renderLayout
 ) {
     /** DATA */
     const edgesHighlighted = ref([])
@@ -196,8 +206,6 @@ export default function useEventGraph(
         if (!node || !portId) return
         node.setPortProp(portId, 'attrs/portBody', {
             fill: '#ffffff',
-        })
-        node.setPortProp(portId, 'attrs/portBody', {
             stroke: '#e6e6eb',
         })
     }
@@ -253,6 +261,7 @@ export default function useEventGraph(
                 const { portData } = createPortData(x)
                 return portData
             })
+            graph.value.freeze('controlPorts')
             ports.forEach((x) => {
                 if (portExist(x.id)) {
                     const parentNode = getPortNode(x.id)
@@ -272,6 +281,7 @@ export default function useEventGraph(
                         setPortStyle(node, port.id, 'highlight')
                 })
             }
+            graph.value.unfreeze('controlPorts')
             translateSubsequentNodes(node)
         }
     }
@@ -292,9 +302,12 @@ export default function useEventGraph(
                 sourcePort: fromEntityId,
                 targetCell,
                 targetPort: toEntityId,
-                stroke: '#5277d7',
             }
-            addEdge(graph, relation)
+
+            addEdge(graph, relation, {
+                stroke: '#5277d7',
+                arrowSize: graphPrefs.value.showArrow ? 12 : 0.1,
+            })
         })
     }
 
@@ -611,21 +624,10 @@ export default function useEventGraph(
         }))
         const { data } = useFetchLineage(nodeConfig, true)
         watch(data, async () => {
-            await addSubGraph(
-                data.value,
-                registerAllListeners,
-                removeAddedNodesShadow
-            )
+            await addSubGraph(data.value, registerAllListeners)
+            const ucell = graph.value.getCellById(guid)
+            graph.value.scrollToCell(ucell, { animation: { duration: 600 } })
             hideLoader()
-        })
-    }
-
-    // removeAddedNodesShadow
-    const removeAddedNodesShadow = () => {
-        const list = document.getElementsByClassName('node-added-shadow')
-        const listArr = Array.from(list)
-        listArr.forEach((ele) => {
-            ele.classList.remove('node-added-shadow')
         })
     }
 
@@ -734,18 +736,23 @@ export default function useEventGraph(
     const removeCHPEdges = () => {
         const graphEdges = graph.value.getEdges()
         const edges = graphEdges.filter((x) => x.id.includes('port'))
+        graph.value.freeze('removeCHPEdges')
         edges.forEach((edge) => {
             const cell = graph.value.getCellById(edge.id)
             cell.remove()
         })
+        graph.value.unfreeze('removeCHPEdges')
     }
 
     // selectPort
     const selectPort = (node, e, portId) => {
+        showLoader(e)
+
         resetPortStyle(chp.value.node, chp.value.portId)
 
         if (chp.value.portId || che.value) removeCHPEdges()
         activeNodesToggled.value = {}
+
         chp.value.expandedNodes.forEach((x) => {
             if (x.id === node.id) return
             const ports = x.getPorts()
@@ -756,16 +763,20 @@ export default function useEventGraph(
             }
             translateExpandedNodesToDefault(x)
         })
+
         chp.value.node = getPortNode(portId)
         chp.value.portId = portId
         chp.value.expandedNodes = []
+
         const nodePorts = node.getPorts()
         nodePorts.shift()
+
+        graph.value.freeze('nodePortOp')
         nodePorts.forEach((port) => {
             if (port.id === portId) setPortStyle(node, portId, 'select')
             else resetPortStyle(node, port.id)
         })
-        showLoader(e)
+        graph.value.unfreeze('nodePortOp')
 
         const { relations } = lineage.value
         const rel = relations.find((x) => x.fromEntityId === portId)
@@ -786,6 +797,8 @@ export default function useEventGraph(
         removeCHPEdges()
 
         activeNodesToggled.value = {}
+
+        graph.value.freeze('deselectPort')
         chp.value.expandedNodes.forEach((x) => {
             const caretElement = getCaretElement(x.id)
             controlCaret(x.id, caretElement)
@@ -796,6 +809,7 @@ export default function useEventGraph(
             }
             translateExpandedNodesToDefault(x)
         })
+        graph.value.unfreeze('deselectPort')
 
         chp.value.node = null
         chp.value.portId = ''
@@ -956,53 +970,126 @@ export default function useEventGraph(
         if (chp.value.portId) deselectPort()
         if (che.value) resetCHE()
 
-        if (node?.store?.data?.entity?.typeCount) {
-            // const edges = graph.value.getIncomingEdges(node)
-            // const sNode = edges[0]?.getSourceNode()
-            // if (sNode) {
-            //     onSelectAsset(sNode.store.data.entity)
-            //     highlight(node?.id)
-            //     setTimeout(() => {
-            //         drawerActiveKey.value = 'Relations'
-            //     }, 500)
-            //     selectedTypeInRelationDrawer.value =
-            //         node.store.data.entity.typeName
-            // }
+        if (node.id.includes('vpNode')) {
+            const sourceId = node.id.split('/')[1]
+            const data = sameSourceCount.value[sourceId]
+            const { targetsHidden } = data
 
-            const { entity } = node.store.data
+            const nodesHidden = [...targetsHidden]
+            const nodesToAdd = nodesHidden.splice(0, 4)
+            sameSourceCount.value[sourceId].targetsHidden = nodesHidden
 
-            if (entity.guid === highlightedNode.value) {
-                onCloseDrawer()
-                assetGuidToHighlight.value = ''
-                return
+            const { relations, childrenCounts } = mergedLineageData.value
+
+            nodesToAdd.forEach((x) => {
+                const { nodeData } = createNodeData(
+                    x,
+                    relations,
+                    childrenCounts,
+                    true
+                )
+                nodes.value.push(nodeData)
+                addNode(graph, relations, childrenCounts, x)
+            })
+
+            const nodesToAddIds = nodesToAdd.map((x) => x.guid)
+            const edgesToAdd = relations.filter((x) =>
+                nodesToAddIds.includes(x.toEntityId)
+            )
+
+            edgesToAdd.forEach((x) => {
+                const { fromEntityId: from, toEntityId: to, processId } = x
+                const relation = {
+                    id: `${processId}/${from}@${to}`,
+                    sourceCell: from,
+                    sourcePort: `${from}-invisiblePort`,
+                    targetCell: to,
+                    targetPort: `${to}-invisiblePort`,
+                }
+                const exists = edges.value.find((x) => x.id === relation.id)
+
+                if (exists) return
+
+                const { edgeData } = createEdgeData(
+                    relation,
+                    {},
+                    { stroke: '#aaaaaa' }
+                )
+                edges.value.push(edgeData)
+                addEdge(graph, relation)
+            })
+
+            nodes.value = nodes.value.filter((x) => x.id !== node.id)
+            edges.value = edges.value.filter(
+                (x) => x.id !== `vpNodeProcessId/${sourceId}@${node.id}`
+            )
+
+            renderLayout(registerAllListeners)
+
+            if (nodesHidden.length === 0) return
+
+            // add back vp node
+            const { nodeData } = createNodeData(
+                node.store.data.entity,
+                relations,
+                childrenCounts,
+                true
+            )
+            nodeData.data.updatedDisplayText =
+                nodesHidden.length > 4
+                    ? `view 4/${nodesHidden.length} more`
+                    : `view ${nodesHidden.length} more`
+            nodes.value.push(nodeData)
+            addNode(graph, relations, childrenCounts, nodeData.entity)
+
+            // add back vp edge
+            const from = sourceId
+            const processId = 'vpNodeProcessId'
+            const to = node.id
+
+            const relation = {
+                id: `${processId}/${from}@${to}`,
+                sourceCell: from,
+                sourcePort: `${from}-invisiblePort`,
+                targetCell: to,
+                targetPort: `${to}-invisiblePort`,
             }
 
-            const targetEntityId =
-                entity.attributes?.[childGroupBiAssetMap[entity.typeName]]?.guid
+            const { edgeData } = createEdgeData(
+                relation,
+                {},
+                { stroke: '#aaaaaa' }
+            )
+            edges.value.push(edgeData)
+            addEdge(graph, relation)
+            renderLayout(registerAllListeners)
 
-            if (targetEntityId) {
-                onCloseDrawer()
-                showLoader(e)
-                const { data } = fetchAsset(targetEntityId)
-                watchOnce(data, () => {
-                    highlight(entity?.guid)
-                    onSelectAsset(data.value)
-                    selectedTypeInRelationDrawer.value =
-                        node.store.data.entity.typeName
-                    setTimeout(() => {
-                        drawerActiveKey.value = 'Relations'
-                    }, 500)
-                })
+            const cell = graph.value.getCellById(node.id)
+            const updatedData = {
+                updatedDisplayText:
+                    nodesHidden.length > 4
+                        ? `view 4/${nodesHidden.length} more`
+                        : `view ${nodesHidden.length} more`,
             }
-        } else {
-            onSelectAsset(node.store.data.entity)
-            highlight(node?.id)
+            cell.updateData({ ...updatedData })
+
+            return
         }
+
+        const { entity } = node.store.data
+
+        if (entity.guid === highlightedNode.value) {
+            onCloseDrawer()
+            assetGuidToHighlight.value = ''
+            return
+        }
+
+        onSelectAsset(entity)
+        highlight(entity?.guid)
     })
 
     // BLANK - CLICK
     graph.value.on('blank:click', () => {
-        removeAddedNodesShadow()
         resetCHE()
 
         if (chp.value.portId) {
@@ -1026,10 +1113,6 @@ export default function useEventGraph(
     // CELL - MOUSEWHEEL
     graph.value.on('cell:mousewheel', () => {
         currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
-    })
-
-    graph.value.on('cell:click', () => {
-        removeAddedNodesShadow()
     })
 
     // Set connector for duplicate relations
@@ -1062,7 +1145,7 @@ export default function useEventGraph(
             const size = val ? 12 : 0.1
             graph.value.getEdges().forEach((edge) => {
                 // Should not be port edge or the current selected edge
-                if (!edge.id.includes('port') && edge.id !== che.value) {
+                if (edge.id !== che.value) {
                     edge.attr('line/targetMarker/height', size)
                     edge.attr('line/targetMarker/width', size)
                 }

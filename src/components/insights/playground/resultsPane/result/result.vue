@@ -16,7 +16,7 @@
                 class="flex flex-col justify-center h-full"
             >
                 <Loading v-if="isQueryRunning === 'loading'" />
-                <!-- <QueryTimer :timerId="`${activeInlineTab.key}_timer`" /> -->
+                <QueryTimer :timerId="`${activeInlineTab.key}_timer`" />
                 <div
                     class="flex justify-center mt-2"
                     v-if="isQueryRunning === 'loading'"
@@ -167,6 +167,11 @@
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
+
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as Ref<string>
+
             const monacoInstance = inject('monacoInstance') as Ref<any>
             const editorInstance = inject('editorInstance') as Ref<any>
             const outputPaneSize = inject('outputPaneSize') as Ref<number>
@@ -201,12 +206,13 @@
             // let isQueryAborted = ref(false)
 
             const abortRunningQuery = () => {
-                abortQuery(
-                    activeInlineTab,
-                    inlineTabs,
-                    editorInstance,
-                    monacoInstance
+                const activeInlineTabKeyCopy = activeInlineTabKey.value
+
+                const tabIndex = inlineTabs.value.findIndex(
+                    (tab) => tab.key === activeInlineTabKeyCopy
                 )
+
+                abortQuery(tabIndex, inlineTabs, editorInstance, monacoInstance)
                 // isQueryAborted.value = true
             }
 

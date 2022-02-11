@@ -4,7 +4,6 @@
         <div class="w-1/2 mb-3">
             <SearchAdvanced
                 v-model:value="queryText"
-                :autofocus="true"
                 :placeholder="`Search ${totalCount} columns`"
                 size="minimal"
                 @change="handleSearchChange"

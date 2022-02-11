@@ -15,6 +15,7 @@ import { getBasePath, getEnv } from './modules/__env'
 import { useAuthStore } from '~/store/auth'
 import { inputFocusDirective } from '~/utils/directives/input-focus'
 import { authDirective } from './utils/directives/auth'
+import { Tenant } from '~/services/service/tenant'
 
 import {
     identifyGroup,
@@ -31,12 +32,32 @@ const routes = setupLayouts(generatedRoutes)
 const router = createRouter({ history: createWebHistory(), routes })
 const authStore = useAuthStore()
 
+// auto install all the plugins in modules/* folder
+Object.values(import.meta.globEager('./modules/*.ts')).map((i) => {
+    i.install?.({ app, router, routes })
+})
 const keycloak = Keycloak({
     url: `${getBasePath()}/auth`,
     realm: getEnv().DEFAULT_REALM,
     clientId: getEnv().DEFAULT_CLIENT_ID,
 })
 
+/** Provide keycloak instance to the app so it's available globally */
+app.config.globalProperties.$keycloak = keycloak
+app.provide('$keycloak', keycloak)
+
+/** Get tenant status */
+const getTenantStatus = async () => {
+    try {
+        const result = await Tenant.GetTenantStatus()
+        return result?.status ?? ''
+    } catch (e) {
+        console.error(e)
+        return ''
+    }
+}
+
+/** Initialize keycloak */
 keycloak
     .init({
         pkceMethod: 'S256',
@@ -46,10 +67,24 @@ keycloak
     .then(async (auth) => {
         authStore.setIsAuthenticated(auth)
         if (!auth) {
-            const redirectURL = window.location.pathname
-            localStorage.setItem('redirectURL', redirectURL)
-            window.location.replace(keycloak.createLoginUrl())
+            /** check tenant status if user is not authenticated */
+            const status = await getTenantStatus()
+            if (status === 'register') {
+                /** route to setup page  */
+                app.use(router).mount('#app')
+                router.push('/setup')
+            } else if (status === 'ready') {
+                /** route to login screen */
+                const redirectURL = window.location.pathname
+                localStorage.setItem('redirectURL', redirectURL)
+                window.location.replace(keycloak.createLoginUrl())
+            } else {
+                /** route to error page */
+                app.use(router).mount('#app')
+                router.push('/error')
+            }
         } else {
+            /** Normal flow; user is authenticated */
             authStore.setToken({
                 token: keycloak.token,
                 decodedToken: keycloak.tokenParsed,
@@ -75,13 +110,6 @@ keycloak
             setInterval(() => {
                 keycloak.updateToken(60)
             }, 6000)
-            app.config.globalProperties.$keycloak = keycloak
-            app.provide('$keycloak', keycloak)
-
-            // auto install all the plugins in modules/* folder
-            Object.values(import.meta.globEager('./modules/*.ts')).map((i) => {
-                i.install?.({ app, router, routes })
-            })
             inputFocusDirective(app)
             authDirective(app)
             app.use(router).mount('#app')
@@ -113,8 +141,12 @@ router.beforeEach(async (to, from, next) => {
             return next()
         }
         return window.location.reload()
-    } else {
+    }
+    if (to.path !== '/setup' && to.path !== '/error') {
         window.location.replace('/404')
+    } else if (authStore.isAuthenticated && to.path === '/setup') {
+        /** If a logged in user tries to access setup page, re-route to home page */
+        next('/')
     }
     return next()
 })

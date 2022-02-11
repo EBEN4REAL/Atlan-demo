@@ -561,6 +561,7 @@
 
                 body.value.metadata.labels['orchestration.atlan.com/atlan-ui'] =
                     'true'
+
                 body.value.spec = {
                     templates: [
                         {
@@ -584,6 +585,11 @@
                         },
                     ],
                     entrypoint: 'main',
+                }
+
+                if (workflowTemplate.value?.spec.volumeClaimTemplates) {
+                    body.value.spec.volumeClaimTemplates =
+                        workflowTemplate.value.spec.volumeClaimTemplates
                 }
 
                 status.value = 'loading'

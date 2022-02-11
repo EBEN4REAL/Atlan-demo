@@ -41,6 +41,7 @@
     import { useConnectionStore } from '~/store/connection'
 
     export default defineComponent({
+        name: 'ConnectionFilter',
         props: {
             modelValue: {
                 required: false,

@@ -313,7 +313,13 @@
                         </div>
                     </div>
                     <div class="flex items-center">
-                        <div class="flex" v-if="editorFocused">
+                        <div
+                            class="flex"
+                            v-if="
+                                editorFocused &&
+                                !activeInlineTab.playground?.isVQB
+                            "
+                        >
                             <span class="mr-2"
                                 >Ln:&nbsp;{{ editorPos.lineNumber }}</span
                             >
@@ -416,9 +422,7 @@
     } from '~/components/insights/common/composables/useProvide'
     import { useTimeAgo } from '@vueuse/core'
     import { useAccess } from '~/components/insights/common/composables/useAccess'
-    import { useEditor } from '~/components/insights/common/composables/useEditor'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
-    import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
     import EditorContext from '~/components/insights/playground/editor/context/index.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import VQBSQLPreview from '~/components/insights/playground/editor/VQBQueryPreview/index.vue'
@@ -430,6 +434,7 @@
     import { useFilter } from '~/components/insights/playground/editor/vqb/composables/useFilter'
     import { useAuthStore } from '~/store/auth'
     import { storeToRefs } from 'pinia'
+    import { useRunQueryUtils } from '~/components/insights/common/composables/useRunQueryUtils'
 
     const Monaco = defineAsyncComponent(() => import('./monaco/monaco.vue'))
 
@@ -468,7 +473,6 @@
             const { canUserUpdateQuery } = useAccess()
             const { getConnectorName } = useConnector()
             const { isFilterIsInteractive } = useFilter()
-            const { resetErrorDecorations, setErrorDecorations } = useEditor()
             const { resultsPaneSizeToggle, explorerPaneToggle } = useHotKeys()
             const { queryRun, abortQuery } = useRunQuery()
             const { modifyActiveInlineTabEditor } = useInlineTab()
@@ -553,8 +557,8 @@
                 useSavedQuery(inlineTabs, activeInlineTab, activeInlineTabKey)
             const isQueryRunning = computed(
                 () =>
-                    activeInlineTab.value.playground.resultsPane.result
-                        .isQueryRunning
+                    activeInlineTab.value?.playground?.resultsPane?.result
+                        ?.isQueryRunning
             )
             const showSaveQueryModal: Ref<boolean> = ref(false)
             const isUpdating: Ref<boolean> = ref(false)
@@ -572,9 +576,11 @@
                 executionTime
             ) => {
                 console.log(queryExecutionTime, executionTime, 'extime')
+
                 if (activeInlineTab && inlineTabs?.value) {
                     const activeInlineTabCopy: activeInlineTabInterface =
                         JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
+
                     activeInlineTabCopy.playground.editor.dataList = dataList
 
                     activeInlineTabCopy.playground.editor.columnList =
@@ -588,46 +594,19 @@
                     )
                 }
             }
-            /* sucess| error */
-            const onRunCompletion = (activeInlineTab, status: string) => {
-                if (status === 'success') {
-                    /* Resetting the red dot from the editor if it error is not line type */
-                    resetErrorDecorations(
-                        activeInlineTab,
-                        toRaw(editorInstance.value)
-                    )
-                } else if (status === 'error') {
-                    resetErrorDecorations(
-                        activeInlineTab,
-                        toRaw(editorInstance.value)
-                    )
-                    // console.log('error deco:', status)
-                    /* If it is a line error i,e VALIDATION_ERROR | QUERY_PARSING_ERROR */
-                    const errorName =
-                        activeInlineTab.value?.playground?.resultsPane?.result
-                            ?.queryErrorObj?.errorName
 
-                    console.log(
-                        'error data: ',
-                        activeInlineTab.value?.playground?.resultsPane?.result
-                            ?.queryErrorObj?.errorName
-                    )
-                    if (LINE_ERROR_NAMES.includes(errorName)) {
-                        setErrorDecorations(
-                            activeInlineTab,
-                            toRaw(editorInstance),
-                            toRaw(monacoInstance)
-                        )
-                    }
-                }
-            }
-            const onQueryIdGeneration = (activeInlineTab, queryId: string) => {
-                /* Setting the particular instance to this tab */
-                activeInlineTab.value.playground.resultsPane.result.runQueryId =
-                    queryId
-            }
+            const { onRunCompletion, onQueryIdGeneration } = useRunQueryUtils(
+                editorInstance,
+                monacoInstance
+            )
+
             function toggleRun() {
-                const activeInlineTabCopy = ref(activeInlineTab.value)
+                const activeInlineTabKeyCopy = activeInlineTabKey.value
+
+                const tabIndex = inlineTabs.value.findIndex(
+                    (tab) => tab.key === activeInlineTabKeyCopy
+                )
+
                 const currState =
                     activeInlineTab.value.playground.resultsPane.result
                         .isQueryRunning === 'loading'
@@ -643,7 +622,7 @@
                     let selectedText = ''
                     if (showVQB.value) {
                         selectedText = generateSQLQuery(
-                            activeInlineTabCopy.value,
+                            activeInlineTab.value,
                             limitRows.value
                         )
                     } else {
@@ -657,7 +636,7 @@
 
                     console.log('query selected: ', selectedText)
                     queryRun(
-                        activeInlineTabCopy,
+                        tabIndex,
                         getData,
                         limitRows,
                         onRunCompletion,
@@ -665,11 +644,12 @@
                         selectedText,
                         editorInstance,
                         monacoInstance,
-                        showVQB
+                        showVQB,
+                        inlineTabs
                     )
                 } else if (currState === 'abort') {
                     abortQuery(
-                        activeInlineTabCopy,
+                        tabIndex,
                         inlineTabs,
                         editorInstance,
                         monacoInstance
@@ -701,8 +681,17 @@
                                 toRaw(editorInstance.value).getSelection()
                             )
                     }
+
+                    const activeInlineTabKeyCopy = activeInlineTabKey.value
+
+                    const tabIndex = inlineTabs.value.findIndex(
+                        (tab) => tab.key === activeInlineTabKeyCopy
+                    )
+
+                    // const activeInlineTabCopy: activeInlineTabInterface =
+                    //     JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
                     queryRun(
-                        activeInlineTab,
+                        tabIndex,
                         getData,
                         limitRows,
                         onRunCompletion,
@@ -710,7 +699,8 @@
                         selectedText,
                         editorInstance,
                         monacoInstance,
-                        showVQB
+                        showVQB,
+                        inlineTabs
                     )
                 }
             }
@@ -862,73 +852,31 @@
                         // console.log('running: ', isQueryRunning.value)
 
                         if (
-                            !isQueryCreatedByCurrentUser &&
-                            !hasQueryReadPermission &&
-                            !hasQueryWritePermission
+                            isQueryRunning.value == '' ||
+                            isQueryRunning.value == 'success' ||
+                            isQueryRunning.value == 'error'
                         ) {
-                            if (
-                                isQueryRunning.value == '' ||
-                                isQueryRunning.value == 'success' ||
-                                isQueryRunning.value == 'error'
-                            ) {
-                                runQuery()
-                            }
+                            runQuery()
                         }
                     }
                     //prevent the default action
                 }
-                if (e.key === 'S') {
+                if (e.key === 'S' || e.key === 's') {
                     if (e.metaKey || e.ctrlKey) {
+                        console.log('save key')
                         e.preventDefault()
                         saveOrUpdate()
                     }
                     //prevent the default action
                 }
-
-                /* Toggle VQB CODE */
-                // if (e.key === 'Q' || e.key === 'q') {
-                //     if (e.ctrlKey) {
-                //         e.preventDefault()
-                //         if (vqbQueryRoute.value) {
-                //             // showVQB.value = !showVQB.value
-                //             const activeInlineTabCopy: activeInlineTabInterface =
-                //                 Object.assign({}, activeInlineTab.value)
-
-                //             activeInlineTabCopy.playground.isVQB =
-                //                 !activeInlineTabCopy?.playground?.isVQB
-
-                //             setVQBInInlineTab(
-                //                 activeInlineTabCopy,
-                //                 inlineTabs,
-                //                 true
-                //             )
-                //         }
-                //     }
-                //     //prevent the default action
-                // }
-                /* ----------------------------- */
             }
+
             onMounted(() => {
                 window.addEventListener('keydown', _keyListener)
             })
             onUnmounted(() => {
                 window.removeEventListener('keydown', _keyListener)
             })
-
-            /* Handlng the Fullscreen esc key logic */
-            // const _keyListener = (e) => {
-            //     if (e.key === 'Escape') {
-            //         setFullScreenState(false, fullSreenState)
-            //         console.log('key pressed', e.key, e)
-            //         //prevent the default action
-            //     }
-            // }
-            // onMounted(() => {
-            //     window.addEventListener('keydown', _keyListener)
-            // })
-            // onUnmounted(() => {
-            //     window.removeEventListener('keydown', _keyListener)
-            // })
 
             /* ------------------------------------------ */
             return {

@@ -8,6 +8,14 @@ const keyMap = {
                 }),
             },
         },
+        global_context: {
+            changed: {
+                action: 'discovery_global_context_changed',
+                properties: (props: { type: 'persona' | 'purpose' | 'all_assets' }) => ({
+                    type: props.type,
+                }),
+            }
+        },
         aggregate_tab: {
             changed: {
                 action: 'discovery_aggregate_tab_changed',
@@ -197,6 +205,9 @@ const keyMap = {
     },
     insights: {
         query: {
+            renamed: {
+                action: 'insights_query_renamed',
+            },
             deleted: {
                 action: 'inights_query_deleted',
             },
@@ -387,6 +398,43 @@ const keyMap = {
                 action: 'admin_api_key_deleted',
             },
         },
+        integration: {
+            added: {
+                action: 'admin_integration_added',
+                properties: (props: { integration: string, level: string }) => ({
+                    ...props
+                }),
+            },
+            removed: {
+                action: 'admin_integration_removed',
+                properties: (props: { integration: string, level: string }) => ({
+                    ...props
+                }),
+            }
+        }
     },
+    integration: {
+        slack: {
+            asset_shared: {
+                action: 'integration_slack_asset_shared',
+                properties: (props: { asset_type: string, has_message: boolean }) => ({
+                    ...props
+                }),
+            },
+            message_cta_clicked: {
+                action: 'integration_slack_message_cta_clicked',
+                properties: (props: { type: string }) => ({
+                    ...props
+                }),
+            },
+            share_channels_updated: {
+                action: 'integration_slack_share_channels_updated',
+                properties: (props: { channel_count: string }) => ({
+                    ...props
+                }),
+            }
+
+        }
+    }
 }
 export default keyMap

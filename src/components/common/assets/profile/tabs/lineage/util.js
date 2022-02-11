@@ -73,6 +73,8 @@ export const getNodeSourceImage = {
 
 // FIXME: Shall we use the connectorName attribute here?
 export const getSource = (entity) => {
+    if (entity.typeName === 'vpNode') return null
+
     const item =
         entity.attributes?.qualifiedName?.split('/') ||
         entity.uniqueAttributes?.qualifiedName?.split('/')
@@ -89,51 +91,3 @@ export const getSchema = (entity) => {
     if (item[0] === 'default') return item[4]
     return item[3]
 }
-
-export const childParentBiAssetMap = {
-    PowerBIReport: 'PowerBIDataset',
-    LookerTile: 'LookerQuery',
-}
-
-export const childGroupBiAssetMap = {
-    PowerBIDataset: 'workspace',
-    PowerBIDashboard: 'workspace',
-    PowerBIDataflow: 'workspace',
-    PowerBIPage: 'report',
-    PowerBIReport: 'workspace',
-    PowerBITile: 'dashboard',
-    LookerQuery: 'model',
-    LookerTile: 'dashboard',
-    LookerLook: 'model',
-    LookerDashboard: 'folder',
-    LookerExplore: 'model',
-    LookerModel: 'project',
-}
-export const parentChildrenBiAssetArr = [
-    'PowerBIDataset',
-    'PowerBIDashboard',
-    'PowerBIDataflow',
-    'PowerBIDatasource',
-    'PowerBIPage',
-    'PowerBIReport',
-    'PowerBITile',
-    'PowerBIWorkspace',
-    'LookerTile',
-    'LookerQuery',
-    'LookerFolder',
-    'LookerDashboard',
-    'LookerExplore',
-    'LookerLook',
-    'LookerModel',
-    'LookerProject',
-    'LookerField',
-]
-
-export const nonBiTypes = [
-    'Column',
-    'ColumnProcess',
-    'Database',
-    'Process',
-    'Table',
-    'View',
-]

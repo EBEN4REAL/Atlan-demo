@@ -29,7 +29,7 @@
                         <span>via <span>Schedule</span></span>
                     </div>
                     <div class="text-gray-500" v-else>
-                        mannually run by {{ creatorUsername(item) }}
+                        manually run by {{ creatorUsername(item) }}
                     </div>
                 </div>
             </a-select-option>

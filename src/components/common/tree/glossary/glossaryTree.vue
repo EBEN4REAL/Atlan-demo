@@ -13,6 +13,7 @@
             entityType="AtlasGlossaryTerm"
             @add="reInitTree"
             :glossary-qualified-name="defaultGlossary"
+            :glossaryName="parentGlossary?.displayText"
         >
             <template #trigger>
                 <div class="flex-grow">
@@ -127,7 +128,7 @@
             disabledGuids: {
                 type: Object as PropType<string[]>,
                 required: false,
-            }
+            },
         },
         emits: ['select', 'check', 'update:checkedGuids'],
         setup(props, { emit }) {
@@ -140,6 +141,10 @@
             const { selectedGlossary } = useAssetInfo()
             const isTreeNodeAnimating = ref(false)
             const glossaryStore = useGlossaryStore()
+            const parentGlossary = computed(() =>
+                glossaryStore.getGlossaryByQualifiedName(defaultGlossary.value)
+            )
+
             const localCheckedNodes = ref([])
             const parentGlossaryGuid = computed(() => {
                 const selectedGtc = glossaryStore.list.find(
@@ -168,7 +173,7 @@
                 dragAndDropNode,
                 nodeToParentKeyMap,
                 allKeys,
-                checkDuplicateCategoryNames
+                checkDuplicateCategoryNames,
             } = useGlossaryTree({
                 emit,
                 parentGlossaryQualifiedName: defaultGlossary,
@@ -194,8 +199,11 @@
             // }
 
             const addGTCNode = (asset, entity = {}) => {
-                if (entity !== {}) addNode(asset, entity)
-                else addNode(asset)
+                console.log(asset, entity)
+                if (entity !== {}) {
+                    console.log('add')
+                    addNode(asset, entity)
+                } else addNode(asset)
             }
             const deleteGTCNode = (asset, entity = {}) => {
                 if (entity !== {}) deleteNode(asset, entity)
@@ -311,7 +319,8 @@
                 handleAddSelectedKey,
                 dragAndDropNode,
                 isTreeNodeAnimating,
-                checkDuplicateCategoryNames
+                checkDuplicateCategoryNames,
+                parentGlossary,
             }
         },
     })

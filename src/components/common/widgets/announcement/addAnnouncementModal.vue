@@ -53,7 +53,10 @@
                         <span class="text-sm capitalize">{{
                             localAnnouncement.announcementType
                         }}</span
-                        ><AtlanIcon :icon="icon" class="w-auto h-4 mr-1" />
+                        ><AtlanIcon
+                            :icon="icon"
+                            class="w-auto h-4 mr-1 mb-0.5"
+                        />
                     </div>
                 </a-dropdown>
             </div>

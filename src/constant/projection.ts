@@ -37,6 +37,7 @@ export const InternalAttributes = [
 export const AssetAttributes = [
     'name',
     'displayName',
+    'apiName',
     'description',
     'displayDescription',
     'userDescription',
@@ -116,6 +117,16 @@ export const AssetAttributes = [
     'dataflowCount',
     'tileCount',
     'pageCount',
+    'sourceId',
+    'fieldCount',
+    'objectQualifiedName',
+    'dashboardType',
+    'reportType',
+    'detailColumns',
+    'isCustom',
+    'inlineHelpText',
+    'picklistValues',
+    'formula',
 ]
 
 export const SQLAttributes = [
@@ -168,6 +179,66 @@ export const AssetRelationAttributes = [
 ]
 
 export const DefaultRelationAttributes = []
+
+// For just asset list display
+export const MinimalAttributes = [
+    'name',
+    'displayName',
+    'description',
+    'displayDescription',
+    'userDescription',
+    'certificateStatus',
+    'connectorName',
+    'connectionName',
+    'connectionQualifiedName',
+    'defaultSchemaQualifiedName',
+    'defaultDatabaseQualifiedName',
+    'meanings',
+    'category',
+    'parentQualifiedName',
+    'collectionQualifiedName',
+    'parent',
+    'sourceViewCount',
+    'sourceChildCount',
+    'folderName',
+    'modelName',
+    'projectName',
+    'folder',
+    'model',
+    'workspace',
+    'dashboard',
+    'dataset',
+    'datasource',
+    'workbook',
+    'site',
+    'project',
+    'report',
+    'organization',
+    'object',
+    'reportCount',
+    'dashboardCount',
+    'datasetCount',
+    'dataflowCount',
+    'tileCount',
+    'pageCount',
+    'categories',
+    'parentCategory',
+    'rowCount',
+    'columnCount',
+    'sizeBytes',
+    'schemaName',
+    'tableName',
+    'viewName',
+    'databaseName',
+    'dataType',
+    'definition',
+    'isPrimary',
+    'table',
+    'view',
+    'database',
+    'tableCount',
+    'viewsCount',
+]
 
 export const BasicSearchAttributes = [
     '__timestamp',
@@ -240,6 +311,27 @@ export const BasicSearchAttributes = [
     'isPartition',
     'readme',
     'parent',
+]
+
+export const LineageAttributes = [
+    // General
+    'qualifiedName',
+    'name',
+    'displayName',
+    'certificateStatus',
+    'link',
+    'dataType',
+    // BI Relationships
+    'workspace',
+    'report',
+    'dashboard',
+    'model',
+    'folder',
+    'project',
+    // SQL
+    'table',
+    'view',
+    '__customAttributes',
 ]
 
 export const ConnectionAttriibutes = [...InternalAttributes, ...AssetAttributes]

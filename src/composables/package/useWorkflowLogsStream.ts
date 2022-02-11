@@ -64,7 +64,10 @@ export default function useWorkflowLogsStream() {
             eventClient?.value?.disconnect()
             eventClient.value = null
         } else {
-            logArray.value.push(message?.result?.content)
+            logArray.value.push({
+                id: Date.now().toString(),
+                text: message?.result?.content,
+            })
         }
     }
 

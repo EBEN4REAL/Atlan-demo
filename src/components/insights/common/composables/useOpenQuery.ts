@@ -4,6 +4,7 @@ import { useInlineTab } from '~/components/insights/common/composables/useInline
 import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
 import { useEditor } from '~/components/insights/common/composables/useEditor'
 import { useActiveTab } from '~/components/insights/common/composables/useActiveTab'
+import { useRunQueryUtils } from '~/components/insights/common/composables/useRunQueryUtils'
 
 export default function useOpenQuery({
     tabs,
@@ -75,6 +76,7 @@ export default function useOpenQuery({
             modifyActiveInlineTabEditor(
                 activeInlineTabCopy,
                 tabs,
+                false,
                 saveQueryDataInLocalStorage
             )
             setSelection(
@@ -125,6 +127,11 @@ export default function useOpenQuery({
         }
     }
 
+    const { onRunCompletion, onQueryIdGeneration } = useRunQueryUtils(
+        editorInstance,
+        monacoInstance
+    )
+
     const playQuery = (newQuery, newText, activeInlineTabCopy) => {
         activeInlineTabCopy.playground.editor.text = newText
         modifyActiveInlineTab(
@@ -133,15 +140,23 @@ export default function useOpenQuery({
             activeInlineTabCopy.isSaved
         )
 
+        const activeInlineTabKeyCopy = activeInlineTabKey.value
+
+        const tabIndex = tabs.value.findIndex(
+            (tab) => tab.key === activeInlineTabKeyCopy
+        )
+
         queryRun(
-            activeInlineTab,
+            tabIndex,
             getData,
             limit,
-            null,
-            null,
+            onRunCompletion,
+            onQueryIdGeneration,
             newText,
             editorInstance,
-            monacoInstance
+            monacoInstance,
+            ref(false), // open in vqb
+            tabs
         )
     }
 

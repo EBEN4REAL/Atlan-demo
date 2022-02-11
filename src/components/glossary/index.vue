@@ -13,36 +13,10 @@
                 @change="handleSelectGlossary"
             ></GlossarySelect>
             <div class="flex" v-auth="map.CREATE_GLOSSARY">
-                <AddGTCModal
-                    :key="selectedGlossaryQf"
-                    :entityType="defaultEntityType"
+                <CreateGtcBtn
+                    :selected-glossary-qf="selectedGlossaryQf"
                     @add="handleAddGTC"
-                    :glossaryQualifiedName="selectedGlossaryQf"
-                    :glossaryName="selectedGlosaryName"
-                >
-                    <template #trigger>
-                        <a-tooltip>
-                            <template #title
-                                >Add new
-                                {{
-                                    `${
-                                        defaultEntityType === 'AtlasGlossary'
-                                            ? 'Glossary'
-                                            : 'Term/Category'
-                                    }`
-                                }}</template
-                            >
-
-                            <a-button class="ml-3" size="small">
-                                <AtlanIcon
-                                    icon="Add"
-                                    class="transition duration-300 text-primary"
-                                />
-                            </a-button>
-                        </a-tooltip>
-                    </template>
-                </AddGTCModal>
-
+                />
                 <div v-if="selectedGlossaryQf?.length" class="ml-2">
                     <GlossaryActions
                         :entity="selectedGlossary"
@@ -61,16 +35,18 @@
                 @change="handleSearchChange"
                 placeholder="Search terms & categories..."
             >
-                <template v-if="showCollapseAll" #filter>
-                    <a-tooltip v-if="!queryText">
+                <template  #filter>
+                    <a-tooltip v-if="!queryText" >
                         <template #title>Collapse all </template>
-
+                        <!-- <a-button :disabled="!showCollapseAll" class="p-0 m-0 border-0 outline-none "> -->
                         <atlan-icon
                             icon="TreeCollapseAll"
                             class="h-4 ml-0 outline-none cursor-pointer"
+                            :class="{'cursor-not-allowed opacity-80':!showCollapseAll}"
                             @click="handleCollapse"
                         >
                         </atlan-icon>
+                        <!-- </a-button> -->
                     </a-tooltip>
                 </template>
             </SearchAdvanced>
@@ -179,11 +155,10 @@
     import AssetFilters from '@/common/assets/filters/index.vue'
     import AssetList from '@/common/assets/list/index.vue'
     import GlossaryItem from '~/components/common/assets/list/glossaryAssetItem.vue'
-    import AddGTCModal from './modal/addGtcModal.vue'
     import GlossaryTree from '@/common/tree/glossary/glossaryTree.vue'
 
     import GlossarySelect from '@/common/popover/glossarySelect/index.vue'
-
+    import CreateGtcBtn from '@/glossary/actions/createGtcBtn.vue'
     import GlossaryActions from '@/glossary/actions/glossary.vue'
 
     import {
@@ -215,11 +190,11 @@
             PreferenceSelector,
             EmptyView,
             AtlanIcon,
-            AddGTCModal,
             GlossarySelect,
             GlossaryItem,
             GlossaryTree,
             GlossaryActions,
+            CreateGtcBtn,
         },
         props: {
             showFilters: {
@@ -246,7 +221,7 @@
             disabledGuids: {
                 type: Object as PropType<string[]>,
                 required: false,
-            }
+            },
         },
         emits: ['check', 'update:checkedGuids', 'searchItemCheck'],
         setup(props, { emit }) {
@@ -315,13 +290,6 @@
                     return glossaryBox.value.clientHeight - 150
                 }
                 return 400
-            })
-
-            const defaultEntityType = computed(() => {
-                if (selectedGlossaryQf.value) {
-                    return 'AtlasGlossaryTerm'
-                }
-                return 'AtlasGlossary'
             })
 
             const {
@@ -440,14 +408,18 @@
                 glossaryStore.setActivePanel(activeKey.value)
             }
 
-            const handleAddGTC = (asset) => {
+            const handleAddGTC = (asset, entity) => {
                 if (asset) {
                     if (asset.typeName === 'AtlasGlossary') {
                         glossaryStore.addGlossary(asset)
                         handleSelectGlossary(asset?.attributes?.qualifiedName)
                     }
                     if (glossaryTree.value) {
-                        glossaryTree.value.addGlossary(asset)
+                        console.log(asset, entity)
+                        if (entity?.value?.guid || entity?.guid) {
+                            console.log(entity.value)
+                            glossaryTree.value.addGTCNode(asset, entity)
+                        } else glossaryTree.value.addGlossary(asset)
                     }
                 }
             }
@@ -534,7 +506,6 @@
                 handleSelectGlossary,
                 handleAddTerm,
                 handleAddCategory,
-                defaultEntityType,
                 handleCollapse,
                 onCheck,
                 reInitTree,
@@ -576,6 +547,6 @@
         }
     }
     .treeStyles {
-        max-height: calc(100vh - 11rem) !important;
+        max-height: calc(100vh - 5rem) !important;
     }
 </style>

@@ -282,7 +282,7 @@
                         </div>
                     </div>
 
-                    <div class="flex items-center p-6 mt-1 border-bottom">
+                    <div class="flex items-center p-4 mt-1 border-bottom">
                         <span v-if="selectedPermission.length === 0">
                             <a-button
                                 v-if="isEdit ? canEdit : true"
@@ -303,18 +303,22 @@
                                 :key="el"
                                 class="flex flex-col h-auto mb-3 overflow-auto tag-permission max-h-32"
                             >
-                                <div class="text-sm text-gray-500 title-tag">
+                                <div
+                                    class="mb-2 text-sm text-gray-500 title-tag"
+                                >
                                     <AtlanIcon
                                         :icon="
                                             el.title.toLowerCase() === 'assets'
                                                 ? 'AssetsInactiveLight'
                                                 : 'GovernanceCenter'
                                         "
-                                        class="h-4 ml-1"
+                                        class="h-4"
                                     />
                                     {{ el.title }}
                                 </div>
-                                <div class="font-mono tracking-wide value-tag">
+                                <div
+                                    class="font-mono text-xs tracking-wide value-tag"
+                                >
                                     {{ el.value }}
                                 </div>
                             </div>
@@ -967,7 +971,6 @@
     }
     .button-container {
         justify-content: flex-end;
-        border-top: solid 1px #e6e6eb;
         padding: 16px;
         .btn-submit {
             width: 100px;

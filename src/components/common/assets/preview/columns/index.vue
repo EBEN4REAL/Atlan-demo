@@ -92,7 +92,6 @@
     import {
         MinimalAttributes,
         DefaultRelationAttributes,
-        SQLAttributes,
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import useEvaluate from '~/composables/auth/useEvaluate'
@@ -129,10 +128,7 @@
             const aggregations = ref([aggregationAttributeName])
             const postFacets = ref({})
             const dependentKey = ref('DEFAULT_COLUMNS')
-            const defaultAttributes = ref([
-                ...MinimalAttributes,
-                ...SQLAttributes,
-            ])
+            const defaultAttributes = ref([...MinimalAttributes])
             const preference = ref({
                 sort: 'order-asc',
             })

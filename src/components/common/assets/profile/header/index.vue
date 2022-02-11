@@ -309,7 +309,7 @@
                             :icon="getConnectorImage(item)"
                             class="h-4 mr-1"
                         />
-                        Open in
+                        View in
                         {{ getConnectorLabel(item) }}
                     </div>
                 </a-button>

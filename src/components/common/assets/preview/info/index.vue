@@ -60,7 +60,7 @@
                     <AtlanIcon
                         :icon="getConnectorImage(selectedAsset)"
                         class="h-4 mr-1"
-                    />Open in
+                    />View in
                     {{ getConnectorLabel(selectedAsset) }}
                 </div>
                 <AtlanIcon icon="External" />

@@ -127,7 +127,7 @@
         >
             <component :is="AddPersonaIllustration"></component>
             <span class="mx-auto text-base text-gray"
-                >You don't have any purposes</span
+                >You don't have any purposes setup</span
             >
             <AtlanBtn
                 class="flex-none mx-auto mt-6"

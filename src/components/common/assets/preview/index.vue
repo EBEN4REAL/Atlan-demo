@@ -391,18 +391,11 @@
                 (prev) => {
                     if (prev) {
                         if (
-                            (!isDrawer.value &&
-                                authStore?.evaluations?.some(
-                                    (ev) =>
-                                        ev?.entityGuid ===
-                                        selectedAsset.value?.guid
-                                )) ||
-                            (isDrawer.value &&
-                                authStore?.secondaryEvaluations?.some(
-                                    (ev) =>
-                                        ev?.entityGuid ===
-                                        selectedAsset.value?.guid
-                                ))
+                            !isDrawer.value &&
+                            authStore?.evaluations?.some(
+                                (ev) =>
+                                    ev?.entityGuid === selectedAsset.value?.guid
+                            )
                         ) {
                             return
                         }

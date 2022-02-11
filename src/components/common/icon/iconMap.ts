@@ -22,6 +22,7 @@ import CallIcon from '~/assets/images/home/help/call.svg'
 import FeedbackIcon from '~/assets/images/home/help/feedback.svg'
 import GlossaryIcon from '~/assets/images/home/Glossary.svg'
 import Lock from '~/assets/images/icons/lock.svg'
+import Lock2 from '~/assets/images/icons/lock2.svg'
 import NoRelevantAsset from '~/assets/images/icons/no-relevant-assets.svg'
 import NoAssetOrganization from '~/assets/images/icons/no-assets-organization.svg'
 import NoAssetsFound from '~/assets/images/illustrations/no_assets_to_show.svg'
@@ -557,6 +558,7 @@ export default {
     Approve,
     Decline,
     Lock,
+    Lock2,
     EmptyGlossary,
     Glossary,
     GlossaryInactive,

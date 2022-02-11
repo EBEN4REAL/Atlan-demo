@@ -27,7 +27,7 @@
                 >
                     <template #label>
                         <AtlanIcon
-                            icon="Lock"
+                            icon="Lock2"
                             class="h-3 mr-1 text-yellow-500 mb-0.5"
                             v-if="
                                 (property.ui.widget === 'password' ||

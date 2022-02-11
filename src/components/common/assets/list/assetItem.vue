@@ -18,14 +18,26 @@
             ]"
         >
             <div class="flex items-start flex-1 px-3 py-3 asset-card">
-                <a-checkbox
-                    v-if="showCheckBox"
-                    :checked="isChecked"
-                    class="ml-2 mr-3 opacity-60 hover:opacity-100"
-                    :class="bulkSelectMode ? 'opacity-100' : 'opacity-0'"
-                    @click.stop
-                    @change="(e) => $emit('listItem:check', e, item)"
-                />
+                <a-tooltip
+                    placement="leftTop"
+                    :title="
+                        isScrubbed(item) && disableCheckboxForScrubbed
+                            ? `You don't have permission to link this asset to a term`
+                            : ''
+                    "
+                    :mouse-enter-delay="0.2"
+                >
+                    <a-checkbox
+                        v-if="showCheckBox"
+                        :checked="isChecked"
+                        :disabled="
+                            isScrubbed(item) && disableCheckboxForScrubbed
+                        "
+                        class="ml-2 mr-3 opacity-60 hover:opacity-100"
+                        :class="bulkSelectMode ? 'opacity-100' : 'opacity-0'"
+                        @click.stop
+                        @change="(e) => $emit('listItem:check', e, item)"
+                /></a-tooltip>
                 <div
                     class="flex flex-col flex-1"
                     :class="{ 'lg:pr-16': !isCompact }"
@@ -993,7 +1005,7 @@
             "
         />
         <AssetDrawer
-            :data="selectedAssetDrawerData"
+            :guid="selectedAssetDrawerGuid"
             :show-drawer="showAssetSidebarDrawer"
             @closeDrawer="handleCloseDrawer"
             @update="handleListUpdate"
@@ -1103,6 +1115,11 @@
                 type: Boolean,
                 default: false,
             },
+            disableCheckboxForScrubbed: {
+                type: Boolean,
+                default: false,
+                required: false,
+            },
         },
         emits: ['listItem:check', 'unlinkAsset', 'preview', 'updateDrawer'],
         setup(props, { emit }) {
@@ -1118,7 +1135,7 @@
             } = toRefs(props)
 
             const showAssetSidebarDrawer = ref(false)
-            const selectedAssetDrawerData = ref({})
+            const selectedAssetDrawerGuid = ref('')
 
             const {
                 title,
@@ -1180,20 +1197,19 @@
             const handlePreview = (item: any) => {
                 if (enableSidebarDrawer.value === true) {
                     showAssetSidebarDrawer.value = true
-                    selectedAssetDrawerData.value = item
+                    selectedAssetDrawerGuid.value = item?.guid
                 } else {
                     emit('preview', item, itemIndex.value)
                 }
             }
 
             const handleCloseDrawer = () => {
-                selectedAssetDrawerData.value = {}
+                selectedAssetDrawerGuid.value = ''
                 showAssetSidebarDrawer.value = false
             }
 
             const handleListUpdate = (asset) => {
                 emit('updateDrawer', asset)
-                selectedAssetDrawerData.value = asset
             }
 
             const isSelected = computed(() => {
@@ -1295,7 +1311,7 @@
                 classifications,
                 getProfilePath,
                 showAssetSidebarDrawer,
-                selectedAssetDrawerData,
+                selectedAssetDrawerGuid,
                 handleCloseDrawer,
                 isUserDescription,
                 isScrubbed,

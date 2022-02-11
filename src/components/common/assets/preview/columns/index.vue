@@ -90,9 +90,8 @@
     import ColumnItem from './assetItem.vue'
 
     import {
-        AssetAttributes,
-        AssetRelationAttributes,
-        InternalAttributes,
+        MinimalAttributes,
+        DefaultRelationAttributes,
         SQLAttributes,
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
@@ -131,14 +130,13 @@
             const postFacets = ref({})
             const dependentKey = ref('DEFAULT_COLUMNS')
             const defaultAttributes = ref([
-                ...InternalAttributes,
-                ...AssetAttributes,
+                ...MinimalAttributes,
                 ...SQLAttributes,
             ])
             const preference = ref({
                 sort: 'order-asc',
             })
-            const relationAttributes = ref([...AssetRelationAttributes])
+            const relationAttributes = ref([...DefaultRelationAttributes])
 
             const updateFacet = () => {
                 facets.value = {}

@@ -6,7 +6,7 @@
                 ? `You don't have permission to view ${title} for this asset`
                 : title
         "
-        :mouse-enter-delay="0.5"
+        :mouse-enter-delay="0.2"
         ><div
             class="flex items-center justify-center"
             :class="displayMode ? '' : 'relative w-full h-full'"

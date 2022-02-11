@@ -39,6 +39,7 @@
                 :enableSidebarDrawer="false"
                 :selectable="true"
                 :openAssetProfileInNewTab="true"
+                :disableCheckboxForScrubbed="true"
                 :selectedItems="checkedGuids"
                 :filters="filters"
                 assetListClass="px-0 mt-2"
@@ -144,7 +145,7 @@
         setup(props, { emit }) {
             const { selectedItems } = useVModels(props, emit)
 
-            const filters = ref({excludeGtc: true})
+            const filters = ref({ excludeGtc: true })
             const childrenDrawer = ref(false)
             const drawerAsset = ref()
             const AssetListRef = ref()
@@ -214,7 +215,7 @@
                 handleAssetCardClick,
                 drawerAsset,
                 AssetListRef,
-                filters
+                filters,
             }
         },
     })

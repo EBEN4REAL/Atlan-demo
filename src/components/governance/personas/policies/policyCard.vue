@@ -7,19 +7,15 @@
         >
             <div
                 v-if="type === 'meta'"
-                class="p-2 mr-2 rounded-full bg-primary-light icon-wrap"
+                class="flex items-center justify-center w-10 h-10 mr-2 bg-gray-100 border border-gray-200 rounded-full"
             >
-                <AtlanIcon
-                    v-if="type === 'meta'"
-                    icon="Policies"
-                    class="-mt-1"
-                />
+                <AtlanIcon v-if="type === 'meta'" icon="Policies" />
             </div>
             <div
                 v-if="type === 'data'"
-                class="p-2 mr-2 rounded-full bg-primary-light icon-wrap"
+                class="flex items-center justify-center w-10 h-10 mr-2 bg-gray-100 border border-gray-200 rounded-full"
             >
-                <AtlanIcon icon="QueryGrey" class="-mt-1" />
+                <AtlanIcon icon="QueryGrey" />
             </div>
             <div class="flex flex-col">
                 <div class="flex items-center justify-between">
@@ -108,7 +104,7 @@
                 </div>
                 <span class="text-gray-300 mx-1.5">•</span>
                 <div>
-                    <AtlanIcon icon="ShieldBlank" class="-mt-1" />
+                    <AtlanIcon icon="ShieldBlank" class="-mt-1 icon-gray" />
                     {{ permissions.length }}
                 </div>
             </div>
@@ -317,6 +313,11 @@
     .allow-icon {
         path {
             fill: #00a680 !important;
+        }
+    }
+    .icon-gray {
+        path {
+            fill: #6f7590 !important;
         }
     }
 </style>

@@ -165,17 +165,22 @@
                             v-if="isEdit ? canEdit : true"
                             class="flex gap-x-1"
                         >
-                            <a-button
+                            <div
                                 v-if="!isAddAll"
                                 size="small"
                                 :disabled="!connectorData.attributeValue"
+                                class="cursor-pointer"
                                 @click="addConnectionAsset"
                             >
                                 <span class="text-primary">
                                     Include all assets</span
                                 >
-                            </a-button>
-                            <a-button
+                                <AtlanIcon
+                                    icon="Add"
+                                    class="ml-1 text-primary"
+                                />
+                            </div>
+                            <!-- <a-button
                                 v-if="!isAddAll && policy.assets.length > 0"
                                 size="small"
                                 @click="handleAddAsset"
@@ -185,7 +190,7 @@
                                     icon="ArrowRight"
                                     class="ml-1 text-primary"
                                 />
-                            </a-button>
+                            </a-button> -->
                         </div>
                     </div>
                     <div class="p-3">
@@ -202,11 +207,6 @@
                                         : 'hover:bg-primary-light cursor-pointer'
                                 "
                             >
-                                <AtlanIcon
-                                    v-if="splitName(asset) === 'All assets'"
-                                    icon="AssetsInactiveLight"
-                                    class="h-4 mr-1"
-                                />
                                 <span class="asset-name">
                                     {{ splitName(asset) }}
                                 </span>
@@ -219,14 +219,30 @@
                                     padding="compact"
                                 
                                 > -->
-                                <AtlanIcon
+                                <!-- <AtlanIcon
                                     v-if="!disabledForm"
                                     icon="Cross"
                                     class="h-3 ml-3 text-red-500 rotate-45"
                                     @click="handleDeleteAsset(asset)"
-                                />
+                                /> -->
                             </div>
                             <div
+                                v-if="isEdit ? canEdit : true"
+                                class="flex gap-x-1"
+                            >
+                                <a-button
+                                    v-if="!disabledForm"
+                                    size="small"
+                                    class="w-8 h-8 border border-gray-200 rounded-full"
+                                    @click="handleAddAsset"
+                                >
+                                    <AtlanIcon
+                                        :icon="isAddAll ? 'Pencil' : 'Add'"
+                                    />
+                                </a-button>
+                            </div>
+
+                            <!-- <div
                                 v-if="
                                     isEdit
                                         ? canEdit
@@ -247,7 +263,7 @@
                                         class="ml-1 text-primary"
                                     />
                                 </a-button>
-                            </div>
+                            </div> -->
                         </div>
                         <div
                             v-if="rules.assets.show"
@@ -888,6 +904,10 @@
                 return result
             })
             const handleChangeAssets = () => {
+                // remove default 'all asset'
+                if (!isAddAll.value) {
+                    handleDeleteAsset(connectorData.value.attributeValue)
+                }
                 rules.value.assets.show = false
             }
             const splitName = (name) => {

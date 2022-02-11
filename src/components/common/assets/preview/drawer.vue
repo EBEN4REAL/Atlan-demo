@@ -107,6 +107,7 @@
             const deferredLoading = ref(false)
 
             const updateDrawerList = (asset) => {
+                drawerData.value = asset
                 emit('update', asset)
             }
 

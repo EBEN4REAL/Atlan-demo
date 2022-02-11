@@ -21,6 +21,7 @@ const {
     createEdgeData,
     createNodeData,
 } = useGraph()
+
 const lineageStore = useLineageStore()
 
 export default function useEventGraph(
@@ -226,8 +227,6 @@ export default function useEventGraph(
 
         node.setPortProp(portId, 'attrs/portBody', {
             fill,
-        })
-        node.setPortProp(portId, 'attrs/portBody', {
             stroke: '#5277d7',
         })
     }
@@ -273,8 +272,7 @@ export default function useEventGraph(
             graph.value.freeze('controlPorts')
             ports.forEach((x) => {
                 if (portExist(x.id)) {
-                    const parentNode = getPortNode(x.id)
-                    parentNode.removePort(x.id)
+                    node.removePort(x.id)
                 }
             })
             node.addPorts(ports)
@@ -293,6 +291,27 @@ export default function useEventGraph(
             graph.value.unfreeze('controlPorts')
             translateSubsequentNodes(node)
         }
+    }
+
+    const controlShowMorePorts = (node, enable = true) => {
+        if (enable && !node.hasPort(`${node.id}-allCols`))
+            node.addPort({
+                id: `${node.id}-allCols`,
+                group: 'columnList',
+                attrs: {
+                    portBody: {
+                        event: 'allCols:click',
+                        rx: 4,
+                    },
+                    portNameLabel: {
+                        text: 'Show more columns',
+                        event: 'allCols:click',
+                        fill: '#5277d7',
+                    },
+                },
+            })
+        else if (!enable && node.hasPort(`${node.id}-allCols`))
+            node.removePort(`${node.id}-allCols`)
     }
 
     // createRelations
@@ -334,94 +353,140 @@ export default function useEventGraph(
         return rel
     }
 
-    // getNodesColumnList
-    const getNodeColumnList = (nodes, allRelations = []) => {
-        const viewQualifiedName = ['def']
-        const tableQualifiedName = ['def']
+    const renderColumnLineage = (
+        trNodes,
+        relations,
+        parentMap: Map<string, any[]>
+    ) => {
+        if (!relations?.length) return
 
-        nodes.forEach((node) => {
-            const asset = node.store.data.entity
-            const { typeName, attributes } = asset
-
+        graph.value.freeze('renderColumnLineage')
+        trNodes.forEach((node) => {
             if (node.getPorts().length > 1) {
                 const ports = node.getPorts()
                 ports.shift()
                 node.removePorts(ports)
                 translateExpandedNodesToDefault(node)
-                hideLoader()
-                if (!allRelations.length) return
             }
 
-            if (lineageStore.hasColumnList(node.id)) {
-                const columnList = lineageStore.getNodesColumnList(node.id)
-                if (columnList[0]?.text) {
-                    const { text } = columnList[0]
-                    const { portData } = createCustomPortData(node.id, text)
-                    node.addPort(portData)
-                } else {
-                    const override = !!allRelations.length
-                    controlPorts(node, columnList, allRelations, override)
-                }
+            if (parentMap.get(node.id)?.length)
+                controlPorts(node, parentMap.get(node.id), relations, true)
 
-                const rel = getValidPortRelations(allRelations)
-                createRelations(rel)
-                translateSubsequentNodes(node)
-                hideLoader()
-                return
-            }
+            controlShowMorePorts(node)
 
-            if (typeName.toLowerCase() === 'view')
-                viewQualifiedName.push(attributes.qualifiedName)
-            else if (typeName.toLowerCase() === 'table')
-                tableQualifiedName.push(attributes.qualifiedName)
+            const rel = getValidPortRelations(relations)
+            createRelations(rel)
+            translateSubsequentNodes(node)
         })
+        graph.value.unfreeze('renderColumnLineage')
+    }
+
+    const getPortsForNode = (node, isFetchMore = false) => {
+        const asset = node.store.data.entity
+        const { typeName, attributes } = asset
+
+        if (lineageStore.hasColumnList(node.id) && !isFetchMore) {
+            const { assets: columnList, total } =
+                lineageStore.getNodesColumnList(node.id)
+
+            controlPorts(node, columnList, [])
+            if (columnList.length < total) controlShowMorePorts(node)
+            translateSubsequentNodes(node)
+            chp.value.expandedNodes.push(node)
+            hideLoader()
+            return
+        }
+
+        const viewQualifiedName = ['def']
+        const tableQualifiedName = ['def']
+
+        if (typeName.toLowerCase() === 'view')
+            viewQualifiedName.push(attributes.qualifiedName)
+        else if (typeName.toLowerCase() === 'table')
+            tableQualifiedName.push(attributes.qualifiedName)
 
         if (tableQualifiedName.length === 1 && viewQualifiedName.length === 1) {
             hideLoader()
             return
         }
 
-        const { list } = fetchColumns({
+        let offset = 0
+
+        if (isFetchMore) {
+            if (lineageStore.hasColumnList(node.id)) {
+                offset =
+                    lineageStore.getNodesColumnList(node.id)?.assets?.length ||
+                    0
+            }
+        }
+
+        const { list, count } = fetchColumns({
             viewQualifiedName,
             tableQualifiedName,
+            limit: 5,
+            offset,
         })
 
-        watch(
+        watchOnce(
             list,
             () => {
-                if (!list.value) {
-                    const node = nodes[0]
+                const columns = list.value
+                if (!columns) {
                     const caretElement = getCaretElement(node.id)
                     controlCaret(node.id, caretElement)
                     hideLoader()
                     message.info('No column with lineage found for this node')
                     return
                 }
-                nodes.forEach((node) => {
-                    const asset = node.store.data.entity
-                    const guid = node.id
-                    const assetType = asset.typeName.toLowerCase()
-                    const columns = list.value.filter(
-                        (column) =>
-                            column.attributes?.[assetType]?.guid === guid
+
+                if (isFetchMore && chp.value.portId) {
+                    onCloseDrawer()
+                    deselectPort()
+                }
+
+                if (!lineageStore.hasColumnList(node.id))
+                    lineageStore.setNodesColumnList(node.id, columns, count)
+                else {
+                    const prevCols = lineageStore.getNodesColumnList(
+                        node.id
+                    )?.assets
+                    lineageStore.setNodesColumnList(
+                        node.id,
+                        [...prevCols, ...columns],
+                        count
                     )
-                    const override = !!allRelations.length
-                    controlPorts(node, columns, allRelations, override)
-                    if (!lineageStore.hasColumnList(node.id))
-                        lineageStore.setNodesColumnList(node.id, columns)
-                    const rel = getValidPortRelations(allRelations)
-                    createRelations(rel)
-                    translateSubsequentNodes(node)
-                })
+                }
+                const allCols = lineageStore.getNodesColumnList(node.id)?.assets
+                controlShowMorePorts(node, false)
+                controlPorts(node, allCols, [], true)
+                translateSubsequentNodes(node)
                 hideLoader()
+
+                // debugger
+                if (allCols?.length < count.value) {
+                    controlShowMorePorts(node)
+                }
+                // Add to ExpandedNodes array only if it is not fetched again
+                if (!isFetchMore) {
+                    chp.value.expandedNodes.push(node)
+                    controlShowMorePorts(node)
+                }
             },
             { deep: true }
         )
     }
 
+    graph.value.on('allCols:click', ({ e, node }) => {
+        e.stopPropagation()
+        showLoader(e)
+        getPortsForNode(node, true)
+    })
+
     // controlTranslate
     const controlTranslate = (portId, lineage) => {
         const translateCandidates = []
+        const parentMap = new Map<string, any[]>()
+
         Object.entries(lineage.guidEntityMap).forEach(([k, v]) => {
             if (k !== portId) {
                 const qnArr = v.attributes.qualifiedName.split('/')
@@ -436,10 +501,19 @@ export default function useEventGraph(
                 const parentNodeExists = translateCandidates.find(
                     (x) => x?.id === parentNode?.id
                 )
-                if (parentNode && !parentNodeExists)
+
+                if (parentNode && !parentNodeExists) {
                     translateCandidates.push(parentNode)
+                    parentMap.set(parentNode.id, [v])
+                } else if (parentNode && parentMap.has(parentNode.id)) {
+                    parentMap.set(parentNode.id, [
+                        ...parentMap.get(parentNode.id),
+                        v,
+                    ])
+                }
             }
         })
+
         toggleNodesEdges(graph, false)
 
         if (!translateCandidates.length) {
@@ -460,8 +534,8 @@ export default function useEventGraph(
             controlCaret(x.id, caretElement, true)
         })
 
-        getNodeColumnList(translateCandidates, lineage.relations)
-
+        renderColumnLineage(translateCandidates, lineage.relations, parentMap)
+        hideLoader()
         chp.value.expandedNodes = translateCandidates
     }
 
@@ -472,11 +546,11 @@ export default function useEventGraph(
             controlTranslate(portId, lineage)
             return
         }
-        const { depth, direction } = config.value
         const portConfig = computed(() => ({
-            depth,
+            depth: 20,
             guid: portId,
-            direction,
+            direction: 'BOTH',
+            attributes: ['dataType', 'qualifiedName', 'certificateStatus'],
             hideProcess: true,
         }))
         const { data, error } = useFetchLineage(portConfig, true)
@@ -533,8 +607,8 @@ export default function useEventGraph(
 
         edge.attr('line/strokeDasharray', reset ? 0 : 5)
 
-        edge.toFront()
         controlLabelStyle(edge, reset)
+        edge.toFront()
     }
 
     const controlPortEdgeHighlight = (edge, reset: boolean) => {
@@ -546,8 +620,8 @@ export default function useEventGraph(
         edge.attr('line/targetMarker/width', reset ? 0.1 : 12)
         edge.attr('line/strokeDasharray', reset ? 0 : 5)
 
-        edge.toFront()
         controlLabelStyle(edge, reset)
+        edge.toFront()
     }
 
     const animateEdge = (edge, animate = true) => {
@@ -706,7 +780,7 @@ export default function useEventGraph(
                 controlCaret(nodeId, x)
 
                 if (!isExpandedNode(nodeId)) {
-                    getNodeColumnList([node])
+                    getPortsForNode(node)
                 }
 
                 if (isExpandedNode(nodeId)) {
@@ -1056,10 +1130,7 @@ export default function useEventGraph(
                 childrenCounts,
                 true
             )
-            nodeData.data.updatedDisplayText =
-                nodesHidden.length > 4
-                    ? `view 4/${nodesHidden.length} more`
-                    : `view ${nodesHidden.length} more`
+            nodeData.data.hiddenCount = nodesHidden.length
             nodes.value.push(nodeData)
             addNode(graph, relations, childrenCounts, nodeData.entity)
 
@@ -1087,10 +1158,7 @@ export default function useEventGraph(
 
             const cell = graph.value.getCellById(node.id)
             const updatedData = {
-                updatedDisplayText:
-                    nodesHidden.length > 4
-                        ? `view 4/${nodesHidden.length} more`
-                        : `view ${nodesHidden.length} more`,
+                hiddenCount: nodesHidden.length,
             }
             cell.updateData({ ...updatedData })
 

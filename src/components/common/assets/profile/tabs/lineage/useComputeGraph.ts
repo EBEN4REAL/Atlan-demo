@@ -87,10 +87,7 @@ export default async function useComputeGraph(
                     typeName: 'vpNode',
                     guid: `vpNode/${k}`,
                     attributes: {
-                        name:
-                            v.targetsHidden.length > 4
-                                ? `view 4/${v.targetsHidden.length} more`
-                                : `view ${v.targetsHidden.length} more`,
+                        hiddenCount: v.targetsHidden.length,
                     },
                 },
             }

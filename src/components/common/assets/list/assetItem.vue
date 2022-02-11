@@ -1005,7 +1005,7 @@
             "
         />
         <AssetDrawer
-            :data="selectedAssetDrawerData"
+            :guid="selectedAssetDrawerGuid"
             :show-drawer="showAssetSidebarDrawer"
             @closeDrawer="handleCloseDrawer"
             @update="handleListUpdate"
@@ -1135,7 +1135,7 @@
             } = toRefs(props)
 
             const showAssetSidebarDrawer = ref(false)
-            const selectedAssetDrawerData = ref({})
+            const selectedAssetDrawerGuid = ref('')
 
             const {
                 title,
@@ -1197,20 +1197,19 @@
             const handlePreview = (item: any) => {
                 if (enableSidebarDrawer.value === true) {
                     showAssetSidebarDrawer.value = true
-                    selectedAssetDrawerData.value = item
+                    selectedAssetDrawerGuid.value = item?.guid
                 } else {
                     emit('preview', item, itemIndex.value)
                 }
             }
 
             const handleCloseDrawer = () => {
-                selectedAssetDrawerData.value = {}
+                selectedAssetDrawerGuid.value = ''
                 showAssetSidebarDrawer.value = false
             }
 
             const handleListUpdate = (asset) => {
                 emit('updateDrawer', asset)
-                selectedAssetDrawerData.value = asset
             }
 
             const isSelected = computed(() => {
@@ -1312,7 +1311,7 @@
                 classifications,
                 getProfilePath,
                 showAssetSidebarDrawer,
-                selectedAssetDrawerData,
+                selectedAssetDrawerGuid,
                 handleCloseDrawer,
                 isUserDescription,
                 isScrubbed,

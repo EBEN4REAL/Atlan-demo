@@ -303,7 +303,15 @@
                                 :key="el"
                                 class="flex flex-col h-auto mb-3 overflow-auto tag-permission max-h-32"
                             >
-                                <div class="text-gray-500 title-tag">
+                                <div class="text-sm text-gray-500 title-tag">
+                                    <AtlanIcon
+                                        :icon="
+                                            el.title.toLowerCase() === 'assets'
+                                                ? 'AssetsInactiveLight'
+                                                : 'GovernanceCenter'
+                                        "
+                                        class="h-4 ml-1"
+                                    />
                                     {{ el.title }}
                                 </div>
                                 <div class="font-mono tracking-wide value-tag">

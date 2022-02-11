@@ -1,4 +1,4 @@
-import { Ref } from 'vue'
+import { Ref, toRaw } from 'vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { generateUUID } from '~/utils/helper/generator'
 import { inlineTabsDemoData } from '../dummyData/demoInlineTabData'
@@ -25,6 +25,10 @@ export function useActiveTab() {
         queryConnectors?: object
         assetInfo?: object
     }): activeInlineTabInterface {
+        const activeInlineTabCopy: activeInlineTabInterface = JSON.parse(
+            JSON.stringify(toRaw(activeInlineTab.value))
+        )
+
         let vqbData = {
             panels: [
                 {
@@ -52,18 +56,18 @@ export function useActiveTab() {
             vqbData = vqb
         }
 
-        let contextData = activeInlineTab.value.playground.editor.context
+        let contextData = activeInlineTabCopy.playground.editor.context
         if (context) {
             contextData = context as any
         }
         let schemaConnectorsData =
-            activeInlineTab.value.explorer.schema.connectors
+            activeInlineTabCopy.explorer.schema.connectors
         if (context) {
             schemaConnectorsData = schemaConnectors as any
         }
 
         let queryConnectorsData =
-            activeInlineTab.value.explorer.queries.connectors
+            activeInlineTabCopy.explorer.queries.connectors
         if (context) {
             queryConnectorsData = queryConnectors as any
         }
@@ -73,13 +77,12 @@ export function useActiveTab() {
         }
 
         const key = generateUUID()
-        const activeInlineTabCopy: activeInlineTabInterface = JSON.parse(
-            JSON.stringify(activeInlineTab.value)
-        )
 
         // `Copy ${activeInlineTabCopy.label} preview`
 
-        let inlineTabData: activeInlineTabInterface = inlineTabsDemoData[0]
+        let inlineTabData: activeInlineTabInterface = JSON.parse(
+            JSON.stringify(inlineTabsDemoData[0])
+        )
         inlineTabData = {
             ...inlineTabData,
             label: label,

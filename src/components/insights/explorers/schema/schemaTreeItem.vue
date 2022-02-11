@@ -844,12 +844,9 @@
                     }
                     case 'play': {
                         const activeInlineTabCopy: activeInlineTabInterface =
-                            Object.assign({}, activeInlineTab.value)
-
-                        console.log(
-                            'activeInlineTab: ',
-                            Object.keys(activeInlineTabCopy)
-                        )
+                            JSON.parse(
+                                JSON.stringify(toRaw(activeInlineTab.value))
+                            )
 
                         let newQuery = `-- ${title(
                             item.value
@@ -874,27 +871,6 @@
                             item.value?.databaseQualifiedName +
                             '/' +
                             item.value?.schemaName
-
-                        if (!Object.keys(activeInlineTabCopy).length) {
-                            handleAddNewTab(
-                                newQuery,
-                                {
-                                    attributeName: 'schemaQualifiedName',
-                                    attributeValue:
-                                        updatedEditorSchemaQualifiedName,
-                                },
-                                {
-                                    attributeName: 'schemaQualifiedName',
-                                    attributeValue:
-                                        updatedEditorSchemaQualifiedName,
-                                },
-                                item.value
-                            )
-                            let activeInlineTabCopy: activeInlineTabInterface =
-                                Object.assign({}, activeInlineTab.value)
-                            playQuery(newQuery, newQuery, activeInlineTab)
-                            return
-                        }
 
                         // if we have a editor context
                         const prevText =
@@ -924,7 +900,7 @@
                                     // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
                                     newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
                                     let newText = `${newQuery}`
-                                    handleAddNewTab(
+                                    const tabKey = handleAddNewTab(
                                         newText,
                                         {
                                             attributeName:
@@ -938,22 +914,20 @@
                                         },
                                         item.value
                                     )
-                                    let activeInlineTabCopy: activeInlineTabInterface =
-                                        Object.assign({}, activeInlineTab.value)
-                                    playQuery(
-                                        newQuery,
-                                        newText,
-                                        activeInlineTab
+                                    const tabIndex = inlineTabs.value.findIndex(
+                                        (tab) => tab.key === tabKey
                                     )
+                                    playQuery(newQuery, newQuery, tabIndex)
 
                                     return
                                 } else {
-                                    const newText = `${newQuery}${prevText}`
-                                    playQuery(
-                                        newQuery,
-                                        newText,
-                                        activeInlineTab
+                                    const tabIndex = inlineTabs.value.findIndex(
+                                        (tab) =>
+                                            tab.key === activeInlineTabKey.value
                                     )
+
+                                    const newText = `${newQuery}${prevText}`
+                                    playQuery(newQuery, newText, tabIndex)
                                     return
                                 }
                                 break
@@ -985,7 +959,7 @@
                                         // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
                                         newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
                                         let newText = `${newQuery}`
-                                        handleAddNewTab(
+                                        const tabKey = handleAddNewTab(
                                             newText,
                                             {
                                                 attributeName:
@@ -999,28 +973,29 @@
                                             },
                                             item.value
                                         )
-                                        let activeInlineTabCopy: activeInlineTabInterface =
-                                            Object.assign(
-                                                {},
-                                                activeInlineTab.value
+                                        const tabIndex =
+                                            inlineTabs.value.findIndex(
+                                                (tab) => tab.key === tabKey
                                             )
-                                        playQuery(
-                                            newQuery,
-                                            newText,
-                                            activeInlineTab
-                                        )
+                                        playQuery(newQuery, newQuery, tabIndex)
                                         return
                                     } else {
                                         if (
                                             dbqn !== queryDatabaseQualifiedName
                                         ) {
+                                            const tabIndex =
+                                                inlineTabs.value.findIndex(
+                                                    (tab) =>
+                                                        tab.key ===
+                                                        activeInlineTabKey.value
+                                                )
                                             // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
                                             newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${databaseName}${assetQuoteType}.${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
                                             const newText = `${newQuery}${prevText}`
                                             playQuery(
                                                 newQuery,
                                                 newText,
-                                                activeInlineTab
+                                                tabIndex
                                             )
                                             return
                                         }
@@ -1030,11 +1005,11 @@
                                     // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
                                     newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
                                     const newText = `${newQuery}${prevText}`
-                                    playQuery(
-                                        newQuery,
-                                        newText,
-                                        activeInlineTab
+                                    const tabIndex = inlineTabs.value.findIndex(
+                                        (tab) =>
+                                            tab.key === activeInlineTabKey.value
                                     )
+                                    playQuery(newQuery, newText, tabIndex)
                                     return
                                 }
                                 break
@@ -1069,7 +1044,7 @@
                                         // open in new tab
                                         // openContextModal()
                                         let newText = `${newQuery}`
-                                        handleAddNewTab(
+                                        const tabKey = handleAddNewTab(
                                             newText,
                                             {
                                                 attributeName:
@@ -1083,28 +1058,30 @@
                                             },
                                             item.value
                                         )
-                                        let activeInlineTabCopy: activeInlineTabInterface =
-                                            Object.assign(
-                                                {},
-                                                activeInlineTab.value
+                                        const tabIndex =
+                                            inlineTabs.value.findIndex(
+                                                (tab) => tab.key === tabKey
                                             )
-                                        playQuery(
-                                            newQuery,
-                                            newText,
-                                            activeInlineTab
-                                        )
+                                        playQuery(newQuery, newQuery, tabIndex)
                                         return
                                     } else {
+                                        const tabIndex =
+                                            inlineTabs.value.findIndex(
+                                                (tab) =>
+                                                    tab.key ===
+                                                    activeInlineTabKey.value
+                                            )
                                         if (
                                             dbqn !== queryDatabaseQualifiedName
                                         ) {
                                             // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
                                             newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${databaseName}${assetQuoteType}.${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
                                             const newText = `${newQuery}${prevText}`
+
                                             playQuery(
                                                 newQuery,
                                                 newText,
-                                                activeInlineTab
+                                                tabIndex
                                             )
                                             return
                                         } else {
@@ -1117,7 +1094,7 @@
                                                 playQuery(
                                                     newQuery,
                                                     newText,
-                                                    activeInlineTab
+                                                    tabIndex
                                                 )
                                                 return
                                             }
@@ -1130,11 +1107,11 @@
                                     // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
                                     newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
                                     const newText = `${newQuery}${prevText}`
-                                    playQuery(
-                                        newQuery,
-                                        newText,
-                                        activeInlineTab
+                                    const tabIndex = inlineTabs.value.findIndex(
+                                        (tab) =>
+                                            tab.key === activeInlineTabKey.value
                                     )
+                                    playQuery(newQuery, newText, tabIndex)
                                     return
                                 }
                                 break
@@ -1155,7 +1132,11 @@
                                 closeAssetSidebar(activeInlineTab.value)
                             } else {
                                 let activeInlineTabCopy: activeInlineTabInterface =
-                                    Object.assign({}, activeInlineTab.value)
+                                    JSON.parse(
+                                        JSON.stringify(
+                                            toRaw(activeInlineTab.value)
+                                        )
+                                    )
                                 activeInlineTabCopy.assetSidebar.assetInfo =
                                     t.entity
                                 activeInlineTabCopy.assetSidebar.isVisible =
@@ -1167,7 +1148,9 @@
                             }
                         } else {
                             let activeInlineTabCopy: activeInlineTabInterface =
-                                Object.assign({}, activeInlineTab.value)
+                                JSON.parse(
+                                    JSON.stringify(toRaw(activeInlineTab.value))
+                                )
 
                             if (!Object.keys(activeInlineTabCopy).length) {
                                 let tableName = title(item.value)
@@ -1193,9 +1176,8 @@
                                     item.value
                                 )
 
-                                activeInlineTabCopy = Object.assign(
-                                    {},
-                                    activeInlineTab.value
+                                activeInlineTabCopy = JSON.parse(
+                                    JSON.stringify(toRaw(activeInlineTab.value))
                                 )
                                 // playQuery(newQuery, newQuery, activeInlineTabCopy)
                             }
@@ -1211,23 +1193,13 @@
                     }
                 }
             }
-            const { onRunCompletion, onQueryIdGeneration } = useRunQueryUtils(
-                editorInstance,
-                monacoInstance
-            )
 
-            const playQuery = (
-                newQuery,
-                newText,
-                activeInlineTab: Ref<activeInlineTabInterface>
-            ) => {
-                const activeInlineTabKeyCopy = activeInlineTabKey.value
-
-                const tabIndex = inlineTabs.value.findIndex(
-                    (tab) => tab.key === activeInlineTabKeyCopy
-                )
+            const playQuery = (newQuery, newText, tabIndex: number) => {
+                const { onRunCompletion, onQueryIdGeneration } =
+                    useRunQueryUtils(editorInstance, monacoInstance)
+                // debugger
                 if (!readOnly.value) {
-                    activeInlineTab.value.playground.editor.text = newText
+                    inlineTabs.value[tabIndex].playground.editor.text = newText
                     selectionObject.value.startLineNumber = 2
                     selectionObject.value.startColumnNumber = 1
                     selectionObject.value.endLineNumber = 2
@@ -1282,7 +1254,7 @@
 
             const openSidebar = () => {
                 const activeInlineTabCopy: activeInlineTabInterface =
-                    Object.assign({}, activeInlineTab.value)
+                    JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
                 activeInlineTabCopy.assetSidebar.assetInfo = item.value
                 activeInlineTabCopy.assetSidebar.isVisible = true
                 openAssetSidebar(activeInlineTabCopy, 'not_editor')
@@ -1307,7 +1279,7 @@
             // const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
             const tabs = inject('inlineTabs')
 
-            const handleAddNewTab = async (
+            const handleAddNewTab = (
                 query,
                 context,
                 explorerContext,
@@ -1328,11 +1300,12 @@
                 })
 
                 inlineTabAdd(inlineTabData, tabs, activeInlineTabKey)
+                return inlineTabData.key
             }
 
             const setContextInEditor = (item) => {
                 const activeInlineTabCopy: activeInlineTabInterface =
-                    Object.assign({}, activeInlineTab.value)
+                    JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
 
                 let qualifiedName = item?.qualifiedName?.split('/')
                 if (qualifiedName?.length === 5) {

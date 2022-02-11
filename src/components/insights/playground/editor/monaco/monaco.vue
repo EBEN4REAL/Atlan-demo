@@ -85,8 +85,6 @@
             ) as Ref<editorConfigInterface>
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
 
-    
-
             const editorFocused = inject('editorFocused') as Ref<boolean>
             const editorContentSelectionState = inject(
                 'editorContentSelectionState'
@@ -611,6 +609,16 @@
 
             watch(activeInlineTabKey, (newKey, prevKey) => {
                 // updateEditorModelOnTabOpen(editorStates, newKey as string)
+
+                if (!editorStates.get(newKey).viewState) {
+                    editor?.setSelection(new monaco.Selection(0, 0, 0, 0))
+                } else if (
+                    editorStates.get(newKey).viewState &&
+                    !editorStates.get(newKey).viewState?.cursorState[0]
+                        ?.inSelectionMode
+                ) {
+                    editor?.setSelection(new monaco.Selection(0, 0, 0, 0))
+                }
 
                 if (tabs.value[newKey]?.playground?.isVQB) {
                     return

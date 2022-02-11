@@ -2,7 +2,7 @@
     <div v-if="showDrawer" class="close-btn-sidebar" @click="handleClose">
         <AtlanIcon icon="Add" class="text-gray-700" />
     </div>
-    <div class="relative add-policy-container">
+    <div class="relative bg-gray-100 add-policy-container">
         <div>
             <div class="relative p-3 border-b">
                 <div class="flex items-center">
@@ -189,7 +189,7 @@
                     </div>
                     <div class="p-3">
                         <div
-                            class="flex flex-wrap h-auto gap-1 p-2 mt-1 overflow-auto border border-dashed rounded border-bottom border-slate-300 max-h-32"
+                            class="flex flex-wrap h-auto gap-1 p-2 mt-1 overflow-auto border rounded border-bottom border-slate-300 max-h-32"
                         >
                             <div
                                 v-for="asset in policy.assets"
@@ -282,9 +282,7 @@
                         </div>
                     </div>
 
-                    <div
-                        class="flex items-center p-6 mt-1 border border-gray-200 border-dashed rounded border-bottom"
-                    >
+                    <div class="flex items-center p-6 mt-1 border-bottom">
                         <span v-if="selectedPermission.length === 0">
                             <a-button
                                 v-if="isEdit ? canEdit : true"
@@ -321,7 +319,7 @@
                     >
                         {{ rules.metadata.text }}
                     </div>
-                    <div class="p-3 pt-2 bg-gray-100">
+                    <div class="p-3 pt-2 bg-gray-100 rounded-lg rounded-t-none">
                         <div
                             v-if="
                                 isEdit

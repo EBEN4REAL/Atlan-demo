@@ -1,5 +1,5 @@
 <template>
-    <div class="relative add-policy-container">
+    <div class="relative bg-gray-100 add-policy-container">
         <div>
             <div class="relative px-4 pt-5 pb-5">
                 <div
@@ -636,7 +636,6 @@
     }
     .button-container {
         justify-content: flex-end;
-        border-top: solid 1px #e6e6eb;
         padding: 16px;
         .btn-submit {
             width: 100px;

@@ -1005,7 +1005,6 @@ export default function useEventGraph(
             // highlight(null)
         }
 
-        showLoader(e)
         che.value = edge.id
         controlEdgeHighlight(edge, false)
 
@@ -1013,25 +1012,12 @@ export default function useEventGraph(
             ? edge.id.split('/')[1]
             : edge.id.split('/')[0]
 
-        const { data } = fetchAsset(processId)
+        onSelectAsset({ guid: processId })
 
-        /** Automatically stop the watcher once done.
-         * Added this to stop memory leaks from happening
-         * due to multiple watchers staying active in the memory */
-        watchOnce(data, () => {
-            onSelectAsset(data.value)
-
-            if (edge.id.includes('port')) {
-                // setPortStyle(chp.value.node, chp.value.portId, 'highlight')
-                // chp.value.node = null
-                // chp.value.portId = ''
-            } else {
-                const target = edge.id.split('/')[1].split('@')[1]
-                if (highlightedNode.value !== target) highlight(target, false)
-            }
-
-            hideLoader()
-        })
+        if (!edge.id.includes('port')) {
+            const target = edge.id.split('/')[1].split('@')[1]
+            if (highlightedNode.value !== target) highlight(target, false)
+        }
     })
 
     // EDGE - MOUSEENTER

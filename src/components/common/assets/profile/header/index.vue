@@ -8,7 +8,18 @@
         </a-button>
         <div class="flex items-center justify-between w-full ml-3">
             <div class="flex flex-col w-full">
-                <div class="flex items-center mb-0 overflow-hidden">
+                <div v-show="isEditMode">
+                    <Name
+                        v-model="isEditMode"
+                        :selected-asset="item"
+                        classes="text-base font-bold text-gray-700  mb-0"
+                    />
+                </div>
+
+                <div
+                    v-if="!isEditMode"
+                    class="flex items-center mb-0 overflow-hidden"
+                >
                     <div
                         v-if="['column'].includes(item.typeName?.toLowerCase())"
                         class="flex mr-1"
@@ -18,16 +29,7 @@
                             class="h-4 text-gray-500 mb-0.5"
                         />
                     </div>
-                    <div v-show="isEditMode">
-                        <Name
-                            v-model="isEditMode"
-                            :selected-asset="item"
-                            classes="text-base font-bold text-gray-700  mb-0"
-                        />
-                    </div>
-
                     <Tooltip
-                        v-if="!isEditMode"
                         :tooltip-text="`${title(item)}`"
                         classes="text-base font-bold text-gray-700  mb-0"
                     />

@@ -92,7 +92,7 @@
                         class="flex items-center"
                         @click="$emit('edit', asset)"
                     >
-                        <AtlanIcon icon="Pencil" class="ml-1 mr-2" />
+                        <AtlanIcon icon="Pencil" class="mr-2" />
                         <p class="p-0 m-0">Rename</p>
                     </div>
                 </a-menu-item>

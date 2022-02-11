@@ -608,7 +608,8 @@ export default function useEventGraph(
         edge.attr('line/strokeDasharray', reset ? 0 : 5)
 
         controlLabelStyle(edge, reset)
-        if (!reset) edge.toFront()
+        if (!reset) edge.setZIndex(50)
+        else edge.setZIndex(15)
     }
 
     const controlPortEdgeHighlight = (edge, reset: boolean) => {
@@ -621,7 +622,8 @@ export default function useEventGraph(
         edge.attr('line/strokeDasharray', reset ? 0 : 5)
 
         controlLabelStyle(edge, reset)
-        if (!reset) edge.toFront()
+        if (!reset) edge.setZIndex(50)
+        else edge.setZIndex(15)
     }
 
     const animateEdge = (edge, animate = true) => {
@@ -1042,7 +1044,7 @@ export default function useEventGraph(
 
         edgesHighlighted.value.forEach((id) => {
             const edgeCell = graph.value.getCellById(id)
-            edgeCell.toFront()
+            edgeCell.setZIndex(50)
         })
     })
 
@@ -1055,7 +1057,7 @@ export default function useEventGraph(
 
         edgesHighlighted.value.forEach((id) => {
             const edgeCell = graph.value.getCellById(id)
-            edgeCell.toFront()
+            edgeCell.setZIndex(50)
         })
     })
 

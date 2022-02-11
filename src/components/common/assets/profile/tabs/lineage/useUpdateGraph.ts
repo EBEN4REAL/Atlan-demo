@@ -48,11 +48,13 @@ export default function useUpdateGraph() {
                 edgesHighlighted.value.push(x.id)
             }
             x.attr('line/stroke', itExists ? '#5277d7' : gray)
-            if (!itExists) {
+            x.attr('line/targetMarker/stroke', itExists ? '#5277d7' : gray)
+
+            if (itExists) cell.setZIndex(50)
+            else {
+                cell.setZIndex(15)
                 cell.attr('line/strokeWidth', 1.6)
             }
-            x.attr('line/targetMarker/stroke', itExists ? '#5277d7' : gray)
-            if (itExists) cell.toFront()
         })
         graph.value.unfreeze('highlightEdges')
     }

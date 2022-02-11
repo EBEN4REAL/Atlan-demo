@@ -594,12 +594,15 @@
                 @change="handleChangeDescription"
             />
         </div>
-        <div v-if="isProcess(selectedAsset) && getProcessSQL(selectedAsset)">
+        <div v-if="isProcess(selectedAsset)" class="flex flex-col text-sm">
+            <span class="px-5 mb-1 text-gray-500">Query</span>
             <SQLSnippet
+                v-if="getProcessSQL(selectedAsset)?.length"
                 class="mx-4 rounded-lg"
                 :text="getProcessSQL(selectedAsset)"
                 background="bg-primary-light"
             />
+            <span v-else class="px-5 text-gray-600">No SQL data available</span>
         </div>
         <div v-if="selectedAsset?.typeName === 'LookerQuery'">
             <SQLSnippet

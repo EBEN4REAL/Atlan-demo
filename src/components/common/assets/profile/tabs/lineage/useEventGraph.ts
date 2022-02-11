@@ -1002,7 +1002,7 @@ export default function useEventGraph(
         // If there is an existing highlighted edge
         if (che.value) {
             resetCHE()
-            // highlight(null)
+            highlight(null)
         }
 
         che.value = edge.id

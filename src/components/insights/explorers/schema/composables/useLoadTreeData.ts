@@ -11,33 +11,9 @@ import { IndexSearchResponse } from '~/services/meta/search/index'
 
 import { useAPIPromise } from '~/services/api/useAPIPromise'
 import { map } from '~/services/meta/search/key'
-import {
-    InternalAttributes,
-    BasicSearchAttributes,
-    AssetAttributes,
-    AssetRelationAttributes,
-} from '~/constant/projection'
-import { useBody } from './useBody'
+import { attributes } from '~/components/insights/playground/editor/vqb/composables/VQBattributes'
 
-const attributes = [
-    'name',
-    'displayName',
-    'typeName',
-    'dataType',
-    'description',
-    'userDescription',
-    'certificateStatus',
-    'ownerUsers',
-    'ownerGroups',
-    'classifications',
-    'tableCount',
-    'viewCount',
-    'columnCount',
-    'connectorName',
-    ...AssetAttributes,
-    ...InternalAttributes,
-    ...BasicSearchAttributes,
-]
+import { useBody } from './useBody'
 
 const useLoadTreeData = (
     queryText: Ref<string>,
@@ -80,7 +56,6 @@ const useLoadTreeData = (
             dsl,
             attributes,
             suppressLogs: true,
-            relationAttributes: [...AssetRelationAttributes],
         }
     }
 

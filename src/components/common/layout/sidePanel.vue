@@ -83,13 +83,17 @@
                         v-if="nav.link"
                         :target="nav.openInANewTab ? '_blank' : 'self'"
                         :href="nav.link"
+                        class="flex items-center"
                     >
-                        <atlan-icon :icon="nav?.icon" class="h-4 mr-2" />
-                        {{ nav.label }}
+                        <atlan-icon
+                            :icon="nav?.icon"
+                            class="h-4 mr-2 text-gray-500"
+                        />
+                        <span class="hover:text-primary"> {{ nav.label }}</span>
                         <AtlanIcon
                             v-if="nav.openInANewTab"
                             icon="External"
-                            class="ml-2 text-gray-500 opacity-0 group-hover:opacity-100"
+                            class="ml-2 text-gray-500 opacity-0 group-hover:opacity-100 hover:text-gray-500"
                         />
                     </a>
                     <span v-else class="flex items-center">
@@ -97,7 +101,7 @@
                             :icon="nav?.icon"
                             class="h-4 mr-2 text-gray-500"
                         />
-                        {{ nav.label }}
+                        <span class="hover:text-primary"> {{ nav.label }}</span>
                     </span>
                 </div>
             </template>

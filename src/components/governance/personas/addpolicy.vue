@@ -363,7 +363,7 @@
                         >
                             <div class="flex justify-between mt-4">
                                 <div>
-                                    <span>Deny Permissions</span>
+                                    <span>Deny</span>
                                     <a-tooltip placement="top" color="white">
                                         <AtlanIcon
                                             icon="Overview"
@@ -462,7 +462,7 @@
                         >
                             <div class="flex justify-between mt-4">
                                 <div>
-                                    <span>Deny Permissions</span>
+                                    <span>Deny</span>
                                     <a-tooltip placement="top" color="white">
                                         <AtlanIcon
                                             icon="Overview"

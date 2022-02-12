@@ -97,72 +97,137 @@
                     >
                 </div>
             </div>
-            <div class="flex ml-auto wrapper-asset-permission">
-                <div>
-                    <AtlanIcon icon="AssetsInactiveLight" class="-mt-1" />
-                    {{ policy.assets.length }}
+            <div class="flex items-center flex-1">
+                <div class="flex justify-center flex-1">
+                    <a-tooltip placement="top">
+                        <template #title>
+                            {{ policy.assets.length }}
+                            {{ policy.assets.length > 1 ? 'assets' : 'asset' }}
+                        </template>
+                        <div>
+                            <AtlanIcon
+                                icon="AssetsInactiveLight"
+                                class="-mt-1"
+                            />
+                            {{ policy.assets.length }}
+                        </div>
+                    </a-tooltip>
+                    <span class="text-gray-300 mx-1.5">•</span>
+                    <a-tooltip placement="top">
+                        <template #title>
+                            {{ permissions.length }}
+                            {{
+                                permissions.length > 1
+                                    ? 'permissions'
+                                    : 'permission'
+                            }}
+                        </template>
+                        <div>
+                            <AtlanIcon
+                                icon="ShieldBlank"
+                                class="-mt-1 icon-gray"
+                            />
+                            {{ permissions.length }}
+                        </div>
+                    </a-tooltip>
                 </div>
-                <span class="text-gray-300 mx-1.5">•</span>
-                <div>
-                    <AtlanIcon icon="ShieldBlank" class="-mt-1 icon-gray" />
-                    {{ permissions.length }}
+                <div class="flex flex-1">
+                    <div
+                        v-if="canDelete"
+                        class="flex items-center justify-end flex-1 gap-1 pr-3"
+                    >
+                        <a-tooltip placement="top">
+                            <template #title>
+                                <div class="text-gray-300">Created by</div>
+                                <div>
+                                    {{ policy.createdBy }}
+                                    {{ createdAtFormated }}
+                                </div>
+                            </template>
+                            <AtlanBtn
+                                class="px-2 bg-transparent border-none hover:bg-gray-200"
+                                size="sm"
+                                color="secondary"
+                                data-test-id="policy-delete"
+                                padding="compact"
+                            >
+                                <AtlanIcon icon="WarningIcon" />
+                            </AtlanBtn>
+                        </a-tooltip>
+                        <a-popover
+                            v-if="canDelete"
+                            v-model:visible="visibleDelete"
+                            trigger="click"
+                            placement="topRight"
+                            @onMouseleave="() => (visibleDelete = false)"
+                        >
+                            <template #content>
+                                <div class="popover-delete">
+                                    <span>
+                                        Are you sure you want to delete
+                                        <strong>{{ policy?.name }}</strong> ?
+                                    </span>
+                                    <div class="btn-wrapper">
+                                        <AtlanBtn
+                                            padding="compact"
+                                            color="minimal"
+                                            data-test-id="cancel"
+                                            class="btn-asset"
+                                            size="sm"
+                                            @click="
+                                                () => (visibleDelete = false)
+                                            "
+                                        >
+                                            Cancel
+                                        </AtlanBtn>
+                                        <AtlanBtn
+                                            padding="compact"
+                                            data-test-id="save"
+                                            class="btn-asset"
+                                            size="sm"
+                                            color="danger"
+                                            @click="removePolicy"
+                                        >
+                                            Delete
+                                        </AtlanBtn>
+                                    </div>
+                                </div>
+                            </template>
+                            <AtlanBtn
+                                class="px-2 bg-transparent border-none hover:text-red-500 hover:bg-gray-200"
+                                size="sm"
+                                color="secondary"
+                                data-test-id="policy-delete"
+                                padding="compact"
+                                @click.stop="() => (visibleDelete = true)"
+                            >
+                                <AtlanIcon icon="Delete" />
+                            </AtlanBtn>
+                        </a-popover>
+                        <AtlanBtn
+                            class="px-2 bg-transparent border-none"
+                            size="sm"
+                            color="secondary"
+                            data-test-id="policy-delete"
+                            padding="compact"
+                        >
+                            <AtlanIcon class="text-primary" icon="ArrowRight" />
+                        </AtlanBtn>
+                    </div>
+                    <div v-else class="flex justify-center flex-1">
+                        <span class="text-sm text-red-500"
+                            >Denied Permission</span
+                        >
+                    </div>
                 </div>
             </div>
         </div>
-
-        <a-popover
-            v-if="canDelete"
-            v-model:visible="visibleDelete"
-            trigger="click"
-            placement="topRight"
-            @onMouseleave="() => (visibleDelete = false)"
-        >
-            <template #content>
-                <div class="popover-delete">
-                    <span>
-                        Are you sure you want to delete
-                        <strong>{{ policy?.name }}</strong> ?
-                    </span>
-                    <div class="btn-wrapper">
-                        <AtlanBtn
-                            padding="compact"
-                            color="minimal"
-                            data-test-id="cancel"
-                            class="btn-asset"
-                            size="sm"
-                            @click="() => (visibleDelete = false)"
-                        >
-                            Cancel
-                        </AtlanBtn>
-                        <AtlanBtn
-                            padding="compact"
-                            data-test-id="save"
-                            class="btn-asset"
-                            size="sm"
-                            color="danger"
-                            @click="removePolicy"
-                        >
-                            Delete
-                        </AtlanBtn>
-                    </div>
-                </div>
-            </template>
-            <AtlanBtn
-                class="absolute flex-none px-2 border-r border-gray-300 border-none right-2 bottom-2 hover:text-red-500 button-hide"
-                size="sm"
-                color="secondary"
-                data-test-id="policy-delete"
-                padding="compact"
-                @click="() => (visibleDelete = true)"
-            >
-                <AtlanIcon icon="Delete" class="" />
-            </AtlanBtn>
-        </a-popover>
     </div>
 </template>
 
 <script lang="ts">
     import { computed, defineComponent, PropType, toRefs, ref } from 'vue'
+    import { useTimeAgo } from '@vueuse/core'
     import PillGroup from '@/UI/pill/pillGroup.vue'
     import AtlanBtn from '@/UI/button.vue'
     import {
@@ -286,6 +351,7 @@
                     maskPersona.find((el) => el.value === policy.value.type)
                         ?.label
             )
+            const createdAtFormated = useTimeAgo(policy.value.createdAt)
             return {
                 getPopoverContent,
                 removePolicy,
@@ -304,6 +370,7 @@
                 isAddAll,
                 maskComputed,
                 permissions,
+                createdAtFormated,
             }
         },
     })

@@ -54,12 +54,16 @@
         },
         setup(props, { emit }) {
             const { text, enableCopy } = toRefs(props)
-            const formattedText = computed(() =>
-                format(text.value, {
-                    language: 'sql', // Defaults to "sql" (see the above list of supported dialects)
-                    indent: '    ', // Defaults to two spaces
-                })
-            )
+            const formattedText = computed(() => {
+                try {
+                    return format(text.value, {
+                        language: 'sql', // Defaults to "sql" (see the above list of supported dialects)
+                        indent: '    ', // Defaults to two spaces
+                    })
+                } catch (error) {
+                    return text.value
+                }
+            })
             const renderedLines = computed(() =>
                 formattedText.value.split('\n')
             )

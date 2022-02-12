@@ -608,7 +608,8 @@ export default function useEventGraph(
         edge.attr('line/strokeDasharray', reset ? 0 : 5)
 
         controlLabelStyle(edge, reset)
-        edge.toFront()
+        if (!reset) edge.setZIndex(50)
+        else edge.setZIndex(15)
     }
 
     const controlPortEdgeHighlight = (edge, reset: boolean) => {
@@ -621,7 +622,8 @@ export default function useEventGraph(
         edge.attr('line/strokeDasharray', reset ? 0 : 5)
 
         controlLabelStyle(edge, reset)
-        edge.toFront()
+        if (!reset) edge.setZIndex(50)
+        else edge.setZIndex(15)
     }
 
     const animateEdge = (edge, animate = true) => {
@@ -736,96 +738,95 @@ export default function useEventGraph(
         deselectPort()
     }
 
+    const loadCTAHandler = (e) => {
+        e.stopPropagation()
+
+        resetState()
+
+        showLoader(e)
+
+        const ele = getEventPath(e).find((x) => x.getAttribute('data-cell-id'))
+        const nodeId = ele.getAttribute('data-cell-id')
+
+        getNodeLineage(nodeId)
+    }
+
     // registerLoadCTAListeners
-    const registerLoadCTAListeners = () => {
+    const registerLoadCTAListeners = (remove) => {
         const loadCTAs = document.getElementsByClassName('node-loadCTA')
         const loadCTAsArray = Array.from(loadCTAs)
         loadCTAsArray.forEach((x) => {
-            x.addEventListener('mousedown', (e) => {
-                e.stopPropagation()
-
-                resetState()
-
-                showLoader(e)
-
-                const ele = getEventPath(e).find((x) =>
-                    x.getAttribute('data-cell-id')
-                )
-                const nodeId = ele.getAttribute('data-cell-id')
-
-                getNodeLineage(nodeId)
-            })
+            if (remove) x.removeEventListener('mousedown', loadCTAHandler)
+            else x.addEventListener('mousedown', loadCTAHandler)
         })
     }
-    registerLoadCTAListeners()
 
+    const caretHandler = (e) => {
+        e.stopPropagation()
+        showLoader(e)
+
+        const x = e.target
+        const ele = getEventPath(e).find((x) => x.getAttribute('data-cell-id'))
+        const nodeId = ele.getAttribute('data-cell-id')
+        const graphNodes = graph.value.getNodes()
+        const node = graphNodes.find((x) => x.id === nodeId)
+
+        controlCaret(nodeId, x)
+
+        if (!isExpandedNode(nodeId)) {
+            getPortsForNode(node)
+        }
+
+        if (isExpandedNode(nodeId)) {
+            if (!activeNodesToggled.value[node.id]) {
+                handleToggleOfActiveNode(node)
+                const ports = node.getPorts()
+                ports.shift()
+                node.removePorts(ports)
+            } else {
+                const { edges, ports } = activeNodesToggled.value[node.id]
+                node.addPorts(ports)
+                edges.forEach((edge) => {
+                    const [_, processId, sourceTarget] = edge.id.split('/')
+                    const [source, target] = sourceTarget.split('@')
+                    const relation = {
+                        fromEntityId: source,
+                        toEntityId: target,
+                        processId,
+                    }
+                    createRelations([relation])
+                })
+
+                activeNodesToggled.value[node.id].newEdgesId.forEach(
+                    (edgeId) => {
+                        const cell = graph.value.getCellById(edgeId)
+                        if (cell) cell.remove()
+                    }
+                )
+                delete activeNodesToggled.value[node.id]
+            }
+            translateExpandedNodesToDefault(node)
+            hideLoader()
+        }
+    }
     // registerCaretListeners
-    const registerCaretListeners = () => {
+    const registerCaretListeners = (remove) => {
         const carets = document.getElementsByClassName('node-caret')
         const caretsArray = Array.from(carets)
 
         caretsArray.forEach((x) => {
-            x.addEventListener('mousedown', (e) => {
-                e.stopPropagation()
-
-                showLoader(e)
-
-                const ele = getEventPath(e).find((x) =>
-                    x.getAttribute('data-cell-id')
-                )
-                const nodeId = ele.getAttribute('data-cell-id')
-                const graphNodes = graph.value.getNodes()
-                const node = graphNodes.find((x) => x.id === nodeId)
-
-                controlCaret(nodeId, x)
-
-                if (!isExpandedNode(nodeId)) {
-                    getPortsForNode(node)
-                }
-
-                if (isExpandedNode(nodeId)) {
-                    if (!activeNodesToggled.value[node.id]) {
-                        handleToggleOfActiveNode(node)
-                        const ports = node.getPorts()
-                        ports.shift()
-                        node.removePorts(ports)
-                    } else {
-                        const { edges, ports } =
-                            activeNodesToggled.value[node.id]
-                        node.addPorts(ports)
-                        edges.forEach((edge) => {
-                            const [_, processId, sourceTarget] =
-                                edge.id.split('/')
-                            const [source, target] = sourceTarget.split('@')
-                            const relation = {
-                                fromEntityId: source,
-                                toEntityId: target,
-                                processId,
-                            }
-                            createRelations([relation])
-                        })
-
-                        activeNodesToggled.value[node.id].newEdgesId.forEach(
-                            (edgeId) => {
-                                const cell = graph.value.getCellById(edgeId)
-                                if (cell) cell.remove()
-                            }
-                        )
-                        delete activeNodesToggled.value[node.id]
-                    }
-                    translateExpandedNodesToDefault(node)
-                    hideLoader()
-                }
-            })
+            if (remove) x.removeEventListener('mousedown', caretHandler)
+            else x.addEventListener('mousedown', caretHandler)
         })
     }
-    registerCaretListeners()
 
     // registerAllListeners
-    const registerAllListeners = () => {
-        registerLoadCTAListeners()
-        registerCaretListeners()
+    const registerAllListeners = (remove = false) => {
+        registerLoadCTAListeners(remove)
+        registerCaretListeners(remove)
     }
+
+    registerAllListeners()
 
     // removeCHPEdges
     const removeCHPEdges = () => {
@@ -1029,7 +1030,7 @@ export default function useEventGraph(
 
         edgesHighlighted.value.forEach((id) => {
             const edgeCell = graph.value.getCellById(id)
-            edgeCell.toFront()
+            edgeCell.setZIndex(50)
         })
     })
 
@@ -1042,7 +1043,7 @@ export default function useEventGraph(
 
         edgesHighlighted.value.forEach((id) => {
             const edgeCell = graph.value.getCellById(id)
-            edgeCell.toFront()
+            edgeCell.setZIndex(50)
         })
     })
 
@@ -1227,4 +1228,6 @@ export default function useEventGraph(
             })
         }
     )
+
+    return { registerAllListeners }
 }

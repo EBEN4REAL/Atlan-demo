@@ -1,27 +1,66 @@
 <template>
     <div class="meta-data-scope-container">
         <div v-for="(scope, idx) in scopeList" :key="scope.type">
-            <div class="px-3 py-3 mx-3 mb-6 border border-dashed">
-                <a-checkbox
-                    class="mb-3 font-bold"
-                    data-test-id="checkbox"
-                    :checked="
-                        groupedActions[idx].scopes.length ===
-                        scopeList[idx].scopes.length
-                    "
-                    @click.stop="toggleCheckAll(idx)"
-                >
-                    All {{ scope.type }} permissions
-                </a-checkbox>
+            <div class="mx-3 mb-6 border border-dashed">
+                <div class="flex p-3 bg-gray-100">
+                    <a-checkbox
+                        :indeterminate="
+                            groupedActions[idx].scopes.length ===
+                            scopeList[idx].scopes.length
+                                ? false
+                                : Boolean(groupedActions[idx].scopes.length)
+                        "
+                        class="font-bold"
+                        data-test-id="checkbox"
+                        :checked="
+                            groupedActions[idx].scopes.length ===
+                            scopeList[idx].scopes.length
+                        "
+                        @click.stop="toggleCheckAll(idx)"
+                    >
+                        {{ scope.type }}
+                    </a-checkbox>
+                </div>
+                <div class="p-3">
+                    <a-checkbox-group
+                        :value="groupedActions[idx].scopes"
+                        :name="scope.type"
+                        :class="['capitalize', $style.checkbox_custom]"
+                        class="flex flex-wrap wrapper-checkbox"
+                        @update:value="updateSelection(scope.type, $event)"
+                    >
+                        <div
+                            v-for="(check, i) in scope.scopes"
+                            :key="i"
+                            class="p-1 px-2 hover:bg-primary-light"
+                        >
+                            <a-popover placement="bottom">
+                                <template #content>
+                                    <div class="p-2 content-popover-permission">
+                                        <span class="text-xs text-gray-600">
+                                            {{ check.desc }}
+                                        </span>
+                                        <span class="text-xs text-primary">
+                                            Learn more
+                                        </span>
+                                    </div>
+                                </template>
+                                <a-checkbox :value="check.value">
+                                    {{ check.label }}
+                                </a-checkbox>
+                            </a-popover>
+                        </div>
+                    </a-checkbox-group>
 
-                <a-checkbox-group
-                    :value="groupedActions[idx].scopes"
-                    :name="scope.type"
-                    :options="scope.scopes"
-                    :class="['capitalize', $style.checkbox_custom]"
-                    class="wrapper-checkbox"
-                    @update:value="updateSelection(scope.type, $event)"
-                ></a-checkbox-group>
+                    <!-- <a-checkbox-group
+                        :value="groupedActions[idx].scopes"
+                        :name="scope.type"
+                        :options="scope.scopes"
+                        :class="['capitalize', $style.checkbox_custom]"
+                        class="flex flex-wrap wrapper-checkbox"
+                        @update:value="updateSelection(scope.type, $event)"
+                    ></a-checkbox-group> -->
+                </div>
             </div>
         </div>
     </div>
@@ -109,6 +148,9 @@
     }
 </style>
 <style lang="less">
+    .content-popover-permission {
+        max-width: 150px;
+    }
     .meta-data-scope-container {
         .ant-collapse-header {
             background-color: #fafafa;
@@ -136,15 +178,8 @@
             // margin-bottom: 0.25rem;
             // @apply mt-1;
         }
-        .wrapper-checkbox {
-            // display: flex;
-            // flex-direction: column;
-            // flex: 1;
-            // height: auto;
-            .ant-checkbox-wrapper {
-                // height: 40px;
-            }
-            // justify-content: space-between;
-        }
+    }
+    .wrapper-checkbox {
+        gap: 15px !important;
     }
 </style>

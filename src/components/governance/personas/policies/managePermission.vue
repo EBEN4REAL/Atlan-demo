@@ -13,9 +13,17 @@
             </AtlanBtn>
             <div>
                 <span class="text-sm font-semibold text-gray-700"
-                    >Edit permissions</span
+                    >Configure permissions</span
                 >
             </div>
+            <AtlanBtn
+                padding="compact"
+                class="py-1 ml-auto h-fit"
+                size="small"
+                @click="handleSave"
+            >
+                Update
+            </AtlanBtn>
         </div>
 
         <div class="p-4 pt-0 container-content">
@@ -25,7 +33,7 @@
                 type="persona"
             />
         </div>
-        <div
+        <!-- <div
             class="fixed flex items-center justify-end p-3 mt-auto border-t border-solid gap-x-2 border-slate-300 btn-wrapper-manage"
         >
             <span class="mr-auto text-gray-500"
@@ -48,7 +56,7 @@
             >
                 Save
             </AtlanBtn>
-        </div>
+        </div> -->
     </div>
 </template>
 

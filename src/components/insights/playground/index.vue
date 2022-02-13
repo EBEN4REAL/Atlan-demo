@@ -150,8 +150,8 @@
                             >
                                 <div
                                     v-if="
-                                        tab.playground.editor.text.length > 0 ||
-                                        tab?.queryId
+                                        tab?.playground?.editor?.text?.length >
+                                            0 || tab?.queryId
                                     "
                                     class="w-1.5 h-1.5 rounded-full bg-primary absolute right-3.5 top-2.5"
                                 ></div>

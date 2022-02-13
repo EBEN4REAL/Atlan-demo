@@ -869,6 +869,8 @@
                 input.value = ''
                 input.value = item.value.attributes?.name
 
+                let newName = item.value.attributes?.name
+
                 input.addEventListener('keydown', (e) => {
                     // console.log('event: ', e)
                     if (e.key === 'Escape') {
@@ -881,6 +883,7 @@
                     if (e.key === 'Enter') {
                         if (input.value && input.value !== orignalName) {
                             item.value.attributes.name = input.value
+                            newName = input.value
                             const { data, error, isLoading } =
                                 Insights.CreateQueryFolder(
                                     {
@@ -939,6 +942,40 @@
                                     } renamed successfully`,
                                 })
 
+                                if (
+                                    activeInlineTab.value.attributes &&
+                                    activeInlineTab?.value.attributes
+                                        ?.__guid ===
+                                        item?.value?.attributes?.__guid
+                                ) {
+                                    let activeInlineTabCopy: activeInlineTabInterface =
+                                        JSON.parse(
+                                            JSON.stringify(
+                                                toRaw(activeInlineTab.value)
+                                            )
+                                        )
+                                    activeInlineTabCopy.attributes.name =
+                                        input.value
+                                    activeInlineTabCopy.label = newName
+
+                                    if (
+                                        activeInlineTabCopy?.assetSidebar
+                                            ?.assetInfo?.attributes?.__guid ===
+                                        item?.value?.attributes?.__guid
+                                    ) {
+                                        activeInlineTabCopy.assetSidebar.assetInfo.attributes.name =
+                                            newName
+                                        activeInlineTabCopy.assetSidebar.assetInfo.displayText =
+                                            newName
+                                    }
+                                    modifyActiveInlineTab(
+                                        activeInlineTabCopy,
+                                        inlineTabs,
+                                        activeInlineTabCopy.isSaved,
+                                        true
+                                    )
+                                }
+
                                 useAddEvent(
                                     'insights',
                                     'folder',
@@ -959,6 +996,7 @@
                     // console.log('rename error blur: ', error)
                     if (input.value && input.value !== orignalName) {
                         item.value.attributes.name = input.value
+                        newName = input.value
                         const { data, error, isLoading } =
                             Insights.CreateQueryFolder(
                                 {
@@ -1008,6 +1046,39 @@
                                         : 'Folder'
                                 } renamed successfully`,
                             })
+
+                            if (
+                                activeInlineTab.value.attributes &&
+                                activeInlineTab?.value.attributes?.__guid ===
+                                    item?.value?.attributes?.__guid
+                            ) {
+                                let activeInlineTabCopy: activeInlineTabInterface =
+                                    JSON.parse(
+                                        JSON.stringify(
+                                            toRaw(activeInlineTab.value)
+                                        )
+                                    )
+                                activeInlineTabCopy.attributes.name =
+                                    input.value
+                                activeInlineTabCopy.label = newName
+
+                                if (
+                                    activeInlineTabCopy?.assetSidebar?.assetInfo
+                                        ?.attributes?.__guid ===
+                                    item?.value?.attributes?.__guid
+                                ) {
+                                    activeInlineTabCopy.assetSidebar.assetInfo.attributes.name =
+                                        newName
+                                    activeInlineTabCopy.assetSidebar.assetInfo.displayText =
+                                        newName
+                                }
+                                modifyActiveInlineTab(
+                                    activeInlineTabCopy,
+                                    inlineTabs,
+                                    activeInlineTabCopy.isSaved,
+                                    true
+                                )
+                            }
 
                             useAddEvent(
                                 'insights',

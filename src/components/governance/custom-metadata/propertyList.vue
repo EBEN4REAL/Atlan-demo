@@ -6,8 +6,7 @@
                 style="height: 40px"
             >
                 <div class="flex font-bold">
-                    <div style="width: 44px"></div>
-                    <div class="cursor-pointer" style="width: 248px">
+                    <div class="ml-4 cursor-pointer" style="width: 276px">
                         Property
                     </div>
                     <div class="capitalize" style="width: 248px">Type</div>
@@ -30,7 +29,7 @@
                     <div class="flex items-center">
                         <div
                             style="width: 44px"
-                            class="h-4 text-center"
+                            class="text-center"
                             :class="
                                 checkAccess(map.UPDATE_BUSINESS_METADATA)
                                     ? 'opacity-100'
@@ -77,7 +76,7 @@
                                 </a-tooltip>
                             </div>
                         </div>
-                        <div class="capitalize" style="width: 248px">
+                        <div class="flex capitalize" style="width: 248px">
                             <AtlanIcon
                                 v-if="
                                     mapTypeToIcon(

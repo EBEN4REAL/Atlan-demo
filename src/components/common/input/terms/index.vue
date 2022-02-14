@@ -1,7 +1,6 @@
 <template>
     <div>
         <a-popover
-            v-if="editPermission"
             v-model:visible="isEdit"
             placement="leftTop"
             :overlay-class-name="$style.termPopover"
@@ -15,35 +14,34 @@
                     @check="onCheck"
                     @searchItemCheck="onSearchItemCheck"
                 />
+                <div
+                    v-if="!editPermission && role !== 'Guest'"
+                    class="flex items-center justify-end mx-2 space-x-2"
+                >
+                    <a-button @click="handleCancelRequest">Cancel</a-button>
+                    <a-button
+                        type="primary"
+                        :loading="requestLoading"
+                        @click="handleRequest"
+                        class="bg-primary"
+                        >Request</a-button
+                    >
+                </div>
             </template>
         </a-popover>
         <div class="flex flex-wrap items-center gap-1 text-sm text-gray-500">
-            <a-tooltip
-                placement="left"
-                :title="
-                    !editPermission
-                        ? `You don't have permission to link terms to this asset`
-                        : ''
-                "
-                :mouse-enter-delay="0.5"
+            <a-button
+                shape="circle"
+                size="small"
+                class="text-center shadow"
+                :class="{
+                    editPermission:
+                        'hover:bg-primary-light hover:border-primary',
+                }"
+                @click="() => (isEdit = true)"
             >
-                <a-button
-                    shape="circle"
-                    :disabled="!editPermission"
-                    size="small"
-                    class="text-center shadow"
-                    :class="{
-                        editPermission:
-                            'hover:bg-primary-light hover:border-primary',
-                    }"
-                    @click="() => (isEdit = true)"
-                >
-                    <span
-                        ><AtlanIcon
-                            icon="Add"
-                            class="h-3"
-                        ></AtlanIcon></span></a-button
-            ></a-tooltip>
+                <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
+            ></a-button>
 
             <template v-for="term in list" :key="term.guid">
                 <TermPopover
@@ -85,8 +83,11 @@
         defineAsyncComponent,
         inject,
     } from 'vue'
-    import { useVModels } from '@vueuse/core'
+    import { message } from 'ant-design-vue'
+    import { useVModels, whenever } from '@vueuse/core'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import { useTermLinkRequest } from '@/common/input/terms/useTermLinkRequest.ts'
+    import whoami from '~/composables/user/whoami.ts'
 
     import GlossaryTree from '~/components/glossary/index.vue'
     import TermPill from '@/common/pills/term.vue'
@@ -147,28 +148,50 @@
                     (term) => term.attributes?.__state === 'ACTIVE'
                 )
             )
+
+            const existingTerms = computed(() => selectedAsset.value?.meanings)
+            const requestLoading = ref()
+            const newTerms = ref([])
+            const { role } = whoami()
             const onPopoverClose = (visible) => {
                 if (!visible && hasBeenEdited.value) {
                     modelValue.value = localValue.value
-                    emit('change', localValue.value)
+                    if (props.editPermission) emit('change', localValue.value)
+                    else handleRequest()
                     hasBeenEdited.value = false
                 }
             }
 
             const onCheck = (checkedNodes) => {
-                checkedNodes.forEach((term) => {
-                    if (
-                        !localValue.value.find(
-                            (localTerm) =>
-                                (localTerm.guid ?? localTerm.termGuid) ===
-                                term.guid
+                if (props.editPermission) {
+                    checkedNodes.forEach((term) => {
+                        if (
+                            !localValue.value.find(
+                                (localTerm) =>
+                                    (localTerm.guid ?? localTerm.termGuid) ===
+                                    term.guid
+                            )
                         )
+                            localValue.value.push(term)
+                    })
+                    localValue.value = localValue.value.filter((term) =>
+                        checkedGuids.value.includes(term.termGuid ?? term.guid)
                     )
-                        localValue.value.push(term)
-                })
-                localValue.value = localValue.value.filter((term) =>
-                    checkedGuids.value.includes(term.termGuid ?? term.guid)
-                )
+                } else {
+                    checkedNodes.forEach((term) => {
+                        if (
+                            !newTerms.value.find(
+                                (localTerm) =>
+                                    (localTerm.guid ?? localTerm.termGuid) ===
+                                    term.guid
+                            )
+                        )
+                            newTerms.value.push(term)
+                    })
+                    newTerms.value = newTerms.value.filter((term) =>
+                        checkedGuids.value.includes(term.termGuid ?? term.guid)
+                    )
+                }
                 hasBeenEdited.value = true
             }
 
@@ -239,6 +262,48 @@
                 }
             }
 
+            const handleOpenPopover = () => {
+                isEdit.value = true
+                requestLoading.value = false
+            }
+            const handleRequest = () => {
+                newTerms.value = newTerms.value?.filter((el) => {
+                    if (
+                        !existingTerms.value?.find(
+                            (i) => (i?.guid ?? i?.termGuid) === el?.guid
+                        )
+                    ) {
+                        return el
+                    }
+                })
+                const {
+                    error: requestError,
+                    isLoading: isRequestLoading,
+                    isReady: requestReady,
+                } = useTermLinkRequest({
+                    assetGuid: selectedAsset.value?.guid,
+                    assetQf: selectedAsset.value?.attributes?.qualifiedName,
+                    assetType: selectedAsset.value?.typeName,
+                    terms: newTerms.value,
+                })
+                whenever(requestError, () => {
+                    if (requestError.value) {
+                        message.error(`Request failed`)
+                        isEdit.value = false
+                    }
+                })
+                whenever(requestReady, () => {
+                    if (requestReady.value) {
+                        message.success(`Request raised`)
+                        isEdit.value = false
+                    }
+                })
+                requestLoading.value = isRequestLoading.value
+            }
+            const handleCancelRequest = () => {
+                isEdit.value = false
+            }
+
             return {
                 getFetchedTerm,
                 isReady,
@@ -258,6 +323,11 @@
                 handleCloseDrawer,
                 drawerAsset,
                 handleListUpdate,
+                handleRequest,
+                requestLoading,
+                handleOpenPopover,
+                handleCancelRequest,
+                role,
             }
         },
     })

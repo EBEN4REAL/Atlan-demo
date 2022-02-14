@@ -199,16 +199,53 @@
                 </div>
             </div>
             <div v-if="tableName(selectedAsset)">
-                <div class="mb-1 text-sm text-gray-500">Table</div>
-                <div class="text-sm text-gray-700">
+                <div class="mb-1 text-sm text-gray-500"></div>
+
+                <div class="flex items-center mb-1 text-gray-500">
+                    <span>Table</span>
+                    <a-tooltip title="Copy">
+                        <div
+                            @click="
+                                handleCopyValue(
+                                    tableName(selectedAsset),
+                                    'Table Name'
+                                )
+                            "
+                        >
+                            <AtlanIcon
+                                icon="CopyOutlined"
+                                class="w-auto ml-1 cursor-pointer mb-0.5"
+                            /></div
+                    ></a-tooltip>
+                </div>
+                <div class="text-sm text-gray-700 break-all">
                     <AtlanIcon icon="TableGray" class="w-auto h-4 mb-0.5" />
                     {{ tableName(selectedAsset) }}
                 </div>
             </div>
             <div v-if="viewName(selectedAsset)">
-                <div class="mb-1 text-sm text-gray-500">View</div>
+                <div class="flex items-center mb-1 text-gray-500">
+                    <span>View</span>
+                    <a-tooltip title="Copy">
+                        <div
+                            @click="
+                                handleCopyValue(
+                                    viewName(selectedAsset),
+                                    'View Name'
+                                )
+                            "
+                        >
+                            <AtlanIcon
+                                icon="CopyOutlined"
+                                class="w-auto ml-1 cursor-pointer mb-0.5"
+                            /></div
+                    ></a-tooltip>
+                </div>
                 <div class="text-sm text-gray-700">
-                    <AtlanIcon icon="ViewGray" class="w-auto h-4 mb-0.5" />
+                    <AtlanIcon
+                        icon="ViewGray"
+                        class="w-auto h-4 mb-0.5 break-all"
+                    />
                     {{ viewName(selectedAsset) }}
                 </div>
             </div>

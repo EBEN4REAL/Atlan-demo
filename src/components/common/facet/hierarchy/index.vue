@@ -8,7 +8,7 @@
             @change="handleConnectorChange"
         ></ConnectorSelect>
         <div
-            class="flex items-center w-full mt-2"
+            class="flex items-center w-full my-2"
             v-if="localValue.connectorName"
         >
             <div class="mr-1">
@@ -16,7 +16,7 @@
                     <AtlanIcon class="w-4 h-4" icon="Connection"
                 /></a-tooltip>
             </div>
-            <div style="width: calc(100% - 22px)">
+            <div style="width: calc(100% - 22px)" class="">
                 <ConnectionSelect
                     :key="localValue.connectorName"
                     :connector="localValue.connectorName"
@@ -29,7 +29,7 @@
 
         <AssetDropdown
             :key="localValue.connectionQualifiedName"
-            class="mt-2 mb-0"
+            class="mb-0"
             :persona="persona"
             :connector="filteredConnector"
             @change="handleAssetChange"

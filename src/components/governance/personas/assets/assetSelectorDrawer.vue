@@ -23,6 +23,24 @@
                     <AtlanIcon icon="ArrowRight" class="-rotate-180" />
                 </AtlanBtn>
                 <span class="text-lg font-bold text-gray-700">Add Assets</span>
+                <div class="flex items-center ml-auto w-fit">
+                    <span
+                        v-if="selectedAssetCount"
+                        class="mr-3 text-sm font-bold text-gray-500"
+                        >{{
+                            `${selectedAssetCount} ${
+                                selectedAssetCount > 1 ? 'assets' : 'asset'
+                            } added`
+                        }}
+                    </span>
+                    <AtlanBtn
+                        padding="compact"
+                        class="px-7 h-fit"
+                        @click="saveAssets"
+                    >
+                        Add
+                    </AtlanBtn>
+                </div>
             </div>
 
             <RaisedTab
@@ -96,7 +114,7 @@
             </div>
 
             <a-divider />
-            <div class="flex items-center justify-end m-2 gap-x-2">
+            <!-- <div class="flex items-center justify-end m-2 gap-x-2">
                 <span class="mr-auto text-gray-500"
                     >{{ selectedAssetCount || 'No' }} items selected</span
                 >
@@ -117,7 +135,7 @@
                 >
                     Save
                 </AtlanBtn>
-            </div>
+            </div> -->
         </div>
     </a-drawer>
 </template>

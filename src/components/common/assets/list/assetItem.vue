@@ -900,6 +900,14 @@
                                 <PopoverClassification
                                     :classification="classification"
                                     :entity-guid="item.guid"
+                                    :mouse-enter-delay="
+                                        classificationPopoverMouseEnterDelay
+                                    "
+                                    @mouse-entered="
+                                        () => {
+                                            classificationPopoverMouseEnterDelay = 0.2
+                                        }
+                                    "
                                 >
                                     <ClassificationPill
                                         :name="classification.name"
@@ -954,17 +962,20 @@
                                 </div>
                             </template>
                         </div>
-                        <div v-if="categories(item)?.length > 0" class="flex items-center gap-x-2">
+                        <div
+                            v-if="categories(item)?.length > 0"
+                            class="flex items-center gap-x-2"
+                        >
                             <div
-                                v-for="cat in categories(item).slice(0,3)"
+                                v-for="cat in categories(item).slice(0, 3)"
                                 :key="cat.guid"
-                                class="flex items-center border rounded-full bg-white px-2 py-1  mt-1 group hover:text-white hover:bg-primary "
+                                class="flex items-center border rounded-full bg-white px-2 py-1 mt-1 group hover:text-white hover:bg-primary"
                                 style="max-width: 200px"
                             >
                                 <div class="w-4 mr-1">
                                     <AtlanIcon
                                         icon="Category"
-                                        class="h-4 text-purple  group-hover:text-white"
+                                        class="h-4 text-purple group-hover:text-white"
                                     ></AtlanIcon>
                                 </div>
                                 <Tooltip
@@ -989,9 +1000,11 @@
                                     class="flex items-center flex-wrap gap-x-2 gap-y-2 px-2 py-2"
                                 >
                                     <div
-                                        v-for="cat in categories(item)?.slice(3)"
+                                        v-for="cat in categories(item)?.slice(
+                                            3
+                                        )"
                                         :key="cat.guid"
-                                        class="flex items-center border rounded-full bg-white px-2 py-1  hover:text-white hover:bg-primary group"
+                                        class="flex items-center border rounded-full bg-white px-2 py-1 hover:text-white hover:bg-primary group"
                                         style="max-width: 200px"
                                     >
                                         <div class="w-4 mr-1">
@@ -1018,9 +1031,9 @@
                             </template>
 
                             <div
-                                class="flex items-center mr-3 text-sm gap-x-1  bg-transparent px-2 text-primary py-1  mt-1 cursor-pointer"
+                                class="flex items-center mr-3 text-sm gap-x-1 bg-transparent px-2 text-primary py-1 mt-1 cursor-pointer"
                             >
-                               + {{ categories(item)?.slice(3)?.length }} more
+                                + {{ categories(item)?.slice(3)?.length }} more
                             </div>
                         </a-popover>
                     </div>
@@ -1168,6 +1181,8 @@
             const { getEntityStatusIcon } = useGlossaryData()
             const showAssetSidebarDrawer = ref(false)
             const selectedAssetDrawerGuid = ref('')
+
+            const classificationPopoverMouseEnterDelay = ref(1)
 
             const {
                 title,
@@ -1369,6 +1384,8 @@
                 fieldCount,
                 isCustom,
                 getEntityStatusIcon,
+                meanings,
+                classificationPopoverMouseEnterDelay,
             }
         },
     })

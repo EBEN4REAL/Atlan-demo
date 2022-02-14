@@ -3,6 +3,7 @@ export default function useUpdateGraph() {
     const highlightNodes = (graph, highlightedNode, nodesToHighlight) => {
         const graphNodes = graph.value.getNodes()
 
+        graph.value.freeze('highlightNodes')
         graphNodes.forEach((x) => {
             const itExists = nodesToHighlight.includes(x.id)
             const isHN = highlightedNode?.value === x.id
@@ -29,12 +30,14 @@ export default function useUpdateGraph() {
                 lineageNodeElement?.classList.add('isHighlightedNodePath')
             if (isGrayed) lineageNodeElement?.classList.add('isGrayed')
         })
+        graph.value.unfreeze('highlightNodes')
     }
 
     const highlightEdges = (graph, nodesToHighlight, edgesHighlighted) => {
         edgesHighlighted.value = []
         const graphEdges = graph.value.getEdges()
         const gray = nodesToHighlight.length ? '#d9d9d9' : '#aaaaaa'
+        graph.value.freeze('highlightEdges')
         graphEdges.forEach((x) => {
             const cell = graph.value.getCellById(x.id)
             const [source, target] = x.id.split('/')[1].split('@')
@@ -45,12 +48,15 @@ export default function useUpdateGraph() {
                 edgesHighlighted.value.push(x.id)
             }
             x.attr('line/stroke', itExists ? '#5277d7' : gray)
-            if (!itExists) {
+            x.attr('line/targetMarker/stroke', itExists ? '#5277d7' : gray)
+
+            if (itExists) cell.setZIndex(50)
+            else {
+                cell.setZIndex(15)
                 cell.attr('line/strokeWidth', 1.6)
             }
-            x.attr('line/targetMarker/stroke', itExists ? '#5277d7' : gray)
-            if (itExists) cell.toFront()
         })
+        graph.value.unfreeze('highlightEdges')
     }
 
     return {

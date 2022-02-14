@@ -83,7 +83,7 @@
                                 :is-propagated="isPropagated(classification)"
                                 :allow-delete="false"
                                 :color="
-                                    classification.options?.color.toLowerCase()
+                                    classification.options?.color?.toLowerCase()
                                 "
                                 :created-by="classification?.createdBy"
                             ></ClassificationPill>
@@ -93,7 +93,7 @@
             </div>
         </div>
         <AssetDrawer
-            :data="item"
+            :guid="item?.guid"
             :show-drawer="showColumnDrawer"
             :show-mask="page === 'assets'"
             :showCloseBtn="page !== 'assets'"

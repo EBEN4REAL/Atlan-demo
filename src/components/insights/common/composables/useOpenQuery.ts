@@ -8,6 +8,7 @@ import { useInlineTab } from '~/components/insights/common/composables/useInline
 import { generateUUID } from '~/utils/helper/generator'
 import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
 import { useEditor } from '~/components/insights/common/composables/useEditor'
+import { useRunQueryUtils } from '~/components/insights/common/composables/useRunQueryUtils'
 
 export default function useOpenQuery({
     tabs,
@@ -134,6 +135,7 @@ export default function useOpenQuery({
                     activeTab:
                         activeInlineTab.value?.playground?.resultsPane
                             ?.activeTab ?? 0,
+                    outputPaneSize: 27.9,
                     result: {
                         title: `${key} Result`,
                         runQueryId: undefined,
@@ -245,6 +247,11 @@ export default function useOpenQuery({
         }
     }
 
+    const { onRunCompletion, onQueryIdGeneration } = useRunQueryUtils(
+        editorInstance,
+        monacoInstance
+    )
+
     const playQuery = (newQuery, newText, activeInlineTabCopy) => {
         activeInlineTabCopy.playground.editor.text = newText
         modifyActiveInlineTab(
@@ -263,12 +270,12 @@ export default function useOpenQuery({
             tabIndex,
             getData,
             limit,
-            null,
-            null,
+            onRunCompletion,
+            onQueryIdGeneration,
             newText,
             editorInstance,
             monacoInstance,
-            false, // open in vqb
+            ref(false), // open in vqb
             tabs
         )
     }

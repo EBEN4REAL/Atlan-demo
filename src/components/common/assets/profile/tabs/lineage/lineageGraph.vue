@@ -6,12 +6,11 @@
     >
         <div
             v-if="!isComputeDone"
-            class="flex items-center justify-center bg-white w-100"
+            class="flex flex-col items-center justify-center bg-white w-100"
             style="height: 80vh"
         >
-            <div>
-                <a-spin tip="Rendering graph..." />
-            </div>
+            <AtlanLoader class="h-10" />
+            <span class="mt-1 text-sm">Rendering graph...</span>
         </div>
 
         <AtlanLoader
@@ -138,6 +137,7 @@
             const isComputeDone = ref(false)
             const drawerActiveKey = ref('Overview')
             const selectedTypeInRelationDrawer = ref('__all')
+            let removeListeners = () => {}
 
             /** COMPUTED */
             const offsetLoaderCords = computed(() => {
@@ -186,7 +186,14 @@
                 )
 
                 // useComputeGraph
-                const { addSubGraph } = await useComputeGraph(
+                const {
+                    addSubGraph,
+                    renderLayout,
+                    mergedLineageData,
+                    sameSourceCount,
+                    nodes,
+                    edges,
+                } = await useComputeGraph(
                     graph,
                     graphLayout,
                     lineage,
@@ -197,7 +204,7 @@
                 )
 
                 // useEventGraph
-                useEventGraph(
+                const { registerAllListeners } = useEventGraph(
                     graph,
                     lineage,
                     baseEntity,
@@ -210,10 +217,16 @@
                     selectedTypeInRelationDrawer,
                     config,
                     graphPrefs,
+                    mergedLineageData,
+                    sameSourceCount,
+                    nodes,
+                    edges,
                     onSelectAsset,
                     onCloseDrawer,
-                    addSubGraph
+                    addSubGraph,
+                    renderLayout
                 )
+                removeListeners = registerAllListeners
             }
 
             /** PROVIDERS */
@@ -244,7 +257,11 @@
             onUnmounted(() => {
                 isComputeDone.value = false
                 // removedNodes.value = {}
-                if (graph.value) graph.value.dispose()
+                if (graph.value) {
+                    if (typeof removeListeners === 'function')
+                        removeListeners(true)
+                    graph.value.dispose()
+                }
             })
 
             return {
@@ -453,8 +470,10 @@
                 align-items: center;
             }
 
-            &.isCounter {
-                height: 50px !important;
+            &.isVpNode {
+                @apply rounded-full bg-white flex items-center justify-center gap-x-2;
+                height: 48px !important;
+                padding: unset !important;
             }
 
             & .popover {

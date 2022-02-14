@@ -6,7 +6,7 @@
                 ? `You don't have permission to view ${title} for this asset`
                 : title
         "
-        :mouse-enter-delay="0.5"
+        :mouse-enter-delay="0.2"
         ><div
             class="flex items-center justify-center"
             :class="displayMode ? '' : 'relative w-full h-full'"
@@ -17,7 +17,7 @@
                 :class="isActive && !activeIcon ? 'text-primary' : ''"
                 class="h-6"
             />
-            <img v-else-if="image" :src="imageUrl(image)" class="w-auto h-6" />
+            <img v-else-if="image" :src="imageUrl(image)" class="w-6 h-6" />
             <span v-else-if="emoji" class="self-center float-left text-xl">
                 {{ emoji }}
             </span>
@@ -79,8 +79,13 @@
             },
         },
         setup(props, { emit }) {
-            const imageUrl = (url) =>
-                `${window.location.origin}/api/service/images/${url}?ContentDisposition=inline&name=${url}`
+            const imageUrl = (url) => {
+                if (url.startsWith('http')) {
+                    return url
+                }
+                const logo = `${window.location.origin}/api/service/images/${url}?ContentDisposition=inline&name=${url}`
+                return logo
+            }
             return { imageUrl }
         },
     })

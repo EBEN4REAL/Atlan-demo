@@ -113,6 +113,11 @@ export default function useAssetInfo() {
         return found
     }
 
+    const getConnectorLabelByName = (name: string) => {
+        const found = connectionStore.getConnectorLabelMapping[name]
+        return found
+    }
+
     const getConnectorImageMap = computed(() => {
         return connectionStore.getConnectorImageMapping
     })
@@ -273,7 +278,7 @@ export default function useAssetInfo() {
                 return {
                     component: 'customMetadata',
                     excludes: ['Query', 'Folder'],
-                    image: i.options?.imageId,
+                    image: i.options?.imageId || i.options?.logoUrl,
                     emoji: i.options?.emoji,
                     name: i.label,
                     tooltip: i.label,
@@ -1150,6 +1155,8 @@ export default function useAssetInfo() {
     const picklistValues = (asset: assetInterface) =>
         attributes(asset)?.picklistValues || []
 
+    const formula = (asset: assetInterface) => attributes(asset)?.formula
+
     return {
         attributes,
         title,
@@ -1291,5 +1298,7 @@ export default function useAssetInfo() {
         apiName,
         isCustom,
         picklistValues,
+        formula,
+        getConnectorLabelByName,
     }
 }

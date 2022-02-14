@@ -422,9 +422,7 @@
     } from '~/components/insights/common/composables/useProvide'
     import { useTimeAgo } from '@vueuse/core'
     import { useAccess } from '~/components/insights/common/composables/useAccess'
-    import { useEditor } from '~/components/insights/common/composables/useEditor'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
-    import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
     import EditorContext from '~/components/insights/playground/editor/context/index.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import VQBSQLPreview from '~/components/insights/playground/editor/VQBQueryPreview/index.vue'
@@ -436,6 +434,7 @@
     import { useFilter } from '~/components/insights/playground/editor/vqb/composables/useFilter'
     import { useAuthStore } from '~/store/auth'
     import { storeToRefs } from 'pinia'
+    import { useRunQueryUtils } from '~/components/insights/common/composables/useRunQueryUtils'
 
     const Monaco = defineAsyncComponent(() => import('./monaco/monaco.vue'))
 
@@ -474,7 +473,6 @@
             const { canUserUpdateQuery } = useAccess()
             const { getConnectorName } = useConnector()
             const { isFilterIsInteractive } = useFilter()
-            const { resetErrorDecorations, setErrorDecorations } = useEditor()
             const { resultsPaneSizeToggle, explorerPaneToggle } = useHotKeys()
             const { queryRun, abortQuery } = useRunQuery()
             const { modifyActiveInlineTabEditor } = useInlineTab()
@@ -596,49 +594,13 @@
                     )
                 }
             }
-            /* sucess| error */
-            const onRunCompletion = (activeInlineTab, status: string) => {
-                if (status === 'success') {
-                    /* Resetting the red dot from the editor if it error is not line type */
-                    resetErrorDecorations(
-                        activeInlineTab,
-                        toRaw(editorInstance.value)
-                    )
-                } else if (status === 'error') {
-                    resetErrorDecorations(
-                        activeInlineTab,
-                        toRaw(editorInstance.value)
-                    )
-                    // console.log('error deco:', status)
-                    /* If it is a line error i,e VALIDATION_ERROR | QUERY_PARSING_ERROR */
-                    const errorName =
-                        activeInlineTab.value?.playground?.resultsPane?.result
-                            ?.queryErrorObj?.errorName
 
-                    console.log(
-                        'error data: ',
-                        activeInlineTab.value?.playground?.resultsPane?.result
-                            ?.queryErrorObj?.errorName
-                    )
-                    if (LINE_ERROR_NAMES.includes(errorName)) {
-                        setErrorDecorations(
-                            activeInlineTab,
-                            toRaw(editorInstance),
-                            toRaw(monacoInstance)
-                        )
-                    }
-                }
-            }
-            const onQueryIdGeneration = (activeInlineTab, queryId: string) => {
-                /* Setting the particular instance to this tab */
-                activeInlineTab.value.playground.resultsPane.result.runQueryId =
-                    queryId
-            }
+            const { onRunCompletion, onQueryIdGeneration } = useRunQueryUtils(
+                editorInstance,
+                monacoInstance
+            )
+
             function toggleRun() {
-                // const activeInlineTabCopy = ref(activeInlineTab.value)
-                // const activeInlineTabCopy: activeInlineTabInterface =
-                //     JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
-
                 const activeInlineTabKeyCopy = activeInlineTabKey.value
 
                 const tabIndex = inlineTabs.value.findIndex(
@@ -796,7 +758,7 @@
             }
             const togglePane = () => {
                 console.log('called')
-                resultsPaneSizeToggle(outputPaneSize)
+            resultsPaneSizeToggle(activeInlineTab,inlineTabs)
             }
             const toggleExplorerPane = () => {
                 console.log('explorer pane toggled')

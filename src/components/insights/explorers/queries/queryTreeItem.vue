@@ -978,7 +978,9 @@
 
                                 useAddEvent(
                                     'insights',
-                                    'folder',
+                                    item.value.typeName === 'Query'
+                                        ? 'query'
+                                        : 'folder',
                                     'renamed',
                                     undefined
                                 )
@@ -1000,7 +1002,7 @@
                         const { data, error, isLoading } =
                             Insights.CreateQueryFolder(
                                 {
-                                    entiy: item.value.entity,
+                                    entity: item.value.entity,
                                 },
                                 {}
                             )

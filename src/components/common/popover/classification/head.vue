@@ -57,14 +57,16 @@
     import relativeTime from 'dayjs/plugin/relativeTime'
 
     import { computed, defineComponent, PropType, ref } from 'vue'
-    import { ClassificationInterface } from '~/types/classifications/classification.interface'
+    import { and } from '@vueuse/core'
+    import AtlanLoader from '@common/loaders/atlanLoader.vue'
     import ClassificationIcon from '@/common/icon/classificationIcon.vue'
     import AtlanIcon from '@/common/icon/atlanIcon.vue'
     import UserAvatar from '@/common/avatar/user.vue'
-    import { and } from '@vueuse/core'
+
     import { usePropagatedVia } from '~/composables/classification/usePropagatedVia'
     import { useLinkedBy } from '~/composables/classification/useLinkedBy'
-    import AtlanLoader from '@common/loaders/atlanLoader.vue'
+
+    import { ClassificationInterface } from '~/types/classifications/classification.interface'
 
     dayjs.extend(relativeTime)
 

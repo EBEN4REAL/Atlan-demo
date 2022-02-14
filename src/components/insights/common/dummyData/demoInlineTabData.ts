@@ -75,6 +75,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
             },
             resultsPane: {
                 activeTab: 0,
+                outputPaneSize: 27.9,
                 result: {
                     title: `Result`,
                     runQueryId: undefined,

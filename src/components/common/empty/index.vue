@@ -19,7 +19,7 @@
         </p>
         <AtlanButton
             v-if="buttonText"
-            class="w-36 mt-11"
+            :class="buttonClass"
             size="lg"
             :color="buttonColor"
             padding="compact"
@@ -73,6 +73,11 @@
                 type: String,
                 required: false,
                 default: '',
+            },
+            buttonClass: {
+                type: String,
+                required: false,
+                default: 'w-36 mt-11',
             },
             buttonColor: {
                 type: String as PropType<

@@ -22,6 +22,7 @@ import CallIcon from '~/assets/images/home/help/call.svg'
 import FeedbackIcon from '~/assets/images/home/help/feedback.svg'
 import GlossaryIcon from '~/assets/images/home/Glossary.svg'
 import Lock from '~/assets/images/icons/lock.svg'
+import Lock2 from '~/assets/images/icons/lock2.svg'
 import NoRelevantAsset from '~/assets/images/icons/no-relevant-assets.svg'
 import NoAssetOrganization from '~/assets/images/icons/no-assets-organization.svg'
 import NoAssetsFound from '~/assets/images/illustrations/no_assets_to_show.svg'
@@ -90,6 +91,7 @@ import GlossaryVerified from '~/assets/images/icons/glossary-verified.svg'
 import GlossaryDraft from '~/assets/images/icons/glossary-wip.svg'
 import GlossaryGray from '~/assets/images/icons/glossary-gray.svg'
 import KebabMenu from '~/assets/images/icons/kebab-menu-new.svg'
+import KebabMenuHorizontal from '~/assets/images/icons/kebab-menu.svg'
 import Overview from '~/assets/images/icons/overview.svg'
 import OverviewActive from '~/assets/images/icons/overview_active.svg'
 import Lineage from '~/assets/images/icons/lineage.svg'
@@ -398,11 +400,16 @@ import Request from '~/assets/images/icons/Request.svg'
 import RequestActive from '~/assets/images/icons/RequestActive.svg'
 import FilterFunnelDot from '~/assets/images/icons/filterFunnelDot.svg'
 import Comment from '~/assets/images/icons/Comment.svg'
+import Resources2 from '~/assets/images/illustrations/resources/resources.svg'
 import RunningQuery from '~/assets/images/icons/tabs/Running.svg'
 import FailedQuery from '~/assets/images/icons/tabs/Error.svg'
 import SuccessQuery from '~/assets/images/icons/tabs/success-check.svg'
+import QuestionRound from '~/assets/images/icons/question-round.svg'
+import Documentation from '~/assets/images/icons/documentation.svg'
+import Logout from '~/assets/images/icons/logout.svg'
 
 export default {
+    Resources2,
     RunningQuery,
     FailedQuery,
     SuccessQuery,
@@ -555,10 +562,12 @@ export default {
     Approve,
     Decline,
     Lock,
+    Lock2,
     EmptyGlossary,
     Glossary,
     GlossaryInactive,
     KebabMenu,
+    KebabMenuHorizontal,
     User,
     Chats,
     OpenTermProfile,
@@ -787,4 +796,7 @@ export default {
     Comment,
     EmptyRequest,
     PlusWhite,
+    QuestionRound,
+    Documentation,
+    Logout,
 }

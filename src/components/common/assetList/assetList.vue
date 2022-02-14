@@ -94,6 +94,9 @@
                             @listItem:check="
                                 (e, item) => $emit('listItem:check', item)
                             "
+                            :disableCheckboxForScrubbed="
+                                disableCheckboxForScrubbed
+                            "
                         >
                             <template #cta>
                                 <slot :item="item" name="assetItemCta"> </slot>
@@ -125,13 +128,9 @@
     import AssetItem from '@/common/assets/list/assetItem.vue'
     import useAssetStore from '~/store/asset'
     import useFetchAssetList from './usefetchAssetList'
-    import useTypedefData from '~/composables/typedefs/useTypedefData'
     import {
-        AssetAttributes,
-        AssetRelationAttributes,
-        InternalAttributes,
-        SQLAttributes,
-        GlossaryAttributes,
+        DefaultRelationAttributes,
+        MinimalAttributes,
     } from '~/constant/projection'
 
     export default defineComponent({
@@ -240,6 +239,11 @@
                 default: 'large',
                 required: false,
             },
+            disableCheckboxForScrubbed: {
+                type: Boolean,
+                default: false,
+                required: false,
+            },
         },
         emits: ['handleAssetCardClick', 'listItem:check'],
         setup(props) {
@@ -264,16 +268,9 @@
             const searchDirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
 
             // set all the attributes that would be fetched
-            const { customMetadataProjections } = useTypedefData()
-            const defaultAttributes = ref([
-                ...InternalAttributes,
-                ...AssetAttributes,
-                ...SQLAttributes,
-                ...customMetadataProjections,
-                ...GlossaryAttributes,
-            ])
+            const defaultAttributes = ref([...MinimalAttributes])
 
-            const relationAttributes = ref([...AssetRelationAttributes])
+            const relationAttributes = ref([...DefaultRelationAttributes])
 
             // Preferences are to be shared for all asset lists
             const discoveryStore = useAssetStore()

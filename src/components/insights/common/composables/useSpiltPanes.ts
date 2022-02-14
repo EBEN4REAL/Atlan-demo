@@ -1,11 +1,15 @@
-import { ref } from 'vue'
+import { ref, Ref, toRaw } from 'vue'
+import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+import { useLocalStorageSync } from '~/components/insights/common/composables/useLocalStorageSync'
 
 export const explorerPaneSize = ref(24.5)
 export const minExplorerSize = ref(0)
 export const maxExplorerSize = ref(24.5)
 export const currentNormalExplorerSize = ref(24.5)
+export const outputPaneSize = ref(27.3)
+const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
 
-export function useSpiltPanes() {
+export function useSpiltPanes(activeInlineTab?: activeInlineTabInterface) {
     /* ---- Panes  ----- */
     /* TODO: Collapse panes if it reach  threshold */
     const EXPLORER_WIDTH = 333 // in px
@@ -18,10 +22,20 @@ export function useSpiltPanes() {
 
     const assetSidebarPaneSize = ref(25)
 
-    const outputPaneSize = ref(27.3)
     const paneResize = (event: any) => {
         if (event.length > 0) {
             // explorerPaneSize.value = event[0].size
+        }
+    }
+    const horizontalPaneResize = (
+        event,
+        activeInlineTab: Ref<activeInlineTabInterface>,
+        tabsArray: Ref<activeInlineTabInterface[]>
+    ) => {
+        if (event.length > 0) {
+            activeInlineTab.value.playground.resultsPane.outputPaneSize =
+                event[1]?.size
+            syncInlineTabsInLocalStorage(toRaw(tabsArray.value))
         }
     }
 
@@ -30,8 +44,9 @@ export function useSpiltPanes() {
         MAX_EXPLORER_WIDTH,
         ASSET_SIDEBAR_WIDTH,
         EXPLORER_WIDTH,
-        outputPaneSize,
         assetSidebarPaneSize,
         paneResize,
+        horizontalPaneResize,
+        outputPaneSize,
     }
 }

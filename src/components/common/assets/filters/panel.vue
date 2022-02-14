@@ -11,14 +11,19 @@
                         class="flex items-center justify-between hover:text-primary"
                     >
                         <div class="flex items-center w-full">
-                            <img
+                            <div
                                 v-if="
                                     item?.options?.logoType === 'image' &&
-                                    item.options?.imageId
+                                    (item.options?.imageId ||
+                                        item.options?.logoUrl)
                                 "
-                                class="float-left w-auto h-4 mr-2"
-                                :src="imageUrl(item.options?.imageId)"
-                            />
+                                class="flex items-center float-left w-4 h-4 mr-2"
+                            >
+                                <img
+                                    class="object-contain"
+                                    :src="imageUrl(item)"
+                                />
+                            </div>
 
                             <span
                                 v-else-if="
@@ -351,8 +356,13 @@
                 return str
             })
 
-            const imageUrl = (url) =>
-                `${window.location.origin}/api/service/images/${url}?ContentDisposition=inline&name=${url}`
+            const imageUrl = (item) => {
+                const imageId = item.options?.imageId
+                let url = imageId
+                    ? `${window.location.origin}/api/service/images/${imageId}?ContentDisposition=inline&name=${imageId}`
+                    : item.options.logoUrl
+                return url
+            }
 
             return {
                 isFiltered,

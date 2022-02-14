@@ -1,31 +1,23 @@
-import { ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import bodybuilder from 'bodybuilder'
 import { assetInterface } from '~/types/assets/asset.interface'
 import useIndexSearch from '~/composables/discovery/useIndexSearch'
-import {
-    AssetRelationAttributes,
-    InternalAttributes,
-    SQLAttributes,
-    AssetAttributes,
-} from '~/constant/projection'
-import useTypedefData from '~/composables/typedefs/useTypedefData'
 
 export default function fetchColumns({
     viewQualifiedName,
     tableQualifiedName,
+    offset = 0,
+    limit = 2000,
 }) {
-    const { customMetadataProjections } = useTypedefData()
-
     const attributes = [
-        ...InternalAttributes,
-        ...SQLAttributes,
-        ...AssetAttributes,
-        ...customMetadataProjections,
+        'dataType',
+        'qualifiedName',
+        'certificateStatus',
+        'table',
+        'view',
     ]
-    const relationAttributes = [...AssetRelationAttributes]
+    const relationAttributes = []
     const base = bodybuilder()
-    const offset = 0
-    const limit = 20000
     const preference = { sort: 'order-asc' }
     const [name, type] = preference.sort.split('-')
     const facets = [
@@ -82,6 +74,7 @@ export default function fetchColumns({
         dsl,
         attributes,
         relationAttributes,
+        suppressLogs: true,
     }
     const { data } = useIndexSearch<assetInterface>(
         body,
@@ -90,14 +83,11 @@ export default function fetchColumns({
         false,
         1
     )
-    const list = ref([])
-
-    watch(data, () => {
-        if (data?.value?.entities) list.value = data?.value?.entities
-        else list.value = null
-    })
+    const list = computed(() => data?.value?.entities || [])
+    const count = computed(() => data?.value?.approximateCount)
 
     return {
         list,
+        count,
     }
 }

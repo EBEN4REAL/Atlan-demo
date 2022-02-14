@@ -9,7 +9,7 @@
             <a href="#" class="flex items-center h-full px-3">
                 <div
                     v-if="selectedValue.length > 0"
-                    class="flex items-center text-sm text-primary font-semibold cursor-pointer hover:text-primary"
+                    class="flex items-center text-sm font-semibold cursor-pointer text-primary hover:text-primary"
                 >
                     <div v-if="selectedValue.length === 1" class="">
                         All Assets
@@ -32,7 +32,7 @@
                             </div>
                             <AtlanIcon
                                 v-if="!isAccessPersona(selectedValue[1])"
-                                icon="Lock"
+                                icon="Lock2"
                                 class="mb-0.5 ml-1 h4 text-yellow-500"
                             ></AtlanIcon>
                         </div>
@@ -45,7 +45,7 @@
                             </div>
                             <AtlanIcon
                                 v-if="!isAccessPurpose(selectedValue[1])"
-                                icon="Lock"
+                                icon="Lock2"
                                 class="mb-0.5 ml-1 h3 text-yellow-500"
                             ></AtlanIcon>
                         </div>
@@ -59,7 +59,7 @@
                 </div>
                 <AtlanIcon
                     icon="CaretDown"
-                    class="text-primary h-3 ml-1"
+                    class="h-3 ml-1 text-primary"
                 ></AtlanIcon>
             </a>
         </a-cascader>

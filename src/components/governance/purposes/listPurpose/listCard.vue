@@ -18,7 +18,15 @@
                 v-for="classification in allClassifications"
                 :key="classification.guid"
             >
-                <Popover :classification="classification">
+                <Popover
+                    :classification="classification"
+                    :mouse-enter-delay="classificationPopoverMouseEnterDelay"
+                    @mouse-entered="
+                        () => {
+                            classificationPopoverMouseEnterDelay = 0.2
+                        }
+                    "
+                >
                     <ClassificationPill
                         :name="classification.name"
                         :display-name="classification?.displayName"
@@ -50,16 +58,17 @@
         paddingX: {
             type: Number,
             required: false,
-            default: 10
+            default: 10,
         },
         paddingY: {
             type: Number,
             required: false,
-            default: 8
-        }
+            default: 8,
+        },
     })
     const { p, classificationList } = toRefs(props)
     const allClassifications: Ref<object[]> = ref([])
+    const classificationPopoverMouseEnterDelay = ref(1)
 
     if (p.value?.tags?.length)
         p.value.tags.forEach((c) => {

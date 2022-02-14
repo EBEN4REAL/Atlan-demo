@@ -56,7 +56,7 @@ export default function useGraph() {
         const { title } = useAssetInfo()
         const { guid, typeName, attributes } = entity
         const typeNameComputed = getNodeTypeText[typeName] || typeName
-        const { certificateStatus } = attributes
+        const certificateStatus = attributes?.certificateStatus
         let status = ''
         const displayText = title(entity)
         const source = getSource(entity)
@@ -66,6 +66,7 @@ export default function useGraph() {
         const isRootNode = checkIfRootNode(relations, guid)
         const isLeafNode = checkIfLeafNode(relations, guid)
         const isCtaNode = hasCTA(relations, childrenCounts, guid)
+        const isVpNode = typeName === 'vpNode'
 
         if (certificateStatus) {
             switch (certificateStatus) {
@@ -85,6 +86,7 @@ export default function useGraph() {
             isHighlightedNode: null,
             isHighlightedNodePath: null,
             isGrayed: false,
+            hiddenCount: 0,
             ...dataObj,
         }
 
@@ -94,78 +96,78 @@ export default function useGraph() {
             source,
             isBase,
             entity,
+            isCtaNode,
+            isVpNode,
             width: 270,
-            height: 70,
+            height: isVpNode ? 50 : 70,
             shape: 'html',
             data: computedData,
             html: {
                 render(node) {
                     const data = node.getData() as any
-
+                    const totalHidden = isVpNode
+                        ? data?.hiddenCount || entity.attributes.hiddenCount
+                        : 0
+                    // prettier-ignore
                     return `
-                    <div class="flex items-center">
-                    <div id="${guid}" class="lineage-node group ${
-                        data?.isHighlightedNode === data?.id
-                            ? 'isHighlightedNode'
-                            : ''
-                    }
-                            ${
-                                data?.isHighlightedNodePath === data?.id
-                                    ? 'isHighlightedNodePath'
-                                    : ''
-                            }
-                            ${data?.isGrayed ? 'isGrayed' : ''}
-                            ${isBase ? 'isBase' : ''}
-                            ">
+                <div class="flex items-center">
+                    <div id="${guid}" class="lineage-node group ${isVpNode ? 'isVpNode' : ''} 
+                    ${data?.isHighlightedNode === data?.id? 'isHighlightedNode': ''}
+                    ${data?.isHighlightedNodePath === data?.id? 'isHighlightedNodePath': ''}
+                    ${data?.isGrayed ? 'isGrayed' : ''} ${isBase ? 'isBase' : ''}">
                         <div class=" ${isBase ? 'inscr' : 'hidden'}">BASE</div>
-                        <div class="popover group-hover:visible group-hover:bottom-20 group-hover:opacity-100 group-hover:delay-1000">
-                            ${displayText}
-                        </div>
-                        <div>
-                            <div class="node-text">
-                                <span class="relative z-50 block ">
-                                    <span class="absolute right-0 justify-end hidden w-6 text-white group-hover:flex caret-bg">${
-                                        ['Table', 'View'].includes(typeName)
-                                            ? iconCaretDown
-                                            : ''
-                                    }
+                        ${
+                            isVpNode
+                                ? `<span class="font-bold text-primary">Load ${totalHidden > 4 ? 4 : totalHidden} more</span>${totalHidden > 4 ?  `<span class="text-gray-500">(out of ${totalHidden})</span>`: ''}`
+                                : `<div class="popover group-hover:visible group-hover:bottom-20 group-hover:opacity-100 group-hover:delay-1000">
+                                ${displayText}
+                            </div>
+                            <div>
+                                <div class="node-text">
+                                    <span class="relative z-50 block ">
+                                        <span class="absolute right-0 justify-end hidden w-6 text-white group-hover:flex caret-bg">${
+                                            ['Table', 'View'].includes(typeName)
+                                                ? iconCaretDown
+                                                : ''
+                                        }
+                                        </span>
                                     </span>
-                                </span>
-                                <div class="flex items-center gap-x-1">
-                                    <span class="truncate node-title group-hover:underline">${displayText}</span>
-                                    <span class="flex-none mr-1">${status}</span>
+                                    <div class="flex items-center gap-x-1">
+                                        <span class="truncate node-title group-hover:underline">${displayText}</span>
+                                        <span class="flex-none mr-1">${status}</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="node-meta">
-                                <img class="node-meta__source" src="${img}" />
-                                <div class="truncate node-meta__text isTypename">${typeNameComputed}</div>
-                                <div class="node-meta__text">
-                                    ${
-                                        ['Table', 'View'].includes(typeName) &&
-                                        schemaName
-                                            ? 'in'
-                                            : ''
-                                    }
+                                <div class="node-meta">
+                                    <img class="node-meta__source" src="${img}" />
+                                    <div class="truncate node-meta__text isTypename">${typeNameComputed}</div>
+                                    <div class="node-meta__text">
+                                        ${
+                                            ['Table', 'View'].includes(
+                                                typeName
+                                            ) && schemaName
+                                                ? 'in'
+                                                : ''
+                                        }
+                                    </div>
+                                    <div class="node-meta__text text-gray  truncate ${
+                                        ['Table', 'View'].includes(typeName)
+                                            ? ''
+                                            : 'hidden'
+                                    }">
+                                        ${schemaName || ''}
+                                    </div>
                                 </div>
-                                <div class="node-meta__text text-gray  truncate ${
-                                    ['Table', 'View'].includes(typeName)
-                                        ? ''
-                                        : 'hidden'
-                                }">
-                                    ${schemaName || ''}
-                                </div>
-                            </div>
-                        </div>
+                            </div>`
+                        }
+
                     </div>
-                    <div id="node-${guid}-loadCTA" style="position: absolute;z-index: 99;" class="${
-                        (isRootNode || isLeafNode) && isCtaNode
-                            ? 'flex'
-                            : 'hidden'
-                    } ${
-                        isRootNode ? 'l-m20px' : 'r-m20px'
-                    } node-loadCTA h-6 w-6 bg-gray-400 text-white rounded-full  justify-center items-center">
-                        ${iconPlus}
-                    </div>
+                    ${(isRootNode || isLeafNode) && isCtaNode
+                        ?   `<div id="node-${guid}-loadCTA" style="position: absolute;z-index: 99;" class="${isRootNode ? 'l-m20px' : 'r-m20px'} 
+                                node-loadCTA h-6 w-6 bg-gray-400 text-white rounded-full flex justify-center items-center cursor-pointer">
+                                ${iconPlus}
+                            </div>` : ''
+                    } 
+                    
                 </div>`
                 },
                 shouldComponentUpdate(node) {
@@ -282,10 +284,22 @@ export default function useGraph() {
         return { nodeData }
     }
 
-    const addNode = async (graph, entity, data = {}) => {
+    const addNode = async (
+        graph,
+        relations,
+        childrenCounts,
+        entity,
+        data = {}
+    ) => {
         const graphNodes = graph.value.getNodes()
         const baseEntityGuid = graphNodes.find((x) => x.store.data.isBase).id
-        const { nodeData } = createNodeData(entity, baseEntityGuid)
+        const { nodeData } = createNodeData(
+            entity,
+            relations,
+            childrenCounts,
+            baseEntityGuid,
+            data
+        )
         graph.value.addNode(nodeData)
     }
 
@@ -418,8 +432,7 @@ export default function useGraph() {
                         ref: 'label',
                         fill: relation?.type === 'related' ? '#fff' : 'none',
                         strokeWidth: 1,
-                        rx: 4,
-                        ry: 4,
+                        rx: 10,
                         refWidth: '140%',
                         refHeight: '140%',
                         refX: '-20%',
@@ -456,6 +469,10 @@ export default function useGraph() {
     }
 
     const addEdge = (graph, relation, styles: EdgeStyle = {}) => {
+        const graphEdges = graph.value.getEdges()
+        const exists = graphEdges.find((x) => x.id === relation.id)
+        if (exists) return
+
         const { edgeData } = createEdgeData(relation, {}, styles)
         graph.value.addEdge(edgeData)
     }
@@ -473,11 +490,13 @@ export default function useGraph() {
 
     const toggleNodesEdges = (graph, visible) => {
         const graphEdges = graph.value.getEdges()
+        graph.value.freeze('toggleNodesEdges')
         graphEdges.forEach((x) => {
             const cell = graph.value.getCellById(x.id)
             cell.attr('line/stroke', visible ? '#aaaaaa' : '#dce0e5')
             cell.toBack()
         })
+        graph.value.unfreeze('toggleNodesEdges')
     }
 
     return {

@@ -37,7 +37,6 @@
                 :disabled="isEditing"
                 :list="filteredPersonas"
                 data-key="id"
-                :key="`${selectedPersonaId}${selectedPersona.users.length}${selectedPersona.groups.length}`"
             >
                 <template #default="{ item, isSelected }">
                     <div class="flex items-center justify-between w-full">
@@ -71,14 +70,14 @@
                                 </span>
                                 <span
                                     v-if="
-                                        item.metadataPolicies.length > 0 ||
-                                        item.dataPolicies.length > 0
+                                        item.metadataPolicies?.length > 0 ||
+                                        item.dataPolicies?.length > 0
                                     "
                                     class="text-sm text-gray-500"
                                 >
                                     {{
-                                        item.metadataPolicies.length +
-                                        item.dataPolicies.length
+                                        item.metadataPolicies?.length +
+                                        item.dataPolicies?.length
                                     }}
                                     policies</span
                                 >
@@ -120,7 +119,8 @@
         </template>
         <div
             v-else-if="
-                filteredPersonas?.length == 0 && isPersonaError === undefined
+                (filteredPersonas === null || filteredPersonas?.length == 0) &&
+                isPersonaError === undefined
             "
             class="flex flex-col items-center justify-center h-full"
         >
@@ -232,29 +232,41 @@
             }
             const whitelistedConnectionIds = ref([])
             onMounted(() => {
-                if (!route.params.id && filteredPersonas.value.length) {
+                console.log('rohan', filteredPersonas?.value?.length)
+                if (!route.params.id && filteredPersonas?.value?.length) {
                     const id = filteredPersonas.value[0].id!
                     selectedPersonaId.value = id
                     router.replace(`/governance/personas/${id}`)
                 }
             })
-            watch(isPersonaListReady, () => {
-                if (personaList.value?.length) {
-                    if (route.params.id) {
-                        const find = personaList.value.find(
-                            (el) => el.id === route.params.id
-                        )
-                        if (find) {
-                            selectedPersonaId.value = route.params.id
+
+            watch(
+                isPersonaListReady,
+                () => {
+                    if (personaList?.value?.length) {
+                        if (route.params.id) {
+                            const find = personaList.value.find(
+                                (el) => el.id === route.params.id
+                            )
+                            if (find) {
+                                selectedPersonaId.value = route.params.id
+                            } else {
+                                if (filteredPersonas?.value?.length) {
+                                    selectedPersonaId.value =
+                                        filteredPersonas.value[0].id!
+                                }
+                            }
                         } else {
-                            selectedPersonaId.value =
-                                filteredPersonas.value[0].id!
+                            if (filteredPersonas?.value?.length) {
+                                selectedPersonaId.value =
+                                    filteredPersonas.value[0].id!
+                            }
                         }
-                    } else {
-                        selectedPersonaId.value = filteredPersonas.value[0].id!
                     }
-                }
-            })
+                },
+                { immediate: true }
+            )
+
             watch(selectedPersonaId, () => {
                 router.replace(
                     `/governance/personas/${selectedPersonaId.value}`

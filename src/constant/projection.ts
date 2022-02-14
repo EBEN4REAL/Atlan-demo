@@ -126,6 +126,7 @@ export const AssetAttributes = [
     'isCustom',
     'inlineHelpText',
     'picklistValues',
+    'formula',
 ]
 
 export const SQLAttributes = [
@@ -177,7 +178,7 @@ export const AssetRelationAttributes = [
     '__createdBy',
 ]
 
-export const DefaultRelationAttributes = []
+export const DefaultRelationAttributes = ['name', 'qualifiedName']
 
 // For just asset list display
 export const MinimalAttributes = [
@@ -237,6 +238,14 @@ export const MinimalAttributes = [
     'database',
     'tableCount',
     'viewsCount',
+    'fieldCount',
+    'isCustom',
+    'isPartition',
+    'isSort',
+    'isIndexed',
+    'isForeign',
+    'isDist',
+    'order',
 ]
 
 export const BasicSearchAttributes = [

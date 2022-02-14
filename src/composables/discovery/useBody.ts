@@ -679,6 +679,7 @@ export function useBody(
         !facets?.typeNames?.includes('AtlasGlossary') &&
         !facets?.typeNames?.includes('AtlasGlossaryTerm') &&
         !facets?.typeNames?.includes('AtlasGlossaryCategory') &&
+        !facets?.typeNames?.includes('Link') &&
         !facets?.guid
     ) {
         // Global TypeName Filters

@@ -170,7 +170,7 @@
         </div>
 
         <AssetDrawer
-            :data="selectedRowData"
+            :guid="selectedRowGuid"
             :show-drawer="showColumnSidebar"
             @closeDrawer="handleCloseColumnSidebar"
             @update="handleListUpdate"
@@ -198,13 +198,10 @@
     // Composables
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import {
-        AssetAttributes,
-        AssetRelationAttributes,
-        InternalAttributes,
-        SQLAttributes,
+        MinimalAttributes,
+        DefaultRelationAttributes,
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
-    import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     // Interfaces
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -224,7 +221,7 @@
             /** DATA */
             const columnsData = ref({})
             const selectedRow = ref(null)
-            const selectedRowData = ref({})
+            const selectedRowGuid = ref('')
             const showColumnSidebar = ref<boolean>(false)
             const queryText = ref('')
             const columnsList: Ref<assetInterface[]> = ref([])
@@ -251,17 +248,11 @@
             const aggregations = ref([aggregationAttributeName])
             const postFacets = ref({})
             const dependentKey = ref('DEFAULT_COLUMNS')
-            const { customMetadataProjections } = useTypedefData()
-            const defaultAttributes = ref([
-                ...InternalAttributes,
-                ...AssetAttributes,
-                ...SQLAttributes,
-                ...customMetadataProjections,
-            ])
+            const defaultAttributes = ref([...MinimalAttributes])
             const preference = ref({
                 sort: 'order-asc',
             })
-            const relationAttributes = ref([...AssetRelationAttributes])
+            const relationAttributes = ref([...DefaultRelationAttributes])
 
             const assetQualifiedName = computed(
                 () => selectedAsset.value?.attributes?.qualifiedName
@@ -330,14 +321,14 @@
 
             const handleCloseColumnSidebar = () => {
                 selectedRow.value = null
-                selectedRowData.value = {}
+                selectedRowGuid.value = ''
                 showColumnSidebar.value = false
             }
             const openColumnSidebar = (columnOrder) => {
                 selectedRow.value = columnOrder
                 columnsList.value.forEach((singleRow) => {
                     if (singleRow.attributes.order === columnOrder) {
-                        selectedRowData.value = singleRow
+                        selectedRowGuid.value = singleRow?.guid
                     }
                 })
 
@@ -366,8 +357,6 @@
             }
 
             const handleListUpdate = (asset: any) => {
-                selectedRowData.value = asset
-
                 const index = list.value.findIndex((i) => i.guid === asset.guid)
                 if (index > -1) {
                     list.value[index] = asset
@@ -509,7 +498,7 @@
                 handleChangeSort,
                 showColumnSidebar,
                 pagination,
-                selectedRowData,
+                selectedRowGuid,
                 columns: [
                     {
                         width: 50,

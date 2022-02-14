@@ -1,13 +1,18 @@
 <template>
     <div
         v-if="announcementTitle(selectedAsset)"
-        class="flex flex-col px-3 py-2 border rounded"
+        class="flex flex-col px-3 py-3"
         :class="bgClass"
     >
+        <AssetTitleCtx
+            v-if="showAssetName"
+            :item="selectedAsset"
+            class="mb-1"
+        ></AssetTitleCtx>
         <div class="flex justify-between">
             <div>
                 <div class="flex items-center font-bold text-gray-700">
-                    <AtlanIcon :icon="icon" class="mr-1"></AtlanIcon>
+                    <AtlanIcon :icon="icon" class="mr-2 h-4 mb-0.5"></AtlanIcon>
                     {{ announcementTitle(selectedAsset) }}
                 </div>
                 <div
@@ -78,6 +83,7 @@
                 </a-dropdown>
             </div>
         </div>
+
         <div
             class="flex items-center justify-between mt-2 text-gray-500 gap-x-1"
             v-if="announcementUpdatedBy(selectedAsset)"
@@ -102,6 +108,7 @@
     import UserAvatar from '@common/avatar/user.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import AssetTitleCtx from './assetTitleContext.vue'
 
     export default defineComponent({
         name: 'AnnouncementWidget',
@@ -109,6 +116,7 @@
             AddAnnouncementModal,
             DeleteAnnouncementModal,
             UserAvatar,
+            AssetTitleCtx,
         },
 
         props: {
@@ -121,9 +129,20 @@
                 required: false,
                 default: true,
             },
+            noBorder: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+            showAssetName: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         setup(props) {
-            const { selectedAsset, allowEdit } = toRefs(props)
+            const { selectedAsset, allowEdit, noBorder, showAssetName } =
+                toRefs(props)
             const {
                 announcementTitle,
                 announcementMessage,
@@ -139,11 +158,18 @@
                 }
                 switch (announcementType(selectedAsset.value)?.toLowerCase()) {
                     case 'information':
-                        return 'information-bg information-border'
+                        return noBorder.value
+                            ? 'information-bg'
+                            : 'information-bg information-border border rounded'
                     case 'issue':
-                        return 'issue-bg issue-border'
+                        return noBorder.value
+                            ? 'issue-bg'
+                            : 'issue-bg issue-border border rounded'
                     case 'warning':
-                        return 'warning-bg warning-border'
+                        return noBorder.value
+                            ? 'warning-bg'
+                            : 'warning-bg warning-border border rounded'
+
                     default:
                         return 'information-bg information-border'
                 }
@@ -174,7 +200,9 @@
                 selectedAssetUpdatePermission,
                 bgClass,
                 icon,
+                showAssetName,
                 allowEdit,
+                noBorder,
             }
         },
     })

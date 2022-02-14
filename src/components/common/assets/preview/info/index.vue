@@ -60,7 +60,7 @@
                     <AtlanIcon
                         :icon="getConnectorImage(selectedAsset)"
                         class="h-4 mr-1"
-                    />Open in
+                    />View in
                     {{ getConnectorLabel(selectedAsset) }}
                 </div>
                 <AtlanIcon icon="External" />
@@ -230,6 +230,23 @@
 
         <div
             v-if="
+                ['SalesforceField'].includes(selectedAsset?.typeName) &&
+                formula(selectedAsset) &&
+                formula(selectedAsset) !== ''
+            "
+            class="flex px-5"
+        >
+            <div class="flex flex-col w-full text-sm">
+                <span class="mb-1 text-sm text-gray-500">Formula</span>
+                <DetailsContainer
+                    :text="formula(selectedAsset)"
+                    class="rounded-lg"
+                />
+            </div>
+        </div>
+
+        <div
+            v-if="
                 [
                     'SalesforceOrganization',
                     'SalesforceReport',
@@ -238,7 +255,24 @@
             "
             class="flex flex-col px-5 text-sm"
         >
-            <span class="mb-1 text-gray-500">Source ID</span>
+            <div class="flex items-center mb-1 text-gray-500">
+                <span>Source ID</span>
+                <a-tooltip title="Copy">
+                    <div
+                        v-if="sourceId(selectedAsset) !== '-'"
+                        @click="
+                            handleCopyValue(
+                                sourceId(selectedAsset),
+                                'Source ID'
+                            )
+                        "
+                    >
+                        <AtlanIcon
+                            icon="CopyOutlined"
+                            class="w-auto ml-1 cursor-pointer mb-0.5"
+                        /></div
+                ></a-tooltip>
+            </div>
 
             <span class="text-gray-700">{{ sourceId(selectedAsset) }}</span>
         </div>
@@ -267,11 +301,7 @@
             <div class="flex flex-col text-sm">
                 <div class="mb-1 text-sm text-gray-500">Report Type</div>
                 <div class="text-gray-700">
-                    Label : {{ selectedAsset?.attributes?.reportType?.label }}
-                </div>
-                <div class="text-gray-700">
-                    Type <span class="ml-1">:</span>
-                    {{ selectedAsset?.attributes?.reportType?.type }}
+                    {{ selectedAsset?.attributes?.reportType?.label }}
                 </div>
             </div>
         </div>
@@ -307,14 +337,12 @@
             "
             class="flex px-5"
         >
-            <div class="flex flex-col text-sm">
+            <div class="flex flex-col w-full text-sm">
                 <span class="mb-1 text-sm text-gray-500">Detail Columns</span>
-                <div
-                    v-for="(col, index) in detailColumns(selectedAsset)"
-                    :key="index"
-                >
-                    <span class="font-semibold break-words">{{ col }}</span>
-                </div>
+                <DetailsContainer
+                    :array="detailColumns(selectedAsset)"
+                    class="rounded-lg"
+                />
             </div>
         </div>
 
@@ -325,14 +353,12 @@
             "
             class="flex px-5"
         >
-            <div class="flex flex-col text-sm">
+            <div class="flex flex-col w-full text-sm">
                 <span class="mb-1 text-sm text-gray-500">Picklist Values</span>
-                <div
-                    v-for="(val, index) in picklistValues(selectedAsset)"
-                    :key="index"
-                >
-                    <span class="font-semibold break-words">{{ val }}</span>
-                </div>
+                <DetailsContainer
+                    :array="picklistValues(selectedAsset)"
+                    class="rounded-lg"
+                />
             </div>
         </div>
 
@@ -396,14 +422,13 @@
             "
             class="flex px-5"
         >
-            <div class="flex flex-col text-sm">
+            <div class="flex flex-col w-full text-sm">
                 <span class="mb-1 text-sm text-gray-500">Fields</span>
-                <div
-                    v-for="(field, index) in fieldsLookerQuery(selectedAsset)"
-                    :key="index"
-                >
-                    <span class="font-semibold break-words">{{ field }}</span>
-                </div>
+
+                <DetailsContainer
+                    :array="fieldsLookerQuery(selectedAsset)"
+                    class="rounded-lg"
+                />
             </div>
         </div>
 
@@ -569,12 +594,15 @@
                 @change="handleChangeDescription"
             />
         </div>
-        <div v-if="isProcess(selectedAsset) && getProcessSQL(selectedAsset)">
+        <div v-if="isProcess(selectedAsset)" class="flex flex-col text-sm">
+            <span class="px-5 mb-1 text-gray-500">Query</span>
             <SQLSnippet
+                v-if="getProcessSQL(selectedAsset)?.length"
                 class="mx-4 rounded-lg"
                 :text="getProcessSQL(selectedAsset)"
                 background="bg-primary-light"
             />
+            <span v-else class="px-5 text-gray-600">No SQL data available</span>
         </div>
         <div v-if="selectedAsset?.typeName === 'LookerQuery'">
             <SQLSnippet
@@ -782,8 +810,6 @@
         inject,
         ref,
         toRefs,
-        watch,
-        computed,
     } from 'vue'
     import SavedQuery from '@common/hovercards/savedQuery.vue'
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
@@ -809,6 +835,9 @@
     import SubFolderCount from '@/common/widgets/summary/types/subFolderCount.vue'
     import ParentContext from '@/common/widgets/summary/types/parentContext.vue'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
+    import DetailsContainer from '@common/assets/misc/detailsOverflowContainer.vue'
+    import { copyToClipboard } from '~/utils/clipboard'
+    import { message } from 'ant-design-vue'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -834,6 +863,7 @@
             SubFolderCount,
             ParentContext,
             FieldCount,
+            DetailsContainer,
             SampleDataTable: defineAsyncComponent(
                 () =>
                     import(
@@ -915,6 +945,7 @@
                 detailColumns,
                 picklistValues,
                 sourceId,
+                formula,
             } = useAssetInfo()
 
             const {
@@ -980,10 +1011,16 @@
                 window.open(URL, '_blank')?.focus()
             }
 
+            const handleCopyValue = async (value, type) => {
+                await copyToClipboard(value)
+                message.success(`${type} copied!`)
+            }
+
             return {
                 localDescription,
                 selectedAsset,
                 isLoadingClassification,
+                handleCopyValue,
                 localClassifications,
                 handleClassificationChange,
                 isSelectedAssetHaveRowsAndColumns,
@@ -1050,6 +1087,7 @@
                 detailColumns,
                 picklistValues,
                 sourceId,
+                formula,
             }
         },
     })

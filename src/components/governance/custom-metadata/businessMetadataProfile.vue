@@ -48,7 +48,7 @@
                         >
                             <a-input
                                 v-model:value="attrsearchText"
-                                class="w-full h-8 px-2 pl-2"
+                                class="h-8 px-2 pl-2 w-80"
                                 :placeholder="'Search for property'"
                             >
                                 <template #suffix>

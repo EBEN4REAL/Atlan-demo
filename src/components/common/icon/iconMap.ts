@@ -295,6 +295,7 @@ import SMTP from '~/assets/images/icons/smtp.svg'
 import APIKey from '~/assets/images/icons/apikey.svg'
 import Camera from '~/assets/images/icons/camera.svg'
 import FormatText from '~/assets/images/icons/formatText.svg'
+import BeautifySql from '~/assets/images/icons/beautifySql.svg'
 import NoUsers from '~/assets/images/illustrations/no-users.svg'
 import NoGroups from '~/assets/images/illustrations/no-groups.svg'
 import CreateGroups from '~/assets/images/illustrations/create-groups.svg'
@@ -806,4 +807,5 @@ export default {
     ExplorerTriggerFilled,
     OutputpaneTriggerFilled,
     SidebarTriggerFilled,
+    BeautifySql,
 }

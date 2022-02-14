@@ -58,7 +58,7 @@
                     class="border-t"
                 />
                 <div
-                    class="flex items-center justify-between w-full px-3 pt-1 pb-1 text-xs text-gray-500 bg-white"
+                    class="flex items-center justify-between w-full px-3 py-3 text-xs text-gray-500 bg-white"
                     style="z-index: 2"
                 >
                     <div class="flex items-center">

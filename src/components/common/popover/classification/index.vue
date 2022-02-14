@@ -6,7 +6,7 @@
         @mouseenter="$emit('mouseEntered')"
     >
         <template #content>
-            <div>
+            <div class="max-w-sm">
                 <div>
                     <ClassificationHead
                         :classification="classification"

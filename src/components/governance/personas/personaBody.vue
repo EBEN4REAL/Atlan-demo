@@ -144,7 +144,7 @@
                         metaDataComputed.length > 0 ||
                         dataPolicyComputed.length > 0
                     "
-                    class="flex flex-col flex-grow overflow-y-auto gap-y-3"
+                    class="flex flex-col flex-grow overflow-y-auto"
                 >
                     <template
                         v-for="(policy, idx) in metaDataComputed"

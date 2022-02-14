@@ -124,8 +124,10 @@
             class="flex flex-col items-center justify-center h-full"
         >
             <component :is="AddPersonaIllustration"></component>
-            <span class="mx-auto text-base text-gray"
-                >You don't have any personas</span
+            <div class="text-2xl font-bold">Start Creating Personas</div>
+            <span class="mx-auto text-base text-gray-500 sub-title-empty-state"
+                >Persona management keeps your data assets safe by ensuring that
+                the right people have access to the right data.</span
             >
             <AtlanBtn
                 class="flex-none mx-auto mt-6"
@@ -138,8 +140,11 @@
                 <template #prefix>
                     <AtlanIcon icon="Add" />
                 </template>
-                Add new persona
+                Get started
             </AtlanBtn>
+            <div class="mt-6 cursor-pointer text-primary">
+                Learn More <AtlanIcon icon="ArrowRight" />
+            </div>
         </div>
         <ErrorView v-else :error="isPersonaError">
             <div class="mt-3">
@@ -194,7 +199,7 @@
         personaList,
     } from './composables/usePersonaList'
     import { isEditing } from './composables/useEditPersona'
-    import AddPersonaIllustration from '~/assets/images/illustrations/add_user.svg'
+    import AddPersonaIllustration from '~/assets/images/empty_state_personaV2.svg'
     import DetailPolicy from './overview/detailPolicy.vue'
     import usePermissions from '~/composables/auth/usePermissions'
     import { useAuthStore } from '~/store/auth'
@@ -316,5 +321,10 @@
     }
     .inActive {
         background: #cf592e;
+    }
+    .sub-title-empty-state {
+        max-width: 550px;
+        text-align: center;
+        margin-top: 16px !important;
     }
 </style>

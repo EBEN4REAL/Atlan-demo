@@ -125,8 +125,11 @@
             class="flex flex-col items-center justify-center h-full"
         >
             <component :is="AddPersonaIllustration"></component>
-            <span class="mx-auto text-base text-gray"
-                >You don't have any purposes</span
+            <div class="text-2xl font-bold">Start Creating Purposes</div>
+            <span class="mx-auto text-base text-gray-500 sub-title-empty-state"
+                >Purposes will control permissions based on which users and
+                groups can view, edit or query assets tagged with that
+                Classification.</span
             >
             <AtlanBtn
                 class="flex-none mx-auto mt-6"
@@ -139,8 +142,11 @@
                 <template #prefix>
                     <AtlanIcon icon="Add" />
                 </template>
-                Add new purpose
+                Get started
             </AtlanBtn>
+            <div class="mt-6 cursor-pointer text-primary">
+                Learn More <AtlanIcon icon="ArrowRight" />
+            </div>
         </div>
         <ErrorView v-else :error="isPurposeError">
             <div class="mt-3">
@@ -186,7 +192,7 @@
         isPurposeError,
     } from './composables/usePurposeList'
     import { isEditing } from './composables/useEditPurpose'
-    import AddPersonaIllustration from '~/assets/images/illustrations/add_user.svg'
+    import AddPersonaIllustration from '~/assets/images/empty_state_policyV2.svg'
     import ErrorIllustration from '~/assets/images/error.svg'
     import { useAuthStore } from '~/store/auth'
 
@@ -299,5 +305,10 @@
 <style lang="less" scoped>
     .success {
         background: #00a680;
+    }
+    .sub-title-empty-state {
+        max-width: 550px;
+        text-align: center;
+        margin-top: 16px !important;
     }
 </style>

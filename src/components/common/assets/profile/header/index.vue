@@ -362,7 +362,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, computed, toRefs, ref ,watch} from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        computed,
+        toRefs,
+        ref,
+        watch,
+    } from 'vue'
     import { useMagicKeys, useActiveElement, whenever, and } from '@vueuse/core'
     import { useRouter } from 'vue-router'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -549,7 +556,7 @@
                 handleEdit,
                 isCustom,
                 handleNameUpdate,
-entityTitle 
+                entityTitle,
             }
         },
     })

@@ -16,7 +16,7 @@
             <div
                 id="drag-container"
                 class="overflow-y-auto bg-white"
-                style="height: calc(100vh - 17.5rem)"
+                style="max-height: calc(100vh - 17.5rem)"
             >
                 <div
                     v-for="(property, index) in properties"

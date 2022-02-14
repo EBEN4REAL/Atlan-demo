@@ -61,12 +61,8 @@ export const operators = {
     ],
     SQL: [
         {
-            id: 'equals',
-            label: 'Equals(=)',
-        },
-        {
-            id: 'notEquals',
-            label: 'Not Equals(!=)',
+            id: 'contains',
+            label: 'Contains',
         },
         {
             id: 'isNull',

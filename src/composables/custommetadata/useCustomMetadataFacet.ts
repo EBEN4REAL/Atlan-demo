@@ -47,10 +47,10 @@ export default function useCustomMetadataFacet() {
             if (
                 typeof a.options?.customApplicableEntityTypes === 'string'
             ) {
-                let temp = JSON.parse(
+                const temp = JSON.parse(
                     a.options?.customApplicableEntityTypes
                 )
-                if (temp) {
+                if (temp?.length) {
                     if (temp.includes(typeName) || typeName === '__all') {
                         attributeList.push({
                             ...a,
@@ -59,13 +59,6 @@ export default function useCustomMetadataFacet() {
                             ),
                         })
                     }
-                } else {
-                    attributeList.push({
-                        ...a,
-                        typeList: JSON.parse(
-                            a.options?.customApplicableEntityTypes
-                        ),
-                    })
                 }
             }
         })

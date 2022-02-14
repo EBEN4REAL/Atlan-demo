@@ -78,8 +78,14 @@
             class="flex flex-col px-6 pt-6"
             style="height: calc(100% - 155px)"
         >
-            <div class="bg-white rounded">
-                <div class="p-4 mb-3 border-b">
+            <div
+                :class="
+                    metaDataComputed.length > 0 || dataPolicyComputed.length > 0
+                        ? 'bg-white rounded-lg'
+                        : ''
+                "
+            >
+                <div class="p-4 border-b">
                     <div class="flex items-center justify-between">
                         <div class="w-1/2 pr-3">
                             <div
@@ -199,7 +205,7 @@
 
                 <div
                     v-if="isEmpty"
-                    class="flex flex-col items-center justify-center bg-white wrapper-empty-data"
+                    class="flex flex-col items-center justify-center wrapper-empty-data"
                 >
                     <component :is="EmptyPolicyIllustration"></component>
                     <span class="mt-10 text-xl font-bold text-gray">

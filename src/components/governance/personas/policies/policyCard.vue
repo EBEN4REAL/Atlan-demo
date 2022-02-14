@@ -1,7 +1,9 @@
 <template>
-    <div class="relative bg-white rounded container-policy-card">
+    <div
+        class="relative bg-white border-b hover:bg-gray-100 container-policy-card"
+    >
         <div
-            class="flex items-center px-3 py-3 border-b rounded cursor-pointer group hover:bg-gray-100 card-policy"
+            class="flex items-center px-3 py-3 cursor-pointer card-policy"
             :class="selectedPolicy.id === policy.id ? '' : ''"
             @click="handleClickPlicyCard"
         >
@@ -426,6 +428,10 @@
         height: fit-content !important;
     }
     .container-policy-card {
+        &:last-child {
+            border-bottom-right-radius: 0.5rem;
+            border-bottom-left-radius: 0.5rem;
+        }
         .button-hide {
             opacity: 0;
             transition: all ease 0.3s;

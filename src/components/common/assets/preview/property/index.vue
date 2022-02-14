@@ -173,7 +173,7 @@
             </div>
         </div>
 
-        <div class="flex flex-col mt-3 mb-3 text-sm">
+        <div class="flex flex-col mt-3 mb-3 text-sm" v-if="lastSyncRunAt(selectedAsset, true)">
             <span class="mb-1 text-gray-500">Last synced at (on Atlan)</span>
 
             <div class="flex flex-col">

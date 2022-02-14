@@ -27,6 +27,7 @@
                         :connector-name="facets?.hierarchy?.connectorName"
                         :autofocus="true"
                         :allow-clear="true"
+                        :isLoading="isValidating"
                         size="large"
                         :class="
                             ['admin', 'classifications'].includes(page)
@@ -149,6 +150,7 @@
                                 :id="getAssetId(item)"
                                 :item="item"
                                 :item-index="itemIndex"
+                                :isLoading="isValidating"
                                 :selected-guid="
                                     page === 'admin' || page === 'glossary'
                                         ? null

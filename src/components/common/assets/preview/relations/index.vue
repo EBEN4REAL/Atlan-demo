@@ -22,7 +22,7 @@
 
         <AggregationTabs
             v-model="selectedType"
-            class="px-3 mb-1"
+            class="px-3 mb-1 mt-2"
             :list="assetTypeAggregationList"
             @change="handleAssetTypeChange"
         ></AggregationTabs>

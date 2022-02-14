@@ -118,7 +118,9 @@
                             {{ policy.assets.length }}
                         </div>
                     </a-tooltip>
-                    <span v-if="permissions.length" class="text-gray-300 mx-1.5"
+                    <span
+                        v-if="permissions.length || maskComputed"
+                        class="text-gray-300 mx-1.5"
                         >•</span
                     >
                     <a-tooltip v-if="permissions.length" placement="top">
@@ -143,10 +145,7 @@
                             {{ maskComputed }}
                         </template>
                         <div class="truncate max-w-5">
-                            <AtlanIcon
-                                icon="DatabaseGray"
-                                class="-mt-1 icon-gray"
-                            />
+                            <AtlanIcon icon="Number" class="-mt-1 icon-gray" />
                             {{ maskComputed }}
                         </div>
                     </a-tooltip>

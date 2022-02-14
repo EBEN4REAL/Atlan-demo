@@ -2,7 +2,7 @@
     <div class="relative bg-white rounded container-policy-card">
         <div
             class="flex items-center px-3 py-3 rounded cursor-pointer group hover:bg-gray-100 card-policy"
-            :class="selectedPolicy.id === policy.id ? 'outline-primary' : ''"
+            :class="selectedPolicy.id === policy.id ? '' : ''"
             @click="handleClickPlicyCard"
         >
             <div

@@ -59,6 +59,7 @@ export interface activeInlineTabInterface {
         vqb: VQBInterface
         resultsPane: {
             activeTab: number
+            outputPaneSize: number
             result: {
                 title: string
                 runQueryId: undefined | string

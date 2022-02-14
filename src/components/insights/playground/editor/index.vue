@@ -76,12 +76,23 @@
                                 <template #title>Toggle sidebar</template>
                                 <div
                                     class="p-1 mr-2 rounded cursor-pointer hover:bg-gray-200 group"
+                                    :class="{
+                                        'bg-primary-light': explorerPanelActive,
+                                    }"
                                     @click="toggleExplorerPane"
                                     @mouseout="recordTooltipPresence"
                                 >
                                     <AtlanIcon
-                                        icon="ExplorerTrigger"
+                                        :icon="
+                                            explorerPanelActive
+                                                ? 'ExplorerTriggerFilled'
+                                                : 'ExplorerTrigger'
+                                        "
                                         class="w-4 h-4"
+                                        :class="{
+                                            'stroke-current':
+                                                !explorerPanelActive,
+                                        }"
                                     />
                                 </div>
                             </a-tooltip>
@@ -334,11 +345,21 @@
                             >
                                 <div
                                     class="p-1 rounded cursor-pointer hover:bg-gray-200 group text-primary"
+                                    :class="{
+                                        'bg-primary-light': resultPaneActive,
+                                    }"
                                     @mouseout="recordTooltipPresence"
                                 >
                                     <AtlanIcon
-                                        icon="OutputpaneTrigger"
+                                        :icon="
+                                            resultPaneActive
+                                                ? 'OutputpaneTriggerFilled'
+                                                : 'OutputpaneTrigger'
+                                        "
                                         class="w-4 h-4 text-gray-500 outline-none"
+                                        :class="{
+                                            'stroke-current': !resultPaneActive,
+                                        }"
                                     />
                                 </div>
                             </div>
@@ -361,11 +382,23 @@
                                     >
                                     <div
                                         class="p-1 rounded cursor-pointer hover:bg-gray-200 group"
+                                        :class="{
+                                            'bg-primary-light':
+                                                assetPreviewActive,
+                                        }"
                                         @mouseout="recordTooltipPresence"
                                     >
                                         <AtlanIcon
-                                            icon="SidebarTrigger"
+                                            :icon="
+                                                assetPreviewActive
+                                                    ? 'SidebarTriggerFilled'
+                                                    : 'SidebarTrigger'
+                                            "
                                             class="w-4 h-4 text-gray-500 outline-none"
+                                            :class="{
+                                                'stroke-current':
+                                                    !assetPreviewActive,
+                                            }"
                                         />
                                     </div>
                                 </a-tooltip>
@@ -435,6 +468,7 @@
     const Monaco = defineAsyncComponent(() => import('./monaco/monaco.vue'))
 
     export default defineComponent({
+        name: 'PlaygroundIndex',
         components: {
             VQB,
             Monaco: Monaco,
@@ -563,6 +597,21 @@
             }
             const { classificationList } = useTypedefData()
             let defaultClassification = classificationList.value[0] ?? undefined
+
+            const resultPaneActive = computed(() => {
+                const tabActive =
+                    activeInlineTab.value.playground.resultsPane
+                        .outputPaneSize > 0
+                return tabActive
+            })
+            const assetPreviewActive = computed(() => {
+                const tabActive = activeInlineTab.value.assetSidebar.isVisible
+                return tabActive
+            })
+            const explorerPanelActive = computed(() => {
+                const tabActive = explorerPaneSize.value > 0
+                return tabActive
+            })
 
             // callback fxn
             const getData = (
@@ -921,6 +970,9 @@
                 hasQueryReadPermission,
                 hasQueryWritePermission,
                 activeTabCollection,
+                resultPaneActive,
+                assetPreviewActive,
+                explorerPanelActive,
                 // collectionInfo,
                 // hasCollectionReadPermission,
                 // hasCollectionWritePermission,

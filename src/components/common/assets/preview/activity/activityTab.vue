@@ -66,6 +66,19 @@
                             >Column</span
                         >)
                     </div>
+                    <div
+                        v-if="
+                            log.entityId !== item.guid &&
+                            ['AtlasGlossary'].includes(item.typeName)
+                        "
+                        class="flex items-center mt-1 text-gray-700"
+                    >
+                        (<span class="tracking-wide text-gray-500 uppercase">{{
+                            glossaryLabel[log?.typeName]
+                        }}</span
+                        >)
+                    </div>
+
                     <div class="flex items-center mt-1 text-gray-500">
                         <div class="flex items-center">
                             <AtlanIcon icon="User" class="mr-1"></AtlanIcon>
@@ -156,6 +169,7 @@
     import { useAssetAuditSearch } from '~/composables/discovery/useAssetAuditSearch'
     import ActivityTypeSelect from '@/common/select/activityType.vue'
     import { activityTypeMap } from '~/constant/activityType'
+    import { default as glossaryLabel } from '@/glossary/constants/assetTypeLabel'
 
     export default defineComponent({
         name: 'ActivityTab',
@@ -341,6 +355,7 @@
                 activityType,
                 activityTypeMap,
                 handleActivityTypeChange,
+                glossaryLabel,
             }
         },
     })

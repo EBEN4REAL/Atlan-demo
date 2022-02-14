@@ -156,19 +156,23 @@
                     <!-- canDelete -->
                     <!-- v-if="policy.allow" -->
                     <div class="flex-1 ustify-center default-s3">
-                        <span v-if="policy.allow" class="text-gray-500">
+                        <!-- <span v-if="policy.allow" class="text-gray-500">
                             <AtlanIcon class="text-gray-500" icon="Check" />
                             {{
                                 type === 'meta'
                                     ? 'Permission Allowed'
                                     : 'Query Allowed'
                             }}
-                        </span>
-                        <span v-else class="text-sm text-red-500">{{
-                            type === 'meta'
-                                ? 'Denied Permission'
-                                : 'Denied Query'
-                        }}</span>
+                        </span> -->
+                        <span
+                            v-if="!policy.allow"
+                            class="text-sm text-red-500"
+                            >{{
+                                type === 'meta'
+                                    ? 'Denied Permission'
+                                    : 'Denied Query'
+                            }}</span
+                        >
                     </div>
                     <div
                         class="items-center justify-end flex-1 gap-1 pr-3 default-s4"

@@ -78,8 +78,8 @@
             class="flex flex-col px-6 pt-6"
             style="height: calc(100% - 155px)"
         >
-            <div class="p-4 rounded bg-primary-light">
-                <div class="mb-3">
+            <div class="bg-white rounded">
+                <div class="p-4 mb-3 border-b">
                     <div class="flex items-center justify-between">
                         <div class="w-1/2 pr-3">
                             <div
@@ -246,7 +246,12 @@
                         </template>
                     </a-dropdown>
                     <div class="mt-6 cursor-pointer text-primary">
-                        Learn More <AtlanIcon icon="ArrowRight" />
+                        <a
+                            href="https://ask.atlan.com/hc/en-us/articles/4413877880209-How-to-build-access-policies"
+                            target="_blank"
+                        >
+                            Learn More <AtlanIcon icon="ArrowRight" />
+                        </a>
                     </div>
                 </div>
             </div>
@@ -614,8 +619,20 @@
         }
     }
 </style>
-<style lang="less" module>
+<style lang="less">
     .container-tabs {
+        .ant-radio-button-wrapper {
+            &::before {
+                display: none !important;
+            }
+            @apply bg-gray-100;
+            &.ant-radio-button-wrapper-checked {
+                box-shadow: 0px 1px 4px 0px #0000001f;
+
+                @apply bg-white;
+            }
+            border: none !important;
+        }
         .assetbar {
             :global(.ant-tabs-tab:first-child) {
                 border-top-left-radius: 24px !important;

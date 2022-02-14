@@ -1,18 +1,75 @@
-import { AssetTypeList } from '~/constant/assetType'
-import assetCategories from '~/constant/assetCategories'
+import { assetTypeList } from '~/constant/assetType'
 import { CUSTOM_METADATA_ATTRIBUTE as CMA } from '~/types/typedefs/customMetadata.interface'
 
-const inApplicableTypeName = ['Connection']
-const otherTypes = [
-    {
-        title: 'Glossary Term',
-        value: 'AtlasGlossaryTerm',
-        key: 'AtlasGlossaryTerm',
-    },
-]
 
-export const applicableEntityTypesOptions = [
-    ...assetCategories.map((t) => ({
+const customMetadataAssetCategories: {
+    id: string
+    label: string,
+    children: {
+        id: string
+        label: string,
+    }[]
+}[] = [
+        {
+            id: 'SQL',
+            label: 'SQL',
+            children: [
+                ...assetTypeList.filter(t => t.categoryType === 'SQL').map(c => ({
+                    id: c.id, label: c.id
+                }))
+            ],
+        },
+        {
+            id: 'BI',
+            label: 'BI',
+            children: [
+                ...assetTypeList.filter(t => t.categoryType === 'BI').map(c => ({
+                    id: c.id, label: c.id
+                }))
+            ],
+        },
+        {
+            id: 'SaaS',
+            label: 'SaaS',
+            children: [
+                ...assetTypeList.filter(t => t.categoryType === 'SaaS').map(c => ({
+                    id: c.id, label: c.id
+                }))
+            ],
+        },
+        {
+            id: 'Insights',
+            label: 'Insights',
+            children: [
+                ...assetTypeList.filter(t => t.categoryType === 'Insights').map(c => ({
+                    id: c.id, label: c.id
+                }))
+            ],
+        },
+        {
+            id: 'Lineage',
+            label: 'Lineage',
+            children: [
+                ...assetTypeList.filter(t => t.categoryType === 'Lineage').map(c => ({
+                    id: c.id, label: c.id
+                }))
+            ],
+        },
+        {
+            id: 'BusinessTerms',
+            label: 'Business Terms',
+            children: [
+                ...assetTypeList.filter(t => t.categoryType === 'BusinessTerms').map(c => ({
+                    id: c.id, label: c.id
+                }))
+            ],
+        }
+    ]
+
+
+
+export const applicableEntityTypesOptions: any = [
+    ...customMetadataAssetCategories.map((t) => ({
         title: t.label,
         value: t.id,
         key: t.id,

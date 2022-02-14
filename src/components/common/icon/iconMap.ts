@@ -91,6 +91,7 @@ import GlossaryVerified from '~/assets/images/icons/glossary-verified.svg'
 import GlossaryDraft from '~/assets/images/icons/glossary-wip.svg'
 import GlossaryGray from '~/assets/images/icons/glossary-gray.svg'
 import KebabMenu from '~/assets/images/icons/kebab-menu-new.svg'
+import KebabMenuHorizontal from '~/assets/images/icons/kebab-menu.svg'
 import Overview from '~/assets/images/icons/overview.svg'
 import OverviewActive from '~/assets/images/icons/overview_active.svg'
 import Lineage from '~/assets/images/icons/lineage.svg'
@@ -566,6 +567,7 @@ export default {
     Glossary,
     GlossaryInactive,
     KebabMenu,
+    KebabMenuHorizontal,
     User,
     Chats,
     OpenTermProfile,

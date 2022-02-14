@@ -55,7 +55,16 @@
             </a-tooltip>
 
             <template v-for="classification in list" :key="classification.guid">
-                <Popover :classification="classification" :entity-guid="guid">
+                <Popover
+                    :classification="classification"
+                    :entity-guid="guid"
+                    :mouse-enter-delay="classificationPopoverMouseEnterDelay"
+                    @mouse-entered="
+                        () => {
+                            classificationPopoverMouseEnterDelay = 0.2
+                        }
+                    "
+                >
                     <ClassificationPill
                         :name="classification.name"
                         :display-name="classification?.displayName"
@@ -242,6 +251,7 @@
                     isEdit.value = false
                 }
             })
+            const classificationPopoverMouseEnterDelay = ref(1)
 
             return {
                 localValue,
@@ -254,6 +264,7 @@
                 classificationFacetRef,
                 isEdit,
                 handleDeleteClassification,
+                classificationPopoverMouseEnterDelay,
             }
         },
     })

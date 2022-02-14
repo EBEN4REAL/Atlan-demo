@@ -1,7 +1,7 @@
 <template>
     <div class="flex items-center w-full">
         <div class="mr-1">
-            <a-tooltip :title="typeName" placement="top" v-if="!isLoading">
+            <a-tooltip :title="typeName" placement="right" v-if="!isLoading">
                 <AtlanIcon
                     class="w-4 h-4"
                     :icon="typeName + `Gray`"

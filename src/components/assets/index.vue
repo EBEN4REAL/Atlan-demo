@@ -79,11 +79,11 @@
                 <div
                     v-if="showAggrs"
                     class="w-full"
-                    :class="page === 'admin' ? '' : 'px-6'"
+                    :class="page === 'admin' ? '' : 'pl-3 mt-2 mb-1'"
                 >
                     <AggregationTabs
                         v-model="postFacets.typeName"
-                        class="mt-2 mb-1"
+                        class=""
                         :list="assetTypeAggregationList"
                         :shortcut-enabled="true"
                         @change="handleAssetTypeChange"

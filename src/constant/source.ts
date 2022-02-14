@@ -5,8 +5,6 @@ export const SourceList = [
         image: 'Snowflake',
         filterMaxLevel: 2,
         connectionCount: 0,
-        selectFirstAsDefault: false, // false by default
-
         dialectConfig: {
             assetQuoteType: '"',
             abortQuery: true,
@@ -126,7 +124,7 @@ export const SourceList = [
         image: 'MySQL',
         connectionCount: 0,
         dialectConfig: {
-            abortQuery: true, // @inishchith to update on SQL end.
+            abortQuery: true,
         },
         selectFirstAsDefault: true, // false by default
         hierarchy: [
@@ -313,7 +311,6 @@ export const SourceList = [
             assetQuoteType: '"',
             abortQuery: false,
         },
-        selectFirstAsDefault: false, // false by default
         hierarchy: [
             {
                 typeName: 'Database',

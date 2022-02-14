@@ -180,9 +180,17 @@
 
             const facets = ref()
 
-            if (['Table', 'View'].includes(item.value.typeName)) {
+            if (
+                ['Table', 'View', 'AtlasGlossary'].includes(item.value.typeName)
+            ) {
                 facets.value = {
                     entityQualifiedName: item.value.attributes.qualifiedName,
+                }
+            }
+            if (['AtlasGlossary'].includes(item.value.typeName)) {
+                facets.value = {
+                    ...facets.value,
+                    typeNames: [item.value.typeName],
                 }
             } else {
                 facets.value = {
@@ -201,7 +209,6 @@
                 }
                 return ''
             }
-
             const {
                 data,
                 list: auditList,

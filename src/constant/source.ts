@@ -126,7 +126,7 @@ export const SourceList = [
         image: 'MySQL',
         connectionCount: 0,
         dialectConfig: {
-            abortQuery: false, // @inishchith to update on SQL end.
+            abortQuery: true, // @inishchith to update on SQL end.
         },
         selectFirstAsDefault: true, // false by default
         hierarchy: [

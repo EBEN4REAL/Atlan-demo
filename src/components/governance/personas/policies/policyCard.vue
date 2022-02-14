@@ -104,7 +104,7 @@
                 </div>
             </div>
             <div class="flex items-center flex-1 pl-5">
-                <div class="flex justify-center flex-1">
+                <div class="flex flex-1">
                     <a-tooltip placement="top">
                         <template #title>
                             {{ policy.assets.length }}
@@ -118,8 +118,10 @@
                             {{ policy.assets.length }}
                         </div>
                     </a-tooltip>
-                    <span class="text-gray-300 mx-1.5">•</span>
-                    <a-tooltip placement="top">
+                    <span v-if="permissions.length" class="text-gray-300 mx-1.5"
+                        >•</span
+                    >
+                    <a-tooltip v-if="permissions.length" placement="top">
                         <template #title>
                             {{ permissions.length }}
                             {{
@@ -136,12 +138,39 @@
                             {{ permissions.length }}
                         </div>
                     </a-tooltip>
+                    <a-tooltip v-if="maskComputed" placement="top">
+                        <template #title>
+                            {{ maskComputed }}
+                        </template>
+                        <div class="truncate max-w-5">
+                            <AtlanIcon
+                                icon="DatabaseGray"
+                                class="-mt-1 icon-gray"
+                            />
+                            {{ maskComputed }}
+                        </div>
+                    </a-tooltip>
                 </div>
                 <div class="flex flex-1">
                     <!-- canDelete -->
+                    <!-- v-if="policy.allow" -->
+                    <div class="flex-1 ustify-center default-s3">
+                        <span v-if="policy.allow" class="text-gray-500">
+                            <AtlanIcon class="text-gray-500" icon="Check" />
+                            {{
+                                type === 'meta'
+                                    ? 'Permission Allowed'
+                                    : 'Query Allowed'
+                            }}
+                        </span>
+                        <span v-else class="text-sm text-red-500">{{
+                            type === 'meta'
+                                ? 'Denied Permission'
+                                : 'Denied Query'
+                        }}</span>
+                    </div>
                     <div
-                        v-if="policy.allow"
-                        class="flex items-center justify-end flex-1 gap-1 pr-3"
+                        class="items-center justify-end flex-1 gap-1 pr-3 default-s4"
                     >
                         <a-tooltip placement="top">
                             <template #title>
@@ -220,13 +249,6 @@
                         >
                             <AtlanIcon class="text-primary" icon="ArrowRight" />
                         </AtlanBtn>
-                    </div>
-                    <div v-else class="flex justify-center flex-1">
-                        <span class="text-sm text-red-500">{{
-                            type === 'meta'
-                                ? 'Denied Permission'
-                                : 'Denied Query'
-                        }}</span>
                     </div>
                 </div>
             </div>
@@ -409,7 +431,19 @@
             opacity: 0;
             transition: all ease 0.3s;
         }
+        .default-s3 {
+            display: flex !important;
+        }
+        .default-s4 {
+            display: none !important;
+        }
         &:hover {
+            .default-s3 {
+                display: none !important;
+            }
+            .default-s4 {
+                display: flex !important;
+            }
             .button-hide {
                 opacity: 1;
                 background-color: transparent !important;

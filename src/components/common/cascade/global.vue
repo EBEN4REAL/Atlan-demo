@@ -199,7 +199,7 @@
                 return false
             }
             const isAccessPersona = (id) => {
-                if (personas.find((i) => i.id === id)) {
+                if (personas?.find((i) => i.id === id)) {
                     return true
                 }
 

@@ -204,6 +204,14 @@
                     }"
                 ></component>
             </a-tab-pane>
+            <template #moreIcon>
+                <div class="flex">
+                    <AtlanIcon
+                        icon="KebabMenuHorizontal"
+                        class="text-primary"
+                    ></AtlanIcon>
+                </div>
+            </template>
         </a-tabs>
     </div>
 </template>
@@ -559,8 +567,11 @@
                 @apply justify-center;
             }
 
-            :global(.ant-tabs-nav-wrap) {
-                @apply pt-3;
+            :global(.ant-tabs-tab:first-child) {
+                padding: 3px 8px !important;
+                @apply mt-3 !important;
+
+                @apply justify-center;
             }
 
             :global(.ant-tabs-content) {

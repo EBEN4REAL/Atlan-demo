@@ -191,7 +191,7 @@
                         size="sm"
                         color="secondary"
                         padding="compact"
-                        class="flex items-center justify-between h-6 ml-2 border-none button-shadow group"
+                        class="flex items-center justify-between h-6 ml-2 border-gray-300 group"
                         :class="isUpdating ? 'px-4.5' : 'px-2'"
                         :disabled="
                             activeInlineTab.isSaved && activeInlineTab.queryId
@@ -249,7 +249,7 @@
                         size="sm"
                         color="secondary"
                         padding="compact"
-                        class="flex items-center h-6 px-3 ml-2 border-none button-shadow"
+                        class="flex items-center h-6 px-3 ml-2 border-gray-300"
                         @click="$emit('onClickSaveQuery')"
                     >
                         <div

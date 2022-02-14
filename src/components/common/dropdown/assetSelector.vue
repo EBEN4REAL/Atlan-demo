@@ -44,7 +44,6 @@
     import { defineComponent, watch, toRefs, computed, PropType } from 'vue'
     import { useAssetListing } from '~/components/insights/common/composables/useAssetListing'
     import { isSelectFirstDefault } from '~/components/insights/common/composables/getDialectInfo'
-    import { useConnector } from '~/components/insights/common/composables/useConnector'
 
     import { message } from 'ant-design-vue'
 
@@ -105,7 +104,6 @@
                 connector,
                 index,
             } = toRefs(props)
-            const { getConnectionQualifiedName } = useConnector()
             const initialBody = {
                 dsl: filters.value,
                 attributes: ['name', 'displayName'],
@@ -169,26 +167,6 @@
             }
 
             const dropdownOption = computed(() => {
-                // const tree: Record<string, any>[] = []
-                // list.value.forEach((ls) => {
-                //     let treeNodeObj = {
-                //         label:
-                //             ls.attributes?.displayName || ls.attributes?.name,
-                //         value: ls.attributes.qualifiedName,
-                //         slots: {
-                //             title: 'title',
-                //         },
-                //         children: [],
-                //     }
-                //     tree.push(treeNodeObj)
-                //     console.log('selector tree data: ', tree)
-                // })
-                // tree.sort((x, y) => {
-                //     if (x.label < y.label) return -1
-                //     if (x.label > y.label) return 1
-                //     return 0
-                // })
-                // return tree
                 let data = list.value.map((ls) => ({
                     label: ls.attributes?.displayName || ls.attributes?.name,
                     value: ls.attributes.qualifiedName,
@@ -199,9 +177,6 @@
                     if (x.label > y.label) return 1
                     return 0
                 })
-                // checkifNeedsIsSelectFirstDefault(data)
-
-                // console.log('data here: ', data)
                 return data
             })
 
@@ -212,19 +187,6 @@
                         dropdownOption.value?.length > 0
                     )
             })
-
-            // watch(
-            //     [connector, dropdownOption],
-            //     (
-            //         [newConnector, newDropDown],
-            //         [prevConnector, prevDropDown]
-            //     ) => {
-            //         if (newConnector?.id !== prevConnector?.id) {
-            //             checkifNeedsIsSelectFirstDefault(newDropDown)
-            //         }
-            //     },
-            //     { immediate: true }
-            // )
 
             return {
                 index,

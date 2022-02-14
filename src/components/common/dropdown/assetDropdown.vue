@@ -37,8 +37,6 @@
     import { Components } from '~/types/atlas/client'
     import AssetSelector from '~/components/common/dropdown/assetSelector.vue'
     import bodybuilder from 'bodybuilder'
-    import { isSelectFirstDefault } from '~/components/insights/common/composables/getDialectInfo'
-    import { useConnector } from '~/components/insights/common/composables/useConnector'
 
     export default defineComponent({
         name: 'AssetDropdown',
@@ -69,7 +67,6 @@
         setup(props, { emit }) {
             const { connector, filter } = toRefs(props)
             const _firsCalled = ref(false)
-            const { getConnectionQualifiedName } = useConnector()
             console.log('connection filters: ', filter.value)
             console.log('connector preview: ', connector.value)
 
@@ -177,12 +174,6 @@
                 }
                 emit('labelChange', '')
             }
-            //databaseQualifiedName
-
-            //
-            //"default/snowflake/1644180115/ATLAN_SAMPLE_DATA"
-
-            //1
 
             const handleChange = (
                 key: string,
@@ -223,15 +214,12 @@
             const firstSelectByDefaultChange = (
                 key: string,
                 value: string | undefined,
-                level: number,
-                forceRefresh
+                level: number
             ) => {
                 if (!_firsCalled.value) {
                     handleChange(key, value, level)
                     _firsCalled.value = true
                 }
-                // debugger
-                // debugger
             }
             watch(connector, () => {
                 _firsCalled.value = false

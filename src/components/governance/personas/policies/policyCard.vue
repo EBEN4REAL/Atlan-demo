@@ -5,33 +5,36 @@
             :class="selectedPolicy.id === policy.id ? '' : ''"
             @click="handleClickPlicyCard"
         >
-            <div
-                v-if="type === 'meta'"
-                class="flex items-center justify-center w-10 h-10 mr-2 bg-gray-100 border border-gray-200 rounded-full"
-            >
-                <AtlanIcon v-if="type === 'meta'" icon="Policies" />
-            </div>
-            <div
-                v-if="type === 'data'"
-                class="flex items-center justify-center w-10 h-10 mr-2 bg-gray-100 border border-gray-200 rounded-full"
-            >
-                <AtlanIcon icon="QueryGrey" />
-            </div>
-            <div class="flex flex-col">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center">
+            <div class="flex items-center flex-1">
+                <div
+                    v-if="type === 'meta'"
+                    class="flex items-center justify-center w-10 h-10 mr-2 bg-gray-100 border border-gray-200 rounded-full"
+                >
+                    <AtlanIcon v-if="type === 'meta'" icon="Policies" />
+                </div>
+                <div
+                    v-if="type === 'data'"
+                    class="flex items-center justify-center w-10 h-10 mr-2 bg-gray-100 border border-gray-200 rounded-full"
+                >
+                    <AtlanIcon icon="QueryGrey" />
+                </div>
+                <div class="flex flex-col">
+                    <div class="flex items-center justify-between">
                         <div class="flex items-center">
-                            <AtlanIcon
-                                :icon="`${getImage(
-                                    connectionQfName?.split('/')[1]
-                                )}`"
-                                class="w-auto h-4 pr-1 rounded-tl rounded-bl"
-                            ></AtlanIcon>
-                            <span
-                                >{{ connectorName }}/{{ connectionName }}</span
-                            >
-                        </div>
-                        <!-- <div v-if="policy.assets.length > 0">
+                            <div class="flex items-center">
+                                <AtlanIcon
+                                    :icon="`${getImage(
+                                        connectionQfName?.split('/')[1]
+                                    )}`"
+                                    class="w-auto h-4 pr-1 rounded-tl rounded-bl"
+                                ></AtlanIcon>
+                                <span
+                                    >{{ connectorName }}/{{
+                                        connectionName
+                                    }}</span
+                                >
+                            </div>
+                            <!-- <div v-if="policy.assets.length > 0">
                             <span class="text-gray-300 mx-1.5">•</span>
                             <span v-if="!isAddAll" class="flex-none text-sm">
                                 {{ policy.assets.length }}
@@ -45,7 +48,7 @@
                                 All assets
                             </span>
                         </div> -->
-                        <!-- <div v-if="permissions.length > 0 && type === 'meta'">
+                            <!-- <div v-if="permissions.length > 0 && type === 'meta'">
                             <span class="text-gray-300 mx-1.5">•</span>
                             <span class="flex-none text-sm">
                                 {{ permissions.length }}
@@ -76,28 +79,31 @@
                                 {{ maskComputed }}
                             </span>
                         </div> -->
-                    </div>
-                    <!-- <span v-if="!policy.allow" class="mr-6 denied-policy-pill">
+                        </div>
+                        <!-- <span v-if="!policy.allow" class="mr-6 denied-policy-pill">
                         {{
                             type === 'meta'
                                 ? 'Denied Permissions'
                                 : 'Denied Query'
                         }}
                     </span> -->
-                </div>
-                <div class="flex items-center">
-                    <span class="text-gray-500">{{ policy?.name }}</span>
-                    <span class="text-gray-300 mx-1.5">•</span>
-                    <span
-                        class="ml-1 text-gray-500"
-                        data-test-id="policy-type"
-                        >{{
-                            type === 'meta' ? 'Metadata Policy' : 'Data Policy'
-                        }}</span
-                    >
+                    </div>
+                    <div class="flex items-center">
+                        <span class="text-gray-500">{{ policy?.name }}</span>
+                        <span class="text-gray-300 mx-1.5">•</span>
+                        <span
+                            class="ml-1 text-gray-500"
+                            data-test-id="policy-type"
+                            >{{
+                                type === 'meta'
+                                    ? 'Metadata Policy'
+                                    : 'Data Policy'
+                            }}</span
+                        >
+                    </div>
                 </div>
             </div>
-            <div class="flex items-center flex-1">
+            <div class="flex items-center flex-1 pl-5">
                 <div class="flex justify-center flex-1">
                     <a-tooltip placement="top">
                         <template #title>
@@ -132,8 +138,9 @@
                     </a-tooltip>
                 </div>
                 <div class="flex flex-1">
+                    <!-- canDelete -->
                     <div
-                        v-if="canDelete"
+                        v-if="policy.allow"
                         class="flex items-center justify-end flex-1 gap-1 pr-3"
                     >
                         <a-tooltip placement="top">
@@ -215,9 +222,11 @@
                         </AtlanBtn>
                     </div>
                     <div v-else class="flex justify-center flex-1">
-                        <span class="text-sm text-red-500"
-                            >Denied Permission</span
-                        >
+                        <span class="text-sm text-red-500">{{
+                            type === 'meta'
+                                ? 'Denied Permission'
+                                : 'Denied Query'
+                        }}</span>
                     </div>
                 </div>
             </div>

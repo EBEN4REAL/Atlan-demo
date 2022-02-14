@@ -8,6 +8,7 @@
         }"
         ok-text="Done"
         @ok="handleFullScreen"
+        @cancel="handleFullScreen"
     >
         <template #footer>
             <a-button type="primary" @click="handleFullScreen">Done</a-button>

@@ -107,7 +107,7 @@
                                         : MOUSE_ENTER_DELAY
                                 "
                             >
-                                <template #title>Format SQL</template>
+                                <template #title>Beautify SQL</template>
                                 <div
                                     class="items-center justify-center p-1 mr-2 rounded cursor-pointer hover:bg-gray-200 group"
                                     @click="formatDocument"
@@ -183,9 +183,11 @@
                             >
                                 <template #title>Custom variables</template>
                                 <div
-                                    class="items-center justify-center p-1 mr-2 rounded cursor-pointer hover:bg-gray-200"
+                                    class="items-center justify-center p-1 rounded cursor-pointer hover:bg-gray-200"
                                     :class="
-                                        showcustomToolBar ? 'bg-gray-300' : ''
+                                        showcustomToolBar
+                                            ? 'bg-primary-light'
+                                            : ''
                                     "
                                     @click="toggleCustomToolbar"
                                     @mouseout="recordTooltipPresence"
@@ -194,7 +196,7 @@
                                 </div>
                             </a-tooltip>
                             <!-- limit 100 -->
-                            <div class="flex items-center px-1">
+                            <div class="flex items-center ml-3">
                                 <a-checkbox
                                     :class="$style.checkbox_style"
                                     v-model:checked="limitRows.checked"
@@ -286,7 +288,9 @@
                                 <template #title> Exit full screen</template>
                                 <div
                                     class="p-1 mr-2 rounded cursor-pointer hover:bg-gray-200"
-                                    :class="fullSreenState ? 'bg-gray-300' : ''"
+                                    :class="
+                                        fullSreenState ? 'bg-primary-light' : ''
+                                    "
                                     @click="tFullScreen"
                                     @mouseout="recordTooltipPresence"
                                 >

@@ -143,7 +143,10 @@ import Cross from '~/assets/images/icons/cross.svg'
 import FullScreen from '~/assets/images/icons/fullscreen.svg'
 import ExitFullScreen from '~/assets/images/icons/exit-fullscreen.svg'
 import SidebarTrigger from '~/assets/images/icons/sidebar-trigger.svg'
+import SidebarTriggerFilled from '~/assets/images/icons/sidebar-trigger-filled.svg'
 import OutputpaneTrigger from '~/assets/images/icons/output-pane-trigger.svg'
+import OutputpaneTriggerFilled from '~/assets/images/icons/output-pane-trigger-filled.svg'
+
 import RunSuccess from '~/assets/images/icons/run-success.svg'
 import RunFailed from '~/assets/images/icons/run-failed.svg'
 import WorkflowsActive from '~/assets/images/icons/workflows_active.svg'
@@ -177,6 +180,7 @@ import EmptyQueriesTab from '~/assets/images/illustrations/empty_queries_tab.svg
 import Slack from '~/assets/images/admin/integrations/slack.svg'
 import Teams from '~/assets/images/admin/integrations/teams.svg'
 import ExplorerTrigger from '~/assets/images/icons/explorer-trigger.svg'
+import ExplorerTriggerFilled from '~/assets/images/icons/explorer-trigger-filled.svg'
 import EmptySearchQuery from '~/assets/images/icons/empty_search_query.svg'
 import EmptyResult from '~/assets/images/icons/empty_result.svg'
 import Schedule from '~/assets/images/icons/schedule.svg'
@@ -799,4 +803,7 @@ export default {
     QuestionRound,
     Documentation,
     Logout,
+    ExplorerTriggerFilled,
+    OutputpaneTriggerFilled,
+    SidebarTriggerFilled,
 }

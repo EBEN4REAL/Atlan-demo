@@ -5,6 +5,7 @@
         :class="{
             'outline-primary bg-primary-menu shadow-sm': isSelected,
             'cursor-pointer': enableSidebarDrawer,
+            'opacity-80': isLoading,
         }"
         @click="handlePreview(item)"
     >
@@ -1164,6 +1165,11 @@
                 default: false,
                 required: false,
             },
+            isLoading: {
+                type: Boolean,
+                default: false,
+                required: false,
+            },
         },
         emits: ['listItem:check', 'unlinkAsset', 'preview', 'updateDrawer'],
         setup(props, { emit }) {
@@ -1176,6 +1182,7 @@
                 bulkSelectMode,
                 enableSidebarDrawer,
                 itemIndex,
+                isLoading,
             } = toRefs(props)
 
             const { getEntityStatusIcon } = useGlossaryData()
@@ -1385,6 +1392,7 @@
                 isCustom,
                 getEntityStatusIcon,
                 meanings,
+                isLoading,
                 classificationPopoverMouseEnterDelay,
             }
         },

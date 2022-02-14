@@ -33,6 +33,7 @@
         </template>
 
         <template #suffix>
+            <a-spin size="small" v-if="isLoading" class="mt-0.5 mx-1"></a-spin>
             <slot name="tab" />
             <slot name="filter" />
             <a-popover
@@ -94,10 +95,11 @@
             connectorName: { type: String, default: () => '' },
             customClass: { type: String, default: '' },
             noBorder: { type: Boolean, default: false },
+            isLoading: { type: Boolean, default: false },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const { autofocus, connectorName, size, placeholder } =
+            const { autofocus, connectorName, size, placeholder, isLoading } =
                 toRefs(props)
 
             const { modelValue } = useVModels(props, emit)
@@ -178,6 +180,7 @@
                 getConnectorLabelByName,
                 allowTabShortcut,
                 placeholderDynamic,
+                isLoading,
             }
         },
     })

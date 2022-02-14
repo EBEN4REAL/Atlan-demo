@@ -8,7 +8,8 @@
         :overlayClassName="tooltipColor === 'white' ? 'tooltip-black' : ''"
         ><div
             :class="classes"
-            :style="{ maxWidth: clampPercentage, 'line-break': 'anywhere' }"
+            :style="{ maxWidth: clampPercentage }"
+            class="break-words"
         >
             <template v-if="routeTo">
                 <router-link

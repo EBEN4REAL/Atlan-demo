@@ -41,7 +41,7 @@
             >
                 <template #title>Copy data</template>
                 <div
-                    class="flex items-center p-1 mr-3 rounded cursor-pointer"
+                    class="flex items-center mr-4 rounded cursor-pointer"
                     @click="
                         useCopy(
                             activeInlineTab.playground.editor.columnList,
@@ -53,7 +53,7 @@
                         icon="CopyOutlined"
                         class="w-4 h-4 mr-1 text-gray-500"
                     />
-                    <span class="mt-1">Copy</span>
+                    <span class="mt-0.5">Copy</span>
                 </div>
             </a-tooltip>
             <a-tooltip
@@ -66,7 +66,7 @@
             >
                 <template #title>Export data</template>
                 <div
-                    class="flex items-center p-1 mr-2 rounded cursor-pointer"
+                    class="flex items-center mr-2 rounded cursor-pointer"
                     @click="
                         useTableExport(
                             activeInlineTab?.queryId

@@ -143,7 +143,12 @@
                 Get started
             </AtlanBtn>
             <div class="mt-6 cursor-pointer text-primary">
-                Learn More <AtlanIcon icon="ArrowRight" />
+                <a
+                    href="https://ask.atlan.com/hc/en-us/articles/4413870860049-What-are-personas-"
+                    target="_blank"
+                >
+                    Learn More <AtlanIcon icon="ArrowRight" />
+                </a>
             </div>
         </div>
         <ErrorView v-else :error="isPersonaError">

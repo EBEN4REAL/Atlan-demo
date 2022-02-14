@@ -199,7 +199,7 @@
 
                 <div
                     v-if="isEmpty"
-                    class="flex flex-col items-center justify-center wrapper-empty-data"
+                    class="flex flex-col items-center justify-center bg-white wrapper-empty-data"
                 >
                     <component :is="EmptyPolicyIllustration"></component>
                     <span class="mt-10 text-xl font-bold text-gray">

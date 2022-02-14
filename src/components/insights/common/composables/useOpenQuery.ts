@@ -135,6 +135,7 @@ export default function useOpenQuery({
                     activeTab:
                         activeInlineTab.value?.playground?.resultsPane
                             ?.activeTab ?? 0,
+                    outputPaneSize: 27.9,
                     result: {
                         title: `${key} Result`,
                         runQueryId: undefined,

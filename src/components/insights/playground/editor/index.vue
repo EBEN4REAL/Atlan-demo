@@ -758,7 +758,7 @@
             }
             const togglePane = () => {
                 console.log('called')
-                resultsPaneSizeToggle(outputPaneSize)
+            resultsPaneSizeToggle(activeInlineTab,inlineTabs)
             }
             const toggleExplorerPane = () => {
                 console.log('explorer pane toggled')

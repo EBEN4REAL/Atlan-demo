@@ -203,7 +203,6 @@
                 ASSET_SIDEBAR_WIDTH,
                 EXPLORER_WIDTH,
                 assetSidebarPaneSize,
-                outputPaneSize,
                 paneResize,
             } = useSpiltPanes()
             const route = useRoute()
@@ -360,7 +359,6 @@
                 editorHoverConfig,
                 monacoInstance,
                 explorerPaneSize,
-                outputPaneSize,
                 fullSreenState,
                 setEditorInstance,
                 isCollectionCreatedByCurrentUser,
@@ -474,7 +472,7 @@
                 if (e.key === 'j') {
                     if (e.metaKey || e.ctrlKey) {
                         e.preventDefault()
-                        resultsPaneSizeToggle(outputPaneSize)
+                        resultsPaneSizeToggle(activeInlineTab, tabsArray)
                     }
                     // prevent the default action
                 }
@@ -629,6 +627,7 @@
                         },
                         resultsPane: {
                             activeTab: 0,
+                            outputPaneSize: 27.9,
                             result: {
                                 title: `Result`,
                                 runQueryId: undefined,

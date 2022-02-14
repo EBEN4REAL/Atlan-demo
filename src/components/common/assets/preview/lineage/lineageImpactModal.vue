@@ -43,9 +43,9 @@
                                 <div
                                     class="flex items-center text-sm text-gray-500"
                                 >
-                                    <img
-                                        :src="text.sourceImg"
-                                        class="h-3 mr-1 mb-0.5"
+                                    <AtlanIcon
+                                        :icon="text.sourceImg"
+                                        class="h-4 mr-1 mb-0.5"
                                     />
                                     <span class="tracking-wider uppercase">
                                         {{ text.typeName }}

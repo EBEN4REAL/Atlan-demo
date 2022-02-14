@@ -60,6 +60,15 @@
             <template #leftExtra>
                 <slot></slot>
             </template>
+
+            <template #moreIcon>
+                <div class="flex">
+                    <AtlanIcon
+                        icon="KebabMenuHorizontal"
+                        class="text-primary"
+                    ></AtlanIcon>
+                </div>
+            </template>
         </a-tabs>
     </div>
 </template>

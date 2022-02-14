@@ -39,7 +39,7 @@
 
 <script lang="ts">
     import { useVModels } from '@vueuse/core'
-    import { defineComponent, ref, toRefs, computed } from 'vue'
+    import { defineComponent, ref, toRefs, computed, onMounted } from 'vue'
 
     import useConnectionData from '~/composables/connection/useConnectionData'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -106,6 +106,18 @@
                     (item) => item.id === persona.value
                 )
                 return found?.metadataPolicies.map((i) => i.connectionId) || []
+            })
+
+            onMounted(() => {
+                if (connector.value) {
+                    if (!selectedValue.value) {
+                        if (filteredList.value.length === 1) {
+                            selectedValue.value =
+                                filteredList.value[0].attributes.qualifiedName
+                            handleChange(selectedValue.value)
+                        }
+                    }
+                }
             })
 
             const isAdminConnection = (item) => {

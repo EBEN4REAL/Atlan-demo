@@ -113,6 +113,11 @@ export default function useAssetInfo() {
         return found
     }
 
+    const getConnectorLabelByName = (name: string) => {
+        const found = connectionStore.getConnectorLabelMapping[name]
+        return found
+    }
+
     const getConnectorImageMap = computed(() => {
         return connectionStore.getConnectorImageMapping
     })
@@ -1294,5 +1299,6 @@ export default function useAssetInfo() {
         isCustom,
         picklistValues,
         formula,
+        getConnectorLabelByName,
     }
 }

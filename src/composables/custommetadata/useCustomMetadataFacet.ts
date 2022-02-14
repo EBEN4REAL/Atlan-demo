@@ -43,6 +43,7 @@ export default function useCustomMetadataFacet() {
     const typeNameFiltering = (attributeDefs, typeName) => {
         const attributeList = []
         attributeDefs.forEach((a) => {
+            if (!a.options?.customApplicableEntityTypes) return
             if (
                 typeof a.options?.customApplicableEntityTypes === 'string'
             ) {
@@ -66,11 +67,6 @@ export default function useCustomMetadataFacet() {
                         ),
                     })
                 }
-            } else {
-                attributeList.push({
-                    ...a,
-                    typeList: [],
-                })
             }
         })
         return attributeList

@@ -62,7 +62,11 @@
                             :clamp-percentage="assetNameTruncatePercentage"
                             :tooltip-text="`${title(item)}`"
                             :route-to="getProfilePath(item)"
-                            classes="text-md font-bold mb-0 cursor-pointer text-primary hover:underline "
+                            :classes="
+                                isScrubbed(item)
+                                    ? 'text-md mb-0  font-semibold cursor-pointer text-primary hover:underline opacity-70 '
+                                    : 'text-md font-bold mb-0 cursor-pointer text-primary hover:underline '
+                            "
                             :should-open-in-new-tab="openAssetProfileInNewTab"
                             @click="(e) => e.stopPropagation()"
                         />
@@ -80,7 +84,7 @@
                             <AtlanIcon
                                 v-if="isScrubbed(item)"
                                 icon="Lock"
-                                class="h-4 mb-1 ml-1"
+                                class="h-4 mb-1 ml-2 text-gray-500"
                             ></AtlanIcon
                         ></a-tooltip>
                     </div>

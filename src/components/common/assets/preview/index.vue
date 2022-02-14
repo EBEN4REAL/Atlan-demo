@@ -21,7 +21,11 @@
                 <Tooltip
                     :tooltip-text="`${title(selectedAsset)}`"
                     :route-to="getProfilePath(selectedAsset)"
-                    classes="text-base font-bold mb-0 cursor-pointer text-primary hover:underline "
+                    :classes="
+                        isScrubbed(selectedAsset)
+                            ? 'text-md mb-0  font-semibold cursor-pointer text-primary hover:underline opacity-70 '
+                            : 'text-md font-bold mb-0 cursor-pointer text-primary hover:underline '
+                    "
                     :should-open-in-new-tab="
                         selectedAsset.typeName?.toLowerCase() === 'query'
                     "
@@ -576,6 +580,10 @@
 
             :global(.ant-tabs-content) {
                 @apply px-0 h-full !important;
+
+                :global(.ant-tabs-tab:first-child) {
+                    @apply mt-0 !important;
+                }
             }
             :global(.ant-tabs-ink-bar) {
                 @apply rounded-t-sm;

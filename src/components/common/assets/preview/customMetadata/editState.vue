@@ -114,7 +114,7 @@
             v-model:value="localValue"
             class="flex-grow shadow-none border-1"
             :allow-clear="true"
-            :placeholder="`Select ${isMultivalued ? 'enums' : 'an enum'}`"
+            :placeholder="`Select ${isMultivalued ? 'items' : 'an item'}`"
             :mode="isMultivalued ? 'multiple' : null"
             style="width: 100%"
             :show-arrow="true"

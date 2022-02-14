@@ -8,13 +8,13 @@
         destroy-on-close
     >
         <div class="p-4">
-            <div class="mb-2 font-bold text-gray-700">New Enum</div>
+            <div class="mb-2 font-bold text-gray-700">New Picklist</div>
             <a-form layout="vertical">
                 <a-form-item label="Name">
                     <a-input
                         id="name-input"
                         v-model:value="form.name"
-                        placeholder="Name the label"
+                        placeholder="Name of the Picklist"
                     ></a-input>
                 </a-form-item>
 

@@ -13,7 +13,11 @@
                 </div>
                 <div style="width: 130px"></div>
             </div>
-            <div id="drag-container" class="bg-white">
+            <div
+                id="drag-container"
+                class="overflow-y-auto bg-white"
+                style="height: calc(100vh - 17.5rem)"
+            >
                 <div
                     v-for="(property, index) in properties"
                     :id="`prop-${property.name}`"

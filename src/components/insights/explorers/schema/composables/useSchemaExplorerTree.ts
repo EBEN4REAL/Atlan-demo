@@ -128,8 +128,8 @@ const useTree = ({
         return parentStack
     }
 
-    function removeDuplicates(treeData: Ref<CustomTreeDataItem[]>) {
-        const arr = []
+    function removeDuplicates(treeData: Ref<CustomTreeDataItem[]>, c, d, s) {
+        let arr = []
         treeData.value.reduce((acc, curr) => {
             if (acc.indexOf(curr.guid) === -1) {
                 acc.push(curr.guid)
@@ -137,6 +137,10 @@ const useTree = ({
             }
             return acc
         }, [])
+        if (c && d && !s) {
+            arr = arr.filter((t) => t?.typeName === 'Schema')
+        }
+
         return arr
     }
 
@@ -245,7 +249,12 @@ const useTree = ({
             treeData.value = []
         }
         /* removing duplicates */
-        treeData.value = removeDuplicates(treeData)
+        treeData.value = removeDuplicates(
+            treeData,
+            connectionQualifiedName,
+            databaseQualifiedName,
+            schemaQualifiedName
+        )
 
         isInitingTree.value = false
     }

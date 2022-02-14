@@ -5,6 +5,8 @@ export const SourceList = [
         image: 'Snowflake',
         filterMaxLevel: 2,
         connectionCount: 0,
+        selectFirstAsDefault: false, // false by default
+
         dialectConfig: {
             assetQuoteType: '"',
             abortQuery: true,
@@ -78,6 +80,55 @@ export const SourceList = [
         dialectConfig: {
             abortQuery: true,
         },
+        hierarchy: [
+            {
+                typeName: 'Database',
+                name: 'Database',
+                parent: '',
+                attribute: 'databaseQualifiedName',
+                level: 1,
+                image: 'Database',
+            },
+            {
+                typeName: 'Schema',
+                name: 'Schema',
+                parent: 'Database',
+                attribute: 'schemaQualifiedName',
+                level: 2,
+                image: 'Schema',
+            },
+            {
+                typeName: 'Table',
+                name: 'Table',
+                parent: 'Schema',
+                attribute: 'tableQualifiedName',
+                level: 3,
+            },
+            {
+                typeName: 'View',
+                name: 'View',
+                parent: 'Schema',
+                attribute: 'viewQualifiedName',
+                level: 3,
+            },
+            {
+                typeName: 'Procedure',
+                name: 'Procedure',
+                parent: 'Schema',
+                attribute: 'procedureQualifiedName',
+                level: 3,
+            },
+        ],
+    },
+    {
+        id: 'mysql',
+        label: 'MySQL',
+        image: 'MySQL',
+        connectionCount: 0,
+        dialectConfig: {
+            abortQuery: false, // @inishchith to update on SQL end.
+        },
+        selectFirstAsDefault: true, // false by default
         hierarchy: [
             {
                 typeName: 'Database',
@@ -262,6 +313,7 @@ export const SourceList = [
             assetQuoteType: '"',
             abortQuery: false,
         },
+        selectFirstAsDefault: false, // false by default
         hierarchy: [
             {
                 typeName: 'Database',

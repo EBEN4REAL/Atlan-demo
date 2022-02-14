@@ -2,7 +2,7 @@
     <a-select
         :placeholder="placeholder"
         :value="modelValue"
-        :allowClear="true"
+        :allowClear="!isSelectFirstDefault(connector.id)"
         :showSearch="true"
         notFoundContent="No data available"
         style="width: 100%; border-radius: 8px"
@@ -41,8 +41,11 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, watch, toRefs, computed } from 'vue'
+    import { defineComponent, watch, toRefs, computed, PropType } from 'vue'
     import { useAssetListing } from '~/components/insights/common/composables/useAssetListing'
+    import { isSelectFirstDefault } from '~/components/insights/common/composables/getDialectInfo'
+    import { useConnector } from '~/components/insights/common/composables/useConnector'
+
     import { message } from 'ant-design-vue'
 
     export default defineComponent({
@@ -51,6 +54,17 @@
             VNodes: (_, { attrs }) => attrs.vnodes,
         },
         props: {
+            connector: {
+                type: Object as PropType<{
+                    id: string
+                    label: string
+                    image: string
+                    types: string[]
+                    hierarchy: Record<string, any>[]
+                    filterMaxLevel: number
+                }>,
+                required: false,
+            },
             modelValue: {
                 type: String,
                 required: false,
@@ -72,20 +86,33 @@
                 required: false,
                 default: () => false,
             },
+            index: {
+                type: Number,
+                required: true,
+            },
             bgGrayForSelector: {
                 type: Boolean,
                 default: true,
             },
         },
-        emits: ['update:modelValue', 'change'],
+        emits: ['update:modelValue', 'change', 'firstSelectByDefaultChange'],
         setup(props, { emit }) {
-            const { disabled, filters, typeName } = toRefs(props)
+            const {
+                disabled,
+                filters,
+                typeName,
+                modelValue,
+                connector,
+                index,
+            } = toRefs(props)
+            const { getConnectionQualifiedName } = useConnector()
             const initialBody = {
                 dsl: filters.value,
                 attributes: ['name', 'displayName'],
             }
             const { list, replaceBody, data, isLoading, error } =
                 useAssetListing({}, false)
+
             watch(error, () => {
                 if (error.value) {
                     console.log(typeName.value)
@@ -112,6 +139,35 @@
                 emit('update:modelValue', checkedValues)
                 emit('change', checkedValues)
             }
+
+            const checkifNeedsIsSelectFirstDefault = (
+                data: any[],
+                forceRefresh = false
+            ) => {
+                // debugger
+                if (
+                    isSelectFirstDefault(connector.value.id) &&
+                    index.value == 0
+                ) {
+                    if (data?.length > 0) {
+                        // debugger
+                        // emit(
+                        //     'firstSelectByDefaultChange',
+                        //     'connectionQualifiedName',
+                        //     filters.value.attributeValue,
+                        //     0
+                        // )
+                        emit(
+                            'firstSelectByDefaultChange',
+                            'databaseQualifiedName',
+                            data[0].value,
+                            1,
+                            forceRefresh
+                        )
+                    }
+                }
+            }
+
             const dropdownOption = computed(() => {
                 // const tree: Record<string, any>[] = []
                 // list.value.forEach((ls) => {
@@ -137,16 +193,41 @@
                     label: ls.attributes?.displayName || ls.attributes?.name,
                     value: ls.attributes.qualifiedName,
                 }))
+
                 data.sort((x, y) => {
                     if (x.label < y.label) return -1
                     if (x.label > y.label) return 1
                     return 0
                 })
+                // checkifNeedsIsSelectFirstDefault(data)
+
                 // console.log('data here: ', data)
                 return data
             })
 
+            watch(dropdownOption, () => {
+                if (index.value == 0)
+                    checkifNeedsIsSelectFirstDefault(
+                        dropdownOption.value,
+                        dropdownOption.value?.length > 0
+                    )
+            })
+
+            // watch(
+            //     [connector, dropdownOption],
+            //     (
+            //         [newConnector, newDropDown],
+            //         [prevConnector, prevDropDown]
+            //     ) => {
+            //         if (newConnector?.id !== prevConnector?.id) {
+            //             checkifNeedsIsSelectFirstDefault(newDropDown)
+            //         }
+            //     },
+            //     { immediate: true }
+            // )
+
             return {
+                index,
                 typeName,
                 list,
                 handleChange,
@@ -154,6 +235,8 @@
                 data,
                 isLoading,
                 dropdownOption,
+                connector,
+                isSelectFirstDefault,
             }
         },
     })

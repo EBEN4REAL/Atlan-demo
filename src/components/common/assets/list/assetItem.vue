@@ -64,7 +64,7 @@
                             :route-to="getProfilePath(item)"
                             :classes="
                                 isScrubbed(item)
-                                    ? 'text-md mb-0  font-semibold cursor-pointer text-primary hover:underline opacity-70 '
+                                    ? 'text-md mb-0  font-semibold cursor-pointer text-primary hover:underline opacity-80 '
                                     : 'text-md font-bold mb-0 cursor-pointer text-primary hover:underline '
                             "
                             :should-open-in-new-tab="openAssetProfileInNewTab"

@@ -294,7 +294,7 @@
                                 :avatar-shape="'circle'"
                                 class="mr-2 mt-0.5"
                             />
-                            <a-tooltip placement="bottom">
+                            <a-tooltip placement="top">
                                 <template #title>
                                     <div class="created-name">
                                         {{ value }}

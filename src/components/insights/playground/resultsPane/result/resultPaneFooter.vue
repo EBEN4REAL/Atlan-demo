@@ -8,30 +8,27 @@
         "
     >
         <div class="flex items-center px-3 text-gray-700 mt-0.5">
-            <span class="mr-2">
+            <!-- Execution Time will be shown when it is >0 -->
+            <span v-if="queryExecutionTime > 0" class="flex items-center mr-1">
+                <AtlanIcon class="w-4 h-4 mr-1 mb-0.5" icon="QueryTime" />
+                <span class="mr-1">
+                    {{ getFormattedTimeFromMilliSeconds(queryExecutionTime) }}
+                </span>
+                <div class="w-1 h-1 bg-gray-C4C4C4 rounded-full mb-0.5"></div>
+            </span>
+            <!-- -------------------------------------------- -->
+            <span class="mr-1">
                 {{
                     `${activeInlineTab.playground.resultsPane.result.totalRowsCount?.toLocaleString()} rows`
                 }}
             </span>
-            <div class="w-1 h-1 mr-2 bg-gray-500 rounded-full mb-0.5"></div>
+            <div class="w-1 h-1 mr-1 bg-gray-C4C4C4 rounded-full mb-0.5"></div>
 
-            <span class="mr-2">
+            <span class="mr-1">
                 {{
                     activeInlineTab.playground.editor.columnList.length?.toLocaleString()
                 }}&nbsp;cols
             </span>
-            <!-- Execution Time will be shown when it is >0 -->
-            <div
-                v-if="queryExecutionTime > 0"
-                class="w-1 h-1 mr-2 bg-gray-500 rounded-full mb-0.5"
-            ></div>
-            <span v-if="queryExecutionTime > 0" class="flex items-center mr-2">
-                <AtlanIcon class="w-4 h-4 mr-1 mb-0.5" icon="QueryTime" />
-                <span>
-                    {{ getFormattedTimeFromMilliSeconds(queryExecutionTime) }}
-                </span>
-            </span>
-            <!-- -------------------------------------------- -->
         </div>
         <div class="flex items-center">
             <a-tooltip
@@ -131,7 +128,11 @@
         },
     })
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+    .bg-gray-C4C4C4 {
+        background: #c4c4c4;
+    }
+</style>
 
 <route lang="yaml">
 meta:

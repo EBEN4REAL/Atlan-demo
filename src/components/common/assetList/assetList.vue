@@ -44,7 +44,7 @@
             >
                 <ErrorView></ErrorView>
             </div>
-            <div v-if="list.length === 0 && !isValidating" class="h-full">
+            <div v-else-if="list.length === 0 && !isValidating" class="h-full">
                 <EmptyView
                     empty-screen="NoAssetsFound"
                     image-class="h-44"

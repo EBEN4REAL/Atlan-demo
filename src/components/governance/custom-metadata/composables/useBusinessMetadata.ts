@@ -1,10 +1,8 @@
-import { ref, watch, toRaw, computed } from 'vue'
-import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { DEFAULT_ATTRIBUTE, DEFAULT_BM } from '~/constant/businessMetadataTemplate'
-// import { generateUUID } from '~/utils/helper/generator'
 import { useTypedefStore } from '~/store/typedef'
-import { Types } from '~/services/meta/types'
-import { useRoute, useRouter } from 'vue-router'
+import { applicableTypeList } from '~/composables/custommetadata/useApplicableTypes'
 
 
 // Types
@@ -179,11 +177,18 @@ export default function useBusinessMetadata() {
 
 
   // Utility functions 
-  const getDefaultAttributeTemplate = () =>
-    // const uuid4 = generateUUID()
-    // TODO changes when UUID4 support
-    ({ ...DEFAULT_ATTRIBUTE })
-  // return { ...DEFAULT_ATTRIBUTE, name: uuid4 };
+  const getDefaultAttributeTemplate = () => {
+    const applicableEntityTypesOptions = applicableTypeList()
+    const template = JSON.parse(JSON.stringify(DEFAULT_ATTRIBUTE))
+    template.options.customApplicableEntityTypes = applicableEntityTypesOptions.reduce(
+      (acc, item) => [
+        ...acc,
+        ...(item?.children?.map((v) => v.value) ?? []),
+      ],
+      []
+    )
+    return template
+  }
 
 
 

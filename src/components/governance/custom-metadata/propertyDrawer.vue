@@ -417,7 +417,6 @@
         DEFAULT_ATTRIBUTE,
         ATTRIBUTE_INPUT_VALIDATION_RULES,
         ATTRIBUTE_TYPES,
-        applicableEntityTypesOptions,
     } from '~/constant/businessMetadataTemplate'
     import { Types } from '~/services/meta/types'
     import NewEnumForm from './newEnumForm.vue'
@@ -430,6 +429,8 @@
     import { useUpdateEnums } from '../enums/composables/useModifyEnums'
     import { useTypedefStore } from '~/store/typedef'
     import MultiInput from '@/common/input/customizedTagInput.vue'
+    import { applicableTypeList } from '~/composables/custommetadata/useApplicableTypes'
+    import useBusinessMetadata from './composables/useBusinessMetadata'
 
     const CHECKEDSTRATEGY = TreeSelect.SHOW_PARENT
 
@@ -448,9 +449,8 @@
         },
         emits: ['addedProperty', 'openIndex'],
         setup(props, { emit }) {
-            const initializeForm = (): CMA => ({
-                ...JSON.parse(JSON.stringify(DEFAULT_ATTRIBUTE)),
-            })
+            const { getDefaultAttributeTemplate } = useBusinessMetadata()
+            const initializeForm = (): CMA => getDefaultAttributeTemplate()
             // data
             const visible = ref<boolean>(false)
             const createMore = ref<boolean>(false)
@@ -465,6 +465,7 @@
             const typeTreeSelect = ref(null)
             const enumSearchValue = ref('')
             const oldEnumSeardValue = ref('')
+            const applicableEntityTypesOptions = applicableTypeList()
             const viewOnly = computed(
                 () => props.metadata.options?.isLocked === 'true'
             )
@@ -927,6 +928,7 @@
             })
 
             return {
+                applicableEntityTypesOptions,
                 viewOnly,
                 discardEnumEdit,
                 handleEditEnum,

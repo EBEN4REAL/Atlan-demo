@@ -1,85 +1,4 @@
-import { assetTypeList } from '~/constant/assetType'
 import { CUSTOM_METADATA_ATTRIBUTE as CMA } from '~/types/typedefs/customMetadata.interface'
-
-
-const customMetadataAssetCategories: {
-    id: string
-    label: string,
-    children: {
-        id: string
-        label: string,
-    }[]
-}[] = [
-        {
-            id: 'SQL',
-            label: 'SQL',
-            children: [
-                ...assetTypeList.filter(t => t.categoryType === 'SQL').map(c => ({
-                    id: c.id, label: c.fullLabel ?? c.label
-                }))
-            ],
-        },
-        {
-            id: 'BI',
-            label: 'BI',
-            children: [
-                ...assetTypeList.filter(t => t.categoryType === 'BI').map(c => ({
-                    id: c.id, label: c.fullLabel ?? c.label
-                }))
-            ],
-        },
-        {
-            id: 'SaaS',
-            label: 'SaaS',
-            children: [
-                ...assetTypeList.filter(t => t.categoryType === 'SaaS').map(c => ({
-                    id: c.id, label: c.fullLabel ?? c.label
-                }))
-            ],
-        },
-        {
-            id: 'Insights',
-            label: 'Insights',
-            children: [
-                ...assetTypeList.filter(t => t.categoryType === 'Insights').map(c => ({
-                    id: c.id, label: c.fullLabel ?? c.label
-                }))
-            ],
-        },
-        {
-            id: 'Lineage',
-            label: 'Lineage',
-            children: [
-                ...assetTypeList.filter(t => t.categoryType === 'Lineage').map(c => ({
-                    id: c.id, label: c.fullLabel ?? c.label
-                }))
-            ],
-        },
-        {
-            id: 'BusinessTerms',
-            label: 'Business Terms',
-            children: [
-                ...assetTypeList.filter(t => t.categoryType === 'BusinessTerms').map(c => ({
-                    id: c.id, label: c.fullLabel ?? c.label
-                }))
-            ],
-        }
-    ]
-
-
-
-export const applicableEntityTypesOptions: any = [
-    ...customMetadataAssetCategories.map((t) => ({
-        title: t.label,
-        value: t.id,
-        key: t.id,
-        children: t.children?.map((a) => ({
-            title: a.label,
-            value: a.id,
-            key: a.id,
-        })),
-    })),
-]
 
 /**
  * @desc default template for new BM attribute
@@ -93,15 +12,8 @@ export const DEFAULT_ATTRIBUTE: CMA = {
     name: '',
     displayName: '',
     options: {
-        /* applicableEntityTypes's value needs to be send stringified when adding/updating in Atlas hold this here: [JSON.stringify(applicableEntityTypes)] */
         applicableEntityTypes: JSON.stringify(['Asset']),
-        customApplicableEntityTypes: applicableEntityTypesOptions.reduce(
-            (acc, item) => [
-                ...acc,
-                ...(item?.children?.map((v) => v.value) ?? []),
-            ],
-            []
-        ),
+        customApplicableEntityTypes: [],
         maxStrLength: '100000000',
         isEnum: false,
         enumType: '',

@@ -179,10 +179,9 @@ export const ATTRIBUTE_TYPES = [
     },
     {
         label: 'SQL',
-        id: 'SQL',
+        id: 'sql',
         icon: 'Query',
     },
-
 ]
 
 /**

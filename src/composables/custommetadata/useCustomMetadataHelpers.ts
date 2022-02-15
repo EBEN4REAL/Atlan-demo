@@ -97,6 +97,8 @@ export default function useCustomMetadataHelpers() {
             return 'Decimal'
         if (['text', 'string'].includes(t))
             return 'Text'
+        if (['enum'].includes(t))
+            return 'Options'
         return tName
     }
 

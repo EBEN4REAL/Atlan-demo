@@ -109,15 +109,38 @@
                 <div class="flex flex-1">
                     <a-tooltip placement="top">
                         <template #title>
-                            {{ policy.assets.length }}
-                            {{ policy.assets.length > 1 ? 'assets' : 'asset' }}
+                            <div
+                                v-if="
+                                    policy.assets.length === 1 &&
+                                    isAllAssets(policy.assets[0])
+                                "
+                            >
+                                All Assets
+                            </div>
+                            <div v-else>
+                                {{ policy.assets.length }}
+                                {{
+                                    policy.assets.length > 1
+                                        ? 'assets'
+                                        : 'asset'
+                                }}
+                            </div>
                         </template>
-                        <div>
+                        <div class="flex items-center">
                             <AtlanIcon
                                 icon="AssetsInactiveLight"
                                 class="-mt-1"
                             />
-                            {{ policy.assets.length }}
+                            <div
+                                v-if="
+                                    policy.assets.length !== 1 &&
+                                    !isAllAssets(policy.assets[0])
+                                "
+                                class="ml-1 text-xs text-gray-500"
+                            >
+                                {{ policy.assets.length }}
+                            </div>
+                            <div v-else class="w-4" />
                         </div>
                     </a-tooltip>
                     <span
@@ -127,19 +150,28 @@
                     >
                     <a-tooltip v-if="permissions.length" placement="top">
                         <template #title>
-                            {{ permissions.length }}
-                            {{
-                                permissions.length > 1
-                                    ? 'permissions'
-                                    : 'permission'
-                            }}
+                            <div v-if="permissions.length !== 9">
+                                {{ permissions.length }}
+                                {{
+                                    permissions.length > 1
+                                        ? 'permissions'
+                                        : 'permission'
+                                }}
+                            </div>
+                            <div v-if="permissions.length === 9">
+                                All permissions
+                            </div>
                         </template>
                         <div>
                             <AtlanIcon
                                 icon="ShieldBlank"
                                 class="-mt-1 icon-gray"
                             />
-                            {{ permissions.length }}
+                            {{
+                                permissions.length === 9
+                                    ? ''
+                                    : permissions.length
+                            }}
                         </div>
                     </a-tooltip>
                     <a-tooltip v-if="maskComputed" placement="top">
@@ -388,6 +420,13 @@
                         ?.label
             )
             const createdAtFormated = useTimeAgo(policy.value.createdAt)
+            const isAllAssets = (name) => {
+                const splited = name.split('/')
+                if (splited && splited.length === 3) {
+                    return true
+                }
+                return false
+            }
             return {
                 getPopoverContent,
                 removePolicy,
@@ -407,6 +446,7 @@
                 maskComputed,
                 permissions,
                 createdAtFormated,
+                isAllAssets,
             }
         },
     })

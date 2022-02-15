@@ -40,9 +40,6 @@
                                         <span class="text-xs text-gray-600">
                                             {{ check.desc }}
                                         </span>
-                                        <span class="text-xs text-primary">
-                                            Learn more
-                                        </span>
                                     </div>
                                 </template>
                                 <a-checkbox :value="check.value">

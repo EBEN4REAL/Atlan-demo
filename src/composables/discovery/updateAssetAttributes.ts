@@ -1,4 +1,4 @@
-import { ref, inject } from 'vue'
+import { ref, inject, watch } from 'vue'
 import { message } from 'ant-design-vue'
 import { whenever } from '@vueuse/core'
 import updateAsset from '~/composables/discovery/updateAsset'
@@ -74,16 +74,23 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         }
     }
 
-    if (['Query'].includes(entity.value.typeName)) {
-        entity.value.attributes = {
-            ...entity.value.attributes,
-            parentQualifiedName: attributes(selectedAsset?.value)
-                ?.parentQualifiedName,
-            parent: attributes(selectedAsset?.value)?.parent,
-            collectionQualifiedName: attributes(selectedAsset?.value)
-                ?.collectionQualifiedName,
-        }
-    }
+    watch(
+        selectedAsset,
+        () => {
+            if (['Query'].includes(entity.value.typeName)) {
+                entity.value.attributes = {
+                    ...entity.value.attributes,
+                    name: selectedAsset.value.attributes.name,
+                    parentQualifiedName: attributes(selectedAsset?.value)
+                        ?.parentQualifiedName,
+                    parent: attributes(selectedAsset?.value)?.parent,
+                    collectionQualifiedName: attributes(selectedAsset?.value)
+                        ?.collectionQualifiedName,
+                }
+            }
+        },
+        { immediate: true }
+    )
 
     const body = ref({
         entities: [],

@@ -60,6 +60,7 @@ export default function useOpenQuery({
             label: `${previewItem.title} preview`,
             key,
             favico: 'https://atlan.com/favicon.ico',
+            attributes: {},
             isSaved: false,
             queryId: undefined,
             status: 'is_null',

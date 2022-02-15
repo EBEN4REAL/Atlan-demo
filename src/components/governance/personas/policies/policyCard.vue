@@ -140,7 +140,7 @@
                             >
                                 {{ policy.assets.length }}
                             </div>
-                            <div v-else class="w-4" />
+                            <div v-else class="ml-1 text-gray-500">All</div>
                         </div>
                     </a-tooltip>
                     <span
@@ -162,14 +162,14 @@
                                 All permissions
                             </div>
                         </template>
-                        <div>
+                        <div class="text-gray-500">
                             <AtlanIcon
                                 icon="ShieldBlank"
                                 class="-mt-1 icon-gray"
                             />
                             {{
                                 permissions.length === 9
-                                    ? ''
+                                    ? 'All'
                                     : permissions.length
                             }}
                         </div>
@@ -178,7 +178,7 @@
                         <template #title>
                             {{ maskComputed }}
                         </template>
-                        <div class="truncate max-w-5">
+                        <div class="text-gray-500 truncate max-w-5">
                             <AtlanIcon icon="Number" class="-mt-1 icon-gray" />
                             {{ maskComputed }}
                         </div>

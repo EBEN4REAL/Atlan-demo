@@ -93,7 +93,7 @@
     import { message } from 'ant-design-vue'
     import { useVModels, whenever } from '@vueuse/core'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { useTermLinkRequest } from '@/common/input/terms/useTermLinkRequest.ts'
+    import { useCreateRequests } from '~/composables/requests/useCreateRequests.ts'
     import whoami from '~/composables/user/whoami.ts'
 
     import GlossaryTree from '~/components/glossary/index.vue'
@@ -287,7 +287,7 @@
                     error: requestError,
                     isLoading: isRequestLoading,
                     isReady: requestReady,
-                } = useTermLinkRequest({
+                } = useCreateRequests({
                     assetGuid: selectedAsset.value?.guid,
                     assetQf: selectedAsset.value?.attributes?.qualifiedName,
                     assetType: selectedAsset.value?.typeName,

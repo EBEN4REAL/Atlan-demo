@@ -19,7 +19,7 @@ interface params {
     assetType: String
     terms: Array<any>
 }
-export function useCreateRequest({
+export function useCreateRequests({
     assetGuid,
     assetQf,
     assetType,

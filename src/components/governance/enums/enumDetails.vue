@@ -143,12 +143,12 @@
             // FIXME: May be simplified
             watch([updateError, isReady], () => {
                 if (isReady && state.value.enumDefs.length) {
-                    message.success('Picklist updated.')
+                    message.success('Option updated.')
                     context.emit('update:selectedEnum', state.value.enumDefs[0])
                     isEditing.value = false
                 }
                 if (updateError.value) {
-                    message.error('Failed to save your Picklist.')
+                    message.error('Failed to save your Option.')
                     console.error(updateError.value)
                     reset()
                 }

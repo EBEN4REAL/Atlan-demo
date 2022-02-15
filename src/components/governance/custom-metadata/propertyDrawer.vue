@@ -99,14 +99,14 @@
                     >
                         <a-form-item
                             class="mb-3"
-                            label="Select Enum"
+                            label="Select Option"
                             :name="['options', 'enumType']"
                         >
                             <a-select
                                 v-model:value="form.options.enumType"
                                 show-search
-                                no-results-text="No enum found"
-                                placeholder="Select enum"
+                                no-results-text="No option found"
+                                placeholder="Select option"
                                 :options="finalEnumsList"
                                 :disabled="isEdit || viewOnly"
                                 @change="handleEnumSelect"
@@ -769,7 +769,7 @@
                 updatedEnumDef.value = enumObject
                 message.success({
                     key: 'enum',
-                    content: 'Updating Picklist...',
+                    content: 'Updating Option...',
                 })
                 await execute()
                 const updatedEnum =
@@ -782,7 +782,7 @@
                 if (isReady && state.value.enumDefs.length) {
                     message.success({
                         key: 'enum',
-                        content: 'Picklist updated.',
+                        content: 'Option updated.',
                         duration: 2,
                     })
                     enumEdit.value = false
@@ -790,7 +790,7 @@
                 if (updateError.value) {
                     message.error({
                         key: 'enum',
-                        content: 'Failed to update Picklist.',
+                        content: 'Failed to update Option.',
                         duration: 2,
                     })
                     reset()
@@ -861,7 +861,7 @@
 
             const handleClickCreateNewEnum = () => {
                 if (!enumSearchValue.value) oldEnumSeardValue.value = ''
-                form.value.options.enumType = 'New Picklist'
+                form.value.options.enumType = 'New Option'
                 newEnumMode.value = true
             }
 

@@ -39,6 +39,7 @@ export default function useEventGraph(
     graphPrefs,
     mergedLineageData,
     sameSourceCount,
+    sameTargetCount,
     nodes,
     edges,
     onSelectAsset,
@@ -431,6 +432,7 @@ export default function useEventGraph(
             list,
             () => {
                 const columns = list.value
+
                 if (!columns) {
                     const caretElement = getCaretElement(node.id)
                     controlCaret(node.id, caretElement)
@@ -469,7 +471,7 @@ export default function useEventGraph(
                 // Add to ExpandedNodes array only if it is not fetched again
                 if (!isFetchMore) {
                     chp.value.expandedNodes.push(node)
-                    controlShowMorePorts(node)
+                    // controlShowMorePorts(node)
                 }
             },
             { deep: true }
@@ -1053,13 +1055,22 @@ export default function useEventGraph(
         if (che.value) resetCHE()
 
         if (node.id.includes('vpNode')) {
-            const sourceId = node.id.split('/')[1]
-            const data = sameSourceCount.value[sourceId]
-            const { targetsHidden } = data
+            const id = node.id.split('/')[1]
+            const hidden =
+                sameSourceCount.value?.[id]?.targetsHidden ||
+                sameTargetCount.value?.[id]?.sourcesHidden
 
-            const nodesHidden = [...targetsHidden]
+            const nodesHidden = [...hidden]
             const nodesToAdd = nodesHidden.splice(0, 4)
-            sameSourceCount.value[sourceId].targetsHidden = nodesHidden
+
+            const mode = sameSourceCount.value?.[id]?.targetsHidden
+                ? 'sameSource'
+                : 'sameTarget'
+
+            if (mode === 'sameSource')
+                sameSourceCount.value[id].targetsHidden = nodesHidden
+            if (mode === 'sameTarget')
+                sameTargetCount.value[id].sourcesHidden = nodesHidden
 
             const { relations, childrenCounts } = mergedLineageData.value
 
@@ -1075,9 +1086,12 @@ export default function useEventGraph(
             })
 
             const nodesToAddIds = nodesToAdd.map((x) => x.guid)
-            const edgesToAdd = relations.filter((x) =>
-                nodesToAddIds.includes(x.toEntityId)
-            )
+
+            const edgesToAdd = relations.filter((x) => {
+                if (mode === 'sameSource')
+                    return nodesToAddIds.includes(x.toEntityId)
+                return nodesToAddIds.includes(x.fromEntityId)
+            })
 
             edgesToAdd.forEach((x) => {
                 const { fromEntityId: from, toEntityId: to, processId } = x
@@ -1102,9 +1116,11 @@ export default function useEventGraph(
             })
 
             nodes.value = nodes.value.filter((x) => x.id !== node.id)
-            edges.value = edges.value.filter(
-                (x) => x.id !== `vpNodeProcessId/${sourceId}@${node.id}`
-            )
+            edges.value = edges.value.filter((x) => {
+                if (mode === 'sameSource')
+                    return x.id !== `vpNodeProcessId/${id}@${node.id}`
+                return x.id !== `vpNodeProcessId/${node.id}@${id}`
+            })
 
             renderLayout(registerAllListeners)
 
@@ -1122,9 +1138,9 @@ export default function useEventGraph(
             addNode(graph, relations, childrenCounts, nodeData.entity)
 
             // add back vp edge
-            const from = sourceId
+            const from = mode === 'sameSource' ? id : node.id
             const processId = 'vpNodeProcessId'
-            const to = node.id
+            const to = mode === 'sameSource' ? node.id : id
 
             const relation = {
                 id: `${processId}/${from}@${to}`,

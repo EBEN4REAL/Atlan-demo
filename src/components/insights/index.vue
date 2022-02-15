@@ -578,6 +578,7 @@
 
                 const queryTab: activeInlineTabInterface = {
                     key: generateUUID(),
+                    attributes: {},
                     label: `${tableNameFromURL} preview`,
                     isSaved: false,
                     queryId: undefined,

@@ -74,11 +74,19 @@ export function useQueryLogs(
         () => {
             if (data.value?.hits?.hits?.length) {
                 // get saved query logs, if present in the result
-                const savedQueryIds = (
+                let savedQueryIds = (
                     data.value?.hits?.hits.filter(
                         (log) => log._source?.message?.savedQueryId
                     ) || []
                 ).map((log) => log._source.message.savedQueryId)
+                const aggregateSavedQueryIds =
+                    (
+                        data.value?.aggregations?.group_by_savedQueryId
+                            ?.buckets || []
+                    ).map((bucket) => bucket.key) || []
+                savedQueryIds = [
+                    ...new Set([...savedQueryIds, ...aggregateSavedQueryIds]),
+                ]
                 // Check if the ids already have cached metadata
                 let filteredSavedQueryIds = []
                 if (savedQueryIds && savedQueryIds.length) {
@@ -90,7 +98,10 @@ export function useQueryLogs(
                     )
                 }
                 if (filteredSavedQueryIds && filteredSavedQueryIds.length) {
+                    const limit = filteredSavedQueryIds.length || 20
+                    console.log('limit', limit)
                     const base = bodybuilder()
+                    base.size(limit)
                     filteredSavedQueryIds.forEach((queryId) =>
                         base.orFilter('term', '__guid', queryId)
                     )

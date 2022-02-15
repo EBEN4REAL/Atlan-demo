@@ -46,6 +46,7 @@ export function useDiscoverList({
 }: DiscoverListParams) {
     const defaultBody = ref({})
     const generateBody = () => {
+        console.log('facets', facets?.value)
         const dsl = useBody(
             queryText?.value,
             offset?.value,

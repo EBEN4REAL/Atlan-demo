@@ -90,7 +90,7 @@ export default function useBody({
                         base.aggregation(
                             'terms',
                             'message.savedQueryId.keyword',
-                            { size: 20 },
+                            { size: 30 },
                             `${agg_prefix}_${mkey}`
                         )
                     }

@@ -1,6 +1,6 @@
 <template>
     <!--h2 class="mb-3 text-xl font-bold">Relevant for you</h2-->
-    <transition v-if="list.length" name="fade">
+    <transition name="fade">
         <div>
             <h2 class="mb-3 text-sm font-semibold text-gray-500">
                 <AtlanIcon icon="InformationAnnouncement"></AtlanIcon> Popular
@@ -39,6 +39,7 @@
         toRefs,
         computed,
         defineAsyncComponent,
+        watch,
     } from 'vue'
     import dayjs from 'dayjs'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
@@ -56,64 +57,38 @@
             AssetTitleCtx,
         },
         setup() {
-            const dependentKey = ref('HOME_RECENTS_ANNOUNCEMENTS')
-            const limit = ref(15)
-            const offset = ref(0)
-            const queryText = ref('')
-
-            const facets = ref([
-                {
-                    announcementTitle: [
-                        {
-                            operator: 'isNotNull',
-                            operand: 'announcementTitle',
-                        },
-                    ],
-                },
-            ])
-
-            const postFacets = ref({})
-            const aggregations = ref(['typeName'])
-            const preference = ref({
-                sort: 'announcementUpdatedAt-desc',
-                display: [],
-            })
-            const defaultAttributes = ref([
+            // FETCH QUERY LOGS
+            const gte = ref(
+                dayjs(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).format()
+            )
+            const lt = ref(dayjs().format())
+            const from = ref(0)
+            const size = ref(20)
+            const queryAggregations = ['savedQueryId']
+            const queryAttributes = [
                 'name',
                 'displayName',
-                'announcementMessage',
-                'announcementTitle',
-                'announcementType',
-                'announcementUpdatedAt',
-                'announcementUpdatedBy',
                 'certificateStatus',
                 'certificateUpdatedBy',
                 'certificateStatusMessage',
-            ])
+            ]
 
             const {
-                list,
-                isLoading,
-                assetTypeAggregationList,
-                isLoadMore,
-                isValidating,
-                fetch,
-                error,
-                quickChange,
-                updateList,
-            } = useDiscoverList({
-                isCache: true,
-                dependentKey,
-                queryText,
-                facets,
-                postFacets,
-                aggregations,
-                preference,
-                limit,
-                offset,
-                attributes: defaultAttributes,
-                suppressLogs: true,
-            })
+                aggregates: queryAggregationResult,
+                // mutateBody,
+                // refetchList,
+                isLoading: isQueryLogsLoading,
+                // filteredLogsCount,
+                savedQueryMetaMap,
+            } = useQueryLogs(
+                gte,
+                lt,
+                from,
+                size,
+                null,
+                queryAttributes,
+                queryAggregations
+            )
 
             const {
                 title,
@@ -124,26 +99,7 @@
                 getProfilePath,
             } = useAssetInfo()
 
-            const gte = ref(
-                dayjs(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).format()
-            )
-            const lt = ref(dayjs().format())
-            const from = ref(0)
-            const size = ref(20)
-            const queryAggregations = ['savedQueryId']
-
-            const {
-                aggregates: queryAggregationResult,
-                // mutateBody,
-                // refetchList,
-                isLoading: isQueryLogsLoading,
-                // filteredLogsCount,
-                // savedQueryMetaMap,
-            } = useQueryLogs(gte, lt, from, size, null, null, queryAggregations)
-
             return {
-                isLoading,
-                list,
                 title,
                 certificateStatus,
                 certificateUpdatedAt,
@@ -152,6 +108,7 @@
                 getProfilePath,
                 queryAggregationResult,
                 isQueryLogsLoading,
+                savedQueryMetaMap,
             }
         },
     })

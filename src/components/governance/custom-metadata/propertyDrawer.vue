@@ -51,6 +51,7 @@
                                 v-model:value="form.displayName"
                                 type="text"
                                 class=""
+                                :disabled="viewOnly"
                             />
                         </a-form-item>
                         <a-form-item
@@ -65,13 +66,15 @@
                                 :get-popup-container="
                                     (target) => target.parentNode
                                 "
-                                list-height="240"
+                                :list-height="240"
+                                :filter-option="customFilter"
                                 @change="handleTypeNameChange"
                             >
                                 <a-select-option
                                     v-for="(type, index) in attributesTypes"
-                                    :key="type.id"
+                                    :key="type.label"
                                     :value="type.id"
+                                    :label="type.label"
                                 >
                                     <span class="flex items-center">
                                         <AtlanIcon
@@ -98,16 +101,16 @@
                     >
                         <a-form-item
                             class="mb-3"
-                            label="Select Enum"
+                            label="Select Option"
                             :name="['options', 'enumType']"
                         >
                             <a-select
                                 v-model:value="form.options.enumType"
                                 show-search
-                                no-results-text="No enum found"
-                                placeholder="Select enum"
+                                no-results-text="No option found"
+                                placeholder="Select option"
                                 :options="finalEnumsList"
-                                :disabled="isEdit"
+                                :disabled="isEdit || viewOnly"
                                 @change="handleEnumSelect"
                                 @search="handleEnumSearch"
                             >
@@ -139,28 +142,30 @@
                                 <div class="mb-2 font-normal font-size-sm">
                                     Enum options:
                                 </div>
-                                <span
-                                    v-auth="access.UPDATE_ENUM"
-                                    v-if="!enumEdit"
-                                    class="cursor-pointer hover:underline text-primary"
-                                    @click="handleEditEnum"
-                                    >Edit</span
-                                >
+                                <template v-if="!viewOnly">
+                                    <span
+                                        v-if="!enumEdit"
+                                        v-auth="access.UPDATE_ENUM"
+                                        class="cursor-pointer text-primary"
+                                        @click="handleEditEnum"
+                                        >Edit</span
+                                    >
 
-                                <div v-else class="space-x-3">
-                                    <span
-                                        v-auth="access.UPDATE_ENUM"
-                                        class="cursor-pointer hover:underline text-primary"
-                                        @click="discardEnumEdit"
-                                        >Cancel</span
-                                    >
-                                    <span
-                                        v-auth="access.UPDATE_ENUM"
-                                        class="cursor-pointer hover:underline text-primary"
-                                        @click="saveChanges"
-                                        >Save</span
-                                    >
-                                </div>
+                                    <div v-else class="space-x-3">
+                                        <span
+                                            v-auth="access.UPDATE_ENUM"
+                                            class="cursor-pointer hover:underline text-primary"
+                                            @click="discardEnumEdit"
+                                            >Cancel</span
+                                        >
+                                        <span
+                                            v-auth="access.UPDATE_ENUM"
+                                            class="cursor-pointer hover:underline text-primary"
+                                            @click="saveChanges"
+                                            >Save</span
+                                        >
+                                    </div>
+                                </template>
                             </div>
                             <template v-if="enumEdit">
                                 <MultiInput
@@ -246,6 +251,7 @@
                                 <div class="w-100">
                                     <div ref="typeTreeSelect">
                                         <a-tree-select
+                                            :disabled="viewOnly"
                                             :value="
                                                 form.options
                                                     .customApplicableEntityTypes
@@ -369,24 +375,6 @@
                                     />
                                 </div>
                             </a-form-item>
-                            <!-- <a-form-item class="mb-0">
-                                <div class="flex justify-between">
-                                    <label :for="`${form.name}-isBadge`">
-                                        <span class="flex items-center">
-                                            Allow search
-                                        </span>
-                                    </label>
-                                    <a-switch
-                                        :id="`${form.name}-isBadge`"
-                                        v-model:checked="
-                                            form.options.allowSearch
-                                        "
-                                        class=""
-                                        :name="`${form.name}-isBadge`"
-                                        size="small"
-                                    />
-                                </div>
-                            </a-form-item> -->
                         </div>
                     </div>
                 </a-form>
@@ -427,6 +415,7 @@
     } from 'vue'
     import { message, TreeSelect } from 'ant-design-vue'
     import { onKeyStroke } from '@vueuse/core'
+    import v from 'vue-sse'
     import {
         DEFAULT_ATTRIBUTE,
         ATTRIBUTE_INPUT_VALIDATION_RULES,
@@ -479,11 +468,18 @@
             const typeTreeSelect = ref(null)
             const enumSearchValue = ref('')
             const oldEnumSeardValue = ref('')
+            const viewOnly = computed(
+                () => props.metadata.options?.isLocked === 'true'
+            )
             const { metadata } = toRefs(props)
 
             const attributesTypes = reactive(
                 JSON.parse(JSON.stringify(ATTRIBUTE_TYPES))
             )
+
+            const customFilter = (v, o) =>
+                o.label.toLowerCase().includes(v.toLowerCase())
+
             const finalApplicableTypeNamesOptions = computed(() => {
                 const options = JSON.parse(
                     JSON.stringify(applicableEntityTypesOptions)
@@ -778,7 +774,10 @@
                 )
 
                 updatedEnumDef.value = enumObject
-                message.success({ key: 'enum', content: 'Updating Enum...' })
+                message.success({
+                    key: 'enum',
+                    content: 'Updating Option...',
+                })
                 await execute()
                 const updatedEnum =
                     state?.value?.enumDefs?.length && state.value.enumDefs[0]
@@ -790,7 +789,7 @@
                 if (isReady && state.value.enumDefs.length) {
                     message.success({
                         key: 'enum',
-                        content: 'Enum updated.',
+                        content: 'Option updated.',
                         duration: 2,
                     })
                     enumEdit.value = false
@@ -798,7 +797,7 @@
                 if (updateError.value) {
                     message.error({
                         key: 'enum',
-                        content: 'Failed to update Enum.',
+                        content: 'Failed to update Option.',
                         duration: 2,
                     })
                     reset()
@@ -817,6 +816,7 @@
              * @desc set enum boolean in options & emit changes
              */
             const handleTypeNameChange = (value: string) => {
+                console.log('handleTypeNameChange', value)
                 // ? check if enum
                 if (value === 'enum') {
                     form.value.options.isEnum = true
@@ -826,7 +826,7 @@
                     delete form.value.enumValues
                 }
 
-                if (['groups', 'users', 'url'].includes(value))
+                if (['groups', 'users', 'url', 'SQL'].includes(value))
                     form.value.options.customType = value
                 else delete form.value.options.customType
             }
@@ -869,7 +869,7 @@
 
             const handleClickCreateNewEnum = () => {
                 if (!enumSearchValue.value) oldEnumSeardValue.value = ''
-                form.value.options.enumType = 'New Enum'
+                form.value.options.enumType = 'New Option'
                 newEnumMode.value = true
             }
 
@@ -887,7 +887,7 @@
             }
 
             const isMultiValuedSupport = computed(() => {
-                const blackList = ['boolean', 'date']
+                const blackList = ['boolean', 'date', 'SQL']
                 return !blackList.includes(form.value.options.primitiveType)
             })
 
@@ -920,7 +920,7 @@
                     )
                         form.value.typeName = form.value.options.enumType
                     // handle if is user, group or name
-                    else if (['users', 'url', 'groups'].includes(v1))
+                    else if (['users', 'url', 'groups', 'SQL'].includes(v1))
                         form.value.typeName = 'string'
                     else form.value.typeName = v1
                 },
@@ -935,6 +935,8 @@
             })
 
             return {
+                customFilter,
+                viewOnly,
                 discardEnumEdit,
                 handleEditEnum,
                 saveChanges,

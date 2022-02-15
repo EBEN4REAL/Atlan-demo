@@ -22,7 +22,7 @@
 
         <AggregationTabs
             v-model="selectedType"
-            class="px-3 mb-1"
+            class="px-3 mb-1 mt-2"
             :list="assetTypeAggregationList"
             @change="handleAssetTypeChange"
         ></AggregationTabs>
@@ -100,14 +100,11 @@
     import AssetItem from '@/common/assets/list/assetItem.vue'
 
     import {
-        AssetAttributes,
-        AssetRelationAttributes,
-        InternalAttributes,
-        SQLAttributes,
+        DefaultRelationAttributes,
+        MinimalAttributes,
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { useRelations } from '~/composables/discovery/useRelations'
     import { whenever } from '@vueuse/core'
     import useAssetStore from '~/store/asset'
@@ -152,16 +149,10 @@
             }))
 
             const dependentKey = ref(null)
-            const { customMetadataProjections } = useTypedefData()
 
-            const defaultAttributes = ref([
-                ...InternalAttributes,
-                ...AssetAttributes,
-                ...SQLAttributes,
-                ...customMetadataProjections,
-            ])
+            const defaultAttributes = ref([...MinimalAttributes])
             const preference = ref({ sort: 'default', display: [] })
-            const relationAttributes = ref([...AssetRelationAttributes])
+            const relationAttributes = ref([...DefaultRelationAttributes])
 
             const updateFacet = () => {
                 facets.value = {}

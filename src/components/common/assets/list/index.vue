@@ -46,6 +46,7 @@
                     return []
                 },
             },
+
             isLoading: {
                 type: Boolean,
                 required: true,

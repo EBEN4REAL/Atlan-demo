@@ -442,8 +442,8 @@
             }
 
             watch(listError, () => {
-                if (listError.value)
-                    message.error('Failed to load request data.')
+                // if (listError.value)
+                //     message.error('Failed to load request data.')
             })
             watch(
                 filters,

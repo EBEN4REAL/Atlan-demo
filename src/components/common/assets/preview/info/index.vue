@@ -60,7 +60,7 @@
                     <AtlanIcon
                         :icon="getConnectorImage(selectedAsset)"
                         class="h-4 mr-1"
-                    />Open in
+                    />View in
                     {{ getConnectorLabel(selectedAsset) }}
                 </div>
                 <AtlanIcon icon="External" />
@@ -199,16 +199,53 @@
                 </div>
             </div>
             <div v-if="tableName(selectedAsset)">
-                <div class="mb-1 text-sm text-gray-500">Table</div>
-                <div class="text-sm text-gray-700">
+                <div class="mb-1 text-sm text-gray-500"></div>
+
+                <div class="flex items-center mb-1 text-gray-500">
+                    <span>Table</span>
+                    <a-tooltip title="Copy">
+                        <div
+                            @click="
+                                handleCopyValue(
+                                    tableName(selectedAsset),
+                                    'Table Name'
+                                )
+                            "
+                        >
+                            <AtlanIcon
+                                icon="CopyOutlined"
+                                class="w-auto ml-1 cursor-pointer mb-0.5"
+                            /></div
+                    ></a-tooltip>
+                </div>
+                <div class="text-sm text-gray-700 break-all">
                     <AtlanIcon icon="TableGray" class="w-auto h-4 mb-0.5" />
                     {{ tableName(selectedAsset) }}
                 </div>
             </div>
             <div v-if="viewName(selectedAsset)">
-                <div class="mb-1 text-sm text-gray-500">View</div>
+                <div class="flex items-center mb-1 text-gray-500">
+                    <span>View</span>
+                    <a-tooltip title="Copy">
+                        <div
+                            @click="
+                                handleCopyValue(
+                                    viewName(selectedAsset),
+                                    'View Name'
+                                )
+                            "
+                        >
+                            <AtlanIcon
+                                icon="CopyOutlined"
+                                class="w-auto ml-1 cursor-pointer mb-0.5"
+                            /></div
+                    ></a-tooltip>
+                </div>
                 <div class="text-sm text-gray-700">
-                    <AtlanIcon icon="ViewGray" class="w-auto h-4 mb-0.5" />
+                    <AtlanIcon
+                        icon="ViewGray"
+                        class="w-auto h-4 mb-0.5 break-all"
+                    />
                     {{ viewName(selectedAsset) }}
                 </div>
             </div>
@@ -255,7 +292,24 @@
             "
             class="flex flex-col px-5 text-sm"
         >
-            <span class="mb-1 text-gray-500">Source ID</span>
+            <div class="flex items-center mb-1 text-gray-500">
+                <span>Source ID</span>
+                <a-tooltip title="Copy">
+                    <div
+                        v-if="sourceId(selectedAsset) !== '-'"
+                        @click="
+                            handleCopyValue(
+                                sourceId(selectedAsset),
+                                'Source ID'
+                            )
+                        "
+                    >
+                        <AtlanIcon
+                            icon="CopyOutlined"
+                            class="w-auto ml-1 cursor-pointer mb-0.5"
+                        /></div
+                ></a-tooltip>
+            </div>
 
             <span class="text-gray-700">{{ sourceId(selectedAsset) }}</span>
         </div>
@@ -577,12 +631,15 @@
                 @change="handleChangeDescription"
             />
         </div>
-        <div v-if="isProcess(selectedAsset) && getProcessSQL(selectedAsset)">
+        <div v-if="isProcess(selectedAsset)" class="flex flex-col text-sm">
+            <span class="px-5 mb-1 text-gray-500">Query</span>
             <SQLSnippet
+                v-if="getProcessSQL(selectedAsset)?.length"
                 class="mx-4 rounded-lg"
                 :text="getProcessSQL(selectedAsset)"
                 background="bg-primary-light"
             />
+            <span v-else class="px-5 text-gray-600">No SQL data available</span>
         </div>
         <div v-if="selectedAsset?.typeName === 'LookerQuery'">
             <SQLSnippet
@@ -790,8 +847,6 @@
         inject,
         ref,
         toRefs,
-        watch,
-        computed,
     } from 'vue'
     import SavedQuery from '@common/hovercards/savedQuery.vue'
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
@@ -818,6 +873,8 @@
     import ParentContext from '@/common/widgets/summary/types/parentContext.vue'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import DetailsContainer from '@common/assets/misc/detailsOverflowContainer.vue'
+    import { copyToClipboard } from '~/utils/clipboard'
+    import { message } from 'ant-design-vue'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -991,10 +1048,16 @@
                 window.open(URL, '_blank')?.focus()
             }
 
+            const handleCopyValue = async (value, type) => {
+                await copyToClipboard(value)
+                message.success(`${type} copied!`)
+            }
+
             return {
                 localDescription,
                 selectedAsset,
                 isLoadingClassification,
+                handleCopyValue,
                 localClassifications,
                 handleClassificationChange,
                 isSelectedAssetHaveRowsAndColumns,

@@ -30,7 +30,11 @@
                 {{ announcementUpdatedAtFormatted }}
             </div>
         </div>
-        <a-dropdown :trigger="['click']" placement="bottomRight">
+        <a-dropdown
+            v-auth="[map.UPDATE_WORKSPACE]"
+            :trigger="['click']"
+            placement="bottomRight"
+        >
             <AtlanBtn
                 color="secondary"
                 padding="compact"
@@ -77,6 +81,7 @@
     import { formatDateTime } from '~/utils/date'
     import AtlanBtn from '@/UI/button.vue'
     import Avatar from '~/components/common/avatar/index.vue'
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'CompanyAnnouncement',
@@ -135,6 +140,7 @@
                 bgClass,
                 icon,
                 imageUrl,
+                map,
             }
         },
     })

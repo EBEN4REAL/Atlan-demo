@@ -200,6 +200,7 @@ export function useSavedQuery(
                     activeTab:
                         activeInlineTab.value?.playground.resultsPane
                             .activeTab ?? 0,
+                    outputPaneSize: 27.9,
                     result: {
                         title: savedQuery?.attributes?.name,
                         isQueryRunning: '',

@@ -22,6 +22,7 @@ import CallIcon from '~/assets/images/home/help/call.svg'
 import FeedbackIcon from '~/assets/images/home/help/feedback.svg'
 import GlossaryIcon from '~/assets/images/home/Glossary.svg'
 import Lock from '~/assets/images/icons/lock.svg'
+import Lock2 from '~/assets/images/icons/lock2.svg'
 import NoRelevantAsset from '~/assets/images/icons/no-relevant-assets.svg'
 import NoAssetOrganization from '~/assets/images/icons/no-assets-organization.svg'
 import NoAssetsFound from '~/assets/images/illustrations/no_assets_to_show.svg'
@@ -90,6 +91,7 @@ import GlossaryVerified from '~/assets/images/icons/glossary-verified.svg'
 import GlossaryDraft from '~/assets/images/icons/glossary-wip.svg'
 import GlossaryGray from '~/assets/images/icons/glossary-gray.svg'
 import KebabMenu from '~/assets/images/icons/kebab-menu-new.svg'
+import KebabMenuHorizontal from '~/assets/images/icons/kebab-menu.svg'
 import Overview from '~/assets/images/icons/overview.svg'
 import OverviewActive from '~/assets/images/icons/overview_active.svg'
 import Lineage from '~/assets/images/icons/lineage.svg'
@@ -141,7 +143,10 @@ import Cross from '~/assets/images/icons/cross.svg'
 import FullScreen from '~/assets/images/icons/fullscreen.svg'
 import ExitFullScreen from '~/assets/images/icons/exit-fullscreen.svg'
 import SidebarTrigger from '~/assets/images/icons/sidebar-trigger.svg'
+import SidebarTriggerFilled from '~/assets/images/icons/sidebar-trigger-filled.svg'
 import OutputpaneTrigger from '~/assets/images/icons/output-pane-trigger.svg'
+import OutputpaneTriggerFilled from '~/assets/images/icons/output-pane-trigger-filled.svg'
+
 import RunSuccess from '~/assets/images/icons/run-success.svg'
 import RunFailed from '~/assets/images/icons/run-failed.svg'
 import WorkflowsActive from '~/assets/images/icons/workflows_active.svg'
@@ -175,6 +180,7 @@ import EmptyQueriesTab from '~/assets/images/illustrations/empty_queries_tab.svg
 import Slack from '~/assets/images/admin/integrations/slack.svg'
 import Teams from '~/assets/images/admin/integrations/teams.svg'
 import ExplorerTrigger from '~/assets/images/icons/explorer-trigger.svg'
+import ExplorerTriggerFilled from '~/assets/images/icons/explorer-trigger-filled.svg'
 import EmptySearchQuery from '~/assets/images/icons/empty_search_query.svg'
 import EmptyResult from '~/assets/images/icons/empty_result.svg'
 import Schedule from '~/assets/images/icons/schedule.svg'
@@ -289,6 +295,7 @@ import SMTP from '~/assets/images/icons/smtp.svg'
 import APIKey from '~/assets/images/icons/apikey.svg'
 import Camera from '~/assets/images/icons/camera.svg'
 import FormatText from '~/assets/images/icons/formatText.svg'
+import BeautifySql from '~/assets/images/icons/beautifySql.svg'
 import NoUsers from '~/assets/images/illustrations/no-users.svg'
 import NoGroups from '~/assets/images/illustrations/no-groups.svg'
 import CreateGroups from '~/assets/images/illustrations/create-groups.svg'
@@ -402,6 +409,9 @@ import Resources2 from '~/assets/images/illustrations/resources/resources.svg'
 import RunningQuery from '~/assets/images/icons/tabs/Running.svg'
 import FailedQuery from '~/assets/images/icons/tabs/Error.svg'
 import SuccessQuery from '~/assets/images/icons/tabs/success-check.svg'
+import QuestionRound from '~/assets/images/icons/question-round.svg'
+import Documentation from '~/assets/images/icons/documentation.svg'
+import Logout from '~/assets/images/icons/logout.svg'
 
 export default {
     Resources2,
@@ -557,10 +567,12 @@ export default {
     Approve,
     Decline,
     Lock,
+    Lock2,
     EmptyGlossary,
     Glossary,
     GlossaryInactive,
     KebabMenu,
+    KebabMenuHorizontal,
     User,
     Chats,
     OpenTermProfile,
@@ -789,4 +801,11 @@ export default {
     Comment,
     EmptyRequest,
     PlusWhite,
+    QuestionRound,
+    Documentation,
+    Logout,
+    ExplorerTriggerFilled,
+    OutputpaneTriggerFilled,
+    SidebarTriggerFilled,
+    BeautifySql,
 }

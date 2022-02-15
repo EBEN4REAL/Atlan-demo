@@ -2,8 +2,8 @@
     <div class="flex items-center justify-between w-full h-full">
         <div class="flex items-center h-full">
             <AtlanIcon
-                icon="Dots"
                 v-if="!isHome"
+                icon="Dots"
                 class="h-6 mr-2 rounded cursor-pointer select-none hover:bg-primary-menu hover:text-primary"
                 :class="{ 'text-primary': isSidebarActive }"
                 @click="$emit('toggleNavbar')"
@@ -71,14 +71,14 @@
                                 <a href="/insights">New Query</a>
                             </div>
                             <div
-                                class="menu-item"
                                 v-auth="[map.CREATE_PERSONA]"
+                                class="menu-item"
                             >
                                 <a href="/governance/personas">New Persona</a>
                             </div>
                             <div
-                                class="menu-item"
                                 v-auth="[map.CREATE_PURPOSE]"
+                                class="menu-item"
                             >
                                 <a href="/governance/purposes">New Purpose</a>
                             </div>
@@ -93,11 +93,41 @@
                     <AtlanIcon icon="ChevronDown" class="h-3 ml-1"></AtlanIcon>
                 </a-button>
             </a-dropdown>
+            <a-dropdown placement="bottomRight">
+                <template #overlay>
+                    <a-menu>
+                        <a-menu-item
+                            class="menu-item hover:text-primary"
+                            @click="toggleHelpWidget"
+                        >
+                            <AtlanIcon icon="Support" class="mr-2" />
+                            Support
+                        </a-menu-item>
+                        <a-menu-item
+                            class="documentation-menu-item menu-item hover:text-primary"
+                        >
+                            <a target="_blank" :href="documentationLink">
+                                <AtlanIcon icon="Documentation" class="mr-2" />
+                                Atlan Documentation
+                            </a>
+                        </a-menu-item>
+                    </a-menu></template
+                >
+                <AtlanButton
+                    size="sm"
+                    class="px-2 mx-2 text-gray-700 bg-transparent border-none"
+                    padding="compact"
+                >
+                    <div class="flex items-center">
+                        <AtlanIcon icon="QuestionRound" />
+                    </div>
+                </AtlanButton>
+            </a-dropdown>
             <!-- <atlan-icon icon="Search" class="h-5 mr-3" />
 
             <atlan-icon icon="Add" class="h-5 mr-3 font-bold text-primary" /> -->
             <!-- <AtlanIcon icon="Notification" class="h-5 mr-3" /> -->
-            <div class="pl-3 ml-3 border-l">
+            <div class="pl-3 border-l">
                 <UserPersonalAvatar class="self-center" />
             </div>
         </div>
@@ -108,17 +138,19 @@
     import { useVModels } from '@vueuse/core'
     import { computed, defineComponent, ref, watch, toRefs } from 'vue'
 
+    import { useRoute, useRouter } from 'vue-router'
     import UserPersonalAvatar from '@/common/avatar/me.vue'
     import GlobalSelection from '@/common/cascade/global.vue'
     import { useTenantStore } from '~/store/tenant'
     import ContextModal from '@/common/modal/context.vue'
 
-    import { useRoute, useRouter } from 'vue-router'
     import defaultLogo from '~/assets/images/your_company.png'
 
     import AssetMenu from '../assets/profile/header/assetMenu.vue'
     import map from '~/constant/accessControl/map'
     import useAssetStore from '~/store/asset'
+    import useHelpWidget from '~/composables/helpCenter/useHelpWidget'
+    import { helpCenterList } from '~/constant/navigation/helpCentre'
 
     export default defineComponent({
         name: 'Navigation Menu',
@@ -142,6 +174,7 @@
             const tenantStore = useTenantStore()
             const currentRoute = useRoute()
             const logoNotFound = ref(false)
+            const { toggleHelpWidget } = useHelpWidget()
 
             const infoVisible = ref(false)
 
@@ -199,6 +232,12 @@
             const handleInfo = () => {
                 infoVisible.value = !infoVisible.value
             }
+            const documentationLink = computed(
+                () =>
+                    helpCenterList.find(
+                        (listItem) => listItem.id === 'documentation'
+                    )?.link ?? ''
+            )
 
             return {
                 page,
@@ -217,6 +256,8 @@
                 dirtyTimestamp,
                 handleInfo,
                 infoVisible,
+                toggleHelpWidget,
+                documentationLink,
             }
         },
     })
@@ -232,5 +273,10 @@
             @apply text-gray-700;
         }
         @apply bg-gray-100;
+    }
+    .documentation-menu-item:hover {
+        a {
+            @apply text-primary !important;
+        }
     }
 </style>

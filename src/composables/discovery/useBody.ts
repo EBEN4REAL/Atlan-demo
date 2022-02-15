@@ -492,13 +492,22 @@ export function useBody(
                                     base.filter(
                                         'wildcard',
                                         element.operand,
-                                        `*${
-                                            Array.isArray(element.value)
-                                                ? JSON.stringify(element.value)
-                                                : element.value
+                                        `*${Array.isArray(element.value)
+                                            ? JSON.stringify(element.value)
+                                            : element.value
                                         }`
                                     )
                                 }
+                                if (element.operator === 'contains') {
+                                    base.filter(
+                                        'wildcard',
+                                        element.operand,
+                                        {
+                                            value: `*${element.value}*`
+                                        }
+                                    )
+                                }
+
                                 if (element.operator === 'pattern') {
                                     base.filter(
                                         'regexp',

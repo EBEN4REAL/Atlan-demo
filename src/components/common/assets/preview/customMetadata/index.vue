@@ -56,7 +56,7 @@
                         selectedAsset,
                         isDrawer,
                         'ENTITY_UPDATE_BUSINESS_METADATA'
-                    )
+                    ) && !viewOnly
                 "
             >
                 <div
@@ -254,7 +254,7 @@
                                         selectedAsset,
                                         isDrawer,
                                         'ENTITY_UPDATE_BUSINESS_METADATA'
-                                    )
+                                    ) && !viewOnly
                                 "
                             >
                                 <PropertyPopover
@@ -276,7 +276,7 @@
                                     selectedAsset,
                                     isDrawer,
                                     'ENTITY_UPDATE_BUSINESS_METADATA'
-                                )
+                                ) && !viewOnly
                             "
                             color="primary"
                             padding="compact"
@@ -392,6 +392,7 @@
             const readOnly = ref(true)
             const loading = ref(false)
             const showMore = ref(false)
+            const viewOnly = ref(data.value.options?.isLocked === 'true')
             const guid = ref()
             const { checkAccess } = useAuth()
             const isEvaluating = inject('isEvaluating')
@@ -647,6 +648,7 @@
             })
 
             return {
+                viewOnly,
                 isEvaluating,
                 checkAccess,
                 page,

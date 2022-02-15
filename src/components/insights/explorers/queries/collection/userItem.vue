@@ -10,7 +10,7 @@
                 v-if="item.type === 'ownerGroups'"
                 shape="circle"
                 :size="20"
-                class="mr-2 text-primary bg-primary-light"
+                class="text-primary bg-primary-light"
             >
                 <template #icon>
                     <AtlanIcon icon="GroupStatic"></AtlanIcon>

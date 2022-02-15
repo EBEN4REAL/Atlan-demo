@@ -1,7 +1,7 @@
 <template>
     <a-dropdown
         v-model:visible="isVisible"
-        trigger="hover"
+        trigger="click"
         placement="bottomRight"
     >
         <a-button class="ml-3" size="small">

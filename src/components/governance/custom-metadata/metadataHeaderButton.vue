@@ -9,7 +9,8 @@
                     key="1"
                     v-auth="map.UPDATE_BUSINESS_METADATA"
                     class="rounded-t menu-item"
-                    @click="metadataModal.open()"
+                    :class="viewOnly ? 'text-gray-400 cursor-not-allowed' : ''"
+                    @click="() => (!viewOnly ? metadataModal.open() : '')"
                 >
                     <AtlanIcon class="inline mb-1 mr-2" icon="Edit" />Edit
                 </div>
@@ -49,11 +50,16 @@
                         v-auth="map.DELETE_BUSINESS_METADATA"
                         class="rounded-b menu-item"
                         :class="
-                            !allowDelete
-                                ? 'text-gray-200 cursor-not-allowed'
+                            !allowDelete || viewOnly
+                                ? 'text-gray-400 cursor-not-allowed'
                                 : ''
                         "
-                        @click.prevent.stop="deleteConfirm = true"
+                        @click.prevent.stop="
+                            () =>
+                                !viewOnly && allowDelete
+                                    ? (deleteConfirm = true)
+                                    : ''
+                        "
                     >
                         <AtlanIcon
                             class="inline mb-1 mr-2"
@@ -111,7 +117,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, h, inject } from 'vue'
+    import { defineComponent, ref, watch, h, inject, computed } from 'vue'
     import { message, Modal } from 'ant-design-vue'
     import addMetadataModal from '~/components/governance/custom-metadata/metadataModal.vue'
     import { copyToClipboard } from '~/utils/clipboard'
@@ -145,6 +151,9 @@
             const store = useTypedefStore()
             const metadataModal = ref(null)
             const openDeleteModal = ref(false)
+            const viewOnly = computed(
+                () => props.metadata.options?.isLocked === 'true'
+            )
 
             const copyAPI = (text: string, theMessage) => {
                 copyToClipboard(text)
@@ -215,6 +224,7 @@
             }
 
             return {
+                viewOnly,
                 isLoading,
                 deleteConfirm,
                 deleteCM,
@@ -229,8 +239,7 @@
 </script>
 <style lang="less" scoped>
     .menu-item {
-        @apply p-2;
-        @apply cursor-pointer;
+        @apply p-2 cursor-pointer;
         &:hover {
             @apply bg-gray-100;
         }

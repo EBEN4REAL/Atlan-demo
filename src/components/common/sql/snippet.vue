@@ -1,4 +1,50 @@
 <template>
+    <a-modal
+        width="70vw"
+        :visible="queryModalVisible"
+        :closable="false"
+        :body-style="{
+            maxHeight: '70vh',
+        }"
+        ok-text="Done"
+        @ok="handleFullScreen"
+        @cancel="handleFullScreen"
+    >
+        <template #footer>
+            <a-button type="primary" @click="handleFullScreen">Done</a-button>
+        </template>
+        <div class="relative px-4 pt-4">
+            <div
+                class="w-full px-4 py-2 overflow-x-auto overflow-y-auto rounded"
+                :class="background === '' ? 'bg-gray-100' : background"
+                style="max-height: 65vh"
+            >
+                <template v-for="(line, i) in renderedLines" :key="i">
+                    <div class="flex">
+                        <span class="mr-3" style="color: #a5a5a5">{{
+                            i + 1
+                        }}</span>
+                        <!-- :style="`color:${getTokenColor(kt)}`" -->
+                        <div
+                            v-html="generateHTMLFromLine(i, line)"
+                            class="flex flex-wrap"
+                        ></div>
+                    </div>
+                </template>
+            </div>
+            <div class="absolute flex gap-1 top-5 right-5">
+                <div
+                    class="px-1 py-0.5 bg-white rounded shadow cursor-pointer"
+                    @click="handleCopy"
+                >
+                    <AtlanIcon
+                        icon="CopyOutlined"
+                        class="w-4 h-4 text-gray-500"
+                    />
+                </div>
+            </div>
+        </div>
+    </a-modal>
     <div class="relative">
         <div
             class="max-w-full p-4 overflow-x-auto overflow-y-auto rounded"
@@ -16,12 +62,19 @@
                 </div>
             </template>
         </div>
-        <div
-            class="absolute px-1 py-0.5 bg-white rounded shadow cursor-pointer top-3 right-3"
-            v-if="true"
-            @click="handleCopy"
-        >
-            <AtlanIcon icon="CopyOutlined" class="w-4 h-4 text-gray-500" />
+        <div class="absolute flex gap-1 top-3 right-5">
+            <div
+                class="px-1 py-0.5 bg-white rounded shadow cursor-pointer"
+                @click="handleCopy"
+            >
+                <AtlanIcon icon="CopyOutlined" class="w-4 h-4 text-gray-500" />
+            </div>
+            <div
+                class="px-1 py-0.5 bg-white rounded shadow cursor-pointer"
+                @click="handleFullScreen"
+            >
+                <AtlanIcon icon="FullScreen" class="w-4 h-4 text-gray-500" />
+            </div>
         </div>
     </div>
 </template>
@@ -35,7 +88,7 @@
     import { copyToClipboard } from '~/utils/clipboard'
 
     export default defineComponent({
-        name: 'SQL Snippet',
+        name: 'SQLSnippet',
         components: {},
         props: {
             text: {
@@ -54,12 +107,16 @@
         },
         setup(props, { emit }) {
             const { text, enableCopy } = toRefs(props)
-            const formattedText = computed(() =>
-                format(text.value, {
-                    language: 'sql', // Defaults to "sql" (see the above list of supported dialects)
-                    indent: '    ', // Defaults to two spaces
-                })
-            )
+            const formattedText = computed(() => {
+                try {
+                    return format(text.value, {
+                        language: 'sql', // Defaults to "sql" (see the above list of supported dialects)
+                        indent: '    ', // Defaults to two spaces
+                    })
+                } catch (error) {
+                    return text.value
+                }
+            })
             const renderedLines = computed(() =>
                 formattedText.value.split('\n')
             )
@@ -84,6 +141,12 @@
             const handleCopy = () => {
                 copyToClipboard(formattedText.value)
                 message.success('Query Copied!')
+            }
+
+            const queryModalVisible = ref(false)
+
+            const handleFullScreen = () => {
+                queryModalVisible.value = !queryModalVisible.value
             }
 
             const generateHTMLFromLine = (
@@ -121,6 +184,8 @@
                 enableCopy,
                 generateHTMLFromLine,
                 handleCopy,
+                queryModalVisible,
+                handleFullScreen,
             }
         },
     })

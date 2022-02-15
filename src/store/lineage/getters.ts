@@ -14,7 +14,7 @@ export const getters = {
     hasColumnList(state) {
         return (nodeId) => {
             if (!nodeId) return false
-            const columns = state.nodesColumnList?.[nodeId]
+            const columns = state.nodesColumnList?.[nodeId]?.assets
             return !!columns
         }
     },

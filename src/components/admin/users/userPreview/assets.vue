@@ -3,7 +3,7 @@
         <div class="py-1 mb-3 text-base font-semibold text-gray-500">
             Owned Assets
         </div>
-        <div v-auth="map.LIST_USERS" class="flex flex-col h-full rounded-lg">
+        <div class="flex flex-col h-full rounded-lg">
             <AssetList
                 :asset-name-truncate-percentage="'93%'"
                 :asset-list-class="'h-5/6'"

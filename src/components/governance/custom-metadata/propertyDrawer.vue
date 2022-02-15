@@ -66,13 +66,15 @@
                                 :get-popup-container="
                                     (target) => target.parentNode
                                 "
-                                list-height="240"
+                                :list-height="240"
+                                :filter-option="customFilter"
                                 @change="handleTypeNameChange"
                             >
                                 <a-select-option
                                     v-for="(type, index) in attributesTypes"
-                                    :key="type.id"
+                                    :key="type.label"
                                     :value="type.id"
+                                    :label="type.label"
                                 >
                                     <span class="flex items-center">
                                         <AtlanIcon
@@ -413,6 +415,7 @@
     } from 'vue'
     import { message, TreeSelect } from 'ant-design-vue'
     import { onKeyStroke } from '@vueuse/core'
+    import v from 'vue-sse'
     import {
         DEFAULT_ATTRIBUTE,
         ATTRIBUTE_INPUT_VALIDATION_RULES,
@@ -473,6 +476,10 @@
             const attributesTypes = reactive(
                 JSON.parse(JSON.stringify(ATTRIBUTE_TYPES))
             )
+
+            const customFilter = (v, o) =>
+                o.label.toLowerCase().includes(v.toLowerCase())
+
             const finalApplicableTypeNamesOptions = computed(() => {
                 const options = JSON.parse(
                     JSON.stringify(applicableEntityTypesOptions)
@@ -928,6 +935,7 @@
             })
 
             return {
+                customFilter,
                 viewOnly,
                 discardEnumEdit,
                 handleEditEnum,

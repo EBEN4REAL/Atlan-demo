@@ -8,6 +8,10 @@
             @visibleChange="onPopoverClose"
         >
             <template #content>
+                <div class="bg-gray-100 mx-4 px-3 py-2 mb-3">
+                    You don't have edit access to this asset, but you can
+                    suggest terms to the asset owner. <span  @click="handleCancelRequest" class="text-primary cursor-pointer">Dismiss</span>
+                </div>
                 <GlossaryTree
                     v-model:checkedGuids="checkedGuids"
                     :checkable="true"
@@ -24,7 +28,7 @@
                         :loading="requestLoading"
                         @click="handleRequest"
                         class="bg-primary"
-                        >Request</a-button
+                        >Submit Request</a-button
                     >
                 </div>
             </template>
@@ -32,6 +36,7 @@
         <div class="flex flex-wrap items-center gap-1 text-sm text-gray-500">
             <a-button
                 shape="circle"
+                :disabled="role === 'Guest'"
                 size="small"
                 class="text-center shadow"
                 :class="{

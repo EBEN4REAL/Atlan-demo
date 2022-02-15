@@ -50,6 +50,7 @@
         <AssetDropdown
             v-if="connection"
             :connector="filteredConnector"
+            :connection="selectedValue"
             :filter="data"
             @change="handleChange"
             :bgGrayForSelector="bgGrayForSelector"

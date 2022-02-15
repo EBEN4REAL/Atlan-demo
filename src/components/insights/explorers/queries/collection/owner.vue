@@ -90,7 +90,7 @@
                             list-class="h-52"
                             checkbox-list-class="h-48 py-2"
                             list-item-class="h-8 my-0.5"
-                            :showLoggedInUser="showLoggedInUser"
+                            :showLoggedInUser="true"
                             v-model:selectedRecords="selectedRecords"
                         ></Users>
 
@@ -191,11 +191,6 @@
                 default: null,
                 required: false,
             },
-            showLoggedInUser: {
-                type: Boolean,
-                default: false,
-                required: false,
-            },
             dropdownStyleObject: {
                 type: Object,
                 default: { width: '330px' },
@@ -258,9 +253,15 @@
                     return props?.searchPlaceholder || 'Search users and groups'
                 }
                 if (componentType.value === 'groups') {
-                    return `Search ${groupRef?.value?.filterTotal ?? ''} groups`
+                    const count = groupRef?.value?.filterTotal
+                        ? groupRef.value.filterTotal
+                        : ''
+                    return `Search ${count} groups`
                 }
-                return `Search ${usersRef?.value?.filterTotal ?? ''} users`
+                const count = usersRef?.value?.filterTotal
+                    ? usersRef.value.filterTotal
+                    : ''
+                return `Search ${count} users`
             })
 
             const ownerSearchRef: Ref<null | HTMLInputElement> = ref(null)

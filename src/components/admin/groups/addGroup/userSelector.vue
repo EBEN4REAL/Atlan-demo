@@ -7,7 +7,6 @@
             :enable-tabs="['users']"
             :hide-disabled-tabs="true"
             select-user-key="id"
-            :show-logged-in-user="true"
             :dropdown-style-object="{ width: '430px' }"
             search-placeholder="Search users"
             :hideTabs="true"

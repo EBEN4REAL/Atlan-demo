@@ -40,6 +40,7 @@ interface useSchemaExplorerTreeProps {
     initSelectedKeys?: Ref<string | undefined>
     initialExapndedKeys?: Ref<string | undefined>
     isAccordion?: boolean
+    handleUpdateValue?: any
 }
 
 const useTree = ({
@@ -56,6 +57,7 @@ const useTree = ({
     sortOrderTable,
     sortOrderColumn,
     searchResultType,
+    handleUpdateValue,
 }: useSchemaExplorerTreeProps) => {
     // A map of node guids to the guid of their parent. Used for traversing the tree while doing local update
     const nodeToParentKeyMap: Record<string, 'root' | string> = {}
@@ -431,7 +433,8 @@ const useTree = ({
                 const schemaResponse = await getSchemaForDatabase(
                     treeNode.dataRef.qualifiedName
                 )
-
+                if (handleUpdateValue)
+                    handleUpdateValue(schemaResponse.entities)
                 schemaResponse.entities?.forEach((schema) => {
                     treeNode.dataRef.children?.push(
                         returnTreeDataItemAttributes(schema)
@@ -451,7 +454,7 @@ const useTree = ({
                 const tableResponse = await getTablesAndViewsForSchema(
                     treeNode.dataRef.qualifiedName
                 )
-
+                if (handleUpdateValue) handleUpdateValue(tableResponse.entities)
                 tableResponse.entities?.forEach((table) => {
                     treeNode.dataRef.children?.push(
                         returnTreeDataItemAttributes(table)
@@ -471,7 +474,8 @@ const useTree = ({
                 const columnResponse = await getColumnsForTable(
                     treeNode.dataRef.qualifiedName
                 )
-
+                if (handleUpdateValue)
+                    handleUpdateValue(columnResponse.entities)
                 columnResponse.entities?.forEach((column) => {
                     treeNode.dataRef.children?.push(
                         returnTreeDataItemAttributes(column)
@@ -488,7 +492,8 @@ const useTree = ({
                 const columnResponse = await getColumnsForView(
                     treeNode.dataRef.qualifiedName
                 )
-
+                if (handleUpdateValue)
+                    handleUpdateValue(columnResponse.entities)
                 columnResponse.entities?.forEach((column) => {
                     treeNode.dataRef.children?.push(
                         returnTreeDataItemAttributes(column)
@@ -504,6 +509,7 @@ const useTree = ({
             }
             loadedKeys.value.push(treeNode.dataRef.key)
         } catch (error) {
+            console.error(error, 'error')
             const er = Object.getOwnPropertyDescriptor(error, 'message')
             isNodeLoading.value = false
             nodeError.value = er?.value
@@ -637,9 +643,9 @@ const useTree = ({
         }
     }
 
-    const returnTreeDataItemAttributes = (
+    function returnTreeDataItemAttributes(
         item: Database | Schema | Table | Column
-    ) => {
+    ) {
         return {
             attributes: item.attributes,
             entity: item,
@@ -654,7 +660,7 @@ const useTree = ({
         }
     }
 
-    const checkAndAddLoadMoreNode = (
+    function checkAndAddLoadMoreNode(
         response:
             | IndexSearchResponse<Database>
             | IndexSearchResponse<Schema>
@@ -663,7 +669,7 @@ const useTree = ({
         serviceName: 'Connection' | 'Database' | 'Schema' | 'Table' | 'View',
         parentQualifiedName: string,
         key?: string
-    ) => {
+    ) {
         const query = JSON.parse(response.searchParameters.query)
         const limit = query.size
         const offset = query.from

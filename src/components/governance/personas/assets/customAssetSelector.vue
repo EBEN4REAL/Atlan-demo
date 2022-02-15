@@ -22,7 +22,7 @@
                             :icon="`${getImage(
                                 connectionQfName?.split('/')[1]
                             )}`"
-                            class="w-auto h-3 mr-2"
+                            class="w-auto h-4 mr-2"
                         ></AtlanIcon>
                     <span class="text-sm text-gray"> {{ connName }}/ </span>
                 </template>

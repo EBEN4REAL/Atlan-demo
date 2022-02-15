@@ -21,6 +21,7 @@
                 'url',
                 'string',
                 'text',
+                'SQL',
             ].includes(dataType.toLowerCase()) && multiple
         "
         v-model="localValue"
@@ -37,7 +38,7 @@
         @change="handleInputChange"
     ></a-input>
     <a-input
-        v-else-if="['string', 'text'].includes(dataType)"
+        v-else-if="['string', 'text', 'SQL'].includes(dataType)"
         v-model:value="localValue"
         :maxlength="max || 50"
         placeholder="Type..."

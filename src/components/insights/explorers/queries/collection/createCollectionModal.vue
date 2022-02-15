@@ -94,31 +94,7 @@
                     />
                 </div>
             </div>
-            <!-- <div class="px-4 mt-4">
-                <span class="text-sm font-normal text-gray-700"
-                    >Visibility</span
-                >
-                <div class="mt-2">
-                    <a-radio-group
-                        v-model:value="isShareable"
-                        name="radioGroup"
-                    >
-                        <a-radio value="false">
-                            <span class="text-sm text-gray-700">Private</span>
-                        </a-radio>
-                        <a-radio value="true" class="">
-                            <span class="text-sm text-gray-700">Shared</span>
-                        </a-radio>
-                    </a-radio-group>
-                </div>
-            </div> -->
-            <!-- <div
-                class="p-3 mx-4 mt-3 font-normal border border-gray-300 rounded-lg"
-                v-if="isShareable === 'true'"
-            > -->
-            <!-- <div class="mx-4 mt-3 font-normal" v-if="isShareable === 'true'"> -->
             <div class="mx-4 mt-3 font-normal">
-                <!-- <span class="text-sm text-gray-700">Users and groups</span> -->
                 <span class="text-sm text-gray-700" v-if="!isShare">Share</span>
                 <div class="flex items-center mb-1.5">
                     <a-dropdown :trigger="['click']" placement="bottomLeft">
@@ -169,7 +145,10 @@
                     }}
                 </span> -->
 
-                <div style="max-height: 172px" class="mt-2 overflow-auto">
+                <div
+                    style="max-height: 172px"
+                    class="px-2 mt-2 overflow-auto bg-gray-100 rounded"
+                >
                     <div
                         class="flex items-center justify-between h-7"
                         style="margin-top: 3px; margin-bottom: 3px"

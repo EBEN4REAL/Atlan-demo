@@ -179,7 +179,7 @@ export const ATTRIBUTE_TYPES = [
     },
     {
         label: 'SQL',
-        id: 'sql',
+        id: 'SQL',
         icon: 'Query',
     },
 ]

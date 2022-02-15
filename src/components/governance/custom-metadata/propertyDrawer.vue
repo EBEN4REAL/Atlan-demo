@@ -819,7 +819,7 @@
                     delete form.value.enumValues
                 }
 
-                if (['groups', 'users', 'url', 'sql'].includes(value))
+                if (['groups', 'users', 'url', 'SQL'].includes(value))
                     form.value.options.customType = value
                 else delete form.value.options.customType
             }
@@ -913,7 +913,7 @@
                     )
                         form.value.typeName = form.value.options.enumType
                     // handle if is user, group or name
-                    else if (['users', 'url', 'groups', 'sql'].includes(v1))
+                    else if (['users', 'url', 'groups', 'SQL'].includes(v1))
                         form.value.typeName = 'string'
                     else form.value.typeName = v1
                 },

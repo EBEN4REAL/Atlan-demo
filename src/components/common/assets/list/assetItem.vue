@@ -1,9 +1,9 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
     <div
-        class="my-0.5 rounded transition duration-100 hover:bg-primary-menu"
+        class="my-1 rounded-lg transition duration-100 hover:border-primary border hover:shadow-md"
         :class="{
-            'outline-primary bg-primary-menu shadow-sm': isSelected,
+            'border-primary  shadow-md bordern bg-primary-menu': isSelected,
             'cursor-pointer': enableSidebarDrawer,
             'opacity-80': isLoading,
         }"
@@ -13,7 +13,7 @@
             class="flex flex-col"
             :class="[
                 !bulkSelectMode && isSelected
-                    ? 'border-primary bg-primary-menu'
+                    ? 'border-primary '
                     : 'border-transparent',
                 bulkSelectMode && isChecked ? 'bg-primary-menu' : '',
             ]"

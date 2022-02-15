@@ -12,7 +12,11 @@ interface useBodyProps {
     usernames?: string[] | undefined
     connectorName?: string | undefined
     searchText?: string | undefined
+    aggregations?: string[]
 }
+
+const agg_prefix = 'group_by'
+
 export default function useBody({
     from,
     limit,
@@ -25,6 +29,7 @@ export default function useBody({
     usernames,
     connectorName,
     searchText,
+    aggregations,
 }: useBodyProps) {
     const base = bodybuilder()
 
@@ -77,6 +82,25 @@ export default function useBody({
             'log.message.authenticatorResult.userName',
             usernames
         )
+    if (aggregations) {
+        aggregations?.forEach((mkey) => {
+            switch (mkey) {
+                case 'savedQueryId': {
+                    if (mkey) {
+                        base.aggregation(
+                            'terms',
+                            'message.savedQueryId.keyword',
+                            { size: 20 },
+                            `${agg_prefix}_${mkey}`
+                        )
+                    }
+                    break
+                }
+                default:
+                    console.log('no aggregation applied')
+            }
+        })
+    }
 
     return base.build()
 }

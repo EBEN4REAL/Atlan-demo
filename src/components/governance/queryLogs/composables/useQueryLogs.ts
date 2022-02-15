@@ -7,14 +7,14 @@ import { SourceList } from '~/constant/source'
 import useIndexSearch from '~/composables/discovery/useIndexSearch'
 
 const { listQueryLogs } = useLogsService()
-const { getConnectionName, getConnectorName } = useConnector()
 export function useQueryLogs(
     gte: Ref<string>,
     lt: Ref<string>,
     from = ref(0),
     size = ref(6),
     usernames: Ref<Array<string>>,
-    attributes = ['name']
+    attributes = ['name'],
+    aggregations = []
 ) {
     const savedQueryMetaMap: Ref<Record<string, any>> = ref({})
     const body = ref<Record<string, any>>({})
@@ -27,6 +27,7 @@ export function useQueryLogs(
         gte: gte.value,
         lt: lt.value,
         usernames: usernames?.value ? usernames?.value : undefined,
+        aggregations,
     })
 
     body.value = dsl
@@ -104,6 +105,7 @@ export function useQueryLogs(
     const list = computed(() => data.value?.hits?.hits)
     const totalCount = computed(() => size.value + from.value)
     const filteredLogsCount = computed(() => data.value?.hits?.total?.value)
+    const aggregates = computed(() => data.value?.aggregations)
     function mutateBody({
         from,
         size,
@@ -145,6 +147,7 @@ export function useQueryLogs(
         filteredLogsCount,
         paginateLogs,
         savedQueryMetaMap,
+        aggregates,
     }
 }
 export const getQueryMetadata = (query) => {
@@ -172,6 +175,7 @@ export const getQueryMetadata = (query) => {
     }
     // Connection
     if (query?._source?.message?.connectionQualifiedName) {
+        const { getConnectionName, getConnectorName } = useConnector()
         meta.connection.value = getConnectionName(
             query._source.message.connectionQualifiedName
         )

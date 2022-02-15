@@ -9,8 +9,8 @@
             </div>
             <div class="flex flex-col col-span-4 px-9">
                 <div class="">
-                    <SearchAndStats />
-                    <Announcements class="mt-6" />
+                    <!-- <SearchAndStats /> -->
+                    <!-- <Announcements class="mt-6" /> -->
                 </div>
                 <!-- 
                 <div class="mt-6">
@@ -20,7 +20,7 @@
                     <Purpose></Purpose>
                 </div> -->
                 <div class="mt-6">
-                    <Relevant />
+                    <!-- <Relevant /> -->
                 </div>
 
                 <!--section>
@@ -34,10 +34,13 @@
             </section> -->
             <!-- TODO: Hidden for paytm rollout, will enable it back -->
             <section>
-                <RecentResources />
+                <!-- <RecentResources /> -->
             </section>
             <section>
-                <RecentAnnouncements />
+                <!-- <RecentAnnouncements /> -->
+            </section>
+            <section>
+                <PopularQueries />
             </section>
         </aside>
     </div>
@@ -59,6 +62,7 @@
     import useHelpWidget from '~/composables/helpCenter/useHelpWidget'
     import RecentResources from '@/home/main/recentResources.vue'
     import RecentAnnouncements from '@/home/main/recentAnnouncements.vue'
+    import PopularQueries from '@/home/main/popoularQueries.vue'
 
     export default defineComponent({
         name: 'HomePage',
@@ -72,6 +76,7 @@
             Purpose,
             RecentResources,
             RecentAnnouncements,
+            PopularQueries,
         },
         props: {},
         setup() {

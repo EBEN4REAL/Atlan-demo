@@ -1321,6 +1321,7 @@
                 isTabAdded.value = key
                 const inlineTabData: activeInlineTabInterface = {
                     label: `${previewItem.title} preview`,
+                    attributes: {},
                     key,
                     favico: 'https://atlan.com/favicon.ico',
                     isSaved: false,

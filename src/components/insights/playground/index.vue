@@ -340,6 +340,7 @@
                 isTabAdded.value = key
                 const inlineTabData: activeInlineTabInterface = {
                     label: `Untitled ${getLastUntitledNumber()}`,
+                    attributes: {},
                     key,
                     favico: 'https://atlan.com/favicon.ico',
                     isSaved: false,

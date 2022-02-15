@@ -639,9 +639,9 @@ const useTree = ({
         }
     }
 
-    const returnTreeDataItemAttributes = (
+    function returnTreeDataItemAttributes(
         item: Database | Schema | Table | Column
-    ) => {
+    ) {
         return {
             attributes: item.attributes,
             entity: item,
@@ -656,7 +656,7 @@ const useTree = ({
         }
     }
 
-    const checkAndAddLoadMoreNode = (
+    function checkAndAddLoadMoreNode(
         response:
             | IndexSearchResponse<Database>
             | IndexSearchResponse<Schema>
@@ -665,7 +665,7 @@ const useTree = ({
         serviceName: 'Connection' | 'Database' | 'Schema' | 'Table' | 'View',
         parentQualifiedName: string,
         key?: string
-    ) => {
+    ) {
         const query = JSON.parse(response.searchParameters.query)
         const limit = query.size
         const offset = query.from

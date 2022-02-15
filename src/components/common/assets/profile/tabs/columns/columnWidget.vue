@@ -117,7 +117,11 @@
                         <span class="data-type">{{ text?.toUpperCase() }}</span>
                     </template>
                     <template v-else-if="column.key === 'description'">
-                        <Tooltip :tooltip-text="text" />
+                        <EditableDescription
+                            :asset-item="record.item"
+                            :tooltip-text="text"
+                            :allow-editing="true"
+                        />
                     </template>
                 </template>
             </a-table>
@@ -205,9 +209,12 @@
 
     // Interfaces
     import { assetInterface } from '~/types/assets/asset.interface'
+    import EditableDescription from '@common/assets/profile/tabs/columns/editableDescription.vue'
+    import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
 
     export default defineComponent({
         components: {
+            EditableDescription,
             SearchAdvanced,
             AssetDrawer,
             EmptyView,
@@ -525,6 +532,7 @@
                         key: 'description',
                     },
                 ],
+                useAssetInfo,
             }
         },
     })

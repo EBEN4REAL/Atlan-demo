@@ -191,6 +191,7 @@
                     renderLayout,
                     mergedLineageData,
                     sameSourceCount,
+                    sameTargetCount,
                     nodes,
                     edges,
                 } = await useComputeGraph(
@@ -219,6 +220,7 @@
                     graphPrefs,
                     mergedLineageData,
                     sameSourceCount,
+                    sameTargetCount,
                     nodes,
                     edges,
                     onSelectAsset,

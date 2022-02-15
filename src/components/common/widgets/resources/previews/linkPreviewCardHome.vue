@@ -46,9 +46,9 @@
             </div>
             <div>
                 <a-dropdown
+                    v-if="editPermission"
                     trigger="click"
                     placement="bottomRight"
-                    v-if="editPermission"
                 >
                     <div>
                         <AtlanIcon

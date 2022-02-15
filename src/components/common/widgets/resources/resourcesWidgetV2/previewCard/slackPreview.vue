@@ -86,7 +86,7 @@
     import { PropType, toRefs, computed, watch, inject } from 'vue'
     import { useTimeAgo } from '@vueuse/core'
     import { Link } from '~/types/resources.interface'
-    import LinkPreview from '@/common/widgets/resources/resourcesWidgetV2/linkPreviewCard.vue'
+    import LinkPreview from '@/common/widgets/resources/resourcesWidgetV2/previewCard/linkPreviewCard.vue'
     import {
         getChannelAndMessageIdFromSlackLink,
         UnfurlSlackMessage,

@@ -127,7 +127,7 @@
     } from '~/composables/integrations/useSlack'
     import EmptyScreen from '@/common/empty/index.vue'
     import SlackConnect from './misc/connectSlackCard.vue'
-    import LinkPreviewCard from '@/common/widgets/resources/resourcesWidgetV2/linkPreviewCard.vue'
+    import LinkPreviewCard from '@/common/widgets/resources/resourcesWidgetV2/previewCard/linkPreviewCard.vue'
     import SlackPreview from '@/common/widgets/resources/resourcesWidgetV2/slackPreview.vue'
     import AddResource from '@/common/widgets/resources/resourcesWidgetV2/resourceInputModal.vue'
     import SlackUserLoginTrigger from '@common/integrations/slack/slackUserLoginTriggerCard.vue'

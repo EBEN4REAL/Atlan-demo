@@ -393,7 +393,6 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         unlinkedAssets?: assetInterface[]
         term: assetInterface
     }) => {
-        console.log(linkedAssets)
         const linked = linkedAssets.map((assignedEntitiy) => {
             const meanings = assignedEntitiy.attributes.meanings ?? []
             if (!meanings.find((meaning) => meaning.guid === term.guid)) {
@@ -426,7 +425,6 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
                     parent: assignedEntitiy?.attributes?.parent,
                 }
             }
-            return payload
 
             return payload
         })

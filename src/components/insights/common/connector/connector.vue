@@ -31,7 +31,11 @@
                 >
                     <AtlanIcon :icon="iconName(node)" class="h-4 mr-1" />
                     <div class="flex flex-col" v-if="!node?.connection">
-                        {{ capitalizeFirstLetter(node.title) }}
+                        {{
+                            node.title?.length > 1
+                                ? `${capitalizeFirstLetter(node.title)}`
+                                : node.title
+                        }}
                     </div>
                     <div class="flex flex-col" v-else>
                         {{ node.title }}

@@ -968,6 +968,15 @@
                                         activeInlineTabCopy.assetSidebar.assetInfo.displayText =
                                             newName
                                     }
+                                    if (
+                                        data.value?.mutatedEntities?.UPDATE
+                                            ?.length > 0
+                                    ) {
+                                        activeInlineTabCopy.updateTime =
+                                            data.value?.mutatedEntities?.UPDATE[0].updateTime
+                                        activeInlineTabCopy.updatedBy =
+                                            data.value?.mutatedEntities?.UPDATE[0].updatedBy
+                                    }
                                     modifyActiveInlineTab(
                                         activeInlineTabCopy,
                                         inlineTabs,

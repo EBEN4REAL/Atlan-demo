@@ -101,15 +101,19 @@
         emits: ['closeRenameModal'],
         setup(props, { emit }) {
             const { queryData, modalVisible } = toRefs(props)
-            const name: Ref<string> = ref(queryData?.value?.attributes?.name)
-
-            const refreshQueryTree = inject<
-                (guid: string, type: 'query' | 'Folder') => void
-            >('refreshQueryTree', () => {})
 
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+
+            const name: Ref<string> = ref(
+                queryData?.value?.attributes?.name ??
+                    activeInlineTab.value?.label
+            )
+
+            const refreshQueryTree = inject<
+                (guid: string, type: 'query' | 'Folder') => void
+            >('refreshQueryTree', () => {})
 
             const closeModal = () => {
                 emit('closeRenameModal')
@@ -164,39 +168,48 @@
 
                 watch(data, () => {
                     message.success('Query renamed successfully')
+                    if (data.value !== undefined) {
+                        let parentGuid = queryData.value.attributes.parent.guid
 
-                    let parentGuid = queryData.value.attributes.parent.guid
+                        refreshQueryTree(parentGuid, 'query')
 
-                    refreshQueryTree(parentGuid, 'query')
+                        if (activeInlineTab.value.attributes) {
+                            let activeInlineTabCopy: activeInlineTabInterface =
+                                JSON.parse(
+                                    JSON.stringify(toRaw(activeInlineTab.value))
+                                )
+                            activeInlineTabCopy.attributes.name = name.value
+                            activeInlineTabCopy.label = name.value
 
-                    if (activeInlineTab.value.attributes) {
-                        let activeInlineTabCopy: activeInlineTabInterface =
-                            JSON.parse(
-                                JSON.stringify(toRaw(activeInlineTab.value))
+                            if (
+                                activeInlineTabCopy?.assetSidebar?.assetInfo
+                                    ?.attributes?.__guid ===
+                                queryData?.value?.attributes?.__guid
+                            ) {
+                                activeInlineTabCopy.assetSidebar.assetInfo.attributes.name =
+                                    name.value
+                                activeInlineTabCopy.assetSidebar.assetInfo.displayText =
+                                    name.value
+                            }
+                            if (
+                                data.value?.mutatedEntities?.UPDATE?.length > 0
+                            ) {
+                                activeInlineTabCopy.updateTime =
+                                    data.value?.mutatedEntities?.UPDATE[0].updateTime
+                                activeInlineTabCopy.updatedBy =
+                                    data.value?.mutatedEntities?.UPDATE[0].updatedBy
+                            }
+                            modifyActiveInlineTab(
+                                activeInlineTabCopy,
+                                tabs,
+                                activeInlineTabCopy.isSaved,
+                                true
                             )
-                        activeInlineTabCopy.attributes.name = name.value
-                        activeInlineTabCopy.label = name.value
-
-                        if (
-                            activeInlineTabCopy?.assetSidebar?.assetInfo
-                                ?.attributes?.__guid ===
-                            queryData?.value?.attributes?.__guid
-                        ) {
-                            activeInlineTabCopy.assetSidebar.assetInfo.attributes.name =
-                                name.value
-                            activeInlineTabCopy.assetSidebar.assetInfo.displayText =
-                                name.value
                         }
-                        modifyActiveInlineTab(
-                            activeInlineTabCopy,
-                            tabs,
-                            activeInlineTabCopy.isSaved,
-                            true
-                        )
-                    }
 
-                    closeModal()
-                    useAddEvent('insights', 'query', 'renamed', undefined)
+                        closeModal()
+                        useAddEvent('insights', 'query', 'renamed', undefined)
+                    }
                 })
             }
 

@@ -17,6 +17,7 @@ export default function useCustomMetadataHelpers() {
                 if (a?.options?.customType?.includes('users')) return 'users'
                 if (a?.options?.customType?.includes('groups')) return 'groups'
                 if (a?.options?.customType?.includes('url')) return `url`
+                if (a?.options?.customType?.includes('SQL')) return `SQL`
                 return 'text'
             }
         }

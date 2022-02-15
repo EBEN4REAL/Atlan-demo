@@ -880,7 +880,7 @@
             }
 
             const isMultiValuedSupport = computed(() => {
-                const blackList = ['boolean', 'date']
+                const blackList = ['boolean', 'date', 'SQL']
                 return !blackList.includes(form.value.options.primitiveType)
             })
 

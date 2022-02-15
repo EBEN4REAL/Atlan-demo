@@ -32,7 +32,7 @@
                     <!-- <div class="ml-1 font-semibold">
                         {{ isEdit ? selectedPolicy.name : 'New policy' }}
                     </div> -->
-                    <div v-if="isEdit ? canEdit : true" class="flex ml-auto">
+                    <!-- <div v-if="isEdit ? canEdit : true" class="flex ml-auto">
                         <AtlanBtn
                             size="md"
                             padding="compact"
@@ -51,7 +51,7 @@
                                 isLoading ? 'Saving' : isEdit ? 'Update' : 'Add'
                             }}
                         </AtlanBtn>
-                    </div>
+                    </div> -->
                 </div>
                 <!-- <div class="flex items-center">
                     <span class="mr-1 text-neutral-600"
@@ -549,7 +549,7 @@
             </div>
         </div>
         <div v-if="isEdit ? canEdit : true" class="flex button-container">
-            <!-- <AtlanBtn
+            <AtlanBtn
                 size="sm"
                 padding="compact"
                 color="minimal"
@@ -572,7 +572,7 @@
                 @click="handleSave"
             >
                 {{ isLoading ? 'Saving' : isEdit ? 'Update' : 'Save' }}
-            </AtlanBtn> -->
+            </AtlanBtn>
         </div>
         <div v-else-if="isEdit && !canEdit">
             <div class="flex p-3 m-4 rounded bg-primary-light text-primary">

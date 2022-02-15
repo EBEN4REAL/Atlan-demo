@@ -33,13 +33,13 @@
                             } added`
                         }}
                     </span>
-                    <AtlanBtn
+                    <!-- <AtlanBtn
                         padding="compact"
                         class="px-7 h-fit"
                         @click="saveAssets"
                     >
                         Add
-                    </AtlanBtn>
+                    </AtlanBtn> -->
                 </div>
             </div>
 
@@ -114,8 +114,8 @@
             </div>
 
             <a-divider />
-            <!-- <div class="flex items-center justify-end m-2 gap-x-2">
-                <span class="mr-auto text-gray-500"
+            <div class="flex items-center justify-end m-2 gap-x-2">
+                <span class="pl-2 mr-auto text-gray-500"
                     >{{ selectedAssetCount || 'No' }} items selected</span
                 >
                 <AtlanBtn
@@ -135,7 +135,7 @@
                 >
                     Save
                 </AtlanBtn>
-            </div> -->
+            </div>
         </div>
     </a-drawer>
 </template>

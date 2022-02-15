@@ -110,6 +110,14 @@
                 queryData?.value?.attributes?.name ??
                     activeInlineTab.value?.label
             )
+            watch(
+                () => activeInlineTab.value?.label,
+                () => {
+                    name.value =
+                        queryData?.value?.attributes?.name ??
+                        activeInlineTab.value?.label
+                }
+            )
 
             const refreshQueryTree = inject<
                 (guid: string, type: 'query' | 'Folder') => void

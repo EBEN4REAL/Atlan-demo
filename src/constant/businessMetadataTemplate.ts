@@ -182,7 +182,6 @@ export const ATTRIBUTE_TYPES = [
         id: 'SQL',
         icon: 'Query',
     },
-
 ]
 
 /**

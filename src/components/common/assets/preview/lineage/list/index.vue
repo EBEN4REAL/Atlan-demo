@@ -13,7 +13,7 @@
 
     <AggregationTabs
         v-model="selectedType"
-        class="px-4 mb-1"
+        class="px-4 mt-2 mb-1"
         :list="assetTypes"
     ></AggregationTabs>
 

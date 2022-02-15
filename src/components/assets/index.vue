@@ -80,7 +80,7 @@
                 <div
                     v-if="showAggrs"
                     class="w-full"
-                    :class="page === 'admin' ? '' : 'pl-4 mt-3 mb-1'"
+                    :class="page === 'admin' ? '' : 'px-4 mt-3 mb-1'"
                 >
                     <AggregationTabs
                         v-model="postFacets.typeName"

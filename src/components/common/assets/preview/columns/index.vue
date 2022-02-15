@@ -1,6 +1,8 @@
 <template>
     <div class="flex flex-col h-full" style="height: calc(100% - 84px)">
-        <div class="flex items-center justify-between px-5 bg-gray-50 py-2">
+        <div
+            class="flex items-center justify-between px-5 bg-gray-50 py-2 border-b border-gray-200"
+        >
             <span class="font-semibold text-gray-500">Columns</span>
         </div>
 

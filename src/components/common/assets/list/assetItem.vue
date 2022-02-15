@@ -1,9 +1,9 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
     <div
-        class="my-1 rounded-lg transition duration-100 hover:border-primary border hover:shadow-md"
+        class="my-1 rounded-lg transition duration-100 hover:border-primary border hover:shadow"
         :class="{
-            'border-primary  shadow-md bordern bg-primary-menu': isSelected,
+            'border-primary  shadow bordern bg-primary-menu': isSelected,
             'cursor-pointer': enableSidebarDrawer,
             'opacity-80': isLoading,
         }"
@@ -65,7 +65,7 @@
                             :classes="
                                 isScrubbed(item)
                                     ? 'text-md mb-0  font-semibold cursor-pointer text-primary hover:underline opacity-80 '
-                                    : 'text-md font-bold mb-0 cursor-pointer text-primary hover:underline '
+                                    : 'text-md font-bold mb-0 cursor-pointer text-primary hover:underline  '
                             "
                             :should-open-in-new-tab="openAssetProfileInNewTab"
                             @click="(e) => e.stopPropagation()"
@@ -99,7 +99,7 @@
                     </div>
 
                     <!-- Info bar -->
-                    <div class="flex flex-wrap items-center mt-1">
+                    <div class="flex flex-wrap items-center mt-1.5">
                         <div class="flex items-center mr-2">
                             <a-tooltip
                                 v-if="connectorName(item)"
@@ -205,7 +205,7 @@
                                     "
                                     class="mr-2 text-gray-500"
                                     ><span
-                                        class="font-semibold tracking-tight text-gray-500"
+                                        class="font-semibold tracking-wide text-gray-500"
                                         >{{ rowCount(item, false) }}
                                     </span>
                                     Rows</span
@@ -231,7 +231,7 @@
                             </a-tooltip>
                             <span class="text-gray-500">
                                 <span
-                                    class="font-semibold tracking-tight text-gray-500"
+                                    class="font-semibold tracking-wide text-gray-500"
                                     >{{ columnCount(item, false) }}</span
                                 >
                                 Cols</span

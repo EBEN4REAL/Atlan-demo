@@ -11,7 +11,9 @@
             </keep-alive>
         </div>
 
-        <div class="relative hidden bg-white asset-preview-container md:block">
+        <div
+            class="relative hidden bg-white asset-preview-container md:block border-l border-gray-300"
+        >
             <AssetPreview :selected-asset="localSelected" />
         </div>
     </div>

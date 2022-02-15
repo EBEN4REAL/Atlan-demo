@@ -5,10 +5,10 @@
     >
         <div
             v-if="activeInlineTab?.assetSidebar?.isVisible"
-            class="close-btn-add-policy"
+            class="absolute close-btn-add-policy"
             @click="handleClose"
         >
-            <AtlanIcon icon="Add" class="text-white" />
+            <AtlanIcon icon="Add" class="w-5 h-5 text-gray-500" />
         </div>
 
         <AssetPreview
@@ -235,16 +235,9 @@
     }
     .close-btn-add-policy {
         // padding: 10px;
-        height: 32px;
-        width: 32px;
-        background: #3e4359cc;
-        position: fixed;
-        border-radius: 50%;
-        display: grid;
-        place-items: center;
+        right: 16px;
+        top: 11px;
         transform: rotate(45deg);
-        right: 430px;
-        top: 60px;
         z-index: 20;
         cursor: pointer;
     }

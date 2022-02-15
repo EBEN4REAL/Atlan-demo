@@ -93,7 +93,7 @@
     import { message } from 'ant-design-vue'
     import { useVModels, whenever } from '@vueuse/core'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { useCreateRequests } from '~/composables/requests/useCreateRequests.ts'
+    import { useCreateRequests } from '~/composables/requests/useCreateRequests'
     import whoami from '~/composables/user/whoami.ts'
 
     import GlossaryTree from '~/components/glossary/index.vue'

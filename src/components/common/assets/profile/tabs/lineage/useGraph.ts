@@ -5,13 +5,9 @@ import {
     getSchema,
     getNodeTypeText,
 } from './util.js'
-import {
-    iconPlus,
-    iconCaretDown,
-    iconVerified,
-    iconDraft,
-    iconDeprecated,
-} from './icons'
+import { iconPlus, iconVerified, iconDraft, iconDeprecated } from './icons'
+import CaretDown from '~/assets/images/icons/caret-down.svg?url'
+
 import { dataTypeCategoryList } from '~/constant/dataType'
 import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
@@ -127,7 +123,7 @@ export default function useGraph() {
                                     <span class="relative z-50 block ">
                                         <span class="absolute right-0 justify-end hidden w-6 text-white group-hover:flex caret-bg">${
                                             ['Table', 'View'].includes(typeName)
-                                                ? iconCaretDown
+                                                ? `<img src="${CaretDown}">`
                                                 : ''
                                         }
                                         </span>

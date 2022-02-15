@@ -432,6 +432,7 @@ export default function useEventGraph(
             list,
             () => {
                 const columns = list.value
+
                 if (!columns) {
                     const caretElement = getCaretElement(node.id)
                     controlCaret(node.id, caretElement)
@@ -470,7 +471,7 @@ export default function useEventGraph(
                 // Add to ExpandedNodes array only if it is not fetched again
                 if (!isFetchMore) {
                     chp.value.expandedNodes.push(node)
-                    controlShowMorePorts(node)
+                    // controlShowMorePorts(node)
                 }
             },
             { deep: true }

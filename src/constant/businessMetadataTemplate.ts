@@ -15,7 +15,7 @@ const customMetadataAssetCategories: {
             label: 'SQL',
             children: [
                 ...assetTypeList.filter(t => t.categoryType === 'SQL').map(c => ({
-                    id: c.id, label: c.id
+                    id: c.id, label: c.fullLabel ?? c.label
                 }))
             ],
         },
@@ -24,7 +24,7 @@ const customMetadataAssetCategories: {
             label: 'BI',
             children: [
                 ...assetTypeList.filter(t => t.categoryType === 'BI').map(c => ({
-                    id: c.id, label: c.id
+                    id: c.id, label: c.fullLabel ?? c.label
                 }))
             ],
         },
@@ -33,7 +33,7 @@ const customMetadataAssetCategories: {
             label: 'SaaS',
             children: [
                 ...assetTypeList.filter(t => t.categoryType === 'SaaS').map(c => ({
-                    id: c.id, label: c.id
+                    id: c.id, label: c.fullLabel ?? c.label
                 }))
             ],
         },
@@ -42,7 +42,7 @@ const customMetadataAssetCategories: {
             label: 'Insights',
             children: [
                 ...assetTypeList.filter(t => t.categoryType === 'Insights').map(c => ({
-                    id: c.id, label: c.id
+                    id: c.id, label: c.fullLabel ?? c.label
                 }))
             ],
         },
@@ -51,7 +51,7 @@ const customMetadataAssetCategories: {
             label: 'Lineage',
             children: [
                 ...assetTypeList.filter(t => t.categoryType === 'Lineage').map(c => ({
-                    id: c.id, label: c.id
+                    id: c.id, label: c.fullLabel ?? c.label
                 }))
             ],
         },
@@ -60,7 +60,7 @@ const customMetadataAssetCategories: {
             label: 'Business Terms',
             children: [
                 ...assetTypeList.filter(t => t.categoryType === 'BusinessTerms').map(c => ({
-                    id: c.id, label: c.id
+                    id: c.id, label: c.fullLabel ?? c.label
                 }))
             ],
         }

@@ -56,6 +56,15 @@
                 }}</span>
             </div>
         </template>
+        <template v-else-if="getDatatypeOfAttribute(attribute) === 'SQL'">
+            <div class="w-full">
+                <SQLFormatter
+                    :text="attribute.value"
+                    background="bg-primary-light"
+                    class=""
+                />
+            </div>
+        </template>
         <a-typography-paragraph
             v-else-if="getDatatypeOfAttribute(attribute) === 'text'"
             class="text-gray-700 break-normal"
@@ -158,10 +167,12 @@
     import { useGroupPreview } from '~/composables/group/showGroupPreview'
     import { CUSTOM_METADATA_ATTRIBUTE as CMA } from '~/types/typedefs/customMetadata.interface'
     import { getDomain } from '~/utils/url'
+    import SQLFormatter from '@common/sql/snippet.vue'
 
     export default defineComponent({
         name: 'CustomMetadataReadOnly',
         components: {
+            SQLFormatter,
             UserPill,
             GroupPill,
             PopOverUser,

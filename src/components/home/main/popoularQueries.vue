@@ -1,10 +1,9 @@
 <template>
     <!--h2 class="mb-3 text-xl font-bold">Relevant for you</h2-->
-    <transition name="fade">
+    <transition v-if="popularQueriesList.length" name="fade">
         <div>
             <h2 class="mb-3 text-sm font-semibold text-gray-500">
-                <AtlanIcon icon="InformationAnnouncement"></AtlanIcon> Popular
-                Queries
+                <AtlanIcon icon="TrendUp"></AtlanIcon> Popular Queries
             </h2>
 
             <div

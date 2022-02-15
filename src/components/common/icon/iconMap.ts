@@ -412,6 +412,7 @@ import SuccessQuery from '~/assets/images/icons/tabs/success-check.svg'
 import QuestionRound from '~/assets/images/icons/question-round.svg'
 import Documentation from '~/assets/images/icons/documentation.svg'
 import Logout from '~/assets/images/icons/logout.svg'
+import TrendUp from '~/assets/images/icons/trendUp.svg'
 
 export default {
     Resources2,
@@ -808,4 +809,5 @@ export default {
     OutputpaneTriggerFilled,
     SidebarTriggerFilled,
     BeautifySql,
+    TrendUp,
 }

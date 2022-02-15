@@ -1,7 +1,7 @@
 <template>
     <a-input
         ref="searchBar"
-        :placeholder="placeholder"
+        :placeholder="placeholderDynamic"
         v-model:value="localValue"
         :size="size"
         data-test-id="input-text"
@@ -33,6 +33,7 @@
         </template>
 
         <template #suffix>
+            <a-spin size="small" v-if="isLoading" class="mt-0.5 mx-1"></a-spin>
             <slot name="tab" />
             <slot name="filter" />
             <a-popover
@@ -94,14 +95,17 @@
             connectorName: { type: String, default: () => '' },
             customClass: { type: String, default: '' },
             noBorder: { type: Boolean, default: false },
+            isLoading: { type: Boolean, default: false },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const { autofocus, connectorName, size } = toRefs(props)
+            const { autofocus, connectorName, size, placeholder, isLoading } =
+                toRefs(props)
 
             const { modelValue } = useVModels(props, emit)
 
-            const { getConnectorImageMap } = useAssetInfo()
+            const { getConnectorImageMap, getConnectorLabelByName } =
+                useAssetInfo()
 
             const searchBar: Ref<null | HTMLInputElement> = ref(null)
             const localValue = ref(modelValue.value)
@@ -113,6 +117,15 @@
             const forceFocus = () => {
                 start()
             }
+
+            const placeholderDynamic = computed(() => {
+                if (getConnectorLabelByName(connectorName.value)) {
+                    return `Search ${getConnectorLabelByName(
+                        connectorName.value
+                    )} assets`
+                }
+                return placeholder.value
+            })
 
             // computed({
             //     get: () => modelValue.value,
@@ -164,7 +177,10 @@
                 getConnectorImageMap,
                 capitalizeFirstLetter,
                 focusInput,
+                getConnectorLabelByName,
                 allowTabShortcut,
+                placeholderDynamic,
+                isLoading,
             }
         },
     })

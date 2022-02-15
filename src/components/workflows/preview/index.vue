@@ -76,11 +76,6 @@
                                         'package.argoproj.io/name'
                                     ]
                                 }}
-                                ({{
-                                    item?.metadata.labels[
-                                        'package.argoproj.io/version'
-                                    ]
-                                }})
                             </div>
                         </div>
                     </div>

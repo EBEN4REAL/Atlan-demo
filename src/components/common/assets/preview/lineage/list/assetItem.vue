@@ -343,6 +343,14 @@
                             <PopoverClassification
                                 :classification="classification"
                                 :entity-guid="item?.guid"
+                                :mouse-enter-delay="
+                                    classificationPopoverMouseEnterDelay
+                                "
+                                @mouse-entered="
+                                    () => {
+                                        classificationPopoverMouseEnterDelay = 0.2
+                                    }
+                                "
                             >
                                 <ClassificationPill
                                     :name="classification.name"
@@ -364,7 +372,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs, computed } from 'vue'
+    import { defineComponent, PropType, toRefs, computed, ref } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
@@ -502,6 +510,7 @@
                     )
                 )
             )
+            const classificationPopoverMouseEnterDelay = ref(1)
 
             return {
                 isChecked,
@@ -543,6 +552,7 @@
                 clsfList,
                 classifications,
                 getLineagePath,
+                classificationPopoverMouseEnterDelay,
             }
         },
     })

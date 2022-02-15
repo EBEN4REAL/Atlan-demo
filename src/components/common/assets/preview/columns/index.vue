@@ -24,7 +24,7 @@
 
         <AggregationTabs
             v-model="postFacets.dataType"
-            class="px-3 mb-1"
+            class="px-3 mt-2 mb-1"
             :list="columnDataTypeAggregationList"
             @change="handleDataTypeChange"
         ></AggregationTabs>

@@ -1,17 +1,22 @@
 <template>
     <div class="flex flex-col w-full pb-1 mt-2 gap-y-2">
-        <template v-for="(item, index) in list" :key="item.typeName">
+        <template v-for="(item, index) in list" :key="index">
             <div>
                 <AssetSelector
+                    :_firsCalled="_firsCalled"
+                    :connector="connector"
                     :key="getKey(index)"
+                    :index="index"
                     :modelValue="asset[item.attribute]"
                     :type-name="item.typeName"
                     :filters="getFilter(index)"
                     :disabled="isDisabled(index)"
                     @change="handleChange(item.attribute, $event, item.level)"
+                    @firstSelectByDefaultChange="firstSelectByDefaultChange"
                     :placeholder="`Select ${item.name}`"
                     :data-test-id="item.name?.toLowerCase()"
                     :bgGrayForSelector="bgGrayForSelector"
+                    :selectFirstByDefault="selectFirstByDefault"
                 ></AssetSelector>
             </div>
         </template>
@@ -20,6 +25,7 @@
 
 <script lang="ts">
     import {
+        watch,
         computed,
         defineComponent,
         ref,
@@ -60,15 +66,18 @@
         emits: ['labelChange', 'change'],
         setup(props, { emit }) {
             const { connector, filter } = toRefs(props)
+            const _firsCalled = ref(false)
             console.log('connection filters: ', filter.value)
             console.log('connector preview: ', connector.value)
 
-            const list: ComputedRef<any[]> = computed(
-                () =>
+            const list: ComputedRef<any[]> = computed(() => {
+                // debugger
+                return (
                     connector.value?.hierarchy.filter(
                         (item) => item.level < 3
                     ) || []
-            )
+                )
+            })
 
             const asset: ComputedRef<Record<string, any>> = computed(() => {
                 const chunks = filter.value.attributeValue?.split('/') || []
@@ -199,15 +208,32 @@
                     emit('change', { attributeName: '', attributeValue: '' })
 
                 setSelectorValue()
+                // handleChange(key, value, level)
             }
 
+            const firstSelectByDefaultChange = (
+                key: string,
+                value: string | undefined,
+                level: number
+            ) => {
+                if (!_firsCalled.value) {
+                    handleChange(key, value, level)
+                    _firsCalled.value = true
+                }
+            }
+            watch(connector, () => {
+                _firsCalled.value = false
+            })
+
             return {
+                _firsCalled,
                 list,
                 asset,
                 getFilter,
                 handleChange,
                 isDisabled,
                 getKey,
+                firstSelectByDefaultChange,
             }
         },
     })

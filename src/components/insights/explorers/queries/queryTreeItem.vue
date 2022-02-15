@@ -964,7 +964,7 @@
                         const { data, error, isLoading } =
                             Insights.CreateQueryFolder(
                                 {
-                                    entiy: item.value.entity,
+                                    entity: item.value.entity,
                                 },
                                 {}
                             )

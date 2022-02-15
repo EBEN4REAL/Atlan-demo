@@ -1,9 +1,12 @@
-import { ref, Ref } from 'vue'
+import { ref, Ref, toRaw } from 'vue'
 import { useSpiltPanes } from './useSpiltPanes'
 import { currentNormalExplorerSize } from './useSpiltPanes'
+import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+import { useLocalStorageSync } from '~/components/insights/common/composables/useLocalStorageSync'
 
 export function useHotKeys() {
-    const { _t, assetSidebarPaneSize, outputPaneSize } = useSpiltPanes()
+    const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
+    const { _t, assetSidebarPaneSize } = useSpiltPanes()
     function explorerPaneToggle(explorerPaneSizeParam: Ref<any>) {
         if (explorerPaneSizeParam.value == 0) {
             // setting original width
@@ -15,10 +18,19 @@ export function useHotKeys() {
             assetSidebarPaneSizeParam.value = assetSidebarPaneSize.value
         } else assetSidebarPaneSizeParam.value = 0
     }
-    function resultsPaneSizeToggle(outputPaneSizeParam: Ref<any>) {
-        if (outputPaneSizeParam.value <= 10) {
-            outputPaneSizeParam.value = outputPaneSize.value
-        } else outputPaneSizeParam.value = 0
+    function resultsPaneSizeToggle(
+        activeInlineTab: Ref<activeInlineTabInterface>,
+        tabsArray: Ref<activeInlineTabInterface[]>
+    ) {
+        if (activeInlineTab.value.playground.resultsPane.outputPaneSize <= 10) {
+            activeInlineTab.value.playground.resultsPane.outputPaneSize =
+                Math.abs(
+                    activeInlineTab.value.playground.resultsPane.outputPaneSize
+                )
+        } else
+            activeInlineTab.value.playground.resultsPane.outputPaneSize =
+                -activeInlineTab.value.playground.resultsPane.outputPaneSize
+        syncInlineTabsInLocalStorage(toRaw(tabsArray.value))
     }
 
     return {

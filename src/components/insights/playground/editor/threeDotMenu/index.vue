@@ -3,9 +3,9 @@
         <a-dropdown :trigger="['click']" placement="bottomRight">
             <div
                 @click.prevent="toggleButtonState"
-                class="flex cursor-pointer h-6 items-center justify-center py-0.5 -mr-2 px-1 border-white text-gray-500"
+                class="flex cursor-pointer h-6 items-center justify-center py-0.5 border-white text-gray-500"
             >
-                <AtlanIcon class icon="KebabMenu" />
+                <AtlanIcon class icon="KebabMenuHorizontal" />
             </div>
             <template #overlay>
                 <a-menu

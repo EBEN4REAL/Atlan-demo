@@ -610,6 +610,14 @@
                             <PopoverClassification
                                 :classification="classification"
                                 :entity-guid="item?.guid"
+                                :mouse-enter-delay="
+                                    classificationPopoverMouseEnterDelay
+                                "
+                                @mouse-entered="
+                                    () => {
+                                        classificationPopoverMouseEnterDelay = 0.2
+                                    }
+                                "
                             >
                                 <ClassificationPill
                                     :name="classification.name"
@@ -752,8 +760,7 @@
             }
 
             const isSelected = computed(() => {
-                return selectedGuid.value === item?.value?.guid;
-
+                return selectedGuid.value === item?.value?.guid
             })
 
             const { classificationList } = useTypedefData()
@@ -762,8 +769,7 @@
                 if (!item?.value?.guid) {
                     return false
                 }
-                return item?.value?.guid !== classification.entityGuid;
-
+                return item?.value?.guid !== classification.entityGuid
             }
 
             const list = computed(() => {
@@ -778,6 +784,7 @@
             const last = useTimeAgo(
                 item.value.attributes.__modificationTimestamp
             )
+            const classificationPopoverMouseEnterDelay = ref(1)
             return {
                 isChecked,
                 showCheckBox,
@@ -819,6 +826,7 @@
                 list,
                 classifications,
                 last,
+                classificationPopoverMouseEnterDelay,
             }
         },
     })

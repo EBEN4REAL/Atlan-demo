@@ -105,6 +105,8 @@ export function useQueryLogs(
                     filteredSavedQueryIds.forEach((queryId) =>
                         base.orFilter('term', '__guid', queryId)
                     )
+                    // TODO @rohan: apply isActive filter
+                    // base.andFilter('term', '__state', 'ACTIVE')
                     const requestBody = base.build()
                     fetchSavedQueryMeta(requestBody)
                 }

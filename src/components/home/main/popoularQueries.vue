@@ -20,12 +20,18 @@
                 style="min-height: 150px"
             >
                 <div
-                    v-for="queryObj in queryAggregationResult
-                        ?.group_by_savedQueryId?.buckets"
+                    v-for="queryObj in popularQueriesList"
                     :key="queryObj.key"
                     class="mb-3"
                 >
-                    {{ queryObj.key }}
+                    <div>
+                        {{
+                            title(queryObj.asset) || `No title: ${queryObj.key}`
+                        }}
+                        <span class="font-bold">
+                            {{ queryObj.doc_count }}
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -71,6 +77,7 @@
                 'certificateStatus',
                 'certificateUpdatedBy',
                 'certificateStatusMessage',
+                '__STATE',
             ]
 
             const {
@@ -89,6 +96,24 @@
                 queryAttributes,
                 queryAggregations
             )
+
+            const popularQueriesList = computed(() => {
+                const aggrs =
+                    queryAggregationResult?.value?.group_by_savedQueryId
+                        ?.buckets
+                const enrichedArray = aggrs
+                    ?.map((aggr) => {
+                        const { key, doc_count: docCount } = aggr
+                        const asset = savedQueryMetaMap?.value[key] || {}
+                        return {
+                            key,
+                            doc_count: docCount,
+                            asset,
+                        }
+                    })
+                    .filter((item) => item.asset?.status === 'ACTIVE')
+                return enrichedArray || []
+            })
 
             const {
                 title,
@@ -109,6 +134,7 @@
                 queryAggregationResult,
                 isQueryLogsLoading,
                 savedQueryMetaMap,
+                popularQueriesList,
             }
         },
     })

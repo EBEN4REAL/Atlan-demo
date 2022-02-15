@@ -90,7 +90,7 @@
                             list-class="h-52"
                             checkbox-list-class="h-48 py-2"
                             list-item-class="h-8 my-0.5"
-                            :showLoggedInUser="showLoggedInUser"
+                            :showLoggedInUser="true"
                             v-model:selectedRecords="selectedRecords"
                         ></Users>
 
@@ -189,11 +189,6 @@
             selectedRecords: {
                 type: Object,
                 default: null,
-                required: false,
-            },
-            showLoggedInUser: {
-                type: Boolean,
-                default: false,
                 required: false,
             },
             dropdownStyleObject: {

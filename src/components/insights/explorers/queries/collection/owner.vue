@@ -258,9 +258,15 @@
                     return props?.searchPlaceholder || 'Search users and groups'
                 }
                 if (componentType.value === 'groups') {
-                    return `Search ${groupRef?.value?.filterTotal ?? ''} groups`
+                    const count = groupRef?.value?.filterTotal
+                        ? groupRef.value.filterTotal
+                        : ''
+                    return `Search ${count} groups`
                 }
-                return `Search ${usersRef?.value?.filterTotal ?? ''} users`
+                const count = usersRef?.value?.filterTotal
+                    ? usersRef.value.filterTotal
+                    : ''
+                return `Search ${count} users`
             })
 
             const ownerSearchRef: Ref<null | HTMLInputElement> = ref(null)

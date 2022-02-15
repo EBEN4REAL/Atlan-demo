@@ -111,12 +111,13 @@
                     activeInlineTab.value?.label
             )
             watch(
-                () => activeInlineTab.value?.label,
+                activeInlineTab,
                 () => {
-                    name.value =
-                        queryData?.value?.attributes?.name ??
-                        activeInlineTab.value?.label
-                }
+                    name.value = queryData?.value?.attributes?.name
+                        ? queryData?.value?.attributes?.name
+                        : activeInlineTab.value?.label
+                },
+                { immediate: true }
             )
 
             const refreshQueryTree = inject<

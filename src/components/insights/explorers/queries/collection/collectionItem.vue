@@ -56,13 +56,6 @@
                 </template>
             </a-dropdown>
         </div>
-        <div class="absolute opacity-100 group right-12 y-center">
-            <AtlanIcon
-                v-if="selectedCollection?.guid === item?.guid"
-                icon="Check"
-                class="w-4 h-4 text-primary parent-ellipsis-container-extension"
-            ></AtlanIcon>
-        </div>
         <!-- <ShareCollectionModal
             v-model:showShareModal="showShareQueryModal"
             :item="item"

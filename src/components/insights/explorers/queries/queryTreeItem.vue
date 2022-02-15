@@ -974,6 +974,7 @@
                                         (tab) =>
                                             tab.queryId === item?.value.guid
                                     )
+                                    if (index < 0) return
                                     inlineTabs.value[index].attributes.name =
                                         input.value
                                     inlineTabs.value[index].label = newName
@@ -1111,6 +1112,7 @@
                                         (tab) =>
                                             tab.queryId === item?.value.guid
                                     )
+                                    if (index < 0) return
                                     inlineTabs.value[index].attributes.name =
                                         input.value
                                     inlineTabs.value[index].label = newName

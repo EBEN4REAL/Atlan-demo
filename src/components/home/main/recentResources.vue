@@ -26,7 +26,7 @@
                         class="w-auto h-32"
                     />
                 </div>
-                <div class="flex flex-col" v-else>
+                <div v-else class="flex flex-col">
                     <div
                         v-for="(item, index) in list"
                         :key="index"
@@ -34,11 +34,17 @@
                     >
                         <component
                             :is="getPreviewComponent(item?.attributes?.link)"
-                            :edit-permission="false"
-                            :item="item"
-                            :showAssetName="true"
-                            class=""
-                        />
+                            :link="item"
+                            :asset-subtitle="true"
+                            class="border-none"
+                        >
+                            <template v-if="item.attributes?.asset" #subtitle>
+                                <AssetTitleCtx
+                                    :item="item.attributes.asset"
+                                    class="mt-2"
+                                ></AssetTitleCtx>
+                            </template>
+                        </component>
                     </div>
                 </div>
             </div>
@@ -52,6 +58,7 @@
         ref,
         toRefs,
         computed,
+        provide,
         defineAsyncComponent,
     } from 'vue'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
@@ -65,7 +72,8 @@
         getChannelAndMessageIdFromSlackLink,
     } from '~/composables/integrations/useSlack'
     import integrationStore from '~/store/integrations/index'
-    import AssetTitleCtx from '@/home/shared/assetTitleContext.vue'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import AssetTitleCtx from '@/common/widgets/resources/resourcesWidgetV2/misc/assetTitleContext.vue'
 
     export default defineComponent({
         name: 'RecentResources',
@@ -74,13 +82,13 @@
             slackLinkPreview: defineAsyncComponent(
                 () =>
                     import(
-                        '@/common/widgets/resources/previews/slackLinkPreviewCardHome.vue'
+                        '@/common/widgets/resources/resourcesWidgetV2/previewCard/slackPreview.vue'
                     )
             ),
             linkPreview: defineAsyncComponent(
                 () =>
                     import(
-                        '@/common/widgets/resources/previews/linkPreviewCardHome.vue'
+                        '@/common/widgets/resources/resourcesWidgetV2/previewCard/linkPreviewCard.vue'
                     )
             ),
         },
@@ -89,6 +97,10 @@
             const limit = ref(15)
             const offset = ref(0)
             const queryText = ref('')
+
+            const readOnly = ref(true)
+            provide('readOnly', readOnly)
+
             const facets = ref({
                 typeNames: ['Link'],
             })
@@ -111,13 +123,7 @@
                 'asset',
             ])
             const store = integrationStore()
-            const hasAtleastOneSlackLink = computed(() => {
-                const linkArr = links(selectedAsset.value)
-                const slackLink = linkArr.some((link) =>
-                    isSlackLink(link?.attributes?.link)
-                )
-                return slackLink
-            })
+
             const { tenantSlackStatus, userSlackStatus } = toRefs(store)
             const relationAttributes = ref([
                 'name',
@@ -160,11 +166,28 @@
                 relationAttributes,
                 suppressLogs: true,
             })
+
+            // const { links } = useAssetInfo()
+            // const allResources = computed(() => {
+            //     if (list.value) {
+            //         return list.value.map((a) => ({
+            //             title: a.displayText,
+            //             links: links(a),
+            //         }))
+            //     }
+            //     return []
+            //     // return links(selectedAsset.value)?.sort((a, b) =>
+            //     //     // eslint-disable-next-line no-underscore-dangle
+            //     //     a.attributes.__timestamp < b.attributes.__timestamp
+            //     //         ? -1
+            //     //         : 1
+            //     // )
+            // })
             return {
+                // allResources,
                 isLoading,
                 list,
                 getPreviewComponent,
-                hasAtleastOneSlackLink,
                 userSlackStatus,
                 tenantSlackStatus,
             }

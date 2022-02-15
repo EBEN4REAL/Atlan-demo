@@ -204,11 +204,10 @@
                                         )
                                     "
                                     class="mr-2 text-gray-500"
-                                    ><span
-                                        class="font-semibold tracking-wide text-gray-500"
+                                    ><span class="text-gray-500"
                                         >{{ rowCount(item, false) }}
                                     </span>
-                                    Rows</span
+                                    rows</span
                                 >
                                 <template #title>
                                     <span
@@ -230,11 +229,10 @@
                                 </template>
                             </a-tooltip>
                             <span class="text-gray-500">
-                                <span
-                                    class="font-semibold tracking-wide text-gray-500"
-                                    >{{ columnCount(item, false) }}</span
-                                >
-                                Cols</span
+                                <span class="text-gray-500">{{
+                                    columnCount(item, false)
+                                }}</span>
+                                columns</span
                             >
                         </div>
 

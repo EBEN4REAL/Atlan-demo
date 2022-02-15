@@ -121,12 +121,12 @@ export default function useGraph() {
                             <div>
                                 <div class="node-text">
                                     <span class="relative z-50 block ">
-                                        <span class="absolute right-0 justify-end hidden w-6 text-white group-hover:flex caret-bg">${
+                                        <div class="absolute right-0 justify-end hidden w-6 group-hover:flex caret-bg">${
                                             ['Table', 'View'].includes(typeName)
-                                                ? `<img src="${CaretDown}">`
+                                                ? `<img class="node-caret h-6 w-6" src="${CaretDown}">`
                                                 : ''
                                         }
-                                        </span>
+                                        </div>
                                     </span>
                                     <div class="flex items-center gap-x-1">
                                         <span class="truncate node-title group-hover:underline">${displayText}</span>

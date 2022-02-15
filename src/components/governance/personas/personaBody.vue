@@ -63,6 +63,7 @@
                 <ResourcesWidget
                     placeholder="Resources is the place to document all knowledge around the persona"
                     :entity-name="persona.name"
+                    :read-only="false"
                     :resources="persona?.resources?.links ?? []"
                     :add-status="addStatus"
                     :update-status="updateStatus"

@@ -36,7 +36,7 @@ export const previewTabs = [
         ],
         icon: 'Lineage',
         tooltip: 'Lineage',
-        scrubbed: true,
+        scrubbed: false,
         requiredInProfile: true,
         analyticsKey: 'lineage',
     },

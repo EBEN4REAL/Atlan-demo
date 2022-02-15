@@ -32,6 +32,7 @@
     import CustomRadioButton from '@common/radio/customRadioButton.vue'
 
     export default defineComponent({
+        name: 'PreferenceSelector',
         components: {
             Sorting,
             CustomRadioButton,

@@ -55,24 +55,43 @@
             ),
         },
         setup() {
-            const relevantTab = ref('2')
+            const relevantTab = ref('4')
             const { username: myUsername } = whoami()
             const assetCounts = ref({})
             const relevantTabList = ref([
+                // {
+                //     id: '2',
+                //     name: 'My Assets',
+                //     component: 'AssetList',
+                //     typeName: ['Table'],
+                //     icon: 'NoRelevantAsset',
+                //     filter: {
+                //         owners: {
+                //             ownerUsers: [myUsername.value],
+                //         },
+                //     },
+                //     emptyText: 'All your assets will appear here.',
+                //     preference: undefined,
+                //     dependentKey: 'DEFAULT_ASSET_LIST_HOME',
+                //     assetCount: 0,
+                // },
                 {
-                    id: '2',
-                    name: 'My Assets',
+                    id: '4',
+                    name: 'My Drafts',
                     component: 'AssetList',
                     typeName: ['Table'],
                     icon: 'NoRelevantAsset',
                     filter: {
+                        certificateStatus: ['DRAFT'],
                         owners: {
                             ownerUsers: [myUsername.value],
                         },
                     },
-                    emptyText: 'All your assets will appear here.',
-                    preference: undefined,
-                    dependentKey: 'DEFAULT_ASSET_LIST_HOME',
+                    emptyText: 'All your drafts will appear here',
+                    preference: {
+                        sort: '__modificationTimestamp-desc',
+                    },
+                    dependentKey: 'DEFAULT_ASSET_LIST_MY_DRAFTS',
                     assetCount: 0,
                 },
                 {

@@ -8,13 +8,13 @@
         destroy-on-close
     >
         <div class="p-4">
-            <div class="mb-2 font-bold text-gray-700">New Picklist</div>
+            <div class="mb-2 font-bold text-gray-700">New Option</div>
             <a-form layout="vertical">
                 <a-form-item label="Name">
                     <a-input
                         id="name-input"
                         v-model:value="form.name"
-                        placeholder="Name of the Picklist"
+                        placeholder="Name of the Option"
                     ></a-input>
                     <div v-if="errorMessage" class="mt-2 text-xs text-red-500">
                         {{ errorMessage }}

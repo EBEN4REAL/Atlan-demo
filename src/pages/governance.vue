@@ -46,7 +46,7 @@
                             Custom Metadata
                         </a-menu-item>
                         <a-menu-item key="picklist" v-auth="[map.LIST_ENUM]">
-                            Picklist
+                            Options
                         </a-menu-item>
                     </a-menu-item-group>
                 </a-menu>

@@ -162,7 +162,7 @@
                     ? 'height: calc(100% - 0px)'
                     : 'height: calc(100% - 84px)'
             "
-            tab-position="left"
+            tab-position="right"
             :destroy-inactive-tab-pane="true"
         >
             <a-tab-pane
@@ -560,7 +560,7 @@
 
 <style lang="less" module>
     .previewtab {
-        &:global(.ant-tabs-left) {
+        &:global(.ant-tabs-right) {
             :global(.ant-tabs-nav-container) {
                 width: 48px !important;
                 @apply ml-0 !important;

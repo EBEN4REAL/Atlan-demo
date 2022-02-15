@@ -83,7 +83,9 @@
                     icon: 'NoRelevantAsset',
                     filter: {
                         certificateStatus: ['DRAFT'],
-                        owners: ['rohan'],
+                        owners: {
+                            ownerUsers: [myUsername.value],
+                        },
                     },
                     emptyText: 'All your drafts will appear here',
                     preference: {

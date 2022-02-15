@@ -244,7 +244,7 @@
         watch,
     } from 'vue'
     import { message } from 'ant-design-vue'
-    import ResourcesWidget from '@common/widgets/resources/resourcesWidgetV2/resourcesWidgetV2.vue'
+    import ResourcesWidget from '@common/widgets/resources/resourcesWidget.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import MinimalTab from '@/UI/minimalTab.vue'
     import AtlanBtn from '@/UI/button.vue'

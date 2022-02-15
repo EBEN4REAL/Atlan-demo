@@ -93,16 +93,16 @@
     import { PropType, toRefs, computed, watch, inject } from 'vue'
     import { useTimeAgo } from '@vueuse/core'
     import { Link } from '~/types/resources.interface'
-    import LinkPreview from '@/common/widgets/resources/resourcesWidgetV2/previewCard/linkPreviewCard.vue'
+    import LinkPreview from '@/common/widgets/resources/previewCard/linkPreviewCard.vue'
     import {
         getChannelAndMessageIdFromSlackLink,
         UnfurlSlackMessage,
         stripSlackText,
     } from '~/composables/integrations/useSlack'
-    import DeleteResource from '@/common/widgets/resources/resourcesWidgetV2/misc/deleteResource.vue'
-    import EditResource from '@/common/widgets/resources/resourcesWidgetV2/resourceInputModal.vue'
+    import DeleteResource from '@/common/widgets/resources/misc/deleteResource.vue'
+    import EditResource from '@/common/widgets/resources/resourceInputModal.vue'
     import ShowLess from '@/UI/showLess.vue'
-    import CardActions from '@/common/widgets/resources/resourcesWidgetV2/misc/cardActionMenu.vue'
+    import CardActions from '@/common/widgets/resources/misc/cardActionMenu.vue'
     import integrationStore from '~/store/integrations/index'
     import Truncate from '@/common/ellipsis/index.vue'
 

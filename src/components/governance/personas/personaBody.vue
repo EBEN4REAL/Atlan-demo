@@ -236,7 +236,7 @@
         toRefs,
     } from 'vue'
     import { message } from 'ant-design-vue'
-    import ResourcesWidget from '@common/widgets/resources/resourcesWidgetV2/resourcesWidgetV2.vue'
+    import ResourcesWidget from '@common/widgets/resources/resourcesWidget.vue'
     import usePersonaResources from '@/governance/personas/composables/usePersonaResources'
 
     import MinimalTab from '@/UI/minimalTab.vue'

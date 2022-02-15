@@ -89,7 +89,7 @@
     import { getDomain } from '~/utils/url'
     import { Link } from '~/types/resources.interface'
     import Tooltip from '@/common/ellipsis/index.vue'
-    import CardActions from '@/common/widgets/resources/resourcesWidgetV2/misc/cardActionMenu.vue'
+    import CardActions from '@/common/widgets/resources/misc/cardActionMenu.vue'
 
     const props = defineProps({
         link: {

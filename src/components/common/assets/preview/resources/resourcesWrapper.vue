@@ -32,7 +32,7 @@
         ref,
     } from 'vue'
     import { whenever } from '@vueuse/core'
-    import ResourcesWidget from '@/common/widgets/resources/resourcesWidgetV2/resourcesWidgetV2.vue'
+    import ResourcesWidget from '@/common/widgets/resources/resourcesWidget.vue'
     import Placeholder from '@/common/assets/preview/resources/placeholder.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'

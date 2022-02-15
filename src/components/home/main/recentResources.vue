@@ -73,7 +73,7 @@
     } from '~/composables/integrations/useSlack'
     import integrationStore from '~/store/integrations/index'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import AssetTitleCtx from '@/common/widgets/resources/resourcesWidgetV2/misc/assetTitleContext.vue'
+    import AssetTitleCtx from '@/common/widgets/resources/misc/assetTitleContext.vue'
 
     export default defineComponent({
         name: 'RecentResources',
@@ -82,13 +82,13 @@
             slackLinkPreview: defineAsyncComponent(
                 () =>
                     import(
-                        '@/common/widgets/resources/resourcesWidgetV2/previewCard/slackPreview.vue'
+                        '@/common/widgets/resources/previewCard/slackPreview.vue'
                     )
             ),
             linkPreview: defineAsyncComponent(
                 () =>
                     import(
-                        '@/common/widgets/resources/resourcesWidgetV2/previewCard/linkPreviewCard.vue'
+                        '@/common/widgets/resources/previewCard/linkPreviewCard.vue'
                     )
             ),
         },

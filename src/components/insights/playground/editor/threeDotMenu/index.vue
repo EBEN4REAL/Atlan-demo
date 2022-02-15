@@ -436,6 +436,32 @@
                     <hr v-if="!showVQB" />
                     <!-- Show these options when query is saved -->
                     <div v-if="activeInlineTab?.queryId" class="text-gray-700">
+                        <a-menu-item
+                            @click="queryModalVisible = true"
+                            class="px-4 py-2"
+                        >
+                            Rename query
+                        </a-menu-item>
+                        <a-menu-item
+                            key="editQuery"
+                            class="px-4 py-2"
+                            @click="
+                                () => {
+                                    openEdit()
+                                }
+                            "
+                            >Edit query</a-menu-item
+                        >
+                        <a-menu-item
+                            key="deleteQueryEditor"
+                            class="px-4 py-2 text-red-600"
+                            @click="
+                                () => {
+                                    showDeletePopover = true
+                                }
+                            "
+                            >Delete query</a-menu-item
+                        >
                         <a-sub-menu key="shareQueryMenu" class="text-gray-500">
                             <template #title>
                                 <div
@@ -511,6 +537,21 @@
             </template>
         </a-dropdown>
     </div>
+
+    <EditQuery
+        v-if="queryModalVisible"
+        :modalVisible="queryModalVisible"
+        :queryData="{ attributes: activeInlineTab.attributes }"
+        @closeRenameModal="queryModalVisible = false"
+    />
+
+    <TreeDeletePopover
+        :item="{ attributes: activeInlineTab.attributes }"
+        @cancel="showDeletePopover = false"
+        @delete="() => deleteQuery()"
+        :isSaving="isDeleteLoading"
+        :showDeletePopover="showDeletePopover"
+    />
 </template>
 
 <script lang="ts">
@@ -523,6 +564,7 @@
         inject,
         Ref,
         toRaw,
+        watch,
     } from 'vue'
     import { editorConfigInterface } from '~/types/insights/editoConfig.interface'
     import { useEditorPreference } from '~/components/insights/common/composables/useEditorPreference'
@@ -538,9 +580,14 @@
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import SlackModal from '@/common/assets/misc/slackModal.vue'
     import integrationStore from '~/store/integrations/index'
+    import EditQuery from '../editQuery/index.vue'
+    import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
+    import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
+    import TreeDeletePopover from '~/components/insights/common/treeDeletePopover.vue'
+    import { Insights } from '~/services/meta/insights/index'
 
     export default defineComponent({
-        components: { SlackModal },
+        components: { SlackModal, EditQuery, TreeDeletePopover },
         props: {},
         setup(props, { emit }) {
             const router = useRouter()
@@ -553,7 +600,8 @@
             } = useEditorPreference()
 
             const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
-            const { inlineTabAdd, setVQBInInlineTab } = useInlineTab()
+            const { inlineTabAdd, setVQBInInlineTab, inlineTabRemove } =
+                useInlineTab()
             const store = integrationStore()
             const { tenantSlackStatus } = toRefs(store)
 
@@ -705,6 +753,8 @@
                 )
             }
 
+            const queryModalVisible = ref(false)
+
             const duplicateQuery = () => {
                 const activeInlineTabCopy: activeInlineTabInterface =
                     JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
@@ -776,6 +826,92 @@
                 })
                 useAddEvent('insights', 'query', 'link_copied', undefined)
             }
+
+            const { isSameNodeOpenedInSidebar } = useSchema()
+
+            const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
+                tabsArray,
+                activeInlineTab
+            )
+
+            const openEdit = () => {
+                let queryInfo = {
+                    entity: {
+                        attributes: { ...activeInlineTab.value.attributes },
+                        typeName: 'Query',
+                        guid: activeInlineTab.value.attributes.__guid,
+                    },
+                }
+                if (isSameNodeOpenedInSidebar(queryInfo, activeInlineTab)) {
+                    /* Close it if it is already opened */
+                    closeAssetSidebar(activeInlineTab.value)
+                } else {
+                    const activeInlineTabCopy: activeInlineTabInterface =
+                        JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
+
+                    console.log('query entity1: ', queryInfo.entity)
+                    activeInlineTabCopy.assetSidebar.assetInfo =
+                        queryInfo.entity
+                    activeInlineTabCopy.assetSidebar.isVisible = true
+                    openAssetSidebar(activeInlineTabCopy, 'not_editor')
+                }
+            }
+
+            const refreshQueryTree = inject<
+                (guid: string, type: 'query' | 'Folder') => void
+            >('refreshQueryTree', () => {})
+
+            const showDeletePopover = ref(false)
+            const isDeleteLoading = ref(false)
+
+            const pushGuidToURL = (guid: string | undefined) => {
+                const queryParams = {}
+                if (route?.query?.vqb) queryParams.vqb = true
+                if (guid) {
+                    queryParams.id = guid
+                    router.push({ path: `insights`, query: queryParams })
+                } else {
+                    router.push({ path: `insights`, query: queryParams })
+                }
+            }
+
+            const deleteQuery = () => {
+                let item = {
+                    attributes: activeInlineTab.value.attributes,
+                    guid: activeInlineTab.value.attributes.__guid,
+                }
+                let key = item.guid
+                let parentGuid = item?.attributes?.parent?.guid
+                console.log('delete item: ', item)
+                const { data, error, isLoading } = Insights.DeleteEntity(
+                    item.guid,
+                    {}
+                )
+                isDeleteLoading.value = true
+
+                watch([data, error, isLoading], ([newData, newError]) => {
+                    isDeleteLoading.value = isLoading.value
+                    console.log('delete: ', isLoading.value)
+                    if (newData && !newError) {
+                        showDeletePopover.value = false
+
+                        inlineTabRemove(
+                            key,
+                            tabsArray,
+                            activeInlineTabKey,
+                            pushGuidToURL
+                        )
+
+                        refreshQueryTree(parentGuid, 'query')
+
+                        message.success({
+                            content: `${item?.attributes?.name} deleted!`,
+                        })
+                        useAddEvent('insights', 'query', 'deleted', undefined)
+                    }
+                })
+            }
+
             return {
                 tenantSlackStatus,
                 link,
@@ -804,6 +940,11 @@
                 capitalizeFirstLetter,
                 copyURL,
                 readOnly,
+                queryModalVisible,
+                openEdit,
+                showDeletePopover,
+                deleteQuery,
+                isDeleteLoading,
             }
         },
     })

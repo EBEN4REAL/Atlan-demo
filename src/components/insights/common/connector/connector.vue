@@ -31,7 +31,11 @@
                 >
                     <AtlanIcon :icon="iconName(node)" class="h-4 mr-1" />
                     <div class="flex flex-col" v-if="!node?.connection">
-                        {{ capitalizeFirstLetter(node.title) }}
+                        {{
+                            node.title?.length > 1
+                                ? `${capitalizeFirstLetter(node.title)}`
+                                : node.title
+                        }}
                     </div>
                     <div class="flex flex-col" v-else>
                         {{ node.title }}
@@ -300,12 +304,16 @@
             const iconName = (node) => {
                 if (node?.connection === undefined) {
                     if (node.title === 'bigquery') return 'BigQuery'
-                    return capitalizeFirstLetter(node.title)
+                    return node.title?.length > 1
+                        ? capitalizeFirstLetter(node.title)
+                        : node.title
                 } else {
                     let el = node?.key?.split('/')
                     if (el && el.length) {
                         if (el[1] === 'bigquery') return 'BigQuery'
-                        return capitalizeFirstLetter(el[1])
+                        return el[1]?.length > 1
+                            ? capitalizeFirstLetter(el[1])
+                            : el[1]
                     } else {
                         return ''
                     }

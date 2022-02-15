@@ -82,6 +82,7 @@
                                     }"
                                     @mouseenter="setTabHover(tab)"
                                     @mouseleave="setTabHover(null)"
+                                    @contextmenu.prevent="showContextMenu"
                                 >
                                     <div
                                         class="flex items-center text-gray-700"
@@ -149,8 +150,8 @@
                             >
                                 <div
                                     v-if="
-                                        tab.playground.editor.text.length > 0 ||
-                                        tab?.queryId
+                                        tab?.playground?.editor?.text?.length >
+                                            0 || tab?.queryId
                                     "
                                     class="w-1.5 h-1.5 rounded-full bg-primary absolute right-3.5 top-2.5"
                                 ></div>
@@ -339,6 +340,7 @@
                 isTabAdded.value = key
                 const inlineTabData: activeInlineTabInterface = {
                     label: `Untitled ${getLastUntitledNumber()}`,
+                    attributes: {},
                     key,
                     favico: 'https://atlan.com/favicon.ico',
                     isSaved: false,
@@ -503,6 +505,7 @@
                 // }
             }
             const onEdit = (targetKey: string | MouseEvent, action: string) => {
+                console.log('edit triggered: ')
                 if (action === 'add') {
                     handleAdd(false)
                 } else {
@@ -661,6 +664,10 @@
                     tabHover.value = null
                 }
             }
+            const contentMenu = ref(true)
+            const showContextMenu = () => {
+                contentMenu.value = true
+            }
             const onHorizontalResize = useDebounceFn((e) => {
                 horizontalPaneResize(e, activeInlineTab, tabs)
             }, 500)
@@ -688,6 +695,8 @@
                 setTabHover,
                 tabHover,
                 isSaving,
+                showContextMenu,
+                contentMenu,
             }
         },
     })

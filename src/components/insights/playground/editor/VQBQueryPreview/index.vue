@@ -66,6 +66,7 @@
                     JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
                 const inlineTabData: activeInlineTabInterface = {
                     label: `Copy ${activeInlineTabCopy.label} preview`,
+                    attributes: {},
                     key,
                     favico: 'https://atlan.com/favicon.ico',
                     isSaved: false,

@@ -847,7 +847,7 @@
                     closeAssetSidebar(activeInlineTab.value)
                 } else {
                     const activeInlineTabCopy: activeInlineTabInterface =
-                        Object.assign({}, activeInlineTab.value)
+                        JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
 
                     console.log('query entity1: ', queryInfo.entity)
                     activeInlineTabCopy.assetSidebar.assetInfo =

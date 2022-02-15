@@ -1,7 +1,6 @@
 <template>
     <div data-test-id="classification-popover">
         <a-popover
-            v-if="editPermission"
             v-model:visible="isEdit"
             placement="leftTop"
             :overlay-class-name="$style.classificationPopover"
@@ -10,6 +9,19 @@
             @visibleChange="handleVisibleChange"
         >
             <template #content>
+                <div
+                    v-if="!editPermission && role !== 'Guest'"
+                    class="bg-gray-100 mx-4 px-3 py-2 mb-4"
+                >
+                    You don't have edit access to this asset, but you can
+                    suggest Classifications to the asset owner.
+                    <span
+                        @click="handleCancelRequest"
+                        class="text-primary cursor-pointer"
+                        >Dismiss</span
+                    >
+                </div>
+
                 <div>
                     <ClassificationFacet
                         ref="classificationFacetRef"
@@ -18,41 +30,44 @@
                         @change="handleSelectedChange"
                     ></ClassificationFacet>
                 </div>
+                <div
+                    v-if="!editPermission && role !== 'Guest'"
+                    class="flex items-center justify-end mx-2 space-x-2 mt-5"
+                >
+                    <a-button @click="handleCancelRequest">Cancel</a-button>
+                    <a-button
+                        type="primary"
+                        :loading="requestLoading"
+                        @click="handleRequest"
+                        class="bg-primary"
+                        >Submit Request</a-button
+                    >
+                </div>
             </template>
         </a-popover>
 
         <div class="flex flex-wrap items-center gap-1 text-sm">
-            <a-tooltip
+            <Shortcut
+                shortcut-key="t"
+                action="set classification"
                 placement="left"
-                :title="
-                    !editPermission
-                        ? `You don't have permission to link classifications to this asset`
-                        : ''
-                "
-                :mouse-enter-delay="0.5"
+                :edit-permission="editPermission && showShortcut"
             >
-                <Shortcut
-                    shortcut-key="t"
-                    action="set classification"
-                    placement="left"
-                    :edit-permission="editPermission && showShortcut"
+                <a-button
+                    shape="circle"
+                    :disabled="role === 'Guest'"
+                    size="small"
+                    class="text-center shadow"
+                    :class="{
+                        editPermission:
+                            'hover:bg-primary-light hover:border-primary',
+                    }"
+                    @click="handleOpenPopover"
                 >
-                    <a-button
-                        shape="circle"
-                        :disabled="!editPermission"
-                        size="small"
-                        class="text-center shadow"
-                        :class="{
-                            editPermission:
-                                'hover:bg-primary-light hover:border-primary',
-                        }"
-                        @click="() => (isEdit = true)"
-                    >
-                        <span
-                            ><AtlanIcon icon="Add" class="h-3"></AtlanIcon
-                        ></span> </a-button
-                ></Shortcut>
-            </a-tooltip>
+                    <span
+                        ><AtlanIcon icon="Add" class="h-3"></AtlanIcon
+                    ></span> </a-button
+            ></Shortcut>
 
             <template v-for="classification in list" :key="classification.guid">
                 <Popover
@@ -89,12 +104,17 @@
         useVModels,
         whenever,
     } from '@vueuse/core'
+
+    import { message } from 'ant-design-vue'
     import ClassificationFacet from '@/common/facet/classification/index.vue'
     import { mergeArray } from '~/utils/array'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import ClassificationPill from '@/common/pills/classification.vue'
     import Popover from '@/common/popover/classification/index.vue'
     import Shortcut from '@/common/popover/shortcut.vue'
+    import { useCreateRequests } from '~/composables/requests/useCreateRequests'
+    import { assetInterface } from '~/types/assets/asset.interface'
+    import whoami from '~/composables/user/whoami.ts'
 
     export default defineComponent({
         name: 'ClassificationWidget',
@@ -144,16 +164,26 @@
                 required: false,
                 default: null,
             },
+            selectedAsset: {
+                type: Object as PropType<assetInterface>,
+                required: true,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
 
-            const { guid, editPermission } = toRefs(props)
+            const { guid, editPermission, selectedAsset } = toRefs(props)
             const localValue = ref(modelValue.value)
+            const { role } = whoami()
             const selectedValue = ref({
                 classifications: modelValue.value.map((i) => i.typeName),
             })
+            const existingClassifications = computed(() =>
+                modelValue.value.map((i) => i.typeName)
+            )
+            const requestLoading = ref()
+            const newClassifications = ref([])
 
             const isEdit = ref(false)
             const classificationFacetRef: Ref<null | HTMLInputElement> =
@@ -210,6 +240,11 @@
                         })
                     }
                 })
+
+                if (!props.editPermission) {
+                    newClassifications.value = localValue.value
+                    localValue.value = []
+                }
             }
 
             const handleVisibleChange = (visible) => {
@@ -252,6 +287,56 @@
                 }
             })
             const classificationPopoverMouseEnterDelay = ref(1)
+            const handleRequest = () => {
+                console.log(selectedValue.value)
+                console.log(localValue.value)
+                console.log(newClassifications.value)
+                console.log(existingClassifications.value)
+                newClassifications.value = newClassifications.value?.filter(
+                    (el) => {
+                        if (
+                            !existingClassifications.value?.find(
+                                (i) => i?.typeName === el?.typeName
+                            )
+                        ) {
+                            return el
+                        }
+                    }
+                )
+
+                console.log(newClassifications.value)
+                const {
+                    error: requestError,
+                    isLoading: isRequestLoading,
+                    isReady: requestReady,
+                } = useCreateRequests({
+                    assetGuid: selectedAsset.value?.guid,
+                    assetQf: selectedAsset.value?.attributes?.qualifiedName,
+                    assetType: selectedAsset.value?.typeName,
+                    classifications: newClassifications.value,
+                })
+                whenever(requestError, () => {
+                    if (requestError.value) {
+                        message.error(`Request failed`)
+                        isEdit.value = false
+                    }
+                })
+                whenever(requestReady, () => {
+                    if (requestReady.value) {
+                        message.success(`Request raised`)
+                        isEdit.value = false
+                    }
+                })
+                requestLoading.value = isRequestLoading.value
+            }
+
+            const handleCancelRequest = () => {
+                isEdit.value = false
+            }
+            const handleOpenPopover = () => {
+                isEdit.value = true
+                requestLoading.value = false
+            }
 
             return {
                 localValue,
@@ -265,6 +350,11 @@
                 isEdit,
                 handleDeleteClassification,
                 classificationPopoverMouseEnterDelay,
+                handleRequest,
+                role,
+                handleCancelRequest,
+                handleOpenPopover,
+                requestLoading,
             }
         },
     })

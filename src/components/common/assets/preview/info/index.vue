@@ -691,6 +691,7 @@
                 "
                 class="px-5"
                 :showShortcut="true"
+                :selected-asset="selectedAsset"
                 @change="handleClassificationChange"
             >
             </Classification>

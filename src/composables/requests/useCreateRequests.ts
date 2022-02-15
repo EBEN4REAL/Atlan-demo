@@ -14,13 +14,15 @@ interface requestPayload {
     sourceQualifiedName?: String
     destinationAttribute?: String
     destinationValue?: String
+    payload?: any
 }
 interface params {
     assetGuid: String
     assetQf: String
     assetType: String
-    terms: Array<any>
-    certificate: String
+    terms?: Array<any>
+    certificate?: String
+    classifications?: Array<String>
 }
 export function useCreateRequests({
     assetGuid,
@@ -28,6 +30,7 @@ export function useCreateRequests({
     assetType,
     terms = [],
     certificate = '',
+    classifications = [],
 }: params) {
     const requests = ref<requestPayload[]>([])
     const constructPayload = () => {
@@ -59,6 +62,25 @@ export function useCreateRequests({
                 destinationValue: certificate,
                 entityType: assetType,
                 sourceType: 'static',
+            })
+        }
+        if (classifications?.length) {
+            classifications.forEach((classification) => {
+                requests.value.push({
+                    requestType: 'attach_classification',
+                    id: assetGuid,
+                    approvalType: 'single',
+                    sourceType: 'atlas',
+                    entityType: assetType,
+                    destinationGuid: assetGuid,
+                    destinationQualifiedName: assetQf,
+                    payload: {
+                        typeName: classification?.typeName,
+                        propagate: classification?.propagate,
+                        removePropagationsOnEntityDelete: false,
+                        validityPeriods: [],
+                    },
+                })
             })
         }
         console.log(requests.value)

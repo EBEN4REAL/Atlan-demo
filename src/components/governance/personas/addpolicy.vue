@@ -308,7 +308,7 @@
                         </div>
                     </div>
 
-                    <div class="flex items-center p-4 mt-1 border-bottom">
+                    <div class="flex items-center p-4 pb-1 mt-1 border-bottom">
                         <span v-if="selectedPermission.length === 0">
                             <a-button
                                 v-if="isEdit ? canEdit : true"
@@ -365,7 +365,7 @@
                                     : true && connectorData.attributeValue
                             "
                         >
-                            <div class="flex justify-between mt-4">
+                            <div class="flex justify-between mt-1">
                                 <div>
                                     <span>Deny</span>
                                     <a-tooltip placement="top" color="white">
@@ -456,7 +456,7 @@
                             class="mb-6 w-80"
                         />
                     </div>
-                    <div class="p-3 pt-2 bg-gray-100">
+                    <div class="p-3 bg-gray-100">
                         <div
                             v-if="
                                 isEdit

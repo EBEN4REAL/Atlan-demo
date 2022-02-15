@@ -767,7 +767,10 @@
                 )
 
                 updatedEnumDef.value = enumObject
-                message.success({ key: 'enum', content: 'Updating Enum...' })
+                message.success({
+                    key: 'enum',
+                    content: 'Updating Picklist...',
+                })
                 await execute()
                 const updatedEnum =
                     state?.value?.enumDefs?.length && state.value.enumDefs[0]
@@ -779,7 +782,7 @@
                 if (isReady && state.value.enumDefs.length) {
                     message.success({
                         key: 'enum',
-                        content: 'Enum updated.',
+                        content: 'Picklist updated.',
                         duration: 2,
                     })
                     enumEdit.value = false
@@ -787,7 +790,7 @@
                 if (updateError.value) {
                     message.error({
                         key: 'enum',
-                        content: 'Failed to update Enum.',
+                        content: 'Failed to update Picklist.',
                         duration: 2,
                     })
                     reset()
@@ -858,7 +861,7 @@
 
             const handleClickCreateNewEnum = () => {
                 if (!enumSearchValue.value) oldEnumSeardValue.value = ''
-                form.value.options.enumType = 'New Enum'
+                form.value.options.enumType = 'New Picklist'
                 newEnumMode.value = true
             }
 

@@ -45,8 +45,8 @@
                         >
                             Custom Metadata
                         </a-menu-item>
-                        <a-menu-item key="enums" v-auth="[map.LIST_ENUM]">
-                            Enums
+                        <a-menu-item key="picklist" v-auth="[map.LIST_ENUM]">
+                            Picklist
                         </a-menu-item>
                     </a-menu-item-group>
                 </a-menu>

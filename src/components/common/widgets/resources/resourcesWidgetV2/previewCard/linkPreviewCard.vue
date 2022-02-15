@@ -1,31 +1,34 @@
 <template>
     <div class="p-2 border rounded cursor-pointer hover:bg-gray-100">
-        <div class="flex justify-between">
+        <div class="flex justify-between h-full">
             <div
                 class="flex items-center flex-1"
+                style=""
                 @click="openLink(link.attributes.link)"
             >
-                <div class="mr-2" style="width: 32px; height: 32px">
-                    <AtlanIcon
-                        v-if="defaultIcon || link.attributes.link === ''"
-                        icon="Link"
-                        class="w-auto h-7"
-                    />
+                <div class="flex items-center w-10">
+                    <div class="">
+                        <AtlanIcon
+                            v-if="defaultIcon || link.attributes.link === ''"
+                            icon="Link"
+                            class="w-auto h-7"
+                        />
 
-                    <img
-                        v-else
-                        :src="
-                            getDomain(link.attributes.link) !== 'atlan.com'
-                                ? `https://www.google.com/s2/favicons?domain=${getDomain(
-                                      link.attributes.link
-                                  )}&sz=64`
-                                : '/ico.ico'
-                        "
-                        alt=""
-                        class="w-full p-1"
-                        style=""
-                        @error="defaultIcon = true"
-                    />
+                        <img
+                            v-else
+                            :src="
+                                getDomain(link.attributes.link) !== 'atlan.com'
+                                    ? `https://www.google.com/s2/favicons?domain=${getDomain(
+                                          link.attributes.link
+                                      )}&sz=64`
+                                    : '/ico.ico'
+                            "
+                            alt=""
+                            class="p-1 w-7"
+                            style=""
+                            @error="defaultIcon = true"
+                        />
+                    </div>
                 </div>
                 <div class="flex flex-col w-full">
                     <a

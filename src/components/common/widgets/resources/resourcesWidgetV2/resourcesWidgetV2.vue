@@ -86,14 +86,10 @@
                                 getPreviewComponent(l.attributes.link) ===
                                 'link'
                             "
-                            style="min-height: 80px"
+                            style="height: 80px"
                             :link="l"
                         />
-                        <SlackPreview
-                            v-else
-                            style="min-height: 80px"
-                            :link="l"
-                        />
+                        <SlackPreview v-else style="height: 80px" :link="l" />
                     </div>
                     <template
                         v-if="
@@ -128,7 +124,7 @@
     import EmptyScreen from '@/common/empty/index.vue'
     import SlackConnect from './misc/connectSlackCard.vue'
     import LinkPreviewCard from '@/common/widgets/resources/resourcesWidgetV2/previewCard/linkPreviewCard.vue'
-    import SlackPreview from '@/common/widgets/resources/resourcesWidgetV2/slackPreview.vue'
+    import SlackPreview from '@/common/widgets/resources/resourcesWidgetV2/previewCard/slackPreview.vue'
     import AddResource from '@/common/widgets/resources/resourcesWidgetV2/resourceInputModal.vue'
     import SlackUserLoginTrigger from '@common/integrations/slack/slackUserLoginTriggerCard.vue'
 

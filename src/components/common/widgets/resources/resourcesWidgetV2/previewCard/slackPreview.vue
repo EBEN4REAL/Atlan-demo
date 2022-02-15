@@ -19,20 +19,18 @@
         <div class="p-2 border rounded cursor-pointer hover:bg-gray-100">
             <div class="flex" @click="openLink(link.attributes.link)">
                 <template v-if="data">
-                    <div
-                        class="relative mr-3"
-                        style="width: 32px; height: 32px"
-                    >
-                        <!-- avatar -->
-                        <img
-                            class="w-full p-1 rounded-full"
-                            :src="data.user.image_32"
-                            alt=""
-                        />
-                        <AtlanIcon
-                            :icon="'Slack'"
-                            class="absolute slack-icon-avatar-overlay"
-                        ></AtlanIcon>
+                    <div class="flex items-center w-10">
+                        <div class="relative">
+                            <!-- avatar -->
+                            <img
+                                class="rounded-full h-7"
+                                :src="data.user.image_32"
+                                alt=""
+                            />
+                            <div class="absolute -right-1 -bottom-1">
+                                <AtlanIcon icon="Slack" class="" />
+                            </div>
+                        </div>
                     </div>
 
                     <div class="flex flex-col flex-grow">

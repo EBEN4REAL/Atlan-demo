@@ -441,6 +441,7 @@ export function useBody(
             case 'sql':
             default: {
                 if (filterObject) {
+                    console.log('filterObject', filterObject)
                     Object.keys(filterObject).forEach((key) => {
                         filterObject[key].forEach((element) => {
                             if (!element.operand) return
@@ -492,20 +493,17 @@ export function useBody(
                                     base.filter(
                                         'wildcard',
                                         element.operand,
-                                        `*${Array.isArray(element.value)
-                                            ? JSON.stringify(element.value)
-                                            : element.value
+                                        `*${
+                                            Array.isArray(element.value)
+                                                ? JSON.stringify(element.value)
+                                                : element.value
                                         }`
                                     )
                                 }
                                 if (element.operator === 'contains') {
-                                    base.filter(
-                                        'wildcard',
-                                        element.operand,
-                                        {
-                                            value: `*${element.value}*`
-                                        }
-                                    )
+                                    base.filter('wildcard', element.operand, {
+                                        value: `*${element.value}*`,
+                                    })
                                 }
 
                                 if (element.operator === 'pattern') {

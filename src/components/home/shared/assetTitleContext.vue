@@ -1,25 +1,33 @@
 <template>
     <div class="flex items-center">
-        <AssetPopover :item="item">
-            <router-link :to="getProfilePath(item)" style="max-width: 93%">
-                <a-typography-paragraph
-                    class="mb-0 text-sm font-bold cursor-pointer text-primary hover:underline"
-                    :ellipsis="{
-                        rows: 1,
-                        onEllipsis: true,
-                    }"
-                    :content="title(item)"
-                />
+        <!-- <AssetPopover :item="item"> -->
+        <div class="flex w-full">
+            <router-link :to="getProfilePath(item)" class="flex w-full">
+                <div class="flex flex-1">
+                    <a-typography-paragraph
+                        class="mb-0 text-sm font-bold cursor-pointer text-primary hover:underline"
+                        :ellipsis="{
+                            rows: 1,
+                            onEllipsis: true,
+                        }"
+                        :content="title(item)"
+                    />
+                    <CertificateBadge
+                        v-if="certificateStatus(item)"
+                        :status="certificateStatus(item)"
+                        :username="certificateUpdatedBy(item)"
+                        :timestamp="certificateUpdatedAt(item)"
+                        class="mb-1 ml-1"
+                    ></CertificateBadge>
+                </div>
+                <slot name="title-right"></slot>
             </router-link>
-        </AssetPopover>
-        <CertificateBadge
-            v-if="certificateStatus(item)"
-            :status="certificateStatus(item)"
-            :username="certificateUpdatedBy(item)"
-            :timestamp="certificateUpdatedAt(item)"
-            class="mb-1 ml-1"
-        ></CertificateBadge>
+        </div>
+        <!-- </AssetPopover> -->
     </div>
+    <span v-if="showDescription && description(item)">{{
+        description(item)
+    }}</span>
 </template>
 
 <script lang="ts">
@@ -42,6 +50,10 @@
                     return {}
                 },
             },
+            showDescription: {
+                type: Boolean,
+                default: false,
+            },
         },
         setup() {
             const {
@@ -51,6 +63,7 @@
                 certificateUpdatedBy,
                 certificateStatusMessage,
                 getProfilePath,
+                description,
             } = useAssetInfo()
 
             return {
@@ -60,6 +73,7 @@
                 certificateUpdatedBy,
                 certificateStatusMessage,
                 getProfilePath,
+                description,
             }
         },
     })

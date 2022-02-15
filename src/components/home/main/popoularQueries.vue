@@ -2,8 +2,9 @@
     <!--h2 class="mb-3 text-xl font-bold">Relevant for you</h2-->
     <transition v-if="popularQueriesList.length" name="fade">
         <div>
-            <h2 class="mb-3 text-sm font-semibold text-gray-500">
-                <AtlanIcon icon="TrendUp"></AtlanIcon> Popular Queries
+            <h2 class="mb-1 text-sm font-semibold text-gray-500">
+                <!-- <AtlanIcon icon="TrendUp"></AtlanIcon> -->
+                Popular Queries
             </h2>
 
             <div
@@ -15,21 +16,36 @@
             </div>
             <div
                 v-else
-                class="overflow-y-auto border border-gray-200 rounded resources-container"
+                class="flex flex-col p-4 overflow-y-auto border border-gray-200 rounded resources-container gap-y-4"
                 style="min-height: 150px"
             >
                 <div
                     v-for="queryObj in popularQueriesList"
                     :key="queryObj.key"
-                    class="mb-3"
+                    class="pb-4 border-b"
                 >
                     <div>
-                        {{
-                            title(queryObj.asset) || `No title: ${queryObj.key}`
-                        }}
-                        <span class="font-bold">
-                            {{ queryObj.doc_count }}
-                        </span>
+                        <AssetTitleCtx
+                            :item="queryObj.asset"
+                            :show-description="true"
+                        >
+                            <template #title-right>
+                                <div class="ml-auto">
+                                    <AtlanIcon
+                                        icon="TrendUp"
+                                        class="mr-1"
+                                    ></AtlanIcon>
+                                    <span class="text-gray-500">
+                                        {{ queryObj.doc_count }} runs
+                                    </span>
+                                </div>
+                            </template>
+                        </AssetTitleCtx>
+                        <!-- <div class="mt-2">
+                            <span class="text-gray-500">
+                                {{ queryObj.doc_count }} runs
+                            </span>
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -73,10 +89,11 @@
             const queryAttributes = [
                 'name',
                 'displayName',
+                'description',
+                'userDescription',
                 'certificateStatus',
                 'certificateUpdatedBy',
                 'certificateStatusMessage',
-                '__STATE',
             ]
 
             const {

@@ -20,7 +20,10 @@
                     <Purpose></Purpose>
                 </div> -->
                 <div class="mt-6">
-                    <!-- <Relevant /> -->
+                    <Relevant />
+                </div>
+                <div class="mt-6">
+                    <PopularQueries />
                 </div>
 
                 <!--section>
@@ -34,14 +37,14 @@
             </section> -->
             <!-- TODO: Hidden for paytm rollout, will enable it back -->
             <section>
-                <!-- <RecentResources /> -->
+                <RecentResources />
             </section>
             <section>
-                <!-- <RecentAnnouncements /> -->
+                <RecentAnnouncements />
             </section>
-            <section>
+            <!-- <section>
                 <PopularQueries />
-            </section>
+            </section> -->
         </aside>
     </div>
 </template>

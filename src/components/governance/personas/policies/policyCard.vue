@@ -152,10 +152,10 @@
                         </div>
                     </a-tooltip>
                 </div>
-                <div class="flex flex-1">
+                <div class="relative flex flex-1">
                     <!-- canDelete -->
                     <!-- v-if="policy.allow" -->
-                    <div class="flex-1 ustify-center default-s3">
+                    <div class="flex-1 ustify-center">
                         <!-- <span v-if="policy.allow" class="text-gray-500">
                             <AtlanIcon class="text-gray-500" icon="Check" />
                             {{
@@ -452,6 +452,18 @@
             }
             .default-s4 {
                 display: flex !important;
+                position: absolute;
+                right: 0;
+                background: rgb(250, 250, 250);
+                background: linear-gradient(
+                    90deg,
+                    rgba(250, 250, 250, 0.779171043417367) 9%,
+                    rgba(250, 250, 250, 1) 18%
+                );
+                padding: 10px 0;
+                width: 100%;
+                top: 50%;
+                transform: translateY(-50%);
             }
             .button-hide {
                 opacity: 1;

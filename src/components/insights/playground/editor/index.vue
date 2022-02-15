@@ -58,7 +58,7 @@
                     class="border-t"
                 />
                 <div
-                    class="flex items-center justify-between w-full px-3 pt-1 pb-1 text-xs text-gray-500 bg-white"
+                    class="flex items-center justify-between w-full px-4 py-3 text-xs text-gray-500 bg-white"
                     style="z-index: 2"
                 >
                     <div class="flex items-center">
@@ -75,76 +75,25 @@
                             >
                                 <template #title>Toggle sidebar</template>
                                 <div
-                                    class="p-1 mr-2 rounded cursor-pointer hover:bg-gray-300 group"
+                                    class="p-1 mr-2 rounded cursor-pointer hover:bg-gray-200 group"
+                                    :class="{
+                                        'bg-primary-light': explorerPanelActive,
+                                    }"
                                     @click="toggleExplorerPane"
                                     @mouseout="recordTooltipPresence"
                                 >
                                     <AtlanIcon
-                                        icon="ExplorerTrigger"
+                                        :icon="
+                                            explorerPanelActive
+                                                ? 'ExplorerTriggerFilled'
+                                                : 'ExplorerTrigger'
+                                        "
                                         class="w-4 h-4"
+                                        :class="{
+                                            'stroke-current':
+                                                !explorerPanelActive,
+                                        }"
                                     />
-                                </div>
-                            </a-tooltip>
-                            <!-- full screen button -->
-
-                            <a-tooltip
-                                :mouseEnterDelay="
-                                    lastTooltipPresence !== undefined
-                                        ? ADJACENT_TOOLTIP_DELAY
-                                        : MOUSE_ENTER_DELAY
-                                "
-                                color="#363636"
-                                v-if="fullSreenState"
-                            >
-                                <template #title> Exit full screen</template>
-                                <div
-                                    class="p-1 mr-2 rounded cursor-pointer hover:bg-gray-300"
-                                    :class="fullSreenState ? 'bg-gray-300' : ''"
-                                    @click="tFullScreen"
-                                    @mouseout="recordTooltipPresence"
-                                >
-                                    <div
-                                        class="items-center justify-center group"
-                                    >
-                                        <div
-                                            class="items-center justify-center"
-                                        >
-                                            <AtlanIcon
-                                                class="w-4 h-4 border-gray-500"
-                                                icon="ExitFullScreen"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </a-tooltip>
-                            <a-tooltip
-                                :mouseEnterDelay="
-                                    lastTooltipPresence !== undefined
-                                        ? ADJACENT_TOOLTIP_DELAY
-                                        : MOUSE_ENTER_DELAY
-                                "
-                                color="#363636"
-                                v-else
-                            >
-                                <template #title> Go full screen</template>
-                                <div
-                                    class="p-1 mr-2 rounded cursor-pointer hover:bg-gray-300"
-                                    :class="fullSreenState ? 'bg-gray-300' : ''"
-                                    @click="tFullScreen"
-                                    @mouseout="recordTooltipPresence"
-                                >
-                                    <div
-                                        class="items-center justify-center group"
-                                    >
-                                        <div
-                                            class="items-center justify-center"
-                                        >
-                                            <AtlanIcon
-                                                class="w-4 h-4 border-gray-500"
-                                                icon="FullScreen"
-                                            />
-                                        </div>
-                                    </div>
                                 </div>
                             </a-tooltip>
 
@@ -158,14 +107,14 @@
                                         : MOUSE_ENTER_DELAY
                                 "
                             >
-                                <template #title>Format SQL</template>
+                                <template #title>Beautify SQL</template>
                                 <div
-                                    class="items-center justify-center p-1 mr-2 rounded cursor-pointer hover:bg-gray-300 group"
+                                    class="items-center justify-center p-1 mr-2 rounded cursor-pointer hover:bg-gray-200 group"
                                     @click="formatDocument"
                                     @mouseout="recordTooltipPresence"
                                 >
                                     <AtlanIcon
-                                        icon="FormatText"
+                                        icon="BeautifySql"
                                         class="w-4 h-4"
                                     />
                                 </div>
@@ -206,7 +155,7 @@
                                     <template #title>Preview SQL</template>
                                     <div
                                         v-if="showVQB"
-                                        class="items-center justify-center p-1 mr-2 rounded cursor-pointer hover:bg-gray-300"
+                                        class="items-center justify-center p-1 mr-2 rounded cursor-pointer hover:bg-gray-200"
                                         :class="
                                             showQueryPreview
                                                 ? 'bg-gray-300'
@@ -234,25 +183,23 @@
                             >
                                 <template #title>Custom variables</template>
                                 <div
-                                    class="items-center justify-center p-1 mr-2 rounded cursor-pointer hover:bg-gray-300"
+                                    class="items-center justify-center p-1 rounded cursor-pointer hover:bg-gray-200"
                                     :class="
-                                        showcustomToolBar ? 'bg-gray-300' : ''
+                                        showcustomToolBar
+                                            ? 'bg-primary-light'
+                                            : ''
                                     "
                                     @click="toggleCustomToolbar"
                                     @mouseout="recordTooltipPresence"
                                 >
-                                    <AtlanIcon
-                                        icon="CustomVariable"
-                                        class="w-4 h-4"
-                                    />
+                                    <AtlanIcon icon="Flash" class="w-4 h-4" />
                                 </div>
                             </a-tooltip>
                             <!-- limit 100 -->
-                            <div class="flex items-center px-1">
+                            <div class="flex items-center ml-3">
                                 <a-checkbox
                                     :class="$style.checkbox_style"
                                     v-model:checked="limitRows.checked"
-                                    class="text-xs"
                                 >
                                     <span class="text-gray-500">
                                         Limit to
@@ -327,22 +274,96 @@
                                 >Col:&nbsp; {{ editorPos.column }}</span
                             >
                         </div>
+                        <div>
+                            <!-- full screen button -->
+                            <a-tooltip
+                                :mouseEnterDelay="
+                                    lastTooltipPresence !== undefined
+                                        ? ADJACENT_TOOLTIP_DELAY
+                                        : MOUSE_ENTER_DELAY
+                                "
+                                color="#363636"
+                                v-if="fullSreenState"
+                            >
+                                <template #title> Exit full screen</template>
+                                <div
+                                    class="p-1 mr-2 rounded cursor-pointer hover:bg-gray-200"
+                                    :class="
+                                        fullSreenState ? 'bg-primary-light' : ''
+                                    "
+                                    @click="tFullScreen"
+                                    @mouseout="recordTooltipPresence"
+                                >
+                                    <div
+                                        class="items-center justify-center group"
+                                    >
+                                        <div
+                                            class="items-center justify-center"
+                                        >
+                                            <AtlanIcon
+                                                class="w-4 h-4 border-gray-500"
+                                                icon="ExitFullScreen"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </a-tooltip>
+                            <a-tooltip
+                                :mouseEnterDelay="
+                                    lastTooltipPresence !== undefined
+                                        ? ADJACENT_TOOLTIP_DELAY
+                                        : MOUSE_ENTER_DELAY
+                                "
+                                color="#363636"
+                                v-else
+                            >
+                                <template #title> Go full screen</template>
+                                <div
+                                    class="p-1 mr-2 rounded cursor-pointer hover:bg-gray-200"
+                                    :class="fullSreenState ? 'bg-gray-300' : ''"
+                                    @click="tFullScreen"
+                                    @mouseout="recordTooltipPresence"
+                                >
+                                    <div
+                                        class="items-center justify-center group"
+                                    >
+                                        <div
+                                            class="items-center justify-center"
+                                        >
+                                            <AtlanIcon
+                                                class="w-4 h-4 border-gray-500"
+                                                icon="FullScreen"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </a-tooltip>
+                        </div>
                         <!-- <span class="ml-2 mr-4"
                             >Spaces:&nbsp;{{ editorConfig.tabSpace }}</span
                         > -->
                         <div class="flex items-center justify-center">
                             <div
-                                class
                                 @click="togglePane"
                                 @mouseout="recordTooltipPresence"
                             >
                                 <div
-                                    class="p-1 rounded cursor-pointer hover:bg-gray-300 group"
+                                    class="p-1 rounded cursor-pointer hover:bg-gray-200 group text-primary"
+                                    :class="{
+                                        'bg-primary-light': resultPaneActive,
+                                    }"
                                     @mouseout="recordTooltipPresence"
                                 >
                                     <AtlanIcon
-                                        icon="OutputpaneTrigger"
+                                        :icon="
+                                            resultPaneActive
+                                                ? 'OutputpaneTriggerFilled'
+                                                : 'OutputpaneTrigger'
+                                        "
                                         class="w-4 h-4 text-gray-500 outline-none"
+                                        :class="{
+                                            'stroke-current': !resultPaneActive,
+                                        }"
                                     />
                                 </div>
                             </div>
@@ -364,12 +385,24 @@
                                         >Toggle asset preview</template
                                     >
                                     <div
-                                        class="p-1 rounded cursor-pointer hover:bg-gray-300 group"
+                                        class="p-1 rounded cursor-pointer hover:bg-gray-200 group"
+                                        :class="{
+                                            'bg-primary-light':
+                                                assetPreviewActive,
+                                        }"
                                         @mouseout="recordTooltipPresence"
                                     >
                                         <AtlanIcon
-                                            icon="SidebarTrigger"
+                                            :icon="
+                                                assetPreviewActive
+                                                    ? 'SidebarTriggerFilled'
+                                                    : 'SidebarTrigger'
+                                            "
                                             class="w-4 h-4 text-gray-500 outline-none"
+                                            :class="{
+                                                'stroke-current':
+                                                    !assetPreviewActive,
+                                            }"
                                         />
                                     </div>
                                 </a-tooltip>
@@ -439,6 +472,7 @@
     const Monaco = defineAsyncComponent(() => import('./monaco/monaco.vue'))
 
     export default defineComponent({
+        name: 'PlaygroundIndex',
         components: {
             VQB,
             Monaco: Monaco,
@@ -567,6 +601,21 @@
             }
             const { classificationList } = useTypedefData()
             let defaultClassification = classificationList.value[0] ?? undefined
+
+            const resultPaneActive = computed(() => {
+                const tabActive =
+                    activeInlineTab.value.playground.resultsPane
+                        .outputPaneSize > 0
+                return tabActive
+            })
+            const assetPreviewActive = computed(() => {
+                const tabActive = activeInlineTab.value.assetSidebar.isVisible
+                return tabActive
+            })
+            const explorerPanelActive = computed(() => {
+                const tabActive = explorerPaneSize.value > 0
+                return tabActive
+            })
 
             // callback fxn
             const getData = (
@@ -758,7 +807,7 @@
             }
             const togglePane = () => {
                 console.log('called')
-            resultsPaneSizeToggle(activeInlineTab,inlineTabs)
+                resultsPaneSizeToggle(activeInlineTab, inlineTabs)
             }
             const toggleExplorerPane = () => {
                 console.log('explorer pane toggled')
@@ -925,6 +974,9 @@
                 hasQueryReadPermission,
                 hasQueryWritePermission,
                 activeTabCollection,
+                resultPaneActive,
+                assetPreviewActive,
+                explorerPanelActive,
                 // collectionInfo,
                 // hasCollectionReadPermission,
                 // hasCollectionWritePermission,
@@ -955,12 +1007,12 @@
 <style lang="less" module>
     .checkbox_style {
         :global(.ant-checkbox-inner::after) {
-            width: 4px !important;
-            height: 7px !important;
+            width: 5px !important;
+            height: 9px !important;
         }
         :global(.ant-checkbox-inner) {
-            width: 13.5px !important;
-            height: 13px !important;
+            width: 16px !important;
+            height: 16px !important;
         }
         :global(.ant-checkbox + span) {
             @apply px-1 !important;

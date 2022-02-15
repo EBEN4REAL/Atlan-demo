@@ -505,6 +505,7 @@ const useTree = ({
             loadedKeys.value.push(treeNode.dataRef.key)
         } catch (error) {
             console.error(error, 'error')
+            alert(error)
             const er = Object.getOwnPropertyDescriptor(error, 'message')
             isNodeLoading.value = false
             nodeError.value = er?.value

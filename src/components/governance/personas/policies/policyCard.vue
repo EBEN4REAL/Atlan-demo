@@ -10,13 +10,13 @@
             <div class="flex items-center flex-1">
                 <div
                     v-if="type === 'meta'"
-                    class="flex items-center justify-center w-10 h-10 mr-2 bg-gray-100 border border-gray-200 rounded-full"
+                    class="flex items-center justify-center mr-2 bg-gray-100 border border-gray-200 rounded-full w-9 h-9"
                 >
                     <AtlanIcon v-if="type === 'meta'" icon="Policies" />
                 </div>
                 <div
                     v-if="type === 'data'"
-                    class="flex items-center justify-center w-10 h-10 mr-2 bg-gray-100 border border-gray-200 rounded-full"
+                    class="flex items-center justify-center mr-2 bg-gray-100 border border-gray-200 rounded-full w-9 h-9"
                 >
                     <AtlanIcon icon="QueryGrey" />
                 </div>
@@ -136,11 +136,16 @@
                                     policy.assets.length !== 1 &&
                                     !isAllAssets(policy.assets[0])
                                 "
-                                class="ml-1 text-xs text-gray-500"
+                                class="ml-1 text-xs font-semibold text-gray-500"
                             >
                                 {{ policy.assets.length }}
                             </div>
-                            <div v-else class="ml-1 text-gray-500">All</div>
+                            <div
+                                v-else
+                                class="ml-1 font-semibold text-gray-500"
+                            >
+                                All
+                            </div>
                         </div>
                     </a-tooltip>
                     <span
@@ -162,7 +167,7 @@
                                 All permissions
                             </div>
                         </template>
-                        <div class="text-gray-500">
+                        <div class="font-semibold text-gray-500">
                             <AtlanIcon
                                 icon="ShieldBlank"
                                 class="-mt-1 icon-gray"
@@ -178,7 +183,9 @@
                         <template #title>
                             {{ maskComputed }}
                         </template>
-                        <div class="text-gray-500 truncate max-w-5">
+                        <div
+                            class="font-semibold text-gray-500 truncate max-w-5"
+                        >
                             <AtlanIcon icon="Number" class="-mt-1 icon-gray" />
                             {{ maskComputed }}
                         </div>

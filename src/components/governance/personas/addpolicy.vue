@@ -8,7 +8,7 @@
                 <div class="flex items-center">
                     <div
                         v-if="type === 'meta'"
-                        class="p-2.5 mr-2 rounded-full bg-primary-light"
+                        class="p-2 mr-2 rounded-full bg-primary-light"
                     >
                         <AtlanIcon icon="Policies" class="icon-blue" />
                     </div>

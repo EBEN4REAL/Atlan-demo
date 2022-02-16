@@ -1,8 +1,8 @@
 <template>
-    <div class="meta-data-scope-container">
+    <div class="mx-3 border rounded-lg meta-data-scope-container">
         <div v-for="(scope, idx) in scopeList" :key="scope.type">
-            <div class="mx-3 mb-6 border border-dashed">
-                <div class="flex p-3 bg-gray-100">
+            <div>
+                <div class="flex px-4 py-3 bg-gray-100">
                     <a-checkbox
                         :indeterminate="
                             groupedActions[idx].scopes.length ===
@@ -10,7 +10,7 @@
                                 ? false
                                 : Boolean(groupedActions[idx].scopes.length)
                         "
-                        class="font-bold"
+                        class="text-sm font-bold text-gray-700"
                         data-test-id="checkbox"
                         :checked="
                             groupedActions[idx].scopes.length ===
@@ -21,7 +21,7 @@
                         {{ scope.type }}
                     </a-checkbox>
                 </div>
-                <div class="p-3">
+                <div class="p-3 bg-white">
                     <a-checkbox-group
                         :value="groupedActions[idx].scopes"
                         :name="scope.type"
@@ -42,7 +42,10 @@
                                         </span>
                                     </div>
                                 </template>
-                                <a-checkbox :value="check.value">
+                                <a-checkbox
+                                    :value="check.value"
+                                    class="text-sm text-gray-700"
+                                >
                                     {{ check.label }}
                                 </a-checkbox>
                             </a-popover>

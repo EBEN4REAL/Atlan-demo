@@ -1,6 +1,6 @@
 <template>
-    <div class="relative wrapper-manage-permition">
-        <div class="flex items-center p-4 pb-0 mb-3">
+    <div class="relative h-full bg-gray-100">
+        <div class="flex items-center p-4 bg-white border-b border-gray-300">
             <AtlanBtn
                 class="border-none btn-back"
                 size="sm"
@@ -9,10 +9,10 @@
                 color="secondary"
                 @click="handleClose"
             >
-                <AtlanIcon icon="ArrowRight" class="-rotate-180" />
+                <AtlanIcon icon="ArrowRight" class="text-base -rotate-180" />
             </AtlanBtn>
             <div>
-                <span class="text-sm font-semibold text-gray-700"
+                <span class="text-base font-bold text-gray-700"
                     >Configure permissions</span
                 >
             </div>
@@ -26,7 +26,7 @@
             </AtlanBtn> -->
         </div>
 
-        <div class="p-4 pt-0 container-content">
+        <div class="pt-0 mt-5 bg-gray-100 container-content">
             <MetadataScopes
                 v-model:actions="actionsLocal"
                 class="mb-6"
@@ -66,7 +66,7 @@
     import AtlanBtn from '@/UI/button.vue'
 
     export default defineComponent({
-        name: 'ManagePermition',
+        name: 'ManagePermission',
         components: {
             MetadataScopes,
             AtlanBtn,
@@ -126,9 +126,6 @@
             padding-left: 0.75em !important;
             padding-top: 0.75em !important;
         }
-    }
-    .wrapper-manage-permition {
-        height: 86vh;
     }
     .btn-wrapper-manage {
         width: -webkit-fill-available;

@@ -128,6 +128,7 @@
                                 <VQBThreeDotMenuForColumn
                                     v-if="showVQB"
                                     :item="item"
+                                    :treeData="treeData"
                                 />
 
                                 <!-- <div
@@ -269,10 +270,39 @@
                                         ></AtlanIcon>
                                     </a-tooltip>
                                 </div>
+                                <div
+                                    :data-test-id="'run-table-query'"
+                                    v-if="showVQB"
+                                    :class="
+                                        (activeInlineTab.playground.resultsPane
+                                            .result.isQueryRunning === 'loading'
+                                            ? 'opacity-50 cursor-not-allowed'
+                                            : '',
+                                        'pl-2')
+                                    "
+                                    @click="() => previewVQBQuery(item)"
+                                >
+                                    <a-tooltip color="#363636" placement="top">
+                                        <template #title>{{
+                                            tooltipText
+                                        }}</template>
+
+                                        <AtlanIcon
+                                            icon="Play"
+                                            :class="
+                                                item?.selected
+                                                    ? 'tree-light-color'
+                                                    : ''
+                                            "
+                                            class="w-4 h-4 my-auto outline-none"
+                                        ></AtlanIcon>
+                                    </a-tooltip>
+                                </div>
 
                                 <VQBThreeDotMenuForTable
                                     v-if="showVQB"
                                     :item="item"
+                                    :treeData="treeData"
                                 />
                                 <!-- Add pr-2 for next icon -->
                                 <div
@@ -622,6 +652,8 @@
     import { useRunQueryUtils } from '~/components/insights/common/composables/useRunQueryUtils'
     import VQBThreeDotMenuForColumn from '~/components/insights/explorers/schema/VQBThreeDotMenu/column.vue'
     import VQBThreeDotMenuForTable from '~/components/insights/explorers/schema/VQBThreeDotMenu/table.vue'
+    import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
+    import { generateSQLQuery } from '~/components/insights/playground/editor/vqb/composables/generateSQLQuery'
 
     export function getLastMappedKeyword(
         token_param: string[],
@@ -657,13 +689,18 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
+            treeData: {
+                type: Object as PropType<TreeDataItem[]>,
+                required: true,
+                default: () => [],
+            },
             hoverActions: {
                 type: Boolean,
                 default: true,
             },
         },
         setup(props) {
-            const { hoverActions } = toRefs(props)
+            const { hoverActions, treeData } = toRefs(props)
             const isTabAdded = inject('isTabAdded') as Ref<string | undefined>
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
@@ -1497,11 +1534,71 @@
                     : true
             )
 
+            const previewVQBQuery = (item: any) => {
+                const activeInlineTabCopy = JSON.parse(
+                    JSON.stringify(toRaw(activeInlineTab.value))
+                )
+                activeInlineTabCopy.playground.vqb.panels = []
+                let panel = {
+                    order: 1,
+                    id: 'columns',
+                    hide: true,
+                    subpanels: [
+                        {
+                            id: '1',
+                            columns: ['all'],
+                            tableData: {
+                                assetType: item?.entity.typeName,
+                                certificateStatus:
+                                    item?.entity?.attributes?.certificateStatus,
+                                item: {},
+                            },
+                            columnsData: [],
+                            tableQualfiedName:
+                                item?.entity.attributes?.qualifiedName,
+                        },
+                    ],
+                    expand: false,
+                }
+
+                activeInlineTabCopy.playground.vqb.panels = [panel]
+                activeInlineTabCopy.playground.vqb.selectedTables = [
+                    {
+                        addedBy: 'column',
+                        tableQualifiedName:
+                            item?.entity.attributes?.qualifiedName,
+                    },
+                ]
+
+                const selectedText = generateSQLQuery(
+                    activeInlineTabCopy,
+                    limitRows.value,
+                    true
+                )
+                const tabIndex = inlineTabs.value.findIndex(
+                    (tab) => tab.key === activeInlineTab.value.key
+                )
+
+                queryRun(
+                    tabIndex,
+                    getData,
+                    limitRows,
+                    onRunCompletion,
+                    onQueryIdGeneration,
+                    selectedText,
+                    editorInstance,
+                    monacoInstance,
+                    showVQB,
+                    inlineTabs
+                )
+            }
+
             return {
                 // showContextModal,
                 // closeContextModal,
                 // openInCurrentTab,
                 // openInNewTab,
+                treeData,
                 showVQB,
                 hoverActions,
                 isPopoverAllowed,
@@ -1524,6 +1621,7 @@
                 readOnly,
                 previewData,
                 tooltipText,
+                previewVQBQuery,
             }
         },
     })

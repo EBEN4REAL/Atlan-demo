@@ -243,3 +243,42 @@ export function addGroup(
         activeInlineTab.value.playground.vqb.panels.push(panel)
     }
 }
+export function addTable(
+    activeInlineTab: Ref<activeInlineTabInterface>,
+    item: Ref<assetInterface>
+) {
+    const tableIndex = activeInlineTab.value.playground.vqb.panels.findIndex(
+        (panel) => panel.id.toLowerCase() === 'columns'
+    )
+    if (tableIndex > 0) {
+        return
+    } else {
+        let subpanels = JSON.parse(
+            JSON.stringify(
+                activeInlineTab.value.playground.vqb.panels[0].subpanels
+            )
+        )
+
+        let subpanel = subpanels[0]
+        subpanel = {
+            ...subpanel,
+            tableData: {
+                assetType: item.value?.entity.typeName,
+                certificateStatus:
+                    item.value?.entity?.attributes?.certificateStatus,
+                item: {},
+            },
+            tableQualfiedName: item.value?.entity.attributes?.qualifiedName,
+        }
+        subpanels = [subpanel]
+
+        activeInlineTab.value.playground.vqb.panels[0].subpanels = subpanels
+        activeInlineTab.value.playground.vqb.selectedTables = [
+            {
+                addedBy: 'column',
+                tableQualifiedName:
+                    item.value?.entity.attributes?.qualifiedName,
+            },
+        ]
+    }
+}

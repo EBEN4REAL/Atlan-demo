@@ -92,7 +92,11 @@
                                 v-if="totalPolicy !== 0"
                                 class="px-1 container-tabs"
                             >
-                                <a-radio-group
+                                <RaisedTab
+                                    v-model:active="activeTabFilter"
+                                    :data="streams"
+                                />
+                                <!-- <a-radio-group
                                     v-model:value="activeTabFilter"
                                     class="flex flex-grow"
                                 >
@@ -105,7 +109,7 @@
                                     <a-radio-button value="data"
                                         >Data</a-radio-button
                                     >
-                                </a-radio-group>
+                                </a-radio-group> -->
                             </div>
                         </div>
                         <a-dropdown v-if="!isEmpty" trigger="click">
@@ -331,6 +335,7 @@
         deletePolicyV2,
     } from './composables/useEditPersona'
     import { refetchPersona } from './composables/usePersonaList'
+    import RaisedTab from '@/UI/raisedTab.vue'
 
     export default defineComponent({
         name: 'PersonaBody',
@@ -346,6 +351,7 @@
             AggregationTabs,
             Addpolicy,
             Readme,
+            RaisedTab,
         },
         props: {
             persona: {
@@ -573,7 +579,20 @@
                 handleUpdateResource,
                 handleRemoveResource,
             } = usePersonaResources(persona)
-
+            const streams = computed(() => [
+                {
+                    key: 'all Persona',
+                    label: 'All',
+                },
+                {
+                    key: 'metaData',
+                    label: 'Metadata',
+                },
+                {
+                    key: 'data',
+                    label: 'Data',
+                },
+            ])
             return {
                 addStatus,
                 updateStatus,
@@ -609,6 +628,7 @@
                 loadingPolicy,
                 NoResultIllustration,
                 isEmpty,
+                streams,
             }
         },
     })
@@ -627,23 +647,24 @@
 </style>
 <style lang="less">
     .container-tabs {
-        .ant-radio-button-wrapper {
-            &::before {
-                display: none !important;
-            }
-            @apply bg-gray-100;
-            &.ant-radio-button-wrapper-checked {
-                box-shadow: 0px 1px 4px 0px #0000001f;
+        width: 200px
+        // .ant-radio-button-wrapper {
+        //     &::before {
+        //         display: none !important;
+        //     }
+        //     @apply bg-gray-100;
+        //     &.ant-radio-button-wrapper-checked {
+        //         box-shadow: 0px 1px 4px 0px #0000001f;
 
-                @apply bg-white;
-            }
-            border: none !important;
-        }
-        .assetbar {
-            :global(.ant-tabs-tab:first-child) {
-                border-top-left-radius: 24px !important;
-            }
-        }
+        //         @apply bg-white;
+        //     }
+        //     border: none !important;
+        // }
+        // .assetbar {
+        //     :global(.ant-tabs-tab:first-child) {
+        //         border-top-left-radius: 24px !important;
+        //     }
+        // }
     }
 </style>
 <style scoped lang="less">

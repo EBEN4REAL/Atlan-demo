@@ -181,10 +181,17 @@ export default function useBusinessMetadata() {
     const applicableEntityTypesOptions = applicableTypeList()
     const template = JSON.parse(JSON.stringify(DEFAULT_ATTRIBUTE))
     template.options.customApplicableEntityTypes = applicableEntityTypesOptions.reduce(
-      (acc, item) => [
-        ...acc,
-        ...(item?.children?.map((v) => v.value) ?? []),
-      ],
+      (acc, item) => {
+        const allChilds = [...acc]
+        item.children.forEach(c => {
+          if (c?.children)
+            allChilds.push(...c.children.map(a => a.value))
+
+          else
+            allChilds.push(c.value)
+        })
+        return allChilds
+      },
       []
     )
     return template

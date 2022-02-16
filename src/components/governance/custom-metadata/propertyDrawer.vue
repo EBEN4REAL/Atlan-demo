@@ -840,24 +840,40 @@
                 return []
             })
 
-            const handleApplicableEntityTypeChange = (data) => {
+            const handleApplicableEntityTypeChange = (data, l, e) => {
                 /**
-                 * Data is just an array of ids
-                 * First get items in finalApplicableTypeNamesOptions that match id and have children (store index or id and children)
-                 * Then go through the data again and replace matched items with children ids
-                 * reducer should work
+                 * Just trying to flatten the the tree given any node, add all leaf node values
                  */
-                const childrenExtracted = data.reduce((a, b, index) => {
-                    const isParent = finalApplicableTypeNamesOptions.value.find(
-                        (y) => b === y.value
-                    )
-                    if (isParent)
-                        a.push(...isParent.children.map((z) => z.value))
-                    else a.push(data[index])
-                    return a
+                const flatValues: any = []
+                data.forEach((item) => {
+                    let sourceFound = false
+                    applicableEntityTypesOptions.forEach((cat) => {
+                        if (cat.value === item) {
+                            cat.children.forEach((c) => {
+                                if (c.children)
+                                    flatValues.push(
+                                        ...c.children.map((_c) => _c.value)
+                                    )
+                                else flatValues.push(c.value)
+                            })
+                        } else {
+                            cat.children.forEach((source) => {
+                                if (source.value === item) {
+                                    if (source.children)
+                                        flatValues.push(
+                                            ...source.children.map(
+                                                (_c) => _c.value
+                                            )
+                                        )
+                                    else flatValues.push(source.value)
+                                    sourceFound = true
+                                }
+                            })
+                            if (!sourceFound) flatValues.push(item)
+                        }
+                    })
                 }, [])
-                form.value.options.customApplicableEntityTypes =
-                    childrenExtracted
+                form.value.options.customApplicableEntityTypes = flatValues
             }
 
             const handleClickCreateNewEnum = () => {

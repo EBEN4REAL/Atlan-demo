@@ -5,6 +5,34 @@ const store = useConnectionStore()
 
 const sourceConnected = (typeName) => store.activeConnectionSourceList.some(s => s.id.toLowerCase() === typeName.toLowerCase())
 
+const getChildren = (arr) => {
+    const children: any = []
+
+    arr.forEach(c => {
+        if (c?.source) {
+            const sourceIndex = children.findIndex(s => s.id === c.source)
+            if (sourceIndex > -1)
+                children[sourceIndex].children = [...children[sourceIndex].children, {
+                    id: c.id, label: c.fullLabel ?? c.label
+                }]
+            else {
+                children.push({
+                    id: c.source,
+                    label: c.source,
+                    children: [{
+                        id: c.id, label: c.fullLabel ?? c.label
+                    }]
+                })
+            }
+        } else {
+            children.push({
+                id: c.id, label: c.fullLabel ?? c.label
+            })
+        }
+    })
+    return children
+}
+
 export const applicableTypeList = () => {
 
     const connectedList = assetTypeList.filter(t => t.source ? sourceConnected(t.source) : true)
@@ -17,7 +45,7 @@ export const applicableTypeList = () => {
             label: string,
         }[]
     }[] = [
-            {
+            ...connectedList.some(t => t.categoryType === 'SQL') ? [{
                 id: 'SQL',
                 label: 'SQL',
                 children: [
@@ -25,26 +53,19 @@ export const applicableTypeList = () => {
                         id: c.id, label: c.fullLabel ?? c.label
                     }))
                 ],
-            },
-            {
+            }] : [],
+            ...connectedList.some(t => t.categoryType === 'BI') ? [{
                 id: 'BI',
                 label: 'BI',
-                children: [
-                    ...connectedList.filter(t => t.categoryType === 'BI').map(c => ({
-                        id: c.id, label: c.fullLabel ?? c.label
-                    }))
-                ],
-            },
-            {
+                children: getChildren(connectedList.filter(t => t.categoryType === 'BI')),
+
+            }] : [],
+            ...connectedList.some(t => t.categoryType === 'SaaS') ? [{
                 id: 'SaaS',
                 label: 'SaaS',
-                children: [
-                    ...connectedList.filter(t => t.categoryType === 'SaaS').map(c => ({
-                        id: c.id, label: c.fullLabel ?? c.label
-                    }))
-                ],
-            },
-            {
+                children: getChildren(connectedList.filter(t => t.categoryType === 'SaaS')),
+            }] : [],
+            ...connectedList.some(t => t.categoryType === 'Insights') ? [{
                 id: 'Insights',
                 label: 'Insights',
                 children: [
@@ -52,8 +73,8 @@ export const applicableTypeList = () => {
                         id: c.id, label: c.fullLabel ?? c.label
                     }))
                 ],
-            },
-            {
+            }] : [],
+            ...connectedList.some(t => t.categoryType === 'Lineage') ? [{
                 id: 'Lineage',
                 label: 'Lineage',
                 children: [
@@ -61,16 +82,16 @@ export const applicableTypeList = () => {
                         id: c.id, label: c.fullLabel ?? c.label
                     }))
                 ],
-            },
-            {
+            }] : [],
+            ...connectedList.some(t => t.categoryType === 'BusinessTerms') ? [{
                 id: 'BusinessTerms',
-                label: 'Business Terms',
+                label: 'BusinessTerms',
                 children: [
                     ...connectedList.filter(t => t.categoryType === 'BusinessTerms').map(c => ({
                         id: c.id, label: c.fullLabel ?? c.label
                     }))
                 ],
-            }
+            }] : [],
         ]
 
 
@@ -84,6 +105,13 @@ export const applicableTypeList = () => {
                 title: a.label,
                 value: a.id,
                 key: a.id,
+                category: t.id,
+                children: a?.children?.map((b) => ({
+                    title: b.label,
+                    value: b.id,
+                    key: b.id,
+                    source: a.id
+                })),
             })),
         })),
     ]

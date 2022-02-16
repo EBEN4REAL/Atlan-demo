@@ -10,7 +10,7 @@
     <a-tabs
         v-model:activeKey="relevantTab"
         :class="[$style.hometab, isLoading ? `hidden` : ``]"
-        class="px-6 py-1.5 border border-gray-200 rounded-lg"
+        class="px-4 py-1.5 border border-gray-200 rounded-lg"
         @change="selectRelevantTab($event)"
     >
         <a-tab-pane

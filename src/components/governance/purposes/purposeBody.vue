@@ -62,65 +62,75 @@
             class="flex flex-col px-6 pt-6"
             style="height: calc(100% - 155px)"
         >
-            <div class="flex items-center justify-between mb-3">
-                <div class="w-1/2">
-                    <div v-if="totalPolicy !== 0" class="container-tabs">
-                        <a-radio-group
-                            v-model:value="activeTabFilter"
-                            class="flex flex-grow"
-                        >
-                            <a-radio-button value="all Persona"
-                                >All</a-radio-button
+            <div class="bg-white">
+                <div class="flex items-center justify-between p-4 border-b">
+                    <div class="w-1/2">
+                        <div v-if="totalPolicy !== 0" class="container-tabs">
+                            <a-radio-group
+                                v-model:value="activeTabFilter"
+                                class="flex flex-grow"
                             >
-                            <a-radio-button value="metaData"
-                                >Metadata</a-radio-button
-                            >
-                            <a-radio-button value="data">Data</a-radio-button>
-                        </a-radio-group>
-                    </div>
-                </div>
-                <a-dropdown trigger="click">
-                    <a-button type="primary">
-                        <div class="flex items-center gap-x-1">
-                            New Policy
-
-                            <AtlanIcon icon="ChevronDown" class="text-white" />
+                                <a-radio-button value="all Persona"
+                                    >All</a-radio-button
+                                >
+                                <a-radio-button value="metaData"
+                                    >Metadata</a-radio-button
+                                >
+                                <a-radio-button value="data"
+                                    >Data</a-radio-button
+                                >
+                            </a-radio-group>
                         </div>
-                    </a-button>
+                    </div>
+                    <a-dropdown trigger="click">
+                        <a-button type="primary">
+                            <div class="flex items-center gap-x-1">
+                                New Policy
 
-                    <template #overlay>
-                        <a-menu>
-                            <a-menu-item
-                                v-for="(
-                                    option, index
-                                ) in addPolicyDropdownConfig"
-                                :key="index"
-                                @click="option.handleClick()"
-                            >
-                                <div class="flex items-center">
-                                    <AtlanIcon
-                                        v-if="option.icon"
-                                        class="w-4 h-4 text-gray-600"
-                                        :icon="option.icon"
-                                    />
-                                    <span class="pl-2 text-sm">{{
-                                        option.title
-                                    }}</span>
-                                </div>
-                            </a-menu-item>
-                        </a-menu>
-                    </template>
-                </a-dropdown>
-            </div>
-            <div
-                v-if="
-                    metaDataComputed.length > 0 || dataPolicyComputed.length > 0
-                "
-                class="flex flex-col flex-grow overflow-y-auto gap-y-3"
-            >
-                <template v-for="(policy, idx) in metaDataComputed" :key="idx">
-                    <!-- Render it if the policy is being edited -->
-                    <!-- <MetadataPolicy
+                                <AtlanIcon
+                                    icon="ChevronDown"
+                                    class="text-white"
+                                />
+                            </div>
+                        </a-button>
+
+                        <template #overlay>
+                            <a-menu>
+                                <a-menu-item
+                                    v-for="(
+                                        option, index
+                                    ) in addPolicyDropdownConfig"
+                                    :key="index"
+                                    @click="option.handleClick()"
+                                >
+                                    <div class="flex items-center">
+                                        <AtlanIcon
+                                            v-if="option.icon"
+                                            class="w-4 h-4 text-gray-600"
+                                            :icon="option.icon"
+                                        />
+                                        <span class="pl-2 text-sm">{{
+                                            option.title
+                                        }}</span>
+                                    </div>
+                                </a-menu-item>
+                            </a-menu>
+                        </template>
+                    </a-dropdown>
+                </div>
+                <div
+                    v-if="
+                        metaDataComputed.length > 0 ||
+                        dataPolicyComputed.length > 0
+                    "
+                    class="flex flex-col flex-grow overflow-y-auto"
+                >
+                    <template
+                        v-for="(policy, idx) in metaDataComputed"
+                        :key="idx"
+                    >
+                        <!-- Render it if the policy is being edited -->
+                        <!-- <MetadataPolicy
                         v-if="policyEditMap.metadataPolicies[policy.id!] && !policy?.id?.includes(newIdTag)"
                         class="px-5 bg-white"
                         :policy="policy"
@@ -129,22 +139,22 @@
                         @cancel="discardPolicy('meta', policy.id!)"
                     /> -->
 
-                    <PolicyCard
-                        :policy="policy"
-                        type="meta"
-                        :selected-policy="selectedPolicy"
-                        @edit="setEditFlag('meta', policy.id!)"
-                        @delete="deletePolicyUI('meta', policy.id!)"
-                        @cancel="discardPolicy('meta', policy.id!)"
-                        @clickCard="handleSelectPolicy"
-                    />
-                </template>
-                <template
-                    v-for="(policy, idx) in dataPolicyComputed"
-                    :key="idx"
-                >
-                    <!-- Render it if the policy is being edited -->
-                    <!-- <DataPolicy
+                        <PolicyCard
+                            :policy="policy"
+                            type="meta"
+                            :selected-policy="selectedPolicy"
+                            @edit="setEditFlag('meta', policy.id!)"
+                            @delete="deletePolicyUI('meta', policy.id!)"
+                            @cancel="discardPolicy('meta', policy.id!)"
+                            @clickCard="handleSelectPolicy"
+                        />
+                    </template>
+                    <template
+                        v-for="(policy, idx) in dataPolicyComputed"
+                        :key="idx"
+                    >
+                        <!-- Render it if the policy is being edited -->
+                        <!-- <DataPolicy
                         v-if="policyEditMap.dataPolicies[policy.id!] &&  !policy?.id?.includes(newIdTag)"
                         class="px-5 bg-white"
                         :policy="policy"
@@ -152,17 +162,18 @@
                         @save="savePolicyUI('data', policy.id!)"
                         @cancel="discardPolicy('data', policy.id!)"
                     /> -->
-                    <!-- ^^^ FIXME: Add implemmentation for @save and @cancel ^^^-->
-                    <PolicyCard
-                        :policy="policy"
-                        type="data"
-                        :selected-policy="selectedPolicy"
-                        @edit="setEditFlag('data', policy.id!)"
-                        @delete="deletePolicyUI('data', policy.id!)"
-                        @cancel="discardPolicy('data', policy.id!)"
-                        @clickCard="handleSelectPolicy"
-                    />
-                </template>
+                        <!-- ^^^ FIXME: Add implemmentation for @save and @cancel ^^^-->
+                        <PolicyCard
+                            :policy="policy"
+                            type="data"
+                            :selected-policy="selectedPolicy"
+                            @edit="setEditFlag('data', policy.id!)"
+                            @delete="deletePolicyUI('data', policy.id!)"
+                            @cancel="discardPolicy('data', policy.id!)"
+                            @clickCard="handleSelectPolicy"
+                        />
+                    </template>
+                </div>
             </div>
             <div
                 v-if="
@@ -234,14 +245,7 @@
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        PropType,
-        ref,
-        computed,
-        toRefs,
-        watch,
-    } from 'vue'
+    import { defineComponent, PropType, ref, computed, toRefs } from 'vue'
     import { message } from 'ant-design-vue'
     import ResourcesWidget from '@common/widgets/resources/resourcesWidgetV2/resourcesWidgetV2.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
@@ -261,7 +265,6 @@
     import {
         newIdTag,
         selectedPersonaDirty,
-        addPolicy,
         updateSelectedPersona,
         deletePolicy,
         policyEditMap,

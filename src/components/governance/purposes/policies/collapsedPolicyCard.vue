@@ -1,36 +1,53 @@
 <template>
-    <div
-        class="relative bg-white border border-gray-300 rounded container-policy-card"
-    >
+    <div class="relative container-policy-card">
         <div
-            class="flex flex-col px-3 py-3 rounded cursor-pointer group hover:bg-gray-100 card-policy"
+            class="flex px-3 py-3 rounded cursor-pointer group hover:bg-gray-100 card-policy"
             :class="selectedPolicy.id === policy.id ? 'outline-primary' : ''"
             @click="handleClickPlicyCard"
         >
-            <div class="flex items-center mb-1">
-                <AtlanIcon
+            <div class="flex items-center flex-1 mb-1">
+                <div
                     v-if="type === 'meta'"
-                    icon="Policies"
-                    class="-mt-0.5"
-                />
-                <AtlanIcon
+                    class="flex items-center justify-center w-10 h-10 mr-2 bg-gray-100 border border-gray-200 rounded-full"
+                >
+                    <AtlanIcon v-if="type === 'meta'" icon="Policies" />
+                </div>
+                <div
                     v-if="type === 'data'"
-                    icon="QueryGrey"
-                    class="-mt-0.5"
-                />
-                <span class="ml-1 text-gray-500" data-test-id="policy-type">{{
-                    type === 'meta' ? 'Metadata Policy' : 'Data Policy'
-                }}</span>
-                <span class="mx-1 text-gray-500">/</span>
-                <span class="text-gray-500">{{ policy?.name }}</span>
+                    class="flex items-center justify-center w-10 h-10 mr-2 bg-gray-100 border border-gray-200 rounded-full"
+                >
+                    <AtlanIcon icon="QueryGrey" />
+                </div>
+                <div class="pl-1">
+                    <div>
+                        <span
+                            class="text-gray-500"
+                            data-test-id="policy-type"
+                            >{{
+                                type === 'meta'
+                                    ? 'Metadata Policy'
+                                    : 'Data Policy'
+                            }}</span
+                        >
+                        <span class="mx-1 text-gray-500">/</span>
+                        <span class="text-gray-500">{{ policy?.name }}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">{{ policy?.name }}</span>
+                        <span class="text-gray-300 mx-1.5">•</span>
+                        <span class="text-gray-500">{{
+                            type === 'meta' ? 'Metadata' : 'Data'
+                        }}</span>
+                    </div>
+                </div>
             </div>
 
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between flex-1">
                 <div class="flex items-center">
                     <div class="flex justify-items-end">
                         <span v-if="splitAssets.a.length > 0" class="">
+                            <AtlanIcon icon="Group" class="-mt-1" />
                             {{ splitAssets.a.length }}
-                            {{ splitAssets.a.length === 1 ? 'User' : 'Users' }}
                         </span>
                         <span
                             v-if="
@@ -49,12 +66,11 @@
                     <div v-if="permissions.length > 0 && type === 'meta'">
                         <span class="text-gray-300 mx-1.5">•</span>
                         <span class="flex-none text-sm">
+                            <AtlanIcon
+                                icon="ShieldBlank"
+                                class="-mt-1 icon-gray"
+                            />
                             {{ permissions.length }}
-                            {{
-                                permissions.length > 1
-                                    ? 'permissions'
-                                    : 'permission'
-                            }}
                         </span>
                     </div>
                     <div v-if="type === 'data'">
@@ -238,6 +254,11 @@
     })
 </script>
 <style lang="less">
+    .icon-gray {
+        path {
+            fill: #6f7590 !important;
+        }
+    }
     // .button-hidden {
     //     right: 10px;
     //     z-index: 2;

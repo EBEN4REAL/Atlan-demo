@@ -78,7 +78,7 @@
                 >
                     <div
                         v-for="l in resources"
-                        :key="l.qualifiedName"
+                        :key="l.uniqueAttributes.qualifiedName"
                         class="flex-grow"
                     >
                         <LinkPreviewCard

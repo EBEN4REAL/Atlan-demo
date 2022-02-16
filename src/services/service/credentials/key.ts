@@ -10,10 +10,13 @@ export const GET_CREDENTIAL = 'GET_CREDENTIAL'
 export const TEST_CREDENTIAL_BY_ID = 'TEST_CREDENTIAL_BY_ID'
 export const UPDATE_CREDENTIAL_BY_ID = 'UPDATE_CREDENTIAL_BY_ID'
 export const QUERY_CREDENTIAL_BY_ID = 'QUERY_CREDENTIAL_BY_ID'
+export const METADATA_CREDENTIAL_BY_ID = 'METADATA_CREDENTIAL_BY_ID'
+export const METADATA_CREDENTIAL = 'METADATA_CREDENTIAL'
 
 export const map = {
     [TEST_CREDENTIAL]: () => getAPIPath(BASE_PATH, '/credentials/test'),
     [QUERY_CREDENTIAL]: () => getAPIPath(BASE_PATH, '/credentials/query'),
+    [METADATA_CREDENTIAL]: () => getAPIPath(BASE_PATH, '/credentials/metadata'),
     [GET_CREDENTIAL]: ({ id }: PathParams) =>
         getAPIPath(BASE_PATH, `/credentials/${id}`),
     [TEST_CREDENTIAL_BY_ID]: (path: PathParams | Ref<PathParams>) => {
@@ -33,5 +36,14 @@ export const map = {
             return getAPIPath(BASE_PATH, `/credentials/${path.value.id}/query`)
         }
         return getAPIPath(BASE_PATH, `/credentials/${path.id}/query`)
+    },
+    [METADATA_CREDENTIAL_BY_ID]: (path: PathParams | Ref<PathParams>) => {
+        if (isRef(path)) {
+            return getAPIPath(
+                BASE_PATH,
+                `/credentials/${path.value.id}/metadata`
+            )
+        }
+        return getAPIPath(BASE_PATH, `/credentials/${path.id}/metadata`)
     },
 }

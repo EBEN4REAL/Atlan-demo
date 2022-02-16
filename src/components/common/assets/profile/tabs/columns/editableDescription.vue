@@ -18,6 +18,7 @@
                     :target="shouldOpenInNewTab ? '_blank' : 'self'"
                 >
                     <a-typography-paragraph
+                        v-if="allowEditing"
                         class="cursor-text"
                         :class="classes"
                         :ellipsis="{
@@ -27,10 +28,21 @@
                         :content="localDescription"
                         @click.stop="handleEdit"
                     />
+                    <a-typography-paragraph
+                        v-else
+                        class="cursor-text"
+                        :class="classes"
+                        :ellipsis="{
+                            rows: rows,
+                            onEllipsis: () => (truncated = !truncated),
+                        }"
+                        :content="localDescription"
+                    />
                 </router-link>
             </template>
             <template v-else>
                 <a-typography-paragraph
+                    v-if="allowEditing"
                     class="cursor-text"
                     :class="classes"
                     :ellipsis="{
@@ -40,14 +52,26 @@
                     :content="localDescription"
                     @click.stop="handleEdit"
                 />
+                <a-typography-paragraph
+                    v-else
+                    class="cursor-text"
+                    :class="classes"
+                    :ellipsis="{
+                        rows: rows,
+                        onEllipsis: () => (truncated = !truncated),
+                    }"
+                    :content="localDescription"
+                />
             </template>
         </div>
     </a-tooltip>
     <div
         v-else-if="!isEditing && localDescription.length === 0"
-        class="w-full h-5 block cursor-text"
+        class="cursor-text text-transparent hover:text-gray-400"
         @click.stop="handleEdit"
-    ></div>
+    >
+        <p>{{ allowEditing ? 'Add a description' : '' }}</p>
+    </div>
     <div v-else @click.stop>
         <a-textarea
             ref="descriptionRef"
@@ -80,8 +104,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, inject, nextTick, ref, toRefs, unref } from 'vue'
-    import { useTimeoutFn } from '@vueuse/core'
+    import { defineComponent, nextTick, ref, toRefs, unref } from 'vue'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
 
     export default defineComponent({
@@ -228,7 +251,8 @@
 
     .editable {
         :global(.ant-input) {
-            @apply border-none bg-transparent shadow-none px-0 py-0 rounded-none  !important;
+            @apply border-none bg-transparent shadow-none px-0 py-0 rounded-none !important;
+            min-height: fit-content !important;
         }
         :global(.ant-input:focus) {
             @apply border-none bg-white shadow-lg px-1 py-0 rounded-md !important;

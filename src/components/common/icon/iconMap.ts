@@ -402,6 +402,7 @@ import Resources2 from '~/assets/images/illustrations/resources/resources.svg'
 import RunningQuery from '~/assets/images/icons/tabs/Running.svg'
 import FailedQuery from '~/assets/images/icons/tabs/Error.svg'
 import SuccessQuery from '~/assets/images/icons/tabs/success-check.svg'
+import NoAllow from '~/assets/images/icons/no-allow.svg'
 
 export default {
     Resources2,
@@ -789,4 +790,5 @@ export default {
     Comment,
     EmptyRequest,
     PlusWhite,
+    NoAllow
 }

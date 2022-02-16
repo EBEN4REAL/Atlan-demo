@@ -41,9 +41,9 @@
                         >
                     </div>
                     <a-tooltip
+                        v-if="persona.description"
                         tabindex="-1"
                         :title="persona.description"
-                        v-if="persona.description"
                         placement="right"
                     >
                         <span
@@ -54,7 +54,7 @@
                         ></span>
                     </a-tooltip>
                 </div>
-                <div class="flex text-gray-500" v-if="persona.updatedBy">
+                <div v-if="persona.updatedBy" class="flex text-gray-500">
                     last updated by {{ persona.updatedBy }},
                     <a-tooltip
                         class="ml-1"
@@ -66,27 +66,46 @@
             </div>
             <a-button-group>
                 <!-- Edit -->
-                <a-tooltip placement="bottom" v-auth="map.UPDATE_PERSONA">
+                <a-popover
+                    :align="{ offset: [5, -10] }"
+                    trigger="click"
+                    placement="bottom"
+                >
+                    <template #content>
+                        <div
+                            class="flex p-2 text-sm font-bold text-gray-700 cursor-pointer btn-status hover:bg-gray-100"
+                        >
+                            <AtlanIcon icon="NoAllow" class="mr-1" />Disable
+                            persona
+                        </div>
+                    </template>
+                    <div
+                        class="flex p-2 mr-3 text-sm font-bold cursor-pointer text-success btn-status hover:bg-gray-100"
+                    >
+                        <AtlanIcon icon="Check" class="mr-1" />Enabled
+                    </div>
+                </a-popover>
+                <a-tooltip v-auth="map.UPDATE_PERSONA" placement="bottom">
                     <template #title>
                         <span>Edit Persona</span>
                     </template>
                     <AtlanButton
                         class="flex items-center justify-center h-8 px-5 border border-r-0 rounded rounded-r-none cursor-pointer customShadow"
-                        @click="isEditing = true"
                         color="secondary"
+                        @click="isEditing = true"
                     >
                         <AtlanIcon icon="Edit"></AtlanIcon>
                     </AtlanButton>
                 </a-tooltip>
                 <!-- Delete  -->
-                <a-tooltip placement="bottom" v-auth="map.DELETE_PERSONA">
+                <a-tooltip v-auth="map.DELETE_PERSONA" placement="bottom">
                     <template #title>
                         <span>Delete Persona</span>
                     </template>
                     <AtlanButton
                         class="flex items-center justify-center h-8 px-5 border rounded rounded-l-none cursor-pointer customShadow text-error"
-                        @click="deletePersona"
                         color="secondary"
+                        @click="deletePersona"
                     >
                         <AtlanIcon icon="Delete"></AtlanIcon>
                     </AtlanButton>
@@ -100,6 +119,7 @@
 <script lang="ts">
     import { defineComponent, PropType, computed, toRefs, h, watch } from 'vue'
     import { message, Modal } from 'ant-design-vue'
+    import { useTimeAgo, useVModels } from '@vueuse/core'
     import CreationModal from '@/admin/common/addModal.vue'
     import { IPersona } from '~/types/accessPolicies/personas'
     import {
@@ -113,10 +133,8 @@
     import Dropdown from '@/UI/dropdown.vue'
     import { handleUpdateList } from './composables/usePersonaList'
     import { formatDateTime } from '~/utils/date'
-    import { useTimeAgo } from '@vueuse/core'
     import map from '~/constant/accessControl/map'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
-    import { useVModels } from '@vueuse/core'
 
     export default defineComponent({
         name: 'PersonaHeader',
@@ -140,8 +158,8 @@
                 Modal.confirm({
                     title: `Delete persona`,
                     class: 'delete-persona-modal',
-                    content: () => {
-                        return h('div', [
+                    content: () =>
+                        h('div', [
                             'Are you sure you want to delete persona',
                             h('span', [' ']),
                             h(
@@ -152,8 +170,7 @@
                                 [`${persona.value.displayName}`]
                             ),
                             h('span', '?'),
-                        ])
-                    },
+                        ]),
                     okType: 'danger',
                     autoFocusButton: null,
                     okButtonProps: {
@@ -270,6 +287,9 @@
 </script>
 <style lang="less"></style>
 <style lang="less" scoped>
+    .btn-status {
+        height: fit-content !important;
+    }
     .clean-input {
         @apply block bg-transparent border-0 shadow-none outline-none;
 

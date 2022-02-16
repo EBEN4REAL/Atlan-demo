@@ -131,6 +131,7 @@ export function useQueryLogs(
         connectionQF,
         connectorName,
         searchText,
+        aggregations,
     }) {
         body.value = useBody({
             from: from.value,
@@ -144,6 +145,7 @@ export function useQueryLogs(
             connectionQF,
             connectorName,
             searchText,
+            aggregations,
         })
     }
     const paginateLogs = (page: number) => {

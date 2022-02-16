@@ -20,7 +20,7 @@
                     <Purpose></Purpose>
                 </div> -->
                 <div class="mt-6">
-                    <Relevant />
+                    <!-- <Relevant /> -->
                 </div>
                 <div class="mt-6">
                     <PopularQueries />

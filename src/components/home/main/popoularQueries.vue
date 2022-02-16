@@ -1,11 +1,20 @@
 <template>
     <!--h2 class="mb-3 text-xl font-bold">Relevant for you</h2-->
-    <transition v-if="popularQueriesList.length" name="fade">
+    <!-- <transition v-if="popularQueriesList.length" name="fade"> -->
+    <transition name="fade">
         <div>
-            <h2 class="mb-1 text-sm font-semibold text-gray-500">
-                <!-- <AtlanIcon icon="TrendUp"></AtlanIcon> -->
-                Popular Queries
-            </h2>
+            <div class="flex mb-1">
+                <span class="mb-1 text-sm font-semibold text-gray-500">
+                    <!-- <AtlanIcon icon="TrendUp"></AtlanIcon> -->
+                    Popular Queries
+                </span>
+                <TimeFrameSelector
+                    v-model:modelValue="timeFrame"
+                    class="ml-auto"
+                    :time-frame="timeFrame"
+                    @change="handleRangePickerChange"
+                />
+            </div>
 
             <div
                 v-if="isQueryLogsLoading"
@@ -69,6 +78,7 @@
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import AssetPopover from '@/common/popover/assets/index.vue'
     import AssetTitleCtx from '@/home/shared/assetTitleContext.vue'
+    import TimeFrameSelector from '~/components/admin/common/timeFrameSelector.vue'
 
     export default defineComponent({
         name: 'PopularQueries',
@@ -76,9 +86,11 @@
             CertificateBadge,
             AssetPopover,
             AssetTitleCtx,
+            TimeFrameSelector,
         },
         setup() {
             // FETCH QUERY LOGS
+            const timeFrame = ref('30 days')
             const gte = ref(
                 dayjs(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).format()
             )
@@ -98,8 +110,8 @@
 
             const {
                 aggregates: queryAggregationResult,
-                // mutateBody,
-                // refetchList,
+                mutateBody,
+                refetchList,
                 isLoading: isQueryLogsLoading,
                 // filteredLogsCount,
                 savedQueryMetaMap,
@@ -140,6 +152,25 @@
                 getProfilePath,
             } = useAssetInfo()
 
+            const refreshList = () => {
+                mutateBody({
+                    from,
+                    size,
+                    gte,
+                    lt,
+                    aggregations: queryAggregations,
+                })
+                refetchList()
+            }
+
+            const handleRangePickerChange = (event) => {
+                // eslint-disable-next-line prefer-destructuring
+                gte.value = event[0]
+                // eslint-disable-next-line prefer-destructuring
+                lt.value = event[1]
+                refreshList()
+            }
+
             return {
                 title,
                 certificateStatus,
@@ -151,6 +182,8 @@
                 isQueryLogsLoading,
                 savedQueryMetaMap,
                 popularQueriesList,
+                handleRangePickerChange,
+                timeFrame,
             }
         },
     })

@@ -68,7 +68,6 @@ export default async function useComputeGraph(
             if (assetExists(fromGuid) && assetExists(toGuid)) return
 
             if ([fromTypeName, toTypeName].includes('column')) return
-
             // same source
             if (sameSourceCount.value[from]) {
                 sameSourceCount.value[from].count += 1
@@ -126,9 +125,9 @@ export default async function useComputeGraph(
             if (!v.targetsHidden.length) return
             lineageData.guidEntityMap = {
                 ...lineageData.guidEntityMap,
-                [`vpNode/${k}`]: {
+                [`vpNodeSS-${k}`]: {
                     typeName: 'vpNode',
-                    guid: `vpNode/${k}`,
+                    guid: `vpNodeSS-${k}`,
                     attributes: {
                         hiddenCount: v.targetsHidden.length,
                     },
@@ -142,9 +141,9 @@ export default async function useComputeGraph(
             if (!v.sourcesHidden.length) return
             lineageData.guidEntityMap = {
                 ...lineageData.guidEntityMap,
-                [`vpNode/${k}`]: {
+                [`vpNodeST-${k}`]: {
                     typeName: 'vpNode',
-                    guid: `vpNode/${k}`,
+                    guid: `vpNodeST-${k}`,
                     attributes: {
                         hiddenCount: v.sourcesHidden.length,
                     },
@@ -158,8 +157,7 @@ export default async function useComputeGraph(
             const ent = { ...entity }
             const { attributes, typeName, guid } = ent
 
-            if (isNodeExist(guid)) return
-
+            if (isNodeExist(guid)?.id) return
             if (allTargetsHiddenIds.value.includes(entity.guid)) return
             if (allSourcesHiddenIds.value.includes(entity.guid)) return
 
@@ -215,7 +213,7 @@ export default async function useComputeGraph(
             lineageData.relations.push({
                 fromEntityId: k,
                 processId: 'vpNodeProcessId',
-                toEntityId: `vpNode/${k}`,
+                toEntityId: `vpNodeSS-${k}`,
             })
         })
 
@@ -225,7 +223,7 @@ export default async function useComputeGraph(
             if (!v.sourcesHidden.length) return
 
             lineageData.relations.push({
-                fromEntityId: `vpNode/${k}`,
+                fromEntityId: `vpNodeST-${k}`,
                 processId: 'vpNodeProcessId',
                 toEntityId: k,
             })
@@ -318,9 +316,11 @@ export default async function useComputeGraph(
 
     /* addSubGraph */
     const addSubGraph = (data, registerAllListeners) => {
-        const newData = data
+        const newData = { ...data }
+
         createNodesFromEntityMap(newData, false)
         createNodeEdges(newData)
+
         renderLayout(registerAllListeners)
 
         if (!mergedLineageData.value) mergedLineageData.value = lineage.value

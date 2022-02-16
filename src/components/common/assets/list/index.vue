@@ -1,7 +1,7 @@
 <template>
     <VirtualList :data="list" data-key="guid" variable-height>
         <template #default="{ item, index }">
-            <slot :item="item" :itemIndex="index"></slot>
+            <slot :item="item" :itemIndex="index" class=""></slot>
         </template>
         <template #footer>
             <div

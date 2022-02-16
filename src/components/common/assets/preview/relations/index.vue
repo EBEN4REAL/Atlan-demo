@@ -74,7 +74,7 @@
                     :preference="preference"
                     :enable-sidebar-drawer="true"
                     :asset-name-truncate-percentage="'93%'"
-                    class="mx-3"
+                    class="mx-3 hover:bg-primary-menu"
                     @updateDrawer="updateCurrentList"
                     isCompact
                 ></AssetItem>

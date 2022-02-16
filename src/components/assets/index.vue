@@ -172,7 +172,9 @@
                                         : false
                                 "
                                 :class="
-                                    page !== 'admin' ? 'mx-4  bg-white' : 'mx-4'
+                                    page == 'assets'
+                                        ? 'mx-4 bg-white border hover:shadow'
+                                        : 'mx-4 border-transparent hover:primary-menu-light'
                                 "
                                 :open-asset-profile-in-new-tab="
                                     item.typeName.toLowerCase() === 'query'

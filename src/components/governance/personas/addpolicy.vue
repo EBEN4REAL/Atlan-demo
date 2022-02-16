@@ -4,7 +4,7 @@
     </div>
     <div class="relative bg-gray-100 add-policy-container">
         <div>
-            <div class="relative p-3 border-b">
+            <div class="relative p-3 bg-white border-b border-gray-300">
                 <div class="flex items-center">
                     <div
                         v-if="type === 'meta'"
@@ -67,7 +67,7 @@
                     </span>
                 </div> -->
             </div>
-            <div class="px-4 bg-gray-100">
+            <div class="px-4 mt-3 bg-gray-100">
                 <div class="relative mt-2 bg-white shadow-section">
                     <div class="p-3 text-sm font-bold text-gray-700 border-b">
                         Overview
@@ -110,7 +110,7 @@
                                 {{ rules.policyName.text }}
                             </div>
                         </div>
-                        <div class="relative mt-5">
+                        <div class="relative mt-4">
                             <div class="mb-2 text-sm text-gray-500 required">
                                 Select a connection
                                 <span class="text-red-500">*</span>
@@ -130,7 +130,7 @@
                                     policyType !== 'meta' ? BItypes : []
                                 "
                                 :show-empty-parents="isEdit ? true : false"
-                                class="mb-6"
+                                class="mb-2"
                                 :class="isEdit ? 'edit-connector' : ''"
                                 :disabled="isEdit"
                                 @changeConnector="handleConnectorChange"
@@ -154,10 +154,10 @@
                 </div>
                 <div
                     v-if="connectorData.attributeValue"
-                    class="mt-5 bg-white shadow-section"
+                    class="mt-4 bg-white shadow-section"
                 >
                     <div class="flex items-center justify-between p-3 border-b">
-                        <div class="text-base font-bold text-gray-700">
+                        <div class="text-sm font-bold text-gray-700">
                             Asset selector
 
                             <span v-if="policyType === 'data'" class=""
@@ -170,13 +170,26 @@
                             class="flex gap-x-1"
                         >
                             <div
+                                v-if="!isAddAll && policy.assets.length > 0"
+                                class="cursor-pointer"
+                                @click="handleAddAsset"
+                            >
+                                <span class="text-sm text-primary"> Add</span>
+                                <AtlanIcon
+                                    icon="ArrowRight"
+                                    class="ml-1 text-primary"
+                                />
+                                <span
+                                    class="h-5 mx-3 border-l border-gray-300 border-1"
+                                />
+                            </div>
+                            <div
                                 v-if="!isAddAll"
-                                size="small"
                                 :disabled="!connectorData.attributeValue"
                                 class="cursor-pointer"
                                 @click="addConnectionAsset"
                             >
-                                <span class="text-primary">
+                                <span class="text-sm text-primary">
                                     Include all assets</span
                                 >
                                 <AtlanIcon
@@ -184,22 +197,11 @@
                                     class="ml-1 text-primary"
                                 />
                             </div>
-                            <!-- <a-button
-                                v-if="!isAddAll && policy.assets.length > 0"
-                                size="small"
-                                @click="handleAddAsset"
-                            >
-                                <span class="text-primary"> Add</span>
-                                <AtlanIcon
-                                    icon="ArrowRight"
-                                    class="ml-1 text-primary"
-                                />
-                            </a-button> -->
                         </div>
                     </div>
-                    <div class="p-3">
+                    <div class="p-2">
                         <div
-                            class="flex flex-wrap h-auto gap-1 p-2 mt-1 overflow-auto border rounded border-bottom border-slate-300 max-h-32"
+                            class="flex flex-wrap h-auto gap-1 p-2 overflow-auto max-h-32"
                         >
                             <div
                                 v-if="
@@ -303,11 +305,11 @@
                 </div>
                 <div
                     v-if="policyType === 'meta' && connectorData.attributeValue"
-                    class="mt-5 bg-white shadow-section"
+                    class="mt-4 bg-white shadow-section"
                 >
                     <div class="p-3 border-b">
                         <div class="flex justify-between">
-                            <div class="text-base font-bold text-gray-700">
+                            <div class="text-sm font-bold text-gray-700">
                                 Configure permissions
                                 <span class="text-red-500">*</span>
                             </div>

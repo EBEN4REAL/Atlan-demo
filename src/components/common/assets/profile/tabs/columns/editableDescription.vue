@@ -217,7 +217,7 @@
              */
             const handleEnter = (event: KeyboardEvent) => {
                 if (!event.getModifierState('Shift')) {
-                    handleUpdate()
+                    isEditing.value = false
                 }
             }
 

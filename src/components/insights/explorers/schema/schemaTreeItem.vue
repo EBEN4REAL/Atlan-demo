@@ -125,6 +125,11 @@
                                         ></AtlanIcon>
                                     </a-tooltip>
                                 </div>
+                                <VQBThreeDotMenuForColumn
+                                    v-if="showVQB"
+                                    :item="item"
+                                />
+
                                 <!-- <div
                                     class="bg-gray-light-color"
                                     @click.stop="
@@ -239,7 +244,7 @@
                                     </a-tooltip>
                                 </div>
                                 <div
-                                    class="pl-2 pr-2"
+                                    class="pl-2"
                                     :data-test-id="'preview'"
                                     :class="
                                         item?.selected
@@ -264,6 +269,11 @@
                                         ></AtlanIcon>
                                     </a-tooltip>
                                 </div>
+
+                                <VQBThreeDotMenuForTable
+                                    v-if="showVQB"
+                                    :item="item"
+                                />
                                 <!-- Add pr-2 for next icon -->
                                 <div
                                     :data-test-id="'run-table-query'"
@@ -610,6 +620,8 @@
     import { getDialectInfo } from '~/components/insights/common/composables/getDialectInfo'
     import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
     import { useRunQueryUtils } from '~/components/insights/common/composables/useRunQueryUtils'
+    import VQBThreeDotMenuForColumn from '~/components/insights/explorers/schema/VQBThreeDotMenu/column.vue'
+    import VQBThreeDotMenuForTable from '~/components/insights/explorers/schema/VQBThreeDotMenu/table.vue'
 
     export function getLastMappedKeyword(
         token_param: string[],
@@ -632,7 +644,14 @@
     }
 
     export default defineComponent({
-        components: { StatusBadge, PopoverAsset, AtlanBtn, ColumnKeys },
+        components: {
+            StatusBadge,
+            PopoverAsset,
+            AtlanBtn,
+            ColumnKeys,
+            VQBThreeDotMenuForColumn,
+            VQBThreeDotMenuForTable,
+        },
         props: {
             item: {
                 type: Object as PropType<assetInterface>,

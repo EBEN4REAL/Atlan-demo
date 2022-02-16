@@ -2,6 +2,11 @@
     <!--h2 class="mb-3 text-xl font-bold">Relevant for you</h2-->
     <transition v-if="showWidget" name="fade">
         <div>
+            <AssetDrawer
+                :guid="selectedAssetDrawerGuid"
+                :show-drawer="showAssetSidebarDrawer"
+                @closeDrawer="handleCloseDrawer"
+            />
             <div class="flex mb-1">
                 <span class="mb-1 text-sm font-semibold text-gray-500">
                     <!-- <AtlanIcon icon="TrendUp"></AtlanIcon> -->
@@ -26,13 +31,18 @@
                 <AtlanLoader class="w-full h-10" />
             </div> -->
             <div
-                class="flex flex-col p-4 overflow-y-auto border border-gray-200 rounded resources-container gap-y-4"
+                class="flex flex-col p-4 overflow-y-auto border border-gray-200 rounded resources-container"
                 style="min-height: 150px"
             >
                 <div
                     v-for="queryObj in popularQueriesList"
                     :key="queryObj.key"
-                    class="pb-4 border-b"
+                    class="px-2 py-4 border-b rounded cursor-pointer hover:bg-primary-menu"
+                    @click="
+                        () => {
+                            handleCardClicked(queryObj.asset)
+                        }
+                    "
                 >
                     <div>
                         <AssetTitleCtx
@@ -80,6 +90,7 @@
     import AssetPopover from '@/common/popover/assets/index.vue'
     import AssetTitleCtx from '@/home/shared/assetTitleContext.vue'
     import TimeFrameSelector from '~/components/admin/common/timeFrameSelector.vue'
+    import AssetDrawer from '@/common/assets/preview/drawer.vue'
 
     export default defineComponent({
         name: 'PopularQueries',
@@ -88,6 +99,7 @@
             AssetPopover,
             AssetTitleCtx,
             TimeFrameSelector,
+            AssetDrawer,
         },
         setup() {
             // FETCH QUERY LOGS
@@ -110,6 +122,8 @@
             ]
             const timeFrameWhiteList = [7, 30]
             const showWidget = ref(false)
+            const showAssetSidebarDrawer = ref(false)
+            const selectedAssetDrawerGuid = ref('')
 
             const {
                 aggregates: queryAggregationResult,
@@ -173,6 +187,14 @@
                 lt.value = event[1]
                 refreshList()
             }
+            const handleCardClicked = (item: any) => {
+                showAssetSidebarDrawer.value = true
+                selectedAssetDrawerGuid.value = item?.guid
+            }
+            const handleCloseDrawer = () => {
+                selectedAssetDrawerGuid.value = ''
+                showAssetSidebarDrawer.value = false
+            }
 
             watch(popularQueriesList, (newVal) => {
                 if (newVal.length) {
@@ -195,6 +217,8 @@
                 timeFrame,
                 timeFrameWhiteList,
                 showWidget,
+                handleCardClicked,
+                handleCloseDrawer,
             }
         },
     })

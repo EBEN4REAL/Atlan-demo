@@ -71,7 +71,8 @@ export default function useRunQuery() {
         editorInstance: Ref<any>,
         monacoInstance: Ref<any>,
         showVQB: Ref<Boolean> = ref(false),
-        tabsArray: Ref<activeInlineTabInterface[]>
+        tabsArray: Ref<activeInlineTabInterface[]>,
+        useSchemaExplorerContext?: boolean
     ) => {
         // do not change this. This is a workaround for the issue
         //FIXME:
@@ -117,10 +118,15 @@ export default function useRunQuery() {
             false
 
         // activeInlineTab.value.playground.resultsPane.result.tabQueryState = true
-
-        const attributeValue =
+        let attributeValue =
             tabsArray.value[tabIndex]?.playground?.editor?.context
                 ?.attributeValue
+
+        if (useSchemaExplorerContext) {
+            attributeValue =
+                tabsArray.value[tabIndex]?.explorer.schema.connectors
+                    ?.attributeValue
+        }
         let queryText
         /* Setting it undefined for new run */
         if (

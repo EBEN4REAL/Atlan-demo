@@ -245,7 +245,7 @@
                                     </a-tooltip>
                                 </div>
                                 <div
-                                    class="pl-2"
+                                    class="pl-2 pr-2"
                                     :data-test-id="'preview'"
                                     :class="
                                         item?.selected
@@ -278,7 +278,7 @@
                                             .result.isQueryRunning === 'loading'
                                             ? 'opacity-50 cursor-not-allowed'
                                             : '',
-                                        'pl-2')
+                                        '')
                                     "
                                     @click="() => previewVQBQuery(item)"
                                 >
@@ -1570,10 +1570,12 @@
                     },
                 ]
 
+                const useSchemaExplorerContext = true
+
                 const selectedText = generateSQLQuery(
                     activeInlineTabCopy,
                     limitRows.value,
-                    true
+                    useSchemaExplorerContext
                 )
                 const tabIndex = inlineTabs.value.findIndex(
                     (tab) => tab.key === activeInlineTab.value.key
@@ -1589,7 +1591,8 @@
                     editorInstance,
                     monacoInstance,
                     showVQB,
-                    inlineTabs
+                    inlineTabs,
+                    useSchemaExplorerContext
                 )
             }
 

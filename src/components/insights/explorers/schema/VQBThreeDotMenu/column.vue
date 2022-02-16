@@ -110,6 +110,9 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+            const inlineTabs = inject('inlineTabs') as Ref<
+                activeInlineTabInterface[]
+            >
 
             const ifAddTableFirst = (
                 activeInlineTab: Ref<activeInlineTabInterface>,
@@ -125,7 +128,7 @@
                                 el?.entity?.attributes?.qualifiedName
                             )
                         ) {
-                            addTable(activeInlineTab, ref(el))
+                            addTable(activeInlineTab, ref(el), inlineTabs)
                             return
                         }
                     })

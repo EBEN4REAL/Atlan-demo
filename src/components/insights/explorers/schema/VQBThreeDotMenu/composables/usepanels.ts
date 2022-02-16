@@ -1,8 +1,8 @@
-import { columns } from './../../../../../../constant/groups'
-import { Ref } from 'vue'
+import { Ref, toRaw } from 'vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { assetInterface } from '~/types/assets/asset.interface'
 import { generateUUID } from '~/utils/helper/generator'
+import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
 
 export function addFilter(
     activeInlineTab: Ref<activeInlineTabInterface>,
@@ -245,11 +245,14 @@ export function addGroup(
 }
 export function addTable(
     activeInlineTab: Ref<activeInlineTabInterface>,
-    item: Ref<assetInterface>
+    item: Ref<assetInterface>,
+    tabs: Ref<activeInlineTabInterface[]>
 ) {
+    const { modifyActiveInlineTab } = useInlineTab()
     const tableIndex = activeInlineTab.value.playground.vqb.panels.findIndex(
         (panel) => panel.id.toLowerCase() === 'columns'
     )
+
     if (tableIndex > 0) {
         return
     } else {
@@ -258,6 +261,25 @@ export function addTable(
                 activeInlineTab.value.playground.vqb.panels[0].subpanels
             )
         )
+
+        // setting context for editor when editor context is different than schema explorer
+        if (
+            activeInlineTab.value.playground.editor.context.attributeValue !==
+            activeInlineTab.value.explorer.schema.connectors.attributeValue
+        ) {
+            const activeInlineTabCopy = JSON.parse(
+                JSON.stringify(toRaw(activeInlineTab.value))
+            )
+            activeInlineTabCopy.playground.editor.context =
+                activeInlineTab.value.explorer.schema.connectors
+
+            modifyActiveInlineTab(
+                activeInlineTabCopy,
+                tabs,
+                activeInlineTabCopy.isSaved,
+                true
+            )
+        }
 
         let subpanel = subpanels[0]
         subpanel = {

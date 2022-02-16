@@ -55,7 +55,7 @@
             >
                 <a-button
                     shape="circle"
-                    :disabled="role === 'Guest'"
+                    :disabled="role === 'Guest' && !editPermission"
                     size="small"
                     class="text-center shadow"
                     :class="{

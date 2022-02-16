@@ -72,7 +72,7 @@
             >
                 <a-button
                     v-if="showAddBtn"
-                    :disabled="role === 'Guest'"
+                    :disabled="role === 'Guest' && !editPermission"
                     shape="circle"
                     size="small"
                     class="text-center shadow"

@@ -9,8 +9,6 @@
             />
             <div
                 class="flex flex-col border border-gray-200 rounded resources-container"
-                style="min-height: 150px"
-                v-show="popularQueriesList.length > 0"
             >
                 <div
                     class="flex items-baseline py-1 pl-6 pr-5 mb-1 mb-2 bg-gray-100 border-b"
@@ -30,7 +28,10 @@
                         @change="handleRangePickerChange"
                     />
                 </div>
-                <div class="px-4 pb-4 overflow-y-auto">
+                <div
+                    class="px-4 pb-4 overflow-y-auto"
+                    v-show="popularQueriesList.length > 0"
+                >
                     <div
                         class="border-b"
                         v-for="queryObj in popularQueriesList"
@@ -76,20 +77,23 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div
-                v-if="popularQueriesList.length === 0 && !isQueryLogsLoading"
-                class="flex items-center justify-center border border-gray-200 rounded"
-                style="min-height: 390px"
-            >
-                <div class="flex flex-col items-center justify-center h-full">
-                    <div class="flex flex-col items-center py-8">
-                        <AtlanIcon
-                            icon="NoRelevantAsset"
-                            class="w-auto mb-4"
-                            style="height: 150px"
-                        />
-                        <span class="text-gray-500">{{ emptyText }}</span>
+
+                <div
+                    v-if="
+                        popularQueriesList.length === 0 && !isQueryLogsLoading
+                    "
+                >
+                    <div
+                        class="flex flex-col items-center justify-center h-full"
+                    >
+                        <div class="flex flex-col items-center py-8">
+                            <AtlanIcon
+                                icon="NoRelevantAsset"
+                                class="w-auto mb-4"
+                                style="height: 150px"
+                            />
+                            <span class="text-gray-500">{{ emptyText }}</span>
+                        </div>
                     </div>
                 </div>
             </div>

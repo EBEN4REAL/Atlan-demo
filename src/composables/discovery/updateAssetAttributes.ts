@@ -212,9 +212,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             (!localOwners.value?.ownerGroups ||
                 localOwners.value?.ownerGroups.length === 0) */
             ownerUsers(selectedAsset.value)?.sort().toString() ===
-            localOwners.value?.ownerUsers?.sort().toString() &&
+                localOwners.value?.ownerUsers?.sort().toString() &&
             ownerGroups(selectedAsset.value)?.sort().toString() ===
-            localOwners.value?.ownerGroups?.sort().toString()
+                localOwners.value?.ownerGroups?.sort().toString()
         ) {
             isChanged = false
         } else {
@@ -254,9 +254,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
         if (
             adminUsers(selectedAsset.value)?.sort().toString() ===
-            localAdmins.value?.adminUsers?.sort().toString() &&
+                localAdmins.value?.adminUsers?.sort().toString() &&
             adminGroups(selectedAsset.value)?.sort().toString() ===
-            localAdmins.value?.adminGroups?.sort().toString()
+                localAdmins.value?.adminGroups?.sort().toString()
         ) {
             isChanged = false
         } else {
@@ -294,9 +294,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     const handleChangeCertificate = () => {
         if (
             localCertificate.value.certificateStatus !==
-            certificateStatus(selectedAsset.value) ||
+                certificateStatus(selectedAsset.value) ||
             localCertificate.value.certificateStatusMessage !==
-            certificateStatusMessage(selectedAsset.value)
+                certificateStatusMessage(selectedAsset.value)
         ) {
             if (localCertificate.value.certificateStatus === 'VERIFIED') {
                 isConfetti.value = true
@@ -401,7 +401,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
                     guid: term.guid,
                 })
             }
-            return {
+            const payload = {
                 guid: assignedEntitiy.guid,
                 typeName: assignedEntitiy.typeName,
                 attributes: {
@@ -415,31 +415,56 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
                     meanings,
                 },
             }
+            if (assignedEntitiy?.typeName === 'Query') {
+                payload.attributes = {
+                    ...payload.attributes,
+                    parentQualifiedName:
+                        assignedEntitiy?.attributes?.parentQualifiedName,
+                    collectionQualifiedName:
+                        assignedEntitiy?.attributes?.collectionQualifiedName,
+                    parent: assignedEntitiy?.attributes?.parent,
+                }
+            }
+
+            return payload
         })
 
-        const unlinked = unlinkedAssets.map((unassignedEntity) => ({
-            guid: unassignedEntity.guid,
-            typeName: unassignedEntity.typeName,
-            attributes: {
-                qualifiedName:
-                    unassignedEntity.uniqueAttributes?.qualifiedName ??
-                    unassignedEntity.attributes?.qualifiedName ??
-                    '',
-                name: unassignedEntity.attributes.name,
-            },
-            relationshipAttributes: {
-                meanings:
-                    unassignedEntity.attributes.meanings?.filter(
-                        (meaning) => meaning.guid !== term.guid
-                    ) ?? [],
-            },
-        }))
+        const unlinked = unlinkedAssets.map((unassignedEntity) => {
+            const payload = {
+                guid: unassignedEntity.guid,
+                typeName: unassignedEntity.typeName,
+                attributes: {
+                    qualifiedName:
+                        unassignedEntity.uniqueAttributes?.qualifiedName ??
+                        unassignedEntity.attributes?.qualifiedName ??
+                        '',
+                    name: unassignedEntity.attributes.name,
+                },
+                relationshipAttributes: {
+                    meanings:
+                        unassignedEntity.attributes.meanings?.filter(
+                            (meaning) => meaning.guid !== term.guid
+                        ) ?? [],
+                },
+            }
+            if (unassignedEntity?.typeName === 'Query') {
+                payload.attributes = {
+                    ...payload.attributes,
+                    parentQualifiedName:
+                        unassignedEntity?.attributes?.parentQualifiedName,
+                    collectionQualifiedName:
+                        unassignedEntity?.attributes?.collectionQualifiedName,
+                    parent: unassignedEntity?.attributes?.parent,
+                }
+            }
+            return payload
+        })
 
         body.value.entities = [...linked, ...unlinked]
         if (!unlinkedAssets.length) currentMessage.value = 'Assets linked'
         else if (!linkedAssets.length) currentMessage.value = 'Assets unlinked'
         else currentMessage.value = 'Linked assets updated'
-        mutate()
+        if (body.value.entities?.length) mutate()
 
         whenever(isUpdateReady, () => {
             localAssignedEntities.value = assignedEntities(asset.value)
@@ -544,9 +569,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         const { error, isLoading, isReady } = Entity.DeleteEntity(link?.guid)
 
         whenever(error, () => {
-            message.error(
-                'Something went wrong'
-            )
+            message.error('Something went wrong')
         })
         whenever(isReady, () => {
             message.success(`Resource deleted`)
@@ -636,7 +659,8 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         }
 
         message.error(
-            `${error.value?.response?.data?.errorCode} ${error.value?.response?.data?.errorMessage.split(':')[0]
+            `${error.value?.response?.data?.errorCode} ${
+                error.value?.response?.data?.errorMessage.split(':')[0]
             }` ?? 'Something went wrong'
         )
     })
@@ -714,7 +738,8 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     whenever(isErrorClassification, () => {
         localClassifications.value = classifications(selectedAsset.value)
         message.error(
-            `${error.value?.response?.data?.errorCode} ${error.value?.response?.data?.errorMessage.split(':')[0]
+            `${error.value?.response?.data?.errorCode} ${
+                error.value?.response?.data?.errorMessage.split(':')[0]
             }` ?? 'Something went wrong'
         )
     })

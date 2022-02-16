@@ -62,10 +62,15 @@
                     Object.keys(modelValue.value)?.forEach((key) => {
                         if (modelValue.value[key].length > 0) {
                             modelValue.value[key]?.forEach((item) => {
-                                tempArray.push(`${key}:${item}`)
+                                tempArray.push(
+                                    `${key.substring(
+                                        1,
+                                        key.length - 1
+                                    )}:${item.substring(1, item.length - 1)}`
+                                )
                             })
                         } else {
-                            tempArray.push(key)
+                            tempArray.push(key.substring(1, key.length - 1))
                         }
                     })
                 } else {
@@ -74,10 +79,15 @@
                     Object.keys(tempModel)?.forEach((key) => {
                         if (tempModel[key].length > 0) {
                             tempModel[key]?.forEach((item) => {
-                                tempArray.push(`${key}:${item}`)
+                                tempArray.push(
+                                    `${key.substring(
+                                        1,
+                                        key.length - 1
+                                    )}:${item.substring(1, item.length - 1)}`
+                                )
                             })
                         } else {
-                            tempArray.push(key)
+                            tempArray.push(key.substring(1, key.length - 1))
                         }
                     })
                 }
@@ -90,16 +100,16 @@
                 localValue.value.forEach((item) => {
                     if (item.includes(':')) {
                         const first = item.split(':')[0]
-                        map[first] = []
+                        map[`^${first}$`] = []
                     } else {
-                        map[item] = []
+                        map[`^${item}$`] = []
                     }
                 })
                 localValue.value.forEach((item) => {
                     if (item.includes(':')) {
                         const first = item.split(':')[0]
                         const second = item.split(':')[1]
-                        map[first].push(second)
+                        map[`^${first}$`].push(`^${second}$`)
                     }
                 })
                 modelValue.value = map

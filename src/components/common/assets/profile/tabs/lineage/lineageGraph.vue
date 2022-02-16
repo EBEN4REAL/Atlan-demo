@@ -23,6 +23,7 @@
         <div style="display: flex">
             <div ref="graphContainer" style="flex: 1"></div>
         </div>
+
         <!-- Lineage Header -->
         <LineageHeader
             v-if="isComputeDone"

@@ -464,7 +464,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         if (!unlinkedAssets.length) currentMessage.value = 'Assets linked'
         else if (!linkedAssets.length) currentMessage.value = 'Assets unlinked'
         else currentMessage.value = 'Linked assets updated'
-        mutate()
+        if (body.value.entities?.length) mutate()
 
         whenever(isUpdateReady, () => {
             localAssignedEntities.value = assignedEntities(asset.value)

@@ -141,7 +141,7 @@
                 default: () => [],
             },
         },
-        emits: ['closeDrawer', 'saveAssets'],
+        emits: ['closeDrawer', 'saveAssets','unCheck'],
         setup(props, { emit }) {
             const { selectedItems } = useVModels(props, emit)
 
@@ -177,6 +177,7 @@
                     selectedItems.value = selectedItems.value.filter(
                         (selectedItem) => selectedItem.guid !== item.guid
                     )
+                    emit('unCheck',item)
                 } else {
                     selectedItems.value.push(item)
                 }

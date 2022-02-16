@@ -26,9 +26,7 @@
                             ? 'text-md mb-0  font-semibold cursor-pointer text-primary hover:underline opacity-80 '
                             : 'text-md font-bold mb-0 cursor-pointer text-primary hover:underline '
                     "
-                    :should-open-in-new-tab="
-                        selectedAsset.typeName?.toLowerCase() === 'query'
-                    "
+                    :should-open-in-new-tab="true"
                     @click="() => $emit('closeDrawer')"
                 />
 
@@ -62,8 +60,8 @@
                                 `/${connectionName(selectedAsset)}`
                             }}</span>
                         </template>
-                        <AtlanIcon
-                            :icon="getConnectorImage(selectedAsset)"
+                        <img
+                            :src="getConnectorImage(selectedAsset)"
                             class="h-4 mr-1 mb-0.5"
                         />
                     </a-tooltip>

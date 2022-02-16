@@ -89,6 +89,7 @@
     import Date from './widget/date.vue'
     import Datetime from './widget/datetime.vue'
     import Sqltree from './widget/sqltree.vue'
+    import Apitree from './widget/apitree.vue'
     import Password from './widget/password.vue'
     import Connection from './widget/connection.vue'
     import Users from './widget/users.vue'
@@ -123,6 +124,7 @@
             AtlanIcon,
             ConnectionSelector,
             Datetime,
+            Apitree,
             Date,
         },
         props: {
@@ -232,7 +234,10 @@
                     configMap.value.anyOf.forEach((item) => {
                         item.required.forEach((i) => {
                             console.log('configMap', i)
-                            if (configMap.value.properties[i]) {
+                            if (
+                                configMap.value.properties &&
+                                configMap.value.properties[i]
+                            ) {
                                 configMap.value.properties[i].ui.hidden = true
                             }
                         })
@@ -260,7 +265,14 @@
                     if (findMatch.length > 0) {
                         findMatch.forEach((i) => {
                             i.required.forEach((i) => {
-                                configMap.value.properties[i].ui.hidden = false
+                                if (
+                                    configMap.value.properties &&
+                                    configMap.value.properties[i]
+                                ) {
+                                    configMap.value.properties[
+                                        i
+                                    ].ui.hidden = false
+                                }
                             })
                         })
                     }

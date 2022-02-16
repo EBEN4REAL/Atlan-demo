@@ -76,19 +76,22 @@
                     <div class="mb-2 text-sm text-gray-500 required">
                         Users / Groups <span class="text-red-500">*</span>
                     </div>
-                    <Owners
-                        :ref="
-                            (el) => {
-                                refOwners = el
-                            }
-                        "
-                        v-model:modelValue="selectedOwnersData"
-                        :edit-permission="true"
-                        class="mb-6"
-                        :read-only="false"
-                        :destroy-tooltip-on-hide="true"
-                        @change="handleOwnersChange"
-                    />
+                    <div class="overflow-y-auto max-h-60">
+                        <Owners
+                            :ref="
+                                (el) => {
+                                    refOwners = el
+                                }
+                            "
+                            v-model:modelValue="selectedOwnersData"
+                            :edit-permission="true"
+                            class="mb-6"
+                            :read-only="false"
+                            :destroy-tooltip-on-hide="true"
+                            :align="{ offset: [0, 220] }"
+                            @change="handleOwnersChange"
+                        />
+                    </div>
                     <div
                         v-if="rules.users.show"
                         class="absolute text-xs text-red-500 -bottom-5"

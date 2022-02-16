@@ -1,5 +1,5 @@
 <template>
-    <SQLTreeSelect
+    <APITreeSelect
         :credential="credentialBody"
         :credentialID="credentialID"
         :query="property.ui.sql"
@@ -7,7 +7,7 @@
         :exclude="property.ui.schemaExcludePattern"
         v-model="localValue"
         @change="handleChange"
-    ></SQLTreeSelect>
+    ></APITreeSelect>
 </template>
 
 <script>
@@ -20,14 +20,16 @@
         reactive,
     } from 'vue'
 
-    import SQLTreeSelect from '@common/treeselect/sql/index.vue'
+    import APITreeSelect from '@common/treeselect/api/index.vue'
     import { useWorkflowHelper } from '~/composables/package/useWorkflowHelper'
     import { useVModels } from '@vueuse/core'
+
+    import { mergeDeep } from '~/utils/array'
 
     export default defineComponent({
         name: 'FormBuilder',
         components: {
-            SQLTreeSelect,
+            APITreeSelect,
         },
         props: {
             property: {
@@ -57,63 +59,58 @@
 
             const tempArray = []
 
-            if (modelValue.value) {
-                if (!isEdit.value) {
-                    Object.keys(modelValue.value)?.forEach((key) => {
-                        if (modelValue.value[key].length > 0) {
-                            modelValue.value[key]?.forEach((item) => {
-                                tempArray.push(
-                                    `${key.substring(
-                                        1,
-                                        key.length - 1
-                                    )}:${item.substring(1, item.length - 1)}`
-                                )
-                            })
-                        } else {
-                            tempArray.push(key.substring(1, key.length - 1))
-                        }
-                    })
-                } else {
-                    const tempModel = JSON.parse(modelValue.value)
+            // if (modelValue.value) {
+            //     if (!isEdit.value) {
+            //         Object.keys(modelValue.value)?.forEach((key) => {
+            //             if (modelValue.value[key].length > 0) {
+            //                 modelValue.value[key]?.forEach((item) => {
+            //                     tempArray.push(`${key}:${item}`)
+            //                 })
+            //             } else {
+            //                 tempArray.push(key)
+            //             }
+            //         })
+            //     } else {
+            //         const tempModel = JSON.parse(modelValue.value)
 
-                    Object.keys(tempModel)?.forEach((key) => {
-                        if (tempModel[key].length > 0) {
-                            tempModel[key]?.forEach((item) => {
-                                tempArray.push(
-                                    `${key.substring(
-                                        1,
-                                        key.length - 1
-                                    )}:${item.substring(1, item.length - 1)}`
-                                )
-                            })
-                        } else {
-                            tempArray.push(key.substring(1, key.length - 1))
-                        }
-                    })
-                }
-            }
+            //         Object.keys(tempModel)?.forEach((key) => {
+            //             if (tempModel[key].length > 0) {
+            //                 tempModel[key]?.forEach((item) => {
+            //                     tempArray.push(`${key}:${item}`)
+            //                 })
+            //             } else {
+            //                 tempArray.push(key)
+            //             }
+            //         })
+            //     }
+            // }
 
             const localValue = ref(tempArray)
 
             const handleChange = () => {
-                const map = {}
+                let valueMap = {}
+
+                const tempArray = []
+
                 localValue.value.forEach((item) => {
-                    if (item.includes(':')) {
-                        const first = item.split(':')[0]
-                        map[`^${first}$`] = []
-                    } else {
-                        map[`^${item}$`] = []
+                    let map = {}
+                    const arr = item.split(':')
+                    for (var i = 0; i < arr.length; i++) {
+                        if (i == 0) {
+                            map[arr[i]] = {}
+                        } else {
+                            let temp = {}
+                            temp[arr[i]] = {}
+                            map[arr[i - 1]] = temp
+                        }
                     }
+                    tempArray.push(map)
                 })
-                localValue.value.forEach((item) => {
-                    if (item.includes(':')) {
-                        const first = item.split(':')[0]
-                        const second = item.split(':')[1]
-                        map[`^${first}$`].push(`^${second}$`)
-                    }
-                })
-                modelValue.value = map
-                emit('change', map)
+                console.log(tempArray)
+                console.log(mergeDeep(valueMap, ...tempArray))
+
+                modelValue.value = mergeDeep(valueMap, ...tempArray)
+                emit('change', modelValue.value)
             }
 
             const { buildCredentialBody } = useWorkflowHelper()

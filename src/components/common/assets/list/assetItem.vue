@@ -111,10 +111,10 @@
                                         `/${connectionName(item)}`
                                     }}</span>
                                 </template>
-                                <AtlanIcon
-                                    :icon="getConnectorImage(item)"
+                                <img
+                                    :src="getConnectorImage(item)"
                                     class="h-4 mr-1 mb-0.5"
-                                ></AtlanIcon>
+                                />
                             </a-tooltip>
 
                             <AtlanIcon
@@ -245,14 +245,10 @@
                             class="flex mr-2 text-sm text-gray-500"
                         >
                             <div class="flex items-center text-gray">
-                                <!-- <img
+                                <img
                                     :src="getConnectorImage(item)"
-                                    class="h-3 mr-1 mb-0.5"
-                                /> -->
-                                <AtlanIcon
-                                    :icon="getConnectorImage(item)"
                                     class="h-4 mr-1 mb-0.5"
-                                ></AtlanIcon>
+                                />
                                 <span>{{
                                     `${connectorName(item)}/${connectionName(
                                         item
@@ -888,7 +884,7 @@
                         </div>
                     </div>
 
-                    <div class="flex flex-wrap gap-x-1 items-center">
+                    <div class="flex flex-wrap items-center gap-x-1">
                         <div
                             v-if="
                                 clsfList.length > 0 &&
@@ -972,7 +968,7 @@
                             <div
                                 v-for="cat in categories(item).slice(0, 3)"
                                 :key="cat.guid"
-                                class="flex items-center border rounded-full bg-white px-2 py-1 mt-1 group hover:text-white hover:bg-primary"
+                                class="flex items-center px-2 py-1 mt-1 bg-white border rounded-full group hover:text-white hover:bg-primary"
                                 style="max-width: 200px"
                             >
                                 <div class="w-4 mr-1">
@@ -1000,14 +996,14 @@
                         >
                             <template #content>
                                 <div
-                                    class="flex items-center flex-wrap gap-x-2 gap-y-2 px-2 py-2"
+                                    class="flex flex-wrap items-center px-2 py-2 gap-x-2 gap-y-2"
                                 >
                                     <div
                                         v-for="cat in categories(item)?.slice(
                                             3
                                         )"
                                         :key="cat.guid"
-                                        class="flex items-center border rounded-full bg-white px-2 py-1 hover:text-white hover:bg-primary group"
+                                        class="flex items-center px-2 py-1 bg-white border rounded-full hover:text-white hover:bg-primary group"
                                         style="max-width: 200px"
                                     >
                                         <div class="w-4 mr-1">
@@ -1034,7 +1030,7 @@
                             </template>
 
                             <div
-                                class="flex items-center mr-3 text-sm gap-x-1 bg-transparent px-2 text-primary py-1 mt-1 cursor-pointer"
+                                class="flex items-center px-2 py-1 mt-1 mr-3 text-sm bg-transparent cursor-pointer gap-x-1 text-primary"
                             >
                                 + {{ categories(item)?.slice(3)?.length }} more
                             </div>

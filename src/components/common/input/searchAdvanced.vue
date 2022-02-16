@@ -20,9 +20,9 @@
                 :title="capitalizeFirstLetter(connectorName)"
                 placement="left"
             >
-                <AtlanIcon
+                <img
                     v-if="connectorName"
-                    :icon="getConnectorImageMap[connectorName.toLowerCase()]"
+                    :src="getConnectorImageMap[connectorName.toLowerCase()]"
                     class="w-auto h-4 pr-2 mr-2 border-r"
                 />
             </a-tooltip>

@@ -23,18 +23,20 @@ export function useWorkflowHelper() {
 
         const modelList = []
         list.forEach((i, index) => {
-            const model = buildCredentialBody(
-                formState,
-                i.key,
-                i.ui.credentialType,
-                `${name}-${index}`
-            )
-            modelList.push({
-                parameter: `${param}`,
-                type: 'credential',
-                body: model,
-            })
-            formState[i.key] = `{{${param}}}`
+            if (!i?.ui?.hidden) {
+                const model = buildCredentialBody(
+                    formState,
+                    i.key,
+                    i.ui.credentialType,
+                    `${name}-${index}`
+                )
+                modelList.push({
+                    parameter: `${param}`,
+                    type: 'credential',
+                    body: model,
+                })
+                formState[i.key] = `{{${param}}}`
+            }
         })
         return modelList
     }
@@ -65,12 +67,17 @@ export function useWorkflowHelper() {
 
     const buildCredentialBody = (formState, propertyId, configName, name) => {
         const extra = {}
+        const authType = formState[`${propertyId}.auth-type`]
+
         Object.keys(formState).forEach((key) => {
             if (key.includes(`${propertyId}.extra.`)) {
                 extra[key.replace(`${propertyId}.extra.`, '')] = formState[key]
             }
+            if (key.includes(`${propertyId}.${authType}.extra.`)) {
+                extra[key.replace(`${propertyId}.${authType}.extra.`, '')] =
+                    formState[key]
+            }
         })
-        const authType = formState[`${propertyId}.auth-type`]
 
         return {
             name,

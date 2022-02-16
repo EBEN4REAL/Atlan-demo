@@ -90,11 +90,12 @@ export const assetTypeList: {
     },
     {
         id: 'TablePartition',
-        label: 'Partition',
+        label: 'Table Partition',
         nameAttribute: 'partitionName',
         qualifiedNameAttribute: 'partitionQualifiedName',
         parents: ['Connection', 'Database', 'Schema'],
         children: ['Column'],
+        image: 'TablePartition',
         isDiscoverable: true,
         orderWeight: 100,
         count: 0,

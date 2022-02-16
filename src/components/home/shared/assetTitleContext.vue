@@ -3,7 +3,11 @@
         <!-- <AssetPopover :item="item"> -->
         <div class="flex w-full">
             <div class="flex w-full">
-                <div class="flex flex-1">
+                <div class="flex items-center flex-1">
+                    <AtlanIcon
+                        :icon="getConnectorImage(item)"
+                        class="h-4 mr-1 mb-0.5"
+                    ></AtlanIcon>
                     <router-link
                         :to="getProfilePath(item)"
                         @click="stopPropagation"
@@ -79,6 +83,7 @@
                 getProfilePath,
                 description,
                 isScrubbed,
+                getConnectorImage,
             } = useAssetInfo()
 
             const stopPropagation = (e: Event) => {
@@ -95,6 +100,7 @@
                 description,
                 stopPropagation,
                 isScrubbed,
+                getConnectorImage,
             }
         },
     })

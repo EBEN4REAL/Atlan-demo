@@ -34,39 +34,40 @@
                 class="flex flex-col p-4 overflow-y-auto border border-gray-200 rounded resources-container"
                 style="min-height: 150px"
             >
-                <div
-                    v-for="queryObj in popularQueriesList"
-                    :key="queryObj.key"
-                    class="px-2 py-4 border-b rounded cursor-pointer hover:bg-primary-menu"
-                    @click="
-                        () => {
-                            handleCardClicked(queryObj.asset)
-                        }
-                    "
-                >
-                    <div>
-                        <AssetTitleCtx
-                            :item="queryObj.asset"
-                            :show-description="true"
-                            class="asset-title-ctx"
-                        >
-                            <template #title-right>
-                                <div class="ml-auto">
-                                    <AtlanIcon
-                                        icon="TrendUp"
-                                        class="mr-1"
-                                    ></AtlanIcon>
-                                    <span class="text-gray-500">
-                                        {{ queryObj.doc_count }} runs
-                                    </span>
-                                </div>
-                            </template>
-                        </AssetTitleCtx>
-                        <!-- <div class="mt-2">
-                            <span class="text-gray-500">
-                                {{ queryObj.doc_count }} runs
-                            </span>
-                        </div> -->
+                <div class="border-b" v-for="queryObj in popularQueriesList">
+                    <div
+                        :key="queryObj.key"
+                        class="px-2 py-4 rounded cursor-pointer hover:bg-primary-menu"
+                        @click="
+                            () => {
+                                handleCardClicked(queryObj.asset)
+                            }
+                        "
+                    >
+                        <div>
+                            <AssetTitleCtx
+                                :item="queryObj.asset"
+                                :show-description="true"
+                                class="asset-title-ctx"
+                            >
+                                <template #title-right>
+                                    <div class="ml-auto">
+                                        <AtlanIcon
+                                            icon="TrendUp"
+                                            class="mr-1"
+                                        ></AtlanIcon>
+                                        <span class="text-gray-500">
+                                            {{ queryObj.doc_count }} runs
+                                        </span>
+                                    </div>
+                                </template>
+                            </AssetTitleCtx>
+                            <!-- <div class="mt-2">
+                                <span class="text-gray-500">
+                                    {{ queryObj.doc_count }} runs
+                                </span>
+                            </div> -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -120,6 +121,9 @@
                 'certificateStatus',
                 'certificateUpdatedBy',
                 'certificateStatusMessage',
+                'connectorName',
+                'connectionName',
+                'connectionQualifiedName',
             ]
             const timeFrameWhiteList = [7, 30]
             const showWidget = ref(false)

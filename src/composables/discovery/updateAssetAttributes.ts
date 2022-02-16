@@ -393,6 +393,8 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         unlinkedAssets?: assetInterface[]
         term: assetInterface
     }) => {
+        console.log(linkedAssets);
+        console.log(unlinkedAssets);
         const linked = linkedAssets.map((assignedEntitiy) => {
             const meanings = assignedEntitiy.attributes.meanings ?? []
             if (!meanings.find((meaning) => meaning.guid === term.guid)) {
@@ -456,6 +458,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
                         unassignedEntity?.attributes?.collectionQualifiedName,
                     parent: unassignedEntity?.attributes?.parent,
                 }
+                console.log(payload);
             }
             return payload
         })

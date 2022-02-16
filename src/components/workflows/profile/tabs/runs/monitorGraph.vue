@@ -192,7 +192,7 @@
                 required: true,
             },
         },
-        emits: ['select'],
+        emits: ['select', 'refresh'],
         setup(props, { emit }) {
             /** DATA */
             const { graphData } = toRefs(props)
@@ -363,7 +363,13 @@
                     init(false)
                 }
 
-                drawerVisible.value = false
+                if (selectedPod.value?.id && drawerVisible.value) {
+                    let podData = graph.value.getCellById(
+                        selectedPod.value?.id
+                    )?.data
+                    if (podData) selectedPod.value = podData
+                }
+                // drawerVisible.value = false
             }
 
             watch(

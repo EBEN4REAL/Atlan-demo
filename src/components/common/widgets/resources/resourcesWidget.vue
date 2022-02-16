@@ -86,14 +86,10 @@
                                 getPreviewComponent(l.attributes.link) ===
                                 'link'
                             "
-                            :style="minimal ? '' : 'height: 80px'"
                             :link="l"
+                            class="h-full"
                         />
-                        <SlackPreview
-                            v-else
-                            :style="minimal ? '' : 'height: 80px'"
-                            :link="l"
-                        />
+                        <SlackPreview v-else :link="l" />
                     </div>
                     <template
                         v-if="

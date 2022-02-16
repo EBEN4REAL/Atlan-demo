@@ -33,6 +33,7 @@
             <div
                 class="flex flex-col p-4 overflow-y-auto border border-gray-200 rounded resources-container"
                 style="min-height: 150px"
+                v-if="popularQueriesList.length > 0"
             >
                 <div class="border-b" v-for="queryObj in popularQueriesList">
                     <div
@@ -68,6 +69,22 @@
                                 </span>
                             </div> -->
                         </div>
+                    </div>
+                </div>
+            </div>
+            <div
+                v-else
+                class="flex items-center justify-center border border-gray-200 rounded"
+                style="min-height: 390px"
+            >
+                <div class="flex flex-col items-center justify-center h-full">
+                    <div class="flex flex-col items-center py-8">
+                        <AtlanIcon
+                            icon="NoRelevantAsset"
+                            class="w-auto mb-4"
+                            style="height: 150px"
+                        />
+                        <span class="text-gray-500">{{ emptyText }}</span>
                     </div>
                 </div>
             </div>
@@ -129,6 +146,9 @@
             const showWidget = ref(false)
             const showAssetSidebarDrawer = ref(false)
             const selectedAssetDrawerGuid = ref('')
+            const emptyText = computed(() => {
+                return `No popular queries for ${timeFrame.value}`
+            })
 
             const {
                 aggregates: queryAggregationResult,
@@ -227,6 +247,7 @@
                 handleCloseDrawer,
                 selectedAssetDrawerGuid,
                 showAssetSidebarDrawer,
+                emptyText,
             }
         },
     })

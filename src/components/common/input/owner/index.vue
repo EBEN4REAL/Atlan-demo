@@ -7,6 +7,7 @@
             :overlay-class-name="$style.ownerPopover"
             :trigger="['click']"
             :destroy-tooltip-on-hide="destroyTooltipOnHide"
+            :align="align"
             @visibleChange="handleVisibleChange"
         >
             <template #content>
@@ -191,6 +192,11 @@
                 type: Boolean,
                 required: false,
                 default: true,
+            },
+            align: {
+                type: Object,
+                required: false,
+                default: () => ({}),
             },
         },
         emits: ['change', 'update:modelValue'],

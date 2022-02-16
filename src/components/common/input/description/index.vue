@@ -7,6 +7,19 @@
             :edit-permission="editPermission && !isEdit"
         >
             <div
+                v-if="!editPermission && role !== 'Guest' && isEdit"
+                class="bg-gray-100 px-3 py-2 mb-3"
+            >
+                You don’t have edit access to this asset, but you can suggest a
+                new description to the asset owner.
+                <span
+                    @click="handleCancelRequest"
+                    class="text-primary cursor-pointer"
+                    >Dismiss</span
+                >
+            </div>
+
+            <div
                 class="flex flex-col px-1 rounded"
                 :class="{
                     'bg-primary-light': isEdit,
@@ -74,9 +87,12 @@
         useVModels,
         whenever,
     } from '@vueuse/core'
+    import { message } from 'ant-design-vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import Shortcut from '@/common/popover/shortcut.vue'
+    import whoami from '~/composables/user/whoami.ts'
+    import { useCreateRequests } from '~/composables/requests/useCreateRequests'
 
     export default defineComponent({
         name: 'DescriptionWidget',
@@ -108,6 +124,7 @@
             const { editPermission, selectedAsset, inProfile } = toRefs(props)
             const localValue = ref(modelValue.value)
             const isEdit = ref(false)
+            const { role } = whoami()
             const descriptionRef: Ref<null | HTMLInputElement> = ref(null)
 
             const { description } = useAssetInfo()
@@ -118,7 +135,8 @@
              */
             const handleChange = () => {
                 modelValue.value = localValue.value
-                emit('change')
+                if (editPermission.value) emit('change')
+                else handleRequest()
             }
 
             const { d, enter, shift } = useMagicKeys()
@@ -139,10 +157,34 @@
             }
 
             const handleEdit = () => {
-                if (editPermission?.value) {
-                    isEdit.value = true
-                    start()
-                }
+                isEdit.value = true
+                start()
+            }
+
+            const handleRequest = () => {
+                const {
+                    error: requestError,
+                    isLoading: isRequestLoading,
+                    isReady: requestReady,
+                } = useCreateRequests({
+                    assetGuid: selectedAsset.value?.guid,
+                    assetQf: selectedAsset.value?.attributes?.qualifiedName,
+                    assetType: selectedAsset.value?.typeName,
+                    userDescription: localValue.value,
+                    requestType: 'userDescription',
+                })
+                whenever(requestError, () => {
+                    if (requestError.value) {
+                        message.error(`Request failed`)
+                        isEdit.value = false
+                    }
+                })
+                whenever(requestReady, () => {
+                    if (requestReady.value) {
+                        message.success(`Request raised`)
+                        isEdit.value = false
+                    }
+                })
             }
 
             const handleCancel = () => {
@@ -163,6 +205,9 @@
                     activeElement.value?.attributes?.contenteditable?.value !==
                         'true'
             )
+            const handleCancelRequest = () => {
+                isEdit.value = false
+            }
 
             whenever(
                 and(d, notUsingInput, !inProfile.value, editPermission.value),
@@ -192,6 +237,8 @@
                 description,
                 isMac,
                 handleCancel,
+                role,
+                handleCancelRequest,
             }
         },
     })

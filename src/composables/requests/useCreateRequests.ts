@@ -20,17 +20,21 @@ interface params {
     assetGuid: String
     assetQf: String
     assetType: String
+    requestType?:String
     terms?: Array<any>
     certificate?: String
     classifications?: Array<String>
+    userDescription?:String
 }
 export function useCreateRequests({
     assetGuid,
     assetQf,
     assetType,
+    requestType,
     terms = [],
     certificate = '',
     classifications = [],
+    userDescription='',
 }: params) {
     const requests = ref<requestPayload[]>([])
     const constructPayload = () => {
@@ -81,6 +85,19 @@ export function useCreateRequests({
                         validityPeriods: [],
                     },
                 })
+            })
+        }
+        if(requestType==='userDescription'){
+            requests.value.push({
+                requestType: 'attribute',
+                approvalType: 'single',
+                destinationAttribute: 'userDescription',
+                id: assetGuid,
+                destinationGuid: assetGuid,
+                destinationQualifiedName: assetQf,
+                destinationValue: userDescription,
+                entityType: assetType,
+                sourceType: 'static',
             })
         }
         console.log(requests.value)

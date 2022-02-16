@@ -57,7 +57,12 @@
                                                 class="mr-1"
                                             ></AtlanIcon>
                                             <span class="text-gray-500">
-                                                {{ queryObj.doc_count }} runs
+                                                {{ queryObj.doc_count }}
+                                                {{
+                                                    queryObj.doc_count === 1
+                                                        ? 'run'
+                                                        : 'runs'
+                                                }}
                                             </span>
                                         </div>
                                     </template>

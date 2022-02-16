@@ -89,6 +89,7 @@
     import Date from './widget/date.vue'
     import Datetime from './widget/datetime.vue'
     import Sqltree from './widget/sqltree.vue'
+    import Apitree from './widget/apitree.vue'
     import Password from './widget/password.vue'
     import Connection from './widget/connection.vue'
     import Users from './widget/users.vue'
@@ -123,6 +124,7 @@
             AtlanIcon,
             ConnectionSelector,
             Datetime,
+            Apitree,
             Date,
         },
         props: {

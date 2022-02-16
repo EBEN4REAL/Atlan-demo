@@ -12,6 +12,7 @@
             :isEdit="isEdit"
         ></FormItem>
     </a-form>
+    {{ formState }}
 </template>
 
 <script>

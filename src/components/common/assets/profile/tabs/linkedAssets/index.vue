@@ -46,7 +46,6 @@
 
                     <template #assetItemCta="{ item }">
                         <a-dropdown>
-
                             <AtlanBtn
                                 class="flex items-center justify-center w-8 h-8 p-0 rounded cursor-pointer hover:border-primary-focus opacity-0 group-hover:opacity-100"
                                 size="sm"
@@ -54,12 +53,17 @@
                                 padding="compact"
                                 @click="(e) => e.stopPropagation()"
                             >
-                                <AtlanIcon icon="KebabMenu" class="text-gray-700"></AtlanIcon>
+                                <AtlanIcon
+                                    icon="KebabMenu"
+                                    class="text-gray-700"
+                                ></AtlanIcon>
                             </AtlanBtn>
 
                             <template #overlay>
                                 <a-menu>
-                                    <a-menu-item @click="() => unlinkOneAsset(item)">
+                                    <a-menu-item
+                                        @click="() => unlinkOneAsset(item)"
+                                    >
                                         Unlink asset
                                     </a-menu-item>
                                 </a-menu>
@@ -101,6 +105,7 @@
         :selectedAssetCount="selectedAssetCount"
         @closeDrawer="handleCancel"
         @saveAssets="saveAssets"
+        @unCheck="handleItemUncheck"
         :selected-asset="selectedAsset"
         v-model:selected-items="selectedItems"
     />
@@ -207,6 +212,19 @@
                             )
                     ) ?? []
             }
+            const handleItemUncheck = (item) => {
+                if (
+                    localAssignedEntities.value.find(
+                        (entity: any) => entity.guid === item.guid
+                    )
+                ) {
+                    localAssignedEntities.value =
+                        localAssignedEntities.value.filter(
+                            (entity) => entity.guid !== item.guid
+                        )
+                    localAssignedEntities.value.push(item)
+                }
+            }
             const handleCancel = () => {
                 constructPayload()
                 if (linkedAssets.value?.length || unlinkedAssets.value?.length)
@@ -267,7 +285,8 @@
                 isModalVisible,
                 handleModalCancel,
                 handleConfirmCancel,
-                unlinkOneAsset
+                unlinkOneAsset,
+                handleItemUncheck,
             }
         },
     })

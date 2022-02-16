@@ -62,7 +62,7 @@ export function useWorkflowDiscoverList({
             data.value?.hits.hits.forEach((item) => {
                 list.value.push(item._source)
             })
-        } else if (data.value?.hits.hits) {
+        } else if (data.value?.hits?.hits) {
             const temp = []
             data.value?.hits.hits.forEach((item) => {
                 temp.push(item._source)
@@ -112,14 +112,11 @@ export function useWorkflowDiscoverList({
         return temp
     })
 
-    const quickChange = () => {
+    const quickChange = (force = false) => {
         generateBody()
         cancelRequest()
-        if (localKey.value) {
-            localKey.value = `dirty_${Date.now().toString()}`
-        } else {
-            refresh()
-        }
+        if (localKey.value) localKey.value = `dirty_${Date.now().toString()}`
+        if (force || !localKey.value) refresh()
     }
 
     return {

@@ -25,6 +25,14 @@
                         :timestamp="certificateUpdatedAt(item)"
                         class="mb-1 ml-1"
                     ></CertificateBadge>
+                    <a-tooltip placement="right"
+                        ><template #title>Limited Access</template>
+                        <AtlanIcon
+                            v-if="isScrubbed(item)"
+                            icon="Lock"
+                            class="h-4 mb-1 ml-2 text-gray-500"
+                        ></AtlanIcon
+                    ></a-tooltip>
                 </div>
                 <slot name="title-right"></slot>
             </div>
@@ -70,6 +78,7 @@
                 certificateStatusMessage,
                 getProfilePath,
                 description,
+                isScrubbed,
             } = useAssetInfo()
 
             const stopPropagation = (e: Event) => {
@@ -85,6 +94,7 @@
                 getProfilePath,
                 description,
                 stopPropagation,
+                isScrubbed,
             }
         },
     })

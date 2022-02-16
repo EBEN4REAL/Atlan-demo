@@ -1,6 +1,8 @@
 <template>
-    <div class="flex flex-col w-full h-full py-4 overflow-auto gap-y-4">
-        <div class="flex items-center justify-between px-5">
+    <div class="flex flex-col w-full h-full pb-4 overflow-auto gap-y-4">
+        <div
+            class="flex items-center justify-between px-5 bg-gray-50 py-2 border-b border-gray-200"
+        >
             <span class="font-semibold text-gray-500">Overview</span>
 
             <span

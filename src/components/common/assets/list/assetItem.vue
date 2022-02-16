@@ -1,9 +1,9 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
     <div
-        class="my-0.5 rounded transition duration-100 hover:bg-primary-menu"
+        class="my-1 rounded-lg transition duration-100 hover:border-primary"
         :class="{
-            'outline-primary bg-primary-menu shadow-sm': isSelected,
+            'border-primary  shadow bordern bg-primary-menu': isSelected,
             'cursor-pointer': enableSidebarDrawer,
             'opacity-80': isLoading,
         }"
@@ -13,7 +13,7 @@
             class="flex flex-col"
             :class="[
                 !bulkSelectMode && isSelected
-                    ? 'border-primary bg-primary-menu'
+                    ? 'border-primary '
                     : 'border-transparent',
                 bulkSelectMode && isChecked ? 'bg-primary-menu' : '',
             ]"
@@ -65,7 +65,7 @@
                             :classes="
                                 isScrubbed(item)
                                     ? 'text-md mb-0  font-semibold cursor-pointer text-primary hover:underline opacity-80 '
-                                    : 'text-md font-bold mb-0 cursor-pointer text-primary hover:underline '
+                                    : 'text-md font-bold mb-0 cursor-pointer text-primary hover:underline  '
                             "
                             :should-open-in-new-tab="openAssetProfileInNewTab"
                             @click="(e) => e.stopPropagation()"
@@ -99,7 +99,7 @@
                     </div>
 
                     <!-- Info bar -->
-                    <div class="flex flex-wrap items-center mt-1">
+                    <div class="flex flex-wrap items-center mt-1.5">
                         <div class="flex items-center mr-2">
                             <a-tooltip
                                 v-if="connectorName(item)"
@@ -204,11 +204,10 @@
                                         )
                                     "
                                     class="mr-2 text-gray-500"
-                                    ><span
-                                        class="font-semibold tracking-tight text-gray-500"
+                                    ><span class="text-gray-500"
                                         >{{ rowCount(item, false) }}
                                     </span>
-                                    Rows</span
+                                    rows</span
                                 >
                                 <template #title>
                                     <span
@@ -230,11 +229,10 @@
                                 </template>
                             </a-tooltip>
                             <span class="text-gray-500">
-                                <span
-                                    class="font-semibold tracking-tight text-gray-500"
-                                    >{{ columnCount(item, false) }}</span
-                                >
-                                Cols</span
+                                <span class="text-gray-500">{{
+                                    columnCount(item, false)
+                                }}</span>
+                                columns</span
                             >
                         </div>
 

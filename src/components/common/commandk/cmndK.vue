@@ -56,7 +56,7 @@
                         <AssetItem
                             :item="item"
                             :itemIndex="index"
-                            class="px-2 cmd-k-asset-card"
+                            class="px-2 cmd-k-asset-card hover:bg-primary-menu"
                         />
                     </div>
                     <!-- <div

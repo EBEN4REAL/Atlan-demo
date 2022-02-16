@@ -2,12 +2,16 @@
     <div>
         <a-dropdown :trigger="['click']">
             <a-button
-                class="border-gray-300 rounded focus:ring-2 focus:border-primary"
-                style="min-width: 168px"
+                :style="{ 'min-width: 168px': minimal }"
+                :class="{
+                    'border-0 pr-0': minimal,
+                    'focus:ring-2 focus:border-primary border-gray-300 rounded':
+                        !minimal,
+                }"
             >
                 <div class="flex items-center">
                     <div class="flex flex-1">
-                        <div class="mr-2">
+                        <div class="mr-1">
                             <AtlanIcon
                                 icon="DateTime"
                                 class="h-4 -mt-0.5 -ml-0.5 hove"
@@ -120,6 +124,10 @@
             showCustomTime: {
                 type: Boolean,
                 default: true,
+            },
+            minimal: {
+                type: Boolean,
+                default: false,
             },
         },
         emits: ['change', 'update:modelValue'],

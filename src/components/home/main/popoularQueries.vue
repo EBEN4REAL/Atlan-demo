@@ -14,6 +14,7 @@
                     :time-frame="timeFrame"
                     :timeFrameWhiteList="timeFrameWhiteList"
                     :showCustomTime="false"
+                    :minimal="true"
                     @change="handleRangePickerChange"
                 />
             </div>

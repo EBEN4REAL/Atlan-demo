@@ -202,6 +202,25 @@
                             class="flex flex-wrap h-auto gap-1 p-2 mt-1 overflow-auto border rounded border-bottom border-slate-300 max-h-32"
                         >
                             <div
+                                v-if="
+                                    isEdit && !isAddAll
+                                        ? canEdit
+                                        : !isAddAll
+                                        ? true
+                                        : false
+                                "
+                                class="flex gap-x-1"
+                            >
+                                <a-button
+                                    v-if="!disabledForm"
+                                    size="small"
+                                    class="w-8 h-8 border border-gray-200 rounded-full"
+                                    @click="handleAddAsset"
+                                >
+                                    <AtlanIcon icon="Add" />
+                                </a-button>
+                            </div>
+                            <div
                                 v-for="asset in policy.assets"
                                 :key="asset"
                                 class="flex items-center justify-between px-2 py-1 border border-gray-200 rounded-full wrapper-asset"
@@ -231,7 +250,13 @@
                                 /> -->
                             </div>
                             <div
-                                v-if="isEdit ? canEdit : true"
+                                v-if="
+                                    isEdit && isAddAll
+                                        ? canEdit
+                                        : isAddAll
+                                        ? true
+                                        : false
+                                "
                                 class="flex gap-x-1"
                             >
                                 <a-button
@@ -240,9 +265,7 @@
                                     class="w-8 h-8 border border-gray-200 rounded-full"
                                     @click="handleAddAsset"
                                 >
-                                    <AtlanIcon
-                                        :icon="isAddAll ? 'Pencil' : 'Add'"
-                                    />
+                                    <AtlanIcon icon="Pencil" />
                                 </a-button>
                             </div>
 

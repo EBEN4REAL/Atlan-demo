@@ -61,9 +61,9 @@
 
                 <transition v-if="isFiltered && !isActive" name="fade">
                     <div class="flex items-center">
-                        <AtlanIcon
+                        <img
                             v-if="item.id === 'hierarchy'"
-                            :icon="
+                            :src="
                                 getConnectorImageMap[
                                     getFilterValue.toLowerCase()
                                 ]

@@ -34,7 +34,7 @@
                 <EmptyView
                     empty-screen="NoAssetsFound"
                     image-class="h-44"
-                    desc="No assets found"
+                    :desc="emptyText"
                 />
             </div>
 
@@ -54,6 +54,7 @@
                     <AssetItem
                         :item="item"
                         :preference="preference"
+                        class="hover:bg-primary-menu"
                         :enable-sidebar-drawer="true"
                         @updateDrawer="updateCurrentList"
                     ></AssetItem>
@@ -165,6 +166,11 @@
                 type: String,
                 required: false,
                 default: 'DEFAULT_ASSET_LIST_HOME',
+            },
+            emptyText: {
+                type: String,
+                required: false,
+                default: 'No assets found',
             },
         },
         emits: ['listLoaded'],

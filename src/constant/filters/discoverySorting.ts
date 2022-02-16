@@ -16,6 +16,14 @@ export const discoverySorting = [
         label: 'Name(z-a)',
     },
     {
+        id: '__modificationTimestamp-desc',
+        label: 'Last updated',
+    },
+    // {
+    //     id: '__modificationTimestamp-asc',
+    //     label: 'Last updated ()',
+    // },
+    {
         id: 'order-asc',
         label: 'Order(Asc)',
         includes: ['Column', 'SalesforceField'],

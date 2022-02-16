@@ -688,8 +688,19 @@ const useQueryTree = ({
                 const existingEntity = parent?.find(
                     (item) => item.guid === entity.guid
                 )
+                // console.log('entity: ', existingEntity)
                 // if the entity already exists,ignore it so as to maintain the expanded state
-                if (existingEntity) {
+                if (
+                    existingEntity &&
+                    existingEntity.attributes.name === entity.attributes.name
+                ) {
+                    updatedTreeData.push(existingEntity)
+                } else if (
+                    existingEntity &&
+                    existingEntity.attributes.name !== entity.attributes.name
+                ) {
+                    existingEntity.attributes.name = entity.attributes.name
+                    existingEntity.title = entity.attributes.name
                     updatedTreeData.push(existingEntity)
                 } else {
                     // if a new folder is found at the root level, append it

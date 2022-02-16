@@ -76,7 +76,7 @@
                     <div class="mb-2 text-sm text-gray-500 required">
                         Users / Groups <span class="text-red-500">*</span>
                     </div>
-                    <div class="user-group-container">
+                    <div class="overflow-y-auto max-h-60">
                         <Owners
                             :ref="
                                 (el) => {
@@ -631,10 +631,6 @@
 </script>
 
 <style lang="less" scoped>
-    .user-group-container {
-        max-height: 270px;
-        overflow-y: scroll;
-    }
     .add-policy-container {
         height: 100vh;
         display: flex;

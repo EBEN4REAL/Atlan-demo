@@ -4,10 +4,10 @@
         <div class="flex w-full">
             <div class="flex w-full">
                 <div class="flex items-center flex-1">
-                    <AtlanIcon
-                        :icon="getConnectorImage(item)"
+                    <img
+                        :src="getConnectorImage(item)"
                         class="h-4 mr-1 mb-0.5"
-                    ></AtlanIcon>
+                    />
                     <router-link
                         :to="getProfilePath(item)"
                         @click="stopPropagation"

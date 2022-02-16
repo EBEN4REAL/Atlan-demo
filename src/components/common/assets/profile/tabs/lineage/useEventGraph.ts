@@ -1065,6 +1065,9 @@ export default function useEventGraph(
      * @param edge - The edge whose interactivity is to be checked
      */
     const isEdgeClickable = (edge) => {
+        // No interaction for vertical pagination edges
+        if (edge.id.includes('vpNode')) return false
+
         // No interaction for related edges
         if (edge.id.includes('related')) return false
 
@@ -1083,6 +1086,9 @@ export default function useEventGraph(
      * @param edge - The edge whose interactivity is to be checked
      */
     const isEdgeHoverable = (edge) => {
+        // No interaction for vertical pagination edges
+        if (edge.id.includes('vpNode')) return false
+
         // No interaction for related edges
         if (edge.id.includes('related')) return false
 

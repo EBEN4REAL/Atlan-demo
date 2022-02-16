@@ -18,12 +18,10 @@
                 @keyup.enter="addExpr"
             >
                 <template #prefix>
-                        <AtlanIcon
-                            :icon="`${getImage(
-                                connectionQfName?.split('/')[1]
-                            )}`"
-                            class="w-auto h-4 mr-2"
-                        ></AtlanIcon>
+                    <img
+                        :src="getImage(connectionQfName.split('/')[1])"
+                        class="w-auto h-4 mr-2"
+                    />
                     <span class="text-sm text-gray"> {{ connName }}/ </span>
                 </template>
             </a-input>

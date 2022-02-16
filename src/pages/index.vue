@@ -9,7 +9,7 @@
             </div>
             <div class="flex flex-col col-span-4 px-9">
                 <div class="">
-                    <!-- <SearchAndStats /> -->
+                    <SearchAndStats />
                     <!-- <Announcements class="mt-6" /> -->
                 </div>
                 <!-- 

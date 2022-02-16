@@ -7,73 +7,73 @@
                 :show-drawer="showAssetSidebarDrawer"
                 @closeDrawer="handleCloseDrawer"
             />
-            <div class="flex items-center mb-1">
-                <span class="mb-1 text-sm font-semibold text-gray-500">
-                    <!-- <AtlanIcon icon="TrendUp"></AtlanIcon> -->
-                    Popular Queries
-                </span>
-                <TimeFrameSelector
-                    v-model:modelValue="timeFrame"
-                    class="ml-auto"
-                    :time-frame="timeFrame"
-                    :timeFrameWhiteList="timeFrameWhiteList"
-                    :showCustomTime="false"
-                    :minimal="true"
-                    @change="handleRangePickerChange"
-                />
-            </div>
-
-            <!-- <div
-                v-if="isQueryLogsLoading"
-                class="flex items-center justify-center border border-gray-200 rounded"
-                style="min-height: 150px"
-            >
-                <AtlanLoader class="w-full h-10" />
-            </div> -->
             <div
-                class="flex flex-col px-4 py-2 overflow-y-auto border border-gray-200 rounded resources-container"
+                class="flex flex-col border border-gray-200 rounded resources-container"
                 style="min-height: 150px"
-                v-if="popularQueriesList.length > 0"
+                v-show="popularQueriesList.length > 0"
             >
-                <div class="border-b" v-for="queryObj in popularQueriesList">
+                <div
+                    class="flex items-baseline py-1 pl-6 pr-5 mb-1 mb-2 bg-gray-100 border-b"
+                >
+                    <span class="text-sm font-semibold text-gray-500">
+                        <!-- <AtlanIcon icon="TrendUp"></AtlanIcon> -->
+                        Popular Queries
+                    </span>
+                    <TimeFrameSelector
+                        v-model:modelValue="timeFrame"
+                        class="ml-auto text-gray-400"
+                        :time-frame="timeFrame"
+                        :timeFrameWhiteList="timeFrameWhiteList"
+                        :showCustomTime="false"
+                        :minimal="true"
+                        customClass="bg-gray-100 text-gray-500"
+                        @change="handleRangePickerChange"
+                    />
+                </div>
+                <div class="px-4 pb-4 overflow-y-auto">
                     <div
-                        :key="queryObj.key"
-                        class="px-2 py-4 rounded cursor-pointer hover:bg-primary-menu"
-                        @click="
-                            () => {
-                                handleCardClicked(queryObj.asset)
-                            }
-                        "
+                        class="border-b"
+                        v-for="queryObj in popularQueriesList"
                     >
-                        <div>
-                            <AssetTitleCtx
-                                :item="queryObj.asset"
-                                :show-description="true"
-                                class="asset-title-ctx"
-                            >
-                                <template #title-right>
-                                    <div class="ml-auto">
-                                        <AtlanIcon
-                                            icon="TrendUp"
-                                            class="mr-1"
-                                        ></AtlanIcon>
-                                        <span class="text-gray-500">
-                                            {{ queryObj.doc_count }} runs
-                                        </span>
-                                    </div>
-                                </template>
-                            </AssetTitleCtx>
-                            <!-- <div class="mt-2">
-                                <span class="text-gray-500">
-                                    {{ queryObj.doc_count }} runs
-                                </span>
-                            </div> -->
+                        <div
+                            :key="queryObj.key"
+                            class="px-2 py-4 rounded cursor-pointer hover:bg-primary-menu"
+                            @click="
+                                () => {
+                                    handleCardClicked(queryObj.asset)
+                                }
+                            "
+                        >
+                            <div>
+                                <AssetTitleCtx
+                                    :item="queryObj.asset"
+                                    :show-description="true"
+                                    class="asset-title-ctx"
+                                >
+                                    <template #title-right>
+                                        <div class="ml-auto">
+                                            <AtlanIcon
+                                                icon="TrendUp"
+                                                class="mr-1"
+                                            ></AtlanIcon>
+                                            <span class="text-gray-500">
+                                                {{ queryObj.doc_count }} runs
+                                            </span>
+                                        </div>
+                                    </template>
+                                </AssetTitleCtx>
+                                <!-- <div class="mt-2">
+                                    <span class="text-gray-500">
+                                        {{ queryObj.doc_count }} runs
+                                    </span>
+                                </div> -->
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div
-                v-else
+                v-if="popularQueriesList.length === 0 && !isQueryLogsLoading"
                 class="flex items-center justify-center border border-gray-200 rounded"
                 style="min-height: 390px"
             >
@@ -206,6 +206,7 @@
             }
 
             const handleRangePickerChange = (event) => {
+                console.log('handleRangePickerChange event', event)
                 // eslint-disable-next-line prefer-destructuring
                 gte.value = event[0]
                 // eslint-disable-next-line prefer-destructuring

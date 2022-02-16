@@ -7,6 +7,7 @@
                     'border-0 pr-0': minimal,
                     'focus:ring-2 focus:border-primary border-gray-300 rounded':
                         !minimal,
+                    [customClass]: true,
                 }"
             >
                 <div class="flex items-center">
@@ -17,7 +18,13 @@
                                 class="h-4 -mt-0.5 -ml-0.5 hove"
                             />
                         </div>
-                        <span class="text-gray-700" v-if="!rangeChecked">
+                        <span
+                            :class="{
+                                'text-gray-700': !minimal,
+                                'text-gray-500': minimal,
+                            }"
+                            v-if="!rangeChecked"
+                        >
                             {{
                                 timeFrameOptions.find(
                                     (ex) => ex.value === modelValue.value
@@ -28,7 +35,13 @@
                             {{ convertUTCRangeToString(modelValue.value) }}
                         </span>
                     </div>
-                    <div class="ml-4 text-gray-700">
+                    <div
+                        class="ml-2"
+                        :class="{
+                            'text-gray-700': !minimal,
+                            'text-gray-500': minimal,
+                        }"
+                    >
                         <AtlanIcon
                             icon="ChevronDown"
                             class="h-4 -mt-0.5 -ml-0.5"
@@ -128,6 +141,10 @@
             minimal: {
                 type: Boolean,
                 default: false,
+            },
+            customClass: {
+                type: String,
+                default: '',
             },
         },
         emits: ['change', 'update:modelValue'],

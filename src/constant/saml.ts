@@ -130,6 +130,7 @@ export const topSAMLProviders = [
         defaultConfig: {
             ...googleDefaultConfig,
         },
+        samlAssertionUrlSuffix: '/broker/google/endpoint',
     },
     {
         title: 'Azure AD',
@@ -142,6 +143,7 @@ export const topSAMLProviders = [
         defaultConfig: {
             ...azureDefaultConfig,
         },
+        samlAssertionUrlSuffix: '/broker/azure/endpoint/clients/atlan-saml',
     },
     {
         title: 'Okta',
@@ -154,6 +156,7 @@ export const topSAMLProviders = [
         defaultConfig: {
             ...oktaDefaultConfig,
         },
+        samlAssertionUrlSuffix: '/broker/okta/endpoint/clients/atlan-saml',
     },
     {
         title: 'Jumpcloud',
@@ -167,6 +170,7 @@ export const topSAMLProviders = [
             ...jumpCloudDefaultConfig,
         },
         imageClass: 'w-8 h-5',
+        samlAssertionUrlSuffix: '/broker/jumpcloud/endpoint/clients/atlan-saml',
     },
 ]
 export const customSamlProvider = {
@@ -176,6 +180,7 @@ export const customSamlProvider = {
     ctaText: {
         default: 'Add',
     },
+    samlAssertionUrlSuffix: '/endpoint/clients/atlan-saml',
 }
 
 export const mapperList = [

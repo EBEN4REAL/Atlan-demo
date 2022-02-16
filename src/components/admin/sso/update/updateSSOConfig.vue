@@ -327,7 +327,11 @@
                 const baseUrl = `${window.location.protocol}//${window.location.host}/auth`
                 const redirectUrl = `${baseUrl}/realms/${
                     getEnv().DEFAULT_REALM
-                }/broker/${alias}/endpoint`
+                }${
+                    provider.isCustomSaml
+                        ? `/broker/${alias}${provider.samlAssertionUrlSuffix}`
+                        : provider.samlAssertionUrlSuffix
+                }`
                 const audienceUrl = `${baseUrl}/realms/${
                     getEnv().DEFAULT_REALM
                 }`
@@ -543,6 +547,6 @@
         background-color: white;
     }
     .provider-wrapper {
-        max-width: 38rem;
+        max-width: 42rem;
     }
 </style>

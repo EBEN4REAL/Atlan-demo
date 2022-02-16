@@ -6,15 +6,11 @@
     >
         <template #content>
             <div
-                class="relative p-4 user-popover"
                 v-if="item !== 'service-account-atlan-argo'"
+                class="relative p-4 user-popover"
             >
                 <div
-                    v-if="
-                        !sessionInfoLoading &&
-                        !isLoading &&
-                        selectedUser.username === item
-                    "
+                    v-if="!isLoading && selectedUser.username === item"
                     class="z-10 flex flex-col gap-y-2"
                 >
                     <div
@@ -57,7 +53,9 @@
                                             {{ selectedUser?.workspaceRole }}
                                         </div>
                                         <span
-                                            v-if="lastActiveTime"
+                                            v-if="
+                                                selectedUser?.last_active_time
+                                            "
                                             class="text-sm text-gray-600"
                                         >
                                             <!-- <span class="mx-1 text-gray-400"
@@ -66,13 +64,13 @@
                                             <a-tooltip placement="bottom">
                                                 <template #title>
                                                     {{
-                                                        lastActiveTime
+                                                        selectedUser?.last_active_time
                                                     }}</template
                                                 >
                                                 <span class=""
                                                     >Active
                                                     {{
-                                                        lastActiveTimeAgo
+                                                        selectedUser?.last_active_time_ago
                                                     }}</span
                                                 >
                                             </a-tooltip>
@@ -163,10 +161,7 @@
                     v-else
                     class="flex items-center justify-center w-full px-4"
                 >
-                    <AtlanLoader
-                        v-if="isLoading || sessionInfoLoading"
-                        class="h-8"
-                    />
+                    <AtlanLoader v-if="isLoading" class="h-8" />
                 </div>
             </div>
         </template>
@@ -179,11 +174,9 @@
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import { useUsers } from '~/composables/user/useUsers'
     import AtlanIcon from '../../icon/atlanIcon.vue'
-    import useUserPopover from './composables/useUserPopover'
     import SlackMessageCta from './slackMessageCta.vue'
     import UserAvatar from '@/common/avatar/user.vue'
     import AtlanBtn from '@/UI/button.vue'
-    import getUserLastSession from '~/composables/user/getUserLastSession'
 
     export default {
         name: 'PopoverUser',
@@ -238,20 +231,6 @@
                 getUserProfiles(selectedUser.value)
             )
 
-            const userID = computed(() => selectedUser?.value?.id ?? '')
-            const {
-                lastActiveTime,
-                lastActiveTimeAgo,
-                fetchUserSessions: getLastSession,
-                isLoading: sessionInfoLoading,
-            } = getUserLastSession(userID)
-            watch(
-                selectedUser,
-                () => {
-                    if (selectedUser?.value?.id) getLastSession()
-                },
-                { deep: true, immediate: true }
-            )
             return {
                 selectedUser,
                 isLoading,
@@ -260,9 +239,6 @@
                 getUserList,
                 getUserProfiles,
                 userProfiles,
-                lastActiveTime,
-                lastActiveTimeAgo,
-                sessionInfoLoading,
             }
         },
     }

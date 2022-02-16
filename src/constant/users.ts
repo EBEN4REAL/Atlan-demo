@@ -63,7 +63,6 @@ export const userColumns = [
     {
         title: 'User',
         key: 'user',
-        // sorter: true,
         slots: { customRender: 'name' },
         sortKey: 'firstName',
         align: 'left',
@@ -80,12 +79,31 @@ export const userColumns = [
         sorter: false,
         slots: { customRender: 'role' },
         // dataIndex: ['role_object', 'name'],
-        width: '15%',
+        width: '12.5%',
     },
     {
         title: 'Status',
         key: 'status',
         slots: { customRender: 'status' },
+        // dataIndex: "status_object.status",
+        // filters: [
+        //   { text: "Active", value: JSON.stringify({ enabled: true }) },
+        //   { text: "Disabled", value: JSON.stringify({ enabled: false }) },
+        //   // { text: "Locked", value: JSON.stringify({ locked: true }) },
+        // ],
+        filterMultiple: false,
+        width: '12.5%',
+    },
+    {
+        title: 'Last Active',
+        key: 'last_active_time',
+        align: 'left',
+        // sorter: true,
+        // sortKey: 'lastLoginTime',
+        // sortDirections: ['ASC', 'DESC'],
+        // ascOrderString: `Sort by last active time`,
+        // descOrderString: `Sort by last active time`,
+        slots: { customRender: 'last_active_time' },
         // dataIndex: "status_object.status",
         // filters: [
         //   { text: "Active", value: JSON.stringify({ enabled: true }) },
@@ -106,7 +124,7 @@ export const userColumns = [
         ascOrderString: `Sort by group count`,
         descOrderString: `Sort by group count`,
         // dataIndex: 'group_count_string',
-        width: '15%',
+        width: '12.5%',
     },
     {
         title: 'Personas',
@@ -114,13 +132,13 @@ export const userColumns = [
         // sorter: true,
         align: 'left',
         slots: { customRender: 'persona' },
-        width: '15%',
+        width: '12.5%',
     },
     {
         title: '',
         slots: { customRender: 'actions' },
         align: 'right',
-        width: '15%',
+        width: '10%',
     },
 ]
 
@@ -134,13 +152,17 @@ export const userStatusOptions = [
     {
         label: 'Active',
         value: JSON.stringify({ enabled: true, emailVerified: true }),
-        id: 'active'
+        id: 'active',
     },
-    { label: 'Disabled', value: JSON.stringify({ enabled: false }), id: 'disabled' },
+    {
+        label: 'Disabled',
+        value: JSON.stringify({ enabled: false }),
+        id: 'disabled',
+    },
     {
         label: 'Invited',
         value: JSON.stringify({ enabled: true, emailVerified: false }),
-        id: 'invited'
+        id: 'invited',
     },
 ]
 

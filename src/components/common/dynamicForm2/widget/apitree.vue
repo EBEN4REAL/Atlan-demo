@@ -24,6 +24,8 @@
     import { useWorkflowHelper } from '~/composables/package/useWorkflowHelper'
     import { useVModels } from '@vueuse/core'
 
+    import { mergeDeep } from '~/utils/array'
+
     export default defineComponent({
         name: 'FormBuilder',
         components: {
@@ -86,24 +88,29 @@
             const localValue = ref(tempArray)
 
             const handleChange = () => {
-                const map = {}
+                let valueMap = {}
+
+                const tempArray = []
+
                 localValue.value.forEach((item) => {
-                    if (item.includes(':')) {
-                        const first = item.split(':')[0]
-                        map[first] = []
-                    } else {
-                        map[item] = []
+                    let map = {}
+                    const arr = item.split(':')
+                    for (var i = 0; i < arr.length; i++) {
+                        if (i == 0) {
+                            map[arr[i]] = {}
+                        } else {
+                            let temp = {}
+                            temp[arr[i]] = {}
+                            map[arr[i - 1]] = temp
+                        }
                     }
+                    tempArray.push(map)
                 })
-                localValue.value.forEach((item) => {
-                    if (item.includes(':')) {
-                        const first = item.split(':')[0]
-                        const second = item.split(':')[1]
-                        map[first].push(second)
-                    }
-                })
-                modelValue.value = map
-                emit('change', map)
+                console.log(tempArray)
+                console.log(mergeDeep(valueMap, ...tempArray))
+
+                modelValue.value = mergeDeep(valueMap, ...tempArray)
+                emit('change', modelValue.value)
             }
 
             const { buildCredentialBody } = useWorkflowHelper()

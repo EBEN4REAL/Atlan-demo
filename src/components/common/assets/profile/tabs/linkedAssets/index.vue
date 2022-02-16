@@ -263,9 +263,14 @@
             }
 
             watch(localAssignedEntities, () => {
+                console.log(linkedAssetsWrapperRef?.value?.filters)
                 if (linkedAssetsWrapperRef?.value?.quickChange) {
                     setTimeout(() => {
                         linkedAssetsWrapperRef.value.quickChange()
+                       if (linkedAssetsWrapperRef?.value?.list?.length<2 && linkedAssetsWrapperRef?.value?.postFilters) {
+                            linkedAssetsWrapperRef.value.postFilters.typeName =
+                                '__all'
+                        }
                     }, 1000)
                 }
             })

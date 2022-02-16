@@ -462,7 +462,13 @@ export function generateSQLQuery(
                     subpanel.filter?.value == undefined
                 )
                     return
-                res += ` ${subpanel?.filter?.filterType?.toUpperCase()} `
+                if (
+                    index > 0 &&
+                    Object.keys(filter?.subpanels[index - 1]?.column ?? {})
+                        .length > 0 &&
+                    filter?.subpanels[index - 1]?.filter?.value
+                )
+                    res += ` ${subpanel?.filter?.filterType?.toUpperCase()} `
                 const tableName = getTableNameWithQuotes(
                     subpanel.column.columnQualifiedName ??
                         subpanel.column?.qualifiedName ??

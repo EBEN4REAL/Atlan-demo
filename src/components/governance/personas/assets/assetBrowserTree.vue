@@ -3,7 +3,7 @@
         <div class="pb-4">
             <SearchAndFilter
                 v-model:value="queryText"
-                :placeholder="`Search in assets `"
+                :placeholder="`Search in database `"
                 size="minimal"
                 class=""
             >

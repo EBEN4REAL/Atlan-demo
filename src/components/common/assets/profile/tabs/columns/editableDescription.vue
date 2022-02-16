@@ -1,13 +1,14 @@
 <template>
     <a-tooltip
-        v-if="!isEditing"
+        v-if="!isEditing && localDescription.length > 0"
         :title="truncated ? tooltipText : undefined"
         :placement="placement"
         :destroy-tooltip-on-hide="true"
         :overlay-style="{ maxWidth: width }"
         :color="tooltipColor"
         :overlay-class-name="tooltipColor === 'white' ? 'tooltip-black' : ''"
-        ><div
+    >
+        <div
             :class="classes"
             :style="{ maxWidth: clampPercentage, 'line-break': 'anywhere' }"
         >
@@ -17,6 +18,7 @@
                     :target="shouldOpenInNewTab ? '_blank' : 'self'"
                 >
                     <a-typography-paragraph
+                        class="cursor-text"
                         :class="classes"
                         :ellipsis="{
                             rows: rows,
@@ -41,6 +43,11 @@
             </template>
         </div>
     </a-tooltip>
+    <div
+        v-else-if="!isEditing && localDescription.length === 0"
+        class="w-full h-5 block cursor-text"
+        @click.stop="handleEdit"
+    ></div>
     <div v-else @click.stop>
         <a-textarea
             ref="descriptionRef"
@@ -56,11 +63,24 @@
             @blur="handleUpdate"
             @press-enter="handleEnter($event)"
         />
+        <!--        <p-->
+        <!--            v-if="descriptionRef !== null"-->
+        <!--            class="mt-1 text-xs text-right text-gray-500"-->
+        <!--        >-->
+        <!--            <span class="font-bold">{{ isMac ? 'Return' : 'Enter' }}</span> to-->
+        <!--            save-->
+        <!--            <span class="ml-2">-->
+        <!--                <span class="font-bold"-->
+        <!--                    >Shift + {{ isMac ? 'Return' : 'Enter' }}</span-->
+        <!--                >-->
+        <!--                to add a new line-->
+        <!--            </span>-->
+        <!--        </p>-->
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, unref } from 'vue'
+    import { defineComponent, inject, nextTick, ref, toRefs, unref } from 'vue'
     import { useTimeoutFn } from '@vueuse/core'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
 
@@ -129,10 +149,6 @@
             // A ref indicating if the description is being edited.
             const isEditing = ref(false)
 
-            const { start } = useTimeoutFn(() => {
-                descriptionRef.value?.focus()
-            }, 100)
-
             /**
              * A utility function to toggle on and off editing of the field.
              */
@@ -142,7 +158,9 @@
                 }
 
                 if (isEditing.value) {
-                    start()
+                    nextTick(() => {
+                        descriptionRef.value?.focus()
+                    })
                 }
             }
 
@@ -180,6 +198,9 @@
                 }
             }
 
+            // The shortcut keys will change in accordance with this property.
+            const isMac = window.navigator.userAgent.indexOf('Mac') !== -1
+
             return {
                 tooltipText,
                 truncated,
@@ -191,6 +212,7 @@
                 handleEnter,
                 localDescription,
                 pressedEsc,
+                isMac,
             }
         },
     })

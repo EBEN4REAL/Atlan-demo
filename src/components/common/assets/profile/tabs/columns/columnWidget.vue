@@ -120,7 +120,7 @@
                         <EditableDescription
                             :asset-item="record.item"
                             :tooltip-text="text"
-                            :allow-editing="true"
+                            :allow-editing="allowDescriptionUpdate"
                         />
                     </template>
                 </template>
@@ -184,7 +184,15 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, watch, computed, ref, Ref, nextTick } from 'vue'
+    import {
+        defineComponent,
+        watch,
+        ref,
+        Ref,
+        nextTick,
+        inject,
+        computed,
+    } from 'vue'
 
     import { useDebounceFn } from '@vueuse/core'
     import { useRoute } from 'vue-router'
@@ -211,6 +219,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import EditableDescription from '@common/assets/profile/tabs/columns/editableDescription.vue'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
+    import { ENTITY_UPDATE } from '~/services/meta/entity/key'
 
     export default defineComponent({
         components: {
@@ -235,6 +244,14 @@
             const columnFromUrl: Ref<assetInterface[]> = ref([])
 
             const openDrawerOnLoad = ref<boolean>(false)
+            const actions = inject('actions', ref([]))
+            // A flag indicating whether the description can be updated or not.
+            const allowDescriptionUpdate = computed(
+                () =>
+                    actions.value.findIndex(
+                        (action) => action === ENTITY_UPDATE
+                    ) !== -1
+            )
 
             const {
                 selectedAsset,
@@ -532,7 +549,7 @@
                         key: 'description',
                     },
                 ],
-                useAssetInfo,
+                allowDescriptionUpdate,
             }
         },
     })

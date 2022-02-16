@@ -8,11 +8,17 @@
             @visibleChange="onPopoverClose"
         >
             <template #content>
-                <div 
+                <div
                     v-if="!editPermission && role !== 'Guest'"
-                    class="bg-gray-100 mx-4 px-3 py-2 mb-3">
+                    class="bg-gray-100 mx-4 px-3 py-2 mb-3"
+                >
                     You don't have edit access to this asset, but you can
-                    suggest terms to the asset owner. <span  @click="handleCancelRequest" class="text-primary cursor-pointer">Dismiss</span>
+                    suggest terms to the asset owner.
+                    <span
+                        @click="handleCancelRequest"
+                        class="text-primary cursor-pointer"
+                        >Dismiss</span
+                    >
                 </div>
                 <GlossaryTree
                     v-model:checkedGuids="checkedGuids"
@@ -36,20 +42,29 @@
             </template>
         </a-popover>
         <div class="flex flex-wrap items-center gap-1 text-sm text-gray-500">
-            <a-button
-                shape="circle"
-                :disabled="role === 'Guest' && !editPermission"
-                size="small"
-                class="text-center shadow"
-                :class="{
-                    editPermission:
-                        'hover:bg-primary-light hover:border-primary',
-                }"
-                @click="() => (isEdit = true)"
+            <a-tooltip
+                placement="left"
+                :title="
+                    !editPermission && role === 'Guest'
+                        ? `You don't have permission to add owners to this asset`
+                        : ''
+                "
+                :mouse-enter-delay="0.5"
             >
-                <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
-            ></a-button>
-
+                <a-button
+                    shape="circle"
+                    :disabled="role === 'Guest' && !editPermission"
+                    size="small"
+                    class="text-center shadow"
+                    :class="{
+                        editPermission:
+                            'hover:bg-primary-light hover:border-primary',
+                    }"
+                    @click="() => (isEdit = true)"
+                >
+                    <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
+                ></a-button>
+            </a-tooltip>
             <template v-for="term in list" :key="term.guid">
                 <TermPopover
                     :term="term"

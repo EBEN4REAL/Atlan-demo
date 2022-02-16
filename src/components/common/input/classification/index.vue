@@ -47,28 +47,37 @@
         </a-popover>
 
         <div class="flex flex-wrap items-center gap-1 text-sm">
-            <Shortcut
-                shortcut-key="t"
-                action="set classification"
+            <a-tooltip
                 placement="left"
-                :edit-permission="editPermission && showShortcut"
+                :title="
+                    !editPermission && role === 'Guest'
+                        ? `You don't have permission to add owners to this asset`
+                        : ''
+                "
+                :mouse-enter-delay="0.5"
             >
-                <a-button
-                    shape="circle"
-                    :disabled="role === 'Guest' && !editPermission"
-                    size="small"
-                    class="text-center shadow"
-                    :class="{
-                        editPermission:
-                            'hover:bg-primary-light hover:border-primary',
-                    }"
-                    @click="handleOpenPopover"
+                <Shortcut
+                    shortcut-key="t"
+                    action="set classification"
+                    placement="left"
+                    :edit-permission="editPermission && showShortcut"
                 >
-                    <span
-                        ><AtlanIcon icon="Add" class="h-3"></AtlanIcon
-                    ></span> </a-button
-            ></Shortcut>
-
+                    <a-button
+                        shape="circle"
+                        :disabled="role === 'Guest' && !editPermission"
+                        size="small"
+                        class="text-center shadow"
+                        :class="{
+                            editPermission:
+                                'hover:bg-primary-light hover:border-primary',
+                        }"
+                        @click="handleOpenPopover"
+                    >
+                        <span
+                            ><AtlanIcon icon="Add" class="h-3"></AtlanIcon
+                        ></span> </a-button
+                ></Shortcut>
+            </a-tooltip>
             <template v-for="classification in list" :key="classification.guid">
                 <Popover
                     :classification="classification"

@@ -1,7 +1,6 @@
 <template>
     <!--h2 class="mb-3 text-xl font-bold">Relevant for you</h2-->
-    <!-- <transition v-if="popularQueriesList.length" name="fade"> -->
-    <transition name="fade">
+    <transition v-if="showWidget" name="fade">
         <div>
             <div class="flex mb-1">
                 <span class="mb-1 text-sm font-semibold text-gray-500">
@@ -111,6 +110,7 @@
                 'certificateStatusMessage',
             ]
             const timeFrameWhiteList = [7, 30]
+            const showWidget = ref(false)
 
             const {
                 aggregates: queryAggregationResult,
@@ -175,6 +175,12 @@
                 refreshList()
             }
 
+            watch(popularQueriesList, (newVal) => {
+                if (newVal.length) {
+                    showWidget.value = true
+                }
+            })
+
             return {
                 title,
                 certificateStatus,
@@ -189,6 +195,7 @@
                 handleRangePickerChange,
                 timeFrame,
                 timeFrameWhiteList,
+                showWidget,
             }
         },
     })

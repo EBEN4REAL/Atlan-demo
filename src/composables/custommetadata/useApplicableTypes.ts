@@ -3,7 +3,7 @@ import { useConnectionStore } from '~/store/connection/index'
 
 const store = useConnectionStore()
 
-const sourceConnected = (typeName) => store.getSourceList.some(s => s.id.toLowerCase() === typeName.toLowerCase())
+const sourceConnected = (typeName) => store.activeConnectionSourceList.some(s => s.id.toLowerCase() === typeName.toLowerCase())
 
 export const applicableTypeList = () => {
 

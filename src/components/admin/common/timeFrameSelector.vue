@@ -2,7 +2,7 @@
     <div>
         <a-dropdown :trigger="['click']">
             <a-button
-                class="rounded focus:ring-2 focus:border-primary border-gray-300"
+                class="border-gray-300 rounded focus:ring-2 focus:border-primary"
                 style="min-width: 168px"
             >
                 <div class="flex items-center">
@@ -45,10 +45,10 @@
                             @change="triggerChange"
                         >
                             <div
-                                class="flex flex-col w-full px-3 text-sm text-gray-700  hover:text-primary"
+                                class="flex flex-col w-full px-3 text-sm text-gray-700 hover:text-primary"
                             >
                                 <template
-                                    v-for="item in timeFrameOptions"
+                                    v-for="item in filteredTimeFrameOptions"
                                     :key="item.label"
                                 >
                                     <div class="w-full px-0 py-1">
@@ -66,20 +66,13 @@
                         </a-radio-group>
                         <div
                             @click.stop="() => {}"
-                            class="
-                                flex flex-col
-                                items-center
-                                px-3
-                                py-2
-                                pb-0.5
-                                border-t border-300
-                                hover:text-primary
-                            "
+                            class="flex flex-col items-center px-3 py-2 pb-0.5 border-t border-300 hover:text-primary"
+                            v-if="showCustomTime"
                         >
                             <div>
                                 <div
                                     @click="setRangePickerChecked"
-                                    class="flex items-center justify-start w-full mb-2 "
+                                    class="flex items-center justify-start w-full mb-2"
                                 >
                                     <!-- <AtlanIcon icon="Add" class="mr-2" /> -->
                                     <a-radio
@@ -118,6 +111,16 @@
                 required: false,
                 default: '30 days',
             },
+            timeFrameWhiteList: {
+                type: Array,
+                default: () => {
+                    return []
+                },
+            },
+            showCustomTime: {
+                type: Boolean,
+                default: true,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
@@ -127,6 +130,18 @@
                 value: timeFrame.value,
             })
             const timeFrameOptions = ref(getTimeframeOptions())
+            const filteredTimeFrameOptions = ref(
+                timeFrameOptions.value.filter((timeFrame) => {
+                    if (!props.timeFrameWhiteList.length) {
+                        return true
+                    }
+                    console.log('timeFrame', timeFrame.id)
+                    const enabled = props.timeFrameWhiteList.includes(
+                        timeFrame.id
+                    )
+                    return enabled
+                })
+            )
             const timeFrameVisible = ref(false)
             const dateFormat = 'DD MMM YYYY'
             const rangePicked = ref<Dayjs[]>([
@@ -200,6 +215,7 @@
                 modelValue,
                 timeFrameOptions,
                 timeFrameVisible,
+                filteredTimeFrameOptions,
             }
         },
     })

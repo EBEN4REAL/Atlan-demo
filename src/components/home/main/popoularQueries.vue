@@ -12,6 +12,8 @@
                     v-model:modelValue="timeFrame"
                     class="ml-auto"
                     :time-frame="timeFrame"
+                    :timeFrameWhiteList="timeFrameWhiteList"
+                    :showCustomTime="false"
                     @change="handleRangePickerChange"
                 />
             </div>
@@ -107,6 +109,7 @@
                 'certificateUpdatedBy',
                 'certificateStatusMessage',
             ]
+            const timeFrameWhiteList = [7, 30]
 
             const {
                 aggregates: queryAggregationResult,
@@ -184,6 +187,7 @@
                 popularQueriesList,
                 handleRangePickerChange,
                 timeFrame,
+                timeFrameWhiteList,
             }
         },
     })

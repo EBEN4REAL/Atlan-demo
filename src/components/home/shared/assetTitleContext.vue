@@ -2,16 +2,22 @@
     <div class="flex items-center">
         <!-- <AssetPopover :item="item"> -->
         <div class="flex w-full">
-            <router-link :to="getProfilePath(item)" class="flex w-full">
+            <div class="flex w-full">
                 <div class="flex flex-1">
-                    <a-typography-paragraph
-                        class="mb-0 text-sm font-bold cursor-pointer text-primary hover:underline"
-                        :ellipsis="{
-                            rows: 1,
-                            onEllipsis: true,
-                        }"
-                        :content="title(item)"
-                    />
+                    <router-link
+                        :to="getProfilePath(item)"
+                        @click="stopPropagation"
+                    >
+                        <a-typography-paragraph
+                            class="mb-0 text-sm font-bold cursor-pointer text-primary hover:underline"
+                            :ellipsis="{
+                                rows: 1,
+                                onEllipsis: true,
+                            }"
+                            :content="title(item)"
+                        />
+                    </router-link>
+
                     <CertificateBadge
                         v-if="certificateStatus(item)"
                         :status="certificateStatus(item)"
@@ -21,7 +27,7 @@
                     ></CertificateBadge>
                 </div>
                 <slot name="title-right"></slot>
-            </router-link>
+            </div>
         </div>
         <!-- </AssetPopover> -->
     </div>
@@ -66,6 +72,10 @@
                 description,
             } = useAssetInfo()
 
+            const stopPropagation = (e: Event) => {
+                e.stopPropagation()
+            }
+
             return {
                 title,
                 certificateStatus,
@@ -74,6 +84,7 @@
                 certificateStatusMessage,
                 getProfilePath,
                 description,
+                stopPropagation,
             }
         },
     })

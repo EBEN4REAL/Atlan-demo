@@ -48,6 +48,7 @@
                         <AssetTitleCtx
                             :item="queryObj.asset"
                             :show-description="true"
+                            class="asset-title-ctx"
                         >
                             <template #title-right>
                                 <div class="ml-auto">
@@ -188,6 +189,7 @@
                 refreshList()
             }
             const handleCardClicked = (item: any) => {
+                console.log('handleCardClicked', item.guid)
                 showAssetSidebarDrawer.value = true
                 selectedAssetDrawerGuid.value = item?.guid
             }
@@ -219,6 +221,8 @@
                 showWidget,
                 handleCardClicked,
                 handleCloseDrawer,
+                selectedAssetDrawerGuid,
+                showAssetSidebarDrawer,
             }
         },
     })

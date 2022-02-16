@@ -365,7 +365,7 @@
                                     : true && connectorData.attributeValue
                             "
                         >
-                            <div class="flex justify-between mt-1">
+                            <div class="flex mt-1">
                                 <div>
                                     <span>Deny</span>
                                     <a-tooltip placement="top" color="white">
@@ -388,7 +388,7 @@
                                 <a-switch
                                     :class="policy.allow ? `` : 'bg-red-600'"
                                     data-test-id="toggle-switch"
-                                    class="ml-3"
+                                    class="ml-2"
                                     :checked="!policy.allow"
                                     style="width: 40px !important"
                                     @update:checked="policy.allow = !$event"
@@ -464,9 +464,9 @@
                                     : true && connectorData.attributeValue
                             "
                         >
-                            <div class="flex justify-between mt-4">
+                            <div class="flex mt-4">
                                 <div>
-                                    <span>Deny</span>
+                                    <span>Deny Query</span>
                                     <a-tooltip placement="top" color="white">
                                         <AtlanIcon
                                             icon="Overview"
@@ -487,7 +487,7 @@
                                 <a-switch
                                     :class="policy.allow ? `` : 'bg-red-600'"
                                     data-test-id="toggle-switch"
-                                    class="ml-3"
+                                    class="ml-2"
                                     :checked="!policy.allow"
                                     style="width: 40px !important"
                                     @update:checked="policy.allow = !$event"

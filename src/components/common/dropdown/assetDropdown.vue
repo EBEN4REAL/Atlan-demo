@@ -37,6 +37,7 @@
     import { Components } from '~/types/atlas/client'
     import AssetSelector from '~/components/common/dropdown/assetSelector.vue'
     import bodybuilder from 'bodybuilder'
+    import { isSelectFirstDefault } from '~/components/insights/common/composables/getDialectInfo'
 
     export default defineComponent({
         name: 'AssetDropdown',
@@ -58,6 +59,10 @@
                 required: false,
                 default: () => '',
             },
+            connection: {
+                type: String,
+                required: true,
+            },
             bgGrayForSelector: {
                 type: Boolean,
                 default: true,
@@ -65,7 +70,7 @@
         },
         emits: ['labelChange', 'change'],
         setup(props, { emit }) {
-            const { connector, filter } = toRefs(props)
+            const { connector, filter, connection } = toRefs(props)
             const _firsCalled = ref(false)
             console.log('connection filters: ', filter.value)
             console.log('connector preview: ', connector.value)
@@ -223,6 +228,11 @@
             }
             watch(connector, () => {
                 _firsCalled.value = false
+            })
+            watch(connection, () => {
+                if (isSelectFirstDefault(connector.value.id)) {
+                    _firsCalled.value = false
+                }
             })
 
             return {

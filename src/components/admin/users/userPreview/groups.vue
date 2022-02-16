@@ -19,7 +19,7 @@
                                 :hide-disabled-tabs="true"
                                 select-group-key="id"
                                 :user-id="selectedUser.id"
-                                :hideTabs="true"
+                                :hide-tabs="true"
                             ></OwnerFacets>
                         </div>
                         <div class="flex justify-end mr-3">
@@ -63,7 +63,7 @@
                 </a-button>
             </div>
         </div>
-        <div v-auth="map.LIST_GROUPS" class="h-full">
+        <div class="h-full">
             <div
                 v-if="totalGroupCount || isLoading"
                 class="flex flex-row justify-between"

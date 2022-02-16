@@ -143,7 +143,10 @@ import Cross from '~/assets/images/icons/cross.svg'
 import FullScreen from '~/assets/images/icons/fullscreen.svg'
 import ExitFullScreen from '~/assets/images/icons/exit-fullscreen.svg'
 import SidebarTrigger from '~/assets/images/icons/sidebar-trigger.svg'
+import SidebarTriggerFilled from '~/assets/images/icons/sidebar-trigger-filled.svg'
 import OutputpaneTrigger from '~/assets/images/icons/output-pane-trigger.svg'
+import OutputpaneTriggerFilled from '~/assets/images/icons/output-pane-trigger-filled.svg'
+
 import RunSuccess from '~/assets/images/icons/run-success.svg'
 import RunFailed from '~/assets/images/icons/run-failed.svg'
 import WorkflowsActive from '~/assets/images/icons/workflows_active.svg'
@@ -177,6 +180,7 @@ import EmptyQueriesTab from '~/assets/images/illustrations/empty_queries_tab.svg
 import Slack from '~/assets/images/admin/integrations/slack.svg'
 import Teams from '~/assets/images/admin/integrations/teams.svg'
 import ExplorerTrigger from '~/assets/images/icons/explorer-trigger.svg'
+import ExplorerTriggerFilled from '~/assets/images/icons/explorer-trigger-filled.svg'
 import EmptySearchQuery from '~/assets/images/icons/empty_search_query.svg'
 import EmptyResult from '~/assets/images/icons/empty_result.svg'
 import Schedule from '~/assets/images/icons/schedule.svg'
@@ -291,6 +295,7 @@ import SMTP from '~/assets/images/icons/smtp.svg'
 import APIKey from '~/assets/images/icons/apikey.svg'
 import Camera from '~/assets/images/icons/camera.svg'
 import FormatText from '~/assets/images/icons/formatText.svg'
+import BeautifySql from '~/assets/images/icons/beautifySql.svg'
 import NoUsers from '~/assets/images/illustrations/no-users.svg'
 import NoGroups from '~/assets/images/illustrations/no-groups.svg'
 import CreateGroups from '~/assets/images/illustrations/create-groups.svg'
@@ -320,6 +325,7 @@ import PowerBI from '~/assets/images/source/svg/PowerBI.svg'
 import BigQuery from '~/assets/images/source/svg/Bigquery.svg'
 import Looker from '~/assets/images/source/svg/Looker.svg'
 import Salesforce from '~/assets/images/source/svg/Salesforce.svg'
+import MySQL from '~/assets/images/source/svg/MySQL.svg'
 
 import Schema2Active from '~/assets/images/icons/schema2Active.svg'
 import QueriesActive from '~/assets/images/icons/queriesActive.svg'
@@ -799,4 +805,9 @@ export default {
     QuestionRound,
     Documentation,
     Logout,
+    ExplorerTriggerFilled,
+    OutputpaneTriggerFilled,
+    SidebarTriggerFilled,
+    BeautifySql,
+    MySQL,
 }

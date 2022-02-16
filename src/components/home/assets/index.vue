@@ -34,7 +34,7 @@
                 <EmptyView
                     empty-screen="NoAssetsFound"
                     image-class="h-44"
-                    desc="No assets found"
+                    :desc="emptyText"
                 />
             </div>
 
@@ -165,6 +165,11 @@
                 type: String,
                 required: false,
                 default: 'DEFAULT_ASSET_LIST_HOME',
+            },
+            emptyText: {
+                type: String,
+                required: false,
+                default: 'No assets found',
             },
         },
         emits: ['listLoaded'],

@@ -5,7 +5,10 @@
         @visibleChange="handleVisibleChange"
     >
         <template #content>
-            <div class="relative p-4 user-popover">
+            <div
+                class="relative p-4 user-popover"
+                v-if="item !== 'service-account-atlan-argo'"
+            >
                 <div
                     v-if="
                         !sessionInfoLoading &&

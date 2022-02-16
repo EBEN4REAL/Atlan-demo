@@ -84,14 +84,22 @@
                                 <span class="text-gray-300">&bull;</span>
                                 <span class="ml-1">{{ details }}</span>
                             </span>
-                            <span v-if="lastActiveTime" class="text-sm">
+                            <span
+                                v-if="selectedUser?.last_active_time"
+                                class="text-sm"
+                            >
                                 <span class="text-gray-300">&bull;</span>
                                 <a-tooltip placement="bottom">
                                     <template #title>
-                                        {{ lastActiveTime }}</template
+                                        {{
+                                            selectedUser.last_active_time
+                                        }}</template
                                     >
                                     <span class="ml-1">
-                                        Active {{ lastActiveTimeAgo }}</span
+                                        Active
+                                        {{
+                                            selectedUser.last_active_time_ago
+                                        }}</span
                                     >
                                 </a-tooltip>
                             </span>
@@ -161,9 +169,7 @@
     import SlackMessageCta from '@common/popover/user/slackMessageCta.vue'
     import AtlanButton from '@/UI/button.vue'
     import { useUserOrGroupPreview } from '~/composables/drawer/showUserOrGroupPreview'
-    import { getDeepLinkFromUserDmLink } from '~/composables/integrations/useSlack'
     import Shortcut from '@/common/popover/shortcut.vue'
-    import getUserLastSession from '~/composables/user/getUserLastSession'
 
     export default defineComponent({
         name: 'UserOrGroupPreview',
@@ -295,19 +301,6 @@
             const handleChangeTab = (tabKey) => {
                 activeKey.value = tabKey
             }
-            const userID = computed(() => selectedUser?.value?.id ?? '')
-            const {
-                lastActiveTimeAgo,
-                lastActiveTime,
-                fetchUserSessions: getLastSession,
-            } = getUserLastSession(userID)
-            watch(
-                selectedUser,
-                () => {
-                    if (selectedUser?.value?.id) getLastSession()
-                },
-                { deep: true, immediate: true }
-            )
 
             return {
                 tabs,
@@ -330,8 +323,6 @@
                 updatedImageUrl,
                 userUpdated,
                 handleChangeTab,
-                lastActiveTime,
-                lastActiveTimeAgo,
             }
         },
     })

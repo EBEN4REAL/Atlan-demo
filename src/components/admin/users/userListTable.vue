@@ -159,6 +159,15 @@
                 <div>{{ user.status_object.status }}</div>
             </div>
         </template>
+        <template #last_active_time="{ text: user }"
+            ><span v-if="user?.last_active_time" class="text-sm">
+                <a-tooltip placement="bottom">
+                    <template #title> {{ user.last_active_time }}</template>
+                    <span> {{ user.last_active_time_ago }}</span>
+                </a-tooltip>
+            </span>
+            <span v-else>-</span>
+        </template>
         <template #group="{ text: user }">
             <Groups
                 v-if="user?.groupCount"

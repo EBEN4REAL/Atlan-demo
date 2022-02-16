@@ -57,8 +57,8 @@
                 class="flex items-center justify-between px-2 shadow-none"
                 @click="handlePreviewClick"
                 ><div class="flex items-center">
-                    <AtlanIcon
-                        :icon="getConnectorImage(selectedAsset)"
+                    <img
+                        :src="getConnectorImage(selectedAsset)"
                         class="h-4 mr-1"
                     />View in
                     {{ getConnectorLabel(selectedAsset) }}
@@ -476,11 +476,11 @@
             "
             class="flex px-5"
         >
-            <div class="flex flex-col text-sm cursor-pointer">
+            <div class="flex flex-col text-sm">
                 <span class="mb-2 text-sm text-gray-500"
                     >External Location</span
                 >
-                <span class="font-semibold break-words">{{
+                <span class="font-semibold break-all">{{
                     externalLocation(selectedAsset)
                 }}</span>
             </div>
@@ -500,7 +500,7 @@
                 <span class="mb-2 text-sm text-gray-500"
                     >External Location Format</span
                 >
-                <span class="text-gray-700 break-words">{{
+                <span class="text-gray-700 break-all">{{
                     externalLocationFormat(selectedAsset)
                 }}</span>
             </div>

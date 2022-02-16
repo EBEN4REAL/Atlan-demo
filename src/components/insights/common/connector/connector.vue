@@ -29,8 +29,8 @@
                     class="flex items-center truncate selected-connetor"
                     @click="toggleVisibilityOfChildren(node.title)"
                 >
-                    <AtlanIcon
-                        :icon="getConnectorImage(node.connector)"
+                    <img
+                        :src="getConnectorImage(node.connector)"
                         class="w-4 h-4 mr-1"
                         style="min-width: 1rem"
                     />

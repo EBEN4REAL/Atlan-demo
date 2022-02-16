@@ -10,7 +10,7 @@
             <div class="flex flex-col col-span-4 px-9">
                 <div class="">
                     <SearchAndStats />
-                    <!-- <Announcements class="mt-6" /> -->
+                    <Announcements class="mt-6" />
                 </div>
                 <!-- 
                 <div class="mt-6">

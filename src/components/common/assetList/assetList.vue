@@ -97,6 +97,7 @@
                             :disableCheckboxForScrubbed="
                                 disableCheckboxForScrubbed
                             "
+                            class="hover:bg-primary-menu"
                         >
                             <template #cta>
                                 <slot :item="item" name="assetItemCta"> </slot>

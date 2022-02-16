@@ -1,6 +1,8 @@
 <template>
     <div>
-        <div class="flex items-center justify-between p-4">
+        <div
+            class="flex items-center justify-between px-5 bg-gray-50 py-2 border-b border-gray-200"
+        >
             <p class="font-semibold text-gray-500">Requests</p>
             <a-dropdown trigger="click" placement="bottomRight">
                 <template #overlay>
@@ -61,7 +63,7 @@
             <div class="flex flex-col items-center">
                 <AtlanIcon icon="EmptyRequest" style="height: 165px" />
                 <div class="px-10 mx-10 mt-2 text-center text-gray-500">
-                    Requests for this  asset will appear here
+                    Requests for this asset will appear here
                 </div>
             </div>
         </div>

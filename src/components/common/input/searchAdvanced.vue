@@ -213,8 +213,6 @@
             @apply border-gray-200 border-b shadow-none border-solid border-t-0 border-l-0 border-r-0 !important;
 
             &:global(.ant-input-affix-wrapper-focused) {
-                @apply border-primary border-b  border-solid border-t-0 border-l-0 border-r-0  !important;
-
                 :global(.focusIcon) {
                     @apply text-primary !important;
                 }

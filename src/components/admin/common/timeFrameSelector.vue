@@ -2,7 +2,7 @@
     <div>
         <a-dropdown :trigger="['click']">
             <a-button
-                :style="{ 'min-width: 168px': minimal }"
+                :style="{ 'min-width: 168px': !minimal }"
                 :class="{
                     'border-0 pr-0': minimal,
                     'focus:ring-2 focus:border-primary border-gray-300 rounded':

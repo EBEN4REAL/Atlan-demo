@@ -18,15 +18,14 @@
                 />
             </div>
 
-            <div
+            <!-- <div
                 v-if="isQueryLogsLoading"
                 class="flex items-center justify-center border border-gray-200 rounded"
                 style="min-height: 150px"
             >
                 <AtlanLoader class="w-full h-10" />
-            </div>
+            </div> -->
             <div
-                v-else
                 class="flex flex-col p-4 overflow-y-auto border border-gray-200 rounded resources-container gap-y-4"
                 style="min-height: 150px"
             >

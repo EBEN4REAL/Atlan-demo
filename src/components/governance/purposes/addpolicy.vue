@@ -1,7 +1,7 @@
 <template>
     <div class="relative bg-gray-100 add-policy-container">
         <div>
-            <div class="relative px-4 pt-5 pb-5">
+            <div class="relative p-4 bg-white">
                 <div
                     v-if="showDrawer"
                     class="close-btn-sidebar"
@@ -10,8 +10,10 @@
                     <AtlanIcon icon="Add" class="text-white" />
                 </div>
                 <div class="flex items-center">
-                    <AtlanIcon v-if="type === 'meta'" icon="Policies" />
-                    <AtlanIcon v-if="type === 'data'" icon="QueryGrey" />
+                    <div class="p-2.5 mr-2 rounded-full bg-primary-light">
+                        <AtlanIcon v-if="type === 'meta'" icon="Policies" />
+                        <AtlanIcon v-if="type === 'data'" icon="QueryGrey" />
+                    </div>
                     <span class="ml-1 font-semibold"
                         >{{
                             policyType === 'meta'
@@ -39,62 +41,71 @@
                 </div> -->
             </div>
             <div class="px-4">
-                <div class="relative">
-                    <div class="relative mb-2 text-sm text-gray-500 required">
-                        Name<span class="text-red-500">*</span>
+                <div class="relative mt-2 bg-white shadow-section">
+                    <div class="p-3 text-sm font-bold text-gray-700 border-b">
+                        Overview
                     </div>
-                    <div>
-                        <a-input
-                            :ref="
-                                (el) => {
-                                    policyNameRef = el
-                                }
-                            "
-                            v-model:value="policy.name"
-                            data-test-id="policy-edit-name"
-                            placeholder="Policy Name"
-                            @change="() => (rules.policyName.show = false)"
-                            @blur="
-                                () => {
-                                    if (!policy.name)
-                                        rules.policyName.show = true
-                                    else rules.policyName.show = false
-                                }
-                            "
-                        />
-                    </div>
-                    <!-- <div v-else>{{ policy.name }}</div> -->
-                    <div
-                        v-if="rules.policyName.show"
-                        class="absolute text-xs text-red-500 -bottom-5"
-                        data-test-id="policy-validation-name"
-                    >
-                        {{ rules.policyName.text }}
+                    <div class="relative p-3">
+                        <div
+                            class="relative mb-2 text-sm text-gray-500 required"
+                        >
+                            Name<span class="text-red-500">*</span>
+                        </div>
+                        <div>
+                            <a-input
+                                :ref="
+                                    (el) => {
+                                        policyNameRef = el
+                                    }
+                                "
+                                v-model:value="policy.name"
+                                data-test-id="policy-edit-name"
+                                placeholder="Policy Name"
+                                @change="() => (rules.policyName.show = false)"
+                                @blur="
+                                    () => {
+                                        if (!policy.name)
+                                            rules.policyName.show = true
+                                        else rules.policyName.show = false
+                                    }
+                                "
+                            />
+                        </div>
+                        <!-- <div v-else>{{ policy.name }}</div> -->
+                        <div
+                            v-if="rules.policyName.show"
+                            class="absolute text-xs text-red-500 -bottom-5"
+                            data-test-id="policy-validation-name"
+                        >
+                            {{ rules.policyName.text }}
+                        </div>
                     </div>
                 </div>
-                <div class="relative mt-6">
-                    <div class="mb-2 text-sm text-gray-500 required">
-                        Users / Groups <span class="text-red-500">*</span>
+                <div class="relative mt-6 bg-white shadow-section">
+                    <div class="p-3 text-sm font-bold text-gray-700 border-b">
+                        Users / Groups<span class="text-red-500">*</span>
                     </div>
-                    <Owners
-                        :ref="
-                            (el) => {
-                                refOwners = el
-                            }
-                        "
-                        v-model:modelValue="selectedOwnersData"
-                        :edit-permission="true"
-                        class="mb-6"
-                        :read-only="false"
-                        :destroy-tooltip-on-hide="true"
-                        @change="handleOwnersChange"
-                    />
-                    <div
-                        v-if="rules.users.show"
-                        class="absolute text-xs text-red-500 -bottom-5"
-                        data-test-id="policy-validation-owners"
-                    >
-                        {{ rules.users.text }}
+                    <div class="relative p-3">
+                        <Owners
+                            :ref="
+                                (el) => {
+                                    refOwners = el
+                                }
+                            "
+                            v-model:modelValue="selectedOwnersData"
+                            :edit-permission="true"
+                            class="mb-6"
+                            :read-only="false"
+                            :destroy-tooltip-on-hide="true"
+                            @change="handleOwnersChange"
+                        />
+                        <div
+                            v-if="rules.users.show"
+                            class="absolute text-xs text-red-500 -bottom-5"
+                            data-test-id="policy-validation-owners"
+                        >
+                            {{ rules.users.text }}
+                        </div>
                     </div>
                 </div>
                 <div v-if="policyType === 'meta'" class="mt-6">
@@ -628,6 +639,10 @@
 </script>
 
 <style lang="less" scoped>
+    .shadow-section {
+        box-shadow: 0px 1px 4px 0px #0000001f;
+        border-radius: 8px !important;
+    }
     .add-policy-container {
         height: 100vh;
         display: flex;

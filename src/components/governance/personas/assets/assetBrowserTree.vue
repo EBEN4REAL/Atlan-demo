@@ -27,6 +27,7 @@
                 :selected-keys="selectedKeys"
                 :check-strictly="true"
                 :hover-actions="false"
+                class="bg-gray-100"
             />
             <div
                 v-else-if="treeData.length === 0 && !isInitingTree"

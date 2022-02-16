@@ -47,7 +47,12 @@
             v-model:value="localDescription"
             tabindex="0"
             auto-size
-            @keyup.esc="handleCancel"
+            @keydown.esc="
+                () => {
+                    pressedEsc = true
+                    handleCancel()
+                }
+            "
             @blur="handleUpdate"
             @press-enter="handleEnter($event)"
         />
@@ -115,6 +120,7 @@
             const truncated = ref<boolean>(false)
             const { tooltipText, allowEditing, assetItem } = toRefs(props)
             const descriptionRef = ref(null)
+            const pressedEsc = ref(false)
 
             const { localDescription, handleChangeDescription } =
                 updateAssetAttributes(assetItem, true)
@@ -154,9 +160,14 @@
              * A utility function for handling updates to the field.
              */
             const handleUpdate = () => {
-                isEditing.value = false
-                handleChangeDescription()
-                emit('updatedDescription')
+                if (pressedEsc.value === false) {
+                    originalDescription.value = localDescription.value
+                    isEditing.value = false
+                    handleChangeDescription()
+                    emit('updatedDescription')
+                } else {
+                    pressedEsc.value = false
+                }
             }
 
             /**
@@ -179,6 +190,7 @@
                 descriptionRef,
                 handleEnter,
                 localDescription,
+                pressedEsc,
             }
         },
     })

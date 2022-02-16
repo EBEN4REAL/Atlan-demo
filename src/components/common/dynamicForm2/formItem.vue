@@ -232,7 +232,10 @@
                     configMap.value.anyOf.forEach((item) => {
                         item.required.forEach((i) => {
                             console.log('configMap', i)
-                            if (configMap.value.properties[i]) {
+                            if (
+                                configMap.value.properties &&
+                                configMap.value.properties[i]
+                            ) {
                                 configMap.value.properties[i].ui.hidden = true
                             }
                         })
@@ -260,7 +263,14 @@
                     if (findMatch.length > 0) {
                         findMatch.forEach((i) => {
                             i.required.forEach((i) => {
-                                configMap.value.properties[i].ui.hidden = false
+                                if (
+                                    configMap.value.properties &&
+                                    configMap.value.properties[i]
+                                ) {
+                                    configMap.value.properties[
+                                        i
+                                    ].ui.hidden = false
+                                }
                             })
                         })
                     }

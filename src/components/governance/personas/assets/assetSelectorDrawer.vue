@@ -116,12 +116,13 @@
             </div>
 
             <div
-                class="absolute bottom-0 flex items-center justify-end w-full p-4 bg-white gap-x-2"
+                class="absolute bottom-0 flex items-center justify-end w-full p-3 bg-white border-t border-gray-300 gap-x-2"
             >
                 <span class="pl-2 mr-auto text-gray-500"
                     >{{ selectedAssetCount || 'No' }} items selected</span
                 >
                 <AtlanBtn
+                    size="sm"
                     padding="compact"
                     color="secondary"
                     data-test-id="cancel"
@@ -131,6 +132,7 @@
                     Cancel
                 </AtlanBtn>
                 <AtlanBtn
+                    size="sm"
                     padding="compact"
                     data-test-id="save"
                     class="btn-asset"

@@ -34,12 +34,13 @@
             />
         </div>
         <div
-            class="fixed flex items-center justify-end p-3 mt-auto border-t border-solid gap-x-2 border-slate-300 btn-wrapper-manage"
+            class="fixed flex items-center justify-end p-3 mt-auto border-t border-gray-300 gap-x-2 btn-wrapper-manage"
         >
             <span class="mr-auto text-gray-500"
                 >{{ actionsLocal.length || 'No' }} items updated</span
             >
             <AtlanBtn
+                size="sm"
                 padding="compact"
                 color="secondary"
                 data-test-id="cancel"
@@ -49,6 +50,7 @@
                 Cancel
             </AtlanBtn>
             <AtlanBtn
+                size="sm"
                 padding="compact"
                 data-test-id="save"
                 class="btn-asset"

@@ -2,9 +2,11 @@
     <div v-if="showDrawer" class="close-btn-sidebar" @click="handleClose">
         <AtlanIcon icon="Add" class="text-gray-700" />
     </div>
-    <div class="relative bg-gray-100 add-policy-container">
+    <div class="bg-gray-100 add-policy-container">
         <div>
-            <div class="relative p-3 bg-white border-b border-gray-300">
+            <div
+                class="fixed top-0 z-10 w-full p-3 bg-white border-b border-gray-300"
+            >
                 <div class="flex items-center">
                     <div
                         v-if="type === 'meta'"
@@ -67,7 +69,7 @@
                     </span>
                 </div> -->
             </div>
-            <div class="px-4 mt-3 bg-gray-100">
+            <div class="px-4 my-20 bg-gray-100">
                 <div class="relative mt-2 bg-white shadow-section">
                     <div class="p-3 text-sm font-bold text-gray-700 border-b">
                         Overview
@@ -573,12 +575,15 @@
                 </a-drawer>
             </div>
         </div>
-        <div v-if="isEdit ? canEdit : true" class="flex button-container">
+        <div
+            v-if="isEdit ? canEdit : true"
+            class="absolute bottom-0 flex items-center justify-end w-full p-3 bg-white border-t border-gray-300 gap-x-2"
+        >
             <AtlanBtn
                 size="sm"
                 padding="compact"
-                color="minimal"
-                class="btn-submit"
+                color="secondary"
+                class="px-6 min-w-20"
                 @click="handleClose"
             >
                 Cancel
@@ -593,7 +598,7 @@
                     !policy?.assets?.length ||
                     (policyType === 'meta' && !selectedPermission.length)
                 "
-                class="btn-submit"
+                class="px-6 min-w-20"
                 @click="handleSave"
             >
                 {{ isLoading ? 'Saving' : isEdit ? 'Update' : 'Save' }}
@@ -1023,13 +1028,6 @@
         flex-direction: column;
         justify-content: space-between;
         overflow: scroll;
-    }
-    .button-container {
-        justify-content: flex-end;
-        padding: 16px;
-        .btn-submit {
-            width: 100px;
-        }
     }
     .wrapper-asset {
         .asset-name {

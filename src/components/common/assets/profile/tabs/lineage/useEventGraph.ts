@@ -432,6 +432,7 @@ export default function useEventGraph(
             list,
             () => {
                 const columns = list.value
+
                 if (!columns) {
                     const caretElement = getCaretElement(node.id)
                     controlCaret(node.id, caretElement)
@@ -470,7 +471,7 @@ export default function useEventGraph(
                 // Add to ExpandedNodes array only if it is not fetched again
                 if (!isFetchMore) {
                     chp.value.expandedNodes.push(node)
-                    controlShowMorePorts(node)
+                    // controlShowMorePorts(node)
                 }
             },
             { deep: true }
@@ -914,6 +915,129 @@ export default function useEventGraph(
         toggleNodesEdges(graph, true)
     }
 
+    // handleVPNode
+    const handleVPNode = (node, nodeIdsToAdd = []) => {
+        const nodeIdArr = node.id.split('-')
+        nodeIdArr.splice(0, 1)
+        const id = nodeIdArr.join('-')
+        const identifier = node.id.split('-').splice(0, 1)[0]
+        const mode = identifier.includes('vpNodeSS')
+            ? 'sameSource'
+            : 'sameTarget'
+
+        const hidden =
+            mode === 'sameSource'
+                ? sameSourceCount.value?.[id]?.targetsHidden
+                : sameTargetCount.value?.[id]?.sourcesHidden
+
+        let nodesHidden = [...hidden]
+
+        const handleNodeIdsToAdd = (nita) => {
+            const nh = nodesHidden.filter((x) => !nita.includes(x.guid))
+            const nta = nodesHidden.filter((x) => nita.includes(x.guid))
+            nodesHidden = nh
+            return nta
+        }
+        const nodesToAdd = !nodeIdsToAdd.length
+            ? nodesHidden.splice(0, 4)
+            : handleNodeIdsToAdd(nodeIdsToAdd)
+
+        if (mode === 'sameSource')
+            sameSourceCount.value[id].targetsHidden = nodesHidden
+        if (mode === 'sameTarget')
+            sameTargetCount.value[id].sourcesHidden = nodesHidden
+
+        const { relations, childrenCounts } = mergedLineageData.value
+
+        nodesToAdd.forEach((x) => {
+            const { nodeData } = createNodeData(
+                x,
+                relations,
+                childrenCounts,
+                true
+            )
+            nodes.value.push(nodeData)
+            addNode(graph, relations, childrenCounts, x)
+        })
+
+        const nodesToAddIds = nodesToAdd.map((x) => x.guid)
+
+        const edgesToAdd = relations.filter((x) => {
+            if (mode === 'sameSource')
+                return nodesToAddIds.includes(x.toEntityId)
+            return nodesToAddIds.includes(x.fromEntityId)
+        })
+
+        edgesToAdd.forEach((x) => {
+            const { fromEntityId: from, toEntityId: to, processId } = x
+            const relation = {
+                id: `${processId}/${from}@${to}`,
+                sourceCell: from,
+                sourcePort: `${from}-invisiblePort`,
+                targetCell: to,
+                targetPort: `${to}-invisiblePort`,
+            }
+            const exists = edges.value.find((x) => x.id === relation.id)
+
+            if (exists) return
+
+            const { edgeData } = createEdgeData(
+                relation,
+                {},
+                { stroke: '#aaaaaa' }
+            )
+            edges.value.push(edgeData)
+            addEdge(graph, relation)
+        })
+
+        nodes.value = nodes.value.filter((x) => x.id !== node.id)
+        edges.value = edges.value.filter((x) => {
+            if (mode === 'sameSource')
+                return x.id !== `vpNodeProcessId/${id}@${node.id}`
+            return x.id !== `vpNodeProcessId/${node.id}@${id}`
+        })
+
+        renderLayout(registerAllListeners)
+
+        if (nodesHidden.length === 0) return
+
+        // add back vp node
+        const entity = node?.store?.data?.entity || node.entity
+        const { nodeData } = createNodeData(
+            entity,
+            relations,
+            childrenCounts,
+            true
+        )
+        nodeData.data.hiddenCount = nodesHidden.length
+        nodes.value.push(nodeData)
+        addNode(graph, relations, childrenCounts, nodeData.entity)
+
+        // add back vp edge
+        const from = mode === 'sameSource' ? id : node.id
+        const processId = 'vpNodeProcessId'
+        const to = mode === 'sameSource' ? node.id : id
+
+        const relation = {
+            id: `${processId}/${from}@${to}`,
+            sourceCell: from,
+            sourcePort: `${from}-invisiblePort`,
+            targetCell: to,
+            targetPort: `${to}-invisiblePort`,
+        }
+
+        const { edgeData } = createEdgeData(relation, {}, { stroke: '#aaaaaa' })
+        edges.value.push(edgeData)
+        addEdge(graph, relation)
+        renderLayout(registerAllListeners)
+
+        const cell = graph.value.getCellById(node.id)
+        const updatedData = {
+            hiddenCount: nodesHidden.length,
+        }
+        cell.updateData({ ...updatedData })
+    }
+
     /** EVENTS */
     // PORT - CLICK
     graph.value.on('port:click', ({ e, node }) => {
@@ -941,6 +1065,9 @@ export default function useEventGraph(
      * @param edge - The edge whose interactivity is to be checked
      */
     const isEdgeClickable = (edge) => {
+        // No interaction for vertical pagination edges
+        if (edge.id.includes('vpNode')) return false
+
         // No interaction for related edges
         if (edge.id.includes('related')) return false
 
@@ -959,6 +1086,9 @@ export default function useEventGraph(
      * @param edge - The edge whose interactivity is to be checked
      */
     const isEdgeHoverable = (edge) => {
+        // No interaction for vertical pagination edges
+        if (edge.id.includes('vpNode')) return false
+
         // No interaction for related edges
         if (edge.id.includes('related')) return false
 
@@ -1054,116 +1184,7 @@ export default function useEventGraph(
         if (che.value) resetCHE()
 
         if (node.id.includes('vpNode')) {
-            const id = node.id.split('/')[1]
-            const hidden =
-                sameSourceCount.value?.[id]?.targetsHidden ||
-                sameTargetCount.value?.[id]?.sourcesHidden
-
-            const nodesHidden = [...hidden]
-            const nodesToAdd = nodesHidden.splice(0, 4)
-
-            const mode = sameSourceCount.value?.[id]?.targetsHidden
-                ? 'sameSource'
-                : 'sameTarget'
-
-            if (mode === 'sameSource')
-                sameSourceCount.value[id].targetsHidden = nodesHidden
-            if (mode === 'sameTarget')
-                sameTargetCount.value[id].sourcesHidden = nodesHidden
-
-            const { relations, childrenCounts } = mergedLineageData.value
-
-            nodesToAdd.forEach((x) => {
-                const { nodeData } = createNodeData(
-                    x,
-                    relations,
-                    childrenCounts,
-                    true
-                )
-                nodes.value.push(nodeData)
-                addNode(graph, relations, childrenCounts, x)
-            })
-
-            const nodesToAddIds = nodesToAdd.map((x) => x.guid)
-
-            const edgesToAdd = relations.filter((x) => {
-                if (mode === 'sameSource')
-                    return nodesToAddIds.includes(x.toEntityId)
-                return nodesToAddIds.includes(x.fromEntityId)
-            })
-
-            edgesToAdd.forEach((x) => {
-                const { fromEntityId: from, toEntityId: to, processId } = x
-                const relation = {
-                    id: `${processId}/${from}@${to}`,
-                    sourceCell: from,
-                    sourcePort: `${from}-invisiblePort`,
-                    targetCell: to,
-                    targetPort: `${to}-invisiblePort`,
-                }
-                const exists = edges.value.find((x) => x.id === relation.id)
-
-                if (exists) return
-
-                const { edgeData } = createEdgeData(
-                    relation,
-                    {},
-                    { stroke: '#aaaaaa' }
-                )
-                edges.value.push(edgeData)
-                addEdge(graph, relation)
-            })
-
-            nodes.value = nodes.value.filter((x) => x.id !== node.id)
-            edges.value = edges.value.filter((x) => {
-                if (mode === 'sameSource')
-                    return x.id !== `vpNodeProcessId/${id}@${node.id}`
-                return x.id !== `vpNodeProcessId/${node.id}@${id}`
-            })
-
-            renderLayout(registerAllListeners)
-
-            if (nodesHidden.length === 0) return
-
-            // add back vp node
-            const { nodeData } = createNodeData(
-                node.store.data.entity,
-                relations,
-                childrenCounts,
-                true
-            )
-            nodeData.data.hiddenCount = nodesHidden.length
-            nodes.value.push(nodeData)
-            addNode(graph, relations, childrenCounts, nodeData.entity)
-
-            // add back vp edge
-            const from = mode === 'sameSource' ? id : node.id
-            const processId = 'vpNodeProcessId'
-            const to = mode === 'sameSource' ? node.id : id
-
-            const relation = {
-                id: `${processId}/${from}@${to}`,
-                sourceCell: from,
-                sourcePort: `${from}-invisiblePort`,
-                targetCell: to,
-                targetPort: `${to}-invisiblePort`,
-            }
-
-            const { edgeData } = createEdgeData(
-                relation,
-                {},
-                { stroke: '#aaaaaa' }
-            )
-            edges.value.push(edgeData)
-            addEdge(graph, relation)
-            renderLayout(registerAllListeners)
-
-            const cell = graph.value.getCellById(node.id)
-            const updatedData = {
-                hiddenCount: nodesHidden.length,
-            }
-            cell.updateData({ ...updatedData })
-
+            handleVPNode(node)
             return
         }
 

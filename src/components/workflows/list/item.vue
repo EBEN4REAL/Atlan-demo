@@ -3,7 +3,7 @@
         class="flex flex-col p-4 bg-white border border-gray-200 rounded-lg shadow-sm cursor-pointer hover:border-primary hover:shadow-lg hover:translate-y-2"
         :class="isSelected ? 'border-primary shadow-lg' : ''"
     >
-        <div class="mb-3">
+        <div class="mb-3 border-b pb-3">
             <div class="flex items-center justify-between">
                 <div
                     class="flex items-center flex-grow border-gray-200"

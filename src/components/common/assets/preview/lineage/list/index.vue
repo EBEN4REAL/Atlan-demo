@@ -28,7 +28,7 @@
                 :item-index="itemIndex"
                 :preference="preference"
                 :enable-sidebar-drawer="true"
-                class="mx-3"
+                class="mx-3 hover:bg-primary-menu"
                 isCompact
             ></AssetItem>
         </template>

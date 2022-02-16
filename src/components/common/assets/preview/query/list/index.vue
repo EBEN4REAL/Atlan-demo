@@ -37,7 +37,7 @@
             <AssetItem
                 :item="item"
                 :preference="preference"
-                class="mx-4"
+                class="mx-3 hover:bg-primary-menu"
             ></AssetItem>
         </template>
     </AssetList>

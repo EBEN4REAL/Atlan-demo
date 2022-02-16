@@ -18,7 +18,7 @@
         </div>
 
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
-            <div class="flex flex-col h-full">
+            <div class="flex flex-col h-full bg-primary-light">
                 <div class="flex">
                     <SearchAdvanced
                         :key="searchDirtyTimestamp"
@@ -32,7 +32,7 @@
                         :class="
                             ['admin', 'classifications'].includes(page)
                                 ? ''
-                                : 'px-6'
+                                : 'px-3 bg-white border-b mt-3 mx-4 rounded-lg'
                         "
                         :placeholder="placeholder"
                         @change="handleSearchChange"
@@ -80,7 +80,7 @@
                 <div
                     v-if="showAggrs"
                     class="w-full"
-                    :class="page === 'admin' ? '' : 'pl-3 mt-2 mb-1'"
+                    :class="page === 'admin' ? '' : 'px-4 mt-3 mb-1'"
                 >
                     <AggregationTabs
                         v-model="postFacets.typeName"
@@ -144,6 +144,7 @@
                         :is-load-more="isLoadMore"
                         :is-loading="isValidating"
                         @loadMore="handleLoadMore"
+                        class="bg-primary-light"
                     >
                         <template #default="{ item, itemIndex }">
                             <AssetItem
@@ -170,7 +171,11 @@
                                         ? checkSelectedCriteriaFxn(item)
                                         : false
                                 "
-                                :class="page !== 'admin' ? 'mx-3' : 'mx-3'"
+                                :class="
+                                    page == 'assets'
+                                        ? 'mx-4 bg-white border hover:shadow'
+                                        : 'mx-4 border-transparent hover:primary-menu-light'
+                                "
                                 :open-asset-profile-in-new-tab="
                                     item.typeName.toLowerCase() === 'query'
                                 "

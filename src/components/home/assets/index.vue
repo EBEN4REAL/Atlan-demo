@@ -54,6 +54,7 @@
                     <AssetItem
                         :item="item"
                         :preference="preference"
+                        class="hover:bg-primary-menu"
                         :enable-sidebar-drawer="true"
                         @updateDrawer="updateCurrentList"
                     ></AssetItem>

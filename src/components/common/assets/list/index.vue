@@ -1,7 +1,7 @@
 <template>
     <VirtualList :data="list" data-key="guid" variable-height>
         <template #default="{ item, index }">
-            <slot :item="item" :itemIndex="index"></slot>
+            <slot :item="item" :itemIndex="index" class=""></slot>
         </template>
         <template #footer>
             <div
@@ -10,8 +10,8 @@
             >
                 <button
                     :disabled="isLoading"
-                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full text-primary"
-                    :class="isLoading ? 'px-2 w-9' : ''"
+                    class="flex items-center justify-between px-3 py-2 transition-all duration-300 bg-white rounded-full text-primary"
+                    :class="isLoading ? 'px-3 py-2' : ''"
                     @click="$emit('loadMore')"
                 >
                     <template v-if="!isLoading">
@@ -22,7 +22,7 @@
                         </p>
                         <AtlanIcon icon="ArrowDown" />
                     </template>
-                    <AtlanLoader v-else class="h-10" />
+                    <AtlanLoader v-else class="w-6 h-6" />
                 </button>
             </div>
         </template>

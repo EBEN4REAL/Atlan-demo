@@ -20,9 +20,9 @@
                 :title="capitalizeFirstLetter(connectorName)"
                 placement="left"
             >
-                <AtlanIcon
+                <img
                     v-if="connectorName"
-                    :icon="getConnectorImageMap[connectorName.toLowerCase()]"
+                    :src="getConnectorImageMap[connectorName.toLowerCase()]"
                     class="w-auto h-4 pr-2 mr-2 border-r"
                 />
             </a-tooltip>
@@ -213,8 +213,6 @@
             @apply border-gray-200 border-b shadow-none border-solid border-t-0 border-l-0 border-r-0 !important;
 
             &:global(.ant-input-affix-wrapper-focused) {
-                @apply border-primary border-b  border-solid border-t-0 border-l-0 border-r-0  !important;
-
                 :global(.focusIcon) {
                     @apply text-primary !important;
                 }

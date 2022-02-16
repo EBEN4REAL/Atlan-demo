@@ -19,8 +19,8 @@
                 <div class="flex flex-col">
                     <div class="flex items-center font-semibold">
                         <div class="flex items-center mr-1">
-                            <AtlanIcon
-                                :icon="getImage(connector(credential))"
+                            <img
+                                :src="getImage(connector(credential))"
                                 class="w-auto h-4 mr-1"
                             />
 

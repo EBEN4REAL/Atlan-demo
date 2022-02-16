@@ -43,6 +43,9 @@ export const formatDateTime = (
  * @returns time ago string with shortened time-unit ex - 1h ago
  */
 export const getShortNotationDateTimeAgo = (dateString) => {
+    /** If the string has no digit i.e. is like `just now`, 'last week` -> we return the string as is */
+    if (!/\d/.test(dateString)) return dateString
+
     const timeUnitStrings = [
         'sec',
         'min',

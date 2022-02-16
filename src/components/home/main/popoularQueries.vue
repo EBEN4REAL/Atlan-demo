@@ -7,7 +7,7 @@
                 :show-drawer="showAssetSidebarDrawer"
                 @closeDrawer="handleCloseDrawer"
             />
-            <div class="flex mb-1">
+            <div class="flex items-center mb-1">
                 <span class="mb-1 text-sm font-semibold text-gray-500">
                     <!-- <AtlanIcon icon="TrendUp"></AtlanIcon> -->
                     Popular Queries
@@ -31,7 +31,7 @@
                 <AtlanLoader class="w-full h-10" />
             </div> -->
             <div
-                class="flex flex-col p-4 overflow-y-auto border border-gray-200 rounded resources-container"
+                class="flex flex-col px-4 py-2 overflow-y-auto border border-gray-200 rounded resources-container"
                 style="min-height: 150px"
                 v-if="popularQueriesList.length > 0"
             >

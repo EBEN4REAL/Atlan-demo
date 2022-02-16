@@ -19,10 +19,16 @@
             :style="`left: ${offsetLoaderCords.x}px; top: ${offsetLoaderCords.y}px; z-index: 999`"
         />
 
+        <!-- comShaVer -->
+        <div id="comShaVer" class="hidden">
+            054ad738932fde38623e9607df9241c8f918e540
+        </div>
+
         <!-- Graph Container -->
         <div style="display: flex">
             <div ref="graphContainer" style="flex: 1"></div>
         </div>
+
         <!-- Lineage Header -->
         <LineageHeader
             v-if="isComputeDone"

@@ -27,7 +27,7 @@
                     class="flex items-center truncate selected-connetor"
                     @click="toggleVisibilityOfChildren(node.title)"
                 >
-                    <AtlanIcon :icon="node.img" class="h-4 mr-1" />
+                    <img :src="node.img" class="h-4 mr-1" />
                     <div class="flex flex-col" v-if="!node?.connection">
                         {{ capitalizeFirstLetter(node.title) }}
                     </div>

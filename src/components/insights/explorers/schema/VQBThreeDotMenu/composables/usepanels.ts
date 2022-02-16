@@ -48,6 +48,19 @@ export function addFilter(
                 expand: true,
             },
         ]
+        const len =
+            activeInlineTab.value.playground.vqb.panels[filterIndex].subpanels
+                .length
+        if (len > 0) {
+            // edge case when previous subpanel is empty
+            const previousSubpanel =
+                activeInlineTab.value.playground.vqb.panels[filterIndex]
+                    .subpanels[len - 1]
+            if (Object.keys(previousSubpanel?.column ?? {}).length === 0) {
+                // remove previous el
+                subpanels.splice(len - 1, 1)
+            }
+        }
         activeInlineTab.value.playground.vqb.panels[filterIndex].subpanels =
             subpanels
     } else {
@@ -126,6 +139,20 @@ export function addAggregate(
                 expand: true,
             },
         ]
+
+        const len =
+            activeInlineTab.value.playground.vqb.panels[aggregateIndex]
+                .subpanels.length
+        if (len > 0) {
+            // edge case when previous subpanel is empty
+            const previousSubpanel =
+                activeInlineTab.value.playground.vqb.panels[aggregateIndex]
+                    .subpanels[len - 1]
+            if (Object.keys(previousSubpanel?.column ?? {}).length === 0) {
+                // remove previous el
+                subpanels.splice(len - 1, 1)
+            }
+        }
         activeInlineTab.value.playground.vqb.panels[aggregateIndex].subpanels =
             subpanels
     } else {

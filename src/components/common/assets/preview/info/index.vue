@@ -57,8 +57,8 @@
                 class="flex items-center justify-between px-2 shadow-none"
                 @click="handlePreviewClick"
                 ><div class="flex items-center">
-                    <AtlanIcon
-                        :icon="getConnectorImage(selectedAsset)"
+                    <img
+                        :src="getConnectorImage(selectedAsset)"
                         class="h-4 mr-1"
                     />View in
                     {{ getConnectorLabel(selectedAsset) }}

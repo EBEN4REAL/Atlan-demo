@@ -62,8 +62,8 @@
                                 `/${connectionName(selectedAsset)}`
                             }}</span>
                         </template>
-                        <AtlanIcon
-                            :icon="getConnectorImage(selectedAsset)"
+                        <img
+                            :src="getConnectorImage(selectedAsset)"
                             class="h-4 mr-1 mb-0.5"
                         />
                     </a-tooltip>

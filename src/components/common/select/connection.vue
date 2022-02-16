@@ -20,8 +20,8 @@
             <a-select-option :value="item.attributes?.qualifiedName">
                 <div class="flex flex-col">
                     <div class="flex items-center">
-                        <AtlanIcon
-                            :icon="getConnectorImage(item)"
+                        <img
+                            :src="getConnectorImage(item)"
                             class="h-4 mr-1 mb-0.5"
                             style="min-width: 1rem"
                         /><span class="truncate">{{

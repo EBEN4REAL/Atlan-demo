@@ -416,7 +416,11 @@ import Documentation from '~/assets/images/icons/documentation.svg'
 import Logout from '~/assets/images/icons/logout.svg'
 import TrendUp from '~/assets/images/icons/trendUp.svg'
 
+
+import ThreeDotsAlt from '~/assets/images/icons/3-dots-alt.svg'
+
 export default {
+    ThreeDotsAlt,
     Resources2,
     RunningQuery,
     FailedQuery,

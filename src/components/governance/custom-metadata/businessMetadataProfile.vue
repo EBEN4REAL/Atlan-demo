@@ -151,7 +151,7 @@
     // ? Components
     import CreateUpdateInfo from '@/common/info/createUpdateInfo.vue'
     import MetadataHeaderButton from './metadataHeaderButton.vue'
-    import AddPropertyDrawer from './propertyDrawer.vue'
+    import AddPropertyDrawer from './propertyDrawer/propertyDrawer.vue'
     import noPropertyImage from '~/assets/images/admin/no-property.png'
     import PropertyList from './propertyList.vue'
     import AvatarUpdate from './avatarUpdate.vue'

@@ -1,36 +1,22 @@
 <template>
-    <div class="property-drawer">
+    <div class="relative property-drawer">
         <a-drawer
             :visible="visible"
             :mask="false"
-            :width="450"
+            :width="550"
             :closable="false"
             :destroy-on-close="true"
             class="flex flex-col"
             :body-style="{ display: 'flex', 'flex-direction': 'column' }"
         >
-            <div class="flex items-center justify-between px-3 py-4 border-b">
-                <div class="w-full">
-                    <p class="text-gray-500">Property</p>
-                    <p class="text-xl">
-                        <Truncate
-                            :tooltip-text="
-                                isEdit ? form.displayName : 'Add new'
-                            "
-                            :rows="2"
-                        />
-                    </p>
-                </div>
-
-                <a-button
-                    type="default"
-                    size="small"
-                    class="border-gray-300"
-                    @click="handleClose"
-                >
-                    <AtlanIcon icon="Cancel" class="h-3" />
-                </a-button>
-            </div>
+            <Header
+                :title="form.displayName || undefined"
+                :editing="isEdit"
+                @close="handleClose"
+                :loading="loading"
+                v-model:createMore="createMore"
+                @update="handleUpdateProperty"
+            />
             <!-- Form =============================================================================================================== -->
             <div class="flex-grow px-3 py-4 overflow-y-auto">
                 <a-form
@@ -380,24 +366,6 @@
                 </a-form>
             </div>
 
-            <div class="flex justify-end p-3 border-t">
-                <div v-if="!isEdit" class="flex items-center space-x-2">
-                    <a-switch v-model:checked="createMore" size="small" />
-                    <p class="p-0 m-0">Create more</p>
-                </div>
-                <div class="flex-grow"></div>
-
-                <a-button :style="{ marginRight: '8px' }" @click="handleClose">
-                    Cancel
-                </a-button>
-                <a-button
-                    type="primary"
-                    :loading="loading"
-                    @click="handleUpdateProperty"
-                >
-                    {{ isEdit ? 'Update' : 'Create' }}
-                </a-button>
-            </div>
             <!-- End of Form =============================================================================================================== -->
         </a-drawer>
     </div>
@@ -411,11 +379,10 @@
         computed,
         toRefs,
         watch,
-        Ref,
+        provide,
     } from 'vue'
     import { message, TreeSelect } from 'ant-design-vue'
     import { onKeyStroke } from '@vueuse/core'
-    import v from 'vue-sse'
     import {
         DEFAULT_ATTRIBUTE,
         ATTRIBUTE_INPUT_VALIDATION_RULES,
@@ -423,21 +390,27 @@
         applicableEntityTypesOptions,
     } from '~/constant/businessMetadataTemplate'
     import { Types } from '~/services/meta/types'
-    import NewEnumForm from './newEnumForm.vue'
+    import NewEnumForm from '@/governance/custom-metadata/newEnumForm.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { CUSTOM_METADATA_ATTRIBUTE as CMA } from '~/types/typedefs/customMetadata.interface'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import { refetchTypedef } from '~/composables/typedefs/useTypedefs'
     import Truncate from '@/common/ellipsis/index.vue'
     import access from '~/constant/accessControl/map'
-    import { useUpdateEnums } from '../enums/composables/useModifyEnums'
+    import { useUpdateEnums } from '@/governance/enums/composables/useModifyEnums'
     import { useTypedefStore } from '~/store/typedef'
     import MultiInput from '@/common/input/customizedTagInput.vue'
+
+    // sub-components
+    import Header from '@/governance/custom-metadata/propertyDrawer/header.vue'
+    import Shortcut from '@/common/popover/shortcut.vue'
 
     const CHECKEDSTRATEGY = TreeSelect.SHOW_PARENT
 
     export default defineComponent({
         components: {
+            Shortcut,
+            Header,
             MultiInput,
             NewEnumForm,
             Truncate,
@@ -472,6 +445,7 @@
                 () => props.metadata.options?.isLocked === 'true'
             )
             const { metadata } = toRefs(props)
+            provide('property', form)
 
             const attributesTypes = reactive(
                 JSON.parse(JSON.stringify(ATTRIBUTE_TYPES))

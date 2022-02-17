@@ -1,5 +1,5 @@
 <template>
-    <div ref="wrapper" class="w-full">
+    <div ref="wrapper" class="w-full h-full overflow-y-auto">
         <template v-if="minimal">
             <template v-if="resources?.length">
                 <div
@@ -17,7 +17,7 @@
                             <div
                                 class="flex items-center cursor-pointer text-primary"
                             >
-                                <AtlanIcon icon="Add" class="mr-1" /> Add
+                                <AtlanIcon icon="Add" class="mr-1 mb-0.5" /> Add
                             </div>
                         </template>
                     </AddResource>

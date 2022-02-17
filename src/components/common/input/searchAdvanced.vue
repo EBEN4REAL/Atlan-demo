@@ -33,7 +33,7 @@
         </template>
 
         <template #suffix>
-            <a-spin size="small" v-if="isLoading" class="mt-0.5 mx-1"></a-spin>
+            <AtlanLoader v-if="isLoading" class="mt-0.5 mx-1 h-5" />
             <slot name="tab" />
             <slot name="filter" />
             <a-popover

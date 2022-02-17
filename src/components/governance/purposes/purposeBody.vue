@@ -62,7 +62,7 @@
             class="flex flex-col px-6 pt-6"
             style="height: calc(100% - 155px)"
         >
-            <div class="bg-white">
+            <div class="bg-white rounded-lg">
                 <div
                     v-if="!isEmpty"
                     class="flex items-center justify-between p-4 border-b"

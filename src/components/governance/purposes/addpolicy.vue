@@ -4,13 +4,19 @@
     </div>
     <div class="relative bg-gray-100 add-policy-container">
         <div>
-            <div class="relative p-4 py-2 bg-white">
+            <div
+                class="fixed top-0 z-10 w-full p-3 bg-white border-b border-gray-300"
+            >
                 <div class="flex items-center">
                     <div class="p-2 mr-2 rounded-full bg-primary-light">
-                        <AtlanIcon v-if="type === 'meta'" icon="Policies" />
+                        <AtlanIcon
+                            v-if="type === 'meta'"
+                            icon="Policies"
+                            class="icon-blue"
+                        />
                         <AtlanIcon v-if="type === 'data'" icon="QueryGrey" />
                     </div>
-                    <span class="ml-1 font-semibold"
+                    <span class="ml-1 text-base font-bold"
                         >{{
                             policyType === 'meta'
                                 ? 'Metadata Policy'
@@ -36,96 +42,105 @@
                     </span>
                 </div> -->
             </div>
-            <div class="px-4">
-                <div class="relative mt-2 bg-white shadow-section">
-                    <div class="p-3 text-sm font-bold text-gray-700 border-b">
-                        Overview
-                    </div>
-                    <div class="relative p-3">
+            <div class="my-20">
+                <div class="px-4">
+                    <div class="relative mt-2 bg-white shadow-section">
                         <div
-                            class="relative mb-2 text-sm text-gray-500 required"
+                            class="p-3 text-sm font-bold text-gray-700 border-b"
                         >
-                            Name<span class="text-red-500">*</span>
+                            Overview
                         </div>
-                        <div>
-                            <a-input
+                        <div class="relative p-3">
+                            <div
+                                class="relative mb-2 text-sm text-gray-500 required"
+                            >
+                                Name<span class="text-red-500">*</span>
+                            </div>
+                            <div>
+                                <a-input
+                                    :ref="
+                                        (el) => {
+                                            policyNameRef = el
+                                        }
+                                    "
+                                    v-model:value="policy.name"
+                                    data-test-id="policy-edit-name"
+                                    placeholder="Policy Name"
+                                    @change="
+                                        () => (rules.policyName.show = false)
+                                    "
+                                    @blur="
+                                        () => {
+                                            if (!policy.name)
+                                                rules.policyName.show = true
+                                            else rules.policyName.show = false
+                                        }
+                                    "
+                                />
+                            </div>
+                            <!-- <div v-else>{{ policy.name }}</div> -->
+                            <div
+                                v-if="rules.policyName.show"
+                                class="absolute text-xs text-red-500 -bottom-5"
+                                data-test-id="policy-validation-name"
+                            >
+                                {{ rules.policyName.text }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="relative mt-4 bg-white shadow-section">
+                        <div
+                            class="p-3 text-sm font-bold text-gray-700 border-b"
+                        >
+                            Users / Groups<span class="text-red-500">*</span>
+                        </div>
+                        <div class="relative p-3">
+                            <Owners
                                 :ref="
                                     (el) => {
-                                        policyNameRef = el
+                                        refOwners = el
                                     }
                                 "
-                                v-model:value="policy.name"
-                                data-test-id="policy-edit-name"
-                                placeholder="Policy Name"
-                                @change="() => (rules.policyName.show = false)"
-                                @blur="
-                                    () => {
-                                        if (!policy.name)
-                                            rules.policyName.show = true
-                                        else rules.policyName.show = false
-                                    }
-                                "
+                                v-model:modelValue="selectedOwnersData"
+                                :edit-permission="true"
+                                :read-only="false"
+                                :destroy-tooltip-on-hide="true"
+                                @change="handleOwnersChange"
                             />
-                        </div>
-                        <!-- <div v-else>{{ policy.name }}</div> -->
-                        <div
-                            v-if="rules.policyName.show"
-                            class="absolute text-xs text-red-500 -bottom-5"
-                            data-test-id="policy-validation-name"
-                        >
-                            {{ rules.policyName.text }}
-                        </div>
-                    </div>
-                </div>
-                <div class="relative mt-3 bg-white shadow-section">
-                    <div class="p-3 text-sm font-bold text-gray-700 border-b">
-                        Users / Groups<span class="text-red-500">*</span>
-                    </div>
-                    <div class="relative p-3">
-                        <Owners
-                            :ref="
-                                (el) => {
-                                    refOwners = el
-                                }
-                            "
-                            v-model:modelValue="selectedOwnersData"
-                            :edit-permission="true"
-                            :read-only="false"
-                            :destroy-tooltip-on-hide="true"
-                            @change="handleOwnersChange"
-                        />
-                        <div
-                            v-if="rules.users.show"
-                            class="absolute text-xs text-red-500 -bottom-5"
-                            data-test-id="policy-validation-owners"
-                        >
-                            {{ rules.users.text }}
-                        </div>
-                    </div>
-                </div>
-                <div class="mt-3 bg-white shadow-section">
-                    <div v-if="policyType === 'meta'">
-                        <div class="flex items-center justify-between p-3 pb-2">
                             <div
-                                class="text-sm font-bold text-gray-700 border-b"
+                                v-if="rules.users.show"
+                                class="absolute text-xs text-red-500 -bottom-5"
+                                data-test-id="policy-validation-owners"
                             >
-                                Select permissions
-                                <span class="text-red-500">*</span>
+                                {{ rules.users.text }}
                             </div>
-                            <a-button
-                                v-if="selectedPermission.length > 0"
-                                size="small"
-                                class="border-none text-primary"
-                                @click="handleToggleManage"
-                            >
-                                Edit
-                                <AtlanIcon
-                                    icon="ArrowRight"
-                                    class="text-primary"
-                                />
-                            </a-button>
                         </div>
-                        <!-- <div class="flex justify-between">
+                    </div>
+                    <div class="mt-4 bg-white shadow-section">
+                        <div v-if="policyType === 'meta'">
+                            <div
+                                class="flex items-center justify-between p-3 pb-2"
+                            >
+                                <div
+                                    class="text-sm font-bold text-gray-700 border-b"
+                                >
+                                    Select permissions
+                                    <span class="text-red-500">*</span>
+                                </div>
+                                <a-button
+                                    v-if="selectedPermission.length > 0"
+                                    size="small"
+                                    class="border-none text-primary"
+                                    @click="handleToggleManage"
+                                >
+                                    Edit
+                                    <AtlanIcon
+                                        icon="ArrowRight"
+                                        class="text-primary"
+                                    />
+                                </a-button>
+                            </div>
+                            <!-- <div class="flex justify-between">
                         <div class="text-gray-500">
                             Permissions <span class="text-red-500">*</span>
                         </div>
@@ -143,100 +158,104 @@
                             />
                         </AtlanBtn>
                         </div> -->
-                        <div
-                            class="flex items-center p-3 mt-1 border border-gray-200 border-dashed rounded border-bottom"
-                        >
-                            <span v-if="selectedPermission.length === 0">
-                                <a-button
-                                    size="small"
-                                    class="text-primary"
-                                    @click="handleToggleManage"
-                                >
-                                    Edit
-                                    <AtlanIcon
-                                        icon="ArrowRight"
-                                        class="ml-1 text-primary"
-                                    />
-                                </a-button>
-                            </span>
-                            <div v-else>
-                                <div
-                                    v-for="el in selectedPermission"
-                                    :key="el"
-                                    class="flex flex-col h-auto mb-3 overflow-auto tag-permission max-h-32"
-                                >
-                                    <div class="text-gray-500 title-tag">
-                                        <AtlanIcon
-                                            :icon="el.icon"
-                                            class="mr-1"
-                                        />
-                                        {{ el.title }}
-                                    </div>
-                                    <div
-                                        class="font-mono tracking-wide text-gray-700 value-tag"
+                            <div
+                                class="flex items-center p-3 mt-1 border border-gray-200 border-dashed rounded border-bottom"
+                            >
+                                <span v-if="selectedPermission.length === 0">
+                                    <a-button
+                                        size="small"
+                                        class="text-primary"
+                                        @click="handleToggleManage"
                                     >
-                                        {{ el.value }}
+                                        Edit
+                                        <AtlanIcon
+                                            icon="ArrowRight"
+                                            class="ml-1 text-primary"
+                                        />
+                                    </a-button>
+                                </span>
+                                <div v-else>
+                                    <div
+                                        v-for="el in selectedPermission"
+                                        :key="el"
+                                        class="flex flex-col h-auto mb-3 overflow-auto tag-permission max-h-32"
+                                    >
+                                        <div class="text-gray-500 title-tag">
+                                            <AtlanIcon
+                                                :icon="el.icon"
+                                                class="mr-1"
+                                            />
+                                            {{ el.title }}
+                                        </div>
+                                        <div
+                                            class="font-mono tracking-wide text-gray-700 value-tag"
+                                        >
+                                            {{ el.value }}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div
-                            v-if="rules.metadata.show"
-                            class="mt-2 text-xs text-red-500"
-                            data-test-id="policy-validation-connector"
-                        >
-                            {{ rules.metadata.text }}
-                        </div>
-                    </div>
-                    <div v-if="policyType === 'data'">
-                        <div
-                            class="p-3 text-sm font-bold text-gray-700 border-b"
-                        >
-                            Configurations
-                        </div>
-                        <div class="p-3">
-                            <div class="flex items-center mb-2 gap-x-1">
-                                <span class="text-sm text-gray-500"
-                                    >Masking(Optional)</span
-                                >
+                            <div
+                                v-if="rules.metadata.show"
+                                class="mt-2 text-xs text-red-500"
+                                data-test-id="policy-validation-connector"
+                            >
+                                {{ rules.metadata.text }}
                             </div>
+                        </div>
+                        <div v-if="policyType === 'data'">
+                            <div
+                                class="p-3 text-sm font-bold text-gray-700 border-b"
+                            >
+                                Configurations
+                            </div>
+                            <div class="p-3">
+                                <div class="flex items-center mb-2 gap-x-1">
+                                    <span class="text-sm text-gray-500"
+                                        >Masking(Optional)</span
+                                    >
+                                </div>
 
-                            <DataMaskingSelector
-                                v-model:maskType="policy.mask"
-                                class="mb-6 w-80"
-                                :type="'purpose'"
-                            />
-                        </div>
-                    </div>
-                    <div class="p-3 bg-gray-100 rounded">
-                        <div class="flex">
-                            <div>
-                                <span>Deny Permissions</span>
-                                <a-tooltip placement="top" color="white">
-                                    <AtlanIcon icon="Overview" class="mx-2" />
-                                    <template #title>
-                                        <p class="m-3 text-gray">
-                                            This will deny the permissions you
-                                            have selected above, for all the
-                                            users in the persona, even if they
-                                            had access to those permissions via
-                                            some other persona or purpose.
-                                        </p>
-                                    </template>
-                                </a-tooltip>
+                                <DataMaskingSelector
+                                    v-model:maskType="policy.mask"
+                                    class="mb-6 w-80"
+                                    :type="'purpose'"
+                                />
                             </div>
-                            <a-switch
-                                :class="policy.allow ? `` : 'bg-red-600'"
-                                data-test-id="toggle-switch"
-                                class="ml-3"
-                                :checked="!policy.allow"
-                                style="width: 40px !important"
-                                @update:checked="policy.allow = !$event"
-                            />
+                        </div>
+                        <div class="p-3 bg-gray-100 rounded">
+                            <div class="flex">
+                                <div>
+                                    <span>Deny Permissions</span>
+                                    <a-tooltip placement="top" color="white">
+                                        <AtlanIcon
+                                            icon="Overview"
+                                            class="mx-2"
+                                        />
+                                        <template #title>
+                                            <p class="m-3 text-gray">
+                                                This will deny the permissions
+                                                you have selected above, for all
+                                                the users in the persona, even
+                                                if they had access to those
+                                                permissions via some other
+                                                persona or purpose.
+                                            </p>
+                                        </template>
+                                    </a-tooltip>
+                                </div>
+                                <a-switch
+                                    :class="policy.allow ? `` : 'bg-red-600'"
+                                    data-test-id="toggle-switch"
+                                    class="ml-3"
+                                    :checked="!policy.allow"
+                                    style="width: 40px !important"
+                                    @update:checked="policy.allow = !$event"
+                                />
+                            </div>
                         </div>
                     </div>
-                </div>
-                <!-- <div v-else>
+                    <!-- <div v-else>
                     <div class="flex flex-col mt-7 gap-y-2">
                         <div class="flex gap-1">
                             <AtlanIcon class="text-gray-500" icon="Lock" />
@@ -266,7 +285,7 @@
                     />
                 </div> -->
 
-                <!-- <div
+                    <!-- <div
                     v-if="!policy.allow"
                     class="flex items-center justify-between"
                 >
@@ -286,22 +305,23 @@
                     </div>
                 </div> -->
 
-                <a-drawer
-                    placement="right"
-                    :closable="false"
-                    :visible="isShow"
-                    :width="480"
-                    :mask="false"
-                    :destroy-on-close="true"
-                    @close="handleToggleManage"
-                >
-                    <ManagePermission
-                        v-model:actions="policy.actions"
-                        :visible-drawer="isShow"
-                        @close="() => (isShow = false)"
-                        @save="handleSavePermission"
-                    />
-                </a-drawer>
+                    <a-drawer
+                        placement="right"
+                        :closable="false"
+                        :visible="isShow"
+                        :width="480"
+                        :mask="false"
+                        :destroy-on-close="true"
+                        @close="handleToggleManage"
+                    >
+                        <ManagePermission
+                            v-model:actions="policy.actions"
+                            :visible-drawer="isShow"
+                            @close="() => (isShow = false)"
+                            @save="handleSavePermission"
+                        />
+                    </a-drawer>
+                </div>
             </div>
         </div>
         <div class="flex button-container">
@@ -652,6 +672,13 @@
     })
 </script>
 
+<style lang="less">
+    .icon-blue {
+        path {
+            fill: #5277d7 !important;
+        }
+    }
+</style>
 <style lang="less" scoped>
     .shadow-section {
         box-shadow: 0px 1px 4px 0px #0000001f;

@@ -1,5 +1,5 @@
 <template>
-    <div class="relative container-policy-card">
+    <div class="relative border-b container-policy-card">
         <div
             class="flex items-center px-3 py-3 rounded cursor-pointer group hover:bg-gray-100 card-policy"
             :class="selectedPolicy.id === policy.id ? '' : ''"
@@ -8,13 +8,13 @@
             <div class="flex items-center flex-1 mb-1">
                 <div
                     v-if="type === 'meta'"
-                    class="flex items-center justify-center w-10 h-10 mr-2 bg-gray-100 border border-gray-200 rounded-full"
+                    class="flex items-center justify-center mr-2 bg-gray-100 border border-gray-200 rounded-full w-9 h-9"
                 >
                     <AtlanIcon v-if="type === 'meta'" icon="Policies" />
                 </div>
                 <div
                     v-if="type === 'data'"
-                    class="flex items-center justify-center w-10 h-10 mr-2 bg-gray-100 border border-gray-200 rounded-full"
+                    class="flex items-center justify-center mr-2 bg-gray-100 border border-gray-200 rounded-full w-9 h-9"
                 >
                     <AtlanIcon icon="QueryGrey" />
                 </div>
@@ -45,7 +45,10 @@
             <div class="flex items-center justify-between flex-1">
                 <div class="flex items-center">
                     <div class="flex justify-items-end">
-                        <span v-if="policy.groups.length > 0">
+                        <span
+                            v-if="policy.groups.length > 0"
+                            class="font-semibold"
+                        >
                             <a-tooltip placement="top">
                                 <template #title>
                                     {{ policy.groups.length }} Groups
@@ -62,7 +65,10 @@
                             class="text-gray-300 mx-1.5"
                             >•</span
                         >
-                        <span v-if="policy.users.length > 0" class="">
+                        <span
+                            v-if="policy.users.length > 0"
+                            class="font-semibold"
+                        >
                             <a-tooltip placement="top">
                                 <template #title>
                                     {{
@@ -107,7 +113,10 @@
                         "
                     >
                         <span class="text-gray-300 mx-1.5">•</span>
-                        <span v-if="maskComputed" class="flex-none text-sm">
+                        <span
+                            v-if="maskComputed"
+                            class="flex-none text-sm font-semibold"
+                        >
                             <a-tooltip placement="top">
                                 <template #title>
                                     {{ maskComputed }}

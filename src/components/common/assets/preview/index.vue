@@ -543,7 +543,9 @@
 
             const assetLink = computed(() => {
                 const baseUrl = window.location.origin
-                const url = `${baseUrl}${getProfilePath(selectedAsset.value)}`
+                const url = `${baseUrl}${getProfilePath(
+                    selectedAsset.value
+                )}/overview`
                 return url
             })
 

@@ -92,7 +92,7 @@
                                         : `${permissions.length} permission`
                                 }}
                             </template>
-                            <span class="flex-none text-sm">
+                            <span class="flex-none text-sm font-semibold">
                                 <AtlanIcon
                                     icon="ShieldBlank"
                                     class="-mt-1 icon-gray"

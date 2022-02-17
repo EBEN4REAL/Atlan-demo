@@ -6,7 +6,7 @@
             <span class="font-semibold text-gray-500">Columns</span>
         </div>
 
-        <div class="px-4 pt-3 pb-0">
+        <div class="px-5 pt-3 pb-0">
             <SearchAdvanced
                 v-model:value="queryText"
                 :autofocus="true"
@@ -30,7 +30,7 @@
 
         <AggregationTabs
             v-model="postFacets.dataType"
-            class="px-3 mt-2 mb-1"
+            class="px-5 mt-2 mb-1"
             :list="columnDataTypeAggregationList"
             @change="handleDataTypeChange"
         ></AggregationTabs>
@@ -66,7 +66,7 @@
             <template #default="{ item }">
                 <ColumnItem
                     :item="item"
-                    class="m-1"
+                    class="px-2 my-1"
                     @update="handleListUpdate"
                 />
             </template>

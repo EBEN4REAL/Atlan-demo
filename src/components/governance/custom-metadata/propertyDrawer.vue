@@ -902,6 +902,12 @@
                 form.value.options.customApplicableEntityTypes = flatValues
             }
 
+            const handleClickCreateNewEnum = () => {
+                if (!enumSearchValue.value) oldEnumSeardValue.value = ''
+                form.value.options.enumType = 'New Option'
+                newEnumMode.value = true
+            }
+
             const handleEnumSearch = (searchValue) => {
                 if (searchValue) {
                     newEnumMode.value = false

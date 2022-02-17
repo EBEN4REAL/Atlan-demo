@@ -6,7 +6,7 @@
         <div class="flex flex-col p-4 gap-y-4">
             <div class="flex items-center gap-x-3">
                 <AtlanIcon icon="Slack" class="h-5 mb-1" />
-                <h2 class="text-xl font-bold">Share on Slack</h2>
+                <h2 class="text-xl font-bold">{{ title }}</h2>
             </div>
             <!-- <template v-if="slack"> -->
             <div class="">
@@ -18,7 +18,7 @@
                 />
             </div>
             <div class="">
-                <h3 class="font-bold">Message</h3>
+                <h3 class="font-bold">{{ inputLabel }}</h3>
                 <a-textarea v-model:value="message" />
             </div>
             <!-- </template> -->
@@ -44,8 +44,9 @@
                     type="primary"
                     :disabled="!channel"
                     @click="shareToSlack"
+                    size="sm"
                 >
-                    Share
+                    {{ ctaText }}
                 </AtlanButton>
                 <!-- </template> -->
                 <!-- <router-link
@@ -83,6 +84,10 @@
             type: String,
             required: true,
         },
+        askQuestionModal: {
+            type: Boolean,
+            default: false,
+        },
     })
 
     const emit = defineEmits(['closeParent'])
@@ -90,7 +95,7 @@
     const store = intStore()
 
     const { tenantSlackStatus } = toRefs(store)
-    const { assetType } = toRefs(props)
+    const { assetType, askQuestionModal } = toRefs(props)
 
     const channels = ref([])
 
@@ -108,6 +113,14 @@
     const visible = ref(false)
     const channel = ref('')
     const message = ref('')
+
+    const title = ref(
+        askQuestionModal.value ? 'Ask a question' : 'Share on Slack'
+    )
+
+    const ctaText = ref(askQuestionModal.value ? 'Send' : 'Share')
+
+    const inputLabel = ref(askQuestionModal.value ? 'Question' : 'Message')
 
     const clearAll = () => {
         channel.value = ''

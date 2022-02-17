@@ -147,8 +147,16 @@
                             tenantSlackStatus.configured &&
                             tenantSlackStatus.channels.length
                         "
+                        @click="askQuestionOnSlack"
                     >
-                        <AtlanIcon icon="Slack" class="mb-0.5" />
+                        <SlackModal
+                            :link="assetLink"
+                            :asset-i-d="selectedAsset?.guid"
+                            :asset-type="selectedAsset?.typeName"
+                            :askQuestionModal="true"
+                        >
+                            <AtlanIcon icon="Slack" class="mb-0.5" />
+                        </SlackModal>
                     </a-button>
                 </a-button-group>
             </div>
@@ -255,6 +263,7 @@
     import useCollectionInfo from '~/components/insights/explorers/queries/composables/useCollectionInfo'
     import QueryDropdown from '@/common/query/queryDropdown.vue'
     import integrationStore from '~/store/integrations/index'
+    import SlackModal from '~/components/common/assets/misc/slackModal.vue'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -295,6 +304,7 @@
             linkedAssets: defineAsyncComponent(
                 () => import('./linkedAssets/linkedAssetsWrapper.vue')
             ),
+            SlackModal,
         },
 
         props: {
@@ -397,6 +407,7 @@
             const authStore = useAuthStore()
             const intStore = integrationStore()
             const { tenantSlackStatus } = toRefs(intStore)
+            const slackModalVisible = ref(false)
 
             const { refresh, isLoading: isEvaluating } = useEvaluate(
                 body,
@@ -513,6 +524,18 @@
                 })
             }
 
+            const askQuestionOnSlack = () => {
+                slackModalVisible.value = false
+                // const link = computed(() => {
+                // })
+            }
+
+            const assetLink = computed(() => {
+                const baseUrl = window.location.origin
+                const url = `${baseUrl}${getProfilePath(selectedAsset.value)}`
+                return url
+            })
+
             provide('isProfile', isProfile)
 
             return {
@@ -561,6 +584,8 @@
                 isCollectionCreatedByCurrentUser,
                 handleQueryAction,
                 tenantSlackStatus,
+                askQuestionOnSlack,
+                assetLink,
             }
         },
     })

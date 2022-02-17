@@ -359,8 +359,9 @@
                 background: linear-gradient(
                     90deg,
                     rgba(250, 250, 250, 0.779171043417367) 9%,
-                    rgba(250, 250, 250, 1) 18%
+                    rgba(250, 250, 250, 1) 57%
                 );
+
                 padding: 10px 0;
                 width: 30%;
                 top: 50%;

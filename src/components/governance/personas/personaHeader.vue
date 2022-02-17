@@ -66,7 +66,7 @@
             </div>
             <a-button-group>
                 <!-- Edit -->
-                <a-popover
+                <!-- <a-popover
                     :align="{ offset: [5, -10] }"
                     trigger="click"
                     placement="bottom"
@@ -84,7 +84,7 @@
                     >
                         <AtlanIcon icon="Check" class="mr-1" />Enabled
                     </div>
-                </a-popover>
+                </a-popover> -->
                 <a-tooltip v-auth="map.UPDATE_PERSONA" placement="bottom">
                     <template #title>
                         <span>Edit Persona</span>

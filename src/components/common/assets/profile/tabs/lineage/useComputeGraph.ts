@@ -17,6 +17,9 @@ export default async function useComputeGraph(
     lineageStore.nodesColumnList = {}
     lineageStore.columnsLineage = {}
 
+    // Constants
+    const vPageThreshold = 8
+
     const { createNodeData, createEdgeData } = useGraph()
     const { fit } = useTransformGraph(graph, emit)
 
@@ -72,7 +75,7 @@ export default async function useComputeGraph(
             if (sameSourceCount.value[from]) {
                 sameSourceCount.value[from].count += 1
 
-                if (sameSourceCount.value[from].count <= 4)
+                if (sameSourceCount.value[from].count < vPageThreshold)
                     sameSourceCount.value[from].targetsVisible = [
                         ...sameSourceCount.value[from].targetsVisible,
                         getAsset(to),
@@ -97,7 +100,7 @@ export default async function useComputeGraph(
             if (sameTargetCount.value[to]) {
                 sameTargetCount.value[to].count += 1
 
-                if (sameTargetCount.value[to].count <= 4)
+                if (sameTargetCount.value[to].count < vPageThreshold)
                     sameTargetCount.value[to].sourcesVisible = [
                         ...sameTargetCount.value[to].sourcesVisible,
                         getAsset(from),
@@ -121,7 +124,7 @@ export default async function useComputeGraph(
 
         // same source
         Object.entries(sameSourceCount.value).forEach(([k, v]) => {
-            if (v.count < 5) return
+            if (v.count < vPageThreshold) return
             if (!v.targetsHidden.length) return
             lineageData.guidEntityMap = {
                 ...lineageData.guidEntityMap,
@@ -137,7 +140,7 @@ export default async function useComputeGraph(
 
         // same target
         Object.entries(sameTargetCount.value).forEach(([k, v]) => {
-            if (v.count < 5) return
+            if (v.count < vPageThreshold) return
             if (!v.sourcesHidden.length) return
             lineageData.guidEntityMap = {
                 ...lineageData.guidEntityMap,

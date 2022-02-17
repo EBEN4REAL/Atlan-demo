@@ -188,8 +188,8 @@
                                 @click="addConnectionAsset"
                             >
                                 <span class="text-sm text-primary">
-                                    Include all assets</span
-                                >
+                                    Include all
+                                </span>
                                 <AtlanIcon
                                     icon="Add"
                                     class="ml-1 text-primary"

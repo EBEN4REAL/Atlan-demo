@@ -344,7 +344,7 @@ export function addJoin(
     activeInlineTab: Ref<activeInlineTabInterface>,
     item: Ref<assetInterface>
 ) {
-    debugger
+    // debugger
     const joinIndex = activeInlineTab.value.playground.vqb.panels.findIndex(
         (panel) => panel.id.toLowerCase() === 'join'
     )
@@ -402,7 +402,7 @@ export function addJoin(
                     value: item.value?.entity.attributes?.name,
                 },
             }
-            subpanels = [subpanel, ...subpanels]
+            subpanels = [subpanel]
             // only add subpanel
             activeInlineTab.value.playground.vqb.panels[joinIndex].subpanels =
                 subpanels

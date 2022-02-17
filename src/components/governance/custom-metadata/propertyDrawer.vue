@@ -848,46 +848,58 @@
                 return []
             })
 
+            const getAllLeafNodes = (node) => {
+                const leaf: any = []
+
+                const category = applicableEntityTypesOptions.find(
+                    (_category) => _category.value === node
+                )
+
+                // ? if selection is a category , extract all child leaf
+                if (category) {
+                    category.children.forEach((c) => {
+                        // ? if child of category has child, then it is a source
+                        if (c.children) {
+                            leaf.push(
+                                ...c.children.map((leafNode) => leafNode.value)
+                            )
+                            // ? else it is a leaf
+                        } else leaf.push(c.value)
+                    })
+                    // ? if not a category its either a source or a leaf
+                } else {
+                    // ? flatten all node at 2nd level
+                    const allSourceAndLeaf: any = []
+                    applicableEntityTypesOptions.forEach((cat) => {
+                        const sourceAndLeaf: any[] = cat.children.reduce(
+                            (acc, cur) => {
+                                if (cur.children) acc.push(...cur.children)
+                                else acc.push(cur)
+                                return acc
+                            },
+                            []
+                        )
+                        allSourceAndLeaf.push(...sourceAndLeaf)
+                    })
+
+                    allSourceAndLeaf.forEach((_node) => {
+                        if (_node.value === node || _node.source === node) {
+                            leaf.push(_node.value)
+                        }
+                    })
+                }
+
+                return leaf
+            }
             const handleApplicableEntityTypeChange = (data, l, e) => {
                 /**
                  * Just trying to flatten the the tree given any node, add all leaf node values
                  */
                 const flatValues: any = []
                 data.forEach((item) => {
-                    let sourceFound = false
-                    applicableEntityTypesOptions.forEach((cat) => {
-                        if (cat.value === item) {
-                            cat.children.forEach((c) => {
-                                if (c.children)
-                                    flatValues.push(
-                                        ...c.children.map((_c) => _c.value)
-                                    )
-                                else flatValues.push(c.value)
-                            })
-                        } else {
-                            cat.children.forEach((source) => {
-                                if (source.value === item) {
-                                    if (source.children)
-                                        flatValues.push(
-                                            ...source.children.map(
-                                                (_c) => _c.value
-                                            )
-                                        )
-                                    else flatValues.push(source.value)
-                                    sourceFound = true
-                                }
-                            })
-                            if (!sourceFound) flatValues.push(item)
-                        }
-                    })
-                }, [])
+                    flatValues.push(...getAllLeafNodes(item))
+                })
                 form.value.options.customApplicableEntityTypes = flatValues
-            }
-
-            const handleClickCreateNewEnum = () => {
-                if (!enumSearchValue.value) oldEnumSeardValue.value = ''
-                form.value.options.enumType = 'New Option'
-                newEnumMode.value = true
             }
 
             const handleEnumSearch = (searchValue) => {

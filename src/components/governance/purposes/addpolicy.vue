@@ -42,7 +42,7 @@
                     </span>
                 </div> -->
             </div>
-            <div class="my-20">
+            <div class="mt-4">
                 <div class="px-4">
                     <div class="relative mt-2 bg-white shadow-section">
                         <div
@@ -324,7 +324,9 @@
                 </div>
             </div>
         </div>
-        <div class="flex button-container">
+        <div
+            class="flex items-center justify-end w-full p-3 bg-white border-t border-gray-300 gap-x-2"
+        >
             <AtlanBtn
                 size="sm"
                 padding="compact"

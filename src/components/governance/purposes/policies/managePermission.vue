@@ -32,6 +32,7 @@
                 >{{ actionsLocal.length || 'No' }} items updated</span
             >
             <AtlanBtn
+                size="sm"
                 padding="compact"
                 color="secondary"
                 data-test-id="cancel"
@@ -41,6 +42,7 @@
                 Cancel
             </AtlanBtn>
             <AtlanBtn
+                size="sm"
                 padding="compact"
                 data-test-id="save"
                 class="btn-asset"

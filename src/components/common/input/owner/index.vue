@@ -7,19 +7,20 @@
             :overlay-class-name="$style.ownerPopover"
             :trigger="['click']"
             :destroy-tooltip-on-hide="destroyTooltipOnHide"
+            :align="align"
             @visibleChange="handleVisibleChange"
         >
             <template #content>
                 <div v-if="showPopover">
                     <div
                         v-if="!editPermission && role !== 'Guest'"
-                        class="bg-gray-100 mx-4 px-3 py-2 mb-3"
+                        class="px-3 py-2 mx-4 mb-3 bg-gray-100"
                     >
                         You don't have edit access to this asset, but you can
                         suggest terms to the asset owner.
                         <span
                             @click="handleCancelRequest"
-                            class="text-primary cursor-pointer"
+                            class="cursor-pointer text-primary"
                             >Dismiss</span
                         >
                     </div>
@@ -41,7 +42,7 @@
                     </div>
                     <div
                         v-if="!editPermission && role !== 'Guest'"
-                        class="flex items-center justify-end mx-2 space-x-2 mt-5"
+                        class="flex items-center justify-end mx-2 mt-5 space-x-2"
                     >
                         <a-button @click="handleCancelRequest">Cancel</a-button>
                         <a-button
@@ -235,6 +236,10 @@
                 type: Boolean,
                 required: false,
                 default: true,
+            align: {
+                type: Object,
+                required: false,
+                default: () => ({}),
             },
         },
         emits: ['change', 'update:modelValue'],

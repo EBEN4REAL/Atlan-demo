@@ -115,7 +115,7 @@
                                     : ''
                             "
                         >
-                            <div class="pt-0">
+                            <div class="max-w-xs pt-0">
                                 {{ title }}
                             </div>
                             <div
@@ -165,7 +165,7 @@
                         "
                         class="flex px-4 font-normal tracking-wide text-gray-500 uppercase w-100 group-hover:text-gray-700"
                     >
-                        <div class="pt-0">{{ title }}</div>
+                        <div class="max-w-xs pt-0">{{ title }}</div>
                     </div>
                 </template>
 

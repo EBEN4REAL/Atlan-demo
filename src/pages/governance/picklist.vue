@@ -20,7 +20,7 @@
             </div>
             <ExplorerLayout
                 v-else-if="enumList.length"
-                title="Enums"
+                title="Options"
                 sidebar-class="bg-white"
             >
                 <template #action> </template>
@@ -29,13 +29,13 @@
                     <div class="flex items-center px-4 mb-3">
                         <SearchAndFilter
                             v-model:value="searchText"
-                            :placeholder="`Search from ${enumList.length} enums`"
+                            :placeholder="`Search from ${enumList.length} items`"
                             class="mt-0 bg-white"
                             :autofocus="true"
                             size="minimal"
                         />
                         <a-tooltip>
-                            <template #title>New Enum</template>
+                            <template #title>New Option</template>
                             <AtlanBtn
                                 v-auth="map.CREATE_ENUM"
                                 class="flex-none px-2 ml-4"
@@ -58,7 +58,7 @@
                     :key="selectedId"
                     v-model:selectedEnum="selectedEnum"
                 />
-                <span v-else>No Enum Selected</span>
+                <span v-else>No Option Selected</span>
             </ExplorerLayout>
             <div v-else class="flex items-center justify-center h-full">
                 <a-empty
@@ -74,7 +74,8 @@
                     </template>
 
                     <a-button type="primary" @click="addModalVisible = true"
-                        ><AtlanIcon icon="Add" class="inline" /> Create new enum
+                        ><AtlanIcon icon="Add" class="inline" /> Create new
+                        Option
                     </a-button>
                 </a-empty>
             </div>
@@ -118,7 +119,7 @@
         },
         setup() {
             useHead({
-                title: 'Enums',
+                title: 'Options',
             })
 
             const {

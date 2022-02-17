@@ -29,9 +29,17 @@
                     class="flex items-center truncate selected-connetor"
                     @click="toggleVisibilityOfChildren(node.title)"
                 >
-                    <AtlanIcon :icon="iconName(node)" class="h-4 mr-1" />
+                    <img
+                        :src="getConnectorImage(node.connector)"
+                        class="w-4 h-4 mr-1"
+                        style="min-width: 1rem"
+                    />
                     <div class="flex flex-col" v-if="!node?.connection">
-                        {{ capitalizeFirstLetter(node.title) }}
+                        {{
+                            node.title?.length > 1
+                                ? `${capitalizeFirstLetter(node.title)}`
+                                : node.title
+                        }}
                     </div>
                     <div class="flex flex-col" v-else>
                         {{ node.title }}
@@ -50,6 +58,7 @@
         <AssetDropdown
             v-if="connection"
             :connector="filteredConnector"
+            :connection="selectedValue"
             :filter="data"
             @change="handleChange"
             :bgGrayForSelector="bgGrayForSelector"
@@ -297,23 +306,11 @@
                 }
             }
 
-            const iconName = (node) => {
-                if (node?.connection === undefined) {
-                    if (node.title === 'bigquery') return 'BigQuery'
-                    return capitalizeFirstLetter(node.title)
-                } else {
-                    let el = node?.key?.split('/')
-                    if (el && el.length) {
-                        if (el[1] === 'bigquery') return 'BigQuery'
-                        return capitalizeFirstLetter(el[1])
-                    } else {
-                        return ''
-                    }
-                }
+            const getConnectorImage = (sourceid) => {
+                return store.getConnectorImageMapping[sourceid?.toLowerCase()]
             }
 
             return {
-                iconName,
                 treeSelectRef,
                 filterSourceIds,
                 onChange,
@@ -334,6 +331,7 @@
                 connection,
                 onBlur,
                 toggleVisibilityOfChildren,
+                getConnectorImage,
             }
         },
     })

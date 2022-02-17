@@ -1,4 +1,4 @@
-import { map} from './key'
+import { map } from './key'
 import { useAPI } from '~/services/api/useAPI'
 import { SavedQueryResponse } from '~/types/insights/savedQuery.interface'
 import { BasicSearchResponse } from '~/types/common/atlasSearch.interface'
@@ -15,7 +15,7 @@ const CreateSavedQuery = (body: Record<string, any>, options: useOptions) => {
         options || {}
     )
 }
-const CreateQueryFolder = (body: Record<string, any>,  options: useOptions) => {
+const CreateQueryFolder = (body: Record<string, any>, options: useOptions) => {
     return useAPI<BasicSearchResponse<any>>(
         map.CREATE_QUERY_FOLDER,
         'POST',
@@ -25,7 +25,10 @@ const CreateQueryFolder = (body: Record<string, any>,  options: useOptions) => {
         options || {}
     )
 }
-const CreateQueryCollection = (body: Record<string, any>,  options: useOptions) => {
+const CreateQueryCollection = (
+    body: Record<string, any>,
+    options: useOptions
+) => {
     return useAPI<BasicSearchResponse<any>>(
         map.CREATE_QUERY_FOLDER,
         'POST',
@@ -42,7 +45,7 @@ const GetSavedQuery = (guid: string, options: useOptions) => {
         {
             pathVariables: { guid },
             params: {
-                ignoreRelationships: true,
+                ignoreRelationships: false,
             },
         },
         options || {}
@@ -51,12 +54,14 @@ const GetSavedQuery = (guid: string, options: useOptions) => {
 
 const GetSavedQueryIndex = (body, options: useOptions) => {
     return useAPI<SavedQueryResponse>(
-        Index.INDEX_SEARCH, 'POST', {
+        Index.INDEX_SEARCH,
+        'POST',
+        {
             body,
         },
         options || {}
     )
-    }
+}
 const UpdateSavedQuery = (body: Record<string, any>, options: useOptions) => {
     return useAPI<SavedQueryResponse>(
         map.UPDATE_SAVED_QUERY,
@@ -99,5 +104,5 @@ export const Insights = {
     DeleteEntity,
     UpdateSavedFolder,
     GetSavedQueryIndex,
-    CreateQueryCollection
+    CreateQueryCollection,
 }

@@ -8,14 +8,17 @@
         destroy-on-close
     >
         <div class="p-4">
-            <div class="mb-2 font-bold text-gray-700">New Enum</div>
+            <div class="mb-2 font-bold text-gray-700">New Option</div>
             <a-form layout="vertical">
                 <a-form-item label="Name">
                     <a-input
                         id="name-input"
                         v-model:value="form.name"
-                        placeholder="Name the label"
+                        placeholder="Name of the Option"
                     ></a-input>
+                    <div v-if="errorMessage" class="mt-2 text-xs text-red-500">
+                        {{ errorMessage }}
+                    </div>
                 </a-form-item>
 
                 <a-form-item label="Values">
@@ -73,6 +76,7 @@
         emits: ['add', 'close'],
         setup(props, context) {
             const enumDetailsComponent = ref<DefineComponent>()
+            const errorMessage = ref('')
             const form = ref({
                 elementDefs: [],
                 category: 'ENUM',
@@ -83,11 +87,17 @@
             const { newEnum, addEnum, reset } = useAddEnums()
             const { error: updateError, isReady, state } = addEnum
 
+            const resetError = () => {
+                if (errorMessage.value) errorMessage.value = ''
+            }
+
             function handleChange(values: String[]) {
+                resetError()
                 form.value.elementDefs = values
             }
 
             function handleOK() {
+                resetError()
                 const tempForm = { ...form.value }
                 tempForm.elementDefs = tempForm.elementDefs.map((x, index) => ({
                     value: x,
@@ -109,11 +119,14 @@
                 if (updateError.value) {
                     message.error('Failed to add your enum.')
                     console.error(updateError.value)
+                    errorMessage.value =
+                        updateError.value?.response?.data?.errorMessage || ''
                     reset()
                 }
             })
 
             return {
+                errorMessage,
                 handleChange,
                 form,
                 enumDetailsComponent,

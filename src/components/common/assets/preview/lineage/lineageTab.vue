@@ -7,32 +7,24 @@
             :asset-name="assetName"
             style="z-index: 600"
         />
-        <div class="flex items-center justify-between px-5 pt-4">
+        <div
+            class="flex items-center justify-between px-5 bg-gray-50 py-2 border-b border-gray-200"
+        >
             <span class="text-sm font-bold text-gray-500">Lineage</span>
 
-            <AtlanButton
+            <div
+                class="flex items-center text-primary cursor-pointer"
                 v-if="isWithGraph"
-                size="sm"
-                padding="compact"
-                color="minimal"
-                class="text-primary"
-                :disabled="!downstreamGuids?.length"
                 @click="showImpactedAssets = true"
+                :disabled="!allEntities?.downstream?.length"
             >
-                <AtlanIcon icon="Download" />
-                Download Impact
-            </AtlanButton>
+                <AtlanIcon icon="External" class="mr-1" /> Download Impact
+            </div>
 
             <router-link v-else :to="getLineagePath(selectedAsset)">
-                <AtlanButton
-                    size="sm"
-                    padding="compact"
-                    color="minimal"
-                    class="text-primary"
-                >
-                    <AtlanIcon icon="External" />
-                    View Graph
-                </AtlanButton>
+                <div class="flex items-center text-primary cursor-pointer">
+                    <AtlanIcon icon="External" class="mr-1" /> View Graph
+                </div>
             </router-link>
         </div>
 

@@ -13,7 +13,7 @@
 
     <AggregationTabs
         v-model="selectedType"
-        class="px-4 mb-1"
+        class="px-4 mt-2 mb-1"
         :list="assetTypes"
     ></AggregationTabs>
 
@@ -28,7 +28,7 @@
                 :item-index="itemIndex"
                 :preference="preference"
                 :enable-sidebar-drawer="true"
-                class="mx-3"
+                class="mx-3 hover:bg-primary-menu"
                 isCompact
             ></AssetItem>
         </template>

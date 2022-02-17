@@ -80,14 +80,14 @@
             <template #description>
                 <AtlanIcon icon="EmptyClassifications" class="h-32 mb-6" />
                 <p class="mb-8 text-2xl font-bold">
-                    Create a new classifiaction!
+                    Create a new classification!
                 </p>
                 <a-button
                     v-auth="map.CREATE_CLASSIFICATION"
                     type="primary"
                     @click="createClassificationModalVisible = true"
                 >
-                    <AtlanIcon icon="Add" class="inline" />
+                    <AtlanIcon icon="Add" class="inline mr-1" />
                     Add classification
                 </a-button>
             </template>

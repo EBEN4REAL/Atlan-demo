@@ -26,11 +26,8 @@
                 />
             </div>
         </div>
-        <div
-            class="px-4 pb-8 overflow-y-auto"
-            style="height: calc(100vh - 145px)"
-        >
-            <div class="flex items-start justify-between py-3">
+        <div class="p-4 space-y-4" style="height: calc(100vh - 145px)">
+            <div class="flex items-start justify-between">
                 <CreateUpdateInfo
                     :created-at="localBm.createTime"
                     :updated-at="localBm.updateTime"
@@ -38,9 +35,9 @@
                     :updated-by="localBm.updatedBy"
                 />
             </div>
-            <div v-if="localBm.attributeDefs.length" class="pt-2 pb-5">
+            <template v-if="localBm.attributeDefs.length">
                 <div
-                    class="sticky top-0 z-10 flex items-center justify-between py-3 mb-4 bg-primary-light"
+                    class="sticky top-0 z-10 flex items-center justify-between bg-primary-light"
                 >
                     <div class="mr-4">
                         <div
@@ -48,7 +45,7 @@
                         >
                             <a-input
                                 v-model:value="attrsearchText"
-                                class="w-full h-8 px-2 pl-2"
+                                class="h-8 px-2 pl-2 w-80"
                                 :placeholder="'Search for property'"
                             >
                                 <template #suffix>
@@ -111,7 +108,7 @@
                     @remove-property="handleRemoveAttribute"
                     @open-edit-drawer="openEdit"
                 />
-            </div>
+            </template>
             <div v-else class="flex items-center justify-center h-full">
                 <a-empty
                     :image="noPropertyImage"

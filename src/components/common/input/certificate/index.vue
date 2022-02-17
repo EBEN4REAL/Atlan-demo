@@ -1,6 +1,7 @@
 <template>
     <div class="flex items-center text-xs text-gray-500">
         <a-popover
+            v-if="showPopover"
             v-model:visible="isEdit"
             placement="leftTop"
             :overlay-class-name="$style.certificatePopover"
@@ -174,6 +175,11 @@
                 required: false,
                 default: true,
             },
+            showPopover:{
+                type: Boolean,
+                required: false,
+                default: true,
+            }
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {

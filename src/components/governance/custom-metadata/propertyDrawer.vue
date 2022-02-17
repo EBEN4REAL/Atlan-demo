@@ -420,7 +420,6 @@
         DEFAULT_ATTRIBUTE,
         ATTRIBUTE_INPUT_VALIDATION_RULES,
         ATTRIBUTE_TYPES,
-        applicableEntityTypesOptions,
     } from '~/constant/businessMetadataTemplate'
     import { Types } from '~/services/meta/types'
     import NewEnumForm from './newEnumForm.vue'
@@ -433,6 +432,8 @@
     import { useUpdateEnums } from '../enums/composables/useModifyEnums'
     import { useTypedefStore } from '~/store/typedef'
     import MultiInput from '@/common/input/customizedTagInput.vue'
+    import { applicableTypeList } from '~/composables/custommetadata/useApplicableTypes'
+    import useBusinessMetadata from './composables/useBusinessMetadata'
 
     const CHECKEDSTRATEGY = TreeSelect.SHOW_PARENT
 
@@ -451,9 +452,8 @@
         },
         emits: ['addedProperty', 'openIndex'],
         setup(props, { emit }) {
-            const initializeForm = (): CMA => ({
-                ...JSON.parse(JSON.stringify(DEFAULT_ATTRIBUTE)),
-            })
+            const { getDefaultAttributeTemplate } = useBusinessMetadata()
+            const initializeForm = (): CMA => getDefaultAttributeTemplate()
             // data
             const visible = ref<boolean>(false)
             const createMore = ref<boolean>(false)
@@ -468,6 +468,7 @@
             const typeTreeSelect = ref(null)
             const enumSearchValue = ref('')
             const oldEnumSeardValue = ref('')
+            const applicableEntityTypesOptions = applicableTypeList()
             const viewOnly = computed(
                 () => props.metadata.options?.isLocked === 'true'
             )
@@ -847,24 +848,58 @@
                 return []
             })
 
-            const handleApplicableEntityTypeChange = (data) => {
+            const getAllLeafNodes = (node) => {
+                const leaf: any = []
+
+                const category = applicableEntityTypesOptions.find(
+                    (_category) => _category.value === node
+                )
+
+                // ? if selection is a category , extract all child leaf
+                if (category) {
+                    category.children.forEach((c) => {
+                        // ? if child of category has child, then it is a source
+                        if (c.children) {
+                            leaf.push(
+                                ...c.children.map((leafNode) => leafNode.value)
+                            )
+                            // ? else it is a leaf
+                        } else leaf.push(c.value)
+                    })
+                    // ? if not a category its either a source or a leaf
+                } else {
+                    // ? flatten all node at 2nd level
+                    const allSourceAndLeaf: any = []
+                    applicableEntityTypesOptions.forEach((cat) => {
+                        const sourceAndLeaf: any[] = cat.children.reduce(
+                            (acc, cur) => {
+                                if (cur.children) acc.push(...cur.children)
+                                else acc.push(cur)
+                                return acc
+                            },
+                            []
+                        )
+                        allSourceAndLeaf.push(...sourceAndLeaf)
+                    })
+
+                    allSourceAndLeaf.forEach((_node) => {
+                        if (_node.value === node || _node.source === node) {
+                            leaf.push(_node.value)
+                        }
+                    })
+                }
+
+                return leaf
+            }
+            const handleApplicableEntityTypeChange = (data, l, e) => {
                 /**
-                 * Data is just an array of ids
-                 * First get items in finalApplicableTypeNamesOptions that match id and have children (store index or id and children)
-                 * Then go through the data again and replace matched items with children ids
-                 * reducer should work
+                 * Just trying to flatten the the tree given any node, add all leaf node values
                  */
-                const childrenExtracted = data.reduce((a, b, index) => {
-                    const isParent = finalApplicableTypeNamesOptions.value.find(
-                        (y) => b === y.value
-                    )
-                    if (isParent)
-                        a.push(...isParent.children.map((z) => z.value))
-                    else a.push(data[index])
-                    return a
-                }, [])
-                form.value.options.customApplicableEntityTypes =
-                    childrenExtracted
+                const flatValues: any = []
+                data.forEach((item) => {
+                    flatValues.push(...getAllLeafNodes(item))
+                })
+                form.value.options.customApplicableEntityTypes = flatValues
             }
 
             const handleClickCreateNewEnum = () => {
@@ -935,6 +970,7 @@
             })
 
             return {
+                applicableEntityTypesOptions,
                 customFilter,
                 viewOnly,
                 discardEnumEdit,

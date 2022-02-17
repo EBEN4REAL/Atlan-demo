@@ -236,7 +236,7 @@
         attributes: {
             ...link.value.attributes,
             name: r.title,
-            link: r.url,
+            link: r.link,
             __modificationTimestamp: timestamp.value,
             __modifiedBy: username.value,
         },

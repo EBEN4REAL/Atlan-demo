@@ -59,10 +59,11 @@
                 @editDetails="$emit('editDetails')"
             />
             <Readme :persona="selectedPersonaDirty" />
-            <div class="p-4 mt-3 bg-white border border-gray-200 rounded">
+            <div class="mt-3 bg-white border border-gray-200 rounded">
                 <ResourcesWidget
                     placeholder="Resources is the place to document all knowledge around the persona"
                     :entity-name="persona.name"
+                    :read-only="false"
                     :resources="persona?.resources?.links ?? []"
                     :add-status="addStatus"
                     :update-status="updateStatus"
@@ -235,7 +236,7 @@
         toRefs,
     } from 'vue'
     import { message } from 'ant-design-vue'
-    import ResourcesWidget from '@common/widgets/resources/resourcesWidgetV2/resourcesWidgetV2.vue'
+    import ResourcesWidget from '@common/widgets/resources/resourcesWidget.vue'
     import usePersonaResources from '@/governance/personas/composables/usePersonaResources'
 
     import MinimalTab from '@/UI/minimalTab.vue'

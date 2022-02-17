@@ -1,7 +1,7 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
     <div
-        class="my-1 rounded-lg transition duration-100 hover:border-primary"
+        class="my-1 transition duration-100 rounded-lg hover:border-primary"
         :class="{
             'border-primary  shadow bordern bg-primary-menu': isSelected,
             'cursor-pointer': enableSidebarDrawer,
@@ -1040,12 +1040,7 @@
                 <slot name="cta"></slot>
             </div>
         </div>
-        <hr
-            class="mx-2 text-gray-100 bg-gray-200"
-            :class="
-                (bulkSelectMode && isChecked) || isSelected ? 'invisible' : ''
-            "
-        />
+
         <AssetDrawer
             :guid="selectedAssetDrawerGuid"
             :show-drawer="showAssetSidebarDrawer"

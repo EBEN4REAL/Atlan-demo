@@ -154,6 +154,7 @@
                             :asset-i-d="selectedAsset?.guid"
                             :asset-type="selectedAsset?.typeName"
                             :askQuestionModal="true"
+                            @success="onSlackModalSuccess"
                         >
                             <AtlanIcon icon="Slack" class="mb-0.5" />
                         </SlackModal>
@@ -530,6 +531,16 @@
                 // })
             }
 
+            const resourceId = ref('')
+            provide('highlightResourceGuid', resourceId)
+            const onSlackModalSuccess = () => {
+                console.log('onSlackModalSuccess')
+                resourceId.value = 'a6bfeb90-0d02-477b-a10b-0d54a40953a4'
+                setTimeout(() => {
+                    switchTab(selectedAsset.value, 'Resources')
+                })
+            }
+
             const assetLink = computed(() => {
                 const baseUrl = window.location.origin
                 const url = `${baseUrl}${getProfilePath(selectedAsset.value)}`
@@ -586,6 +597,7 @@
                 tenantSlackStatus,
                 askQuestionOnSlack,
                 assetLink,
+                onSlackModalSuccess,
             }
         },
     })

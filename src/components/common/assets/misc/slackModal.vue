@@ -93,7 +93,7 @@
         },
     })
 
-    const emit = defineEmits(['closeParent'])
+    const emit = defineEmits(['closeParent', 'success'])
 
     const store = intStore()
 
@@ -174,7 +174,8 @@
                 console.log('data', data.value)
                 const slackUrl =
                     'https://instadart-workspace.slack.com/archives/C0319D57ZSP/p1645128058242269'
-                window.open(slackUrl, '_blank')
+                // window.open(slackUrl, '_blank')
+                emit('success')
                 visible.value = false
                 // TODO: @ROHAN add analytics event for question asked
                 // useAddEvent('integration', 'slack', 'asset_shared', {

@@ -100,6 +100,9 @@
                         v-for="l in resources"
                         :key="l.uniqueAttributes.qualifiedName"
                         class="flex-grow"
+                        :class="{
+                            'animate-yellow': highlightResourceGuid === l?.guid,
+                        }"
                     >
                         <LinkPreviewCard
                             v-if="
@@ -136,6 +139,7 @@
         defineAsyncComponent,
         ref,
         provide,
+        inject,
     } from 'vue'
     import SlackUserLoginTrigger from '@common/integrations/slack/slackUserLoginTriggerCard.vue'
     import {
@@ -212,6 +216,12 @@
     provide('removeStatus', removeStatus)
     provide('entityName', entityName)
     provide('readOnly', readOnly)
+    const highlightResourceGuid = ref('a6bfeb90-0d02-477b-a10b-0d54a40953a4')
+    // const highlightResourceGuid = inject(
+    //     'highlightResourceGuid',
+    //     ref('f8533b45-7044-40ef-9fb9-b3938f41d38e')
+    // )
+    console.log('highlightResourceGuid', highlightResourceGuid.value)
 
     const store = integrationStore()
     const { tenantSlackStatus, userSlackStatus } = toRefs(store)
@@ -235,4 +245,19 @@
     }
 </script>
 
-<style scoped></style>
+<style scoped lang="less">
+    .animate-yellow {
+        animation: animateYellow 3s ease;
+    }
+    @keyframes animateYellow {
+        0% {
+            @apply bg-yellow-100;
+        }
+        20% {
+            @apply bg-yellow-100;
+        }
+        100% {
+            @apply bg-white;
+        }
+    }
+</style>

@@ -152,7 +152,7 @@
 
         toast.loading({
             key: 'postQuestionOnSlack',
-            content: 'Sharing on slack ...',
+            content: 'Posting on slack ...',
             duration: 10,
         })
 
@@ -168,9 +168,13 @@
                 loading.value = false
                 toast.success({
                     key: 'postQuestionOnSlack',
-                    content: 'Successfully posted',
+                    content: 'Question posted',
                     duration: 2,
                 })
+                console.log('data', data.value)
+                const slackUrl =
+                    'https://instadart-workspace.slack.com/archives/C0319D57ZSP/p1645128058242269'
+                window.open(slackUrl, '_blank')
                 visible.value = false
                 // TODO: @ROHAN add analytics event for question asked
                 // useAddEvent('integration', 'slack', 'asset_shared', {

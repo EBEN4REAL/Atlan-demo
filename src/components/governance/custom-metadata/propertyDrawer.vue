@@ -66,13 +66,15 @@
                                 :get-popup-container="
                                     (target) => target.parentNode
                                 "
-                                list-height="240"
+                                :list-height="240"
+                                :filter-option="customFilter"
                                 @change="handleTypeNameChange"
                             >
                                 <a-select-option
                                     v-for="(type, index) in attributesTypes"
-                                    :key="type.id"
+                                    :key="type.label"
                                     :value="type.id"
+                                    :label="type.label"
                                 >
                                     <span class="flex items-center">
                                         <AtlanIcon
@@ -99,14 +101,14 @@
                     >
                         <a-form-item
                             class="mb-3"
-                            label="Select Enum"
+                            label="Select Option"
                             :name="['options', 'enumType']"
                         >
                             <a-select
                                 v-model:value="form.options.enumType"
                                 show-search
-                                no-results-text="No enum found"
-                                placeholder="Select enum"
+                                no-results-text="No option found"
+                                placeholder="Select option"
                                 :options="finalEnumsList"
                                 :disabled="isEdit || viewOnly"
                                 @change="handleEnumSelect"
@@ -413,6 +415,7 @@
     } from 'vue'
     import { message, TreeSelect } from 'ant-design-vue'
     import { onKeyStroke } from '@vueuse/core'
+    import v from 'vue-sse'
     import {
         DEFAULT_ATTRIBUTE,
         ATTRIBUTE_INPUT_VALIDATION_RULES,
@@ -474,6 +477,10 @@
             const attributesTypes = reactive(
                 JSON.parse(JSON.stringify(ATTRIBUTE_TYPES))
             )
+
+            const customFilter = (v, o) =>
+                o.label.toLowerCase().includes(v.toLowerCase())
+
             const finalApplicableTypeNamesOptions = computed(() => {
                 const options = JSON.parse(
                     JSON.stringify(applicableEntityTypesOptions)
@@ -770,7 +777,7 @@
                 updatedEnumDef.value = enumObject
                 message.success({
                     key: 'enum',
-                    content: 'Updating Picklist...',
+                    content: 'Updating Option...',
                 })
                 await execute()
                 const updatedEnum =
@@ -783,7 +790,7 @@
                 if (isReady && state.value.enumDefs.length) {
                     message.success({
                         key: 'enum',
-                        content: 'Picklist updated.',
+                        content: 'Option updated.',
                         duration: 2,
                     })
                     enumEdit.value = false
@@ -791,7 +798,7 @@
                 if (updateError.value) {
                     message.error({
                         key: 'enum',
-                        content: 'Failed to update Picklist.',
+                        content: 'Failed to update Option.',
                         duration: 2,
                     })
                     reset()
@@ -810,6 +817,7 @@
              * @desc set enum boolean in options & emit changes
              */
             const handleTypeNameChange = (value: string) => {
+                console.log('handleTypeNameChange', value)
                 // ? check if enum
                 if (value === 'enum') {
                     form.value.options.isEnum = true
@@ -819,7 +827,7 @@
                     delete form.value.enumValues
                 }
 
-                if (['groups', 'users', 'url'].includes(value))
+                if (['groups', 'users', 'url', 'SQL'].includes(value))
                     form.value.options.customType = value
                 else delete form.value.options.customType
             }
@@ -878,7 +886,7 @@
 
             const handleClickCreateNewEnum = () => {
                 if (!enumSearchValue.value) oldEnumSeardValue.value = ''
-                form.value.options.enumType = 'New Picklist'
+                form.value.options.enumType = 'New Option'
                 newEnumMode.value = true
             }
 
@@ -896,7 +904,7 @@
             }
 
             const isMultiValuedSupport = computed(() => {
-                const blackList = ['boolean', 'date']
+                const blackList = ['boolean', 'date', 'SQL']
                 return !blackList.includes(form.value.options.primitiveType)
             })
 
@@ -929,7 +937,7 @@
                     )
                         form.value.typeName = form.value.options.enumType
                     // handle if is user, group or name
-                    else if (['users', 'url', 'groups'].includes(v1))
+                    else if (['users', 'url', 'groups', 'SQL'].includes(v1))
                         form.value.typeName = 'string'
                     else form.value.typeName = v1
                 },
@@ -945,6 +953,7 @@
 
             return {
                 applicableEntityTypesOptions,
+                customFilter,
                 viewOnly,
                 discardEnumEdit,
                 handleEditEnum,

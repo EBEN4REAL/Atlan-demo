@@ -20,7 +20,7 @@
             </div>
             <ExplorerLayout
                 v-else-if="enumList.length"
-                title="Picklist"
+                title="Options"
                 sidebar-class="bg-white"
             >
                 <template #action> </template>
@@ -35,7 +35,7 @@
                             size="minimal"
                         />
                         <a-tooltip>
-                            <template #title>New Picklist</template>
+                            <template #title>New Option</template>
                             <AtlanBtn
                                 v-auth="map.CREATE_ENUM"
                                 class="flex-none px-2 ml-4"
@@ -58,7 +58,7 @@
                     :key="selectedId"
                     v-model:selectedEnum="selectedEnum"
                 />
-                <span v-else>No Picklist Selected</span>
+                <span v-else>No Option Selected</span>
             </ExplorerLayout>
             <div v-else class="flex items-center justify-center h-full">
                 <a-empty
@@ -75,7 +75,7 @@
 
                     <a-button type="primary" @click="addModalVisible = true"
                         ><AtlanIcon icon="Add" class="inline" /> Create new
-                        Picklist
+                        Option
                     </a-button>
                 </a-empty>
             </div>
@@ -119,7 +119,7 @@
         },
         setup() {
             useHead({
-                title: 'Picklist',
+                title: 'Options',
             })
 
             const {

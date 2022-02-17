@@ -1,8 +1,8 @@
 <template>
-    <div class="flex flex-col w-full h-full px-5 pt-4 overflow-auto gap-y-5">
+    <div class="flex flex-col w-full h-full overflow-auto gap-y-5">
         <div
             v-if="links(selectedAsset)?.length > 0"
-            class="flex items-center justify-between"
+            class="flex items-center justify-between px-5 bg-gray-50 py-2 border-b border-gray-200"
         >
             <span class="font-semibold text-gray-500">Resources</span>
 
@@ -11,15 +11,15 @@
                 :edit-permission="linkEditPermission"
             >
                 <template #trigger>
-                    <a-button
-                        class="text-gray-500 border border-transparent rounded shadow-none hover:border-gray-400"
+                    <div
+                        class="text-gray-500 cursor-pointer flex items-center text-primary"
                     >
-                        <AtlanIcon icon="Add" />
-                    </a-button>
+                        <AtlanIcon icon="Add" class="mr-1" /> Add
+                    </div>
                 </template>
             </AddResources>
         </div>
-        <div>
+        <div class="px-5 pt-0">
             <div
                 v-if="links(selectedAsset)?.length > 0"
                 class="flex flex-col gap-y-4"

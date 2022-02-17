@@ -13,10 +13,11 @@
         <template #footer>
             <a-button type="primary" @click="handleFullScreen">Done</a-button>
         </template>
-        <div class="relative pt-4 px-4">
+        <div class="relative px-4 pt-4">
             <div
                 class="w-full px-4 py-2 overflow-x-auto overflow-y-auto rounded"
                 :class="background === '' ? 'bg-gray-100' : background"
+                style="max-height: 65vh"
             >
                 <template v-for="(line, i) in renderedLines" :key="i">
                     <div class="flex">

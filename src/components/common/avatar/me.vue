@@ -25,7 +25,7 @@
     </a>-->
         <template #overlay>
             <a-menu class="mt-1">
-                <a-menu-item style="width: 130px">
+                <a-menu-item>
                     <a @click="() => handleClickUser(username)">
                         <div class="flex items-center">
                             <AtlanIcon icon="User" class="mr-2" />
@@ -33,7 +33,7 @@
                         </div></a
                     >
                 </a-menu-item>
-                <a-menu-item style="width: 130px">
+                <a-menu-item>
                     <a @click="toggleHelpWidget">
                         <div class="flex items-center">
                             <AtlanIcon icon="Support" class="mr-2" />

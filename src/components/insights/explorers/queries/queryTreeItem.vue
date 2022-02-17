@@ -869,6 +869,8 @@
                 input.value = ''
                 input.value = item.value.attributes?.name
 
+                let newName = item.value.attributes?.name
+
                 input.addEventListener('keydown', (e) => {
                     // console.log('event: ', e)
                     if (e.key === 'Escape') {
@@ -881,6 +883,7 @@
                     if (e.key === 'Enter') {
                         if (input.value && input.value !== orignalName) {
                             item.value.attributes.name = input.value
+                            newName = input.value
                             const { data, error, isLoading } =
                                 Insights.CreateQueryFolder(
                                     {
@@ -896,20 +899,6 @@
 
                                     if (isLoading.value === false) {
                                         if (error.value === undefined) {
-                                            // message.success({
-                                            //     content: `${
-                                            //         item.value.typeName ===
-                                            //         'Query'
-                                            //             ? 'Query'
-                                            //             : 'Folder'
-                                            //     } renamed successfully`,
-                                            // })
-                                            // useAddEvent(
-                                            //     'insights',
-                                            //     'folder',
-                                            //     'renamed',
-                                            //     undefined
-                                            // )
                                         } else {
                                             item.value.attributes.name =
                                                 orignalName
@@ -939,6 +928,80 @@
                                     } renamed successfully`,
                                 })
 
+                                // if same tab renamed
+                                if (
+                                    activeInlineTab.value.attributes &&
+                                    activeInlineTab?.value.queryId ===
+                                        item?.value.guid
+                                ) {
+                                    let activeInlineTabCopy: activeInlineTabInterface =
+                                        JSON.parse(
+                                            JSON.stringify(
+                                                toRaw(activeInlineTab.value)
+                                            )
+                                        )
+                                    activeInlineTabCopy.attributes.name =
+                                        input.value
+                                    activeInlineTabCopy.label = newName
+
+                                    if (
+                                        activeInlineTabCopy.assetSidebar
+                                            .assetInfo.guid === item?.value.guid
+                                    ) {
+                                        activeInlineTabCopy.assetSidebar.assetInfo.attributes.name =
+                                            newName
+                                        activeInlineTabCopy.assetSidebar.assetInfo.displayText =
+                                            newName
+                                    }
+                                    if (
+                                        data.value?.mutatedEntities?.UPDATE
+                                            ?.length > 0
+                                    ) {
+                                        activeInlineTabCopy.updateTime =
+                                            data.value?.mutatedEntities?.UPDATE[0].updateTime
+                                        activeInlineTabCopy.updatedBy =
+                                            data.value?.mutatedEntities?.UPDATE[0].updatedBy
+                                    }
+                                    // debugger
+                                    modifyActiveInlineTab(
+                                        activeInlineTabCopy,
+                                        inlineTabs,
+                                        activeInlineTabCopy.isSaved,
+                                        true
+                                    )
+                                } else {
+                                    const index = inlineTabs.value.findIndex(
+                                        (tab) =>
+                                            tab.queryId === item?.value.guid
+                                    )
+                                    if (index < 0) return
+                                    inlineTabs.value[index].attributes.name =
+                                        input.value
+                                    inlineTabs.value[index].label = newName
+
+                                    if (
+                                        data.value?.mutatedEntities?.UPDATE
+                                            ?.length > 0
+                                    ) {
+                                        inlineTabs.value[index].updateTime =
+                                            data.value?.mutatedEntities?.UPDATE[0].updateTime
+                                        inlineTabs.value[index].updatedBy =
+                                            data.value?.mutatedEntities?.UPDATE[0].updatedBy
+                                    }
+                                    if (
+                                        inlineTabs.value[index].assetSidebar
+                                            .assetInfo.guid === item?.value.guid
+                                    ) {
+                                        inlineTabs.value[
+                                            index
+                                        ].assetSidebar.assetInfo.attributes.name =
+                                            newName
+                                        inlineTabs.value[
+                                            index
+                                        ].assetSidebar.assetInfo.displayText = newName
+                                    }
+                                }
+
                                 useAddEvent(
                                     'insights',
                                     item.value.typeName === 'Query'
@@ -961,10 +1024,11 @@
                     // console.log('rename error blur: ', error)
                     if (input.value && input.value !== orignalName) {
                         item.value.attributes.name = input.value
+                        newName = input.value
                         const { data, error, isLoading } =
                             Insights.CreateQueryFolder(
                                 {
-                                    entiy: item.value.entity,
+                                    entity: item.value.entity,
                                 },
                                 {}
                             )
@@ -976,14 +1040,6 @@
 
                                 if (isLoading.value === false) {
                                     if (error.value === undefined) {
-                                        // message.success({
-                                        //     content: `${
-                                        //         item.value.typeName === 'Query'
-                                        //             ? 'Query'
-                                        //             : 'Folder'
-                                        //     } renamed successfully`,
-                                        // })
-                                        // updateAssetCheck.value = true
                                     } else {
                                         item.value.attributes.name = orignalName
 
@@ -1001,22 +1057,96 @@
                         )
 
                         watch(data, () => {
-                            // setTimeout(() => {
-                            updateAssetCheck.value = true
-                            message.success({
-                                content: `${
-                                    item.value.typeName === 'Query'
-                                        ? 'Query'
-                                        : 'Folder'
-                                } renamed successfully`,
-                            })
+                            if (data.value !== undefined) {
+                                // setTimeout(() => {
+                                updateAssetCheck.value = true
+                                message.success({
+                                    content: `${
+                                        item.value.typeName === 'Query'
+                                            ? 'Query'
+                                            : 'Folder'
+                                    } renamed successfully`,
+                                })
+                                if (
+                                    activeInlineTab.value.attributes &&
+                                    activeInlineTab?.value.queryId ===
+                                        item?.value.guid
+                                ) {
+                                    let activeInlineTabCopy: activeInlineTabInterface =
+                                        JSON.parse(
+                                            JSON.stringify(
+                                                toRaw(activeInlineTab.value)
+                                            )
+                                        )
+                                    activeInlineTabCopy.attributes.name =
+                                        input.value
+                                    activeInlineTabCopy.label = newName
 
-                            useAddEvent(
-                                'insights',
-                                'folder',
-                                'renamed',
-                                undefined
-                            )
+                                    if (
+                                        activeInlineTabCopy.assetSidebar
+                                            .assetInfo.guid === item?.value.guid
+                                    ) {
+                                        activeInlineTabCopy.assetSidebar.assetInfo.attributes.name =
+                                            newName
+                                        activeInlineTabCopy.assetSidebar.assetInfo.displayText =
+                                            newName
+                                    }
+
+                                    if (
+                                        data.value?.mutatedEntities?.UPDATE
+                                            ?.length > 0
+                                    ) {
+                                        activeInlineTabCopy.updateTime =
+                                            data.value?.mutatedEntities?.UPDATE[0].updateTime
+                                        activeInlineTabCopy.updatedBy =
+                                            data.value?.mutatedEntities?.UPDATE[0].updatedBy
+                                    }
+                                    modifyActiveInlineTab(
+                                        activeInlineTabCopy,
+                                        inlineTabs,
+                                        activeInlineTabCopy.isSaved,
+                                        true
+                                    )
+                                } else {
+                                    const index = inlineTabs.value.findIndex(
+                                        (tab) =>
+                                            tab.queryId === item?.value.guid
+                                    )
+                                    if (index < 0) return
+                                    inlineTabs.value[index].attributes.name =
+                                        input.value
+                                    inlineTabs.value[index].label = newName
+
+                                    if (
+                                        data.value?.mutatedEntities?.UPDATE
+                                            ?.length > 0
+                                    ) {
+                                        inlineTabs.value[index].updateTime =
+                                            data.value?.mutatedEntities?.UPDATE[0].updateTime
+                                        inlineTabs.value[index].updatedBy =
+                                            data.value?.mutatedEntities?.UPDATE[0].updatedBy
+                                    }
+                                    if (
+                                        inlineTabs.value[index].assetSidebar
+                                            .assetInfo.guid === item?.value.guid
+                                    ) {
+                                        inlineTabs.value[
+                                            index
+                                        ].assetSidebar.assetInfo.attributes.name =
+                                            newName
+                                        inlineTabs.value[
+                                            index
+                                        ].assetSidebar.assetInfo.displayText = newName
+                                    }
+                                }
+
+                                useAddEvent(
+                                    'insights',
+                                    'folder',
+                                    'renamed',
+                                    undefined
+                                )
+                            }
                             // }, 200)
                         })
                     }

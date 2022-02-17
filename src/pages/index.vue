@@ -22,6 +22,9 @@
                 <div class="mt-6">
                     <Relevant />
                 </div>
+                <div class="mt-6">
+                    <PopularQueries />
+                </div>
 
                 <!--section>
                 <YourOrgs />
@@ -39,6 +42,9 @@
             <section>
                 <RecentAnnouncements />
             </section>
+            <!-- <section>
+                <PopularQueries />
+            </section> -->
         </aside>
     </div>
 </template>
@@ -59,6 +65,7 @@
     import useHelpWidget from '~/composables/helpCenter/useHelpWidget'
     import RecentResources from '@/home/main/recentResources.vue'
     import RecentAnnouncements from '@/home/main/recentAnnouncements.vue'
+    import PopularQueries from '@/home/main/popoularQueries.vue'
 
     export default defineComponent({
         name: 'HomePage',
@@ -72,6 +79,7 @@
             Purpose,
             RecentResources,
             RecentAnnouncements,
+            PopularQueries,
         },
         props: {},
         setup() {

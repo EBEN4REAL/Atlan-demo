@@ -167,7 +167,7 @@
             const packageList = ref([])
             const dependentKeyPackage = ref('')
             const facetPackage = ref({})
-            const packageLimit = ref(10)
+            const packageLimit = ref(9)
             const packageOffset = ref(0)
             const preference = ref({
                 sort: 'metadata.creationTimestamp-desc',

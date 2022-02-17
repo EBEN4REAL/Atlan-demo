@@ -34,7 +34,7 @@
                 <EmptyView
                     empty-screen="NoAssetsFound"
                     image-class="h-44"
-                    desc="No assets found"
+                    :desc="emptyText"
                 />
             </div>
 
@@ -54,6 +54,7 @@
                     <AssetItem
                         :item="item"
                         :preference="preference"
+                        class="hover:bg-primary-menu"
                         :enable-sidebar-drawer="true"
                         @updateDrawer="updateCurrentList"
                     ></AssetItem>
@@ -85,13 +86,10 @@
 
     import AssetList from '@/common/assets/list/index.vue'
     import AssetItem from '@/common/assets/list/assetItem.vue'
-    import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     import {
-        AssetAttributes,
-        AssetRelationAttributes,
-        InternalAttributes,
-        SQLAttributes,
+        MinimalAttributes,
+        DefaultRelationAttributes,
     } from '~/constant/projection'
 
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
@@ -169,6 +167,11 @@
                 required: false,
                 default: 'DEFAULT_ASSET_LIST_HOME',
             },
+            emptyText: {
+                type: String,
+                required: false,
+                default: 'No assets found',
+            },
         },
         emits: ['listLoaded'],
         setup(props, { emit }) {
@@ -189,14 +192,9 @@
                 typeName: '__all',
             })
 
-            const { customMetadataProjections } = useTypedefData()
-            const defaultAttributes = ref([
-                ...InternalAttributes,
-                ...AssetAttributes,
-                ...SQLAttributes,
-                ...customMetadataProjections,
-            ])
-            const relationAttributes = ref([...AssetRelationAttributes])
+            const defaultAttributes = ref([...MinimalAttributes])
+            const relationAttributes = ref([...DefaultRelationAttributes])
+
             const activeKey: Ref<string[]> = ref([])
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
             const searchDirtyTimestamp = ref(`dirty_${Date.now().toString()}`)

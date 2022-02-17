@@ -73,8 +73,8 @@
                                     )}`
                                 }}</span>
                             </template>
-                            <AtlanIcon
-                                :icon="getConnectorImage(item)"
+                            <img
+                                :src="getConnectorImage(item)"
                                 class="h-4 mr-1 mb-0.5"
                             />
                         </a-tooltip>
@@ -124,8 +124,8 @@
                         class="flex text-sm text-gray-500 gap-x-2"
                     >
                         <div class="flex items-center text-gray">
-                            <AtlanIcon
-                                :icon="getConnectorImage(item)"
+                            <img
+                                :src="getConnectorImage(item)"
                                 class="h-4 mr-1 mb-0.5"
                             />
                             <span>{{
@@ -305,10 +305,7 @@
                     block
                     @click="handleBIRedirect"
                     ><div class="flex items-center justify-center px-1">
-                        <AtlanIcon
-                            :icon="getConnectorImage(item)"
-                            class="h-4 mr-1"
-                        />
+                        <img :src="getConnectorImage(item)" class="h-4 mr-1" />
                         View in
                         {{ getConnectorLabel(item) }}
                     </div>
@@ -362,7 +359,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, computed, toRefs, ref ,watch} from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        computed,
+        toRefs,
+        ref,
+        watch,
+    } from 'vue'
     import { useMagicKeys, useActiveElement, whenever, and } from '@vueuse/core'
     import { useRouter } from 'vue-router'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -549,7 +553,7 @@
                 handleEdit,
                 isCustom,
                 handleNameUpdate,
-entityTitle 
+                entityTitle,
             }
         },
     })

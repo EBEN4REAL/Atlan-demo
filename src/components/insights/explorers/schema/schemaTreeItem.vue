@@ -1321,6 +1321,7 @@
                 isTabAdded.value = key
                 const inlineTabData: activeInlineTabInterface = {
                     label: `${previewItem.title} preview`,
+                    attributes: {},
                     key,
                     favico: 'https://atlan.com/favicon.ico',
                     isSaved: false,
@@ -1401,6 +1402,7 @@
                             activeTab:
                                 activeInlineTab.value?.playground?.resultsPane
                                     ?.activeTab ?? 0,
+                            outputPaneSize: 27.9,
                             result: {
                                 title: `${key} Result`,
                                 runQueryId: undefined,

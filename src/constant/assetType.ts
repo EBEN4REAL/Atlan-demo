@@ -103,6 +103,7 @@ export const assetTypeList: {
             qualifiedNameAttribute: 'partitionQualifiedName',
             parents: ['Connection', 'Database', 'Schema'],
             children: ['Column'],
+            image: "TablePartition",
             isDiscoverable: true,
             orderWeight: 100,
             categoryType: 'SQL',

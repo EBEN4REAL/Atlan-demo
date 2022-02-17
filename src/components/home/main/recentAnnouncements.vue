@@ -42,11 +42,6 @@
         defineAsyncComponent,
     } from 'vue'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
-    import {
-        AssetAttributes,
-        InternalAttributes,
-        AssetRelationAttributes,
-    } from '~/constant/projection'
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
@@ -85,10 +80,17 @@
                 display: [],
             })
             const defaultAttributes = ref([
-                ...InternalAttributes,
-                ...AssetAttributes,
+                'name',
+                'displayName',
+                'announcementMessage',
+                'announcementTitle',
+                'announcementType',
+                'announcementUpdatedAt',
+                'announcementUpdatedBy',
+                'certificateStatus',
+                'certificateUpdatedBy',
+                'certificateStatusMessage',
             ])
-            const relationAttributes = ref([...AssetRelationAttributes])
 
             const {
                 list,
@@ -111,7 +113,6 @@
                 limit,
                 offset,
                 attributes: defaultAttributes,
-                relationAttributes,
                 suppressLogs: true,
             })
 

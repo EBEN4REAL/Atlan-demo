@@ -20,9 +20,9 @@
                 :title="capitalizeFirstLetter(connectorName)"
                 placement="left"
             >
-                <AtlanIcon
+                <img
                     v-if="connectorName"
-                    :icon="getConnectorImageMap[connectorName.toLowerCase()]"
+                    :src="getConnectorImageMap[connectorName.toLowerCase()]"
                     class="w-auto h-4 pr-2 mr-2 border-r"
                 />
             </a-tooltip>
@@ -33,6 +33,7 @@
         </template>
 
         <template #suffix>
+            <a-spin size="small" v-if="isLoading" class="mt-0.5 mx-1"></a-spin>
             <slot name="tab" />
             <slot name="filter" />
             <a-popover
@@ -94,10 +95,11 @@
             connectorName: { type: String, default: () => '' },
             customClass: { type: String, default: '' },
             noBorder: { type: Boolean, default: false },
+            isLoading: { type: Boolean, default: false },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const { autofocus, connectorName, size, placeholder } =
+            const { autofocus, connectorName, size, placeholder, isLoading } =
                 toRefs(props)
 
             const { modelValue } = useVModels(props, emit)
@@ -178,6 +180,7 @@
                 getConnectorLabelByName,
                 allowTabShortcut,
                 placeholderDynamic,
+                isLoading,
             }
         },
     })
@@ -210,8 +213,6 @@
             @apply border-gray-200 border-b shadow-none border-solid border-t-0 border-l-0 border-r-0 !important;
 
             &:global(.ant-input-affix-wrapper-focused) {
-                @apply border-primary border-b  border-solid border-t-0 border-l-0 border-r-0  !important;
-
                 :global(.focusIcon) {
                     @apply text-primary !important;
                 }

@@ -14,7 +14,7 @@
         <template v-for="item in list" :key="item.id">
             <a-select-option :value="item.id" class="flex">
                 <div class="flex items-center">
-                    <AtlanIcon :icon="item.image" class="w-auto h-4 mr-1" />
+                    <img :src="item.image" class="w-auto h-4 mr-1" />
                     {{ item.label }}
                     <span v-if="showCount" class="ml-1"
                         >({{ item.count }})</span

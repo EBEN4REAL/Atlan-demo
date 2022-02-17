@@ -127,7 +127,7 @@ export const ATTRIBUTE_TYPES = [
         icon: 'DateTime',
     },
     {
-        label: 'Enum',
+        label: 'Options',
         id: 'enum',
         icon: 'Enum',
     },
@@ -151,7 +151,6 @@ export const ATTRIBUTE_TYPES = [
         id: 'SQL',
         icon: 'Query',
     },
-
 ]
 
 /**

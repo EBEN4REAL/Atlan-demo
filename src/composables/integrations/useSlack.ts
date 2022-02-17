@@ -9,7 +9,6 @@ import useIntegrations, {
 } from '~/composables/integrations/useIntegrations'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
-
 const { origin } = window.location
 if (origin.includes('localhost')) {
     // origin = `https://staging.atlan.com`
@@ -17,12 +16,22 @@ if (origin.includes('localhost')) {
 }
 
 export const stripSlackText = (text) => {
-    const urlRegex = /<https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()|]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)>/g
-    const strippedText = text.replace(urlRegex, (match) => {
+    let transformedText = text
+
+    // Matches URL
+    const urlRegex =
+        /<https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()|]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)>/g
+
+    transformedText.replace(urlRegex, (match) => {
         const stripped = match.replace(/<|>/g, '')
         return stripped.includes('|') ? stripped.split('|')[1] : stripped
     })
-    return strippedText
+
+    // Matches slack channel IDs of the format <#C02CY86RC3E|channel-name>
+    const channelRegex = /<#[A-Z0-9]{11}\|(\S+)>/g
+    transformedText = transformedText.replace(channelRegex, '#$1')
+
+    return transformedText
 }
 
 export const getSlackInstallUrlState = (isTenant: boolean) => {
@@ -37,7 +46,7 @@ export const getSlackInstallUrlState = (isTenant: boolean) => {
         isTenant,
         userId,
         username,
-        redirectUrl
+        redirectUrl,
     }
 
     console.log('slack auth state', state)
@@ -123,7 +132,8 @@ export const tenantLevelOauthUrl = computed(() => {
 export const userLevelOauthUrl = computed(() => {
     const store = integrationStore()
     const { userSlackStatus, tenantSlackStatus } = toRefs(store)
-    const oauthBaseUrl = userSlackStatus.value.oAuth || tenantSlackStatus.value.oAuth
+    const oauthBaseUrl =
+        userSlackStatus.value.oAuth || tenantSlackStatus.value.oAuth
     const state = getSlackInstallUrlState(false)
     const slackOauth = `${oauthBaseUrl}&state=${state}`
     return slackOauth
@@ -133,29 +143,41 @@ const trackAddEvent = (tenant) => {
     if (tenant)
         useAddEvent('admin', 'integration', 'added', {
             integration: 'slack',
-            level: 'tenant'
+            level: 'tenant',
         })
     else
         useAddEvent('admin', 'integration', 'added', {
             integration: 'slack',
-            level: 'user'
+            level: 'user',
         })
 }
 
-const handlePopupClose = async (userSlackStatus, tenantSlackStatus, callback, tenant) => {
-    console.log('popup window closed');
+const handlePopupClose = async (
+    userSlackStatus,
+    tenantSlackStatus,
+    callback,
+    tenant
+) => {
+    console.log('popup window closed')
     // ? recall all integration, (better (when filter support added): use filter and fetch only slack user level integration and update store)
     const { call } = useIntegrations(false)
     await call()
     // callback with status
-    if ((!tenant && userSlackStatus.value.configured) || (tenant && tenantSlackStatus.value.configured)) {
+    if (
+        (!tenant && userSlackStatus.value.configured) ||
+        (tenant && tenantSlackStatus.value.configured)
+    ) {
         callback('success')
         trackAddEvent(tenant)
-    }
-    else callback('failure')
+    } else callback('failure')
 }
 
-export function openSlackOAuth({ w = 500, h = 600, tenant = false, callback = (status) => ({}) }) {
+export function openSlackOAuth({
+    w = 500,
+    h = 600,
+    tenant = false,
+    callback = (status) => ({}),
+}) {
     const store = integrationStore()
     const { userSlackStatus, tenantSlackStatus } = toRefs(store)
     const { width, height } = window.screen
@@ -164,9 +186,7 @@ export function openSlackOAuth({ w = 500, h = 600, tenant = false, callback = (s
     const windowConfig = `height=600,width=500,left=${leftPosition},top=${topPosition},resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no, status=yes`
 
     const new_window = window.open(
-        tenant
-            ? tenantLevelOauthUrl.value
-            : userLevelOauthUrl.value,
+        tenant ? tenantLevelOauthUrl.value : userLevelOauthUrl.value,
         'popUpWindow',
         windowConfig
     )
@@ -174,14 +194,20 @@ export function openSlackOAuth({ w = 500, h = 600, tenant = false, callback = (s
     //! hack to detect window closing from crossXorigin
     const timer = setInterval(() => {
         if (new_window?.closed) {
-            clearInterval(timer);
-            handlePopupClose(userSlackStatus, tenantSlackStatus, callback, tenant)
+            clearInterval(timer)
+            handlePopupClose(
+                userSlackStatus,
+                tenantSlackStatus,
+                callback,
+                tenant
+            )
         }
-    }, 500);
+    }, 500)
 }
 
 export const UnfurlSlackMessage = (body, asyncOptions) => {
-    const { data, isLoading, error, isReady, mutate } = Integrations.UnfurlSlackMessage(body, { asyncOptions })
+    const { data, isLoading, error, isReady, mutate } =
+        Integrations.UnfurlSlackMessage(body, { asyncOptions })
     return { data, isLoading, error, mutate }
 }
 
@@ -203,8 +229,7 @@ export const archiveSlack = (pV) => {
                 duration: 2,
             })
         } else if (error.value) {
-            const errMsg =
-                error.value?.response?.data?.errorMessage || ''
+            const errMsg = error.value?.response?.data?.errorMessage || ''
             const generalError = 'Network error while disconnecting'
             const e = errMsg || generalError
             message.error({
@@ -226,22 +251,18 @@ export const archiveSlack = (pV) => {
         data,
         isLoading,
         error,
-        disconnect
+        disconnect,
     }
 }
 
 export const createApp = (body) => {
-
     const { CreateSlackApp } = Integrations
 
     const store = integrationStore()
 
-    const {
-        data,
-        isLoading,
-        error,
-        mutate
-    } = CreateSlackApp(body, { asyncOptions: { immediate: false } })
+    const { data, isLoading, error, mutate } = CreateSlackApp(body, {
+        asyncOptions: { immediate: false },
+    })
 
     watch([isLoading, error], () => {
         if (isLoading.value) {
@@ -251,8 +272,7 @@ export const createApp = (body) => {
                 duration: 2,
             })
         } else if (error.value) {
-            const errMsg =
-                error.value?.response?.data?.errorMessage || ''
+            const errMsg = error.value?.response?.data?.errorMessage || ''
             const generalError = 'Error while creating Atlan App'
             const e = errMsg || generalError
             message.error({
@@ -276,8 +296,6 @@ export const createApp = (body) => {
         data,
         isLoading,
         error,
-        mutate
+        mutate,
     }
-
-
 }

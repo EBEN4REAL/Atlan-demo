@@ -76,8 +76,8 @@
         <a-textarea
             ref="descriptionRef"
             v-model:value="localDescription"
+            rows="1"
             tabindex="0"
-            auto-size
             @keydown.esc="
                 () => {
                     pressedEsc = true
@@ -252,7 +252,7 @@
     .editable {
         :global(.ant-input) {
             @apply border-none bg-transparent shadow-none px-0 py-0 rounded-none !important;
-            min-height: fit-content !important;
+            min-height: 22px !important;
         }
         :global(.ant-input:focus) {
             @apply border-none bg-white shadow-lg px-1 py-0 rounded-md !important;

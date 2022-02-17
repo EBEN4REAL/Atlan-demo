@@ -47,7 +47,7 @@
                     <div class="flex justify-items-end">
                         <span
                             v-if="policy.groups.length > 0"
-                            class="font-semibold"
+                            class="font-semibold text-gray-500"
                         >
                             <a-tooltip placement="top">
                                 <template #title>
@@ -67,7 +67,7 @@
                         >
                         <span
                             v-if="policy.users.length > 0"
-                            class="font-semibold"
+                            class="font-semibold text-gray-500"
                         >
                             <a-tooltip placement="top">
                                 <template #title>
@@ -92,7 +92,7 @@
                                         : `${permissions.length} permission`
                                 }}
                             </template>
-                            <span class="flex-none text-sm font-semibold">
+                            <span class="flex-none font-semibold text-gray-500">
                                 <AtlanIcon
                                     icon="ShieldBlank"
                                     class="-mt-1 icon-gray"
@@ -115,7 +115,7 @@
                         <span class="text-gray-300 mx-1.5">•</span>
                         <span
                             v-if="maskComputed"
-                            class="flex-none text-sm font-semibold"
+                            class="flex-none font-semibold text-gray-500"
                         >
                             <a-tooltip placement="top">
                                 <template #title>

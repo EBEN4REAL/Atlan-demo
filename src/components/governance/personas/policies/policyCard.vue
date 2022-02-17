@@ -136,7 +136,7 @@
                                     policy.assets.length !== 1 &&
                                     !isAllAssets(policy.assets[0])
                                 "
-                                class="ml-1 text-xs font-semibold text-gray-500"
+                                class="ml-1 font-semibold text-gray-500"
                             >
                                 {{ policy.assets.length }}
                             </div>

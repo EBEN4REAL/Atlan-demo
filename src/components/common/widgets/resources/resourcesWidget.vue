@@ -1,13 +1,33 @@
 <template>
-    <div ref="wrapper" class="w-full space-y-3">
-        <template
-            v-if="$slots?.placeholder && !resources?.length ? false : true"
-        >
-            <div class="flex justify-between gap-x-6">
-                <template v-if="$slots?.title">
-                    <slot name="title" />
-                </template>
-                <div v-else>
+    <div ref="wrapper" class="w-full">
+        <template v-if="minimal">
+            <template v-if="resources?.length">
+                <div
+                    class="flex justify-between px-5 py-2 border-b border-gray-200 gap-x-6 bg-gray-50"
+                >
+                    <div>
+                        <span class="font-semibold text-gray-500">
+                            Resources
+                        </span>
+                    </div>
+                    <div class="flex-grow"></div>
+
+                    <AddResource v-if="!readOnly" @add="addCallback">
+                        <template #trigger>
+                            <div
+                                class="flex items-center cursor-pointer text-primary"
+                            >
+                                <AtlanIcon icon="Add" class="mr-1" /> Add
+                            </div>
+                        </template>
+                    </AddResource>
+                </div>
+            </template>
+        </template>
+
+        <template v-else>
+            <div class="flex justify-between px-5 pt-5 gap-x-6">
+                <div>
                     <AtlanIcon icon="Resources2" class="w-auto h-8 mr-3" />
                     <span class="text-base font-bold text-gray">
                         Resources
@@ -24,7 +44,7 @@
                 >
                     <SlackConnect />
                 </template>
-                <AddResource @add="addCallback" v-if="!readOnly">
+                <AddResource v-if="!readOnly" @add="addCallback">
                     <template #trigger>
                         <AtlanButton
                             class="flex-none px-2"
@@ -70,7 +90,7 @@
             </template>
             <template v-else>
                 <div
-                    class="grid gap-3"
+                    class="grid gap-3 p-5"
                     :class="{
                         'grid-cols-1': minimal,
                         'grid-cols-2': !minimal,
@@ -117,6 +137,7 @@
         ref,
         provide,
     } from 'vue'
+    import SlackUserLoginTrigger from '@common/integrations/slack/slackUserLoginTriggerCard.vue'
     import {
         isSlackLink,
         openSlackOAuth,
@@ -126,7 +147,6 @@
     import LinkPreviewCard from '@/common/widgets/resources/previewCard/linkPreviewCard.vue'
     import SlackPreview from '@/common/widgets/resources/previewCard/slackPreview.vue'
     import AddResource from '@/common/widgets/resources/resourceInputModal.vue'
-    import SlackUserLoginTrigger from '@common/integrations/slack/slackUserLoginTriggerCard.vue'
 
     import integrationStore from '~/store/integrations/index'
     import { Link } from '~/types/resources.interface'
@@ -166,6 +186,7 @@
     const emit = defineEmits(['add', 'update', 'remove'])
 
     const wrapper = ref()
+    const addModalRef = ref()
 
     const minimal = computed(() => wrapper.value?.clientWidth < 500)
     // const placeholderVisible = computed(() => !resources.value?.length)

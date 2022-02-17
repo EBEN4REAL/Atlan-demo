@@ -1,6 +1,7 @@
 <template>
     <ResourcesWidget
-        class="px-5 pt-4"
+        :ref="resourcesWidget"
+        class=""
         :resources="resources"
         :add-status="addStatus"
         :update-status="updateStatus"
@@ -13,9 +14,6 @@
         @update="handleUpdate"
         @remove="handleRemove"
     >
-        <template #title>
-            <span class="font-semibold text-gray-500"> Resources </span>
-        </template>
         <template #placeholder>
             <Placeholder />
         </template>
@@ -51,6 +49,11 @@
     })
 
     const { selectedAsset, isDrawer } = toRefs(props)
+    const resourcesWidget = ref()
+    const hhh = () => {
+        console.log(resourcesWidget.value)
+        resourcesWidget?.addModalRef?.showModal()
+    }
 
     const { links, selectedAssetUpdatePermission, assetPermission } =
         useAssetInfo()

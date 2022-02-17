@@ -1,6 +1,6 @@
 <template>
     <div class="flex w-full h-full overflow-x-hidden bg-white">
-        <div class="flex-1 border-r border-gray-200">
+        <div class="flex-1 border-r border-gray-300">
             <router-view v-if="isItem" />
 
             <keep-alive>
@@ -11,9 +11,7 @@
             </keep-alive>
         </div>
 
-        <div
-            class="relative hidden bg-white asset-preview-container md:block border-l border-gray-300"
-        >
+        <div class="relative hidden bg-white asset-preview-container md:block">
             <AssetPreview :selected-asset="localSelected" />
         </div>
     </div>

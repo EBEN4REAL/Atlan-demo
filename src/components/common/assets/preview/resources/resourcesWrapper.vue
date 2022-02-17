@@ -1,6 +1,7 @@
 <template>
     <ResourcesWidget
-        class="px-5 pt-4"
+        :ref="resourcesWidget"
+        class=""
         :resources="resources"
         :add-status="addStatus"
         :update-status="updateStatus"
@@ -13,9 +14,6 @@
         @update="handleUpdate"
         @remove="handleRemove"
     >
-        <template #title>
-            <span class="font-semibold text-gray-500"> Resources </span>
-        </template>
         <template #placeholder>
             <Placeholder />
         </template>
@@ -32,7 +30,7 @@
         ref,
     } from 'vue'
     import { whenever } from '@vueuse/core'
-    import ResourcesWidget from '@/common/widgets/resources/resourcesWidgetV2/resourcesWidgetV2.vue'
+    import ResourcesWidget from '@/common/widgets/resources/resourcesWidget.vue'
     import Placeholder from '@/common/assets/preview/resources/placeholder.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -51,6 +49,11 @@
     })
 
     const { selectedAsset, isDrawer } = toRefs(props)
+    const resourcesWidget = ref()
+    const hhh = () => {
+        console.log(resourcesWidget.value)
+        resourcesWidget?.addModalRef?.showModal()
+    }
 
     const { links, selectedAssetUpdatePermission, assetPermission } =
         useAssetInfo()
@@ -108,7 +111,6 @@
     }
     const removeStatus = ref('')
     const handleRemove = async (link) => {
-        debugger
         const { error, isLoading, isReady } = handleResourceDelete(link)
         removeStatus.value = 'loading'
         whenever(error, () => {

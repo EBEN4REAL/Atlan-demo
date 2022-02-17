@@ -1,7 +1,7 @@
 <template>
     <a-layout class="min-h-full">
         <a-layout-header class="z-30 h-10 p-0 m-0">
-            <div class="h-full px-4 bg-white border-b">
+            <div class="h-full px-4 bg-white border-b border-gray-300">
                 <NavMenu
                     :page="activeKey"
                     :is-sidebar-active="showNavbar"

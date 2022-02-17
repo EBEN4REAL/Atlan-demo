@@ -52,8 +52,11 @@ export default async function useComputeGraph(
 
     const isNodeExist = (id) => nodes.value.find((x) => x.id === id)
 
+    const fromAndToIdSetForNodes = new Set()
+
     const createNodesFromEntityMap = (data, hasBase = true) => {
         const lineageData = { ...data }
+
         const { relations, childrenCounts, baseEntityGuid } = lineageData
 
         const getAsset = (id) => lineageData.guidEntityMap[id]
@@ -61,6 +64,13 @@ export default async function useComputeGraph(
 
         relations.forEach((x) => {
             const { fromEntityId: from, toEntityId: to } = x
+
+            if (from === to) return
+
+            const fromAndToId = `${from}@${to}`
+            if (!fromAndToIdSetForNodes.has(fromAndToId))
+                fromAndToIdSetForNodes.add(fromAndToId)
+            else return
 
             const { typeName: fromTypeName, guid: fromGuid } = getAsset(from)
             const { typeName: toTypeName, guid: toGuid } = getAsset(to)
@@ -197,13 +207,12 @@ export default async function useComputeGraph(
     createNodesFromEntityMap(lineage.value)
 
     /* Edges */
+    const fromAndToIdSetForEdges = new Set()
 
     const createNodeEdges = (data) => {
         const lineageData = { ...data }
 
         const { relations } = lineageData
-
-        const fromAndToIdSet = new Set()
 
         // same source
         Object.entries(sameSourceCount.value).forEach(([k, v]) => {
@@ -232,17 +241,30 @@ export default async function useComputeGraph(
         relations.forEach((x) => {
             const { fromEntityId: from, toEntityId: to, processId } = x
 
-            if (columnEntityIds.find((y) => [from, to].includes(y))) return
+            if (from === to) return
 
-            let edgeExtraData = {}
-            const fromAndToId = `${from}@${to}`
-            if (fromAndToIdSet.has(fromAndToId)) edgeExtraData = { isDup: true }
-            else fromAndToIdSet.add(fromAndToId)
+            if (columnEntityIds.find((y) => [from, to].includes(y))) return
 
             if (allTargetsHiddenIds.value.find((y) => [from, to].includes(y)))
                 return
             if (allSourcesHiddenIds.value.find((y) => [from, to].includes(y)))
                 return
+
+            let edgeExtraData = {}
+
+            const fromAndToId = `${from}@${to}`
+            if (!fromAndToIdSetForEdges.has(fromAndToId)) {
+                fromAndToIdSetForEdges.add(fromAndToId)
+                edgeExtraData = { isDup: true }
+            } else return
+
+            edges.value.find((y) => {
+                const fromTo = y.id.split('/')[1]
+                const [fromTwo, toTwo] = fromTo.split('@')
+                if (toTwo === from && fromTwo === to) {
+                    edgeExtraData = { edgeExtraData, isCyclicEdge: true }
+                }
+            })
 
             const relation = {
                 id: `${processId}/${from}@${to}`,

@@ -35,7 +35,7 @@ export const getters: GettersTree<State> & Getters = {
     },
     getAssetListByConnectionId(state: State) {
         return (id, connectionId) => {
-            const found = state.list.find((item) => item.id === id)
+            const found = state?.list?.find((item) => item.id === id)
             const assetList = []
             found?.metadataPolicies.forEach((element) => {
                 if (element.allow && element.connectionId === connectionId) {

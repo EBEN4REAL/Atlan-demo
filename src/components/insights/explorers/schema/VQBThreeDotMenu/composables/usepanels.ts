@@ -402,7 +402,7 @@ export function addJoin(
                     value: item.value?.entity.attributes?.name,
                 },
             }
-            subpanels = [subpanel]
+            subpanels.splice(0, 1, subpanel)
             // only add subpanel
             activeInlineTab.value.playground.vqb.panels[joinIndex].subpanels =
                 subpanels

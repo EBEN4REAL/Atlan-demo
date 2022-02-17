@@ -20,7 +20,7 @@ export default function useConnection() {
     const { data, aggregationMap } = useIndexSearch(
         {
             dsl: {
-                size: MAX_CONNECTIONS,
+                size: MAX_CONNECTIONS * 10,
                 query: {
                     bool: {
                         filter: [
@@ -65,7 +65,7 @@ export default function useConnection() {
                 },
             },
             attributes: [...CONNECTION_ATTRIBUTES, ...ConnectionAttriibutes],
-            suppressLogs: true
+            suppressLogs: true,
         },
         ref('DEFAULT_CONNECTIONS'),
         false

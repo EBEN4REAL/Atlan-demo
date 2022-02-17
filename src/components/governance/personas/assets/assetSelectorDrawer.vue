@@ -10,7 +10,7 @@
         :width="460"
         @close="$emit('close')"
     >
-        <div class="relative flex flex-col h-full bg-gray-100">
+        <div class="relative flex flex-col h-full bg-white">
             <div
                 class="flex items-center p-4 bg-white border-b border-gray-300"
             >
@@ -50,13 +50,13 @@
                 class="mx-4 mt-3 bg-gray-200 tab-select-asset"
                 :data="tabConfig"
             />
-            <a-divider class="my-4" />
+            <div class="my-4" />
 
             <div
                 class="relative overflow-x-hidden overflow-y-hidden drawer_height"
             >
                 <div
-                    class="absolute w-full h-full bg-gray-100"
+                    class="absolute w-full h-full bg-white"
                     :class="
                         activeTab === 'tree' ? 'front-z-index' : 'rear-z-index'
                     "
@@ -73,7 +73,7 @@
                 </div>
 
                 <div
-                    class="absolute w-full h-full bg-gray-100 assets-wrapper"
+                    class="absolute w-full h-full bg-white assets-wrapper"
                     :class="
                         activeTab === 'list' ? 'front-z-index' : 'rear-z-index'
                     "
@@ -90,14 +90,13 @@
                         :initial-filters="filterConfig"
                         checked-criteria="qualifiedName"
                         :preference="preference"
-                        class="bg-gray-100"
                         page="personas"
                         :all-checkbox-area-click="true"
                     />
                 </div>
 
                 <div
-                    class="absolute w-full h-full bg-gray-100"
+                    class="absolute w-full h-full bg-white"
                     :class="
                         activeTab === 'custom'
                             ? 'front-z-index'

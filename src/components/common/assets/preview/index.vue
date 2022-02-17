@@ -141,6 +141,15 @@
                             </a-tooltip>
                         </template>
                     </template>
+                    <a-button
+                        class="flex items-center justify-center"
+                        v-if="
+                            tenantSlackStatus.configured &&
+                            tenantSlackStatus.channels.length
+                        "
+                    >
+                        <AtlanIcon icon="Slack" class="mb-0.5" />
+                    </a-button>
                 </a-button-group>
             </div>
         </div>
@@ -245,6 +254,7 @@
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import useCollectionInfo from '~/components/insights/explorers/queries/composables/useCollectionInfo'
     import QueryDropdown from '@/common/query/queryDropdown.vue'
+    import integrationStore from '~/store/integrations/index'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -385,6 +395,8 @@
 
             const body = ref({})
             const authStore = useAuthStore()
+            const intStore = integrationStore()
+            const { tenantSlackStatus } = toRefs(intStore)
 
             const { refresh, isLoading: isEvaluating } = useEvaluate(
                 body,
@@ -548,6 +560,7 @@
                 hasCollectionWritePermission,
                 isCollectionCreatedByCurrentUser,
                 handleQueryAction,
+                tenantSlackStatus,
             }
         },
     })

@@ -98,7 +98,7 @@
                                     <span class="ml-1">
                                         Active
                                         {{
-                                            selectedUser.last_active_time_ago
+                                            selectedUser.last_active_time_ago_short_notation
                                         }}</span
                                     >
                                 </a-tooltip>

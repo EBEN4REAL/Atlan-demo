@@ -9,7 +9,7 @@
         :get-popup-container="(target) => target.parentNode"
     >
         <template #suffixIcon>
-            <AtlanIcon icon="CaretDown" class="mb-1" />
+            <AtlanIcon icon="CaretDown" class="mb-0" />
         </template>
         <a-select-option
             :value="item.id"

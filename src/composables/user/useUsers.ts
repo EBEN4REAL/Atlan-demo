@@ -128,6 +128,10 @@ export const getFormattedUser = (user: any) => {
             : '',
         last_active_time: getLastActiveTime(user?.lastLoginTime ?? ''),
         last_active_time_ago: getLastActiveTimeAgo(user?.lastLoginTime ?? ''),
+        last_active_time_ago_short_notation: getLastActiveTimeAgo(
+            user?.lastLoginTime ?? '',
+            true
+        ),
     }
     return localUser
 }

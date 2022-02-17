@@ -20,11 +20,13 @@ interface params {
     assetGuid: String
     assetQf: String
     assetType: String
-    requestType?:String
+    requestType?: String
     terms?: Array<any>
     certificate?: String
     classifications?: Array<String>
-    userDescription?:String
+    userDescription?: String
+    ownerUsers?: Array<any>
+    ownerGroups?: Array<any>
 }
 export function useCreateRequests({
     assetGuid,
@@ -34,7 +36,9 @@ export function useCreateRequests({
     terms = [],
     certificate = '',
     classifications = [],
-    userDescription='',
+    userDescription = '',
+    ownerUsers = [],
+    ownerGroups = [],
 }: params) {
     const requests = ref<requestPayload[]>([])
     const constructPayload = () => {
@@ -87,7 +91,7 @@ export function useCreateRequests({
                 })
             })
         }
-        if(requestType==='userDescription'){
+        if (requestType === 'userDescription') {
             requests.value.push({
                 requestType: 'attribute',
                 approvalType: 'single',
@@ -100,13 +104,45 @@ export function useCreateRequests({
                 sourceType: 'static',
             })
         }
+        if (requestType === 'ownerUsers') {
+            if (ownerUsers?.length) {
+                ownerUsers.forEach((el) => {
+                    requests.value.push({
+                        requestType: 'attribute',
+                        approvalType: 'single',
+                        destinationAttribute: 'ownerUsers',
+                        id: assetGuid,
+                        destinationGuid: assetGuid,
+                        destinationQualifiedName: assetQf,
+                        destinationValue: el,
+                        entityType: assetType,
+                        sourceType: 'static',
+                    })
+                })
+            }
+            if (ownerGroups.length) {
+                ownerGroups.forEach((el) => {
+                    requests.value.push({
+                        requestType: 'attribute',
+                        approvalType: 'single',
+                        destinationAttribute: 'ownerGroups',
+                        id: assetGuid,
+                        destinationGuid: assetGuid,
+                        destinationQualifiedName: assetQf,
+                        destinationValue: el,
+                        entityType: assetType,
+                        sourceType: 'static',
+                    })
+                })
+            }
+        }
         console.log(requests.value)
     }
     constructPayload()
+    console.log('submit req')
     const { data, mutate, error, isLoading, isValidating, isReady } =
         createBulkRequest({
             requests: requests?.value,
         })
-
     return { response: data, error, isLoading, mutate, isReady }
 }

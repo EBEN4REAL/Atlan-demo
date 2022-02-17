@@ -17,7 +17,7 @@
                         class="px-3 py-2 mx-4 mb-3 bg-gray-100"
                     >
                         You don't have edit access to this asset, but you can
-                        suggest terms to the asset owner.
+                        suggest owners to the asset owner.
                         <span
                             @click="handleCancelRequest"
                             class="cursor-pointer text-primary"

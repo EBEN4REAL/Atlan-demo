@@ -1,4 +1,12 @@
 <template>
+    <AssetDrawer
+        :data="selectedConnection"
+        :show-drawer="isDrawerVisible && selectedConnection?.guid"
+        :show-mask="false"
+        :show-close-btn="true"
+        @close-drawer="isDrawerVisible = false"
+        @update="handleDrawerUpdate"
+    />
     <div v-if="isEdit" class="flex flex-col w-2/3">
         <div class="flex flex-col px-3 py-2 border rounded gap-y-2">
             <div class="flex flex-col" v-if="selectedConnection?.guid">
@@ -25,6 +33,8 @@
                     </div>
                     <div class="flex gap-x-2">
                         <a-button
+                            v-if="!isDrawerVisible"
+                            @click="isDrawerVisible = true"
                             ><span
                                 ><AtlanIcon
                                     icon="SidebarSwitch"
@@ -197,6 +207,7 @@
 
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
+
     // import DynamicForm from '@/common/dynamicForm2/index.vue'
 
     export default defineComponent({
@@ -206,6 +217,7 @@
                 import('@/common/dynamicForm2/formItem.vue')
             ),
             ErrorView,
+            AssetDrawer,
         },
         props: {
             property: {
@@ -235,45 +247,55 @@
             const workflowTemplate = inject('workflowTemplate')
 
             const { name, createdBy, createdAt } = useAssetInfo()
+            const { getImage, getList, setList } = useConnectionStore()
 
             const testMessage = ref('')
             const testIcon = ref('')
             const testClass = ref('')
 
-            const connector = computed(() => {
-                return workflowTemplate.value?.metadata.labels[
-                    'orchestration.atlan.com/source'
-                ]
-            })
+            const isDrawerVisible = ref(false)
 
-            const connectorImage = computed(() => {
-                return workflowTemplate.value?.metadata.annotations[
-                    'orchestration.atlan.com/icon'
-                ]
-            })
+            const connector = computed(
+                () =>
+                    workflowTemplate.value?.metadata.labels[
+                        'orchestration.atlan.com/source'
+                    ]
+            )
 
-            const sourceCategory = computed(() => {
-                return workflowTemplate.value?.metadata.labels[
-                    'orchestration.atlan.com/sourceCategory'
-                ]
-            })
+            const connectorImage = computed(
+                () =>
+                    workflowTemplate.value?.metadata.annotations[
+                        'orchestration.atlan.com/icon'
+                    ]
+            )
 
-            const selectedConnection = computed(() => {
-                if (formState[property.value.id]) {
-                    try {
-                        const temp = JSON.parse(formState[property.value.id])
-                        const found = getList.find(
-                            (i) =>
-                                i.attributes.qualifiedName ===
-                                temp?.attributes?.qualifiedName
-                        )
-                        return found
-                    } catch (e) {
-                        return {}
+            const sourceCategory = computed(
+                () =>
+                    workflowTemplate.value?.metadata.labels[
+                        'orchestration.atlan.com/sourceCategory'
+                    ]
+            )
+
+            const selectedConnection = ref(
+                (() => {
+                    if (formState[property.value.id]) {
+                        try {
+                            const temp = JSON.parse(
+                                formState[property.value.id]
+                            )
+                            const found = getList.find(
+                                (i) =>
+                                    i.attributes.qualifiedName ===
+                                    temp?.attributes?.qualifiedName
+                            )
+                            return found
+                        } catch (e) {
+                            return {}
+                        }
                     }
-                }
-                return {}
-            })
+                    return {}
+                })()
+            )
 
             const { data, approximateCount, aggregationMap, getMap } =
                 useIndexSearch({
@@ -359,8 +381,6 @@
                 allowQuery,
                 allowQueryPreview,
             } = useAssetInfo()
-
-            const { getImage, getList } = useConnectionStore()
 
             const configMap = ref({
                 properties: {
@@ -551,6 +571,18 @@
                 ],
             })
 
+            const handleDrawerUpdate = (conn) => {
+                const idx = getList.findIndex(
+                    (i) => i.guid === selectedConnection.value.guid
+                )
+                if (idx > -1) {
+                    const tempList = [...getList]
+                    tempList[idx] = conn
+                    setList(tempList)
+                    selectedConnection.value = conn
+                }
+            }
+
             return {
                 configMap,
                 validateForm,
@@ -565,7 +597,9 @@
                 aggregationMap,
                 getMap,
                 selectedConnection,
+                handleDrawerUpdate,
                 isEdit,
+                isDrawerVisible,
                 getImage,
                 modifiedAt,
                 modifiedBy,

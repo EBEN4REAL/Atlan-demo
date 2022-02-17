@@ -22,11 +22,11 @@ export const workflowTabs = [
         icon: 'Lineage',
         tooltip: 'Lineage',
     },
-    // {
-    //     id: 'config',
-    //     label: 'Config',
-    //     component: 'Config',
-    //     icon: 'Setup',
-    //     tooltip: 'Setup',
-    // },
+    {
+        id: 'config',
+        label: 'Config',
+        component: 'Config',
+        icon: 'Setup',
+        tooltip: 'Setup',
+    },
 ]

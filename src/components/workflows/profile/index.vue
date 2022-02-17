@@ -39,6 +39,7 @@
         defineAsyncComponent,
         onMounted,
         PropType,
+        watch,
         toRefs,
         provide,
         computed,
@@ -86,9 +87,13 @@
                 router.replace(`/workflows/${route.params.id}/${key}`)
             }
 
-            onMounted(() => {
-                activeKey.value = route?.params?.tab
-            })
+            watch(
+                () => route?.params?.tab,
+                () => {
+                    activeKey.value = route?.params?.tab
+                },
+                { immediate: true }
+            )
 
             const runName = ref('')
 

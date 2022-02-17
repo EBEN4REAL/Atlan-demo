@@ -54,7 +54,7 @@
                             <div
                                 class="relative mb-2 text-sm text-gray-500 required"
                             >
-                                Name<span class="text-red-500">*</span>
+                                Name<span class="ml-1 text-red-500">*</span>
                             </div>
                             <div>
                                 <a-input
@@ -92,7 +92,9 @@
                         <div
                             class="p-3 text-sm font-bold text-gray-700 border-b"
                         >
-                            Users / Groups<span class="text-red-500">*</span>
+                            Users and Group<span class="ml-1 text-red-500"
+                                >*</span
+                            >
                         </div>
                         <div class="relative p-3">
                             <Owners
@@ -121,10 +123,8 @@
                             <div
                                 class="flex items-center justify-between p-3 pb-2"
                             >
-                                <div
-                                    class="text-sm font-bold text-gray-700 border-b"
-                                >
-                                    Select permissions
+                                <div class="text-sm font-bold text-gray-700">
+                                    Configure permissions
                                     <span class="text-red-500">*</span>
                                 </div>
                                 <a-button

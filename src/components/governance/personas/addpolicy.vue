@@ -22,13 +22,9 @@
                     </div>
                     <span class="ml-1 text-base font-bold"
                         >{{
-                            policyType === 'meta' && isEdit
+                            policyType === 'meta'
                                 ? 'Metadata Policy'
-                                : policyType === 'data' && isEdit
-                                ? 'Data Policy'
-                                : policyType === 'meta'
-                                ? 'New Metadata Policy'
-                                : 'New Data Policy'
+                                : 'Data Policy'
                         }}
                     </span>
                     <!-- <div class="ml-1 font-semibold">

@@ -6,7 +6,7 @@
                 style=""
                 @click="openLink(link.attributes.link)"
             >
-                <div class="flex items-center w-10">
+                <div class="flex items-center w-10 mr-1">
                     <div class="">
                         <AtlanIcon
                             v-if="defaultIcon || link.attributes.link === ''"
@@ -24,7 +24,7 @@
                                     : '/ico.ico'
                             "
                             alt=""
-                            class="p-1 w-7"
+                            class="w-8"
                             style=""
                             @error="defaultIcon = true"
                         />

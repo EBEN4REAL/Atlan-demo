@@ -23,7 +23,7 @@
                         <div class="relative">
                             <!-- avatar -->
                             <img
-                                class="rounded-full h-7"
+                                class="rounded-full"
                                 :src="data.user.image_32"
                                 alt=""
                             />

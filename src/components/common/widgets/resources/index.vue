@@ -2,7 +2,7 @@
     <div class="flex flex-col w-full h-full overflow-auto gap-y-5">
         <div
             v-if="links(selectedAsset)?.length > 0"
-            class="flex items-center justify-between px-5 bg-gray-50 py-2 border-b border-gray-200"
+            class="flex items-center justify-between px-5 py-2 border-b border-gray-200 bg-gray-50"
         >
             <span class="font-semibold text-gray-500">Resources</span>
 
@@ -11,10 +11,8 @@
                 :edit-permission="linkEditPermission"
             >
                 <template #trigger>
-                    <div
-                        class="text-gray-500 cursor-pointer flex items-center text-primary"
-                    >
-                        <AtlanIcon icon="Add" class="mr-1" /> Add
+                    <div class="flex items-center cursor-pointer text-primary">
+                        <AtlanIcon icon="Add" class="mr-1 mb-0.5" /> Add
                     </div>
                 </template>
             </AddResources>

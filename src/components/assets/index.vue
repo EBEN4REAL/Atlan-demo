@@ -157,6 +157,7 @@
                                         ? null
                                         : selectedAsset.guid
                                 "
+                                :page="page"
                                 :preference="preference"
                                 :show-check-box="showCheckBox"
                                 :bulk-select-mode="

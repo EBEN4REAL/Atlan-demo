@@ -384,7 +384,6 @@
     import { message, TreeSelect } from 'ant-design-vue'
     import { onKeyStroke } from '@vueuse/core'
     import {
-        DEFAULT_ATTRIBUTE,
         ATTRIBUTE_INPUT_VALIDATION_RULES,
         ATTRIBUTE_TYPES,
     } from '~/constant/businessMetadataTemplate'
@@ -400,7 +399,7 @@
     import { useTypedefStore } from '~/store/typedef'
     import MultiInput from '@/common/input/customizedTagInput.vue'
     import { applicableTypeList } from '~/composables/custommetadata/useApplicableTypes'
-    import useBusinessMetadata from './composables/useBusinessMetadata'
+    import useBusinessMetadata from '@/governance/custom-metadata/composables/useBusinessMetadata'
 
     // sub-components
     import Header from '@/governance/custom-metadata/propertyDrawer/header.vue'

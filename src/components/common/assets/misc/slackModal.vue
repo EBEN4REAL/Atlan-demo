@@ -42,8 +42,8 @@
                 </AtlanButton>
                 <AtlanButton
                     type="primary"
-                    :disabled="!channel"
-                    @click="shareToSlack"
+                    :disabled="!channel || loading"
+                    @click="handleCtaClick"
                     size="sm"
                 >
                     {{ ctaText }}
@@ -67,7 +67,10 @@
 
     import intStore from '~/store/integrations/index'
     import AtlanButton from '@/UI/button.vue'
-    import { shareOnSlack } from '~/composables/integrations/useSlack'
+    import {
+        shareOnSlack,
+        askQuestionOnSlack,
+    } from '~/composables/integrations/useSlack'
     import access from '~/constant/accessControl/map'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
@@ -113,12 +116,13 @@
     const visible = ref(false)
     const channel = ref('')
     const message = ref('')
+    const loading = ref(false)
 
     const title = ref(
         askQuestionModal.value ? 'Ask a question' : 'Share on Slack'
     )
 
-    const ctaText = ref(askQuestionModal.value ? 'Send' : 'Share')
+    const ctaText = ref(askQuestionModal.value ? 'Send' : 'Post')
 
     const inputLabel = ref(askQuestionModal.value ? 'Question' : 'Message')
 
@@ -131,6 +135,60 @@
         channel.value = channels.value[0].value
         visible.value = true
         emit('closeParent')
+    }
+
+    const handleCtaClick = () => {
+        if (askQuestionModal.value) {
+            // call ask question api
+            handleSendQuestion()
+        } else {
+            shareToSlack()
+        }
+    }
+
+    const handleSendQuestion = () => {
+        console.log('will send askQuestionOnSlack')
+        loading.value = true
+
+        toast.loading({
+            key: 'postQuestionOnSlack',
+            content: 'Sharing on slack ...',
+            duration: 10,
+        })
+
+        const { data, isLoading, error, isReady } = askQuestionOnSlack({
+            assetID: props.assetID,
+            channelAlias: channel.value,
+            message: message.value,
+            link: props.link,
+        })
+
+        watch([isLoading, error], () => {
+            if (!isLoading.value && !error.value) {
+                loading.value = false
+                toast.success({
+                    key: 'postQuestionOnSlack',
+                    content: 'Successfully posted',
+                    duration: 2,
+                })
+                visible.value = false
+                // TODO: @ROHAN add analytics event for question asked
+                // useAddEvent('integration', 'slack', 'asset_shared', {
+                //     asset_type: assetType.value,
+                //     has_message: !!message.value,
+                // })
+            } else if (error.value) {
+                loading.value = false
+                const errMsg = error.value?.response?.data?.errorMessage
+                const generalError = 'Network error'
+                const e = errMsg || generalError
+                toast.error({
+                    content: e,
+                    key: 'postQuestionOnSlack',
+                    duration: 2,
+                })
+            }
+        })
     }
 
     const shareToSlack = () => {

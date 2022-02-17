@@ -86,6 +86,28 @@ export const shareOnSlack = ({
     return { data, isLoading, error, isReady }
 }
 
+export const askQuestionOnSlack = ({
+    assetID,
+    integrationId,
+    channelAlias,
+    message,
+    link,
+}) => {
+    const body = ref({
+        id: assetID,
+        integration: integrationId,
+        message,
+        link,
+        domain: window.origin,
+        channelAlias,
+    })
+    const { data, isLoading, error, isReady } = Integrations.AskQuestionSlack(
+        body,
+        {}
+    )
+    return { data, isLoading, error, isReady }
+}
+
 // detects if its a valid slack chat url
 export const isSlackLink = (link) =>
     link && link.includes('.slack.com/archives')

@@ -12,10 +12,12 @@ export const UPDATE_INTEGRATION = 'UPDATE_INTEGRATION'
 export const SHARE_SLACK = 'SHARE_SLACK'
 export const UNFURL_SLACK_MESSAGE = 'UNFURL_SLACK_MESSAGE'
 export const CREATE_SLACK_APP = 'CREATE_SLACK_APP'
+export const ASK_QUESTION_SLACK = 'ASK_QUESTION_SLACK'
 
 export const map = {
     [LIST_INTEGRATIONS]: () => getAPIPath('/service', '/integrations'),
     [SHARE_SLACK]: () => getAPIPath('/service', `/slack/share`),
+    [ASK_QUESTION_SLACK]: () => getAPIPath('/service', `/slack/question`),
     [GET_INTEGRATION]: ({ id }: PathParams) =>
         getAPIPath('/service', `/integrations/${id}`),
     [ARCHIVE_INTEGRATION]: ({ id }: PathParams) =>

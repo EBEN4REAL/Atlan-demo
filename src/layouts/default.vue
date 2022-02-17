@@ -35,7 +35,7 @@
                 >
                     <SidePanel
                         :page="activeKey"
-                        class="border-r border-gray-200"
+                        class="border-r border-gray-300"
                         @closeNavbar="closeNavbar"
                         @mouseleave="closeNavbar"
                     />
@@ -43,7 +43,7 @@
                 <div v-else style="min-width: 264px">
                     <SidePanel
                         :page="activeKey"
-                        class="border-r border-gray-200"
+                        class="border-r border-gray-300"
                         @closeNavbar="closeNavbar"
                     />
                 </div>

@@ -1,11 +1,11 @@
 <template>
-    <div class="flex flex-col w-full h-full pb-4 overflow-auto">
+    <div class="flex flex-col w-full h-full pb-4">
         <div
-            class="flex items-center justify-between px-5 bg-gray-50 py-2 border-b border-gray-200"
+            class="flex items-center justify-between px-5 py-2 border-b border-gray-200 bg-gray-50"
         >
             <span class="font-semibold text-gray-500">Properties</span>
         </div>
-        <div class="flex flex-col px-5 gap-y-5 mt-3">
+        <div class="flex flex-col px-5 pt-3 overflow-auto gap-y-5">
             <div
                 v-if="
                     sourceUpdatedBy(selectedAsset) ||

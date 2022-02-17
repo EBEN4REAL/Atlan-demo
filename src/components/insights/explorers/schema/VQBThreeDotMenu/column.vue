@@ -1,5 +1,5 @@
 <template>
-    <div v-if="isTablePresentInVQBContext()">
+    <div>
         <a-dropdown :trigger="['click']">
             <AtlanIcon
                 icon="KebabMenu"
@@ -10,31 +10,38 @@
             />
             <template #overlay>
                 <a-menu>
-                    <!-- <a-menu-item
-                        :class="
+                    <a-menu-item
+                        :class="[
                             readOnly
                                 ? ' bg-gray-100 cursor-not-allowed pointer-events-none'
-                                : ''
-                        "
+                                : '',
+                            canJoinTablePanel ? ' ' : ' cursor-not-allowed ',
+                        ]"
                     >
-                        <div class="flex items-center h-8">
+                        <div
+                            class="flex items-center h-8"
+                            @click="joinTablePanel"
+                        >
                             <AtlanIcon
                                 icon="JoinHeader"
                                 class="w-4 h-4 my-auto mr-1.5"
                             ></AtlanIcon>
                             <span>Join Table</span>
                         </div>
-                    </a-menu-item> -->
+                    </a-menu-item>
                     <a-menu-item
                         :class="
                             readOnly
-                                ? ' bg-gray-100 cursor-not-allowed pointer-events-none'
+                                ? '  cursor-not-allowed pointer-events-none'
                                 : ''
                         "
                     >
                         <div
                             class="flex items-center h-8"
                             @click="addFilterPanel"
+                            :class="[
+                                !canAddOtherPanels ? ' cursor-not-allowed' : '',
+                            ]"
                         >
                             <AtlanIcon
                                 icon="FilterFunnel"
@@ -47,6 +54,9 @@
                         <div
                             class="flex items-center h-8"
                             @click="addGroupPanel"
+                            :class="[
+                                !canAddOtherPanels ? ' cursor-not-allowed' : '',
+                            ]"
                         >
                             <AtlanIcon
                                 icon="BuilderGroup"
@@ -59,6 +69,11 @@
                         <div
                             class="flex items-center h-8"
                             @click="addAggregatePanel"
+                            :class="[
+                                !canAddOtherPanels
+                                    ? 'bg-gray-100 cursor-not-allowed'
+                                    : '',
+                            ]"
                         >
                             <AtlanIcon
                                 icon="Trigger"
@@ -75,6 +90,7 @@
 
 <script lang="ts">
     import {
+        computed,
         defineComponent,
         PropType,
         toRefs,
@@ -90,6 +106,7 @@
         addAggregate,
         addGroup,
         addTable,
+        addJoin,
     } from './composables/usepanels'
 
     export default defineComponent({
@@ -135,15 +152,105 @@
                 }
             }
 
+            const canAddOtherPanels = computed(() => {
+                if (
+                    activeInlineTab.value.playground.vqb.selectedTables.length <
+                    0
+                )
+                    return true
+                const res =
+                    item.value?.entity.attributes?.qualifiedName.includes(
+                        activeInlineTab.value.playground.vqb.selectedTables[0]
+                            .tableQualifiedName
+                    )
+                return res
+            })
+
+            const canJoinTablePanel = computed(() => {
+                // debugger
+                const { index, left, right } = checkWhichPosition()
+                if (index >= 0) {
+                    // if item is already there
+                    // let res = false
+
+                    // activeInlineTab.value.playground.vqb.selectedTables.every(
+                    //     (tableD) => {
+                    //         if (
+                    //             item.value?.entity.attributes?.qualifiedName.includes(
+                    //                 tableD.tableQualifiedName
+                    //             )
+                    //         ) {
+                    //             res = true
+                    //             return false
+                    //         }
+                    //         return true
+                    //     }
+                    // )
+
+                    if (left) {
+                        let canAddToLeft = false
+                        activeInlineTab.value.playground.vqb.selectedTables.forEach(
+                            (tableD) => {
+                                if (
+                                    item.value?.entity.attributes?.qualifiedName.includes(
+                                        tableD.tableQualifiedName
+                                    )
+                                ) {
+                                    canAddToLeft = true
+                                    return canAddToLeft
+                                }
+                            }
+                        )
+
+                        return canAddToLeft
+                    } else if (right) {
+                        let canAddToRight = true
+                        activeInlineTab.value.playground.vqb.selectedTables.forEach(
+                            (tableD) => {
+                                if (
+                                    item.value?.entity.attributes?.qualifiedName.includes(
+                                        tableD.tableQualifiedName
+                                    )
+                                ) {
+                                    canAddToRight = false
+                                    return canAddToRight
+                                }
+                            }
+                        )
+
+                        return canAddToRight
+                    }
+                } else {
+                    let canAddToLeft = false
+                    activeInlineTab.value.playground.vqb.selectedTables.forEach(
+                        (tableD) => {
+                            if (
+                                item.value?.entity.attributes?.qualifiedName.includes(
+                                    tableD.tableQualifiedName
+                                )
+                            ) {
+                                canAddToLeft = true
+                                return canAddToLeft
+                            }
+                        }
+                    )
+
+                    return canAddToLeft
+                }
+            })
+
             const addFilterPanel = () => {
+                if (!canAddOtherPanels.value) return
                 ifAddTableFirst(activeInlineTab, item)
                 addFilter(activeInlineTab, item)
             }
             const addAggregatePanel = () => {
+                if (!canAddOtherPanels.value) return
                 ifAddTableFirst(activeInlineTab, item)
                 addAggregate(activeInlineTab, item)
             }
             const addGroupPanel = () => {
+                if (!canAddOtherPanels.value) return
                 ifAddTableFirst(activeInlineTab, item)
                 addGroup(activeInlineTab, item)
             }
@@ -168,7 +275,65 @@
                 )
                 return res
             }
+
+            const checkWhichPosition = () => {
+                let index = -1,
+                    pos
+                const joinIndex =
+                    activeInlineTab.value.playground.vqb.panels.findIndex(
+                        (panel) => panel.id.toLowerCase() === 'join'
+                    )
+
+                if (joinIndex > 0) {
+                    const subpanels =
+                        activeInlineTab.value.playground.vqb.panels[joinIndex]
+                            .subpanels
+
+                    const subpanelLen = subpanels.length
+                    // found very first empty filed in joins
+                    for (let i = 0; i < subpanelLen; i++) {
+                        // first check right side then left side
+                        if (
+                            Object.keys(subpanels[i].columnsDataLeft, {})
+                                .length === 0
+                        ) {
+                            index = i
+                            pos = 'left'
+                            return {
+                                index: index,
+                                left: pos === 'left',
+                                right: pos === 'right',
+                            }
+                        } else if (
+                            Object.keys(subpanels[i].columnsDataRight, {})
+                                .length === 0
+                        ) {
+                            index = i
+                            pos = 'right'
+                            return {
+                                index: index,
+                                left: pos === 'left',
+                                right: pos === 'right',
+                            }
+                        }
+                    }
+                }
+
+                return {
+                    index: index,
+                    left: pos === 'left',
+                    right: pos === 'right',
+                }
+            }
+
+            const joinTablePanel = () => {
+                if (!canJoinTablePanel.value) return
+                addJoin(activeInlineTab, item)
+            }
             return {
+                joinTablePanel,
+                canAddOtherPanels,
+                canJoinTablePanel,
                 isTablePresentInVQBContext,
                 addAggregatePanel,
                 addFilterPanel,

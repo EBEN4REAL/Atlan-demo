@@ -331,3 +331,218 @@ export function addTable(
         ]
     }
 }
+
+function getTableNameFromColumnQualifiedName(columnQualifiedName: string) {
+    const spiltArray = columnQualifiedName?.split('/')
+    if (spiltArray?.length > 5) {
+        return `${spiltArray[5]}`
+    }
+    return ''
+}
+
+export function addJoin(
+    activeInlineTab: Ref<activeInlineTabInterface>,
+    item: Ref<assetInterface>
+) {
+    debugger
+    const joinIndex = activeInlineTab.value.playground.vqb.panels.findIndex(
+        (panel) => panel.id.toLowerCase() === 'join'
+    )
+    if (joinIndex > 0) {
+        let subpanels = JSON.parse(
+            JSON.stringify(
+                toRaw(activeInlineTab.value).playground.vqb.panels[joinIndex]
+                    .subpanels
+            )
+        )
+        // assuming first table should be selected before join
+        let index,
+            pos,
+            subpanelLen = subpanels.length
+
+        // ensure the column is from same table it is selected
+
+        /* 
+        item.value?.entity.attributes?.qualifiedName.includes(
+                activeInlineTab.value.playground.vqb.selectedTables[0]
+                    .tableQualifiedName
+            )
+        */
+
+        // let ifAlreadyThere = false;
+        // activeInlineTab.value.playground.vqb.selectedTables.every((table)=>{
+        //     if(item.value?.entity.attributes?.qualifiedName.includes(
+        //         table
+        //             .tableQualifiedName
+        //     )){
+        //         ifAlreadyThere=true;
+        //         return false;
+        //     }
+        //     return true
+
+        // })
+
+        const canThisCoulmnInsertableInLeft =
+            Object.keys(subpanels[0].columnsDataLeft, {}).length === 0 &&
+            item.value?.entity.attributes?.qualifiedName.includes(
+                activeInlineTab.value.playground.vqb.selectedTables[0]
+                    .tableQualifiedName
+            )
+        if (canThisCoulmnInsertableInLeft) {
+            const subpanel = {
+                ...subpanels[0],
+                columnsDataLeft: {
+                    columnQualifiedName:
+                        item.value?.entity.attributes?.qualifiedName,
+                    label: item.value?.entity.attributes?.name,
+                    tableName: getTableNameFromColumnQualifiedName(
+                        item.value?.entity.attributes?.qualifiedName
+                    ),
+                    type: item.value?.entity.attributes?.dataType,
+                    value: item.value?.entity.attributes?.name,
+                },
+            }
+            subpanels = [subpanel, ...subpanels]
+            // only add subpanel
+            activeInlineTab.value.playground.vqb.panels[joinIndex].subpanels =
+                subpanels
+            return
+        } else {
+            // found very first empty filed in joins
+            for (let i = 0; i < subpanelLen; i++) {
+                // first check right side then left side
+                if (
+                    Object.keys(subpanels[i].columnsDataLeft, {}).length === 0
+                ) {
+                    index = i
+                    pos = 'left'
+                    break
+                } else if (
+                    Object.keys(subpanels[i].columnsDataRight, {}).length === 0
+                ) {
+                    index = i
+                    pos = 'right'
+                    break
+                }
+            }
+        }
+
+        if (index !== undefined) {
+            if (pos === 'left') {
+                const subpanel = {
+                    ...subpanels[index],
+                    columnsDataLeft: {
+                        columnQualifiedName:
+                            item.value?.entity.attributes?.qualifiedName,
+                        label: item.value?.entity.attributes?.name,
+                        tableName: getTableNameFromColumnQualifiedName(
+                            item.value?.entity.attributes?.qualifiedName
+                        ),
+                        type: item.value?.entity.attributes?.dataType,
+                        value: item.value?.entity.attributes?.name,
+                    },
+                }
+                // replacing the element
+                subpanels.splice(index, 1, subpanel)
+            } else {
+                const subpanel = {
+                    ...subpanels[index],
+                    columnsDataRight: {
+                        columnQualifiedName:
+                            item.value?.entity.attributes?.qualifiedName,
+                        label: item.value?.entity.attributes?.name,
+                        tableName: getTableNameFromColumnQualifiedName(
+                            item.value?.entity.attributes?.qualifiedName
+                        ),
+                        type: item.value?.entity.attributes?.dataType,
+                        value: item.value?.entity.attributes?.name,
+                    },
+                }
+
+                subpanels.splice(index, 1, subpanel)
+                const tableQualifiedName =
+                    getTableQualifiedNameFromColumnQualifiedName(
+                        item.value?.entity.attributes?.qualifiedName
+                    )
+                const addedBy = `joins-${subpanels[index].id}${index}2`
+                const selectedTables = JSON.parse(
+                    JSON.stringify(
+                        toRaw(activeInlineTab.value).playground.vqb
+                            .selectedTables
+                    )
+                )
+                selectedTables.push({
+                    tableQualifiedName: tableQualifiedName,
+                    addedBy,
+                })
+
+                // setting the new tables
+                activeInlineTab.value.playground.vqb.selectedTables =
+                    selectedTables
+            }
+        }
+        // index not found this means we have to insert a new subpanel
+        else {
+            const id = generateUUID()
+
+            const subpanel = {
+                id,
+                columnsDataLeft: {
+                    columnQualifiedName:
+                        item.value?.entity.attributes?.qualifiedName,
+                    label: item.value?.entity.attributes?.name,
+                    tableName: getTableNameFromColumnQualifiedName(
+                        item.value?.entity.attributes?.qualifiedName
+                    ),
+                    type: item.value?.entity.attributes?.dataType,
+                    value: item.value?.entity.attributes?.name,
+                },
+                columnsDataRight: {},
+                joinType: {
+                    name: 'Inner Join',
+                    type: 'inner_join',
+                },
+                expand: true,
+            }
+            subpanels = [...subpanels, subpanel]
+            // const tableQualifiedName = getTableQualifiedNameFromColumnQualifiedName(item.value?.entity.attributes?.qualifiedName);
+            // const addedBy = `joins-${id}${subpanelLen-1}1`
+        }
+
+        // only add subpanel
+        activeInlineTab.value.playground.vqb.panels[joinIndex].subpanels =
+            subpanels
+    } else {
+        // debugger
+        // ensure you allow this column from same table present in context
+        const panel = {
+            id: 'join',
+            hide: true,
+            active: false,
+            order: activeInlineTab.value.playground.vqb.panels.length,
+            subpanels: [
+                {
+                    id: generateUUID(),
+                    columnsDataLeft: {
+                        columnQualifiedName:
+                            item.value?.entity.attributes?.qualifiedName,
+                        label: item.value?.entity.attributes?.name,
+                        tableName: getTableNameFromColumnQualifiedName(
+                            item.value?.entity.attributes?.qualifiedName
+                        ),
+                        type: item.value?.entity.attributes?.dataType,
+                        value: item.value?.entity.attributes?.name,
+                    },
+                    columnsDataRight: {},
+                    joinType: {
+                        name: 'Inner Join',
+                        type: 'inner_join',
+                    },
+                },
+            ],
+            expand: true,
+        }
+
+        activeInlineTab.value.playground.vqb.panels.push(panel)
+    }
+}

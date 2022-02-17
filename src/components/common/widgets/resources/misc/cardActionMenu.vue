@@ -46,8 +46,8 @@
 <script setup lang="ts">
     import { PropType } from 'vue'
     import { message } from 'ant-design-vue'
-    import EditResource from '@/common/widgets/resources/resourcesWidgetV2/resourceInputModal.vue'
-    import DeleteResource from '@/common/widgets/resources/resourcesWidgetV2/misc/deleteResource.vue'
+    import EditResource from '@/common/widgets/resources/resourceInputModal.vue'
+    import DeleteResource from '@/common/widgets/resources/misc/deleteResource.vue'
     import { Link } from '~/types/resources.interface'
     import { copyToClipboard } from '~/utils/clipboard'
 

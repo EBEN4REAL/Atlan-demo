@@ -1,36 +1,63 @@
 <template>
-    <div ref="wrapper" class="w-full space-y-3">
-        <div class="flex justify-between gap-x-6">
-            <template v-if="$slots?.title">
-                <slot name="title" />
+    <div ref="wrapper" class="w-full">
+        <template v-if="minimal">
+            <template v-if="resources?.length">
+                <div
+                    class="flex justify-between px-5 py-2 border-b border-gray-200 gap-x-6 bg-gray-50"
+                >
+                    <div>
+                        <span class="font-semibold text-gray-500">
+                            Resources
+                        </span>
+                    </div>
+                    <div class="flex-grow"></div>
+
+                    <AddResource v-if="!readOnly" @add="addCallback">
+                        <template #trigger>
+                            <div
+                                class="flex items-center cursor-pointer text-primary"
+                            >
+                                <AtlanIcon icon="Add" class="mr-1" /> Add
+                            </div>
+                        </template>
+                    </AddResource>
+                </div>
             </template>
-            <div v-else>
-                <AtlanIcon icon="Resources2" class="w-auto h-8 mr-3" />
-                <span class="text-base font-bold text-gray"> Resources </span>
-            </div>
-            <div class="flex-grow"></div>
-            <template
-                v-if="
-                    hasAtleastOneSlackLink &&
-                    !userSlackStatus.configured &&
-                    tenantSlackStatus.configured
-                "
-            >
-                <SlackConnect />
-            </template>
-            <AddResource @add="addCallback">
-                <template #trigger>
-                    <AtlanButton
-                        class="flex-none px-2"
-                        size="sm"
-                        color="secondary"
-                        padding="compact"
-                    >
-                        <AtlanIcon icon="Add" class="text-gray-400" />
-                    </AtlanButton>
+        </template>
+
+        <template v-else>
+            <div class="flex justify-between px-5 pt-5 gap-x-6">
+                <div>
+                    <AtlanIcon icon="Resources2" class="w-auto h-8 mr-3" />
+                    <span class="text-base font-bold text-gray">
+                        Resources
+                    </span>
+                </div>
+                <div class="flex-grow"></div>
+                <template
+                    v-if="
+                        hasAtleastOneSlackLink &&
+                        !userSlackStatus.configured &&
+                        tenantSlackStatus.configured &&
+                        !minimal
+                    "
+                >
+                    <SlackConnect />
                 </template>
-            </AddResource>
-        </div>
+                <AddResource v-if="!readOnly" @add="addCallback">
+                    <template #trigger>
+                        <AtlanButton
+                            class="flex-none px-2"
+                            size="sm"
+                            color="secondary"
+                            padding="compact"
+                        >
+                            <AtlanIcon icon="Add" class="text-gray-400" />
+                        </AtlanButton>
+                    </template>
+                </AddResource>
+            </div>
+        </template>
         <section>
             <template v-if="!resources?.length">
                 <template v-if="$slots?.placeholder">
@@ -62,33 +89,38 @@
                 </div>
             </template>
             <template v-else>
-                <div class="grid grid-cols-2 gap-3">
-                    <!-- <template
+                <div
+                    class="grid gap-3 p-5"
+                    :class="{
+                        'grid-cols-1': minimal,
+                        'grid-cols-2': !minimal,
+                    }"
+                >
+                    <div
+                        v-for="l in resources"
+                        :key="l.uniqueAttributes.qualifiedName"
+                        class="flex-grow"
+                    >
+                        <LinkPreviewCard
+                            v-if="
+                                getPreviewComponent(l.attributes.link) ===
+                                'link'
+                            "
+                            :link="l"
+                            class="h-full"
+                        />
+                        <SlackPreview v-else :link="l" />
+                    </div>
+                    <template
                         v-if="
                             hasAtleastOneSlackLink &&
                             !userSlackStatus.configured &&
                             tenantSlackStatus.configured &&
-                            $refs.wrapper?.clientWidth < 500
+                            minimal
                         "
                     >
-                        <SlackConnect />
-                    </template> -->
-                    <div
-                        v-for="l in resources"
-                        :key="l.qualifiedName"
-                        class="flex-grow"
-                    >
-                        <LinkPreviewCard
-                            v-if="getPreviewComponent(l.url) === 'link'"
-                            style="min-height: 80px"
-                            :link="l"
-                        />
-                        <SlackPreview
-                            v-else
-                            style="min-height: 80px"
-                            :link="l"
-                        />
-                    </div>
+                        <SlackUserLoginTrigger />
+                    </template>
                 </div>
             </template>
         </section>
@@ -105,19 +137,19 @@
         ref,
         provide,
     } from 'vue'
+    import SlackUserLoginTrigger from '@common/integrations/slack/slackUserLoginTriggerCard.vue'
     import {
         isSlackLink,
         openSlackOAuth,
     } from '~/composables/integrations/useSlack'
     import EmptyScreen from '@/common/empty/index.vue'
     import SlackConnect from './misc/connectSlackCard.vue'
-    import LinkPreviewCard from '@/common/widgets/resources/resourcesWidgetV2/linkPreviewCard.vue'
-    import SlackPreview from '@/common/widgets/resources/resourcesWidgetV2/slackPreview.vue'
-    import AddResource from '@/common/widgets/resources/resourcesWidgetV2/resourceInputModal.vue'
+    import LinkPreviewCard from '@/common/widgets/resources/previewCard/linkPreviewCard.vue'
+    import SlackPreview from '@/common/widgets/resources/previewCard/slackPreview.vue'
+    import AddResource from '@/common/widgets/resources/resourceInputModal.vue'
 
     import integrationStore from '~/store/integrations/index'
     import { Link } from '~/types/resources.interface'
-    import propertyListVue from '~/components/governance/custom-metadata/propertyList.vue'
 
     const props = defineProps({
         resources: {
@@ -152,6 +184,12 @@
         },
     })
     const emit = defineEmits(['add', 'update', 'remove'])
+
+    const wrapper = ref()
+    const addModalRef = ref()
+
+    const minimal = computed(() => wrapper.value?.clientWidth < 500)
+    // const placeholderVisible = computed(() => !resources.value?.length)
 
     const {
         addStatus,

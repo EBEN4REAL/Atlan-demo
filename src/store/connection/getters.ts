@@ -61,6 +61,11 @@ export const getters: GettersTree<State> & Getters = {
                 a.count < b.count ? 1 : b.count < a.count ? -1 : 0
             )
     },
+    activeConnectionSourceList() {
+        return this.getSourceList.filter(s => this.list.some(
+            l => l.attributes.connectorName.toLowerCase() === s.id.toLowerCase(0)
+                && l.status === 'ACTIVE'))
+    },
     getConnectorImageMapping() {
         const map = {}
         SourceList.forEach((item) => {

@@ -27,7 +27,7 @@
         </div>
 
         <div v-else class="flex flex-col flex-grow">
-            <div class="px-4 pt-3 pb-0">
+            <div class="px-5 pt-3 pb-0">
                 <SearchAdvanced
                     v-model:value="queryText"
                     :autofocus="true"
@@ -65,7 +65,7 @@
                             :item-index="itemIndex"
                             :enable-sidebar-drawer="true"
                             :asset-name-truncate-percentage="'93%'"
-                            class="mx-3 hover:bg-primary-menu"
+                            class="px-2 hover:bg-primary-menu"
                             @updateDrawer="handleListUpdate"
                             isCompact
                     /></Popover>

@@ -65,7 +65,11 @@
                         <span v-if="policy.users.length > 0" class="">
                             <a-tooltip placement="top">
                                 <template #title>
-                                    {{ policy.users.length }} Users
+                                    {{
+                                        policy.users.length > 1
+                                            ? `${policy.users.length} Users`
+                                            : `${policy.users.length} User`
+                                    }}
                                 </template>
                                 <AtlanIcon icon="User" class="-mt-1" />
                                 {{ policy.users.length }}
@@ -74,13 +78,22 @@
                     </div>
                     <div v-if="permissions.length > 0 && type === 'meta'">
                         <span class="text-gray-300 mx-1.5">•</span>
-                        <span class="flex-none text-sm">
-                            <AtlanIcon
-                                icon="ShieldBlank"
-                                class="-mt-1 icon-gray"
-                            />
-                            {{ permissions.length }}
-                        </span>
+                        <a-tooltip placement="top">
+                            <template #title>
+                                {{
+                                    permissions.length > 1
+                                        ? `${permissions.length} permissions`
+                                        : `${permissions.length} permission`
+                                }}
+                            </template>
+                            <span class="flex-none text-sm">
+                                <AtlanIcon
+                                    icon="ShieldBlank"
+                                    class="-mt-1 icon-gray"
+                                />
+                                {{ permissions.length }}
+                            </span>
+                        </a-tooltip>
                     </div>
                     <!-- <div v-if="type === 'data'">
                         <span class="text-gray-300 mx-1.5">•</span>
@@ -95,8 +108,16 @@
                     >
                         <span class="text-gray-300 mx-1.5">•</span>
                         <span v-if="maskComputed" class="flex-none text-sm">
-                            <AtlanIcon icon="Number" class="-mt-1 icon-gray" />
-                            {{ maskComputed }}
+                            <a-tooltip placement="top">
+                                <template #title>
+                                    {{ maskComputed }}
+                                </template>
+                                <AtlanIcon
+                                    icon="Number"
+                                    class="-mt-1 icon-gray"
+                                />
+                                {{ maskComputed }}
+                            </a-tooltip>
                         </span>
                     </div>
                 </div>

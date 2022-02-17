@@ -126,7 +126,7 @@
                                 }}
                             </div>
                         </template>
-                        <div class="flex items-center">
+                        <div class="flex items-center w-10">
                             <AtlanIcon
                                 icon="AssetsInactiveLight"
                                 class="-mt-1"

@@ -10,7 +10,6 @@ export interface Getters {
     getConnectorImageMapping(): any
     getConnectorLabelMapping(): any
     getImage(): (id: string) => any
-    getList(): any
 }
 
 export const getters: GettersTree<State> & Getters = {

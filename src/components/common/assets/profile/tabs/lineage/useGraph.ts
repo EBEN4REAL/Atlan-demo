@@ -381,8 +381,12 @@ export default function useGraph() {
     }
 
     const createEdgeData = (relation, data = {}, styles: EdgeStyle = {}) => {
+        const isDup = data?.isDup
+        const isCyclicEdge = data?.isCyclicEdge
+
         const stroke = styles?.stroke
-        let edgeData = {
+        const edgeData = {
+            isDup,
             zIndex: 0,
             id: relation.id,
             source: {
@@ -396,7 +400,7 @@ export default function useGraph() {
             router: {
                 name: 'metro',
             },
-            connector: { name: 'beiz' },
+            connector: { name: !isCyclicEdge ? 'beiz' : 'beizAlt' },
             attrs: {
                 line: {
                     stroke,
@@ -453,6 +457,8 @@ export default function useGraph() {
                             text:
                                 relation?.type === 'related'
                                     ? 'related'
+                                    : isDup
+                                    ? 'grouped-process'
                                     : 'process',
                         },
                     },
@@ -460,8 +466,6 @@ export default function useGraph() {
             ],
             data,
         }
-
-        if (Object.keys(data).length) edgeData = { ...edgeData, data }
 
         return {
             edgeData,

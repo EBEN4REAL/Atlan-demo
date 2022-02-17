@@ -420,6 +420,7 @@
         DEFAULT_ATTRIBUTE,
         ATTRIBUTE_INPUT_VALIDATION_RULES,
         ATTRIBUTE_TYPES,
+        applicableEntityTypesOptions,
     } from '~/constant/businessMetadataTemplate'
     import { Types } from '~/services/meta/types'
     import NewEnumForm from './newEnumForm.vue'
@@ -432,8 +433,6 @@
     import { useUpdateEnums } from '../enums/composables/useModifyEnums'
     import { useTypedefStore } from '~/store/typedef'
     import MultiInput from '@/common/input/customizedTagInput.vue'
-    import { applicableTypeList } from '~/composables/custommetadata/useApplicableTypes'
-    import useBusinessMetadata from './composables/useBusinessMetadata'
 
     const CHECKEDSTRATEGY = TreeSelect.SHOW_PARENT
 
@@ -452,8 +451,9 @@
         },
         emits: ['addedProperty', 'openIndex'],
         setup(props, { emit }) {
-            const { getDefaultAttributeTemplate } = useBusinessMetadata()
-            const initializeForm = (): CMA => getDefaultAttributeTemplate()
+            const initializeForm = (): CMA => ({
+                ...JSON.parse(JSON.stringify(DEFAULT_ATTRIBUTE)),
+            })
             // data
             const visible = ref<boolean>(false)
             const createMore = ref<boolean>(false)
@@ -468,7 +468,6 @@
             const typeTreeSelect = ref(null)
             const enumSearchValue = ref('')
             const oldEnumSeardValue = ref('')
-            const applicableEntityTypesOptions = applicableTypeList()
             const viewOnly = computed(
                 () => props.metadata.options?.isLocked === 'true'
             )
@@ -848,40 +847,24 @@
                 return []
             })
 
-            const handleApplicableEntityTypeChange = (data, l, e) => {
+            const handleApplicableEntityTypeChange = (data) => {
                 /**
-                 * Just trying to flatten the the tree given any node, add all leaf node values
+                 * Data is just an array of ids
+                 * First get items in finalApplicableTypeNamesOptions that match id and have children (store index or id and children)
+                 * Then go through the data again and replace matched items with children ids
+                 * reducer should work
                  */
-                const flatValues: any = []
-                data.forEach((item) => {
-                    let sourceFound = false
-                    applicableEntityTypesOptions.forEach((cat) => {
-                        if (cat.value === item) {
-                            cat.children.forEach((c) => {
-                                if (c.children)
-                                    flatValues.push(
-                                        ...c.children.map((_c) => _c.value)
-                                    )
-                                else flatValues.push(c.value)
-                            })
-                        } else {
-                            cat.children.forEach((source) => {
-                                if (source.value === item) {
-                                    if (source.children)
-                                        flatValues.push(
-                                            ...source.children.map(
-                                                (_c) => _c.value
-                                            )
-                                        )
-                                    else flatValues.push(source.value)
-                                    sourceFound = true
-                                }
-                            })
-                            if (!sourceFound) flatValues.push(item)
-                        }
-                    })
+                const childrenExtracted = data.reduce((a, b, index) => {
+                    const isParent = finalApplicableTypeNamesOptions.value.find(
+                        (y) => b === y.value
+                    )
+                    if (isParent)
+                        a.push(...isParent.children.map((z) => z.value))
+                    else a.push(data[index])
+                    return a
                 }, [])
-                form.value.options.customApplicableEntityTypes = flatValues
+                form.value.options.customApplicableEntityTypes =
+                    childrenExtracted
             }
 
             const handleClickCreateNewEnum = () => {
@@ -952,7 +935,6 @@
             })
 
             return {
-                applicableEntityTypesOptions,
                 customFilter,
                 viewOnly,
                 discardEnumEdit,

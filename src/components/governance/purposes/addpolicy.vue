@@ -2,19 +2,19 @@
     <div v-if="showDrawer" class="close-btn-sidebar" @click="handleClose">
         <AtlanIcon icon="Add" class="text-gray-700" />
     </div>
-    <div class="relative bg-gray-100 add-policy-container">
+    <div class="bg-gray-100 add-policy-container">
         <div>
-            <div
-                class="fixed top-0 z-10 w-full p-3 bg-white border-b border-gray-300"
-            >
+            <div class="relative p-3 bg-white border-b border-gray-300">
                 <div class="flex items-center">
                     <div class="p-2 mr-2 rounded-full bg-primary-light">
                         <AtlanIcon
-                            v-if="type === 'meta'"
+                            v-if="policyType === 'meta'"
                             icon="Policies"
-                            class="icon-blue"
                         />
-                        <AtlanIcon v-if="type === 'data'" icon="QueryGrey" />
+                        <AtlanIcon
+                            v-if="policyType === 'data'"
+                            icon="QueryGrey"
+                        />
                     </div>
                     <span class="ml-1 text-base font-bold"
                         >{{

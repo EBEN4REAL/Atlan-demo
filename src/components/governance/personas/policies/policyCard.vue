@@ -194,7 +194,7 @@
                 <div class="relative flex flex-1">
                     <!-- canDelete -->
                     <!-- v-if="policy.allow" -->
-                    <div class="flex-1 ustify-center">
+                    <div class="flex-1">
                         <!-- <span v-if="policy.allow" class="text-gray-500">
                             <AtlanIcon class="text-gray-500" icon="Check" />
                             {{

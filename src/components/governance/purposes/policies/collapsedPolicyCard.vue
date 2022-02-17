@@ -1,8 +1,8 @@
 <template>
     <div class="relative container-policy-card">
         <div
-            class="flex px-3 py-3 rounded cursor-pointer group hover:bg-gray-100 card-policy"
-            :class="selectedPolicy.id === policy.id ? 'outline-primary' : ''"
+            class="flex items-center px-3 py-3 rounded cursor-pointer group hover:bg-gray-100 card-policy"
+            :class="selectedPolicy.id === policy.id ? '' : ''"
             @click="handleClickPlicyCard"
         >
             <div class="flex items-center flex-1 mb-1">
@@ -19,7 +19,7 @@
                     <AtlanIcon icon="QueryGrey" />
                 </div>
                 <div class="pl-1">
-                    <div>
+                    <!-- <div>
                         <span
                             class="text-gray-500"
                             data-test-id="policy-type"
@@ -31,7 +31,7 @@
                         >
                         <span class="mx-1 text-gray-500">/</span>
                         <span class="text-gray-500">{{ policy?.name }}</span>
-                    </div>
+                    </div> -->
                     <div>
                         <span class="text-gray-500">{{ policy?.name }}</span>
                         <span class="text-gray-300 mx-1.5">•</span>
@@ -45,22 +45,31 @@
             <div class="flex items-center justify-between flex-1">
                 <div class="flex items-center">
                     <div class="flex justify-items-end">
-                        <span v-if="splitAssets.a.length > 0" class="">
-                            <AtlanIcon icon="Group" class="-mt-1" />
-                            {{ splitAssets.a.length }}
+                        <span v-if="policy.groups.length > 0">
+                            <a-tooltip placement="top">
+                                <template #title>
+                                    {{ policy.groups.length }} Groups
+                                </template>
+                                <AtlanIcon icon="Group" class="-mt-1" />
+                                {{ policy.groups.length }}
+                            </a-tooltip>
                         </span>
                         <span
                             v-if="
-                                splitAssets.b.length > 0 &&
-                                splitAssets.a.length > 0
+                                policy.users.length > 0 &&
+                                policy.groups.length > 0
                             "
-                            >&nbsp;and</span
+                            class="text-gray-300 mx-1.5"
+                            >•</span
                         >
-                        <span v-if="splitAssets.b.length > 0">
-                            &nbsp;{{ splitAssets.b.length }}
-                            {{
-                                splitAssets.b.length === 1 ? 'Group' : 'Groups'
-                            }}
+                        <span v-if="policy.users.length > 0" class="">
+                            <a-tooltip placement="top">
+                                <template #title>
+                                    {{ policy.users.length }} Users
+                                </template>
+                                <AtlanIcon icon="User" class="-mt-1" />
+                                {{ policy.users.length }}
+                            </a-tooltip>
                         </span>
                     </div>
                     <div v-if="permissions.length > 0 && type === 'meta'">
@@ -73,10 +82,10 @@
                             {{ permissions.length }}
                         </span>
                     </div>
-                    <div v-if="type === 'data'">
+                    <!-- <div v-if="type === 'data'">
                         <span class="text-gray-300 mx-1.5">•</span>
                         <span class="flex-none text-sm">Query Access </span>
-                    </div>
+                    </div> -->
                     <div
                         v-if="
                             type === 'data' &&
@@ -86,62 +95,97 @@
                     >
                         <span class="text-gray-300 mx-1.5">•</span>
                         <span v-if="maskComputed" class="flex-none text-sm">
+                            <AtlanIcon icon="Number" class="-mt-1 icon-gray" />
                             {{ maskComputed }}
                         </span>
                     </div>
                 </div>
-                <span v-if="!policy.allow" class="mr-5 denied-policy-pill">
+                <!-- <span v-if="!policy.allow" class="mr-5 denied-policy-pill">
                     {{
                         type === 'meta' ? 'Denied Permissions' : 'Denied Query'
                     }}
-                </span>
+                </span> -->
+            </div>
+            <div class="flex justify-end flex-1 pr-8">
+                <span v-if="!policy.allow" class="text-sm text-red-500">{{
+                    type === 'meta' ? 'Denied Permission' : 'Denied Query'
+                }}</span>
+            </div>
+            <div class="items-center justify-end flex-1 gap-1 pr-3 default-s4">
+                <a-tooltip placement="top">
+                    <template #title>
+                        <div class="text-gray-300">Created by</div>
+                        <div>
+                            {{ policy.createdBy }}
+                            {{ createdAtFormated }}
+                        </div>
+                    </template>
+                    <AtlanBtn
+                        class="px-2 bg-transparent border-none hover:bg-gray-200"
+                        size="sm"
+                        color="secondary"
+                        data-test-id="policy-delete"
+                        padding="compact"
+                    >
+                        <AtlanIcon icon="WarningIcon" />
+                    </AtlanBtn>
+                </a-tooltip>
+                <a-popover
+                    v-model:visible="visibleDelete"
+                    trigger="click"
+                    placement="topRight"
+                    @onMouseleave="() => (visibleDelete = false)"
+                >
+                    <template #content>
+                        <div class="popover-delete">
+                            <span>
+                                Are you sure you want to delete
+                                <strong>{{ policy?.name }}</strong> ?
+                            </span>
+                            <div class="btn-wrapper">
+                                <AtlanBtn
+                                    padding="compact"
+                                    color="minimal"
+                                    class="btn-asset"
+                                    size="sm"
+                                    @click="() => (visibleDelete = false)"
+                                >
+                                    Cancel
+                                </AtlanBtn>
+                                <AtlanBtn
+                                    padding="compact"
+                                    class="btn-asset"
+                                    size="sm"
+                                    color="danger"
+                                    @click="removePolicy"
+                                >
+                                    Delete
+                                </AtlanBtn>
+                            </div>
+                        </div>
+                    </template>
+                    <AtlanBtn
+                        class="flex-none px-2 bg-transparent border-none hover:text-red-500 bg-none hover:bg-primary-light"
+                        size="sm"
+                        color="secondary"
+                        data-test-id="policy-delete"
+                        padding="compact"
+                        @click.stop="() => (visibleDelete = true)"
+                    >
+                        <AtlanIcon icon="Delete" class="" />
+                    </AtlanBtn>
+                </a-popover>
+                <AtlanBtn
+                    class="px-2 bg-transparent border-none"
+                    size="sm"
+                    color="secondary"
+                    data-test-id="policy-delete"
+                    padding="compact"
+                >
+                    <AtlanIcon class="text-primary" icon="ArrowRight" />
+                </AtlanBtn>
             </div>
         </div>
-        <a-popover
-            v-model:visible="visibleDelete"
-            trigger="click"
-            placement="topRight"
-            @onMouseleave="() => (visibleDelete = false)"
-        >
-            <template #content>
-                <div class="popover-delete">
-                    <span>
-                        Are you sure you want to delete
-                        <strong>{{ policy?.name }}</strong> ?
-                    </span>
-                    <div class="btn-wrapper">
-                        <AtlanBtn
-                            padding="compact"
-                            color="minimal"
-                            class="btn-asset"
-                            size="sm"
-                            @click="() => (visibleDelete = false)"
-                        >
-                            Cancel
-                        </AtlanBtn>
-                        <AtlanBtn
-                            padding="compact"
-                            class="btn-asset"
-                            size="sm"
-                            color="danger"
-                            @click="removePolicy"
-                        >
-                            Delete
-                        </AtlanBtn>
-                    </div>
-                </div>
-            </template>
-            <AtlanBtn
-                class="absolute flex-none px-2 border-r border-gray-300 border-none right-2 bottom-2 hover:text-red-500 button-hide"
-                size="sm"
-                color="secondary"
-                data-test-id="policy-delete"
-                padding="compact"
-                @click="() => (visibleDelete = true)"
-            >
-                <AtlanIcon icon="Delete" class="" />
-            </AtlanBtn>
-        </a-popover>
     </div>
 </template>
 
@@ -277,11 +321,30 @@
         min-height: 70px;
     }
     .container-policy-card {
+        .default-s4 {
+            display: none !important;
+        }
         .button-hide {
             opacity: 0;
             transition: all ease 0.3s;
         }
+
         &:hover {
+            .default-s4 {
+                display: flex !important;
+                position: absolute;
+                right: 0;
+                background: rgb(250, 250, 250);
+                background: linear-gradient(
+                    90deg,
+                    rgba(250, 250, 250, 0.779171043417367) 9%,
+                    rgba(250, 250, 250, 1) 18%
+                );
+                padding: 10px 0;
+                width: 30%;
+                top: 50%;
+                transform: translateY(-50%);
+            }
             .button-hide {
                 opacity: 1;
                 background-color: transparent !important;

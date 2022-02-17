@@ -63,10 +63,17 @@
             style="height: calc(100% - 155px)"
         >
             <div class="bg-white">
-                <div class="flex items-center justify-between p-4 border-b">
+                <div
+                    v-if="!isEmpty"
+                    class="flex items-center justify-between p-4 border-b"
+                >
                     <div class="w-1/2">
                         <div v-if="totalPolicy !== 0" class="container-tabs">
-                            <a-radio-group
+                            <RaisedTab
+                                v-model:active="activeTabFilter"
+                                :data="streams"
+                            />
+                            <!-- <a-radio-group
                                 v-model:value="activeTabFilter"
                                 class="flex flex-grow"
                             >
@@ -79,7 +86,7 @@
                                 <a-radio-button value="data"
                                     >Data</a-radio-button
                                 >
-                            </a-radio-group>
+                            </a-radio-group> -->
                         </div>
                     </div>
                     <a-dropdown trigger="click">
@@ -191,16 +198,50 @@
                 >
             </div>
             <div
-                v-if="
-                    !selectedPersonaDirty.metadataPolicies?.length &&
-                    !selectedPersonaDirty.dataPolicies?.length
-                "
+                v-if="isEmpty"
                 class="flex flex-col items-center justify-center h-full"
             >
                 <component :is="EmptyPolicyIllustration"></component>
-                <span class="text-2xl font-bold text-gray">
-                    Create Policies</span
+                <span class="mt-10 text-xl font-bold text-gray">
+                    Create Policies
+                </span>
+                <div
+                    class="mt-1 text-base text-center text-gray-500 sub-title-empty"
                 >
+                    Create policies to manage metadata and data access
+                </div>
+                <a-dropdown trigger="click">
+                    <a-button type="primary" class="mt-7">
+                        <div class="flex items-center gap-x-1">
+                            New Policy
+
+                            <AtlanIcon icon="ChevronDown" class="text-white" />
+                        </div>
+                    </a-button>
+
+                    <template #overlay>
+                        <a-menu>
+                            <a-menu-item
+                                v-for="(
+                                    option, index
+                                ) in addPolicyDropdownConfig"
+                                :key="index"
+                                @click="option.handleClick()"
+                            >
+                                <div class="flex items-center">
+                                    <AtlanIcon
+                                        v-if="option.icon"
+                                        class="w-4 h-4 text-gray-600"
+                                        :icon="option.icon"
+                                    />
+                                    <span class="pl-2 text-sm">{{
+                                        option.title
+                                    }}</span>
+                                </div>
+                            </a-menu-item>
+                        </a-menu>
+                    </template>
+                </a-dropdown>
             </div>
         </div>
 
@@ -252,7 +293,7 @@
     import MinimalTab from '@/UI/minimalTab.vue'
     import AtlanBtn from '@/UI/button.vue'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
-    import EmptyPolicyIllustration from '~/assets/images/illustrations/empty_policy.svg'
+    import EmptyPolicyIllustration from '~/assets/images/empty_policy.svg'
     import NoResultIllustration from '~/assets/images/illustrations/Illustration_no_search_results.svg'
     import Addpolicy from './addpolicy.vue'
     import PolicyCard from './policies/collapsedPolicyCard.vue'
@@ -282,6 +323,7 @@
     import AssetList from '@/common/assetList/assetList.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import usePurposeResources from '@/governance/purposes/composables/usePurposeResources'
+    import RaisedTab from '@/UI/raisedTab.vue'
 
     export default defineComponent({
         name: 'PurposeBody',
@@ -298,6 +340,7 @@
             Addpolicy,
             AssetList,
             PurposeReadme,
+            RaisedTab,
         },
         props: {
             persona: {
@@ -513,7 +556,25 @@
                 handleUpdateResource,
                 handleRemoveResource,
             } = usePurposeResources(persona)
-
+            const streams = computed(() => [
+                {
+                    key: 'all Persona',
+                    label: 'All',
+                },
+                {
+                    key: 'metaData',
+                    label: 'Metadata',
+                },
+                {
+                    key: 'data',
+                    label: 'Data',
+                },
+            ])
+            const isEmpty = computed(
+                () =>
+                    !selectedPersonaDirty.value.metadataPolicies?.length &&
+                    !selectedPersonaDirty.value.dataPolicies?.length
+            )
             return {
                 addStatus,
                 updateStatus,
@@ -550,6 +611,8 @@
                 loadingPolicy,
                 addpolicyVisible,
                 isEdit,
+                streams,
+                isEmpty,
             }
         },
     })
@@ -566,13 +629,14 @@
         }
     }
 </style>
-<style lang="less" module>
+<style lang="less">
     .container-tabs {
-        .assetbar {
-            :global(.ant-tabs-tab:first-child) {
-                border-top-left-radius: 24px !important;
-            }
-        }
+           width: 200px
+        // .assetbar {
+        //     :global(.ant-tabs-tab:first-child) {
+        //         border-top-left-radius: 24px !important;
+        //     }
+        // }
     }
 </style>
 <style scoped lang="less">

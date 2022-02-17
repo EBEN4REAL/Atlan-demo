@@ -1,16 +1,12 @@
 <template>
+    <div v-if="showDrawer" class="close-btn-sidebar" @click="handleClose">
+        <AtlanIcon icon="Add" class="text-gray-700" />
+    </div>
     <div class="relative bg-gray-100 add-policy-container">
         <div>
-            <div class="relative p-4 bg-white">
-                <div
-                    v-if="showDrawer"
-                    class="close-btn-sidebar"
-                    @click="handleClose"
-                >
-                    <AtlanIcon icon="Add" class="text-white" />
-                </div>
+            <div class="relative p-4 py-2 bg-white">
                 <div class="flex items-center">
-                    <div class="p-2.5 mr-2 rounded-full bg-primary-light">
+                    <div class="p-2 mr-2 rounded-full bg-primary-light">
                         <AtlanIcon v-if="type === 'meta'" icon="Policies" />
                         <AtlanIcon v-if="type === 'data'" icon="QueryGrey" />
                     </div>
@@ -81,7 +77,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="relative mt-6 bg-white shadow-section">
+                <div class="relative mt-3 bg-white shadow-section">
                     <div class="p-3 text-sm font-bold text-gray-700 border-b">
                         Users / Groups<span class="text-red-500">*</span>
                     </div>
@@ -94,7 +90,6 @@
                             "
                             v-model:modelValue="selectedOwnersData"
                             :edit-permission="true"
-                            class="mb-6"
                             :read-only="false"
                             :destroy-tooltip-on-hide="true"
                             @change="handleOwnersChange"
@@ -108,26 +103,29 @@
                         </div>
                     </div>
                 </div>
-                <div v-if="policyType === 'meta'" class="mt-6">
-                    <div class="flex justify-between">
-                        <div class="text-gray-500">
-                            Select permissions
-                            <span class="text-red-500">*</span>
+                <div class="mt-3 bg-white shadow-section">
+                    <div v-if="policyType === 'meta'">
+                        <div class="flex items-center justify-between p-3 pb-2">
+                            <div
+                                class="text-sm font-bold text-gray-700 border-b"
+                            >
+                                Select permissions
+                                <span class="text-red-500">*</span>
+                            </div>
+                            <a-button
+                                v-if="selectedPermission.length > 0"
+                                size="small"
+                                class="border-none text-primary"
+                                @click="handleToggleManage"
+                            >
+                                Edit
+                                <AtlanIcon
+                                    icon="ArrowRight"
+                                    class="text-primary"
+                                />
+                            </a-button>
                         </div>
-                        <a-button
-                            v-if="selectedPermission.length > 0"
-                            size="small"
-                            class="text-primary"
-                            @click="handleToggleManage"
-                        >
-                            Edit
-                            <AtlanIcon
-                                icon="ArrowRight"
-                                class="ml-1 text-primary"
-                            />
-                        </a-button>
-                    </div>
-                    <!-- <div class="flex justify-between">
+                        <!-- <div class="flex justify-between">
                         <div class="text-gray-500">
                             Permissions <span class="text-red-500">*</span>
                         </div>
@@ -144,58 +142,99 @@
                                 class="ml-1 text-primary"
                             />
                         </AtlanBtn>
-                    </div> -->
-                    <div
-                        class="flex items-center p-3 mt-1 border border-gray-200 border-dashed rounded border-bottom"
-                    >
-                        <span v-if="selectedPermission.length === 0">
-                            <a-button
-                                size="small"
-                                class="text-primary"
-                                @click="handleToggleManage"
-                            >
-                                Edit
-                                <AtlanIcon
-                                    icon="ArrowRight"
-                                    class="ml-1 text-primary"
-                                />
-                            </a-button>
-                        </span>
-                        <div v-else>
-                            <div
-                                v-for="el in selectedPermission"
-                                :key="el"
-                                class="flex flex-col h-auto mb-3 overflow-auto tag-permission max-h-32"
-                            >
-                                <div class="text-gray-500 title-tag">
-                                    {{ el.title }}
-                                </div>
-                                <div class="font-mono tracking-wide value-tag">
-                                    {{ el.value }}
+                        </div> -->
+                        <div
+                            class="flex items-center p-3 mt-1 border border-gray-200 border-dashed rounded border-bottom"
+                        >
+                            <span v-if="selectedPermission.length === 0">
+                                <a-button
+                                    size="small"
+                                    class="text-primary"
+                                    @click="handleToggleManage"
+                                >
+                                    Edit
+                                    <AtlanIcon
+                                        icon="ArrowRight"
+                                        class="ml-1 text-primary"
+                                    />
+                                </a-button>
+                            </span>
+                            <div v-else>
+                                <div
+                                    v-for="el in selectedPermission"
+                                    :key="el"
+                                    class="flex flex-col h-auto mb-3 overflow-auto tag-permission max-h-32"
+                                >
+                                    <div class="text-gray-500 title-tag">
+                                        <AtlanIcon
+                                            :icon="el.icon"
+                                            class="mr-1"
+                                        />
+                                        {{ el.title }}
+                                    </div>
+                                    <div
+                                        class="font-mono tracking-wide text-gray-700 value-tag"
+                                    >
+                                        {{ el.value }}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div
-                        v-if="rules.metadata.show"
-                        class="mt-2 text-xs text-red-500"
-                        data-test-id="policy-validation-connector"
-                    >
-                        {{ rules.metadata.text }}
-                    </div>
-                </div>
-                <div v-if="policyType === 'data'">
-                    <div class="flex items-center mt-3 mb-2 gap-x-1">
-                        <span class="text-sm text-gray-500"
-                            >Masking(Optional)</span
+                        <div
+                            v-if="rules.metadata.show"
+                            class="mt-2 text-xs text-red-500"
+                            data-test-id="policy-validation-connector"
                         >
+                            {{ rules.metadata.text }}
+                        </div>
                     </div>
+                    <div v-if="policyType === 'data'">
+                        <div
+                            class="p-3 text-sm font-bold text-gray-700 border-b"
+                        >
+                            Configurations
+                        </div>
+                        <div class="p-3">
+                            <div class="flex items-center mb-2 gap-x-1">
+                                <span class="text-sm text-gray-500"
+                                    >Masking(Optional)</span
+                                >
+                            </div>
 
-                    <DataMaskingSelector
-                        v-model:maskType="policy.mask"
-                        class="mb-6 w-80"
-                        :type="'purpose'"
-                    />
+                            <DataMaskingSelector
+                                v-model:maskType="policy.mask"
+                                class="mb-6 w-80"
+                                :type="'purpose'"
+                            />
+                        </div>
+                    </div>
+                    <div class="p-3 bg-gray-100 rounded">
+                        <div class="flex">
+                            <div>
+                                <span>Deny Permissions</span>
+                                <a-tooltip placement="top" color="white">
+                                    <AtlanIcon icon="Overview" class="mx-2" />
+                                    <template #title>
+                                        <p class="m-3 text-gray">
+                                            This will deny the permissions you
+                                            have selected above, for all the
+                                            users in the persona, even if they
+                                            had access to those permissions via
+                                            some other persona or purpose.
+                                        </p>
+                                    </template>
+                                </a-tooltip>
+                            </div>
+                            <a-switch
+                                :class="policy.allow ? `` : 'bg-red-600'"
+                                data-test-id="toggle-switch"
+                                class="ml-3"
+                                :checked="!policy.allow"
+                                style="width: 40px !important"
+                                @update:checked="policy.allow = !$event"
+                            />
+                        </div>
+                    </div>
                 </div>
                 <!-- <div v-else>
                     <div class="flex flex-col mt-7 gap-y-2">
@@ -227,33 +266,6 @@
                     />
                 </div> -->
 
-                <div class="">
-                    <div class="flex justify-between mt-4">
-                        <div>
-                            <span>Deny Permissions</span>
-                            <a-tooltip placement="top" color="white">
-                                <AtlanIcon icon="Overview" class="mx-2" />
-                                <template #title>
-                                    <p class="m-3 text-gray">
-                                        This will deny the permissions you have
-                                        selected above, for all the users in the
-                                        persona, even if they had access to
-                                        those permissions via some other persona
-                                        or purpose.
-                                    </p>
-                                </template>
-                            </a-tooltip>
-                        </div>
-                        <a-switch
-                            :class="policy.allow ? `` : 'bg-red-600'"
-                            data-test-id="toggle-switch"
-                            class="ml-3"
-                            :checked="!policy.allow"
-                            style="width: 40px !important"
-                            @update:checked="policy.allow = !$event"
-                        />
-                    </div>
-                </div>
                 <!-- <div
                     v-if="!policy.allow"
                     class="flex items-center justify-between"
@@ -563,14 +575,16 @@
                 })
                 if (assetsPermission.length > 0) {
                     result.push({
-                        title: `Assets :`,
+                        title: `Assets`,
                         value: assetsPermission.join(', '),
+                        icon: 'Compass',
                     })
                 }
                 if (governance.length > 0) {
                     result.push({
-                        title: `Governance :`,
+                        title: `Governance`,
                         value: governance.join(', '),
+                        icon: 'GovernanceCenter',
                     })
                 }
                 return result
@@ -680,12 +694,9 @@
         // .title-tag {
         //     min-width: 100px;
         // }
-        // .value-tag {
-        //     border-radius: 4px;
-        //     padding: 4px 8px;
-        //     background-color: #f3f3f3;
-        //     @apply font-mono;
-        // }
+        .value-tag {
+            font-size: 12px !important;
+        }
     }
     .dot {
         height: 4px;

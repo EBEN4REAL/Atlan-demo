@@ -1,6 +1,6 @@
 <template>
-    <div class="relative wrapper-manage-permition">
-        <div class="flex p-4 pb-0">
+    <div class="relative bg-gray-100 wrapper-manage-permition">
+        <div class="flex p-4 pb-0 mb-2 bg-white border-b">
             <AtlanBtn
                 class="border-none btn-back"
                 size="sm"
@@ -12,13 +12,10 @@
                 <AtlanIcon icon="ArrowRight" class="-rotate-180" />
             </AtlanBtn>
             <div>
-                <span class="text-lg font-bold text-gray-700"
-                    >Manage permissions</span
-                >
+                <span class="font-bold text-gray-700">Manage permissions</span>
                 <div class="text-gray-500">Data consultant policy</div>
             </div>
         </div>
-        <a-divider />
         <div class="p-4 pt-0 container-content">
             <MetadataScopes
                 v-model:actions="actionsLocal"

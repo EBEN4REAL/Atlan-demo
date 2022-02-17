@@ -224,9 +224,9 @@
     <a-drawer
         placement="right"
         :closable="false"
+        class="drawer-add-purpose"
         :visible="addpolicyVisible"
         :width="450"
-        :mask="false"
         :destroy-on-close="true"
         @close="handleCloseAddPolicy"
     >
@@ -555,6 +555,17 @@
     })
 </script>
 
+<style lang="less">
+    .drawer-add-purpose {
+        .ant-drawer-content {
+            overflow: visible !important;
+        }
+        .close-btn-sidebar {
+            position: absolute !important;
+            background: white !important;
+        }
+    }
+</style>
 <style lang="less" module>
     .container-tabs {
         .assetbar {

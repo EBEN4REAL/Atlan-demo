@@ -14,7 +14,6 @@
                             :src="`https://www.google.com/s2/favicons?domain=${getDomain(
                                 v
                             )}`"
-                            :alt="v"
                             class="inline-block w-4 h-4"
                         />{{ v }}</span
                     >
@@ -34,7 +33,6 @@
                     :src="`https://www.google.com/s2/favicons?domain=${getDomain(
                         attribute.value
                     )}`"
-                    :alt="attribute.value"
                     class="w-4 h-4"
                 />
                 {{ attribute.value }}

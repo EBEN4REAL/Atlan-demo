@@ -187,14 +187,22 @@
                     activeInlineTab.value.playground.vqb.selectedTables
                         .length === 0
                 )
-                    return true
-                const res =
-                    activeInlineTab.value.playground.vqb.selectedTables.length >
-                        0 &&
-                    item.value?.entity.attributes?.qualifiedName.includes(
-                        activeInlineTab.value.playground.vqb.selectedTables[0]
-                            ?.tableQualifiedName
-                    )
+                    return false
+                let res = false
+
+                activeInlineTab.value.playground.vqb.selectedTables.every(
+                    (tableD) => {
+                        if (
+                            item.value?.entity.attributes?.qualifiedName.includes(
+                                tableD.tableQualifiedName
+                            )
+                        ) {
+                            res = true
+                            return false
+                        }
+                        return true
+                    }
+                )
                 return res
             })
 

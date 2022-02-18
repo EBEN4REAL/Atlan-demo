@@ -140,8 +140,11 @@
                 style="min-height: 150px"
             >
                 <AtlanIcon icon="Error" class="h-6 mr-2"></AtlanIcon>
-                No connection found - delete the worklow and try setting up a
-                new connection
+                <b>No connection found</b>
+                <span>
+                    Wait for a while if you have setup a new connection or
+                    delete the worklow and try setting up a new one
+                </span>
             </div>
         </div>
     </div>

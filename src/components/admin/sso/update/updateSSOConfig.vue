@@ -302,7 +302,7 @@
                 const baseUrl = `${window.location.protocol}//${window.location.host}/auth`
                 const realmInfo = `realms/${getEnv().DEFAULT_REALM}`
 
-                return provider.isCustomSaml
+                return provider.isCustomSaml && suffix !== ''
                     ? `${baseUrl}/${realmInfo}/broker/${ssoForm.alias}${suffix}`
                     : `${baseUrl}/${realmInfo}${suffix}`
             }

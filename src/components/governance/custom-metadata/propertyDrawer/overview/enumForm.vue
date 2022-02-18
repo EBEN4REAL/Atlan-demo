@@ -86,7 +86,6 @@
                 v-if="createEnum"
                 ref="newEnumFormRef"
                 :enum-search-value="oldEnumSeardValue"
-                @changed-loading="createEnumLoading = $event"
                 @success="handleEnumCreateSuccess"
             />
         </div>
@@ -94,14 +93,21 @@
             v-if="createEnumLoading"
             class="absolute top-0 flex items-center justify-center w-full h-full bg-white bg-opacity-40"
         >
-            <AtlanIcon icon="loader" class="animate-spin" />
+            <AtlanLoader class="h-5" />
         </div>
     </div>
 </template>
 
 <script lang="ts">
     import { message } from 'ant-design-vue'
-    import { computed, defineComponent, ref, watch, onMounted } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        ref,
+        watch,
+        onMounted,
+        ComputedRef,
+    } from 'vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { refetchTypedef } from '~/composables/typedefs/useTypedefs'
     import { useTypedefStore } from '~/store/typedef'
@@ -109,10 +115,12 @@
     import access from '~/constant/accessControl/map'
     import CreateEnumForm from '@/governance/custom-metadata/propertyDrawer/overview/createEnumForm.vue'
     import { isLoading as createEnumLoading } from '@/governance/custom-metadata/propertyDrawer/overview/useCreateEnum'
-
+    import MultiInput from '@/common/input/customizedTagInput.vue'
+    import EnumDef from '@/governance/enums/enum.interface'
     export default defineComponent({
         components: {
             CreateEnumForm,
+            MultiInput,
             VNodes: (_, { attrs }) => attrs.vnodes,
         },
         props: {
@@ -128,7 +136,9 @@
             const enumSearchValue = ref('')
             const oldEnumSeardValue = ref('')
 
-            const { enumList } = useTypedefData()
+            const { enumList }: { enumList: ComputedRef<EnumDef[]> } =
+                useTypedefData()
+
             const enumTypeOtions = ref(null)
 
             const handleCreateEnum = () => {
@@ -162,7 +172,7 @@
                         )
                     }
                 }
-                return null
+                return []
             })
 
             /** @return all enum list data formatted of the component */
@@ -188,7 +198,7 @@
 
             const initEnumModel = () => {
                 // ? initialize enum edit input v-model
-                enumValueModel.value = selectedEnumOptions.value?.map(
+                enumValueModel.value = selectedEnumOptions.value.map(
                     (x) => x.value
                 )
             }
@@ -208,52 +218,51 @@
 
             // Enum Updation flow
             const { updateEnums, updatedEnumDef, reset } = useUpdateEnums()
-            const {
-                error: updateError,
-                isReady,
-                state,
-                execute,
-                isLoading,
-            } = updateEnums
+            const { error: updateError, isReady, state, execute } = updateEnums
 
             const saveChanges = async () => {
                 const store = useTypedefStore()
                 const enumObject = enumList.value?.find(
                     (item) => item.name === selectedEnum.value
                 )
-                enumObject.elementDefs = enumValueModel.value.map(
-                    (value, ordinal) => ({
-                        value,
-                        ordinal,
-                    })
-                )
+                if (enumObject) {
+                    enumObject.elementDefs = enumValueModel.value.map(
+                        (value, ordinal) => ({
+                            value,
+                            ordinal,
+                        })
+                    )
 
-                updatedEnumDef.value = enumObject
-                message.success({
-                    key: 'enum',
-                    content: 'Updating Option...',
-                })
-                await execute()
-                const updatedEnum =
-                    state?.value?.enumDefs?.length && state.value.enumDefs[0]
-                store.updateEnum(updatedEnum)
+                    updatedEnumDef.value = enumObject
+                    message.loading({
+                        key: 'enum',
+                        content: 'Updating Option...',
+                    })
+                    await execute()
+                    const updatedEnum =
+                        state?.value?.enumDefs?.length &&
+                        state.value.enumDefs[0]
+                    store.updateEnum(updatedEnum)
+                }
             }
 
-            // FIXME: May be simplified
             watch([updateError, isReady], () => {
-                if (isReady && state.value.enumDefs.length) {
+                const enumObject = state?.value?.enumDefs[0]
+                if (isReady && enumObject) {
                     message.success({
                         key: 'enum',
-                        content: 'Option updated.',
+                        content: `Option "${enumObject.name}" updated.`,
                         duration: 2,
                     })
                     enumEdit.value = false
                 }
                 if (updateError.value) {
+                    const errMsg =
+                        updateError.value?.response?.data?.errorMessage || ''
                     message.error({
                         key: 'enum',
-                        content: 'Failed to update Option.',
-                        duration: 2,
+                        content: errMsg ?? 'Failed to update Option.',
+                        duration: 4,
                     })
                     reset()
                 }
@@ -294,6 +303,7 @@
                     oldEnumSeardValue.value = newValue
                 } else oldEnumSeardValue.value = oldValue
             })
+
             return {
                 access,
                 handleEnumSearch,

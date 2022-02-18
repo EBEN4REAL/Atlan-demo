@@ -78,13 +78,17 @@
             }
 
             watch([error, isReady], () => {
-                if (isReady && state.value.enumDefs.length) {
+                if (isReady && state?.value?.enumDefs?.length) {
                     message.success('Option created')
                     emit('success', state.value.enumDefs[0])
                 }
                 if (error.value) {
-                    // errMSg
-                    message.error('Failed to add your Option.')
+                    const errMsg =
+                        updateError.value?.response?.data?.errorMessage || ''
+                    message.error({
+                        duration: 4,
+                        content: errMsg ?? 'Failed to add your Option.',
+                    })
                 }
             })
 

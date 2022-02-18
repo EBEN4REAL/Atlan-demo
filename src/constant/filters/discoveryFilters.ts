@@ -64,17 +64,7 @@ export const discoveryFilters = [
         exclude: false,
         analyticsKey: 'term',
     },
-    /* {
-        id: 'announcementType',
-        label: 'Announcement',
-        component: 'announcement',
-        overallCondition: 'OR',
-        attributes: [],
-        isDeleted: false,
-        isDisabled: false,
-        exclude: false,
-        analyticsKey: 'announcement',
-    }, */
+
     {
         id: 'properties',
         label: 'Properties',

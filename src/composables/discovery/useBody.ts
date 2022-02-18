@@ -298,39 +298,7 @@ export function useBody(
 
                 break
             }
-            case 'announcementType': {
-                if (filterObject) {
-                    if (filterObject.length > 0) {
-                        const temp = []
-                        let isExists = false
-                        filterObject.forEach((element) => {
-                            if (element) {
-                                temp.push(element)
-                            } else {
-                                isExists = true
-                            }
-                        })
-                        base.filter('bool', (q) => {
-                            if (temp.length > 0) {
-                                q.orFilter('terms', 'announcementType', temp)
-                            }
 
-                            if (isExists) {
-                                q.orFilter('bool', (query) => {
-                                    return query.notFilter(
-                                        'exists',
-                                        'announcementType'
-                                    )
-                                })
-                            }
-
-                            return q
-                        })
-                    }
-                }
-
-                break
-            }
             case 'typeName': {
                 if (filterObject) {
                     if (filterObject !== '__all') {

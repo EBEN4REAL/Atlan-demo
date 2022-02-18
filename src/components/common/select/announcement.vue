@@ -52,7 +52,6 @@
             const handleChange = () => {
                 modelValue.value = localValue.value
                 emit('change')
-                console.log('hello', localValue.value)
             }
 
             return {

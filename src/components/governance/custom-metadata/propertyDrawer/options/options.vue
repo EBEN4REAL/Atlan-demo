@@ -1,6 +1,18 @@
 <template>
     <CardWrapper title="Options" icon="Enum">
+        <template #action>
+            <div v-auth="access.CREATE_ENUM" class="">
+                <span
+                    class="ml-2 cursor-pointer hover:underline text-primary"
+                    @click="$refs.enumForm.handleCreateEnum()"
+                >
+                    <AtlanIcon icon="Add" />
+                    Create New</span
+                >
+            </div>
+        </template>
         <EnumForm
+            ref="enumForm"
             :disable="editing || internal"
             :edit-access="!internal"
             @change="handleEnumSelect"
@@ -14,6 +26,7 @@
     import EnumForm from '@/governance/custom-metadata/propertyDrawer/options/enumForm.vue'
     import CardWrapper from '@/governance/custom-metadata/propertyDrawer/misc/wrapper.vue'
     import { ATTRIBUTE_INPUT_VALIDATION_RULES } from '~/constant/businessMetadataTemplate'
+    import access from '~/constant/accessControl/map'
 
     const props = defineProps({
         form: { type: Object, required: true },

@@ -12,30 +12,40 @@
             </template>
             <a-select
                 v-model:value="selectedEnum"
-                show-search
                 no-results-text="No option found"
                 placeholder="Select option"
                 :options="finalEnumsList"
                 :disabled="disable"
+                :open="dropdownVisible"
                 :class="$style.input"
+                @mousedown="dropdownVisible = true"
+                :dropdown-class-name="$style.optionsDropdown"
                 @change="handleChange"
-                @search="handleEnumSearch"
             >
+                <template #notFoundContent>
+                    <div class="flex justify-center">No results found</div>
+                </template>
                 <template #dropdownRender="{ menuNode: menu }">
+                    <div class="px-3 mt-2 mb-3 border-gray-300">
+                        <Search
+                            v-model="search"
+                            :clearable="true"
+                            @focus="dropdownVisible = true"
+                            :placeholder="`Search from ${finalEnumsList.length} Options`"
+                        />
+                    </div>
                     <VNodes :vnodes="menu" />
-                    <a-divider style="margin: 4px 0" />
-
-                    <p
-                        class="px-3 cursor-pointer text-primary"
+                    <a-divider class="m-0 my-1" />
+                    <div
+                        v-auth="access.CREATE_ENUM"
+                        class="flex items-center h-10 px-3 mx-1 rounded cursor-pointer hover:bg-primary-light text-primary"
                         @click="handleCreateEnum"
                     >
                         <AtlanIcon class="inline h-4" icon="Add" />
 
-                        Create new enum
-                        <span v-if="enumSearchValue"
-                            >"{{ enumSearchValue }}"</span
-                        >
-                    </p>
+                        Create new Option
+                        <span v-if="search">"{{ search }}"</span>
+                    </div>
                 </template>
             </a-select>
         </a-form-item>
@@ -52,16 +62,16 @@
                         >Edit</span
                     >
 
-                    <div v-else class="space-x-3">
+                    <div v-else class="">
                         <span
                             v-auth="access.UPDATE_ENUM"
-                            class="cursor-pointer hover:underline text-primary"
+                            class="py-0.5 pr-2 border-r border-gray-300 cursor-pointer"
                             @click="discardEnumEdit"
                             >Cancel</span
                         >
                         <span
                             v-auth="access.UPDATE_ENUM"
-                            class="cursor-pointer hover:underline text-primary"
+                            class="ml-2 cursor-pointer hover:underline text-primary"
                             @click="saveChanges"
                             >Save</span
                         >
@@ -91,7 +101,7 @@
             <CreateEnumForm
                 v-if="createEnum"
                 ref="newEnumFormRef"
-                :enum-search-value="oldEnumSeardValue"
+                :enum-search-value="search"
                 @success="handleEnumCreateSuccess"
             />
         </div>
@@ -123,8 +133,12 @@
     import { isLoading as createEnumLoading } from '@/governance/custom-metadata/propertyDrawer/options/useCreateEnum'
     import MultiInput from '@/common/input/customizedTagInput.vue'
     import EnumDef from '@/governance/enums/enum.interface'
+    import Search from '@/common/input/searchAdvanced.vue'
+    import { onClickOutside } from '@vueuse/core'
+
     export default defineComponent({
         components: {
+            Search,
             CreateEnumForm,
             MultiInput,
             VNodes: (_, { attrs }) => attrs.vnodes,
@@ -137,7 +151,9 @@
         setup(_, { emit }) {
             const createEnum = ref<boolean>(false)
             const selectedEnum = ref()
+            const search = ref('')
             const enumEdit = ref<boolean>(false)
+            const dropdownVisible = ref<boolean>(false)
             // enums
             const enumSearchValue = ref('')
             const oldEnumSeardValue = ref('')
@@ -148,7 +164,7 @@
             const enumTypeOtions = ref(null)
 
             const handleCreateEnum = () => {
-                if (!enumSearchValue.value) oldEnumSeardValue.value = ''
+                dropdownVisible.value = false
                 selectedEnum.value = 'New Option'
                 createEnum.value = true
                 emit('change', 'New Option', [])
@@ -183,17 +199,26 @@
 
             /** @return all enum list data formatted of the component */
             const finalEnumsList = computed(() => {
-                if (enumList.value && enumList.value?.length) {
-                    return enumList.value?.map((item) => ({
-                        value: item.name,
-                        key: item.guid,
-                        title: item.name,
-                    }))
+                if (enumList.value?.length) {
+                    return enumList.value
+                        .map((item) => ({
+                            value: item.name,
+                            key: item.guid,
+                            title: item.name,
+                        }))
+                        .filter((_enum) =>
+                            search.value
+                                ? _enum.title
+                                      .toLowerCase()
+                                      .includes(search.value.toLowerCase())
+                                : true
+                        )
                 }
                 return []
             })
 
             const handleChange = (v) => {
+                dropdownVisible.value = false
                 emit(
                     'change',
                     v,
@@ -310,6 +335,8 @@
             })
 
             return {
+                dropdownVisible,
+                search,
                 access,
                 handleEnumSearch,
                 handleChange,
@@ -338,6 +365,18 @@
         &:global(.ant-input),
         :global(.ant-select-selector) {
             @apply border border-gray-300 !important;
+        }
+    }
+
+    .optionsDropdown {
+        :global(.rc-virtual-list) {
+            @apply px-1;
+        }
+        :global(.ant-select-item) {
+            @apply p-2 rounded;
+        }
+        :global(.ant-select-item-option-selected) {
+            @apply bg-primary-light;
         }
     }
 </style>

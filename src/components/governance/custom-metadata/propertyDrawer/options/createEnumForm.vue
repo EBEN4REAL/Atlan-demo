@@ -7,7 +7,7 @@
             :rules="rules"
             :model="form"
         >
-            <a-form-item label="Enum name" name="name" class="mb-0">
+            <a-form-item label="Option name" name="name" class="mb-0">
                 <a-input
                     id="name-input"
                     ref="nameRef"

@@ -24,6 +24,7 @@
                         <SchemaTreeItem
                             v-if="item.title !== 'Load more'"
                             :item="item"
+                            :treeData="treeData"
                             :hover-actions="hoverActions"
                         />
                         <div

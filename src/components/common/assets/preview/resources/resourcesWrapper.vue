@@ -1,7 +1,6 @@
 <template>
     <ResourcesWidget
         :ref="resourcesWidget"
-        class=""
         :resources="resources"
         :add-status="addStatus"
         :update-status="updateStatus"
@@ -67,10 +66,7 @@
 
     // eslint-disable-next-line arrow-body-style
     const resources = computed(() => {
-        return links(selectedAsset.value)?.sort((a, b) =>
-            // eslint-disable-next-line no-underscore-dangle
-            a.attributes.__timestamp < b.attributes.__timestamp ? -1 : 1
-        )
+        return links(selectedAsset.value)
     })
 
     const linkEditPermission = computed(

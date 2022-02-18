@@ -70,55 +70,25 @@
                         <div class="mb-6 font-bold text-gray-700">
                             Service provider metadata
                         </div>
-                        <div class="mb-4">
-                            <div class="mb-2.5">Atlan SAML Assertion URL</div>
+                        <div
+                            v-for="(
+                                meta, index
+                            ) in provider.serviceProviderMetadata"
+                            :key="index"
+                            class="mb-4"
+                        >
+                            <div class="mb-2.5">{{ meta.label }}</div>
                             <div
+                                v-for="(urlSuffix, idx) in meta.suffix"
+                                :key="idx"
                                 class="flex justify-between mb-2 text-gray-500"
                             >
                                 <div class="mr-3 break-all">
-                                    {{
-                                        getSamlAssertionUrl(config.alias)
-                                            .redirectUrl
-                                    }}
+                                    {{ getEnrichedUrl(urlSuffix) }}
                                 </div>
                                 <div
                                     class="flex items-center cursor-pointer text-primary"
-                                    @click="
-                                        copyText(
-                                            getSamlAssertionUrl(config.alias)
-                                                .redirectUrl
-                                        )
-                                    "
-                                >
-                                    <AtlanIcon
-                                        icon="CopyOutlined"
-                                        class="mb-0.5"
-                                    ></AtlanIcon>
-                                    <div class="ml-1">Copy</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mb-4">
-                            <div class="mb-2.5">
-                                Atlan Audience URI (SP Entity ID)
-                            </div>
-                            <div
-                                class="flex justify-between mb-2 text-gray-500"
-                            >
-                                <div class="mr-3 break-all">
-                                    {{
-                                        getSamlAssertionUrl(config.alias)
-                                            .audienceUrl
-                                    }}
-                                </div>
-                                <div
-                                    class="flex items-center cursor-pointer text-primary"
-                                    @click="
-                                        copyText(
-                                            getSamlAssertionUrl(config.alias)
-                                                .audienceUrl
-                                        )
-                                    "
+                                    @click="copyText(getEnrichedUrl(urlSuffix))"
                                 >
                                     <AtlanIcon
                                         icon="CopyOutlined"
@@ -358,7 +328,6 @@
     import { Tenant } from '~/services/service/tenant'
     import DefaultLayout from '@/admin/layout.vue'
     import AtlanBtn from '@/UI/button.vue'
-    
 
     interface FormState {
         alias: string
@@ -454,12 +423,23 @@
                 config.alias = ssoForm.alias
                 isAliasPresent.value = true
             }
+            const getEnrichedUrl = (suffix) => {
+                const baseUrl = `${window.location.protocol}//${window.location.host}/auth`
+                const realmInfo = `realms/${getEnv().DEFAULT_REALM}`
 
+                return provider.isCustomSaml
+                    ? `${baseUrl}/${realmInfo}/broker/${alias.value}${suffix}`
+                    : `${baseUrl}/${realmInfo}${suffix}`
+            }
             const getSamlAssertionUrl = (alias: string) => {
                 const baseUrl = `${window.location.protocol}//${window.location.host}/auth`
                 const redirectUrl = `${baseUrl}/realms/${
                     getEnv().DEFAULT_REALM
-                }/broker/${alias}/endpoint`
+                }${
+                    provider.isCustomSaml
+                        ? `/broker/${alias}${provider.samlAssertionUrlSuffix}`
+                        : provider.samlAssertionUrlSuffix
+                }`
                 const audienceUrl = `${baseUrl}/realms/${
                     getEnv().DEFAULT_REALM
                 }`
@@ -663,6 +643,7 @@
                 tabConfig,
                 allowAddDeleteMappers,
                 showSSOScreen,
+                getEnrichedUrl,
             }
         },
     })
@@ -689,6 +670,6 @@
         background-color: white;
     }
     .provider-wrapper {
-        max-width: 38rem;
+        max-width: 50rem;
     }
 </style>

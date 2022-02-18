@@ -3,14 +3,16 @@
         shortcut-key="esc"
         action="close"
         placement="left"
-        :delay="0.4"
+        :delay="0"
         :edit-permission="true"
     >
         <div class="close-btn-sidebar" @click="$emit('close')">
             <AtlanIcon icon="Add" class="text-white outline-none" />
         </div>
     </Shortcut>
-    <div class="flex items-center justify-between px-3 py-4 border-b">
+    <div
+        class="flex items-center justify-between px-3 py-4 border-b border-gray-300"
+    >
         <div class="flex items-center flex-grow gap-x-2">
             <div
                 class="flex items-center justify-center w-8 h-8 p-2 rounded-full bg-primary-light"

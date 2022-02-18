@@ -1,24 +1,33 @@
 <template>
-    <div class="relative property-drawer">
-        <a-drawer
-            :visible="visible"
-            :mask="false"
-            :width="550"
-            :closable="false"
-            :destroy-on-close="true"
-            class="flex flex-col"
-            :body-style="{ display: 'flex', 'flex-direction': 'column' }"
-        >
-            <Header
-                :title="form.displayName || undefined"
+    <a-drawer
+        :visible="visible"
+        :mask="false"
+        :width="550"
+        :closable="false"
+        :destroy-on-close="true"
+        class="flex flex-col"
+        :body-style="{ display: 'flex', 'flex-direction': 'column' }"
+    >
+        <!-- <AtlanButton @click="$refs.overviewRef?.validate">validate</AtlanButton> -->
+        <Header
+            v-model:createMore="createMore"
+            :title="form.displayName || undefined"
+            :editing="isEdit"
+            :loading="loading"
+            @close="handleClose"
+            @update="handleUpdateProperty"
+        />
+        <!-- Form =============================================================================================================== -->
+        <div class="h-full p-4 bg-gray-100">
+            <Overview
+                ref="overviewRef"
+                v-model:form="form"
+                :internal="viewOnly"
                 :editing="isEdit"
-                @close="handleClose"
-                :loading="loading"
-                v-model:createMore="createMore"
                 @update="handleUpdateProperty"
             />
-            <!-- Form =============================================================================================================== -->
-            <div class="flex-grow px-3 py-4 overflow-y-auto">
+
+            <div v-if="false" class="flex-grow p-4 overflow-y-auto bg-gray-100">
                 <a-form
                     ref="formRef"
                     class="ant-form-right-asterix"
@@ -78,134 +87,14 @@
                     </div>
                     <div class="grid grid-cols-2 gap-4"></div>
                     <!-- Conditonals ============================================ -->
-                    <div
-                        v-if="
-                            form.options.isEnum === 'true' ||
-                            form.options.isEnum === true
-                        "
-                        class="relative p-3 mb-4 border rounded"
-                    >
-                        <a-form-item
-                            class="mb-3"
-                            label="Select Option"
-                            :name="['options', 'enumType']"
-                        >
-                            <a-select
-                                v-model:value="form.options.enumType"
-                                show-search
-                                no-results-text="No option found"
-                                placeholder="Select option"
-                                :options="finalEnumsList"
-                                :disabled="isEdit || viewOnly"
-                                @change="handleEnumSelect"
-                                @search="handleEnumSearch"
-                            >
-                                <template #notFoundContent><p></p></template>
-                                <template #dropdownRender="{ menuNode: menu }">
-                                    <v-nodes :vnodes="menu" />
-                                    <a-divider style="margin: 4px 0" />
 
-                                    <p
-                                        class="px-3 cursor-pointer text-primary"
-                                        @click="handleClickCreateNewEnum"
-                                    >
-                                        <AtlanIcon
-                                            class="inline h-4"
-                                            icon="Add"
-                                        />
-
-                                        Create new enum
-                                        <span v-if="enumSearchValue"
-                                            >"{{ enumSearchValue }}"</span
-                                        >
-                                    </p>
-                                </template>
-                            </a-select>
-                        </a-form-item>
-
-                        <div v-show="selectedEnumOptions?.length" class="">
-                            <div class="flex justify-between">
-                                <div class="mb-2 font-normal font-size-sm">
-                                    Enum options:
-                                </div>
-                                <template v-if="!viewOnly">
-                                    <span
-                                        v-if="!enumEdit"
-                                        v-auth="access.UPDATE_ENUM"
-                                        class="cursor-pointer text-primary"
-                                        @click="handleEditEnum"
-                                        >Edit</span
-                                    >
-
-                                    <div v-else class="space-x-3">
-                                        <span
-                                            v-auth="access.UPDATE_ENUM"
-                                            class="cursor-pointer hover:underline text-primary"
-                                            @click="discardEnumEdit"
-                                            >Cancel</span
-                                        >
-                                        <span
-                                            v-auth="access.UPDATE_ENUM"
-                                            class="cursor-pointer hover:underline text-primary"
-                                            @click="saveChanges"
-                                            >Save</span
-                                        >
-                                    </div>
-                                </template>
-                            </div>
-                            <template v-if="enumEdit">
-                                <MultiInput
-                                    placeholder='Enter values separated by a  ";" or "↵"'
-                                    :value="enumValueModel"
-                                    delimiter=";"
-                                    @change="handleChange"
-                                />
-                            </template>
-                            <p v-else>
-                                <a-tag
-                                    v-for="(e, x) in selectedEnumOptions"
-                                    :key="x"
-                                    class="mb-1 lowercase border-0 rounded-full bg-gray-light"
-                                    >{{ e.title }}</a-tag
-                                >
-                            </p>
-                        </div>
-
-                        <div v-if="newEnumMode" class="mt-6">
-                            <NewEnumForm
-                                v-if="newEnumMode"
-                                ref="newEnumFormRef"
-                                :enum-search-value="oldEnumSeardValue"
-                                @changed-loading="isCreatingEnum = $event"
-                                @success="handleEnumCreateSuccess"
-                            />
-                        </div>
-                        <div
-                            v-if="isCreatingEnum"
-                            class="absolute top-0 flex items-center justify-center w-full h-full bg-white bg-opacity-40"
-                        >
-                            <a-spin size="large" />
-                        </div>
-                    </div>
                     <!-- <pre>{{ finalEnumsList }}</pre> -->
                     <!-- <pre>{{ form.typeName }}</pre>
                     <pre>{{ form.enumValues }}</pre> -->
                     <!-- End of conditonals ========================================= -->
                     <!-- Applicable Asset type ========================================= -->
                     <div class="flex">
-                        <div class="relative" style="width: 100%">
-                            <a-form-item
-                                label="Description"
-                                :name="['description']"
-                                class=""
-                            >
-                                <a-textarea
-                                    v-model:value="form.options.description"
-                                    type="text"
-                                    class=""
-                                />
-                            </a-form-item>
-                        </div>
+                        <div class="relative" style="width: 100%"></div>
                     </div>
                     <div class="flex mb-6">
                         <div class="relative" style="width: 100%">
@@ -365,10 +254,10 @@
                     </div>
                 </a-form>
             </div>
+        </div>
 
-            <!-- End of Form =============================================================================================================== -->
-        </a-drawer>
-    </div>
+        <!-- End of Form =============================================================================================================== -->
+    </a-drawer>
 </template>
 
 <script lang="ts">
@@ -388,33 +277,27 @@
         ATTRIBUTE_TYPES,
     } from '~/constant/businessMetadataTemplate'
     import { Types } from '~/services/meta/types'
-    import NewEnumForm from '@/governance/custom-metadata/newEnumForm.vue'
-    import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { CUSTOM_METADATA_ATTRIBUTE as CMA } from '~/types/typedefs/customMetadata.interface'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
-    import { refetchTypedef } from '~/composables/typedefs/useTypedefs'
     import Truncate from '@/common/ellipsis/index.vue'
     import access from '~/constant/accessControl/map'
-    import { useUpdateEnums } from '@/governance/enums/composables/useModifyEnums'
-    import { useTypedefStore } from '~/store/typedef'
     import MultiInput from '@/common/input/customizedTagInput.vue'
     import { applicableTypeList } from '~/composables/custommetadata/useApplicableTypes'
     import useBusinessMetadata from '@/governance/custom-metadata/composables/useBusinessMetadata'
 
-    // sub-components
+    // sub-modules
     import Header from '@/governance/custom-metadata/propertyDrawer/header.vue'
-    import Shortcut from '@/common/popover/shortcut.vue'
+    import Overview from '@/governance/custom-metadata/propertyDrawer/overview.vue'
+    import { executeCreateEnum } from './useCreateEnum'
 
     const CHECKEDSTRATEGY = TreeSelect.SHOW_PARENT
 
     export default defineComponent({
         components: {
-            Shortcut,
+            Overview,
             Header,
             MultiInput,
-            NewEnumForm,
             Truncate,
-            VNodes: (_, { attrs }) => attrs.vnodes,
         },
         props: {
             metadata: {
@@ -430,16 +313,15 @@
             const visible = ref<boolean>(false)
             const createMore = ref<boolean>(false)
             const form = ref<CMA>(initializeForm())
+            const overviewRef = ref()
             const loading = ref<boolean>(false)
             const isEdit = ref<boolean>(false)
-            const newEnumMode = ref<boolean>(false)
-            const isCreatingEnum = ref<boolean>(false)
+
             const formRef = ref(null)
             const newEnumFormRef = ref(null)
-            const propertyIndex = ref(null)
+            const propertyIndex = ref(-1)
             const typeTreeSelect = ref(null)
-            const enumSearchValue = ref('')
-            const oldEnumSeardValue = ref('')
+
             const applicableEntityTypesOptions = applicableTypeList()
             const viewOnly = computed(
                 () => props.metadata.options?.isLocked === 'true'
@@ -467,7 +349,6 @@
 
             // methods
             const open = (theProperty, makeEdit, index) => {
-                enumSearchValue.value = ''
                 // when open we send the property value and if is undefined, means we creating new prioperty
                 if (theProperty) {
                     const { customApplicableEntityTypes } = theProperty.options
@@ -479,7 +360,6 @@
                         }
                     }
                     form.value = { ...theProperty }
-                    console.table(form.value)
                 } else {
                     form.value = initializeForm()
                 }
@@ -530,14 +410,15 @@
             }
 
             const handleUpdateProperty = async () => {
-                // before create or update, check if is in newEnumMode, first create enum then enum will continue property flow if successful
-                if (newEnumMode.value === true) {
-                    newEnumFormRef.value?.handleCreateEnum()
-                    return
-                }
-
+                // before create or update, check if is in createEnum, first create enum then enum will continue property flow if successful
                 // validate first
-                await formRef.value?.validate()
+                await overviewRef.value.validate()
+                if (
+                    [true, 'true'].includes(form.value.options.isEnum) &&
+                    form.value.options.enumType === 'New Option'
+                )
+                    await executeCreateEnum()
+
                 loading.value = true
 
                 // stringify
@@ -575,6 +456,7 @@
                             },
                         }
                     )
+
                     watch([isReady, error], ([newValue, newError]) => {
                         if (newValue) {
                             message.success('Attribute edited')
@@ -641,185 +523,14 @@
                 }
             }
 
-            const handleEnumCreateSuccess = (newEnum) => {
-                newEnumMode.value = false
-                form.value.options.enumType = newEnum.name
-                refetchTypedef('enum')
-                handleUpdateProperty()
-            }
-
             const handleClose = () => {
                 loading.value = false
-                // form.value = initializeForm()
                 setTimeout(() => {
                     visible.value = false
                 }, 100)
             }
 
-            const { enumList } = useTypedefData()
-
-            /**
-             * @desc list of the options of the selected enum
-             * make it function
-             */
-            const selectedEnumOptions = computed(() => {
-                if (form.value.options.isEnum) {
-                    const reqIndex = enumList.value?.findIndex(
-                        (item) => item.name === form.value.options.enumType
-                    )
-                    if (
-                        reqIndex > -1 &&
-                        enumList.value[reqIndex]?.elementDefs &&
-                        enumList.value[reqIndex]?.elementDefs.length
-                    ) {
-                        return enumList.value[reqIndex]?.elementDefs.map(
-                            (item: { value: any }) => ({
-                                key: item.value,
-                                title: item.value,
-                                value: item.value,
-                                children: undefined,
-                            })
-                        )
-                    }
-                }
-                return null
-            })
-
-            // when an Enum is selected add it's values to form property 'enumValues' as in Atlas
-            const updateEnumValues = () => {
-                if (
-                    form.value.options.isEnum === 'true' ||
-                    form.value.options.isEnum === true
-                ) {
-                    newEnumMode.value = false
-                    form.value.enumValues = selectedEnumOptions.value?.map(
-                        (x) => x.value
-                    )
-                } else {
-                    delete form.value.enumValues
-                }
-            }
-
-            /** ? Edit Enum properties logic starts here   */
-
-            const enumEdit = ref<boolean>(false)
-            const enumValueModel = ref([])
-
-            const initEnumModel = () => {
-                // ? initialize enum edit input v-model
-                enumValueModel.value = selectedEnumOptions.value?.map(
-                    (x) => x.value
-                )
-            }
-
-            const handleEditEnum = () => {
-                initEnumModel()
-                enumEdit.value = true
-            }
-            const discardEnumEdit = () => {
-                enumValueModel.value = []
-                enumEdit.value = false
-            }
-
-            function handleChange(values: String[]) {
-                enumValueModel.value = values
-            }
-
-            // Enum Updation flow
-            const { updateEnums, updatedEnumDef, reset } = useUpdateEnums()
-            const {
-                error: updateError,
-                isReady,
-                state,
-                execute,
-                isLoading,
-            } = updateEnums
-
-            async function saveChanges() {
-                const store = useTypedefStore()
-                const enumObject = enumList.value?.find(
-                    (item) => item.name === form.value.options.enumType
-                )
-                enumObject.elementDefs = enumValueModel.value.map(
-                    (value, ordinal) => ({
-                        value,
-                        ordinal,
-                    })
-                )
-
-                updatedEnumDef.value = enumObject
-                message.success({
-                    key: 'enum',
-                    content: 'Updating Option...',
-                })
-                await execute()
-                const updatedEnum =
-                    state?.value?.enumDefs?.length && state.value.enumDefs[0]
-                store.updateEnum(updatedEnum)
-            }
-
-            // FIXME: May be simplified
-            watch([updateError, isReady], () => {
-                if (isReady && state.value.enumDefs.length) {
-                    message.success({
-                        key: 'enum',
-                        content: 'Option updated.',
-                        duration: 2,
-                    })
-                    enumEdit.value = false
-                }
-                if (updateError.value) {
-                    message.error({
-                        key: 'enum',
-                        content: 'Failed to update Option.',
-                        duration: 2,
-                    })
-                    reset()
-                }
-            })
-
-            /** ? Edit Enum properties logic starts ends   */
-
-            const handleEnumSelect = (v) => {
-                form.value.typeName = v
-                updateEnumValues()
-                if (enumEdit.value) enumEdit.value = false
-            }
-            /**
-             * @param {String} value new type name selected
-             * @desc set enum boolean in options & emit changes
-             */
-            const handleTypeNameChange = (value: string) => {
-                console.log('handleTypeNameChange', value)
-                // ? check if enum
-                if (value === 'enum') {
-                    form.value.options.isEnum = true
-                    updateEnumValues()
-                } else {
-                    form.value.options.isEnum = false
-                    delete form.value.enumValues
-                }
-
-                if (['groups', 'users', 'url', 'SQL'].includes(value))
-                    form.value.options.customType = value
-                else delete form.value.options.customType
-            }
-
-            // enums
-            const enumTypeOtions = ref(null)
-
-            /** @return all enum list data formatted of the component */
-            const finalEnumsList = computed(() => {
-                if (enumList.value && enumList.value?.length) {
-                    return enumList.value?.map((item) => ({
-                        value: item.name,
-                        key: item.guid,
-                        title: item.name,
-                        // children: undefined,
-                    }))
-                }
-                return []
-            })
+            /** ? Edit Enum properties logic end ends   */
 
             const getAllLeafNodes = (node) => {
                 const leaf: any = []
@@ -864,6 +575,7 @@
 
                 return leaf
             }
+
             const handleApplicableEntityTypeChange = (data, l, e) => {
                 /**
                  * Just trying to flatten the the tree given any node, add all leaf node values
@@ -873,25 +585,6 @@
                     flatValues.push(...getAllLeafNodes(item))
                 })
                 form.value.options.customApplicableEntityTypes = flatValues
-            }
-
-            const handleClickCreateNewEnum = () => {
-                if (!enumSearchValue.value) oldEnumSeardValue.value = ''
-                form.value.options.enumType = 'New Option'
-                newEnumMode.value = true
-            }
-
-            const handleEnumSearch = (searchValue) => {
-                if (searchValue) {
-                    newEnumMode.value = false
-                }
-                const foundEnum = finalEnumsList.value.filter((theEnum) =>
-                    theEnum.value
-                        .toUpperCase()
-                        .includes(searchValue.toUpperCase())
-                )
-                if (foundEnum.length === 0) enumSearchValue.value = searchValue
-                else enumSearchValue.value = ''
             }
 
             const isMultiValuedSupport = computed(() => {
@@ -935,27 +628,14 @@
                 { immediate: true }
             )
 
-            // fix cause: enumSearchValue resets when select dropdown closes
-            watch(enumSearchValue, (newValue, oldValue) => {
-                if (newValue) {
-                    oldEnumSeardValue.value = newValue
-                } else oldEnumSeardValue.value = oldValue
-            })
-
             return {
+                overviewRef,
+                // createEnum,
                 applicableEntityTypesOptions,
                 customFilter,
                 viewOnly,
-                discardEnumEdit,
-                handleEditEnum,
-                saveChanges,
-                enumValueModel,
-                handleChange,
-                enumEdit,
                 access,
                 createMore,
-                refetchTypedef,
-                handleEnumSelect,
                 isMultiValuedSupport,
                 handleArrayType,
                 visible,
@@ -967,32 +647,13 @@
                 rules,
                 typeTreeSelect,
                 CHECKEDSTRATEGY,
-                enumTypeOtions,
-                finalEnumsList,
-                selectedEnumOptions,
-                newEnumMode,
                 formRef,
                 newEnumFormRef,
-                isCreatingEnum,
-                enumSearchValue,
-                oldEnumSeardValue,
-                // methods
                 open,
                 initializeForm,
                 handleUpdateProperty,
                 handleClose,
-                handleTypeNameChange,
-                updateEnumValues,
-                handleEnumCreateSuccess,
                 handleApplicableEntityTypeChange,
-                handleEnumSearch,
-                handleClickCreateNewEnum,
-            }
-        },
-        data() {
-            return {
-                test: [],
-                treeSelectOpen: false,
             }
         },
     })

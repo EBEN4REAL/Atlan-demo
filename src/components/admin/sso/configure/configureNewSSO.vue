@@ -427,8 +427,8 @@
                 const baseUrl = `${window.location.protocol}//${window.location.host}/auth`
                 const realmInfo = `realms/${getEnv().DEFAULT_REALM}`
 
-                return provider.isCustomSaml
-                    ? `${baseUrl}/${realmInfo}/broker/${alias.value}${suffix}`
+                return provider.isCustomSaml && suffix !== ''
+                    ? `${baseUrl}/${realmInfo}/broker/${ssoForm.alias}${suffix}`
                     : `${baseUrl}/${realmInfo}${suffix}`
             }
             const getSamlAssertionUrl = (alias: string) => {

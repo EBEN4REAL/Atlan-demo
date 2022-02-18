@@ -21,7 +21,6 @@
                 <template v-if="data">
                     <div class="flex items-center w-10">
                         <div class="relative">
-                            <!-- avatar -->
                             <img
                                 class="rounded-full"
                                 :src="data.user.image_32"
@@ -33,7 +32,7 @@
                         </div>
                     </div>
 
-                    <div class="flex flex-col flex-grow">
+                    <div class="flex flex-col flex-grow overflow-hidden">
                         <div class="flex items-center">
                             <!-- sender -->
                             <b class="mr-2 font-bold">{{
@@ -49,16 +48,16 @@
 
                         <!-- <ShowLess :text="stripSlackText(data.message.text ?? '')" /> -->
 
-                        <span class="" style="">
+                        <div class="" style="">
                             <Truncate
                                 placement="left"
                                 :tooltip-text="
                                     stripSlackText(data.message.text ?? '')
                                 "
-                                width=""
-                                tooltipColor="white"
+                                width="450px"
+                                tooltip-color="white"
                             />
-                        </span>
+                        </div>
 
                         <div class="flex text-xs text-gray-500">
                             <span v-if="data.message.reply_count" class="">

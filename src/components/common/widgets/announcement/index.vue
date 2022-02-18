@@ -12,7 +12,11 @@
         <div class="flex justify-between">
             <div class="flex flex-col w-full">
                 <div class="flex items-center font-bold text-gray-700">
-                    <AtlanIcon :icon="icon" class="mr-2 h-4 mb-0.5"></AtlanIcon>
+                    <AtlanIcon
+                        :icon="icon"
+                        class="mr-2 h-4 mb-0.5"
+                        style="min-width: 1rem"
+                    ></AtlanIcon>
                     {{ announcementTitle(selectedAsset) }}
                 </div>
                 <div

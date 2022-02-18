@@ -66,7 +66,7 @@ export const discoveryFilters = [
     },
     {
         id: 'properties',
-        label: 'Properties',
+        label: 'PROPERTIES',
         component: 'properties',
         attributes: [
             {
@@ -191,7 +191,7 @@ export const discoveryFilters = [
 
     {
         id: 'table',
-        label: 'Table/View',
+        label: 'TABLE/VIEW',
         component: 'properties',
         includes: ['Table', 'View', 'MaterialisedView', 'PartitionTable'],
         attributes: [
@@ -219,7 +219,7 @@ export const discoveryFilters = [
     },
     {
         id: 'column',
-        label: 'Column',
+        label: 'COLUMN',
         component: 'properties',
         includes: ['Column'],
         attributes: [
@@ -275,7 +275,7 @@ export const glossaryFilters = [
     },
     {
         id: 'properties',
-        label: 'Properties',
+        label: 'PROPERTIES',
         component: 'properties',
         attributes: [
             {

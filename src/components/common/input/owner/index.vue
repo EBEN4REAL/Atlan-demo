@@ -17,12 +17,15 @@
                         class="px-3 py-2 mx-4 mb-3 bg-gray-100"
                     >
                         You don't have edit access to this asset, but you can
-                        suggest owners to the asset owner.
-                        <span
-                            @click="handleCancelRequest"
-                            class="cursor-pointer text-primary"
-                            >Dismiss</span
-                        >
+                        suggest owners to the
+                        <span class="text-primary cursor-pointer">
+                            <a-popover placement="rightBottom">
+                                <template #content>
+                                    <AdminList></AdminList>
+                                </template>
+                                <span>Workspace admins</span>
+                            </a-popover>
+                        </span>
                     </div>
 
                     <div class="">
@@ -145,6 +148,7 @@
         toRefs,
         PropType,
         watch,
+        defineAsyncComponent,
     } from 'vue'
 
     // Utils
@@ -186,6 +190,9 @@
             PopOverUser,
             PopOverGroup,
             Shortcut,
+            AdminList: defineAsyncComponent(
+                () => import('@/common/info/adminList.vue')
+            ),
         },
         props: {
             editPermission: {

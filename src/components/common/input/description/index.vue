@@ -11,12 +11,15 @@
                 class="bg-gray-100 px-3 py-2 mb-3"
             >
                 You don’t have edit access to this asset, but you can suggest a
-                new description to the asset owner.
-                <span
-                    @click="handleCancelRequest"
-                    class="text-primary cursor-pointer"
-                    >Dismiss</span
-                >
+                new description to the
+                <span class="text-primary cursor-pointer">
+                    <a-popover placement="bottomRight">
+                        <template #content>
+                            <AdminList></AdminList>
+                        </template>
+                        <span>Workspace admins</span>
+                    </a-popover>
+                </span>
             </div>
 
             <div
@@ -78,6 +81,7 @@
         ref,
         toRefs,
         watchEffect,
+        defineAsyncComponent,
     } from 'vue'
     import {
         and,
@@ -96,7 +100,12 @@
 
     export default defineComponent({
         name: 'DescriptionWidget',
-        components: { Shortcut },
+        components: {
+            Shortcut,
+            AdminList: defineAsyncComponent(
+                () => import('@/common/info/adminList.vue')
+            ),
+        },
         props: {
             modelValue: {
                 type: String,

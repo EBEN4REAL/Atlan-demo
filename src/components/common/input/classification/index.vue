@@ -14,12 +14,15 @@
                     class="bg-gray-100 mx-4 px-3 py-2 mb-4"
                 >
                     You don't have edit access to this asset, but you can
-                    suggest Classifications to the asset owner.
-                    <span
-                        @click="handleCancelRequest"
-                        class="text-primary cursor-pointer"
-                        >Dismiss</span
-                    >
+                    suggest Classifications to the
+                    <span class="text-primary cursor-pointer">
+                        <a-popover placement="bottomRight">
+                            <template #content>
+                                <AdminList></AdminList>
+                            </template>
+                            <span>Workspace admins</span>
+                        </a-popover>
+                    </span>
                 </div>
 
                 <div>
@@ -105,7 +108,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, Ref, ref, toRefs, watch } from 'vue'
+    import { computed, defineComponent, Ref, ref, toRefs, watch , defineAsyncComponent} from 'vue'
     import {
         and,
         useActiveElement,
@@ -132,6 +135,10 @@
             ClassificationPill,
             Popover,
             Shortcut,
+            AdminList: defineAsyncComponent(
+                () => import('@/common/info/adminList.vue')
+            ),
+ 
         },
         props: {
             guid: {

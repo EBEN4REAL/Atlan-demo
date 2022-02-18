@@ -14,12 +14,16 @@
                     class="bg-gray-100 mx-4 px-3 py-2 mb-3"
                 >
                     You don't have edit access to this asset, but you can
-                    suggest new Certificate to the asset owner.
-                    <span
-                        @click="handleCancelRequest"
-                        class="text-primary cursor-pointer"
-                        >Dismiss</span
-                    >
+                    suggest new Certificate to the 
+                    <span class="text-primary cursor-pointer">
+                        <a-popover placement="bottomRight">
+                            <template #content>
+                                <AdminList></AdminList>
+                            </template>
+                            <span>Workspace admins</span>
+                        </a-popover>
+                    </span>
+             
                 </div>
 
                 <CertificateFacet
@@ -38,7 +42,6 @@
                     v-if="!editPermission && role !== 'Guest'"
                     class="flex items-center justify-end mx-2 space-x-2 mt-5"
                 >
-                    <AdminList></AdminList>
                     <a-button @click="handleCancelRequest">Cancel</a-button>
                     <a-button
                         type="primary"

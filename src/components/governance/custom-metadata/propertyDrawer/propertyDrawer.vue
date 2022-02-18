@@ -287,8 +287,8 @@
 
     // sub-modules
     import Header from '@/governance/custom-metadata/propertyDrawer/header.vue'
-    import Overview from '@/governance/custom-metadata/propertyDrawer/overview.vue'
-    import { executeCreateEnum } from './useCreateEnum'
+    import Overview from '@/governance/custom-metadata/propertyDrawer/overview/overview.vue'
+    import { executeCreateEnum } from '@/governance/custom-metadata/propertyDrawer/overview/useCreateEnum'
 
     const CHECKEDSTRATEGY = TreeSelect.SHOW_PARENT
 

@@ -38,7 +38,7 @@
         error,
         isReady,
         state,
-    } from '@/governance/custom-metadata/propertyDrawer/useCreateEnum'
+    } from '@/governance/custom-metadata/propertyDrawer/overview/useCreateEnum'
 
     export default defineComponent({
         components: { MultiInput },

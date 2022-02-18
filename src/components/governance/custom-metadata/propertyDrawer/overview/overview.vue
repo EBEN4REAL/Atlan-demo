@@ -101,7 +101,7 @@
         ATTRIBUTE_INPUT_VALIDATION_RULES,
         ATTRIBUTE_TYPES,
     } from '~/constant/businessMetadataTemplate'
-    import EnumFormItem from '@/governance/custom-metadata/propertyDrawer/enumForm.vue'
+    import EnumFormItem from '@/governance/custom-metadata/propertyDrawer/overview/enumForm.vue'
 
     const props = defineProps({
         form: { type: Object, required: true },

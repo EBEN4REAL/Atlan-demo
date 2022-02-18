@@ -105,10 +105,10 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { refetchTypedef } from '~/composables/typedefs/useTypedefs'
     import { useTypedefStore } from '~/store/typedef'
-    import { useUpdateEnums } from '../../enums/composables/useModifyEnums'
+    import { useUpdateEnums } from '@/governance/enums/composables/useModifyEnums'
     import access from '~/constant/accessControl/map'
-    import CreateEnumForm from '@/governance/custom-metadata/propertyDrawer/createEnumForm.vue'
-    import { isLoading as createEnumLoading } from '@/governance/custom-metadata/propertyDrawer/useCreateEnum'
+    import CreateEnumForm from '@/governance/custom-metadata/propertyDrawer/overview/createEnumForm.vue'
+    import { isLoading as createEnumLoading } from '@/governance/custom-metadata/propertyDrawer/overview/useCreateEnum'
 
     export default defineComponent({
         components: {

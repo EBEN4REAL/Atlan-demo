@@ -61,6 +61,7 @@
 
                     <WorkflowList
                         v-else
+                        :key="listKey"
                         :list="list"
                         class="px-6 mb-4"
                         @select="handleSelect"
@@ -94,6 +95,7 @@
         <div class="relative hidden bg-white asset-preview-container md:block">
             <WorfklowPreview
                 v-if="selectedPackage"
+                :key="listKey"
                 :item="selectedPackage"
             ></WorfklowPreview>
         </div>
@@ -331,7 +333,10 @@
                 }
             }
 
-            // onActivated(() => handlePreview(selectedPackage.value))
+            const listKey = ref(Date.now())
+            onActivated(() => {
+                listKey.value = Date.now()
+            })
 
             return {
                 placeholder,
@@ -378,6 +383,7 @@
                 router,
                 queryText,
                 errorRun,
+                listKey,
             }
         },
     })

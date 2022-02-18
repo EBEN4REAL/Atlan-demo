@@ -10,7 +10,7 @@
             class="mb-1"
         ></AssetTitleCtx>
         <div class="flex justify-between">
-            <div>
+            <div class="flex flex-col w-full">
                 <div class="flex items-center font-bold text-gray-700">
                     <AtlanIcon :icon="icon" class="mr-2 h-4 mb-0.5"></AtlanIcon>
                     {{ announcementTitle(selectedAsset) }}
@@ -20,7 +20,7 @@
                         className: 'text-primary',
                         target: '_blank',
                     }"
-                    class="text-gray-500 break-words"
+                    class="text-gray-500 break-words whitespace-pre-wrap"
                 >
                     {{ announcementMessage(selectedAsset) }}
                 </div>

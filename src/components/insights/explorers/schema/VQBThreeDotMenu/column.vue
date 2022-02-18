@@ -1,16 +1,13 @@
 <template>
-    <div>
-        <a-dropdown :trigger="['click']">
-            <AtlanIcon
-                icon="KebabMenu"
-                class="w-4 h-4 my-auto -mr-1.5 outline-none pl-2"
-                :class="
-                    item?.selected ? 'tree-light-color' : 'bg-gray-light-color'
-                "
-            />
-            <template #overlay>
-                <a-menu>
-                    <a-menu-item
+    <a-dropdown :trigger="['click']">
+        <AtlanIcon
+            icon="KebabMenu"
+            class="w-4 h-4 my-auto -mr-1.5 outline-none pl-2"
+            :class="item?.selected ? 'tree-light-color' : 'bg-gray-light-color'"
+        />
+        <template #overlay>
+            <a-menu>
+                <!-- <a-menu-item
                         :class="[
                             readOnly
                                 ? ' bg-gray-100 cursor-not-allowed pointer-events-none'
@@ -28,64 +25,63 @@
                             ></AtlanIcon>
                             <span>Join Table</span>
                         </div>
-                    </a-menu-item>
-                    <a-menu-item
-                        :class="
-                            readOnly
-                                ? '  cursor-not-allowed pointer-events-none'
-                                : ''
-                        "
+                    </a-menu-item> -->
+                <a-menu-item
+                    :class="
+                        readOnly
+                            ? '  cursor-not-allowed pointer-events-none'
+                            : ''
+                    "
+                >
+                    <div
+                        class="flex items-center h-8"
+                        @click="addFilterPanel"
+                        :class="[
+                            !canAddOtherPanels ? ' cursor-not-allowed' : '',
+                        ]"
                     >
-                        <div
-                            class="flex items-center h-8"
-                            @click="addFilterPanel"
-                            :class="[
-                                !canAddOtherPanels ? ' cursor-not-allowed' : '',
-                            ]"
-                        >
-                            <AtlanIcon
-                                icon="FilterFunnel"
-                                class="w-4 h-4 my-auto mr-1.5"
-                            ></AtlanIcon>
-                            <span>Filter</span>
-                        </div>
-                    </a-menu-item>
-                    <a-menu-item>
-                        <div
-                            class="flex items-center h-8"
-                            @click="addGroupPanel"
-                            :class="[
-                                !canAddOtherPanels ? ' cursor-not-allowed' : '',
-                            ]"
-                        >
-                            <AtlanIcon
-                                icon="BuilderGroup"
-                                class="w-4 h-4 my-auto mr-1.5 focus:outline-none"
-                            ></AtlanIcon>
-                            <span>Group</span>
-                        </div>
-                    </a-menu-item>
-                    <a-menu-item>
-                        <div
-                            class="flex items-center h-8"
-                            @click="addAggregatePanel"
-                            :class="[
-                                !canAddOtherPanels
-                                    ? 'bg-gray-100 cursor-not-allowed'
-                                    : '',
-                            ]"
-                        >
-                            <AtlanIcon
-                                icon="Trigger"
-                                class="w-4 h-4 my-auto mr-1.5 focus:outline-none"
-                            ></AtlanIcon>
-                            <span>Aggregate</span>
-                        </div>
-                    </a-menu-item>
-                </a-menu>
-            </template>
-        </a-dropdown>
-    </div>
+                        <AtlanIcon
+                            icon="FilterFunnel"
+                            class="w-4 h-4 my-auto mr-1.5"
+                        ></AtlanIcon>
+                        <span>Filter</span>
+                    </div>
+                </a-menu-item>
+                <a-menu-item>
+                    <div
+                        class="flex items-center h-8"
+                        @click="addGroupPanel"
+                        :class="[
+                            !canAddOtherPanels ? ' cursor-not-allowed' : '',
+                        ]"
+                    >
+                        <AtlanIcon
+                            icon="BuilderGroup"
+                            class="w-4 h-4 my-auto mr-1.5 focus:outline-none"
+                        ></AtlanIcon>
+                        <span>Group</span>
+                    </div>
+                </a-menu-item>
+                <a-menu-item>
+                    <div
+                        class="flex items-center h-8"
+                        @click="addAggregatePanel"
+                        :class="[
+                            !canAddOtherPanels
+                                ? 'bg-gray-100 cursor-not-allowed'
+                                : '',
+                        ]"
+                    >
+                        <AtlanIcon
+                            icon="Trigger"
+                            class="w-4 h-4 my-auto mr-1.5 focus:outline-none"
+                        ></AtlanIcon>
+                        <span>Aggregate</span>
+                    </div>
+                </a-menu-item>
+            </a-menu>
+        </template>
+    </a-dropdown>
 </template>
 
 <script lang="ts">
@@ -159,9 +155,11 @@
                 )
                     return true
                 const res =
+                    activeInlineTab.value.playground.vqb.selectedTables.length >
+                        0 &&
                     item.value?.entity.attributes?.qualifiedName.includes(
                         activeInlineTab.value.playground.vqb.selectedTables[0]
-                            .tableQualifiedName
+                            ?.tableQualifiedName
                     )
                 return res
             })

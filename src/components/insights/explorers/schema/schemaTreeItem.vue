@@ -244,6 +244,22 @@
                                         ></AtlanIcon>
                                     </a-tooltip>
                                 </div>
+
+                                <div
+                                    class="pl-2"
+                                    v-if="showVQB"
+                                    :class="
+                                        item?.selected
+                                            ? 'tree-light-color'
+                                            : 'bg-gray-light-color'
+                                    "
+                                >
+                                    <VQBThreeDotMenuForTable
+                                        v-if="showVQB"
+                                        :item="item"
+                                        :treeData="treeData"
+                                    />
+                                </div>
                                 <div
                                     class="pl-2 pr-2"
                                     :data-test-id="'preview'"
@@ -299,11 +315,6 @@
                                     </a-tooltip>
                                 </div>
 
-                                <VQBThreeDotMenuForTable
-                                    v-if="showVQB"
-                                    :item="item"
-                                    :treeData="treeData"
-                                />
                                 <!-- Add pr-2 for next icon -->
                                 <div
                                     :data-test-id="'run-table-query'"

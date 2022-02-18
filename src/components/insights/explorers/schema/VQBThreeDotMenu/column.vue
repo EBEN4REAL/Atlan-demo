@@ -127,6 +127,30 @@
                 activeInlineTabInterface[]
             >
 
+            const checkRecursively = (ele) => {
+                // debugger
+                let res
+                for (let i = 0; i < ele?.children.length; i++) {
+                    const el = ele?.children[i]
+                    if (
+                        item.value?.entity?.attributes?.qualifiedName.includes(
+                            el?.entity?.attributes?.qualifiedName
+                        )
+                    ) {
+                        if (
+                            el?.children?.length > 0 &&
+                            el?.typeName !== 'Table'
+                        ) {
+                            res = checkRecursively(el)
+                            break
+                        } else {
+                            res = el
+                        }
+                    }
+                }
+                return res
+            }
+
             const ifAddTableFirst = (
                 activeInlineTab: Ref<activeInlineTabInterface>,
                 item: Ref<assetInterface>
@@ -141,7 +165,17 @@
                                 el?.entity?.attributes?.qualifiedName
                             )
                         ) {
-                            addTable(activeInlineTab, ref(el), inlineTabs)
+                            if (el?.children?.length > 0) {
+                                const sudoItem = checkRecursively(el)
+                                addTable(
+                                    activeInlineTab,
+                                    ref(sudoItem),
+                                    inlineTabs
+                                )
+                            } else {
+                                addTable(activeInlineTab, ref(el), inlineTabs)
+                            }
+
                             return
                         }
                     })

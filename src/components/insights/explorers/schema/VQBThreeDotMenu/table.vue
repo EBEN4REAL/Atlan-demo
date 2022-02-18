@@ -1,12 +1,16 @@
 <template>
     <div>
-        <a-tooltip color="#363636" placement="top" v-if="!isBaseTableAdded">
+        <a-tooltip color="#363636" placement="top">
             <template #title>Start a visual query</template>
 
-            <div class="flex items-center mt-0.5 pl-2" @click="addTablePanel">
+            <div
+                class="flex items-center mt-0.5"
+                @click="addTablePanel"
+                :class="[isBaseTableAdded ? 'cursor-not-allowed' : '']"
+            >
                 <AtlanIcon
                     icon="Vqb24"
-                    class="w-4 h-4 my-auto mr-1.5"
+                    class="w-4 h-4 my-auto mr-0.5"
                 ></AtlanIcon>
             </div>
         </a-tooltip>
@@ -64,6 +68,7 @@
         toRefs,
         inject,
         ComputedRef,
+        Ref,
         computed,
     } from 'vue'
     import { addTable } from './composables/usepanels'
@@ -88,10 +93,9 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
-
-            const addTablePanel = () => {
-                addTable(activeInlineTab, item)
-            }
+            const inlineTabs = inject('inlineTabs') as Ref<
+                activeInlineTabInterface[]
+            >
 
             const isThisTablePresentInVQBContext = () => {
                 if (
@@ -121,6 +125,10 @@
                     0
                 )
             })
+            const addTablePanel = () => {
+                if (isBaseTableAdded.value) return
+                addTable(activeInlineTab, item, inlineTabs)
+            }
 
             return {
                 isBaseTableAdded,

@@ -508,9 +508,15 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         entity.value = {
             ...entity.value,
             relationshipAttributes: {
-                parentCategory: localParentCategory.value,
                 anchor: selectedAsset?.value?.attributes?.anchor,
             },
+        }
+        console.log(localParentCategory.value);
+        if (localParentCategory.value?.guid) {
+            entity.value.relationshipAttributes.parentCategory =
+                localParentCategory.value
+        } else {
+            entity.value.relationshipAttributes.parentCategory = null
         }
         body.value.entities = [entity.value]
         currentMessage.value = 'Categories have been updated'

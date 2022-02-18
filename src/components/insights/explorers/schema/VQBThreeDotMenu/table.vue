@@ -1,4 +1,16 @@
 <template>
+    <div>
+        <a-tooltip color="#363636" placement="top" v-if="!isBaseTableAdded">
+            <template #title>Start a visual query</template>
+
+            <div class="flex items-center mt-0.5 pl-2" @click="addTablePanel">
+                <AtlanIcon
+                    icon="Vqb24"
+                    class="w-4 h-4 my-auto mr-1.5"
+                ></AtlanIcon>
+            </div>
+        </a-tooltip>
+    </div>
     <!-- <a-dropdown :trigger="['click']">
         <AtlanIcon
             icon="KebabMenu"
@@ -12,7 +24,7 @@
                         readOnly
                             ? ' bg-gray-100 cursor-not-allowed pointer-events-none'
                             : ''
-                    "
+                "
                     v-if="!isThisTablePresentInVQBContext()"
                 >
                     <div class="flex items-center h-8" @click="addTablePanel">
@@ -46,7 +58,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs, inject, ComputedRef } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        toRefs,
+        inject,
+        ComputedRef,
+        computed,
+    } from 'vue'
     import { addTable } from './composables/usepanels'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
@@ -96,7 +115,15 @@
                 return false
             }
 
+            const isBaseTableAdded = computed(() => {
+                return (
+                    activeInlineTab.value.playground.vqb.selectedTables.length >
+                    0
+                )
+            })
+
             return {
+                isBaseTableAdded,
                 isThisBaseTable,
                 isThisTablePresentInVQBContext,
                 addTablePanel,

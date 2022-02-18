@@ -150,8 +150,8 @@
 
             const canAddOtherPanels = computed(() => {
                 if (
-                    activeInlineTab.value.playground.vqb.selectedTables.length <
-                    0
+                    activeInlineTab.value.playground.vqb.selectedTables
+                        .length === 0
                 )
                     return true
                 const res =

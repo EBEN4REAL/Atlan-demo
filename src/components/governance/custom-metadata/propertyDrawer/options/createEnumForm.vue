@@ -3,11 +3,11 @@
         <a-form
             ref="formRef"
             layout="vertical"
-            class="relative"
+            class="relative space-y-4"
             :rules="rules"
             :model="form"
         >
-            <a-form-item label="Enum name" name="name">
+            <a-form-item label="Enum name" name="name" class="mb-0">
                 <a-input
                     id="name-input"
                     ref="nameRef"
@@ -16,7 +16,7 @@
                 ></a-input>
             </a-form-item>
 
-            <a-form-item label="Values" name="elementDefs">
+            <a-form-item label="Values" name="elementDefs" class="mb-0">
                 <MultiInput
                     ref="valuesRef"
                     placeholder='Enter values separated by a  ";" or "↵"'
@@ -38,7 +38,7 @@
         error,
         isReady,
         state,
-    } from '@/governance/custom-metadata/propertyDrawer/overview/useCreateEnum'
+    } from '@/governance/custom-metadata/propertyDrawer/options/useCreateEnum'
 
     export default defineComponent({
         components: { MultiInput },

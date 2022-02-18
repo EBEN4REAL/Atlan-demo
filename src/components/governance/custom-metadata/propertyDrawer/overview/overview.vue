@@ -1,6 +1,6 @@
 <template>
     <div class="bg-white rounded-lg shadow" style="">
-        <div class="flex items-center p-4 border-b">
+        <div class="flex items-center p-4 pb-3 border-b">
             <h1 class="flex items-start text-sm font-bold gap-x-2">
                 <AtlanIcon icon="Info" class="text-gray-800" />
                 Overview
@@ -73,21 +73,7 @@
                         :class="$style.input"
                     />
                 </a-form-item>
-                <template
-                    v-if="
-                        form.options.isEnum === 'true' ||
-                        form.options.isEnum === true
-                    "
-                >
-                    <EnumFormItem
-                        :disable="editing || internal"
-                        :edit-access="!internal"
-                        @change="handleEnumSelect"
-                        @update="$emit('update')"
-                    />
-                </template>
             </div>
-            <!-- Conditonals ============================================ -->
         </a-form>
     </div>
 </template>
@@ -101,7 +87,6 @@
         ATTRIBUTE_INPUT_VALIDATION_RULES,
         ATTRIBUTE_TYPES,
     } from '~/constant/businessMetadataTemplate'
-    import EnumFormItem from '@/governance/custom-metadata/propertyDrawer/overview/enumForm.vue'
 
     const props = defineProps({
         form: { type: Object, required: true },
@@ -130,21 +115,6 @@
         o.label.toLowerCase().includes(v.toLowerCase())
 
     const attributesTypes = ref(JSON.parse(JSON.stringify(ATTRIBUTE_TYPES)))
-
-    // when an Enum is selected add it's values to form property 'enumValues' as in Atlas
-    const handleEnumSelect = (typeName, values) => {
-        form.value.options.enumType = typeName
-        form.value.typeName = typeName
-        form.value.enumValues = values
-        // if (
-        //     form.value.options.isEnum === 'true' ||
-        //     form.value.options.isEnum === true
-        // ) {
-        //     form.value.enumValues = values
-        // } else {
-        //     delete form.value.enumValues
-        // }
-    }
 
     /**
      * @param {String} value new type name selected

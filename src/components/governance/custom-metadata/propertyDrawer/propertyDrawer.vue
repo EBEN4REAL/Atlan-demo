@@ -5,10 +5,9 @@
         :width="550"
         :closable="false"
         :destroy-on-close="true"
-        class="flex flex-col"
+        class="flex flex-col propertyDrawer"
         :body-style="{ display: 'flex', 'flex-direction': 'column' }"
     >
-        <!-- <AtlanButton @click="$refs.overviewRef?.validate">validate</AtlanButton> -->
         <Header
             v-model:createMore="createMore"
             :title="form.displayName || undefined"
@@ -18,9 +17,17 @@
             @update="handleUpdateProperty"
         />
         <!-- Form =============================================================================================================== -->
-        <div class="h-full p-4 bg-gray-100">
+        <div class="h-full p-4 space-y-4 bg-gray-100">
             <Overview
                 ref="overviewRef"
+                v-model:form="form"
+                :internal="viewOnly"
+                :editing="isEdit"
+                @update="handleUpdateProperty"
+            />
+            <Options
+                v-if="[true, 'true'].includes(form.options.isEnum)"
+                ref="optionsRef"
                 v-model:form="form"
                 :internal="viewOnly"
                 :editing="isEdit"
@@ -288,7 +295,8 @@
     // sub-modules
     import Header from '@/governance/custom-metadata/propertyDrawer/header.vue'
     import Overview from '@/governance/custom-metadata/propertyDrawer/overview/overview.vue'
-    import { executeCreateEnum } from '@/governance/custom-metadata/propertyDrawer/overview/useCreateEnum'
+    import Options from '@/governance/custom-metadata/propertyDrawer/options/options.vue'
+    import { executeCreateEnum } from '@/governance/custom-metadata/propertyDrawer/options/useCreateEnum'
 
     const CHECKEDSTRATEGY = TreeSelect.SHOW_PARENT
 
@@ -296,8 +304,7 @@
         components: {
             Overview,
             Header,
-            MultiInput,
-            Truncate,
+            Options,
         },
         props: {
             metadata: {
@@ -314,6 +321,7 @@
             const createMore = ref<boolean>(false)
             const form = ref<CMA>(initializeForm())
             const overviewRef = ref()
+            const optionsRef = ref()
             const loading = ref<boolean>(false)
             const isEdit = ref<boolean>(false)
 
@@ -630,6 +638,7 @@
 
             return {
                 overviewRef,
+                optionsRef,
                 // createEnum,
                 applicableEntityTypesOptions,
                 customFilter,
@@ -660,16 +669,21 @@
 </script>
 
 <style lang="less">
-    .ant-form-right-asterix {
-        .ant-form-item-label {
-            overflow: unset !important;
+    .propertyDrawer {
+        .ant-form-undo-flex-direction.ant-form-item {
+            flex-direction: unset !important;
         }
-        .ant-form-item-required::before {
-            position: absolute;
-            right: -12px;
+        .ant-row {
+            display: block;
         }
-    }
-    .ant-form-undo-flex-direction.ant-form-item {
-        flex-direction: unset !important;
+
+        .ant-input,
+        .ant-select-selector {
+            @apply border border-gray-300 !important;
+        }
+
+        .ant-form-item-label > label {
+            @apply text-gray-500;
+        }
     }
 </style>

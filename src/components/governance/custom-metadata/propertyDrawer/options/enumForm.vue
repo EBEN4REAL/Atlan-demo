@@ -1,10 +1,15 @@
 <template>
-    <div class="relative col-span-2 p-3 mb-4 border border-gray-300 rounded">
+    <div
+        class="relative col-span-2 p-4 space-y-4 border border-gray-300 rounded"
+    >
         <a-form-item
-            class="mb-0"
+            class="mb-0 text-gray-500"
             label="Select Option"
             :name="['options', 'enumType']"
         >
+            <template #label>
+                <!-- <div class="text-gray-500">Select Option x</div> -->
+            </template>
             <a-select
                 v-model:value="selectedEnum"
                 show-search
@@ -42,7 +47,7 @@
                     <span
                         v-if="!enumEdit"
                         v-auth="access.UPDATE_ENUM"
-                        class="cursor-pointer text-primary"
+                        class="cursor-pointer text-primary hover:underline"
                         @click="handleEditEnum"
                         >Edit</span
                     >
@@ -113,8 +118,8 @@
     import { useTypedefStore } from '~/store/typedef'
     import { useUpdateEnums } from '@/governance/enums/composables/useModifyEnums'
     import access from '~/constant/accessControl/map'
-    import CreateEnumForm from '@/governance/custom-metadata/propertyDrawer/overview/createEnumForm.vue'
-    import { isLoading as createEnumLoading } from '@/governance/custom-metadata/propertyDrawer/overview/useCreateEnum'
+    import CreateEnumForm from '@/governance/custom-metadata/propertyDrawer/options/createEnumForm.vue'
+    import { isLoading as createEnumLoading } from '@/governance/custom-metadata/propertyDrawer/options/useCreateEnum'
     import MultiInput from '@/common/input/customizedTagInput.vue'
     import EnumDef from '@/governance/enums/enum.interface'
     export default defineComponent({
@@ -275,6 +280,7 @@
                     selectedEnumOptions.value.map((_v) => _v.value)
                 )
                 if (enumEdit.value) enumEdit.value = false
+                if (createEnum.value) createEnum.value = false
             }
 
             const handleEnumSearch = (searchValue) => {

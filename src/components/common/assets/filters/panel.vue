@@ -101,6 +101,7 @@
 
     import Owners from '@common/facet/owners/index.vue'
     import Certificate from '@common/facet/certificate/index.vue'
+    import Announcement from '@common/facet/announcement/index.vue'
     import LogAction from '@common/facet/accessLogs/actions.vue'
     import LogStatus from '@common/facet/accessLogs/status.vue'
     import UserTypes from '@common/facet/accessLogs/userTypes.vue'
@@ -120,6 +121,7 @@
             Hierarchy,
             Certificate,
             Owners,
+            Announcement,
             QueryStatus,
             LogAction,
             LogStatus,

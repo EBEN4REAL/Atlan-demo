@@ -17,8 +17,10 @@ const initializeForm: () => enumDef = () => ({
 
 export const form = ref(initializeForm())
 
+export const validate = async () => { await formRef.value?.validate() }
+
 export const executeCreateEnum = async () => {
-    await formRef.value?.validate()
+    // await validate()
     try {
         const tempForm: any = { ...form.value }
         tempForm.elementDefs = tempForm.elementDefs.map((x, index) => ({

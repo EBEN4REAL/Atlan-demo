@@ -34,6 +34,7 @@
     import { message } from 'ant-design-vue'
     import MultiInput from '@/common/input/customizedTagInput.vue'
     import {
+        formRef,
         form,
         error,
         isReady,
@@ -84,7 +85,7 @@
                 }
                 if (error.value) {
                     const errMsg =
-                        updateError.value?.response?.data?.errorMessage || ''
+                        error.value?.response?.data?.errorMessage || ''
                     message.error({
                         duration: 4,
                         content: errMsg ?? 'Failed to add your Option.',
@@ -94,6 +95,7 @@
 
             return {
                 form,
+                formRef,
                 rules,
                 nameRef,
                 valuesRef,

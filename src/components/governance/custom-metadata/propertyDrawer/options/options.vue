@@ -1,20 +1,10 @@
 <template>
     <CardWrapper title="Options" icon="Enum">
-        <a-form
-            ref="formRef"
-            class="p-4"
-            layout="vertical"
-            :rules="rules"
-            :model="form"
-            :validate-trigger="['click', 'submit']"
-        >
-            <EnumForm
-                :disable="editing || internal"
-                :edit-access="!internal"
-                @change="handleEnumSelect"
-                @update="$emit('update')"
-            />
-        </a-form>
+        <EnumForm
+            :disable="editing || internal"
+            :edit-access="!internal"
+            @change="handleEnumSelect"
+        />
     </CardWrapper>
 </template>
 
@@ -31,7 +21,7 @@
         editing: { type: Boolean, required: true },
     })
 
-    const emit = defineEmits(['update'])
+    const emit = defineEmits([''])
 
     const rules = ref(
         JSON.parse(JSON.stringify(ATTRIBUTE_INPUT_VALIDATION_RULES))

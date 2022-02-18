@@ -17,251 +17,267 @@
             @update="handleUpdateProperty"
         />
         <!-- Form =============================================================================================================== -->
-        <div class="h-full p-4 space-y-4 bg-gray-100">
-            <Overview
-                ref="overviewRef"
-                v-model:form="form"
-                :internal="viewOnly"
-                :editing="isEdit"
-                @update="handleUpdateProperty"
-            />
-            <Options
-                v-if="[true, 'true'].includes(form.options.isEnum)"
-                ref="optionsRef"
-                v-model:form="form"
-                :internal="viewOnly"
-                :editing="isEdit"
-                @update="handleUpdateProperty"
-            />
+        <a-form
+            ref="formRef"
+            layout="vertical"
+            class="h-full"
+            :rules="rules"
+            :model="form"
+            :validate-trigger="['click', 'submit']"
+        >
+            <div class="h-full p-4 space-y-4 bg-gray-100">
+                <Overview
+                    ref="overviewRef"
+                    v-model:form="form"
+                    :internal="viewOnly"
+                    :editing="isEdit"
+                />
 
-            <div v-if="false" class="flex-grow p-4 overflow-y-auto bg-gray-100">
-                <a-form
-                    ref="formRef"
-                    class="ant-form-right-asterix"
-                    layout="vertical"
-                    :rules="rules"
-                    :model="form"
-                    :validate-trigger="['click', 'submit']"
+                <Options
+                    v-if="[true, 'true'].includes(form.options.isEnum)"
+                    ref="optionsRef"
+                    v-model:form="form"
+                    :internal="viewOnly"
+                    :editing="isEdit"
+                />
+
+                <div
+                    v-if="false"
+                    class="flex-grow p-4 overflow-y-auto bg-gray-100"
                 >
-                    <div class="grid grid-cols-2 gap-4">
-                        <a-form-item
-                            label="Name"
-                            :name="['displayName']"
-                            class="ant-form-undo-flex-direction"
-                        >
-                            <a-input
-                                v-model:value="form.displayName"
-                                type="text"
-                                class=""
-                                :disabled="viewOnly"
-                            />
-                        </a-form-item>
-                        <a-form-item
-                            class="ant-form-undo-flex-direction"
-                            :name="['options', 'primitiveType']"
-                            label="Type"
-                        >
-                            <a-select
-                                v-model:value="form.options.primitiveType"
-                                show-search
-                                :disabled="isEdit"
-                                :get-popup-container="
-                                    (target) => target.parentNode
-                                "
-                                :list-height="240"
-                                :filter-option="customFilter"
-                                @change="handleTypeNameChange"
-                            >
-                                <a-select-option
-                                    v-for="(type, index) in attributesTypes"
-                                    :key="type.label"
-                                    :value="type.id"
-                                    :label="type.label"
-                                >
-                                    <span class="flex items-center">
-                                        <AtlanIcon
-                                            class="inline h-4 mr-2 align-middle"
-                                            :icon="type.icon"
-                                        />
-
-                                        <span class="inline align-middle">
-                                            {{ type.label }}
-                                        </span>
-                                    </span>
-                                </a-select-option>
-                            </a-select>
-                        </a-form-item>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4"></div>
-                    <!-- Conditonals ============================================ -->
-
-                    <!-- <pre>{{ finalEnumsList }}</pre> -->
-                    <!-- <pre>{{ form.typeName }}</pre>
-                    <pre>{{ form.enumValues }}</pre> -->
-                    <!-- End of conditonals ========================================= -->
-                    <!-- Applicable Asset type ========================================= -->
-                    <div class="flex">
-                        <div class="relative" style="width: 100%"></div>
-                    </div>
-                    <div class="flex mb-6">
-                        <div class="relative" style="width: 100%">
-                            <a-form-item
-                                :name="[
-                                    'options',
-                                    'customApplicableEntityTypes',
-                                ]"
-                                class="mb-0"
-                            >
-                                <template #label>
-                                    <span>Applicable Asset type</span>
-                                    <a-popover>
-                                        <template #content>
-                                            <div
-                                                class="flex flex-col items-center px-4 py-2 w-60"
-                                            >
-                                                This property will only be
-                                                available for selected asset
-                                                types
-                                            </div>
-                                        </template>
-                                        <AtlanIcon
-                                            icon="Info"
-                                            class="h-3 ml-1"
-                                        />
-                                    </a-popover>
-                                </template>
-                                <div class="w-100">
-                                    <div ref="typeTreeSelect">
-                                        <a-tree-select
-                                            :disabled="viewOnly"
-                                            :value="
-                                                form.options
-                                                    .customApplicableEntityTypes
-                                            "
-                                            no-results-text="No entities found"
-                                            style="width: 100%"
-                                            :tree-data="
-                                                finalApplicableTypeNamesOptions
-                                            "
-                                            :is-leaf="true"
-                                            :multiple="true"
-                                            :async="false"
-                                            tree-checkable
-                                            :placeholder="
-                                                isEdit
-                                                    ? 'Add more types'
-                                                    : 'Select entity types'
-                                            "
-                                            dropdown-class-name="type-select-dd"
-                                            :max-tag-count="5"
-                                            :get-popup-container="
-                                                (target) => target.parentNode
-                                            "
-                                            class="mb-2"
-                                            :allow-clear="false"
-                                            :check-strictly="true"
-                                            :show-checked-strategy="
-                                                CHECKEDSTRATEGY
-                                            "
-                                            @change="
-                                                handleApplicableEntityTypeChange
-                                            "
-                                        >
-                                        </a-tree-select>
-                                    </div>
-                                </div>
-                            </a-form-item>
-                        </div>
-                    </div>
-                    <!-- Applicable Asset type ========================================= -->
-
-                    <div
-                        class="flex items-center justify-around w-full gap-4 p-4 bg-gray-100 border rounded"
+                    <a-form
+                        ref="formRef"
+                        class="ant-form-right-asterix"
+                        layout="vertical"
+                        :rules="rules"
+                        :model="form"
+                        :validate-trigger="['click', 'submit']"
                     >
-                        <div class="w-full">
+                        <div class="grid grid-cols-2 gap-4">
                             <a-form-item
-                                v-if="isMultiValuedSupport"
-                                class="mb-2"
+                                label="Name"
+                                :name="['displayName']"
+                                class="ant-form-undo-flex-direction"
                             >
-                                <div class="flex justify-between">
-                                    <label :for="`${form.name}-isFacet`">
-                                        <span class="flex items-center">
-                                            Allow multiple values
-                                            <a-popover>
-                                                <template #content>
-                                                    <div class="px-4 py-2 w-60">
-                                                        Users will be able to
-                                                        add multiple values
-                                                        while filling
-                                                        <b>
-                                                            {{
-                                                                form.displayName ??
-                                                                'this property.'
-                                                            }}
-                                                        </b>
-                                                    </div>
-                                                </template>
-                                                <AtlanIcon
-                                                    icon="Info"
-                                                    class="h-3 ml-1"
-                                                />
-                                            </a-popover>
-                                        </span>
-                                    </label>
-                                    <a-switch
-                                        :id="`${form.name}-isFacet`"
-                                        v-model:checked="
-                                            form.options.multiValueSelect
-                                        "
-                                        :disabled="isEdit"
-                                        class=""
-                                        :name="`${form.name}-isFacet`"
-                                        size="small"
-                                    />
-                                </div>
+                                <a-input
+                                    v-model:value="form.displayName"
+                                    type="text"
+                                    class=""
+                                    :disabled="viewOnly"
+                                />
                             </a-form-item>
-                            <a-form-item class="mb-2">
-                                <div class="flex justify-between">
-                                    <label :for="`${form.name}-isBadge`">
+                            <a-form-item
+                                class="ant-form-undo-flex-direction"
+                                :name="['options', 'primitiveType']"
+                                label="Type"
+                            >
+                                <a-select
+                                    v-model:value="form.options.primitiveType"
+                                    show-search
+                                    :disabled="isEdit"
+                                    :get-popup-container="
+                                        (target) => target.parentNode
+                                    "
+                                    :list-height="240"
+                                    :filter-option="customFilter"
+                                    @change="handleTypeNameChange"
+                                >
+                                    <a-select-option
+                                        v-for="(type, index) in attributesTypes"
+                                        :key="type.label"
+                                        :value="type.id"
+                                        :label="type.label"
+                                    >
                                         <span class="flex items-center">
-                                            Allow filtering
-                                            <a-popover>
-                                                <template #content>
-                                                    <div class="px-4 py-2 w-60">
-                                                        <b>
-                                                            {{
-                                                                form.displayName ??
-                                                                'This property '
-                                                            }}
-                                                        </b>
-                                                        will be available in
-                                                        asset filtering
-                                                    </div>
-                                                </template>
-                                                <AtlanIcon
-                                                    icon="Info"
-                                                    class="h-3 ml-1"
-                                                />
-                                            </a-popover>
-                                        </span>
-                                    </label>
+                                            <AtlanIcon
+                                                class="inline h-4 mr-2 align-middle"
+                                                :icon="type.icon"
+                                            />
 
-                                    <a-switch
-                                        :id="`${form.name}-isBadge`"
-                                        v-model:checked="
-                                            form.options.allowFiltering
-                                        "
-                                        class=""
-                                        :name="`${form.name}-isBadge`"
-                                        size="small"
-                                    />
-                                </div>
+                                            <span class="inline align-middle">
+                                                {{ type.label }}
+                                            </span>
+                                        </span>
+                                    </a-select-option>
+                                </a-select>
                             </a-form-item>
                         </div>
-                    </div>
-                </a-form>
+                        <div class="grid grid-cols-2 gap-4"></div>
+                        <!-- Conditonals ============================================ -->
+
+                        <!-- <pre>{{ finalEnumsList }}</pre> -->
+                        <!-- <pre>{{ form.typeName }}</pre>
+                    <pre>{{ form.enumValues }}</pre> -->
+                        <!-- End of conditonals ========================================= -->
+                        <!-- Applicable Asset type ========================================= -->
+                        <div class="flex">
+                            <div class="relative" style="width: 100%"></div>
+                        </div>
+                        <div class="flex mb-6">
+                            <div class="relative" style="width: 100%">
+                                <a-form-item
+                                    :name="[
+                                        'options',
+                                        'customApplicableEntityTypes',
+                                    ]"
+                                    class="mb-0"
+                                >
+                                    <template #label>
+                                        <span>Applicable Asset type</span>
+                                        <a-popover>
+                                            <template #content>
+                                                <div
+                                                    class="flex flex-col items-center px-4 py-2 w-60"
+                                                >
+                                                    This property will only be
+                                                    available for selected asset
+                                                    types
+                                                </div>
+                                            </template>
+                                            <AtlanIcon
+                                                icon="Info"
+                                                class="h-3 ml-1"
+                                            />
+                                        </a-popover>
+                                    </template>
+                                    <div class="w-100">
+                                        <div ref="typeTreeSelect">
+                                            <a-tree-select
+                                                :disabled="viewOnly"
+                                                :value="
+                                                    form.options
+                                                        .customApplicableEntityTypes
+                                                "
+                                                no-results-text="No entities found"
+                                                style="width: 100%"
+                                                :tree-data="
+                                                    finalApplicableTypeNamesOptions
+                                                "
+                                                :is-leaf="true"
+                                                :multiple="true"
+                                                :async="false"
+                                                tree-checkable
+                                                :placeholder="
+                                                    isEdit
+                                                        ? 'Add more types'
+                                                        : 'Select entity types'
+                                                "
+                                                dropdown-class-name="type-select-dd"
+                                                :max-tag-count="5"
+                                                :get-popup-container="
+                                                    (target) =>
+                                                        target.parentNode
+                                                "
+                                                class="mb-2"
+                                                :allow-clear="false"
+                                                :check-strictly="true"
+                                                :show-checked-strategy="
+                                                    CHECKEDSTRATEGY
+                                                "
+                                                @change="
+                                                    handleApplicableEntityTypeChange
+                                                "
+                                            >
+                                            </a-tree-select>
+                                        </div>
+                                    </div>
+                                </a-form-item>
+                            </div>
+                        </div>
+                        <!-- Applicable Asset type ========================================= -->
+
+                        <div
+                            class="flex items-center justify-around w-full gap-4 p-4 bg-gray-100 border rounded"
+                        >
+                            <div class="w-full">
+                                <a-form-item
+                                    v-if="isMultiValuedSupport"
+                                    class="mb-2"
+                                >
+                                    <div class="flex justify-between">
+                                        <label :for="`${form.name}-isFacet`">
+                                            <span class="flex items-center">
+                                                Allow multiple values
+                                                <a-popover>
+                                                    <template #content>
+                                                        <div
+                                                            class="px-4 py-2 w-60"
+                                                        >
+                                                            Users will be able
+                                                            to add multiple
+                                                            values while filling
+                                                            <b>
+                                                                {{
+                                                                    form.displayName ??
+                                                                    'this property.'
+                                                                }}
+                                                            </b>
+                                                        </div>
+                                                    </template>
+                                                    <AtlanIcon
+                                                        icon="Info"
+                                                        class="h-3 ml-1"
+                                                    />
+                                                </a-popover>
+                                            </span>
+                                        </label>
+                                        <a-switch
+                                            :id="`${form.name}-isFacet`"
+                                            v-model:checked="
+                                                form.options.multiValueSelect
+                                            "
+                                            :disabled="isEdit"
+                                            class=""
+                                            :name="`${form.name}-isFacet`"
+                                            size="small"
+                                        />
+                                    </div>
+                                </a-form-item>
+                                <a-form-item class="mb-2">
+                                    <div class="flex justify-between">
+                                        <label :for="`${form.name}-isBadge`">
+                                            <span class="flex items-center">
+                                                Allow filtering
+                                                <a-popover>
+                                                    <template #content>
+                                                        <div
+                                                            class="px-4 py-2 w-60"
+                                                        >
+                                                            <b>
+                                                                {{
+                                                                    form.displayName ??
+                                                                    'This property '
+                                                                }}
+                                                            </b>
+                                                            will be available in
+                                                            asset filtering
+                                                        </div>
+                                                    </template>
+                                                    <AtlanIcon
+                                                        icon="Info"
+                                                        class="h-3 ml-1"
+                                                    />
+                                                </a-popover>
+                                            </span>
+                                        </label>
+
+                                        <a-switch
+                                            :id="`${form.name}-isBadge`"
+                                            v-model:checked="
+                                                form.options.allowFiltering
+                                            "
+                                            class=""
+                                            :name="`${form.name}-isBadge`"
+                                            size="small"
+                                        />
+                                    </div>
+                                </a-form-item>
+                            </div>
+                        </div>
+                    </a-form>
+                </div>
             </div>
-        </div>
+        </a-form>
 
         <!-- End of Form =============================================================================================================== -->
     </a-drawer>
@@ -296,7 +312,10 @@
     import Header from '@/governance/custom-metadata/propertyDrawer/header.vue'
     import Overview from '@/governance/custom-metadata/propertyDrawer/overview/overview.vue'
     import Options from '@/governance/custom-metadata/propertyDrawer/options/options.vue'
-    import { executeCreateEnum } from '@/governance/custom-metadata/propertyDrawer/options/useCreateEnum'
+    import {
+        executeCreateEnum,
+        validate as enumFormValidate,
+    } from '@/governance/custom-metadata/propertyDrawer/options/useCreateEnum'
 
     const CHECKEDSTRATEGY = TreeSelect.SHOW_PARENT
 
@@ -325,7 +344,7 @@
             const loading = ref<boolean>(false)
             const isEdit = ref<boolean>(false)
 
-            const formRef = ref(null)
+            const formRef = ref()
             const newEnumFormRef = ref(null)
             const propertyIndex = ref(-1)
             const typeTreeSelect = ref(null)
@@ -420,12 +439,19 @@
             const handleUpdateProperty = async () => {
                 // before create or update, check if is in createEnum, first create enum then enum will continue property flow if successful
                 // validate first
-                await overviewRef.value.validate()
-                if (
+
+                const isCreatingEnum =
                     [true, 'true'].includes(form.value.options.isEnum) &&
                     form.value.options.enumType === 'New Option'
-                )
+
+                if (isCreatingEnum) {
+                    const promises = [
+                        formRef.value.validate(),
+                        enumFormValidate(),
+                    ]
+                    await Promise.allSettled(promises)
                     await executeCreateEnum()
+                } else await formRef.value.validate()
 
                 loading.value = true
 

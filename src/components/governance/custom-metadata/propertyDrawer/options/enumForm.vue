@@ -70,6 +70,7 @@
             </div>
             <template v-if="enumEdit">
                 <MultiInput
+                    ref="multiInput"
                     placeholder='Enter values separated by a  ";" or "↵"'
                     :value="enumValueModel"
                     delimiter=";"
@@ -132,11 +133,11 @@
             disable: { type: Boolean, required: true },
             editAccess: { type: Boolean, default: true },
         },
-        emits: ['change', 'update'],
+        emits: ['change'],
         setup(_, { emit }) {
             const createEnum = ref<boolean>(false)
             const selectedEnum = ref()
-
+            const enumEdit = ref<boolean>(false)
             // enums
             const enumSearchValue = ref('')
             const oldEnumSeardValue = ref('')
@@ -192,11 +193,21 @@
                 return []
             })
 
+            const handleChange = (v) => {
+                emit(
+                    'change',
+                    v,
+                    selectedEnumOptions.value.map((_v) => _v.value)
+                )
+                if (enumEdit.value) enumEdit.value = false
+                if (createEnum.value) createEnum.value = false
+            }
+
             const handleEnumCreateSuccess = (newEnum) => {
                 createEnum.value = false
                 selectedEnum.value = newEnum.name
+                handleChange(selectedEnum.value)
                 refetchTypedef('enum')
-                emit('update')
             }
 
             const enumValueModel = ref<string[]>([])
@@ -209,8 +220,6 @@
             }
 
             /** ? Edit Enum properties logic starts here   */
-
-            const enumEdit = ref<boolean>(false)
 
             const handleEditEnum = () => {
                 initEnumModel()
@@ -272,16 +281,6 @@
                     reset()
                 }
             })
-
-            const handleChange = (v) => {
-                emit(
-                    'change',
-                    v,
-                    selectedEnumOptions.value.map((_v) => _v.value)
-                )
-                if (enumEdit.value) enumEdit.value = false
-                if (createEnum.value) createEnum.value = false
-            }
 
             const handleEnumSearch = (searchValue) => {
                 if (searchValue) {

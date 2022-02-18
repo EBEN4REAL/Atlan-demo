@@ -120,7 +120,9 @@
                         <EditableDescription
                             :asset-item="record.item"
                             :tooltip-text="text"
-                            :allow-editing="allowDescriptionUpdate"
+                            :allow-editing="
+                                selectedAssetUpdatePermission(record.item, true)
+                            "
                         />
                     </template>
                 </template>
@@ -184,15 +186,7 @@
 
 <script lang="ts">
     // Vue
-    import {
-        defineComponent,
-        watch,
-        ref,
-        Ref,
-        nextTick,
-        inject,
-        computed,
-    } from 'vue'
+    import { defineComponent, watch, ref, Ref, nextTick, computed } from 'vue'
 
     import { useDebounceFn } from '@vueuse/core'
     import { useRoute } from 'vue-router'
@@ -218,8 +212,7 @@
     // Interfaces
     import { assetInterface } from '~/types/assets/asset.interface'
     import EditableDescription from '@common/assets/profile/tabs/columns/editableDescription.vue'
-    import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
-    import { ENTITY_UPDATE } from '~/services/meta/entity/key'
+    import useEvaluate from '~/composables/auth/useEvaluate'
 
     export default defineComponent({
         components: {
@@ -244,14 +237,6 @@
             const columnFromUrl: Ref<assetInterface[]> = ref([])
 
             const openDrawerOnLoad = ref<boolean>(false)
-            const actions = inject('actions', ref([]))
-            // A flag indicating whether the description can be updated or not.
-            const allowDescriptionUpdate = computed(
-                () =>
-                    actions.value.findIndex(
-                        (action) => action === ENTITY_UPDATE
-                    ) !== -1
-            )
 
             const {
                 selectedAsset,
@@ -261,6 +246,7 @@
                 certificateStatusMessage,
                 dataTypeCategoryImage,
                 isScrubbed,
+                selectedAssetUpdatePermission,
             } = useAssetInfo()
 
             const aggregationAttributeName = 'dataType'
@@ -426,6 +412,13 @@
                 },
             })
 
+            const bodyEvaluation = ref({})
+            const { refresh: refreshEvaluate } = useEvaluate(
+                bodyEvaluation,
+                false,
+                true
+            ) // true for secondaryEvaluations
+
             // rowClassName Antd
             const rowClassName = (record: { key: null }) =>
                 record.key === selectedRow.value
@@ -476,6 +469,15 @@
                     } else {
                         filterColumnsList()
                     }
+
+                    bodyEvaluation.value = {
+                        entities: list.value.map((item) => ({
+                            typeName: item.typeName,
+                            entityGuid: item.guid,
+                            action: 'ENTITY_UPDATE',
+                        })),
+                    }
+                    refreshEvaluate()
                 }
             )
 
@@ -549,7 +551,7 @@
                         key: 'description',
                     },
                 ],
-                allowDescriptionUpdate,
+                selectedAssetUpdatePermission,
             }
         },
     })

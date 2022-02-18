@@ -1,70 +1,11 @@
 <template>
-    <a-tooltip
-        v-if="!isEditing && localDescription.length > 0"
-        :title="truncated ? tooltipText : undefined"
-        :placement="placement"
-        :destroy-tooltip-on-hide="true"
-        :overlay-style="{ maxWidth: width }"
-        :color="tooltipColor"
-        :overlay-class-name="tooltipColor === 'white' ? 'tooltip-black' : ''"
-    >
-        <div
-            :class="classes"
-            :style="{ maxWidth: clampPercentage, 'line-break': 'anywhere' }"
-        >
-            <template v-if="routeTo">
-                <router-link
-                    :to="routeTo"
-                    :target="shouldOpenInNewTab ? '_blank' : 'self'"
-                >
-                    <a-typography-paragraph
-                        v-if="allowEditing"
-                        class="cursor-text"
-                        :class="classes"
-                        :ellipsis="{
-                            rows: rows,
-                            onEllipsis: () => (truncated = !truncated),
-                        }"
-                        :content="localDescription"
-                        @click.stop="handleEdit"
-                    />
-                    <a-typography-paragraph
-                        v-else
-                        class="cursor-text"
-                        :class="classes"
-                        :ellipsis="{
-                            rows: rows,
-                            onEllipsis: () => (truncated = !truncated),
-                        }"
-                        :content="localDescription"
-                    />
-                </router-link>
-            </template>
-            <template v-else>
-                <a-typography-paragraph
-                    v-if="allowEditing"
-                    class="cursor-text"
-                    :class="classes"
-                    :ellipsis="{
-                        rows: rows,
-                        onEllipsis: () => (truncated = !truncated),
-                    }"
-                    :content="localDescription"
-                    @click.stop="handleEdit"
-                />
-                <a-typography-paragraph
-                    v-else
-                    class="cursor-text"
-                    :class="classes"
-                    :ellipsis="{
-                        rows: rows,
-                        onEllipsis: () => (truncated = !truncated),
-                    }"
-                    :content="localDescription"
-                />
-            </template>
-        </div>
-    </a-tooltip>
+    <div v-if="!allowEditing"></div>
+    <Tooltip
+        v-else-if="!isEditing && localDescription.length > 0"
+        :tooltip-text="localDescription"
+        classes="cursor-text"
+        @click.stop="handleEdit"
+    />
     <div
         v-else-if="!isEditing && localDescription.length === 0"
         class="cursor-text text-transparent hover:text-gray-400"
@@ -72,7 +13,7 @@
     >
         <p>{{ allowEditing ? 'Add a description' : '' }}</p>
     </div>
-    <div v-else @click.stop>
+    <div v-else class="inline-editable" @click.stop>
         <a-textarea
             ref="descriptionRef"
             v-model:value="localDescription"
@@ -106,9 +47,11 @@
 <script lang="ts">
     import { defineComponent, nextTick, ref, toRefs, unref } from 'vue'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
+    import Tooltip from '@common/ellipsis/index.vue'
 
     export default defineComponent({
         name: 'EditableDescription',
+        components: { Tooltip },
         props: {
             assetItem: {
                 type: Object,
@@ -247,15 +190,5 @@
     }
     :global(.tooltip-black .ant-tooltip-inner) {
         @apply p-3 text-gray-700 whitespace-pre-line;
-    }
-
-    .editable {
-        :global(.ant-input) {
-            @apply border-none bg-transparent shadow-none px-0 py-0 rounded-none !important;
-            min-height: 22px !important;
-        }
-        :global(.ant-input:focus) {
-            @apply border-none bg-white shadow-lg px-1 py-0 rounded-md !important;
-        }
     }
 </style>

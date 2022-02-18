@@ -77,7 +77,8 @@
                     v-if="
                         (selectedAsset.typeName == 'View' ||
                             selectedAsset.typeName == 'MaterialisedView') &&
-                        definition(selectedAsset)
+                        definition(selectedAsset) &&
+                        definition(selectedAsset) !== '[]'
                     "
                     :sql="definition(selectedAsset)"
                 >

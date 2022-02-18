@@ -64,6 +64,7 @@ export const discoveryFilters = [
         exclude: false,
         analyticsKey: 'term',
     },
+
     {
         id: 'properties',
         label: 'PROPERTIES',
@@ -140,6 +141,15 @@ export const discoveryFilters = [
                 displayName: 'Is Archived',
                 typeName: 'boolean',
                 description: 'All assets which have been archived',
+                isMandatory: true,
+            },
+            {
+                name: 'announcementType',
+                displayName: 'Announcement',
+                typeName: 'string',
+                subTypeName: 'announcement',
+                description:
+                    'All assets which have the selected announcement type',
                 isMandatory: true,
             },
         ],

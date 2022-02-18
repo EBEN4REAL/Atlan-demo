@@ -1,7 +1,8 @@
 <template>
     <div
         v-if="slackEnabled"
-        class="flex items-center px-1 overflow-hidden rounded-full cursor-pointer hover:scale-125 slack-cta hover:bg-primary-light"
+        class="flex items-center  overflow-hidden rounded-full cursor-pointer   "
+        :class="{'hover:scale-125 px-1 slack-cta hover:bg-primary-light':ctaText?.length}"
         @click="handleClick"
     >
         <AtlanIcon

@@ -38,6 +38,7 @@
                     v-if="!editPermission && role !== 'Guest'"
                     class="flex items-center justify-end mx-2 space-x-2 mt-5"
                 >
+                    <AdminList></AdminList>
                     <a-button @click="handleCancelRequest">Cancel</a-button>
                     <a-button
                         type="primary"
@@ -109,6 +110,7 @@
 <script lang="ts">
     import {
         defineComponent,
+        defineAsyncComponent,
         PropType,
         watch,
         computed,
@@ -139,6 +141,9 @@
             CertificatePill,
             CertificateFacet,
             Shortcut,
+            AdminList: defineAsyncComponent(
+                () => import('@/common/info/adminList.vue')
+            ),
         },
         props: {
             modelValue: {
@@ -175,11 +180,11 @@
                 required: false,
                 default: true,
             },
-            showPopover:{
+            showPopover: {
                 type: Boolean,
                 required: false,
                 default: true,
-            }
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {

@@ -217,8 +217,8 @@
     const { tenantSlackStatus, userSlackStatus } = toRefs(store)
 
     /* eslint-disable no-underscore-dangle */
-    const sortResources = (r) =>
-        r?.sort((a, b) =>
+    const sortResources = (_resources) =>
+        _resources?.sort((a, b) =>
             (a.attributes.__modificationTimestamp ?? a.attributes.__timestamp) >
             (b.attributes.__modificationTimestamp ?? b.attributes.__timestamp)
                 ? -1

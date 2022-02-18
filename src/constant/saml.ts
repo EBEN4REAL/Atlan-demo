@@ -130,6 +130,17 @@ export const topSAMLProviders = [
         defaultConfig: {
             ...googleDefaultConfig,
         },
+        samlAssertionUrlSuffix: '/broker/google/endpoint',
+        serviceProviderMetadata: [
+            {
+                label: 'ACS URL',
+                suffix: ['/broker/google/endpoint'],
+            },
+            {
+                label: 'Entity ID',
+                suffix: [''],
+            },
+        ],
     },
     {
         title: 'Azure AD',
@@ -142,6 +153,20 @@ export const topSAMLProviders = [
         defaultConfig: {
             ...azureDefaultConfig,
         },
+        samlAssertionUrlSuffix: '/broker/azure/endpoint/clients/atlan-saml',
+        serviceProviderMetadata: [
+            {
+                label: 'Identifier (Entity ID)',
+                suffix: [''],
+            },
+            {
+                label: 'Reply URL (Assertion Consumer Service URL)',
+                suffix: [
+                    '/broker/azure/endpoint/clients/atlan-saml',
+                    '/broker/azure/endpoint',
+                ],
+            },
+        ],
     },
     {
         title: 'Okta',
@@ -154,6 +179,17 @@ export const topSAMLProviders = [
         defaultConfig: {
             ...oktaDefaultConfig,
         },
+        samlAssertionUrlSuffix: '/broker/okta/endpoint/clients/atlan-saml',
+        serviceProviderMetadata: [
+            {
+                label: 'Single sign on URL',
+                suffix: ['/broker/okta/endpoint/clients/atlan-saml'],
+            },
+            {
+                label: 'Audience URI (SP Entity ID)',
+                suffix: [''],
+            },
+        ],
     },
     {
         title: 'Jumpcloud',
@@ -167,6 +203,21 @@ export const topSAMLProviders = [
             ...jumpCloudDefaultConfig,
         },
         imageClass: 'w-8 h-5',
+        samlAssertionUrlSuffix: '/broker/jumpcloud/endpoint/clients/atlan-saml',
+        serviceProviderMetadata: [
+            {
+                label: 'IdP Entity ID',
+                suffix: ['/broker/jumpcloud/endpoint'],
+            },
+            {
+                label: 'SP Entity ID',
+                suffix: [''],
+            },
+            {
+                label: 'ACS URL',
+                suffix: ['/broker/jumpcloud/endpoint/clients/atlan-saml'],
+            },
+        ],
     },
 ]
 export const customSamlProvider = {
@@ -176,6 +227,17 @@ export const customSamlProvider = {
     ctaText: {
         default: 'Add',
     },
+    samlAssertionUrlSuffix: '/endpoint/clients/atlan-saml',
+    serviceProviderMetadata: [
+        {
+            label: 'Atlan SAML Assertion URL',
+            suffix: ['/endpoint/clients/atlan-saml'],
+        },
+        {
+            label: 'Atlan Audience URI (SP Entity ID)',
+            suffix: [''],
+        },
+    ],
 }
 
 export const mapperList = [

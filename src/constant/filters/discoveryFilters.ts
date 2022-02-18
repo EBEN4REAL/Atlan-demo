@@ -66,7 +66,7 @@ export const discoveryFilters = [
     },
     {
         id: 'properties',
-        label: 'Properties',
+        label: 'PROPERTIES',
         component: 'properties',
         attributes: [
             {
@@ -275,7 +275,7 @@ export const glossaryFilters = [
     },
     {
         id: 'properties',
-        label: 'Properties',
+        label: 'PROPERTIES',
         component: 'properties',
         attributes: [
             {

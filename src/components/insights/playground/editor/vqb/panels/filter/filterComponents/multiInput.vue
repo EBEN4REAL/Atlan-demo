@@ -9,7 +9,10 @@
             style="height: 32px !important; z-index: 2"
             placeholder="Enter Multiple Values"
             @change="handleChange"
-        />
+            :open="false"
+        >
+            <template #dropdownRender="{ menuNode: menu }" />
+        </a-select>
         <div class="absolute z-20 right-2 trigger-icon">
             <CustomVariableTrigger
                 v-if="!(readOnly && !subpanel?.filter?.isVariable)"

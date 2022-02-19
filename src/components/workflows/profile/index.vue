@@ -13,21 +13,23 @@
             :destroy-inactive-tab-pane="true"
             @change="handleChangeTab"
         >
-            <a-tab-pane
-                v-for="tab in workflowTabs"
-                :key="tab.id"
-                :tab="tab.label"
-                class="h-auto"
-            >
-                <component
-                    :is="tab.component"
-                    :key="`${tab.id}_${searchDirtyTimestamp}`"
-                    :workflowObject="workflowObject"
-                    :runId="runId"
-                    :packageObject="packageObject"
-                    :workflowName="workflowObject?.metadata?.name"
-                ></component>
-            </a-tab-pane>
+            <template v-for="tab in workflowTabs" :key="tab.id">
+                <a-tab-pane
+                    v-if="checkVisibility(tab)"
+                    :key="tab.id"
+                    :tab="tab.label"
+                    class="h-auto"
+                >
+                    <component
+                        :is="tab.component"
+                        :key="`${tab.id}_${searchDirtyTimestamp}`"
+                        :workflowObject="workflowObject"
+                        :runId="runId"
+                        :packageObject="packageObject"
+                        :workflowName="workflowObject?.metadata?.name"
+                    ></component>
+                </a-tab-pane>
+            </template>
         </a-tabs>
     </div>
 </template>
@@ -48,6 +50,7 @@
 
     import WorkflowHeader from './header/index.vue'
     import { workflowTabs } from '~/constant/workflowTabs'
+    import ABInternal from '~/composables/utils/abInternal'
 
     export default defineComponent({
         name: 'WorkflowProfile',
@@ -106,7 +109,7 @@
                     },
                 })
             }
-
+            const { checkVisibility } = ABInternal()
             provide('newrun', handleNewRun)
 
             return {
@@ -120,6 +123,7 @@
                 route,
                 searchDirtyTimestamp,
                 runId,
+                checkVisibility,
             }
         },
     })

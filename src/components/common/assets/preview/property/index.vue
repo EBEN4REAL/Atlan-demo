@@ -3,7 +3,15 @@
         <div
             class="flex items-center justify-between px-5 py-2 border-b border-gray-200 bg-gray-50"
         >
-            <span class="font-semibold text-gray-500">Properties</span>
+            <span class="flex items-center">
+                <PreviewTabsIcon
+                    :icon="tab.icon"
+                    :image="tab.image"
+                    :emoji="tab.emoji"
+                    height="h-4"
+                />
+                <span class="font-semibold text-gray-500 ml-1">Properties</span>
+            </span>
         </div>
         <div class="flex flex-col px-5 pt-3 overflow-auto gap-y-5">
             <div
@@ -256,6 +264,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import { capitalizeFirstLetter } from '~/utils/string'
     import { copyToClipboard } from '~/utils/clipboard'
+    import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
 
     export default defineComponent({
         name: 'PropertiesWidget',
@@ -263,6 +272,7 @@
             UserPill,
             PopOverUser,
             ConnectionInfo,
+            PreviewTabsIcon,
         },
         props: {
             selectedAsset: {
@@ -276,6 +286,10 @@
             page: {
                 type: String,
                 required: true,
+            },
+            tab: {
+                type: Object,
+                required: false,
             },
         },
         setup() {

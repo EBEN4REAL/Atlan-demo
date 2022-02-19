@@ -3,7 +3,15 @@
         <div
             class="flex items-center justify-between px-5 py-2 border-b border-gray-200 bg-gray-50"
         >
-            <span class="font-semibold text-gray-500">Columns</span>
+            <span class="flex items-center">
+                <PreviewTabsIcon
+                    :icon="tab.icon"
+                    :image="tab.image"
+                    :emoji="tab.emoji"
+                    height="h-4"
+                />
+                <span class="font-semibold text-gray-500 ml-1">Columns</span>
+            </span>
         </div>
 
         <div class="px-5 pt-3 pb-0">
@@ -102,6 +110,7 @@
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import useEvaluate from '~/composables/auth/useEvaluate'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
 
     export default defineComponent({
         name: 'ColumnWidget',
@@ -113,12 +122,17 @@
             Sorting,
             EmptyView,
             ErrorView,
+            PreviewTabsIcon,
         },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: false,
                 default: () => {},
+            },
+            tab: {
+                type: Object,
+                required: false,
             },
         },
         setup(props) {

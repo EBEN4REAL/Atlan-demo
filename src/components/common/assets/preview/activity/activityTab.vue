@@ -3,7 +3,15 @@
         <div
             class="flex items-center justify-between px-5 bg-gray-50 py-2 border-b border-gray-200"
         >
-            <span class="font-semibold text-gray-500">Activity</span>
+            <span class="flex items-center">
+                <PreviewTabsIcon
+                    :icon="tab.icon"
+                    :image="tab.image"
+                    :emoji="tab.emoji"
+                    height="h-4"
+                />
+                <span class="font-semibold text-gray-500 ml-1">Activity</span>
+            </span>
 
             <AtlanIcon
                 icon="Reload"
@@ -159,14 +167,24 @@
     import { useAssetAuditSearch } from '~/composables/discovery/useAssetAuditSearch'
     import ActivityTypeSelect from '@/common/select/activityType.vue'
     import { activityTypeMap } from '~/constant/activityType'
+    import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
 
     export default defineComponent({
         name: 'ActivityTab',
-        components: { ActivityType, EmptyScreen, ActivityTypeSelect },
+        components: {
+            ActivityType,
+            EmptyScreen,
+            ActivityTypeSelect,
+            PreviewTabsIcon,
+        },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: true,
+            },
+            tab: {
+                type: Object,
+                required: false,
             },
         },
 

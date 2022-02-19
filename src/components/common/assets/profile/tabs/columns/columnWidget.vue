@@ -117,7 +117,13 @@
                         <span class="data-type">{{ text?.toUpperCase() }}</span>
                     </template>
                     <template v-else-if="column.key === 'description'">
-                        <Tooltip :tooltip-text="text" />
+                        <EditableDescription
+                            :asset-item="record.item"
+                            :tooltip-text="text"
+                            :allow-editing="
+                                selectedAssetUpdatePermission(record.item, true)
+                            "
+                        />
                     </template>
                 </template>
             </a-table>
@@ -180,7 +186,7 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, watch, computed, ref, Ref, nextTick } from 'vue'
+    import { defineComponent, watch, ref, Ref, nextTick, computed } from 'vue'
 
     import { useDebounceFn } from '@vueuse/core'
     import { useRoute } from 'vue-router'
@@ -205,9 +211,12 @@
 
     // Interfaces
     import { assetInterface } from '~/types/assets/asset.interface'
+    import EditableDescription from '@common/assets/profile/tabs/columns/editableDescription.vue'
+    import useEvaluate from '~/composables/auth/useEvaluate'
 
     export default defineComponent({
         components: {
+            EditableDescription,
             SearchAdvanced,
             AssetDrawer,
             EmptyView,
@@ -237,6 +246,7 @@
                 certificateStatusMessage,
                 dataTypeCategoryImage,
                 isScrubbed,
+                selectedAssetUpdatePermission,
             } = useAssetInfo()
 
             const aggregationAttributeName = 'dataType'
@@ -402,6 +412,13 @@
                 },
             })
 
+            const bodyEvaluation = ref({})
+            const { refresh: refreshEvaluate } = useEvaluate(
+                bodyEvaluation,
+                false,
+                true
+            ) // true for secondaryEvaluations
+
             // rowClassName Antd
             const rowClassName = (record: { key: null }) =>
                 record.key === selectedRow.value
@@ -452,6 +469,15 @@
                     } else {
                         filterColumnsList()
                     }
+
+                    bodyEvaluation.value = {
+                        entities: list.value.map((item) => ({
+                            typeName: item.typeName,
+                            entityGuid: item.guid,
+                            action: 'ENTITY_UPDATE',
+                        })),
+                    }
+                    refreshEvaluate()
                 }
             )
 
@@ -525,6 +551,7 @@
                         key: 'description',
                     },
                 ],
+                selectedAssetUpdatePermission,
             }
         },
     })

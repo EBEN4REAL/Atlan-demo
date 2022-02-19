@@ -50,27 +50,26 @@ jobs:
 
       - name: Check out branch
         uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.my_pat }}
-          ref: ${{ github.ref }}
+      #   with:
+      #     ref: ${{ github.ref }}
 
-      - name: "cat package.json"
-        run: cat ./package.json
+      # - name: "cat package.json"
+      #   run: cat ./package.json
 
-      - name: "Setup Node.js"
-        uses: "actions/setup-node@v1"
-        with:
-          node-version: 12
+      # - name: "Setup Node.js"
+      #   uses: "actions/setup-node@v1"
+      #   with:
+      #     node-version: 12
 
-      - name: "Automated Version Bump"
-        uses: "phips28/gh-action-bump-version@master"
-        with:
-          tag-prefix: ""
-        env:
-          GITHUB_TOKEN: ${{ secrets.my_pat }}
+      # - name: "Automated Version Bump"
+      #   uses: "phips28/gh-action-bump-version@master"
+      #   with:
+      #     tag-prefix: ""
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.my_pat }}
 
-      - name: "cat package.json"
-        run: cat ./package.json
+      # - name: "cat package.json"
+      #   run: cat ./package.json
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v2.0.1

@@ -298,6 +298,7 @@ export function useBody(
 
                 break
             }
+
             case 'typeName': {
                 if (filterObject) {
                     if (filterObject !== '__all') {

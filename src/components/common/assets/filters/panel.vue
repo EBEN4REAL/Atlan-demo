@@ -35,8 +35,11 @@
                                 {{ item?.options?.emoji }}
                             </span>
                             <span
-                                class="w-full text-xs uppercase text-gray hover:text-primary title"
+                                class="w-full text-xs text-gray hover:text-primary title"
                                 style="letter-spacing: 0.07em"
+                                :class="{
+                                    uppercase: item?.component !== 'properties',
+                                }"
                             >
                                 <Truncate
                                     :tooltip-text="item.label"

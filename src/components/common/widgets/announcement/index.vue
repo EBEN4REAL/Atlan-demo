@@ -9,82 +9,91 @@
             :item="selectedAsset"
             class="mb-1"
         ></AssetTitleCtx>
-        <div class="flex justify-between">
-            <div class="flex flex-col w-full">
-                <div class="flex items-center font-bold text-gray-700">
+        <div class="flex flex-col w-full">
+            <div class="flex items-center justify-between mb-1">
+                <div class="flex items-center text-gray-700 capitalize">
                     <AtlanIcon
                         :icon="icon"
-                        class="mr-2 h-4 mb-0.5"
+                        class="mr-1 h-5 mb-0.5"
                         style="min-width: 1rem"
                     ></AtlanIcon>
-                    {{ announcementTitle(selectedAsset) }}
+                    <span class=""> {{ announcementType(selectedAsset) }}</span>
                 </div>
                 <div
-                    v-linkified="{
-                        className: 'text-primary',
-                        target: '_blank',
-                    }"
-                    class="text-gray-500 break-words whitespace-pre-wrap"
+                    v-if="
+                        selectedAssetUpdatePermission(selectedAsset) &&
+                        allowEdit
+                    "
                 >
-                    {{ announcementMessage(selectedAsset) }}
-                </div>
-            </div>
-            <div
-                v-if="selectedAssetUpdatePermission(selectedAsset) && allowEdit"
-            >
-                <a-dropdown trigger="click" placement="bottomRight">
-                    <div>
-                        <AtlanIcon
-                            icon="KebabMenu"
-                            class="h-4 m-0 cursor-pointer hover:text-primary"
-                        />
-                    </div>
-                    <!-- <a-button
+                    <a-dropdown trigger="click" placement="bottomRight">
+                        <div>
+                            <AtlanIcon
+                                icon="KebabMenu"
+                                class="h-4 m-0 cursor-pointer hover:text-primary"
+                            />
+                        </div>
+                        <!-- <a-button
                         class="px-2 bg-transparent border-none shadow-none hover:bg-white hover:shadow-sm"
                     >
                     </a-button> -->
 
-                    <template #overlay>
-                        <a-menu mode="vertical">
-                            <a-menu-item key="edit">
-                                <AddAnnouncementModal
-                                    :asset="selectedAsset"
-                                    :updating="true"
-                                    ><template #trigger>
-                                        <div class="flex items-center">
-                                            <AtlanIcon
-                                                icon="Edit"
-                                                class="h-4 mr-2"
-                                            />
-                                            Edit
-                                        </div></template
-                                    ></AddAnnouncementModal
+                        <template #overlay>
+                            <a-menu mode="vertical">
+                                <a-menu-item key="edit">
+                                    <AddAnnouncementModal
+                                        :asset="selectedAsset"
+                                        :updating="true"
+                                        ><template #trigger>
+                                            <div class="flex items-center">
+                                                <AtlanIcon
+                                                    icon="Edit"
+                                                    class="h-4 mr-2"
+                                                />
+                                                Edit
+                                            </div></template
+                                        ></AddAnnouncementModal
+                                    >
+                                </a-menu-item>
+                                <a-menu-item key="delete">
+                                    <DeleteAnnouncementModal
+                                        :asset="selectedAsset"
+                                        :edit-permission="
+                                            selectedAssetUpdatePermission(
+                                                selectedAsset
+                                            )
+                                        "
+                                        ><template #trigger>
+                                            <div
+                                                class="flex items-center text-red-500"
+                                            >
+                                                <AtlanIcon
+                                                    icon="Delete"
+                                                    class="h-4 mr-2"
+                                                />
+                                                Delete
+                                            </div></template
+                                        ></DeleteAnnouncementModal
+                                    ></a-menu-item
                                 >
-                            </a-menu-item>
-                            <a-menu-item key="delete">
-                                <DeleteAnnouncementModal
-                                    :asset="selectedAsset"
-                                    :edit-permission="
-                                        selectedAssetUpdatePermission(
-                                            selectedAsset
-                                        )
-                                    "
-                                    ><template #trigger>
-                                        <div
-                                            class="flex items-center text-red-500"
-                                        >
-                                            <AtlanIcon
-                                                icon="Delete"
-                                                class="h-4 mr-2"
-                                            />
-                                            Delete
-                                        </div></template
-                                    ></DeleteAnnouncementModal
-                                ></a-menu-item
-                            >
-                        </a-menu>
-                    </template>
-                </a-dropdown>
+                            </a-menu>
+                        </template>
+                    </a-dropdown>
+                </div>
+            </div>
+            <div class="flex items-center justify-between mb-1">
+                <div class="flex items-center font-bold text-gray-700">
+                    {{ announcementTitle(selectedAsset) }}
+                </div>
+            </div>
+
+            <div
+                v-linkified="{
+                    className: 'text-primary',
+                    target: '_blank',
+                }"
+                class="text-gray-500 break-words whitespace-pre-wrap"
+            >
+                {{ announcementMessage(selectedAsset) }}
             </div>
         </div>
 

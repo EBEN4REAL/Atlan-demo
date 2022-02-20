@@ -76,13 +76,34 @@
                         "
                         class="flex items-center mt-1 text-gray-700"
                     >
-                        <span
-                            >{{getTermsAndCategoriesDetail(log.detail.guid)?.attributes?.name??''}}</span
-                        >
-                        (<span class="tracking-wide text-gray-500 uppercase">{{
-                            glossaryLabel[log?.typeName]
-                        }}</span
-                        >)
+                        <div class="w-4 mr-1">
+                            <AtlanIcon
+                                :icon="
+                                    getEntityStatusIcon(
+                                        log.typeName,
+                                        certificateStatus(
+                                            getTermsAndCategoriesDetail(
+                                                log.detail.guid ??
+                                                    log.detail?.entityGuid ??
+                                                    log?.entityId
+                                            )
+                                        )
+                                    )
+                                "
+                                :style="iconSize"
+                                class="self-center align-text-bottom text-gray-500"
+                            />
+                        </div>
+                        <Tooltip
+                            :tooltip-text="
+                                getTermsAndCategoriesDetail(
+                                    log.detail.guid ??
+                                        log.detail?.entityGuid ??
+                                        log?.entityId
+                                )?.attributes?.name ?? ''
+                            "
+                            :classes="`font-bold`"
+                        />
                     </div>
 
                     <div class="flex items-center mt-1 text-gray-500">
@@ -178,10 +199,13 @@
     import { default as glossaryLabel } from '@/glossary/constants/assetTypeLabel'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import { MinimalAttributes } from '~/constant/projection'
+    import useGlossaryData from '~/composables/glossary2/useGlossaryData'
+    import Tooltip from '@/common/ellipsis/index.vue'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         name: 'ActivityTab',
-        components: { ActivityType, EmptyScreen, ActivityTypeSelect },
+        components: { ActivityType, EmptyScreen, ActivityTypeSelect, Tooltip },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -193,6 +217,7 @@
             const { selectedAsset: item } = toRefs(props)
             const params = reactive({ count: 10 })
 
+            const { getEntityStatusIcon } = useGlossaryData()
             const limit = ref(10)
             const offset = ref(0)
             const fetchMoreAuditParams = reactive({ count: 10, startKey: '' })
@@ -203,6 +228,7 @@
             const facets = ref()
             const facetsGTC = ref()
             const termAndCategoriesList = ref()
+            const { certificateStatus, title } = useAssetInfo()
 
             if (
                 ['Table', 'View', 'AtlasGlossary'].includes(item.value.typeName)
@@ -229,7 +255,9 @@
                     guidList: [],
                 }
                 auditList.value.forEach((el) => {
-                    facetsGTC.value.guidList.push(el.detail.guid)
+                    if (el?.detail?.guid) {
+                        facetsGTC.value.guidList.push(el.detail.guid)
+                    }
                 })
                 const dependentKeyGTC = ref('term&categories')
                 const {
@@ -410,6 +438,9 @@
                 handleActivityTypeChange,
                 glossaryLabel,
                 getTermsAndCategoriesDetail,
+                getEntityStatusIcon,
+                certificateStatus,
+                title,
             }
         },
     })

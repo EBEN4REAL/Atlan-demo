@@ -1,4 +1,4 @@
-import { ref, inject } from 'vue'
+import { ref, inject, watch } from 'vue'
 import { message } from 'ant-design-vue'
 import { whenever } from '@vueuse/core'
 import updateAsset from '~/composables/discovery/updateAsset'
@@ -74,16 +74,23 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         }
     }
 
-    if (['Query'].includes(entity.value.typeName)) {
-        entity.value.attributes = {
-            ...entity.value.attributes,
-            parentQualifiedName: attributes(selectedAsset?.value)
-                ?.parentQualifiedName,
-            parent: attributes(selectedAsset?.value)?.parent,
-            collectionQualifiedName: attributes(selectedAsset?.value)
-                ?.collectionQualifiedName,
-        }
-    }
+    watch(
+        selectedAsset,
+        () => {
+            if (['Query'].includes(entity.value.typeName)) {
+                entity.value.attributes = {
+                    ...entity.value.attributes,
+                    name: selectedAsset.value.attributes.name,
+                    parentQualifiedName: attributes(selectedAsset?.value)
+                        ?.parentQualifiedName,
+                    parent: attributes(selectedAsset?.value)?.parent,
+                    collectionQualifiedName: attributes(selectedAsset?.value)
+                        ?.collectionQualifiedName,
+                }
+            }
+        },
+        { immediate: true }
+    )
 
     const body = ref({
         entities: [],
@@ -386,6 +393,8 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         unlinkedAssets?: assetInterface[]
         term: assetInterface
     }) => {
+        console.log(linkedAssets);
+        console.log(unlinkedAssets);
         const linked = linkedAssets.map((assignedEntitiy) => {
             const meanings = assignedEntitiy.attributes.meanings ?? []
             if (!meanings.find((meaning) => meaning.guid === term.guid)) {
@@ -394,7 +403,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
                     guid: term.guid,
                 })
             }
-            return {
+            const payload = {
                 guid: assignedEntitiy.guid,
                 typeName: assignedEntitiy.typeName,
                 attributes: {
@@ -408,31 +417,57 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
                     meanings,
                 },
             }
+            if (assignedEntitiy?.typeName === 'Query') {
+                payload.attributes = {
+                    ...payload.attributes,
+                    parentQualifiedName:
+                        assignedEntitiy?.attributes?.parentQualifiedName,
+                    collectionQualifiedName:
+                        assignedEntitiy?.attributes?.collectionQualifiedName,
+                    parent: assignedEntitiy?.attributes?.parent,
+                }
+            }
+
+            return payload
         })
 
-        const unlinked = unlinkedAssets.map((unassignedEntity) => ({
-            guid: unassignedEntity.guid,
-            typeName: unassignedEntity.typeName,
-            attributes: {
-                qualifiedName:
-                    unassignedEntity.uniqueAttributes?.qualifiedName ??
-                    unassignedEntity.attributes?.qualifiedName ??
-                    '',
-                name: unassignedEntity.attributes.name,
-            },
-            relationshipAttributes: {
-                meanings:
-                    unassignedEntity.attributes.meanings?.filter(
-                        (meaning) => meaning.guid !== term.guid
-                    ) ?? [],
-            },
-        }))
+        const unlinked = unlinkedAssets.map((unassignedEntity) => {
+            const payload = {
+                guid: unassignedEntity.guid,
+                typeName: unassignedEntity.typeName,
+                attributes: {
+                    qualifiedName:
+                        unassignedEntity.uniqueAttributes?.qualifiedName ??
+                        unassignedEntity.attributes?.qualifiedName ??
+                        '',
+                    name: unassignedEntity.attributes.name,
+                },
+                relationshipAttributes: {
+                    meanings:
+                        unassignedEntity.attributes.meanings?.filter(
+                            (meaning) => meaning.guid !== term.guid
+                        ) ?? [],
+                },
+            }
+            if (unassignedEntity?.typeName === 'Query') {
+                payload.attributes = {
+                    ...payload.attributes,
+                    parentQualifiedName:
+                        unassignedEntity?.attributes?.parentQualifiedName,
+                    collectionQualifiedName:
+                        unassignedEntity?.attributes?.collectionQualifiedName,
+                    parent: unassignedEntity?.attributes?.parent,
+                }
+                console.log(payload);
+            }
+            return payload
+        })
 
         body.value.entities = [...linked, ...unlinked]
         if (!unlinkedAssets.length) currentMessage.value = 'Assets linked'
         else if (!linkedAssets.length) currentMessage.value = 'Assets unlinked'
         else currentMessage.value = 'Linked assets updated'
-        mutate()
+        if (body.value.entities?.length) mutate()
 
         whenever(isUpdateReady, () => {
             localAssignedEntities.value = assignedEntities(asset.value)
@@ -473,9 +508,15 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         entity.value = {
             ...entity.value,
             relationshipAttributes: {
-                parentCategory: localParentCategory.value,
                 anchor: selectedAsset?.value?.attributes?.anchor,
             },
+        }
+        console.log(localParentCategory.value);
+        if (localParentCategory.value?.guid) {
+            entity.value.relationshipAttributes.parentCategory =
+                localParentCategory.value
+        } else {
+            entity.value.relationshipAttributes.parentCategory = null
         }
         body.value.entities = [entity.value]
         currentMessage.value = 'Categories have been updated'
@@ -483,7 +524,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     }
 
     // Resource Addition
-    const handleAddResource = () => {
+    const handleAddResource = async () => {
         const resourceEntity = ref<any>({
             typeName: 'Link',
             attributes: {
@@ -501,20 +542,20 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         })
         body.value.entities = [resourceEntity.value]
 
-        currentMessage.value = 'A new resource has been added'
-        mutate()
+
+        await mutate()
         sendTrackEvent('resource', 'created', {
             domain: localResource.value.link.split('/')[2],
         })
     }
 
     // Resource Update
-    const handleUpdateResource = (item) => {
+    const handleUpdateResource = async (item) => {
         const resourceEntity = ref<any>({
             typeName: 'Link',
-            guid: item.value?.guid,
+            guid: item.guid,
             attributes: {
-                qualifiedName: item.value?.uniqueAttributes?.qualifiedName,
+                qualifiedName: item.uniqueAttributes?.qualifiedName,
                 name: localResource.value?.title,
                 link: localResource.value?.link,
                 tenantId: 'default',
@@ -523,31 +564,24 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
         body.value.entities = [resourceEntity.value]
 
-        currentMessage.value = `Resource ${title(item.value)} of ${title(
-            selectedAsset.value
-        )} updated`
-        mutate()
+        await mutate()
         sendTrackEvent('resource', 'updated', {
             domain: localResource.value.link.split('/')[2],
         })
     }
 
     // Resource Deletion
-    const handleResourceDelete = (link) => {
-        const { error, isLoading, isReady } = Entity.DeleteEntity(link?.guid)
+    const handleResourceDelete = (_id) => {
+        const { error, isLoading, isReady } = Entity.DeleteEntity(_id)
 
-        whenever(error, () => {
-            message.error(
-                'Something went wrong'
-            )
-        })
         whenever(isReady, () => {
-            message.success(`Resource deleted`)
             guid.value = selectedAsset.value.guid
-
             mutateUpdate()
             sendTrackEvent('resource', 'deleted')
         })
+        return {
+            error, isLoading, isReady
+        }
     }
 
     // Readme Update
@@ -635,7 +669,8 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     })
 
     whenever(isReady, () => {
-        message.success(currentMessage.value)
+        if (currentMessage.value)
+            message.success(currentMessage.value)
         guid.value = selectedAsset.value.guid
         rainConfettis()
         mutateUpdate()

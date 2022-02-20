@@ -55,7 +55,10 @@
                                 : ''
                         "
                         @click.prevent.stop="
-                            () => (!viewOnly ? (deleteConfirm = true) : '')
+                            () =>
+                                !viewOnly && allowDelete
+                                    ? (deleteConfirm = true)
+                                    : ''
                         "
                     >
                         <AtlanIcon

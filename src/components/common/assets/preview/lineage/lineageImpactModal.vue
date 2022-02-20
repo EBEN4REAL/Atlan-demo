@@ -43,9 +43,9 @@
                                 <div
                                     class="flex items-center text-sm text-gray-500"
                                 >
-                                    <img
-                                        :src="text.sourceImg"
-                                        class="h-3 mr-1 mb-0.5"
+                                    <AtlanIcon
+                                        :icon="text.sourceImg"
+                                        class="h-4 mr-1 mb-0.5"
                                     />
                                     <span class="tracking-wider uppercase">
                                         {{ text.typeName }}
@@ -102,7 +102,15 @@
                                         text.slice(0, 2)
                                     )"
                                     :key="idx"
-                                    :classification='classif'
+                                    :classification="classif"
+                                    :mouse-enter-delay="
+                                        classificationPopoverMouseEnterDelay
+                                    "
+                                    @mouse-entered="
+                                        () => {
+                                            classificationPopoverMouseEnterDelay = 0.2
+                                        }
+                                    "
                                 >
                                     <ClassificationPill
                                         :name="classif.name"
@@ -228,7 +236,7 @@
             CertificateBadge,
             Tooltip,
             AtlanButton,
-            ClassificationPopover
+            ClassificationPopover,
         },
         props: {
             guid: { type: String, required: true },
@@ -241,6 +249,7 @@
         emits: ['update:visible'],
         setup(props, { emit }) {
             const { guid, assetName, visible } = toRefs(props)
+            const classificationPopoverMouseEnterDelay = ref(1)
             const { useFetchLineage } = useLineageService()
             const {
                 ownerGroups,
@@ -265,8 +274,7 @@
                 if (!guid?.value) {
                     return false
                 }
-                return guid.value !== classification.entityGuid;
-
+                return guid.value !== classification.entityGuid
             }
 
             const getSource = (entity) => {
@@ -433,6 +441,7 @@
                         key: 'terms',
                     },
                 ],
+                classificationPopoverMouseEnterDelay,
             }
         },
     })

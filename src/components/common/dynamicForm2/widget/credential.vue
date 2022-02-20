@@ -19,8 +19,8 @@
                 <div class="flex flex-col">
                     <div class="flex items-center font-semibold">
                         <div class="flex items-center mr-1">
-                            <AtlanIcon
-                                :icon="getImage(connector(credential))"
+                            <img
+                                :src="getImage(connector(credential))"
                                 class="w-auto h-4 mr-1"
                             />
 
@@ -147,7 +147,7 @@
         onMounted,
         onBeforeMount,
     } from 'vue'
-    import { useVModels } from '@vueuse/core'
+    import { until, useVModels } from '@vueuse/core'
     import { useTestCredential } from '~/composables/credential/useTestCredential'
     import useGetCredential from '~/composables/credential/useGetCredential'
 
@@ -498,10 +498,11 @@
             })
 
             const handleUpdate = async () => {
-                await handleTestAuthentication(true)
-                // if (!errorTest.value) {
-                //     updateByID()
-                // }
+                handleTestAuthentication(true)
+                await until(isLoadingTest).toBe(false)
+                if (testData.value?.message) {
+                    updateByID()
+                }
             }
 
             watch(

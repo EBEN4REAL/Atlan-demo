@@ -1,6 +1,6 @@
 <template>
     <ResourcesWidget
-        class="px-5 pt-4"
+        :ref="resourcesWidget"
         :resources="resources"
         :add-status="addStatus"
         :update-status="updateStatus"
@@ -13,9 +13,6 @@
         @update="handleUpdate"
         @remove="handleRemove"
     >
-        <template #title>
-            <span class="font-semibold text-gray-500"> Resources </span>
-        </template>
         <template #placeholder>
             <Placeholder />
         </template>
@@ -32,7 +29,7 @@
         ref,
     } from 'vue'
     import { whenever } from '@vueuse/core'
-    import ResourcesWidget from '@/common/widgets/resources/resourcesWidgetV2/resourcesWidgetV2.vue'
+    import ResourcesWidget from '@/common/widgets/resources/resourcesWidget.vue'
     import Placeholder from '@/common/assets/preview/resources/placeholder.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -51,6 +48,11 @@
     })
 
     const { selectedAsset, isDrawer } = toRefs(props)
+    const resourcesWidget = ref()
+    const hhh = () => {
+        console.log(resourcesWidget.value)
+        resourcesWidget?.addModalRef?.showModal()
+    }
 
     const { links, selectedAssetUpdatePermission, assetPermission } =
         useAssetInfo()
@@ -64,10 +66,7 @@
 
     // eslint-disable-next-line arrow-body-style
     const resources = computed(() => {
-        return links(selectedAsset.value)?.sort((a, b) =>
-            // eslint-disable-next-line no-underscore-dangle
-            a.attributes.__timestamp < b.attributes.__timestamp ? -1 : 1
-        )
+        return links(selectedAsset.value)
     })
 
     const linkEditPermission = computed(
@@ -108,7 +107,6 @@
     }
     const removeStatus = ref('')
     const handleRemove = async (link) => {
-        debugger
         const { error, isLoading, isReady } = handleResourceDelete(link)
         removeStatus.value = 'loading'
         whenever(error, () => {

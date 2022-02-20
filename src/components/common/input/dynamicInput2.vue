@@ -11,6 +11,11 @@
         :multiple="multiple"
         @change="handleInputChange"
     ></GroupSelector>
+    <Announcement
+        v-else-if="dataType === 'announcement'"
+        v-model:value="localValue"
+        @change="handleInputChange"
+    ></Announcement>
     <MultiInput
         v-else-if="
             [
@@ -21,6 +26,7 @@
                 'url',
                 'string',
                 'text',
+                'SQL',
             ].includes(dataType.toLowerCase()) && multiple
         "
         v-model="localValue"
@@ -37,7 +43,7 @@
         @change="handleInputChange"
     ></a-input>
     <a-input
-        v-else-if="['string', 'text'].includes(dataType)"
+        v-else-if="['string', 'text', 'SQL'].includes(dataType)"
         v-model:value="localValue"
         :maxlength="max || 50"
         placeholder="Type..."
@@ -127,6 +133,7 @@
     import GroupSelector from '@/common/select/groups.vue'
     import EnumSelector from '@/common/select/enum.vue'
     import MultiInput from './customizedTagInput.vue'
+    import Announcement from '@common/select/announcement.vue'
     import { isFloat } from '~/utils/checkType'
 
     dayjs.extend(utc)
@@ -135,7 +142,13 @@
     // import useFileUploader from './useFileUploader'
 
     export default defineComponent({
-        components: { UserSelector, GroupSelector, EnumSelector, MultiInput },
+        components: {
+            UserSelector,
+            GroupSelector,
+            EnumSelector,
+            MultiInput,
+            Announcement,
+        },
         props: {
             modelValue: {},
             dataType: {

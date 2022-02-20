@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex flex-wrap items-center justify-between w-full pb-1.5 pr-3 mt-2"
+        class="flex flex-wrap items-center justify-between w-full pb-1.5 mt-2 px-4"
     >
         <!-- <div class="flex items-center mr-3" v-if="activeInlineTab?.queryId"> -->
         <div class="flex items-center mr-3">
@@ -131,7 +131,7 @@
                 <template #button> </template>
 
                 <div
-                    class="flex items-center pl-2 ml-1 transition rounded-sm hover:bg-gray-light"
+                    class="flex items-center transition rounded-sm hover:bg-gray-light"
                     style="max-width: 16rem"
                 >
                     <div class="mt-1">
@@ -191,7 +191,7 @@
                         size="sm"
                         color="secondary"
                         padding="compact"
-                        class="flex items-center justify-between h-6 ml-2 border-none button-shadow group"
+                        class="flex items-center justify-between h-6 ml-2 border-gray-300 group"
                         :class="isUpdating ? 'px-4.5' : 'px-2'"
                         :disabled="
                             activeInlineTab.isSaved && activeInlineTab.queryId
@@ -249,7 +249,7 @@
                         size="sm"
                         color="secondary"
                         padding="compact"
-                        class="flex items-center h-6 px-3 ml-2 border-none button-shadow"
+                        class="flex items-center h-6 px-3 ml-2 border-gray-300"
                         @click="$emit('onClickSaveQuery')"
                     >
                         <div
@@ -345,7 +345,7 @@
                             <!-- <span v-if="connectionName">{{ connectionName }}</span> -->
 
                             <div v-if="connectionName">
-                                <!-- <div
+                                <div
                                     class="flex items-center"
                                     v-if="
                                         activeInlineTab?.explorer?.schema
@@ -367,7 +367,7 @@
                                     >
                                         .
                                     </div>
-                                </div> -->
+                                </div>
                             </div>
 
                             <span v-else class="text-gray-500"
@@ -427,7 +427,7 @@
 
             <div class="flex items-center ml-2">
                 <div class="flex text-sm">
-                    <div class="flex mr-1">
+                    <div class="flex mr-3">
                         <a-tooltip
                             placement="bottom"
                             color="#363636"

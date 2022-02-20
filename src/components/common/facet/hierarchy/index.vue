@@ -1,24 +1,35 @@
 <template>
-    <div class="flex flex-col w-full px-3 gap-y-2">
+    <div class="flex flex-col w-full px-3">
         <ConnectorSelect
             v-model="localValue.connectorName"
             :showCount="true"
             class="w-full"
             :persona="persona"
+            @change="handleConnectorChange"
         ></ConnectorSelect>
-        <ConnectionSelect
+        <div
+            class="flex items-center w-full my-2"
             v-if="localValue.connectorName"
-            :key="localValue.connectorName"
-            :connector="localValue.connectorName"
-            class="w-full"
-            :persona="persona"
-            v-model="localValue.connectionQualifiedName"
-        ></ConnectionSelect>
+        >
+            <div class="mr-1">
+                <a-tooltip title="Connection" placement="right">
+                    <AtlanIcon class="w-4 h-4" icon="Connection"
+                /></a-tooltip>
+            </div>
+            <div style="width: calc(100% - 22px)" class="">
+                <ConnectionSelect
+                    :key="localValue.connectorName"
+                    :connector="localValue.connectorName"
+                    class="w-full"
+                    :persona="persona"
+                    v-model="localValue.connectionQualifiedName"
+                ></ConnectionSelect>
+            </div>
+        </div>
 
         <AssetDropdown
-            v-if="localValue.connectionQualifiedName"
             :key="localValue.connectionQualifiedName"
-            class="mt-0 mb-0"
+            class="mb-0"
             :persona="persona"
             :connector="filteredConnector"
             @change="handleAssetChange"

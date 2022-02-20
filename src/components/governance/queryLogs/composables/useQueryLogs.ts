@@ -7,14 +7,14 @@ import { SourceList } from '~/constant/source'
 import useIndexSearch from '~/composables/discovery/useIndexSearch'
 
 const { listQueryLogs } = useLogsService()
-const { getConnectionName, getConnectorName } = useConnector()
 export function useQueryLogs(
     gte: Ref<string>,
     lt: Ref<string>,
     from = ref(0),
     size = ref(6),
     usernames: Ref<Array<string>>,
-    attributes = ['name']
+    attributes = ['name'],
+    aggregations = []
 ) {
     const savedQueryMetaMap: Ref<Record<string, any>> = ref({})
     const body = ref<Record<string, any>>({})
@@ -27,6 +27,7 @@ export function useQueryLogs(
         gte: gte.value,
         lt: lt.value,
         usernames: usernames?.value ? usernames?.value : undefined,
+        aggregations,
     })
 
     body.value = dsl
@@ -73,11 +74,19 @@ export function useQueryLogs(
         () => {
             if (data.value?.hits?.hits?.length) {
                 // get saved query logs, if present in the result
-                const savedQueryIds = (
+                let savedQueryIds = (
                     data.value?.hits?.hits.filter(
                         (log) => log._source?.message?.savedQueryId
                     ) || []
                 ).map((log) => log._source.message.savedQueryId)
+                const aggregateSavedQueryIds =
+                    (
+                        data.value?.aggregations?.group_by_savedQueryId
+                            ?.buckets || []
+                    ).map((bucket) => bucket.key) || []
+                savedQueryIds = [
+                    ...new Set([...savedQueryIds, ...aggregateSavedQueryIds]),
+                ]
                 // Check if the ids already have cached metadata
                 let filteredSavedQueryIds = []
                 if (savedQueryIds && savedQueryIds.length) {
@@ -89,10 +98,15 @@ export function useQueryLogs(
                     )
                 }
                 if (filteredSavedQueryIds && filteredSavedQueryIds.length) {
+                    const limit = filteredSavedQueryIds.length || 20
+                    console.log('limit', limit)
                     const base = bodybuilder()
+                    base.size(limit)
                     filteredSavedQueryIds.forEach((queryId) =>
                         base.orFilter('term', '__guid', queryId)
                     )
+                    // TODO @rohan: apply isActive filter
+                    // base.andFilter('term', '__state', 'ACTIVE')
                     const requestBody = base.build()
                     fetchSavedQueryMeta(requestBody)
                 }
@@ -104,6 +118,7 @@ export function useQueryLogs(
     const list = computed(() => data.value?.hits?.hits)
     const totalCount = computed(() => size.value + from.value)
     const filteredLogsCount = computed(() => data.value?.hits?.total?.value)
+    const aggregates = computed(() => data.value?.aggregations)
     function mutateBody({
         from,
         size,
@@ -116,6 +131,7 @@ export function useQueryLogs(
         connectionQF,
         connectorName,
         searchText,
+        aggregations,
     }) {
         body.value = useBody({
             from: from.value,
@@ -129,6 +145,7 @@ export function useQueryLogs(
             connectionQF,
             connectorName,
             searchText,
+            aggregations,
         })
     }
     const paginateLogs = (page: number) => {
@@ -145,6 +162,7 @@ export function useQueryLogs(
         filteredLogsCount,
         paginateLogs,
         savedQueryMetaMap,
+        aggregates,
     }
 }
 export const getQueryMetadata = (query) => {
@@ -172,6 +190,7 @@ export const getQueryMetadata = (query) => {
     }
     // Connection
     if (query?._source?.message?.connectionQualifiedName) {
+        const { getConnectionName, getConnectorName } = useConnector()
         meta.connection.value = getConnectionName(
             query._source.message.connectionQualifiedName
         )

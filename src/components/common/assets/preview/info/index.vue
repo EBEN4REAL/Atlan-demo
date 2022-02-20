@@ -1,6 +1,8 @@
 <template>
-    <div class="flex flex-col w-full h-full py-4 overflow-auto gap-y-4">
-        <div class="flex items-center justify-between px-5">
+    <div class="flex flex-col w-full h-full">
+        <div
+            class="flex items-center justify-between px-5 py-2 border-b border-gray-200 bg-gray-50"
+        >
             <span class="font-semibold text-gray-500">Overview</span>
 
             <span
@@ -15,84 +17,87 @@
                 Saving</span
             >
         </div>
+        <div class="flex flex-col py-4 overflow-y-auto gap-y-4">
+            <AnnouncementWidget
+                class="mx-5"
+                :selected-asset="selectedAsset"
+            ></AnnouncementWidget>
 
-        <AnnouncementWidget
-            class="mx-5"
-            :selected-asset="selectedAsset"
-        ></AnnouncementWidget>
-
-        <div
-            v-if="
-                isGTC(selectedAsset) ||
-                selectedAsset.typeName === 'Connection' ||
-                selectedAsset.typeName === 'Process'
-            "
-            class="flex flex-col"
-        >
-            <div class="px-5 mb-1 text-sm text-gray-500">Name</div>
-
-            <Name
-                ref="nameRef"
-                v-model="localName"
-                class="mx-4"
-                :edit-permission="editPermission"
-                @change="handleChangeName"
-            />
-        </div>
-
-        <Connection
-            v-if="selectedAsset.typeName === 'Connection'"
-            v-model="localSQLQuery"
-            :selected-asset="selectedAsset"
-            :edit-permission="editPermission"
-            @change="handleSQLQueryUpdate"
-        ></Connection>
-
-        <div
-            v-if="webURL(selectedAsset) || sourceURL(selectedAsset)"
-            class="px-5"
-        >
-            <a-button
-                block
-                class="flex items-center justify-between px-2 shadow-none"
-                @click="handlePreviewClick"
-                ><div class="flex items-center">
-                    <AtlanIcon
-                        :icon="getConnectorImage(selectedAsset)"
-                        class="h-4 mr-1"
-                    />View in
-                    {{ getConnectorLabel(selectedAsset) }}
-                </div>
-                <AtlanIcon icon="External" />
-            </a-button>
-        </div>
-
-        <div
-            v-if="isSelectedAssetHaveRowsAndColumns(selectedAsset)"
-            class="flex flex-wrap items-center w-full px-5 gap-x-8"
-        >
-            <SQL
+            <div
                 v-if="
-                    (selectedAsset.typeName == 'View' ||
-                        selectedAsset.typeName == 'MaterialisedView') &&
-                    definition(selectedAsset)
+                    isGTC(selectedAsset) ||
+                    selectedAsset.typeName === 'Connection' ||
+                    selectedAsset.typeName === 'Process'
                 "
-                :sql="definition(selectedAsset)"
+                class="flex flex-col"
             >
-                <div class="flex flex-col text-sm cursor-pointer">
-                    <span class="mb-1 text-sm text-gray-500">Definition</span>
-                    <span class="font-semibold text-primary">SQL</span>
-                </div>
-                <template #action>
-                    <a-button
-                        size="small"
-                        block
-                        @click="switchTab(selectedAsset, 'Lineage')"
-                        >View Lineage</a-button
-                    >
-                </template>
-            </SQL>
-            <!-- <RowInfoHoverCard
+                <div class="px-5 mb-1 text-sm text-gray-500">Name</div>
+
+                <Name
+                    ref="nameRef"
+                    v-model="localName"
+                    class="mx-4"
+                    :edit-permission="editPermission"
+                    @change="handleChangeName"
+                />
+            </div>
+
+            <Connection
+                v-if="selectedAsset.typeName === 'Connection'"
+                v-model="localSQLQuery"
+                :selected-asset="selectedAsset"
+                :edit-permission="editPermission"
+                @change="handleSQLQueryUpdate"
+            ></Connection>
+
+            <div
+                v-if="webURL(selectedAsset) || sourceURL(selectedAsset)"
+                class="px-5"
+            >
+                <a-button
+                    block
+                    class="flex items-center justify-between px-2 shadow-none"
+                    @click="handlePreviewClick"
+                    ><div class="flex items-center">
+                        <img
+                            :src="getConnectorImage(selectedAsset)"
+                            class="h-4 mr-1"
+                        />View in
+                        {{ getConnectorLabel(selectedAsset) }}
+                    </div>
+                    <AtlanIcon icon="External" />
+                </a-button>
+            </div>
+
+            <div
+                v-if="isSelectedAssetHaveRowsAndColumns(selectedAsset)"
+                class="flex flex-wrap items-center w-full px-5 gap-x-8"
+            >
+                <SQL
+                    v-if="
+                        (selectedAsset.typeName == 'View' ||
+                            selectedAsset.typeName == 'MaterialisedView') &&
+                        definition(selectedAsset) &&
+                        definition(selectedAsset) !== '[]'
+                    "
+                    :sql="definition(selectedAsset)"
+                >
+                    <div class="flex flex-col text-sm cursor-pointer">
+                        <span class="mb-1 text-sm text-gray-500"
+                            >Definition</span
+                        >
+                        <span class="font-semibold text-primary">SQL</span>
+                    </div>
+                    <template #action>
+                        <a-button
+                            size="small"
+                            block
+                            @click="switchTab(selectedAsset, 'Lineage')"
+                            >View Lineage</a-button
+                        >
+                    </template>
+                </SQL>
+                <!-- <RowInfoHoverCard
                 v-if="
                     selectedAsset.typeName == 'Table' ||
                     selectedAsset.typeName == 'TablePartition'
@@ -106,450 +111,508 @@
                 :source-created-at-raw="sourceCreatedAt(selectedAsset, true)"
             > -->
 
+                <div
+                    v-if="
+                        rowCount(selectedAsset, true) !== '0' &&
+                        rowCount(selectedAsset, true)
+                    "
+                    class="flex flex-col text-sm"
+                    :class="isProfile ? '' : 'cursor-pointer'"
+                    @click="showSampleDataModal"
+                >
+                    <span class="mb-1 text-sm text-gray-500">Rows</span>
+                    <span
+                        :class="
+                            isProfile
+                                ? 'text-gray-700'
+                                : 'text-primary font-semibold'
+                        "
+                        >{{ rowCount(selectedAsset, true) }}</span
+                    >
+                </div>
+                <!-- </RowInfoHoverCard> -->
+                <div
+                    class="flex flex-col text-sm cursor-pointer"
+                    @click="switchTab(selectedAsset, 'Columns')"
+                >
+                    <span class="mb-1 text-sm text-gray-500">Columns</span>
+                    <span class="font-semibold text-primary">{{
+                        columnCount(selectedAsset)
+                    }}</span>
+                </div>
+                <div
+                    v-if="sizeBytes(selectedAsset) !== '0'"
+                    class="flex flex-col text-sm cursor-pointer"
+                >
+                    <span class="mb-1 text-sm text-gray-500">Size</span>
+                    <span class="text-gray-700">{{
+                        sizeBytes(selectedAsset, false)
+                    }}</span>
+                </div>
+            </div>
+
             <div
                 v-if="
-                    rowCount(selectedAsset, true) !== '0' &&
-                    rowCount(selectedAsset, true)
+                    selectedAsset.typeName?.toLowerCase() === 'column' ||
+                    selectedAsset.typeName?.toLowerCase() === 'salesforcefield'
                 "
-                class="flex flex-col text-sm"
-                :class="isProfile ? '' : 'cursor-pointer'"
-                @click="showSampleDataModal"
+                class="flex flex-col px-5 text-sm gap-y-4"
             >
-                <span class="mb-1 text-sm text-gray-500">Rows</span>
-                <span
-                    :class="
-                        isProfile
-                            ? 'text-gray-700'
-                            : 'text-primary font-semibold'
-                    "
-                    >{{ rowCount(selectedAsset, true) }}</span
-                >
-            </div>
-            <!-- </RowInfoHoverCard> -->
-            <div
-                class="flex flex-col text-sm cursor-pointer"
-                @click="switchTab(selectedAsset, 'Columns')"
-            >
-                <span class="mb-1 text-sm text-gray-500">Columns</span>
-                <span class="font-semibold text-primary">{{
-                    columnCount(selectedAsset)
-                }}</span>
-            </div>
-            <div
-                v-if="sizeBytes(selectedAsset) !== '0'"
-                class="flex flex-col text-sm cursor-pointer"
-            >
-                <span class="mb-1 text-sm text-gray-500">Size</span>
-                <span class="text-gray-700">{{
-                    sizeBytes(selectedAsset, false)
-                }}</span>
-            </div>
-        </div>
+                <div class="flex flex-col">
+                    <span class="mb-1 text-sm text-gray-500">Data Type</span>
 
-        <div
-            v-if="
-                selectedAsset.typeName?.toLowerCase() === 'column' ||
-                selectedAsset.typeName?.toLowerCase() === 'salesforcefield'
-            "
-            class="flex flex-col px-5 text-sm gap-y-4"
-        >
-            <div class="flex flex-col">
-                <span class="mb-1 text-sm text-gray-500">Data Type</span>
+                    <div class="flex items-center text-gray-700 gap-x-1">
+                        <div class="flex items-center">
+                            <component
+                                :is="dataTypeCategoryImage(selectedAsset)"
+                                class="h-4 mr-0.5 mb-0.5"
+                            />
+                            <span class="text-sm uppercase">{{
+                                dataType(selectedAsset)
+                            }}</span>
+                        </div>
 
-                <div class="flex items-center text-gray-700 gap-x-1">
-                    <div class="flex items-center">
-                        <component
-                            :is="dataTypeCategoryImage(selectedAsset)"
-                            class="h-4 mr-0.5 mb-0.5"
+                        <div
+                            v-if="
+                                isPrimary(selectedAsset) ||
+                                isDist(selectedAsset) ||
+                                isPartition(selectedAsset)
+                            "
+                            class="flex"
+                        >
+                            <AtlanIcon
+                                icon="PrimaryKey"
+                                class="mb-0.5 text-yellow-500"
+                            ></AtlanIcon>
+
+                            <span
+                                v-if="isPrimary(selectedAsset)"
+                                class="ml-1 text-sm text-gray-700"
+                                >Primary Key</span
+                            >
+                            <span
+                                v-if="isDist(selectedAsset)"
+                                class="ml-1 text-sm text-gray-700"
+                                >Dist Key</span
+                            >
+                            <span
+                                v-if="isPartition(selectedAsset)"
+                                class="ml-1 text-sm text-gray-700"
+                                >Partition Key</span
+                            >
+                        </div>
+                    </div>
+                </div>
+                <div v-if="tableName(selectedAsset)">
+                    <div class="mb-1 text-sm text-gray-500"></div>
+
+                    <div class="flex items-center mb-1 text-gray-500">
+                        <span>Table</span>
+                        <a-tooltip title="Copy">
+                            <div
+                                @click="
+                                    handleCopyValue(
+                                        tableName(selectedAsset),
+                                        'Table Name'
+                                    )
+                                "
+                            >
+                                <AtlanIcon
+                                    icon="CopyOutlined"
+                                    class="w-auto ml-1 cursor-pointer mb-0.5"
+                                /></div
+                        ></a-tooltip>
+                    </div>
+                    <div class="text-sm text-gray-700 break-all">
+                        <AtlanIcon icon="TableGray" class="w-auto h-4 mb-0.5" />
+                        {{ tableName(selectedAsset) }}
+                    </div>
+                </div>
+                <div v-if="viewName(selectedAsset)">
+                    <div class="flex items-center mb-1 text-gray-500">
+                        <span>View</span>
+                        <a-tooltip title="Copy">
+                            <div
+                                @click="
+                                    handleCopyValue(
+                                        viewName(selectedAsset),
+                                        'View Name'
+                                    )
+                                "
+                            >
+                                <AtlanIcon
+                                    icon="CopyOutlined"
+                                    class="w-auto ml-1 cursor-pointer mb-0.5"
+                                /></div
+                        ></a-tooltip>
+                    </div>
+                    <div class="text-sm text-gray-700">
+                        <AtlanIcon
+                            icon="ViewGray"
+                            class="w-auto h-4 mb-0.5 break-all"
                         />
-                        <span class="text-sm uppercase">{{
-                            dataType(selectedAsset)
-                        }}</span>
-                    </div>
-
-                    <div
-                        v-if="
-                            isPrimary(selectedAsset) ||
-                            isDist(selectedAsset) ||
-                            isPartition(selectedAsset)
-                        "
-                        class="flex"
-                    >
-                        <AtlanIcon
-                            icon="PrimaryKey"
-                            class="mb-0.5 text-yellow-500"
-                        ></AtlanIcon>
-
-                        <span
-                            v-if="isPrimary(selectedAsset)"
-                            class="ml-1 text-sm text-gray-700"
-                            >Primary Key</span
-                        >
-                        <span
-                            v-if="isDist(selectedAsset)"
-                            class="ml-1 text-sm text-gray-700"
-                            >Dist Key</span
-                        >
-                        <span
-                            v-if="isPartition(selectedAsset)"
-                            class="ml-1 text-sm text-gray-700"
-                            >Partition Key</span
-                        >
+                        {{ viewName(selectedAsset) }}
                     </div>
                 </div>
             </div>
-            <div v-if="tableName(selectedAsset)">
-                <div class="mb-1 text-sm text-gray-500">Table</div>
-                <div class="text-sm text-gray-700">
-                    <AtlanIcon icon="TableGray" class="w-auto h-4 mb-0.5" />
-                    {{ tableName(selectedAsset) }}
-                </div>
-            </div>
-            <div v-if="viewName(selectedAsset)">
-                <div class="mb-1 text-sm text-gray-500">View</div>
-                <div class="text-sm text-gray-700">
-                    <AtlanIcon icon="ViewGray" class="w-auto h-4 mb-0.5" />
-                    {{ viewName(selectedAsset) }}
-                </div>
-            </div>
-        </div>
 
-        <div
-            v-if="
-                ['SalesforceObject', 'SalesforceField'].includes(
-                    selectedAsset?.typeName
-                ) && apiName(selectedAsset) !== ''
-            "
-            class="flex px-5"
-        >
-            <div class="flex flex-col text-sm">
-                <span class="mb-1 text-sm text-gray-500">API Name</span>
-                <span class="text-gray-700">{{ apiName(selectedAsset) }}</span>
-            </div>
-        </div>
-
-        <div
-            v-if="
-                ['SalesforceField'].includes(selectedAsset?.typeName) &&
-                formula(selectedAsset) &&
-                formula(selectedAsset) !== ''
-            "
-            class="flex px-5"
-        >
-            <div class="flex flex-col w-full text-sm">
-                <span class="mb-1 text-sm text-gray-500">Formula</span>
-                <DetailsContainer
-                    :text="formula(selectedAsset)"
-                    class="rounded-lg"
-                />
-            </div>
-        </div>
-
-        <div
-            v-if="
-                [
-                    'SalesforceOrganization',
-                    'SalesforceReport',
-                    'SalesforceDashboard',
-                ].includes(selectedAsset?.typeName)
-            "
-            class="flex flex-col px-5 text-sm"
-        >
-            <div class="flex items-center mb-1 text-gray-500">
-                <span>Source ID</span>
-                <a-tooltip title="Copy">
-                    <div
-                        v-if="sourceId(selectedAsset) !== '-'"
-                        @click="
-                            handleCopyValue(
-                                sourceId(selectedAsset),
-                                'Source ID'
-                            )
-                        "
-                    >
-                        <AtlanIcon
-                            icon="CopyOutlined"
-                            class="w-auto ml-1 cursor-pointer mb-0.5"
-                        /></div
-                ></a-tooltip>
-            </div>
-
-            <span class="text-gray-700">{{ sourceId(selectedAsset) }}</span>
-        </div>
-
-        <div
-            v-if="
-                ['SalesforceDashboard'].includes(selectedAsset?.typeName) &&
-                selectedAsset?.attributes?.dashboardType
-            "
-            class="flex px-5"
-        >
-            <div class="flex flex-col text-sm">
-                <span class="mb-1 text-sm text-gray-500">Dashboard Type</span>
-                <span class="text-gray-700">{{
-                    selectedAsset?.attributes?.dashboardType
-                }}</span>
-            </div>
-        </div>
-        <div
-            v-if="
-                ['SalesforceReport'].includes(selectedAsset?.typeName) &&
-                selectedAsset?.attributes?.reportType
-            "
-            class="flex px-5"
-        >
-            <div class="flex flex-col text-sm">
-                <div class="mb-1 text-sm text-gray-500">Report Type</div>
-                <div class="text-gray-700">
-                    {{ selectedAsset?.attributes?.reportType?.label }}
-                </div>
-            </div>
-        </div>
-
-        <div
-            v-if="
-                (isBiAsset(selectedAsset) || isSaasAsset(selectedAsset)) &&
-                ![
-                    'PowerBIWorkspace',
-                    'TableauSite',
-                    'LookerFolder',
-                    'LookerProject',
-                    'LookerQuery',
-                    'SalesforceOrganization',
-                ].includes(selectedAsset?.typeName)
-            "
-            class="flex px-5"
-        >
-            <ParentContext :asset="selectedAsset" />
-        </div>
-
-        <div
-            v-if="['SalesforceObject'].includes(selectedAsset?.typeName)"
-            class="flex px-5"
-        >
-            <FieldCount :asset="selectedAsset" />
-        </div>
-
-        <div
-            v-if="
-                ['SalesforceReport'].includes(selectedAsset?.typeName) &&
-                detailColumns(selectedAsset).length > 0
-            "
-            class="flex px-5"
-        >
-            <div class="flex flex-col w-full text-sm">
-                <span class="mb-1 text-sm text-gray-500">Detail Columns</span>
-                <DetailsContainer
-                    :array="detailColumns(selectedAsset)"
-                    class="rounded-lg"
-                />
-            </div>
-        </div>
-
-        <div
-            v-if="
-                ['SalesforceField'].includes(selectedAsset?.typeName) &&
-                picklistValues(selectedAsset).length > 0
-            "
-            class="flex px-5"
-        >
-            <div class="flex flex-col w-full text-sm">
-                <span class="mb-1 text-sm text-gray-500">Picklist Values</span>
-                <DetailsContainer
-                    :array="picklistValues(selectedAsset)"
-                    class="rounded-lg"
-                />
-            </div>
-        </div>
-
-        <div
-            v-if="
-                ['LookerDashboard', 'LookerLook'].includes(
-                    selectedAsset.typeName
-                )
-            "
-            class="flex px-5"
-        >
-            <SourceViewCount :asset="selectedAsset" />
-        </div>
-        <div
-            v-if="['LookerFolder'].includes(selectedAsset.typeName)"
-            class="flex px-5"
-        >
-            <SubFolderCount :asset="selectedAsset" />
-        </div>
-
-        <div v-if="sourceOwners(selectedAsset)" class="flex px-5">
-            <div class="flex flex-col text-sm">
-                <span class="mb-1 text-sm text-gray-500">Source Owner</span>
-                <span class="text-gray-700">{{
-                    sourceOwners(selectedAsset)
-                }}</span>
-            </div>
-        </div>
-
-        <div v-if="selectedAsset?.attributes?.noteText" class="flex px-5">
-            <div class="flex flex-col text-sm">
-                <span class="mb-1 text-sm text-gray-500">Note</span>
-                <span class="text-gray-700">{{
-                    selectedAsset?.attributes?.noteText
-                }}</span>
-            </div>
-        </div>
-
-        <div v-if="selectedAsset?.attributes?.subtitleText" class="flex px-5">
-            <div class="flex flex-col text-sm">
-                <span class="mb-1 text-sm text-gray-500">Subtitle Text</span>
-                <span class="text-gray-700">{{
-                    selectedAsset?.attributes?.subtitleText
-                }}</span>
-            </div>
-        </div>
-
-        <div v-if="selectedAsset?.attributes?.inlineHelpText" class="flex px-5">
-            <div class="flex flex-col text-sm">
-                <span class="mb-1 text-sm text-gray-500">Help Text</span>
-                <span class="text-gray-700">{{
-                    selectedAsset?.attributes?.inlineHelpText
-                }}</span>
-            </div>
-        </div>
-
-        <div
-            v-if="
-                selectedAsset?.typeName === 'LookerQuery' &&
-                fieldsLookerQuery(selectedAsset).length > 0
-            "
-            class="flex px-5"
-        >
-            <div class="flex flex-col w-full text-sm">
-                <span class="mb-1 text-sm text-gray-500">Fields</span>
-
-                <DetailsContainer
-                    :array="fieldsLookerQuery(selectedAsset)"
-                    class="rounded-lg"
-                />
-            </div>
-        </div>
-
-        <div
-            v-if="
-                isSelectedAssetHaveRowsAndColumns(selectedAsset) &&
-                externalLocation(selectedAsset)
-            "
-            class="flex px-5"
-        >
-            <div class="flex flex-col text-sm cursor-pointer">
-                <span class="mb-2 text-sm text-gray-500"
-                    >External Location</span
-                >
-                <span class="font-semibold break-words">{{
-                    externalLocation(selectedAsset)
-                }}</span>
-            </div>
-        </div>
-
-        <div
-            v-if="
-                isSelectedAssetHaveRowsAndColumns(selectedAsset) &&
-                externalLocation(selectedAsset)
-            "
-            class="flex px-5"
-        >
             <div
-                v-if="externalLocationFormat(selectedAsset)"
-                class="flex flex-col text-sm cursor-pointer"
+                v-if="
+                    ['SalesforceObject', 'SalesforceField'].includes(
+                        selectedAsset?.typeName
+                    ) && apiName(selectedAsset) !== ''
+                "
+                class="flex px-5"
             >
-                <span class="mb-2 text-sm text-gray-500"
-                    >External Location Format</span
-                >
-                <span class="text-gray-700 break-words">{{
-                    externalLocationFormat(selectedAsset)
-                }}</span>
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-sm text-gray-500">API Name</span>
+                    <span class="text-gray-700">{{
+                        apiName(selectedAsset)
+                    }}</span>
+                </div>
             </div>
-        </div>
 
-        <div
-            v-if="selectedAsset?.typeName === 'Query'"
-            class="flex flex-col px-5 text-sm"
-        >
-            <div class="mb-1 text-sm text-gray-500">Collection</div>
+            <div
+                v-if="
+                    ['SalesforceField'].includes(selectedAsset?.typeName) &&
+                    formula(selectedAsset) &&
+                    formula(selectedAsset) !== ''
+                "
+                class="flex px-5"
+            >
+                <div class="flex flex-col w-full text-sm">
+                    <span class="mb-1 text-sm text-gray-500">Formula</span>
+                    <DetailsContainer
+                        :text="formula(selectedAsset)"
+                        class="rounded-lg"
+                    />
+                </div>
+            </div>
 
-            <a-tooltip placement="left" color="#363636">
-                <template #title>
-                    {{
-                        !collectionData?.hasCollectionReadPermission &&
-                        !collectionData?.hasCollectionWritePermission &&
-                        !collectionData?.isCollectionCreatedByCurrentUser
-                            ? `You don't have access to this collection`
-                            : `View collection`
-                    }}
-                </template>
+            <div
+                v-if="
+                    [
+                        'SalesforceOrganization',
+                        'SalesforceReport',
+                        'SalesforceDashboard',
+                    ].includes(selectedAsset?.typeName)
+                "
+                class="flex flex-col px-5 text-sm"
+            >
+                <div class="flex items-center mb-1 text-gray-500">
+                    <span>Source ID</span>
+                    <a-tooltip title="Copy">
+                        <div
+                            v-if="sourceId(selectedAsset) !== '-'"
+                            @click="
+                                handleCopyValue(
+                                    sourceId(selectedAsset),
+                                    'Source ID'
+                                )
+                            "
+                        >
+                            <AtlanIcon
+                                icon="CopyOutlined"
+                                class="w-auto ml-1 cursor-pointer mb-0.5"
+                            /></div
+                    ></a-tooltip>
+                </div>
 
-                <a-button
-                    block
-                    class="flex items-center px-2 shadow-none"
-                    :class="
-                        !collectionData?.hasCollectionReadPermission &&
-                        !collectionData?.hasCollectionWritePermission &&
-                        !collectionData?.isCollectionCreatedByCurrentUser
-                            ? 'disabledButton'
-                            : ''
-                    "
-                    @click="handleCollectionClick"
-                    :disabled="
-                        !collectionData?.hasCollectionReadPermission &&
-                        !collectionData?.hasCollectionWritePermission &&
-                        !collectionData?.isCollectionCreatedByCurrentUser
-                    "
-                >
-                    <div class="flex items-center">
-                        <!-- <AtlanIcon
-                            icon="CollectionIconSmall"
-                            class="mr-1 mb-0.5"
-                        /> -->
+                <span class="text-gray-700">{{ sourceId(selectedAsset) }}</span>
+            </div>
 
-                        <span class="w-5 h-5 mr-1 -mt-1 text-lg">{{
-                            collectionData?.collectionInfo?.attributes?.icon
-                                ? collectionData?.collectionInfo?.attributes
-                                      ?.icon
-                                : '🗃'
-                        }}</span>
-
-                        <span class="text-left truncate" style="width: 270px">
-                            {{ collectionData?.collectionInfo?.displayText }}
-                        </span>
+            <div
+                v-if="
+                    ['SalesforceDashboard'].includes(selectedAsset?.typeName) &&
+                    selectedAsset?.attributes?.dashboardType
+                "
+                class="flex px-5"
+            >
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-sm text-gray-500"
+                        >Dashboard Type</span
+                    >
+                    <span class="text-gray-700">{{
+                        selectedAsset?.attributes?.dashboardType
+                    }}</span>
+                </div>
+            </div>
+            <div
+                v-if="
+                    ['SalesforceReport'].includes(selectedAsset?.typeName) &&
+                    selectedAsset?.attributes?.reportType
+                "
+                class="flex px-5"
+            >
+                <div class="flex flex-col text-sm">
+                    <div class="mb-1 text-sm text-gray-500">Report Type</div>
+                    <div class="text-gray-700">
+                        {{ selectedAsset?.attributes?.reportType?.label }}
                     </div>
-                    <AtlanIcon
-                        icon="Lock"
-                        v-if="
+                </div>
+            </div>
+
+            <div
+                v-if="
+                    (isBiAsset(selectedAsset) || isSaasAsset(selectedAsset)) &&
+                    ![
+                        'PowerBIWorkspace',
+                        'TableauSite',
+                        'LookerFolder',
+                        'LookerProject',
+                        'LookerQuery',
+                        'SalesforceOrganization',
+                    ].includes(selectedAsset?.typeName)
+                "
+                class="flex px-5"
+            >
+                <ParentContext :asset="selectedAsset" />
+            </div>
+
+            <div
+                v-if="['SalesforceObject'].includes(selectedAsset?.typeName)"
+                class="flex px-5"
+            >
+                <FieldCount :asset="selectedAsset" />
+            </div>
+
+            <div
+                v-if="
+                    ['SalesforceReport'].includes(selectedAsset?.typeName) &&
+                    detailColumns(selectedAsset).length > 0
+                "
+                class="flex px-5"
+            >
+                <div class="flex flex-col w-full text-sm">
+                    <span class="mb-1 text-sm text-gray-500"
+                        >Detail Columns</span
+                    >
+                    <DetailsContainer
+                        :array="detailColumns(selectedAsset)"
+                        class="rounded-lg"
+                    />
+                </div>
+            </div>
+
+            <div
+                v-if="
+                    ['SalesforceField'].includes(selectedAsset?.typeName) &&
+                    picklistValues(selectedAsset).length > 0
+                "
+                class="flex px-5"
+            >
+                <div class="flex flex-col w-full text-sm">
+                    <span class="mb-1 text-sm text-gray-500"
+                        >Picklist Values</span
+                    >
+                    <DetailsContainer
+                        :array="picklistValues(selectedAsset)"
+                        class="rounded-lg"
+                    />
+                </div>
+            </div>
+
+            <div
+                v-if="
+                    ['LookerDashboard', 'LookerLook'].includes(
+                        selectedAsset.typeName
+                    )
+                "
+                class="flex px-5"
+            >
+                <SourceViewCount :asset="selectedAsset" />
+            </div>
+            <div
+                v-if="['LookerFolder'].includes(selectedAsset.typeName)"
+                class="flex px-5"
+            >
+                <SubFolderCount :asset="selectedAsset" />
+            </div>
+
+            <div v-if="sourceOwners(selectedAsset)" class="flex px-5">
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-sm text-gray-500">Source Owner</span>
+                    <span class="text-gray-700">{{
+                        sourceOwners(selectedAsset)
+                    }}</span>
+                </div>
+            </div>
+
+            <div v-if="selectedAsset?.attributes?.noteText" class="flex px-5">
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-sm text-gray-500">Note</span>
+                    <span class="text-gray-700">{{
+                        selectedAsset?.attributes?.noteText
+                    }}</span>
+                </div>
+            </div>
+
+            <div
+                v-if="selectedAsset?.attributes?.subtitleText"
+                class="flex px-5"
+            >
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-sm text-gray-500"
+                        >Subtitle Text</span
+                    >
+                    <span class="text-gray-700">{{
+                        selectedAsset?.attributes?.subtitleText
+                    }}</span>
+                </div>
+            </div>
+
+            <div
+                v-if="selectedAsset?.attributes?.inlineHelpText"
+                class="flex px-5"
+            >
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-sm text-gray-500">Help Text</span>
+                    <span class="text-gray-700">{{
+                        selectedAsset?.attributes?.inlineHelpText
+                    }}</span>
+                </div>
+            </div>
+
+            <div
+                v-if="
+                    selectedAsset?.typeName === 'LookerQuery' &&
+                    fieldsLookerQuery(selectedAsset).length > 0
+                "
+                class="flex px-5"
+            >
+                <div class="flex flex-col w-full text-sm">
+                    <span class="mb-1 text-sm text-gray-500">Fields</span>
+
+                    <DetailsContainer
+                        :array="fieldsLookerQuery(selectedAsset)"
+                        class="rounded-lg"
+                    />
+                </div>
+            </div>
+
+            <div
+                v-if="
+                    isSelectedAssetHaveRowsAndColumns(selectedAsset) &&
+                    externalLocation(selectedAsset)
+                "
+                class="flex px-5"
+            >
+                <div class="flex flex-col text-sm">
+                    <span class="mb-2 text-sm text-gray-500"
+                        >External Location</span
+                    >
+                    <span class="font-semibold break-all">{{
+                        externalLocation(selectedAsset)
+                    }}</span>
+                </div>
+            </div>
+
+            <div
+                v-if="
+                    isSelectedAssetHaveRowsAndColumns(selectedAsset) &&
+                    externalLocation(selectedAsset)
+                "
+                class="flex px-5"
+            >
+                <div
+                    v-if="externalLocationFormat(selectedAsset)"
+                    class="flex flex-col text-sm cursor-pointer"
+                >
+                    <span class="mb-2 text-sm text-gray-500"
+                        >External Location Format</span
+                    >
+                    <span class="text-gray-700 break-all">{{
+                        externalLocationFormat(selectedAsset)
+                    }}</span>
+                </div>
+            </div>
+
+            <div
+                v-if="selectedAsset?.typeName === 'Query'"
+                class="flex flex-col px-5 text-sm"
+            >
+                <div class="mb-1 text-sm text-gray-500">Collection</div>
+
+                <a-tooltip placement="left" color="#363636">
+                    <template #title>
+                        {{
+                            !collectionData?.hasCollectionReadPermission &&
+                            !collectionData?.hasCollectionWritePermission &&
+                            !collectionData?.isCollectionCreatedByCurrentUser
+                                ? `You don't have access to this collection`
+                                : `View collection`
+                        }}
+                    </template>
+
+                    <a-button
+                        block
+                        class="flex items-center px-2 shadow-none"
+                        :class="
+                            !collectionData?.hasCollectionReadPermission &&
+                            !collectionData?.hasCollectionWritePermission &&
+                            !collectionData?.isCollectionCreatedByCurrentUser
+                                ? 'disabledButton'
+                                : ''
+                        "
+                        @click="handleCollectionClick"
+                        :disabled="
                             !collectionData?.hasCollectionReadPermission &&
                             !collectionData?.hasCollectionWritePermission &&
                             !collectionData?.isCollectionCreatedByCurrentUser
                         "
-                    />
-                    <AtlanIcon v-else icon="External" />
-                </a-button>
-            </a-tooltip>
-        </div>
+                    >
+                        <div class="flex items-center">
+                            <!-- <AtlanIcon
+                            icon="CollectionIconSmall"
+                            class="mr-1 mb-0.5"
+                        /> -->
 
-        <div
-            v-if="
-                selectedAsset?.guid &&
-                selectedAsset?.typeName === 'Query' &&
-                attributes(selectedAsset)?.parent?.typeName === 'Folder'
-            "
-            class="flex flex-col px-5 text-sm"
-        >
-            <div class="mb-1 text-sm text-gray-500">
-                {{ attributes(selectedAsset)?.parent?.typeName }}
-            </div>
-            <div class="text-sm text-gray-700">
-                {{ attributes(selectedAsset)?.parent?.attributes?.name }}
-            </div>
-        </div>
+                            <span class="w-5 h-5 mr-1 -mt-1 text-lg">{{
+                                collectionData?.collectionInfo?.attributes?.icon
+                                    ? collectionData?.collectionInfo?.attributes
+                                          ?.icon
+                                    : '🗃'
+                            }}</span>
 
-        <!-- <div
+                            <span
+                                class="text-left truncate"
+                                style="width: 270px"
+                            >
+                                {{
+                                    collectionData?.collectionInfo?.displayText
+                                }}
+                            </span>
+                        </div>
+                        <AtlanIcon
+                            icon="Lock"
+                            v-if="
+                                !collectionData?.hasCollectionReadPermission &&
+                                !collectionData?.hasCollectionWritePermission &&
+                                !collectionData?.isCollectionCreatedByCurrentUser
+                            "
+                        />
+                        <AtlanIcon v-else icon="External" />
+                    </a-button>
+                </a-tooltip>
+            </div>
+
+            <div
+                v-if="
+                    selectedAsset?.guid &&
+                    selectedAsset?.typeName === 'Query' &&
+                    attributes(selectedAsset)?.parent?.typeName === 'Folder'
+                "
+                class="flex flex-col px-5 text-sm"
+            >
+                <div class="mb-1 text-sm text-gray-500">
+                    {{ attributes(selectedAsset)?.parent?.typeName }}
+                </div>
+                <div class="text-sm text-gray-700">
+                    {{ attributes(selectedAsset)?.parent?.attributes?.name }}
+                </div>
+            </div>
+
+            <!-- <div
             v-if="
                 selectedAsset?.guid &&
                 selectedAsset?.typeName === 'Query' &&
@@ -571,235 +634,242 @@
             </div>
         </div> -->
 
-        <div class="flex flex-col">
+            <div class="flex flex-col">
+                <div
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+                >
+                    <span>Description</span>
+                    <a-tooltip title="User Description" placement="left">
+                        <AtlanIcon
+                            v-if="isUserDescription(selectedAsset)"
+                            icon="User"
+                            class="h-3 mr-1"
+                        ></AtlanIcon
+                    ></a-tooltip>
+                </div>
+
+                <Description
+                    ref="descriptionRef"
+                    v-model="localDescription"
+                    class="mx-4"
+                    :selected-asset="selectedAsset"
+                    :edit-permission="editPermission"
+                    @change="handleChangeDescription"
+                />
+            </div>
+            <div v-if="isProcess(selectedAsset)" class="flex flex-col text-sm">
+                <span class="px-5 mb-1 text-gray-500">Query</span>
+                <SQLSnippet
+                    v-if="getProcessSQL(selectedAsset)?.length"
+                    class="mx-4 rounded-lg"
+                    :text="getProcessSQL(selectedAsset)"
+                    background="bg-primary-light"
+                />
+                <span v-else class="px-5 text-gray-600"
+                    >No SQL data available</span
+                >
+            </div>
+            <div v-if="selectedAsset?.typeName === 'LookerQuery'">
+                <SQLSnippet
+                    class="mx-4 rounded-lg"
+                    :text="selectedAsset?.attributes?.sourceDefinition"
+                    background="bg-primary-light"
+                />
+            </div>
+
             <div
-                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+                v-if="selectedAsset.guid && selectedAsset.typeName === 'Query'"
             >
-                <span>Description</span>
-                <a-tooltip title="User Description" placement="left">
-                    <AtlanIcon
-                        v-if="isUserDescription(selectedAsset)"
-                        icon="User"
-                        class="h-3 mr-1"
-                    ></AtlanIcon
-                ></a-tooltip>
+                <SavedQuery :selected-asset="selectedAsset" class="mx-4" />
             </div>
-
-            <Description
-                ref="descriptionRef"
-                v-model="localDescription"
-                class="mx-4"
-                :selected-asset="selectedAsset"
-                :edit-permission="editPermission"
-                @change="handleChangeDescription"
-            />
-        </div>
-        <div v-if="isProcess(selectedAsset)" class="flex flex-col text-sm">
-            <span class="px-5 mb-1 text-gray-500">Query</span>
-            <SQLSnippet
-                v-if="getProcessSQL(selectedAsset)?.length"
-                class="mx-4 rounded-lg"
-                :text="getProcessSQL(selectedAsset)"
-                background="bg-primary-light"
-            />
-            <span v-else class="px-5 text-gray-600">No SQL data available</span>
-        </div>
-        <div v-if="selectedAsset?.typeName === 'LookerQuery'">
-            <SQLSnippet
-                class="mx-4 rounded-lg"
-                :text="selectedAsset?.attributes?.sourceDefinition"
-                background="bg-primary-light"
-            />
-        </div>
-
-        <div v-if="selectedAsset.guid && selectedAsset.typeName === 'Query'">
-            <SavedQuery :selected-asset="selectedAsset" class="mx-4" />
-        </div>
-        <div
-            v-if="
-                selectedAsset.guid &&
-                !['Column', 'Connection'].includes(selectedAsset.typeName)
-            "
-            class="flex flex-col"
-        >
             <div
-                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+                v-if="
+                    selectedAsset.guid &&
+                    !['Column', 'Connection'].includes(selectedAsset.typeName)
+                "
+                class="flex flex-col"
             >
-                <span> Owners</span>
+                <div
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+                >
+                    <span> Owners</span>
+                </div>
+
+                <Owners
+                    v-model="localOwners"
+                    class="px-5"
+                    :selected-asset="selectedAsset"
+                    :edit-permission="editPermission"
+                    :showShortcut="true"
+                    @change="handleOwnersChange"
+                />
             </div>
 
-            <Owners
-                v-model="localOwners"
-                class="px-5"
-                :selected-asset="selectedAsset"
-                :edit-permission="editPermission"
-                :showShortcut="true"
-                @change="handleOwnersChange"
-            />
-        </div>
-
-        <div
-            class="flex flex-col"
-            v-if="selectedAsset.guid && selectedAsset.typeName == 'Connection'"
-        >
             <div
-                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+                class="flex flex-col"
+                v-if="
+                    selectedAsset.guid && selectedAsset.typeName == 'Connection'
+                "
             >
-                <span> Admins</span>
+                <div
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+                >
+                    <span> Admins</span>
+                </div>
+
+                <Admins
+                    v-model="localAdmins"
+                    class="px-5"
+                    :selected-asset="selectedAsset"
+                    :edit-permission="editPermission"
+                    @change="handleChangeAdmins"
+                />
             </div>
 
-            <Admins
-                v-model="localAdmins"
-                class="px-5"
-                :selected-asset="selectedAsset"
-                :edit-permission="editPermission"
-                @change="handleChangeAdmins"
-            />
-        </div>
+            <div
+                v-if="
+                    ![
+                        'AtlasGlossary',
+                        'AtlasGlossaryCategory',
+                        'Connection',
+                        'Query',
+                    ].includes(selectedAsset.typeName)
+                "
+                class="flex flex-col"
+            >
+                <div class="px-5 mb-1 text-sm text-gray-500">
+                    <span> Classification</span>
+                </div>
 
-        <div
-            v-if="
-                ![
-                    'AtlasGlossary',
-                    'AtlasGlossaryCategory',
-                    'Connection',
-                    'Query',
-                ].includes(selectedAsset.typeName)
-            "
-            class="flex flex-col"
-        >
-            <div class="px-5 mb-1 text-sm text-gray-500">
-                <span> Classification</span>
+                <Classification
+                    v-model="localClassifications"
+                    :guid="selectedAsset.guid"
+                    :edit-permission="
+                        selectedAssetUpdatePermission(
+                            selectedAsset,
+                            isDrawer,
+                            'ENTITY_ADD_CLASSIFICATION'
+                        )
+                    "
+                    :allowDelete="
+                        selectedAssetUpdatePermission(
+                            selectedAsset,
+                            isDrawer,
+                            'ENTITY_REMOVE_CLASSIFICATION'
+                        )
+                    "
+                    class="px-5"
+                    :showShortcut="true"
+                    @change="handleClassificationChange"
+                >
+                </Classification>
             </div>
 
-            <Classification
-                v-model="localClassifications"
-                :guid="selectedAsset.guid"
-                :edit-permission="
-                    selectedAssetUpdatePermission(
-                        selectedAsset,
-                        isDrawer,
-                        'ENTITY_ADD_CLASSIFICATION'
-                    )
+            <div
+                v-if="
+                    ![
+                        'AtlasGlossary',
+                        'AtlasGlossaryTerm',
+                        'AtlasGlossaryCategory',
+                        'Connection',
+                    ].includes(selectedAsset.typeName)
                 "
-                :allowDelete="
-                    selectedAssetUpdatePermission(
-                        selectedAsset,
-                        isDrawer,
-                        'ENTITY_REMOVE_CLASSIFICATION'
-                    )
-                "
-                class="px-5"
-                :showShortcut="true"
-                @change="handleClassificationChange"
+                class="flex flex-col"
             >
-            </Classification>
-        </div>
-
-        <div
-            v-if="
-                ![
-                    'AtlasGlossary',
-                    'AtlasGlossaryTerm',
-                    'AtlasGlossaryCategory',
-                    'Connection',
-                ].includes(selectedAsset.typeName)
-            "
-            class="flex flex-col"
-        >
-            <p class="px-5 mb-1 text-sm text-gray-500">Terms</p>
-            <TermsWidget
-                v-model="localMeanings"
-                :selected-asset="selectedAsset"
-                class="px-5"
-                :edit-permission="
-                    selectedAssetUpdatePermission(
-                        selectedAsset,
-                        isDrawer,
-                        'RELATIONSHIP_ADD',
-                        'AtlasGlossaryTerm'
-                    ) && editPermission
-                "
-                :allowDelete="
-                    selectedAssetUpdatePermission(
-                        selectedAsset,
-                        isDrawer,
-                        'RELATIONSHIP_REMOVE',
-                        'AtlasGlossaryTerm'
-                    ) && editPermission
-                "
-                @change="handleMeaningsUpdate"
-            >
-            </TermsWidget>
-        </div>
-
-        <div ref="animationPoint" class="flex flex-col">
-            <div class="px-5 mb-1 text-sm text-gray-500">Certificate</div>
-
-            <Certificate
-                v-model="localCertificate"
-                class="px-5"
-                :selected-asset="selectedAsset"
-                :edit-permission="editPermission"
-                @change="handleChangeCertificate"
-            />
-        </div>
-
-        <div
-            v-if="selectedAsset.typeName === 'AtlasGlossaryTerm'"
-            class="flex flex-col"
-        >
-            <p
-                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
-            >
-                Categories
-            </p>
-            <Categories
-                v-model="localCategories"
-                :selected-asset="selectedAsset"
-                class="px-5"
-                :edit-permission="editPermission"
-                @change="handleCategoriesUpdate"
-            >
-            </Categories>
-        </div>
-
-        <div
-            v-if="selectedAsset.typeName === 'AtlasGlossaryTerm'"
-            class="flex flex-col"
-        >
-            <p
-                class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
-            >
-                Related Terms
-            </p>
-            <RelatedTerms
-                v-model="localSeeAlso"
-                :selected-asset="selectedAsset"
-                class="px-5"
-                :edit-permission="editPermission"
-                :allow-delete="editPermission"
-                @change="handleSeeAlsoUpdate"
-            >
-            </RelatedTerms>
-        </div>
-        <div
-            v-if="isBiAsset(selectedAsset) || isSaasAsset(selectedAsset)"
-            class="flex flex-col px-5 gap-y-4"
-        >
-            <SourceUpdated :asset="selectedAsset" />
-            <SourceCreated :asset="selectedAsset" />
-        </div>
-        <a-modal
-            v-model:visible="sampleDataVisible"
-            :footer="null"
-            :closable="false"
-            :destroy-on-close="true"
-            width="1000px"
-            ><div class="p-3">
-                <SampleDataTable :asset="selectedAsset" />
+                <p class="px-5 mb-1 text-sm text-gray-500">Terms</p>
+                <TermsWidget
+                    v-model="localMeanings"
+                    :selected-asset="selectedAsset"
+                    class="px-5"
+                    :edit-permission="
+                        selectedAssetUpdatePermission(
+                            selectedAsset,
+                            isDrawer,
+                            'RELATIONSHIP_ADD',
+                            'AtlasGlossaryTerm'
+                        ) && editPermission
+                    "
+                    :allowDelete="
+                        selectedAssetUpdatePermission(
+                            selectedAsset,
+                            isDrawer,
+                            'RELATIONSHIP_REMOVE',
+                            'AtlasGlossaryTerm'
+                        ) && editPermission
+                    "
+                    @change="handleMeaningsUpdate"
+                >
+                </TermsWidget>
             </div>
-        </a-modal>
+
+            <div ref="animationPoint" class="flex flex-col">
+                <div class="px-5 mb-1 text-sm text-gray-500">Certificate</div>
+
+                <Certificate
+                    v-model="localCertificate"
+                    class="px-5"
+                    :selected-asset="selectedAsset"
+                    :edit-permission="editPermission"
+                    @change="handleChangeCertificate"
+                />
+            </div>
+
+            <div
+                v-if="selectedAsset.typeName === 'AtlasGlossaryTerm'"
+                class="flex flex-col"
+            >
+                <p
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+                >
+                    Categories
+                </p>
+                <Categories
+                    v-model="localCategories"
+                    :selected-asset="selectedAsset"
+                    class="px-5"
+                    :edit-permission="editPermission"
+                    @change="handleCategoriesUpdate"
+                >
+                </Categories>
+            </div>
+
+            <div
+                v-if="selectedAsset.typeName === 'AtlasGlossaryTerm'"
+                class="flex flex-col"
+            >
+                <p
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+                >
+                    Related Terms
+                </p>
+                <RelatedTerms
+                    v-model="localSeeAlso"
+                    :selected-asset="selectedAsset"
+                    class="px-5"
+                    :edit-permission="editPermission"
+                    :allow-delete="editPermission"
+                    @change="handleSeeAlsoUpdate"
+                >
+                </RelatedTerms>
+            </div>
+            <div
+                v-if="isBiAsset(selectedAsset) || isSaasAsset(selectedAsset)"
+                class="flex flex-col px-5 gap-y-4"
+            >
+                <SourceUpdated :asset="selectedAsset" />
+                <SourceCreated :asset="selectedAsset" />
+            </div>
+            <a-modal
+                v-model:visible="sampleDataVisible"
+                :footer="null"
+                :closable="false"
+                :destroy-on-close="true"
+                width="1000px"
+                ><div class="p-3">
+                    <SampleDataTable :asset="selectedAsset" />
+                </div>
+            </a-modal>
+        </div>
     </div>
 </template>
 

@@ -95,14 +95,14 @@
             @change="handleChange"
         />
         <UserSelector
-            v-if="typeName === 'users'"
+            v-else-if="typeName === 'users'"
             ref="inputRef"
             v-model:value="localValue"
             :multiple="isMultivalued"
             @change="handleChange"
         />
         <GroupSelector
-            v-if="typeName === 'groups'"
+            v-else-if="typeName === 'groups'"
             ref="inputRef"
             v-model:value="localValue"
             :multiple="isMultivalued"
@@ -114,7 +114,7 @@
             v-model:value="localValue"
             class="flex-grow shadow-none border-1"
             :allow-clear="true"
-            :placeholder="`Select ${isMultivalued ? 'enums' : 'an enum'}`"
+            :placeholder="`Select ${isMultivalued ? 'items' : 'an item'}`"
             :mode="isMultivalued ? 'multiple' : null"
             style="width: 100%"
             :show-arrow="true"
@@ -125,6 +125,17 @@
                 <AtlanIcon icon="CaretDown" />
             </template>
         </a-select>
+        <a-textarea
+            v-else
+            ref="inputRef"
+            v-model:value="localValue"
+            :allow-clear="true"
+            :auto-size="true"
+            placeholder="Type..."
+            type="text"
+            class="flex-grow shadow-none"
+            @change="handleChange"
+        />
     </div>
 </template>
 

@@ -6,9 +6,11 @@ on:
       - main
       - staging
 jobs:
+  #steps:
   deploy:
-    name: Production Deployment
+    name: Deployment
     runs-on: ubuntu-latest
+    # needs: bump-version
 
     steps:
       - name: Get branch name
@@ -25,6 +27,8 @@ jobs:
             channel="beta"
           elif [[ "$repo_branch" == "staging" ]]; then
             channel="staging"
+          elif [[ "$repo_branch" == "development" ]]; then
+            channel="development"
           else 
             echo "Build not configured for current branch"
             exit 1
@@ -46,6 +50,26 @@ jobs:
 
       - name: Check out branch
         uses: actions/checkout@v2
+      #   with:
+      #     ref: ${{ github.ref }}
+
+      # - name: "cat package.json"
+      #   run: cat ./package.json
+
+      # - name: "Setup Node.js"
+      #   uses: "actions/setup-node@v1"
+      #   with:
+      #     node-version: 12
+
+      # - name: "Automated Version Bump"
+      #   uses: "phips28/gh-action-bump-version@master"
+      #   with:
+      #     tag-prefix: ""
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.my_pat }}
+
+      # - name: "cat package.json"
+      #   run: cat ./package.json
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v2.0.1
@@ -97,6 +121,8 @@ jobs:
             aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_STAGING --paths "/*"
           elif [[ "$repo_branch" == "main" ]]; then
             aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_MAIN --paths "/*"
+          elif [[ "$repo_branch" == "development" ]]; then
+            aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DEVELOPMENT --paths "/*"
           else
             echo "Build not configured for current branch"
             exit 1
@@ -105,6 +131,7 @@ jobs:
           CLOUDFRONT_BETA: ${{ secrets.CLOUDFRONT_DIST_BETA }}
           CLOUDFRONT_STAGING: ${{ secrets.CLOUDFRONT_DIST_STAGING }}
           CLOUDFRONT_MAIN: ${{ secrets.CLOUDFRONT_DIST_MAIN }}
+          CLOUDFRONT_DEVELOPMENT: ${{ secrets.CLOUDFRONT_DIST_DEVELOPMENT }}
 
       # Send a slack notification message on the specified channel with the failure github actions workflow report.
       - name: Slack notification

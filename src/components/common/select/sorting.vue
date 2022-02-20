@@ -1,7 +1,7 @@
 <template>
     <a-select
         placeholder="Sorting"
-        style="min-width: 100px"
+        style="min-width: 125px"
         v-model:value="localValue"
         :allowClear="false"
         :showSearch="false"
@@ -9,7 +9,7 @@
         :get-popup-container="(target) => target.parentNode"
     >
         <template #suffixIcon>
-            <AtlanIcon icon="CaretDown" class="mb-1" />
+            <AtlanIcon icon="CaretDown" class="mb-0" />
         </template>
         <a-select-option
             :value="item.id"

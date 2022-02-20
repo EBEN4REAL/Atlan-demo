@@ -23,6 +23,7 @@
         <div style="display: flex">
             <div ref="graphContainer" style="flex: 1"></div>
         </div>
+
         <!-- Lineage Header -->
         <LineageHeader
             v-if="isComputeDone"
@@ -191,6 +192,7 @@
                     renderLayout,
                     mergedLineageData,
                     sameSourceCount,
+                    sameTargetCount,
                     nodes,
                     edges,
                 } = await useComputeGraph(
@@ -219,6 +221,7 @@
                     graphPrefs,
                     mergedLineageData,
                     sameSourceCount,
+                    sameTargetCount,
                     nodes,
                     edges,
                     onSelectAsset,

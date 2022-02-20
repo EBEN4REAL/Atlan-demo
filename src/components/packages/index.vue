@@ -1,70 +1,63 @@
 <template>
-    <div class="relative flex flex-1">
-        <div class="absolute z-0 metadata-header"></div>
-        <div class="z-10 flex flex-col w-full h-full overflow-hidden">
-            <div class="flex items-center px-6 py-3">
-                <a-tooltip title="Back to Workflow Center">
-                    <a-button
-                        class="px-1 mr-2"
-                        @click="handleBack"
-                        size="large"
-                    >
-                        <atlan-icon
-                            icon="ArrowRight"
-                            class="w-auto h-4 text-gray-500 transform rotate-180"
-                        />
-                    </a-button>
-                </a-tooltip>
-                <div class="flex flex-col">
-                    <span class="text-xl font-semibold text-gray-700">
-                        Metadata Marketplace</span
-                    >
-                    <span class="text-sm text-gray-500">
-                        Home for all your meta needs</span
-                    >
-                </div>
+    <div class="flex flex-col flex-1 h-full bg-primary-menu">
+        <div class="flex items-center px-6 py-3">
+            <a-tooltip title="Back to Workflow Center">
+                <a-button class="px-1 mr-2" @click="handleBack" size="large">
+                    <atlan-icon
+                        icon="ArrowRight"
+                        class="w-auto h-4 text-gray-500 transform rotate-180"
+                    />
+                </a-button>
+            </a-tooltip>
+            <div class="flex flex-col">
+                <span class="text-xl font-semibold text-gray-700">
+                    Metadata Marketplace</span
+                >
+                <span class="text-sm text-gray-500">
+                    Home for all your meta needs</span
+                >
             </div>
-            <div class="px-6">
+        </div>
+
+        <div class="flex items-center justify-between w-full px-6 pb-3">
+            <AggregationTabs
+                :list="getAggregationByType"
+                v-model="postFacets.typeName"
+                @change="handlePackageTypeChange"
+            ></AggregationTabs>
+            <div class="w-1/3">
                 <a-input
-                    class="w-1/2"
                     v-model:value="queryText"
                     placeholder="Search Packages"
                     @change="handleSearchChange"
                 ></a-input>
             </div>
+        </div>
 
-            <div class="px-6 pt-2 pb-3">
-                <AggregationTabs
-                    :list="getAggregationByType"
-                    v-model="postFacets.typeName"
-                    @change="handlePackageTypeChange"
-                ></AggregationTabs>
+        <div class="flex flex-1 w-full h-full mb-3 overflow-y-auto">
+            <div
+                class="flex items-center justify-center w-full"
+                v-if="isLoading"
+            >
+                <a-spin></a-spin>
+            </div>
+            <div
+                class="flex items-center justify-center w-full"
+                v-else-if="error && !isLoading"
+            >
+                <ErrorView></ErrorView>
+            </div>
+            <div
+                class="flex items-center justify-center w-full"
+                v-else-if="!error && !isLoading && list.length === 0"
+            >
+                <EmptyView
+                    desc="No packages found"
+                    empty-screen="WFEmptyTab"
+                ></EmptyView>
             </div>
 
-            <div class="flex flex-1 w-full h-full">
-                <div
-                    class="flex items-center justify-center w-full"
-                    v-if="isLoading"
-                >
-                    <a-spin></a-spin>
-                </div>
-                <div
-                    class="flex items-center justify-center w-full"
-                    v-else-if="error && !isLoading"
-                >
-                    <ErrorView></ErrorView>
-                </div>
-                <div
-                    class="flex items-center justify-center w-full"
-                    v-else-if="!error && !isLoading && list.length === 0"
-                >
-                    <EmptyView
-                        desc="No packages found"
-                        empty-screen="WFEmptyTab"
-                    ></EmptyView>
-                </div>
-                <div v-else class="flex h-full">
-                    <!-- <div class="flex ml-6 filters">
+            <!-- <div class="flex ml-6 filters">
                         <PackageFilters
                             :filter-list="packageFilters"
                             v-model="facets"
@@ -74,14 +67,13 @@
                         ></PackageFilters>
                     </div> -->
 
-                    <PackageList
-                        :list="list"
-                        class="px-6"
-                        @select="handleSelect"
-                        @dblClick="handleDoubleClick"
-                    ></PackageList>
-                </div>
-            </div>
+            <PackageList
+                v-else
+                :list="list"
+                class="px-6"
+                @select="handleSelect"
+                @dblClick="handleDoubleClick"
+            ></PackageList>
         </div>
     </div>
 </template>

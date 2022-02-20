@@ -3,7 +3,8 @@
  * @param date date timestamp
  * @returns human readable date string without time eg.
  */
-export const formatDate = (date: string | number | Date) => new Date(date).toLocaleDateString()
+export const formatDate = (date: string | number | Date) =>
+    new Date(date).toLocaleDateString()
 
 export const formatDateTime = (
     date: any,
@@ -17,7 +18,6 @@ export const formatDateTime = (
     if (!date) {
         return
     }
-    console.log('formatDateTime', { date })
     if (isUnixTimestamp) {
         date = Number(date)
     }
@@ -27,7 +27,6 @@ export const formatDateTime = (
             formattedDate = new Intl.DateTimeFormat(locale, config).format(
                 new Date(date)
             )
-            console.log('formatDateTime', { formattedDate })
             // formattedDate = new Date(date)
         } else {
             // formattedDate = new Intl.DateTimeFormat(locale, config).format(date)
@@ -44,6 +43,9 @@ export const formatDateTime = (
  * @returns time ago string with shortened time-unit ex - 1h ago
  */
 export const getShortNotationDateTimeAgo = (dateString) => {
+    /** If the string has no digit i.e. is like `just now`, 'last week` -> we return the string as is */
+    if (!/\d/.test(dateString)) return dateString
+
     const timeUnitStrings = [
         'sec',
         'min',

@@ -20,8 +20,8 @@
             <a-select-option :value="item.attributes?.qualifiedName">
                 <div class="flex flex-col">
                     <div class="flex items-center">
-                        <AtlanIcon
-                            :icon="getConnectorImage(item)"
+                        <img
+                            :src="getConnectorImage(item)"
                             class="h-4 mr-1 mb-0.5"
                             style="min-width: 1rem"
                         /><span class="truncate">{{
@@ -39,7 +39,7 @@
 
 <script lang="ts">
     import { useVModels } from '@vueuse/core'
-    import { defineComponent, ref, toRefs, computed } from 'vue'
+    import { defineComponent, ref, toRefs, computed, onMounted } from 'vue'
 
     import useConnectionData from '~/composables/connection/useConnectionData'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -106,6 +106,18 @@
                     (item) => item.id === persona.value
                 )
                 return found?.metadataPolicies.map((i) => i.connectionId) || []
+            })
+
+            onMounted(() => {
+                if (connector.value) {
+                    if (!selectedValue.value) {
+                        if (filteredList.value.length === 1) {
+                            selectedValue.value =
+                                filteredList.value[0].attributes.qualifiedName
+                            handleChange(selectedValue.value)
+                        }
+                    }
+                }
             })
 
             const isAdminConnection = (item) => {

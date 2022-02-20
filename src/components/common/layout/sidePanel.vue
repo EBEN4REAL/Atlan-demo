@@ -11,7 +11,7 @@
                 <span class="flex items-center">
                     <atlan-icon
                         icon="Home"
-                        class="h-5 mr-2"
+                        class="h-4 mr-2"
                         :class="{
                             'text-primary': page === '/' || page === 'home',
                         }"

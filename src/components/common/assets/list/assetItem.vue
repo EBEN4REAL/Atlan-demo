@@ -1,10 +1,12 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
     <div
-        class="my-0.5 rounded transition duration-100 hover:bg-primary-menu"
+        class="transition duration-100 hover:border-primary"
         :class="{
-            'outline-primary bg-primary-menu shadow-sm': isSelected,
+            'border-primary  shadow border bg-primary-menu': isSelected,
             'cursor-pointer': enableSidebarDrawer,
+            'opacity-80': isLoading,
+            'my-1 rounded-lg': page === 'assets',
         }"
         @click="handlePreview(item)"
     >
@@ -12,7 +14,7 @@
             class="flex flex-col"
             :class="[
                 !bulkSelectMode && isSelected
-                    ? 'border-primary bg-primary-menu'
+                    ? 'border-primary '
                     : 'border-transparent',
                 bulkSelectMode && isChecked ? 'bg-primary-menu' : '',
             ]"
@@ -61,7 +63,11 @@
                             :clamp-percentage="assetNameTruncatePercentage"
                             :tooltip-text="`${title(item)}`"
                             :route-to="getProfilePath(item)"
-                            classes="text-md font-bold mb-0 cursor-pointer text-primary hover:underline "
+                            :classes="
+                                isScrubbed(item)
+                                    ? 'text-md mb-0  font-semibold cursor-pointer text-primary hover:underline opacity-80 '
+                                    : 'text-md font-bold mb-0 cursor-pointer text-primary hover:underline  '
+                            "
                             :should-open-in-new-tab="openAssetProfileInNewTab"
                             @click="(e) => e.stopPropagation()"
                         />
@@ -79,7 +85,7 @@
                             <AtlanIcon
                                 v-if="isScrubbed(item)"
                                 icon="Lock"
-                                class="h-4 mb-1 ml-1"
+                                class="h-4 mb-1 ml-2 text-gray-500"
                             ></AtlanIcon
                         ></a-tooltip>
                     </div>
@@ -94,7 +100,7 @@
                     </div>
 
                     <!-- Info bar -->
-                    <div class="flex flex-wrap items-center mt-1">
+                    <div class="flex flex-wrap items-center mt-1.5">
                         <div class="flex items-center mr-2">
                             <a-tooltip
                                 v-if="connectorName(item)"
@@ -106,10 +112,10 @@
                                         `/${connectionName(item)}`
                                     }}</span>
                                 </template>
-                                <AtlanIcon
-                                    :icon="getConnectorImage(item)"
+                                <img
+                                    :src="getConnectorImage(item)"
                                     class="h-4 mr-1 mb-0.5"
-                                ></AtlanIcon>
+                                />
                             </a-tooltip>
 
                             <AtlanIcon
@@ -199,11 +205,10 @@
                                         )
                                     "
                                     class="mr-2 text-gray-500"
-                                    ><span
-                                        class="font-semibold tracking-tight text-gray-500"
+                                    ><span class="text-gray-500"
                                         >{{ rowCount(item, false) }}
                                     </span>
-                                    Rows</span
+                                    rows</span
                                 >
                                 <template #title>
                                     <span
@@ -225,11 +230,10 @@
                                 </template>
                             </a-tooltip>
                             <span class="text-gray-500">
-                                <span
-                                    class="font-semibold tracking-tight text-gray-500"
-                                    >{{ columnCount(item, false) }}</span
-                                >
-                                Cols</span
+                                <span class="text-gray-500">{{
+                                    columnCount(item, false)
+                                }}</span>
+                                columns</span
                             >
                         </div>
 
@@ -242,14 +246,10 @@
                             class="flex mr-2 text-sm text-gray-500"
                         >
                             <div class="flex items-center text-gray">
-                                <!-- <img
+                                <img
                                     :src="getConnectorImage(item)"
-                                    class="h-3 mr-1 mb-0.5"
-                                /> -->
-                                <AtlanIcon
-                                    :icon="getConnectorImage(item)"
                                     class="h-4 mr-1 mb-0.5"
-                                ></AtlanIcon>
+                                />
                                 <span>{{
                                     `${connectorName(item)}/${connectionName(
                                         item
@@ -885,7 +885,7 @@
                         </div>
                     </div>
 
-                    <div class="flex flex-wrap gap-x-1 items-center">
+                    <div class="flex flex-wrap items-center gap-x-1">
                         <div
                             v-if="
                                 clsfList.length > 0 &&
@@ -900,6 +900,14 @@
                                 <PopoverClassification
                                     :classification="classification"
                                     :entity-guid="item.guid"
+                                    :mouse-enter-delay="
+                                        classificationPopoverMouseEnterDelay
+                                    "
+                                    @mouse-entered="
+                                        () => {
+                                            classificationPopoverMouseEnterDelay = 0.2
+                                        }
+                                    "
                                 >
                                     <ClassificationPill
                                         :name="classification.name"
@@ -954,17 +962,20 @@
                                 </div>
                             </template>
                         </div>
-                        <div v-if="categories(item)?.length > 0" class="flex items-center gap-x-2">
+                        <div
+                            v-if="categories(item)?.length > 0"
+                            class="flex items-center gap-x-2"
+                        >
                             <div
-                                v-for="cat in categories(item).slice(0,3)"
+                                v-for="cat in categories(item).slice(0, 3)"
                                 :key="cat.guid"
-                                class="flex items-center border rounded-full bg-white px-2 py-1  mt-1 group hover:text-white hover:bg-primary "
+                                class="flex items-center px-2 py-1 mt-1 bg-white border rounded-full group hover:text-white hover:bg-primary"
                                 style="max-width: 200px"
                             >
                                 <div class="w-4 mr-1">
                                     <AtlanIcon
                                         icon="Category"
-                                        class="h-4 text-purple  group-hover:text-white"
+                                        class="h-4 text-purple group-hover:text-white"
                                     ></AtlanIcon>
                                 </div>
                                 <Tooltip
@@ -986,12 +997,14 @@
                         >
                             <template #content>
                                 <div
-                                    class="flex items-center flex-wrap gap-x-2 gap-y-2 px-2 py-2"
+                                    class="flex flex-wrap items-center px-2 py-2 gap-x-2 gap-y-2"
                                 >
                                     <div
-                                        v-for="cat in categories(item)?.slice(3)"
+                                        v-for="cat in categories(item)?.slice(
+                                            3
+                                        )"
                                         :key="cat.guid"
-                                        class="flex items-center border rounded-full bg-white px-2 py-1  hover:text-white hover:bg-primary group"
+                                        class="flex items-center px-2 py-1 bg-white border rounded-full hover:text-white hover:bg-primary group"
                                         style="max-width: 200px"
                                     >
                                         <div class="w-4 mr-1">
@@ -1018,9 +1031,9 @@
                             </template>
 
                             <div
-                                class="flex items-center mr-3 text-sm gap-x-1  bg-transparent px-2 text-primary py-1  mt-1 cursor-pointer"
+                                class="flex items-center px-2 py-1 mt-1 mr-3 text-sm bg-transparent cursor-pointer gap-x-1 text-primary"
                             >
-                               + {{ categories(item)?.slice(3)?.length }} more
+                                + {{ categories(item)?.slice(3)?.length }} more
                             </div>
                         </a-popover>
                     </div>
@@ -1031,9 +1044,12 @@
         <hr
             class="mx-2 text-gray-100 bg-gray-200"
             :class="
-                (bulkSelectMode && isChecked) || isSelected ? 'invisible' : ''
+                (bulkSelectMode && isChecked) || isSelected || page === 'assets'
+                    ? 'invisible'
+                    : ''
             "
         />
+
         <AssetDrawer
             :guid="selectedAssetDrawerGuid"
             :show-drawer="showAssetSidebarDrawer"
@@ -1151,6 +1167,16 @@
                 default: false,
                 required: false,
             },
+            isLoading: {
+                type: Boolean,
+                default: false,
+                required: false,
+            },
+            page: {
+                type: String,
+                required: false,
+                default: 'notAssets',
+            },
         },
         emits: ['listItem:check', 'unlinkAsset', 'preview', 'updateDrawer'],
         setup(props, { emit }) {
@@ -1163,11 +1189,14 @@
                 bulkSelectMode,
                 enableSidebarDrawer,
                 itemIndex,
+                isLoading,
             } = toRefs(props)
 
             const { getEntityStatusIcon } = useGlossaryData()
             const showAssetSidebarDrawer = ref(false)
             const selectedAssetDrawerGuid = ref('')
+
+            const classificationPopoverMouseEnterDelay = ref(1)
 
             const {
                 title,
@@ -1369,6 +1398,9 @@
                 fieldCount,
                 isCustom,
                 getEntityStatusIcon,
+                meanings,
+                isLoading,
+                classificationPopoverMouseEnterDelay,
             }
         },
     })

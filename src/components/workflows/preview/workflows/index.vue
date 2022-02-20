@@ -1,6 +1,10 @@
 <template>
     <div class="flex flex-col w-full h-full px-5 py-4 overflow-hidden">
-        <a-input placeholder="Search workflows" class="mb-2"></a-input>
+        <SearchAndFilter
+            v-model:value="queryText"
+            placeholder="Search workflows"
+            class="mb-2"
+        />
         <div class="flex flex-col flex-1 overflow-y-auto gap-y-3">
             <template v-for="workflow in list" :key="workflow.metadata.name">
                 <Item :item="workflow" :packageObject="item"></Item>
@@ -11,13 +15,14 @@
 
 <script lang="ts">
     import { defineComponent, provide, ref, toRefs, watch } from 'vue'
+    import { debouncedWatch } from '@vueuse/core'
     import UserPill from '@/common/pills/user.vue'
     import PopOverUser from '@/common/popover/user/user.vue'
+    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
     import { useWorkflowDiscoverList } from '~/composables/package/useWorkflowDiscoverList'
-    import Item from './item.vue'
-    import { debouncedWatch } from '@vueuse/core'
     import { useRunDiscoverList } from '~/composables/package/useRunDiscoverList'
+    import Item from './item.vue'
 
     export default defineComponent({
         name: 'PropertiesWidget',
@@ -25,11 +30,12 @@
             UserPill,
             PopOverUser,
             Item,
+            SearchAndFilter,
         },
         props: {
             item: {
                 type: Object,
-                required: false,
+                required: true,
             },
         },
         setup(props, { emit }) {
@@ -84,7 +90,7 @@
 
             debouncedWatch(
                 item.value?.metadata?.name,
-                (prev) => {
+                (prev, newv) => {
                     if (prev) {
                         quickChange()
                     }
@@ -97,13 +103,21 @@
                 facetRun.value = {
                     workflowTemplates: map,
                 }
-                quickChangeRun()
+                // Only get the run details when there are actually any workflows from the previous API call
+                if (map.length) quickChangeRun()
             })
+
+            debouncedWatch(
+                queryText,
+                () => {
+                    quickChange(true)
+                },
+                { debounce: 250 }
+            )
 
             provide('runMap', runByWorkflowMap)
 
             return {
-                item,
                 limit,
                 offset,
                 queryText,

@@ -42,9 +42,8 @@
                 :disableCheckboxForScrubbed="true"
                 :selectedItems="checkedGuids"
                 :filters="filters"
-                assetListClass="px-0 mt-2"
-                aggregationTabClass="px-5"
-                searchBarClass="px-5"
+                aggregation-tab-class="px-5 my-1"
+                search-bar-class="px-5 my-1"
                 @listItem:check="handleAssetItemCheck"
                 @handleAssetCardClick="handleAssetCardClick"
             />
@@ -141,7 +140,7 @@
                 default: () => [],
             },
         },
-        emits: ['closeDrawer', 'saveAssets'],
+        emits: ['closeDrawer', 'saveAssets', 'unCheck'],
         setup(props, { emit }) {
             const { selectedItems } = useVModels(props, emit)
 
@@ -177,6 +176,7 @@
                     selectedItems.value = selectedItems.value.filter(
                         (selectedItem) => selectedItem.guid !== item.guid
                     )
+                    emit('unCheck', item)
                 } else {
                     selectedItems.value.push(item)
                 }

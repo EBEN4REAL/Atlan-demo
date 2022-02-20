@@ -38,8 +38,6 @@ const date_mandatory = [
     // }
 ]
 
-
-
 export const operators = {
     enum: [
         {
@@ -49,6 +47,20 @@ export const operators = {
         {
             id: 'notEquals',
             label: 'Not Equals(!=)',
+        },
+        {
+            id: 'isNull',
+            label: 'Is Null',
+        },
+        {
+            id: 'isNotNull',
+            label: 'Is Not Null',
+        },
+    ],
+    SQL: [
+        {
+            id: 'contains',
+            label: 'Contains',
         },
         {
             id: 'isNull',
@@ -225,6 +237,12 @@ export const operators = {
             label: 'Not Equals(!=)',
         },
     ],
+    string_announcement_mandatory: [
+        {
+            id: 'equals',
+            label: 'Equals(=)',
+        },
+    ],
     string_mandatory: [
         {
             id: 'equals',
@@ -250,7 +268,5 @@ export const operators = {
     date_mandatory,
     dateTime_mandatory: [...date_mandatory],
     date,
-    dateTime: [
-        ...date
-    ],
+    dateTime: [...date],
 }

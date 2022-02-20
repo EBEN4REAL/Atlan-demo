@@ -1,6 +1,6 @@
 <template>
     <div class="flex w-full h-full overflow-x-hidden bg-white">
-        <div class="flex-1 border-r border-gray-200">
+        <div class="flex-1 border-r border-gray-300">
             <router-view v-if="isItem" />
 
             <keep-alive>

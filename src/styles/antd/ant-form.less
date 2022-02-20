@@ -21,3 +21,13 @@
     line-height: 1;
     content: '*';
 }
+
+.inline-editable {
+    .ant-input {
+        @apply border-none bg-transparent shadow-none px-0 py-0 rounded-none !important;
+        min-height: 22px !important;
+    }
+    .ant-input:focus {
+        @apply border-none bg-white shadow-lg px-1 py-0 rounded-md !important;
+    }
+}

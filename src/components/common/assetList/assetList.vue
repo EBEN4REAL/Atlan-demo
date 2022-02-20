@@ -27,7 +27,6 @@
             <div v-if="list.length !== 0" :class="aggregationTabClass">
                 <AggregationTabs
                     v-model="postFilters.typeName"
-                    class="mt-3"
                     :list="assetTypeAggregationList"
                     @change="fetchList(0)"
                 />
@@ -44,7 +43,7 @@
             >
                 <ErrorView></ErrorView>
             </div>
-            <div v-if="list.length === 0 && !isValidating" class="h-full">
+            <div v-else-if="list.length === 0 && !isValidating" class="h-full">
                 <EmptyView
                     empty-screen="NoAssetsFound"
                     image-class="h-44"
@@ -97,6 +96,7 @@
                             :disableCheckboxForScrubbed="
                                 disableCheckboxForScrubbed
                             "
+                            class="hover:bg-primary-menu"
                         >
                             <template #cta>
                                 <slot :item="item" name="assetItemCta"> </slot>
@@ -220,7 +220,7 @@
             },
             aggregationTabClass: {
                 type: String,
-                default: '',
+                default: 'mt-3',
             },
             searchBarClass: {
                 type: String,

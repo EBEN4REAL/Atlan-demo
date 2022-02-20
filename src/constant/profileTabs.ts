@@ -38,7 +38,7 @@ export const profileTabs = [
         ],
         icon: 'Lineage',
         tooltip: 'Lineage',
-        scrubbed: true,
+        scrubbed: false,
     },
     /*  {
         id: 'queries',

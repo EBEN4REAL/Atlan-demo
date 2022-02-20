@@ -1,10 +1,12 @@
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { editorConfigInterface } from '~/types/insights/editoConfig.interface'
+import { outputPaneSize } from '~/components/insights/common/composables/useSpiltPanes'
 
 const InsightsLocalStorageKeys = {
     inlinetabs: 'insights_inlinetabs',
     activeInlineTab: 'insights_active_inlinetab',
 }
+
 export function useLocalStorageSync() {
     function syncInlineTabsInLocalStorage(
         tabsArray: activeInlineTabInterface[],
@@ -55,7 +57,19 @@ export function useLocalStorageSync() {
             const parsedInlineTabs = JSON.parse(
                 localStorage.getItem(InsightsLocalStorageKeys.inlinetabs)
             )
-            return parsedInlineTabs
+
+            // temeperory loop for avoiding crashing it on customer instances
+
+            const alteredTabsArray = parsedInlineTabs.map((tab) => {
+                const t = JSON.parse(JSON.stringify(tab))
+                if (!t.playground.resultsPane?.outputPaneSize) {
+                    t.playground.resultsPane.outputPaneSize =
+                        outputPaneSize.value
+                }
+                return t
+            })
+
+            return alteredTabsArray
         } else return []
     }
     function getActiveInlineTabKeyFromLocalStorage() {

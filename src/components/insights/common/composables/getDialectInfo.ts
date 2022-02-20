@@ -22,3 +22,14 @@ export function canQueryAbort(selectedSourceId: string) {
     }
     return false
 }
+export function isSelectFirstDefault(selectedSourceId: string) {
+    const sourceInfo = SourceList.find(
+        (source) => source.id?.toLowerCase() === selectedSourceId?.toLowerCase()
+    )
+    if (sourceInfo?.hasOwnProperty('selectFirstAsDefault')) {
+        if (sourceInfo.selectFirstAsDefault) {
+            return sourceInfo.selectFirstAsDefault
+        }
+    }
+    return false
+}

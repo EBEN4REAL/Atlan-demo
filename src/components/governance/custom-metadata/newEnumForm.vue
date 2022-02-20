@@ -12,7 +12,7 @@
                     id="name-input"
                     ref="nameRef"
                     v-model:value="form.name"
-                    placeholder="Name the label"
+                    placeholder="Name of the Option"
                 ></a-input>
             </a-form-item>
 

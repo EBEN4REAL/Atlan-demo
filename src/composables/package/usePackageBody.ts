@@ -101,6 +101,16 @@ export function usePackageBody(
                 .build(),
         })
 
+        base.orQuery('nested', {
+            path: 'metadata',
+            ...bodybuilder()
+                .query('wildcard', 'metadata.name', {
+                    value: `*${queryText}*`,
+                    boost: 40,
+                })
+                .build(),
+        })
+
         base.queryMinimumShouldMatch(1, true)
     }
     base.from(offset || 0)

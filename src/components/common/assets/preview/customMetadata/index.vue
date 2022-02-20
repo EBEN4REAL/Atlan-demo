@@ -4,7 +4,9 @@
     </div>
     <div v-else ref="target" class="flex flex-col mb-3 gap-y-2">
         <!-- header starts here -->
-        <div class="flex justify-between h-12 px-5 pb-2 mt-4 gap-x-4 group">
+        <div
+            class="flex justify-between items-center px-5 gap-x-4 group bg-gray-50 py-2 border-b border-gray-200"
+        >
             <div class="flex-grow font-semibold text-gray-500">
                 <div class="flex gap-x-1">
                     <Truncate
@@ -82,7 +84,7 @@
                     </span>
                     <AtlanButton
                         :disabled="!isEdit"
-                        size="sm"
+                        size="small"
                         padding="compact"
                         @click="handleUpdate"
                     >

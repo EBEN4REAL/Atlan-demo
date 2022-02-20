@@ -13,7 +13,7 @@
                 <PopoverAsset
                     :item="item"
                     placement="right"
-                    mouseEnterDelay="0.6"
+                    :mouseEnterDelay="1"
                 >
                     <template #button>
                         <AtlanBtn
@@ -125,6 +125,12 @@
                                         ></AtlanIcon>
                                     </a-tooltip>
                                 </div>
+                                <VQBThreeDotMenuForColumn
+                                    v-if="showVQB"
+                                    :item="item"
+                                    :treeData="treeData"
+                                />
+
                                 <!-- <div
                                     class="bg-gray-light-color"
                                     @click.stop="
@@ -238,6 +244,22 @@
                                         ></AtlanIcon>
                                     </a-tooltip>
                                 </div>
+
+                                <div
+                                    class="pl-2"
+                                    v-if="showVQB"
+                                    :class="
+                                        item?.selected
+                                            ? 'tree-light-color'
+                                            : 'bg-gray-light-color'
+                                    "
+                                >
+                                    <VQBThreeDotMenuForTable
+                                        v-if="showVQB"
+                                        :item="item"
+                                        :treeData="treeData"
+                                    />
+                                </div>
                                 <div
                                     class="pl-2 pr-2"
                                     :data-test-id="'preview'"
@@ -264,6 +286,35 @@
                                         ></AtlanIcon>
                                     </a-tooltip>
                                 </div>
+                                <div
+                                    :data-test-id="'run-table-query'"
+                                    v-if="showVQB"
+                                    :class="
+                                        (activeInlineTab.playground.resultsPane
+                                            .result.isQueryRunning === 'loading'
+                                            ? 'opacity-50 cursor-not-allowed'
+                                            : '',
+                                        '')
+                                    "
+                                    @click="() => previewVQBQuery(item)"
+                                >
+                                    <a-tooltip color="#363636" placement="top">
+                                        <template #title>{{
+                                            tooltipText
+                                        }}</template>
+
+                                        <AtlanIcon
+                                            icon="Play"
+                                            :class="
+                                                item?.selected
+                                                    ? 'tree-light-color'
+                                                    : ''
+                                            "
+                                            class="w-4 h-4 my-auto outline-none"
+                                        ></AtlanIcon>
+                                    </a-tooltip>
+                                </div>
+
                                 <!-- Add pr-2 for next icon -->
                                 <div
                                     :data-test-id="'run-table-query'"
@@ -610,6 +661,10 @@
     import { getDialectInfo } from '~/components/insights/common/composables/getDialectInfo'
     import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
     import { useRunQueryUtils } from '~/components/insights/common/composables/useRunQueryUtils'
+    import VQBThreeDotMenuForColumn from '~/components/insights/explorers/schema/VQBThreeDotMenu/column.vue'
+    import VQBThreeDotMenuForTable from '~/components/insights/explorers/schema/VQBThreeDotMenu/table.vue'
+    import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
+    import { generateSQLQuery } from '~/components/insights/playground/editor/vqb/composables/generateSQLQuery'
 
     export function getLastMappedKeyword(
         token_param: string[],
@@ -632,11 +687,23 @@
     }
 
     export default defineComponent({
-        components: { StatusBadge, PopoverAsset, AtlanBtn, ColumnKeys },
+        components: {
+            StatusBadge,
+            PopoverAsset,
+            AtlanBtn,
+            ColumnKeys,
+            VQBThreeDotMenuForColumn,
+            VQBThreeDotMenuForTable,
+        },
         props: {
             item: {
                 type: Object as PropType<assetInterface>,
                 required: true,
+            },
+            treeData: {
+                type: Object as PropType<TreeDataItem[]>,
+                required: true,
+                default: () => [],
             },
             hoverActions: {
                 type: Boolean,
@@ -644,7 +711,7 @@
             },
         },
         setup(props) {
-            const { hoverActions } = toRefs(props)
+            const { hoverActions, treeData } = toRefs(props)
             const isTabAdded = inject('isTabAdded') as Ref<string | undefined>
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
@@ -1321,6 +1388,7 @@
                 isTabAdded.value = key
                 const inlineTabData: activeInlineTabInterface = {
                     label: `${previewItem.title} preview`,
+                    attributes: {},
                     key,
                     favico: 'https://atlan.com/favicon.ico',
                     isSaved: false,
@@ -1401,6 +1469,7 @@
                             activeTab:
                                 activeInlineTab.value?.playground?.resultsPane
                                     ?.activeTab ?? 0,
+                            outputPaneSize: 27.9,
                             result: {
                                 title: `${key} Result`,
                                 runQueryId: undefined,
@@ -1476,11 +1545,74 @@
                     : true
             )
 
+            const previewVQBQuery = (item: any) => {
+                const activeInlineTabCopy = JSON.parse(
+                    JSON.stringify(toRaw(activeInlineTab.value))
+                )
+                activeInlineTabCopy.playground.vqb.panels = []
+                let panel = {
+                    order: 1,
+                    id: 'columns',
+                    hide: true,
+                    subpanels: [
+                        {
+                            id: '1',
+                            columns: ['all'],
+                            tableData: {
+                                assetType: item?.entity.typeName,
+                                certificateStatus:
+                                    item?.entity?.attributes?.certificateStatus,
+                                item: {},
+                            },
+                            columnsData: [],
+                            tableQualfiedName:
+                                item?.entity.attributes?.qualifiedName,
+                        },
+                    ],
+                    expand: false,
+                }
+
+                activeInlineTabCopy.playground.vqb.panels = [panel]
+                activeInlineTabCopy.playground.vqb.selectedTables = [
+                    {
+                        addedBy: 'column',
+                        tableQualifiedName:
+                            item?.entity.attributes?.qualifiedName,
+                    },
+                ]
+
+                const useSchemaExplorerContext = true
+
+                const selectedText = generateSQLQuery(
+                    activeInlineTabCopy,
+                    limitRows.value,
+                    useSchemaExplorerContext
+                )
+                const tabIndex = inlineTabs.value.findIndex(
+                    (tab) => tab.key === activeInlineTab.value.key
+                )
+
+                queryRun(
+                    tabIndex,
+                    getData,
+                    limitRows,
+                    onRunCompletion,
+                    onQueryIdGeneration,
+                    selectedText,
+                    editorInstance,
+                    monacoInstance,
+                    showVQB,
+                    inlineTabs,
+                    useSchemaExplorerContext
+                )
+            }
+
             return {
                 // showContextModal,
                 // closeContextModal,
                 // openInCurrentTab,
                 // openInNewTab,
+                treeData,
                 showVQB,
                 hoverActions,
                 isPopoverAllowed,
@@ -1503,6 +1635,7 @@
                 readOnly,
                 previewData,
                 tooltipText,
+                previewVQBQuery,
             }
         },
     })

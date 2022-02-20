@@ -14,7 +14,6 @@
                             :src="`https://www.google.com/s2/favicons?domain=${getDomain(
                                 v
                             )}`"
-                            :alt="v"
                             class="inline-block w-4 h-4"
                         />{{ v }}</span
                     >
@@ -34,7 +33,6 @@
                     :src="`https://www.google.com/s2/favicons?domain=${getDomain(
                         attribute.value
                     )}`"
-                    :alt="attribute.value"
                     class="w-4 h-4"
                 />
                 {{ attribute.value }}
@@ -54,6 +52,15 @@
                 <span class="break-normal">{{
                     attribute.value.join(', ')
                 }}</span>
+            </div>
+        </template>
+        <template v-else-if="getDatatypeOfAttribute(attribute) === 'SQL'">
+            <div class="w-full">
+                <SQLFormatter
+                    :text="attribute.value"
+                    background="bg-primary-light"
+                    class=""
+                />
             </div>
         </template>
         <a-typography-paragraph
@@ -158,10 +165,12 @@
     import { useGroupPreview } from '~/composables/group/showGroupPreview'
     import { CUSTOM_METADATA_ATTRIBUTE as CMA } from '~/types/typedefs/customMetadata.interface'
     import { getDomain } from '~/utils/url'
+    import SQLFormatter from '@common/sql/snippet.vue'
 
     export default defineComponent({
         name: 'CustomMetadataReadOnly',
         components: {
+            SQLFormatter,
             UserPill,
             GroupPill,
             PopOverUser,

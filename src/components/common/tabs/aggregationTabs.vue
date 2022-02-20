@@ -60,6 +60,15 @@
             <template #leftExtra>
                 <slot></slot>
             </template>
+
+            <template #moreIcon>
+                <div class="flex">
+                    <AtlanIcon
+                        icon="KebabMenuHorizontal"
+                        class="text-primary"
+                    ></AtlanIcon>
+                </div>
+            </template>
         </a-tabs>
     </div>
 </template>
@@ -231,7 +240,7 @@
             border: 1px solid #e6e6eb !important;
 
             padding: 3px 8px !important;
-            box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.05) !important;
+            box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.02) !important;
 
             transition: all 0.3s ease-out;
 

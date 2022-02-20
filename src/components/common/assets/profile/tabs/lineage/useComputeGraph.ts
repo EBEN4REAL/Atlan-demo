@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import useLineageStore from '~/store/lineage'
 import useGraph from './useGraph'
 import useTransformGraph from './useTransformGraph'
@@ -36,23 +36,49 @@ export default async function useComputeGraph(
     const columnEntityIds = []
 
     const sameSourceCount = ref({})
+    const sameTargetCount = ref({})
+
+    const allTargetsHiddenIds = computed(() => {
+        const y = Object.values(sameSourceCount.value)
+        const z = y.map((x) => x.targetsHidden).flat()
+        return z.map((x) => x.guid)
+    })
+
+    const allSourcesHiddenIds = computed(() => {
+        const y = Object.values(sameTargetCount.value)
+        const z = y.map((x) => x.sourcesHidden).flat()
+        return z.map((x) => x.guid)
+    })
 
     const isNodeExist = (id) => nodes.value.find((x) => x.id === id)
 
+    const fromAndToIdSetForNodes = new Set()
+
     const createNodesFromEntityMap = (data, hasBase = true) => {
         const lineageData = { ...data }
+
         const { relations, childrenCounts, baseEntityGuid } = lineageData
 
         const getAsset = (id) => lineageData.guidEntityMap[id]
+        const assetExists = (id) => nodes.value.find((x) => x.id === id)
 
         relations.forEach((x) => {
             const { fromEntityId: from, toEntityId: to } = x
 
-            const { typeName: fromTypeName } = getAsset(from)
-            const { typeName: toTypeName } = getAsset(to)
+            if (from === to) return
+
+            const fromAndToId = `${from}@${to}`
+            if (!fromAndToIdSetForNodes.has(fromAndToId))
+                fromAndToIdSetForNodes.add(fromAndToId)
+            else return
+
+            const { typeName: fromTypeName, guid: fromGuid } = getAsset(from)
+            const { typeName: toTypeName, guid: toGuid } = getAsset(to)
+
+            if (assetExists(fromGuid) && assetExists(toGuid)) return
 
             if ([fromTypeName, toTypeName].includes('column')) return
-
+            // same source
             if (sameSourceCount.value[from]) {
                 sameSourceCount.value[from].count += 1
 
@@ -76,16 +102,42 @@ export default async function useComputeGraph(
                         targetsHidden: [],
                     },
                 }
+
+            // same target
+            if (sameTargetCount.value[to]) {
+                sameTargetCount.value[to].count += 1
+
+                if (sameTargetCount.value[to].count <= 4)
+                    sameTargetCount.value[to].sourcesVisible = [
+                        ...sameTargetCount.value[to].sourcesVisible,
+                        getAsset(from),
+                    ]
+                else {
+                    sameTargetCount.value[to].sourcesHidden = [
+                        ...sameTargetCount.value[to].sourcesHidden,
+                        getAsset(from),
+                    ]
+                }
+            } else
+                sameTargetCount.value = {
+                    ...sameTargetCount.value,
+                    [to]: {
+                        count: 1,
+                        sourcesVisible: [getAsset(from)],
+                        sourcesHidden: [],
+                    },
+                }
         })
 
+        // same source
         Object.entries(sameSourceCount.value).forEach(([k, v]) => {
             if (v.count < 5) return
             if (!v.targetsHidden.length) return
             lineageData.guidEntityMap = {
                 ...lineageData.guidEntityMap,
-                [`vpNode/${k}`]: {
+                [`vpNodeSS-${k}`]: {
                     typeName: 'vpNode',
-                    guid: `vpNode/${k}`,
+                    guid: `vpNodeSS-${k}`,
                     attributes: {
                         hiddenCount: v.targetsHidden.length,
                     },
@@ -93,9 +145,21 @@ export default async function useComputeGraph(
             }
         })
 
-        const y = Object.values(sameSourceCount.value)
-        const z = y.map((x) => x.targetsHidden).flat()
-        const allTargetsHiddenIds = z.map((x) => x.guid)
+        // same target
+        Object.entries(sameTargetCount.value).forEach(([k, v]) => {
+            if (v.count < 5) return
+            if (!v.sourcesHidden.length) return
+            lineageData.guidEntityMap = {
+                ...lineageData.guidEntityMap,
+                [`vpNodeST-${k}`]: {
+                    typeName: 'vpNode',
+                    guid: `vpNodeST-${k}`,
+                    attributes: {
+                        hiddenCount: v.sourcesHidden.length,
+                    },
+                },
+            }
+        })
 
         const guidEntityMap = Object.values(lineageData.guidEntityMap)
 
@@ -103,9 +167,9 @@ export default async function useComputeGraph(
             const ent = { ...entity }
             const { attributes, typeName, guid } = ent
 
-            if (isNodeExist(guid)) return
-
-            if (allTargetsHiddenIds.includes(entity.guid)) return
+            if (isNodeExist(guid)?.id) return
+            if (allTargetsHiddenIds.value.includes(entity.guid)) return
+            if (allSourcesHiddenIds.value.includes(entity.guid)) return
 
             if (typeName === 'Column') {
                 const parentGuid = attributes.table.guid
@@ -143,14 +207,14 @@ export default async function useComputeGraph(
     createNodesFromEntityMap(lineage.value)
 
     /* Edges */
+    const fromAndToIdSetForEdges = new Set()
 
     const createNodeEdges = (data) => {
         const lineageData = { ...data }
 
         const { relations } = lineageData
 
-        const fromAndToIdSet = new Set()
-
+        // same source
         Object.entries(sameSourceCount.value).forEach(([k, v]) => {
             if (v.count < 5) return
             if (!v.targetsHidden.length) return
@@ -158,25 +222,49 @@ export default async function useComputeGraph(
             lineageData.relations.push({
                 fromEntityId: k,
                 processId: 'vpNodeProcessId',
-                toEntityId: `vpNode/${k}`,
+                toEntityId: `vpNodeSS-${k}`,
             })
         })
 
-        const y = Object.values(sameSourceCount.value)
-        const z = y.map((x) => x.targetsHidden).flat()
-        const allTargetsHiddenIds = z.map((x) => x.guid)
+        // same target
+        Object.entries(sameTargetCount.value).forEach(([k, v]) => {
+            if (v.count < 5) return
+            if (!v.sourcesHidden.length) return
+
+            lineageData.relations.push({
+                fromEntityId: `vpNodeST-${k}`,
+                processId: 'vpNodeProcessId',
+                toEntityId: k,
+            })
+        })
 
         relations.forEach((x) => {
             const { fromEntityId: from, toEntityId: to, processId } = x
 
+            if (from === to) return
+
             if (columnEntityIds.find((y) => [from, to].includes(y))) return
 
-            let edgeExtraData = {}
-            const fromAndToId = `${from}@${to}`
-            if (fromAndToIdSet.has(fromAndToId)) edgeExtraData = { isDup: true }
-            else fromAndToIdSet.add(fromAndToId)
+            if (allTargetsHiddenIds.value.find((y) => [from, to].includes(y)))
+                return
+            if (allSourcesHiddenIds.value.find((y) => [from, to].includes(y)))
+                return
 
-            if (allTargetsHiddenIds.find((y) => [from, to].includes(y))) return
+            let edgeExtraData = {}
+
+            const fromAndToId = `${from}@${to}`
+            if (!fromAndToIdSetForEdges.has(fromAndToId)) {
+                fromAndToIdSetForEdges.add(fromAndToId)
+                edgeExtraData = { isDup: true }
+            } else return
+
+            edges.value.find((y) => {
+                const fromTo = y.id.split('/')[1]
+                const [fromTwo, toTwo] = fromTo.split('@')
+                if (toTwo === from && fromTwo === to) {
+                    edgeExtraData = { edgeExtraData, isCyclicEdge: true }
+                }
+            })
 
             const relation = {
                 id: `${processId}/${from}@${to}`,
@@ -250,9 +338,11 @@ export default async function useComputeGraph(
 
     /* addSubGraph */
     const addSubGraph = (data, registerAllListeners) => {
-        const newData = data
+        const newData = { ...data }
+
         createNodesFromEntityMap(newData, false)
         createNodeEdges(newData)
+
         renderLayout(registerAllListeners)
 
         if (!mergedLineageData.value) mergedLineageData.value = lineage.value
@@ -305,6 +395,7 @@ export default async function useComputeGraph(
         renderLayout,
         mergedLineageData,
         sameSourceCount,
+        sameTargetCount,
         nodes,
         edges,
     }

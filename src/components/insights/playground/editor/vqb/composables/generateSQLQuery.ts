@@ -103,18 +103,20 @@ export function generateSQLQuery(
     limitRows: {
         checked: boolean
         rowsCount: number
-    }
+    },
+    useSchemaExplorerContext?: boolean
 ) {
     const { getTableNameFromTableQualifiedName } = useUtils()
     const { getDatabaseName, getSchemaName, getConnectorName } = useConnector()
     // for assetQuote Info of different sources
-    const assetQuoteType = getDialectInfo(
-        getConnectorName(
-            activeInlineTab.playground.editor.context.attributeValue
-        ) ?? ''
-    )
 
-    const context = activeInlineTab.playground.editor.context
+    const context = !useSchemaExplorerContext
+        ? activeInlineTab.playground.editor.context
+        : activeInlineTab.explorer.schema.connectors
+
+    const assetQuoteType = getDialectInfo(
+        getConnectorName(context.attributeValue) ?? ''
+    )
 
     const select = squel.select()
     const columnPanel = activeInlineTab.playground.vqb.panels.find(
@@ -163,8 +165,16 @@ export function generateSQLQuery(
         }
     }
 
-    function getContext(qualifiedName) {
+    function getContext(qualifiedName, useSchemaExplorerContext?: boolean) {
         let contextPrefix = ''
+        if (useSchemaExplorerContext) {
+            contextPrefix += `${assetQuoteType}${
+                getDatabaseName(qualifiedName ?? '') ?? ''
+            }${assetQuoteType}.${assetQuoteType}${
+                getSchemaName(qualifiedName ?? '') ?? ''
+            }${assetQuoteType}`
+            return contextPrefix
+        }
         /*_______________CONTEXT_______ */
         if (context.attributeName === 'connectionQualifiedName') {
             contextPrefix += `${assetQuoteType}${
@@ -189,7 +199,8 @@ export function generateSQLQuery(
             if (i == 0) {
                 let contextPrefix = ''
                 contextPrefix = getContext(
-                    columnPanel?.subpanels[0]?.tableQualfiedName ?? ''
+                    columnPanel?.subpanels[0]?.tableQualfiedName ?? '',
+                    useSchemaExplorerContext
                 )
 
                 if (subpanel.tableQualfiedName) {
@@ -451,7 +462,13 @@ export function generateSQLQuery(
                     subpanel.filter?.value == undefined
                 )
                     return
-                res += ` ${subpanel?.filter?.filterType?.toUpperCase()} `
+                if (
+                    index > 0 &&
+                    Object.keys(filter?.subpanels[index - 1]?.column ?? {})
+                        .length > 0 &&
+                    filter?.subpanels[index - 1]?.filter?.value
+                )
+                    res += ` ${subpanel?.filter?.filterType?.toUpperCase()} `
                 const tableName = getTableNameWithQuotes(
                     subpanel.column.columnQualifiedName ??
                         subpanel.column?.qualifiedName ??
@@ -661,7 +678,7 @@ export function generateSQLQuery(
     let res = select.toString()
     // keyword subsitution
     res = res.replaceAll('OUTER JOIN', 'FULL OUTER JOIN')
-    if (limitRows.checked) {
+    if (limitRows?.checked) {
         return `${res} LIMIT ${limitRows.rowsCount}`
     }
     console.log(res, 'res')

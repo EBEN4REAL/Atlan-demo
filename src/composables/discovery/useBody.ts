@@ -298,6 +298,7 @@ export function useBody(
 
                 break
             }
+
             case 'typeName': {
                 if (filterObject) {
                     if (filterObject !== '__all') {
@@ -441,6 +442,7 @@ export function useBody(
             case 'sql':
             default: {
                 if (filterObject) {
+                    console.log('filterObject', filterObject)
                     Object.keys(filterObject).forEach((key) => {
                         filterObject[key].forEach((element) => {
                             if (!element.operand) return
@@ -499,6 +501,12 @@ export function useBody(
                                         }`
                                     )
                                 }
+                                if (element.operator === 'contains') {
+                                    base.filter('wildcard', element.operand, {
+                                        value: `*${element.value}*`,
+                                    })
+                                }
+
                                 if (element.operator === 'pattern') {
                                     base.filter(
                                         'regexp',

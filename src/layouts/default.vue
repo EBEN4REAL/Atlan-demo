@@ -1,7 +1,7 @@
 <template>
     <a-layout class="min-h-full">
         <a-layout-header class="z-30 h-10 p-0 m-0">
-            <div class="h-full px-4 bg-white border-b">
+            <div class="h-full px-4 bg-white border-b border-gray-300">
                 <NavMenu
                     :page="activeKey"
                     :is-sidebar-active="showNavbar"
@@ -35,7 +35,7 @@
                 >
                     <SidePanel
                         :page="activeKey"
-                        class="border-r border-gray-200"
+                        class="border-r border-gray-300"
                         @closeNavbar="closeNavbar"
                         @mouseleave="closeNavbar"
                     />
@@ -43,7 +43,7 @@
                 <div v-else style="min-width: 264px">
                     <SidePanel
                         :page="activeKey"
-                        class="border-r border-gray-200"
+                        class="border-r border-gray-300"
                         @closeNavbar="closeNavbar"
                     />
                 </div>

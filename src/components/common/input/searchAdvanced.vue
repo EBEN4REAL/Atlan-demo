@@ -1,7 +1,7 @@
 <template>
     <a-input
         ref="searchBar"
-        :placeholder="placeholder"
+        :placeholder="placeholderDynamic"
         v-model:value="localValue"
         :size="size"
         data-test-id="input-text"
@@ -20,15 +20,18 @@
                 :title="capitalizeFirstLetter(connectorName)"
                 placement="left"
             >
-                <AtlanIcon
+                <img
                     v-if="connectorName"
-                    :icon="getConnectorImageMap[connectorName.toLowerCase()]"
+                    :src="getConnectorImageMap[connectorName.toLowerCase()]"
                     class="w-auto h-4 pr-2 mr-2 border-r"
                 />
             </a-tooltip>
+
+            <AtlanLoader v-if="extraLoading" class="mb-0.5 h-4" />
             <AtlanIcon
+                v-else
                 icon="Search"
-                class="flex-none text-gray-700 focusIcon"
+                class="flex-none h-4 text-gray-700 focusIcon"
             />
         </template>
 
@@ -94,14 +97,19 @@
             connectorName: { type: String, default: () => '' },
             customClass: { type: String, default: '' },
             noBorder: { type: Boolean, default: false },
+            isLoading: { type: Boolean, default: false },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const { autofocus, connectorName, size } = toRefs(props)
+            const { autofocus, connectorName, size, placeholder, isLoading } =
+                toRefs(props)
 
             const { modelValue } = useVModels(props, emit)
 
-            const { getConnectorImageMap } = useAssetInfo()
+            const extraLoading = ref(false)
+
+            const { getConnectorImageMap, getConnectorLabelByName } =
+                useAssetInfo()
 
             const searchBar: Ref<null | HTMLInputElement> = ref(null)
             const localValue = ref(modelValue.value)
@@ -113,6 +121,15 @@
             const forceFocus = () => {
                 start()
             }
+
+            const placeholderDynamic = computed(() => {
+                if (getConnectorLabelByName(connectorName.value)) {
+                    return `Search ${getConnectorLabelByName(
+                        connectorName.value
+                    )} assets`
+                }
+                return placeholder.value
+            })
 
             // computed({
             //     get: () => modelValue.value,
@@ -153,9 +170,19 @@
                 }
             })
 
+            watch(isLoading, () => {
+                if (isLoading.value) {
+                    extraLoading.value = isLoading.value
+                } else
+                    setTimeout(() => {
+                        extraLoading.value = isLoading.value
+                    }, 500)
+            })
+
             return {
                 localValue,
                 searchBar,
+                extraLoading,
                 clearInput,
                 handleChange,
                 forceFocus,
@@ -164,7 +191,10 @@
                 getConnectorImageMap,
                 capitalizeFirstLetter,
                 focusInput,
+                getConnectorLabelByName,
                 allowTabShortcut,
+                placeholderDynamic,
+                isLoading,
             }
         },
     })
@@ -197,9 +227,7 @@
             @apply border-gray-200 border-b shadow-none border-solid border-t-0 border-l-0 border-r-0 !important;
 
             &:global(.ant-input-affix-wrapper-focused) {
-                @apply border-primary border-b  border-solid border-t-0 border-l-0 border-r-0  !important;
-
-                :global(.focusIcon) {
+                :global(.focusIcon h-5) {
                     @apply text-primary !important;
                 }
             }
@@ -230,7 +258,7 @@
             &:global(.ant-input-affix-wrapper-focused) {
                 @apply border-b-0  border-solid border-t-0 border-l-0 border-r-0  !important;
 
-                :global(.focusIcon) {
+                :global(.focusIcon h-5) {
                     @apply text-primary !important;
                 }
             }

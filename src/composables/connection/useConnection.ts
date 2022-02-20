@@ -16,7 +16,7 @@ export const CONNECTION_ATTRIBUTES = [
 
 const GROUP_AGGREATION = 'group_by_connection'
 
-export default function useConnection() {
+export function useConnection() {
     const { data, aggregationMap } = useIndexSearch(
         {
             dsl: {
@@ -75,4 +75,67 @@ export default function useConnection() {
         connectionStore.setList(data?.value.entities || [])
         connectionStore.setAssetCount(aggregationMap(GROUP_AGGREATION) || [])
     })
+}
+
+export function useConnectionByConnectorName(connectorName) {
+    const { data, aggregationMap } = useIndexSearch(
+        {
+            dsl: {
+                size: MAX_CONNECTIONS * 10,
+                query: {
+                    bool: {
+                        filter: [
+                            {
+                                term: {
+                                    __state: 'ACTIVE',
+                                },
+                            },
+                            {
+                                bool: {
+                                    must: {
+                                        term: {
+                                            connectorName,
+                                        },
+                                    },
+                                    must_not: {
+                                        terms: {
+                                            '__typeName.keyword': [
+                                                'Process',
+                                                'ColumnProcess',
+                                            ],
+                                        },
+                                    },
+                                },
+                            },
+                        ],
+                    },
+                },
+                post_filter: {
+                    bool: {
+                        filter: [
+                            {
+                                terms: {
+                                    '__typeName.keyword': ['Connection'],
+                                },
+                            },
+                        ],
+                    },
+                },
+                aggs: {
+                    [GROUP_AGGREATION]: {
+                        terms: {
+                            field: 'connectionQualifiedName',
+                            size: MAX_CONNECTIONS,
+                        },
+                    },
+                },
+            },
+            attributes: [...CONNECTION_ATTRIBUTES, ...ConnectionAttriibutes],
+            suppressLogs: true,
+        },
+        ref('DEFAULT_CONNECTIONS'),
+        false
+    )
+
+    return { data }
 }

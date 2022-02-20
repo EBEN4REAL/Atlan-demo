@@ -90,7 +90,6 @@
                                         )
                                     )
                                 "
-                                :style="iconSize"
                                 class="self-center align-text-bottom text-gray-500"
                             />
                         </div>
@@ -250,12 +249,16 @@
             const fetchTermsAndCategories = () => {
                 console.log('fetching GTC', auditList)
                 const defaultAttributes = ref([...MinimalAttributes])
+                const offsetGTC= ref(0)
                 console.log(facetsGTC)
                 facetsGTC.value = {
                     guidList: [],
                 }
                 auditList.value.forEach((el) => {
-                    if (el?.detail?.guid) {
+                    if (
+                        el?.detail?.guid &&
+                        !facetsGTC.value?.guidList?.includes(el?.detail?.guid)
+                    ) {
                         facetsGTC.value.guidList.push(el.detail.guid)
                     }
                 })
@@ -267,7 +270,7 @@
                 } = useDiscoverList({
                     dependentKey: dependentKeyGTC,
                     limit,
-                    offset,
+                    offset:offsetGTC,
                     facets: facetsGTC,
                     attributes: defaultAttributes,
                     suppressLogs: true,

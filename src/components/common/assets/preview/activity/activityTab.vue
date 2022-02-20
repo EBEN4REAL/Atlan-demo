@@ -76,6 +76,9 @@
                         "
                         class="flex items-center mt-1 text-gray-700"
                     >
+                        <span
+                            >{{getTermsAndCategoriesDetail(log.detail.guid)?.attributes?.name??''}}</span
+                        >
                         (<span class="tracking-wide text-gray-500 uppercase">{{
                             glossaryLabel[log?.typeName]
                         }}</span
@@ -173,6 +176,8 @@
     import ActivityTypeSelect from '@/common/select/activityType.vue'
     import { activityTypeMap } from '~/constant/activityType'
     import { default as glossaryLabel } from '@/glossary/constants/assetTypeLabel'
+    import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
+    import { MinimalAttributes } from '~/constant/projection'
 
     export default defineComponent({
         name: 'ActivityTab',
@@ -196,6 +201,8 @@
             const activityType = ref('all')
 
             const facets = ref()
+            const facetsGTC = ref()
+            const termAndCategoriesList = ref()
 
             if (
                 ['Table', 'View', 'AtlasGlossary'].includes(item.value.typeName)
@@ -214,7 +221,39 @@
                     entityId: item.value.guid,
                 }
             }
-
+            const fetchTermsAndCategories = () => {
+                console.log('fetching GTC', auditList)
+                const defaultAttributes = ref([...MinimalAttributes])
+                console.log(facetsGTC)
+                facetsGTC.value = {
+                    guidList: [],
+                }
+                auditList.value.forEach((el) => {
+                    facetsGTC.value.guidList.push(el.detail.guid)
+                })
+                const dependentKeyGTC = ref('term&categories')
+                const {
+                    list: newList,
+                    fetch,
+                    error,
+                } = useDiscoverList({
+                    dependentKey: dependentKeyGTC,
+                    limit,
+                    offset,
+                    facets: facetsGTC,
+                    attributes: defaultAttributes,
+                    suppressLogs: true,
+                })
+                watch(newList, () => {
+                    termAndCategoriesList.value = [...newList.value]
+                })
+            }
+            const getTermsAndCategoriesDetail = (guid) => {
+                const found = termAndCategoriesList.value?.find(
+                    (el) => el?.guid === guid
+                )
+                return found
+            }
             const preference = ref({
                 sort: 'created-desc',
             })
@@ -236,6 +275,7 @@
                 isLoadMore,
                 totalCount,
                 quickChange,
+                isReady,
             } = useAssetAuditSearch({
                 guid: item.value.guid,
                 isCache: false,
@@ -333,6 +373,16 @@
                     quickChange()
                 }
             }
+            watch(isReady, () => {
+                // fetch children terms and categories for glossary wide activity
+                if (
+                    isReady.value &&
+                    ['AtlasGlossary'].includes(item.value.typeName)
+                ) {
+                    console.log(auditList)
+                    fetchTermsAndCategories()
+                }
+            })
 
             return {
                 error,
@@ -359,6 +409,7 @@
                 activityTypeMap,
                 handleActivityTypeChange,
                 glossaryLabel,
+                getTermsAndCategoriesDetail,
             }
         },
     })

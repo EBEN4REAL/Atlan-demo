@@ -23,6 +23,9 @@
                 @change="handleChange"
                 @search="(v) => (search = v)"
             >
+                <template #suffixIcon>
+                    <AtlanIcon icon="CaretDown" class="text-gray-500" />
+                </template>
                 <template #notFoundContent>
                     <div class="flex justify-center">No results found</div>
                 </template>

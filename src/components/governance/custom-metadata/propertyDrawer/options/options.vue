@@ -36,10 +36,6 @@
 
     const emit = defineEmits([''])
 
-    const rules = ref(
-        JSON.parse(JSON.stringify(ATTRIBUTE_INPUT_VALIDATION_RULES))
-    )
-
     const { form } = useVModels(props, emit)
 
     const handleEnumSelect = (typeName, values) => {

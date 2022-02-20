@@ -26,6 +26,9 @@
                     :filter-option="customFilter"
                     @change="handleTypeNameChange"
                 >
+                    <template #suffixIcon>
+                        <AtlanIcon icon="CaretDown" class="text-gray-500" />
+                    </template>
                     <a-select-option
                         v-for="(type, index) in attributesTypes"
                         :key="type.label"

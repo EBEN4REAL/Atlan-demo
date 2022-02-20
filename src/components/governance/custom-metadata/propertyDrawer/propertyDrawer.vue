@@ -40,6 +40,12 @@
                     :internal="viewOnly"
                     :editing="isEdit"
                 />
+                <ApplicableTypes
+                    ref="optionsRef"
+                    v-model:form="form"
+                    :internal="viewOnly"
+                    :editing="isEdit"
+                />
 
                 <div
                     v-if="false"
@@ -109,82 +115,6 @@
                         <!-- <pre>{{ form.typeName }}</pre>
                     <pre>{{ form.enumValues }}</pre> -->
                         <!-- End of conditonals ========================================= -->
-                        <!-- Applicable Asset type ========================================= -->
-                        <div class="flex">
-                            <div class="relative" style="width: 100%"></div>
-                        </div>
-                        <div class="flex mb-6">
-                            <div class="relative" style="width: 100%">
-                                <a-form-item
-                                    :name="[
-                                        'options',
-                                        'customApplicableEntityTypes',
-                                    ]"
-                                    class="mb-0"
-                                >
-                                    <template #label>
-                                        <span>Applicable Asset type</span>
-                                        <a-popover>
-                                            <template #content>
-                                                <div
-                                                    class="flex flex-col items-center px-4 py-2 w-60"
-                                                >
-                                                    This property will only be
-                                                    available for selected asset
-                                                    types
-                                                </div>
-                                            </template>
-                                            <AtlanIcon
-                                                icon="Info"
-                                                class="h-3 ml-1"
-                                            />
-                                        </a-popover>
-                                    </template>
-                                    <div class="w-100">
-                                        <div ref="typeTreeSelect">
-                                            <a-tree-select
-                                                :disabled="viewOnly"
-                                                :value="
-                                                    form.options
-                                                        .customApplicableEntityTypes
-                                                "
-                                                no-results-text="No entities found"
-                                                style="width: 100%"
-                                                :tree-data="
-                                                    finalApplicableTypeNamesOptions
-                                                "
-                                                :is-leaf="true"
-                                                :multiple="true"
-                                                :async="false"
-                                                tree-checkable
-                                                :placeholder="
-                                                    isEdit
-                                                        ? 'Add more types'
-                                                        : 'Select entity types'
-                                                "
-                                                dropdown-class-name="type-select-dd"
-                                                :max-tag-count="5"
-                                                :get-popup-container="
-                                                    (target) =>
-                                                        target.parentNode
-                                                "
-                                                class="mb-2"
-                                                :allow-clear="false"
-                                                :check-strictly="true"
-                                                :show-checked-strategy="
-                                                    CHECKEDSTRATEGY
-                                                "
-                                                @change="
-                                                    handleApplicableEntityTypeChange
-                                                "
-                                            >
-                                            </a-tree-select>
-                                        </div>
-                                    </div>
-                                </a-form-item>
-                            </div>
-                        </div>
-                        <!-- Applicable Asset type ========================================= -->
 
                         <div
                             class="flex items-center justify-around w-full gap-4 p-4 bg-gray-100 border rounded"
@@ -293,7 +223,7 @@
         watch,
         provide,
     } from 'vue'
-    import { message, TreeSelect } from 'ant-design-vue'
+    import { message } from 'ant-design-vue'
     import { onKeyStroke } from '@vueuse/core'
     import {
         ATTRIBUTE_INPUT_VALIDATION_RULES,
@@ -305,25 +235,26 @@
     import Truncate from '@/common/ellipsis/index.vue'
     import access from '~/constant/accessControl/map'
     import MultiInput from '@/common/input/customizedTagInput.vue'
-    import { applicableTypeList } from '~/composables/custommetadata/useApplicableTypes'
+    // import { applicableTypeList } from '~/composables/custommetadata/useApplicableTypes'
     import useBusinessMetadata from '@/governance/custom-metadata/composables/useBusinessMetadata'
 
     // sub-modules
     import Header from '@/governance/custom-metadata/propertyDrawer/header.vue'
     import Overview from '@/governance/custom-metadata/propertyDrawer/overview/overview.vue'
     import Options from '@/governance/custom-metadata/propertyDrawer/options/options.vue'
+    import ApplicableTypes from '@/governance/custom-metadata/propertyDrawer/applicableTypes/applicableTypes.vue'
+
     import {
         executeCreateEnum,
         validate as enumFormValidate,
     } from '@/governance/custom-metadata/propertyDrawer/options/useCreateEnum'
-
-    const CHECKEDSTRATEGY = TreeSelect.SHOW_PARENT
 
     export default defineComponent({
         components: {
             Overview,
             Header,
             Options,
+            ApplicableTypes,
         },
         props: {
             metadata: {
@@ -349,7 +280,6 @@
             const propertyIndex = ref(-1)
             const typeTreeSelect = ref(null)
 
-            const applicableEntityTypesOptions = applicableTypeList()
             const viewOnly = computed(
                 () => props.metadata.options?.isLocked === 'true'
             )
@@ -362,13 +292,6 @@
 
             const customFilter = (v, o) =>
                 o.label.toLowerCase().includes(v.toLowerCase())
-
-            const finalApplicableTypeNamesOptions = computed(() => {
-                const options = JSON.parse(
-                    JSON.stringify(applicableEntityTypesOptions)
-                )
-                return options
-            })
 
             const rules = reactive(
                 JSON.parse(JSON.stringify(ATTRIBUTE_INPUT_VALIDATION_RULES))
@@ -564,63 +487,6 @@
                 }, 100)
             }
 
-            /** ? Edit Enum properties logic end ends   */
-
-            const getAllLeafNodes = (node) => {
-                const leaf: any = []
-
-                const category = applicableEntityTypesOptions.find(
-                    (_category) => _category.value === node
-                )
-
-                // ? if selection is a category , extract all child leaf
-                if (category) {
-                    category.children.forEach((c) => {
-                        // ? if child of category has child, then it is a source
-                        if (c.children) {
-                            leaf.push(
-                                ...c.children.map((leafNode) => leafNode.value)
-                            )
-                            // ? else it is a leaf
-                        } else leaf.push(c.value)
-                    })
-                    // ? if not a category its either a source or a leaf
-                } else {
-                    // ? flatten all node at 2nd level
-                    const allSourceAndLeaf: any = []
-                    applicableEntityTypesOptions.forEach((cat) => {
-                        const sourceAndLeaf: any[] = cat.children.reduce(
-                            (acc, cur) => {
-                                if (cur.children) acc.push(...cur.children)
-                                else acc.push(cur)
-                                return acc
-                            },
-                            []
-                        )
-                        allSourceAndLeaf.push(...sourceAndLeaf)
-                    })
-
-                    allSourceAndLeaf.forEach((_node) => {
-                        if (_node.value === node || _node.source === node) {
-                            leaf.push(_node.value)
-                        }
-                    })
-                }
-
-                return leaf
-            }
-
-            const handleApplicableEntityTypeChange = (data, l, e) => {
-                /**
-                 * Just trying to flatten the the tree given any node, add all leaf node values
-                 */
-                const flatValues: any = []
-                data.forEach((item) => {
-                    flatValues.push(...getAllLeafNodes(item))
-                })
-                form.value.options.customApplicableEntityTypes = flatValues
-            }
-
             const isMultiValuedSupport = computed(() => {
                 const blackList = ['boolean', 'date', 'SQL']
                 return !blackList.includes(form.value.options.primitiveType)
@@ -665,8 +531,6 @@
             return {
                 overviewRef,
                 optionsRef,
-                // createEnum,
-                applicableEntityTypesOptions,
                 customFilter,
                 viewOnly,
                 access,
@@ -676,19 +540,16 @@
                 visible,
                 form,
                 attributesTypes,
-                finalApplicableTypeNamesOptions,
                 isEdit,
                 loading,
                 rules,
                 typeTreeSelect,
-                CHECKEDSTRATEGY,
                 formRef,
                 newEnumFormRef,
                 open,
                 initializeForm,
                 handleUpdateProperty,
                 handleClose,
-                handleApplicableEntityTypeChange,
             }
         },
     })

@@ -98,39 +98,12 @@
                     <div class="flex flex-col w-full">
                         <div class="flex items-center w-11/12">
                             <div class="flex w-full">
-                                <!-- <a-typography-text
-                                    class="text-base font-bold text-gray-700"
-                                    style="max-width: 95%"
-                                    :style="ellipsis ? { width: '98%' } : {}"
-                                    tooltip-color="#363636"
-                                    :ellipsis="
-                                        ellipsis
-                                            ? {
-                                                  tooltip: `${selectedCollection?.attributes?.name}`,
-                                              }
-                                            : false
-                                    "
-                                    :content="
-                                        selectedCollection?.attributes?.name
-                                    "
-                                /> -->
-
                                 <Tooltip
                                     :tooltip-text="`${selectedCollection?.attributes?.name}`"
                                     classes="cursor-pointer text-base font-bold mr-1
-                                text-gray-700"
+                                text-gray-700 w-full"
                                 >
-                                    <!-- <template #postfixIcon>
-                                        <AtlanIcon
-                                            icon="ChevronDown"
-                                            class="w-4 h-4 text-gray-500"
-                                        ></AtlanIcon>
-                                    </template> -->
                                 </Tooltip>
-                                <!-- <AtlanIcon
-                                    icon="ChevronDown"
-                                    class="w-4 h-4 text-gray-500"
-                                ></AtlanIcon> -->
                                 <div style="width: 20px">
                                     <AtlanIcon
                                         icon="ChevronDown"
@@ -157,24 +130,16 @@
 
 <script lang="ts">
     import {
-        nextTick,
         computed,
         defineComponent,
-        defineAsyncComponent,
         ref,
-        Ref,
-        toRefs,
-        PropType,
         ComputedRef,
         inject,
         onMounted,
         watch,
     } from 'vue'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
-    import {
-        SavedQuery,
-        QueryCollection,
-    } from '~/types/insights/savedQuery.interface'
+    import { QueryCollection } from '~/types/insights/savedQuery.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { isCollectionPrivate } from '~/components/insights/explorers/queries/composables/useQueryCollection'
     import { useAuthStore } from '~/store/auth'

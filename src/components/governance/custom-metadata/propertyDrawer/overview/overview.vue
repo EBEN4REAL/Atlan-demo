@@ -1,5 +1,5 @@
 <template>
-    <CardWrapper title="Overview" icon="Info">
+    <CardWrapper title="Overview" icon="Overview">
         <div class="grid grid-cols-2 gap-4">
             <a-form-item
                 label="Name"

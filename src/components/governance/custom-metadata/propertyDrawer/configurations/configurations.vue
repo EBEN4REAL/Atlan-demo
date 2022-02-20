@@ -17,7 +17,10 @@
                                     </b>
                                 </div>
                             </template>
-                            <AtlanIcon icon="Info" class="h-3 ml-1" />
+                            <AtlanIcon
+                                icon="Info"
+                                class="h-4 ml-1 text-gray-500"
+                            />
                         </a-popover>
                     </span>
                 </label>
@@ -25,7 +28,11 @@
                     :id="`${form.name}-isFacet`"
                     v-model:checked="form.options.multiValueSelect"
                     :disabled="editing"
-                    class=""
+                    :class="
+                        form.options.multiValueSelect
+                            ? 'bg-primary'
+                            : 'bg-gray-300'
+                    "
                     :name="`${form.name}-isFacet`"
                     size="small"
                 />
@@ -35,7 +42,7 @@
             <div class="flex justify-between">
                 <label :for="`${form.name}-isBadge`">
                     <span class="flex items-center">
-                        Allow filtering
+                        Show in filter
                         <a-popover>
                             <template #content>
                                 <div class="px-4 py-2 w-60">
@@ -47,7 +54,10 @@
                                     will be available in asset filtering
                                 </div>
                             </template>
-                            <AtlanIcon icon="Info" class="h-3 ml-1" />
+                            <AtlanIcon
+                                icon="Info"
+                                class="h-4 ml-1 text-gray-500"
+                            />
                         </a-popover>
                     </span>
                 </label>
@@ -58,6 +68,11 @@
                     class=""
                     :name="`${form.name}-isBadge`"
                     size="small"
+                    :class="
+                        form.options.allowFiltering
+                            ? 'bg-primary'
+                            : 'bg-gray-300'
+                    "
                 />
             </div>
         </a-form-item>

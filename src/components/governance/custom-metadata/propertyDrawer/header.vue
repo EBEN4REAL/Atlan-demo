@@ -61,7 +61,7 @@
                                 <AtlanIcon icon="CopyOutlined" class="mr-2" />
                                 Copy GUID
                             </a-menu-item>
-                            <a-menu-item class="h-9">
+                            <!-- <a-menu-item class="h-9">
                                 <AtlanIcon
                                     class="inline mb-1 mr-2"
                                     :class="
@@ -70,7 +70,7 @@
                                     icon="Trash"
                                 />
                                 Delete
-                            </a-menu-item>
+                            </a-menu-item> -->
                         </a-menu>
                         >
                     </template>

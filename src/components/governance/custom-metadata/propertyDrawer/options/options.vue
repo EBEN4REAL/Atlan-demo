@@ -3,6 +3,7 @@
         <template #action>
             <div v-auth="access.CREATE_ENUM" class="">
                 <span
+                    v-if="!$refs.enumForm.createEnum"
                     class="ml-2 cursor-pointer hover:underline text-primary"
                     @click="$refs.enumForm.handleCreateEnum()"
                 >

@@ -12,28 +12,29 @@
             </template>
             <a-select
                 v-model:value="selectedEnum"
+                show-search
                 no-results-text="No option found"
                 placeholder="Select option"
                 :options="finalEnumsList"
                 :disabled="disable"
-                :open="dropdownVisible"
                 :class="$style.input"
-                @mousedown="dropdownVisible = true"
                 :dropdown-class-name="$style.optionsDropdown"
+                @mousedown="dropdownVisible = true"
                 @change="handleChange"
+                @search="(v) => (search = v)"
             >
                 <template #notFoundContent>
                     <div class="flex justify-center">No results found</div>
                 </template>
                 <template #dropdownRender="{ menuNode: menu }">
-                    <div class="px-3 mt-2 mb-3 border-gray-300">
+                    <!-- <div class="px-3 mt-2 mb-3 border-gray-300">
                         <Search
                             v-model="search"
                             :clearable="true"
-                            @focus="dropdownVisible = true"
                             :placeholder="`Search from ${finalEnumsList.length} Options`"
+                            @focus="dropdownVisible = true"
                         />
-                    </div>
+                    </div> -->
                     <VNodes :vnodes="menu" />
                     <a-divider class="m-0 my-1" />
                     <div
@@ -134,7 +135,6 @@
     import MultiInput from '@/common/input/customizedTagInput.vue'
     import EnumDef from '@/governance/enums/enum.interface'
     import Search from '@/common/input/searchAdvanced.vue'
-    import { onClickOutside } from '@vueuse/core'
 
     export default defineComponent({
         components: {

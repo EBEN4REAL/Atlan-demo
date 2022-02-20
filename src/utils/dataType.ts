@@ -3,6 +3,8 @@ export const getDataTypeIcon = (typeName) => {
     switch (typeName) {
         case 'enum':
             return 'EnumType'
+        case 'SQL':
+            return 'Query'
         case 'url':
             return 'Geography'
         case 'user':

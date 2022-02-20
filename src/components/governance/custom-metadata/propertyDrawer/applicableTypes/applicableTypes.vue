@@ -8,8 +8,18 @@
             :name="['options', 'customApplicableEntityTypes']"
             class="mb-0"
         >
+            <template v-if="internal">
+                <div class="flex flex-wrap">
+                    <a-tag
+                        v-for="(type, x) in typeGroups"
+                        :key="x"
+                        class="flex items-center justify-center mb-1 bg-gray-200 border-0 rounded h-7"
+                        >{{ type }}</a-tag
+                    >
+                </div>
+            </template>
             <a-tree-select
-                :disabled="internal"
+                v-else
                 :value="form.options.customApplicableEntityTypes"
                 no-results-text="No asset type found"
                 style="width: 100%"
@@ -20,7 +30,6 @@
                 :placeholder="'Select asset types'"
                 :max-tag-count="5"
                 :get-popup-container="(target) => target.parentNode"
-                class=""
                 :allow-clear="false"
                 check-strictly
                 :show-checked-strategy="CHECKEDSTRATEGY"
@@ -38,7 +47,7 @@
 <script setup lang="ts">
     import { TreeSelect } from 'ant-design-vue'
     import { useVModels } from '@vueuse/core'
-    import { computed } from 'vue'
+    import { computed, onMounted, ref, watch } from 'vue'
     import CardWrapper from '@/governance/custom-metadata/propertyDrawer/misc/wrapper.vue'
     import { applicableTypeList } from '~/composables/custommetadata/useApplicableTypes'
 
@@ -79,17 +88,17 @@
             // ? if not a category its either a source or a leaf
         } else {
             // ? flatten all node at 2nd level
-            const allSourceAndLeaf: any = []
+            const allLeafNodes: any = []
             applicableEntityTypesOptions.forEach((cat) => {
-                const sourceAndLeaf: any[] = cat.children.reduce((acc, cur) => {
+                const leafNodes: any[] = cat.children.reduce((acc, cur) => {
                     if (cur.children) acc.push(...cur.children)
                     else acc.push(cur)
                     return acc
                 }, [])
-                allSourceAndLeaf.push(...sourceAndLeaf)
+                allLeafNodes.push(...leafNodes)
             })
 
-            allSourceAndLeaf.forEach((_node) => {
+            allLeafNodes.forEach((_node) => {
                 if (_node.value === node || _node.source === node) {
                     leaf.push(_node.value)
                 }
@@ -109,6 +118,65 @@
         })
         form.value.options.customApplicableEntityTypes = flatValues
     }
+
+    // ? take all type names and group them into SQL, Tableau, SaaS ...
+    const typeGroups = computed(() => {
+        const applicableTypesGroups = ref<string[]>([])
+        let customTypes = JSON.parse(
+            JSON.stringify(form.value.options.customApplicableEntityTypes)
+        )
+        applicableEntityTypesOptions.forEach((cat) => {
+            if (!customTypes.length) return
+            const allLeafNodes = getAllLeafNodes(cat.value)
+            const isAllLeafIncluded = allLeafNodes.every((n) =>
+                customTypes.includes(n)
+            )
+            if (isAllLeafIncluded) {
+                applicableTypesGroups.value.push(cat.title)
+                customTypes = customTypes.filter(
+                    (t) => !allLeafNodes.includes(t)
+                )
+            }
+        })
+
+        const allSources = applicableEntityTypesOptions.reduce((acc, cur) => {
+            const sources = cur.children.filter((c) => c.isSource)
+            acc.push(...sources)
+            return acc
+        }, [])
+
+        allSources.forEach((source) => {
+            if (!customTypes.length) return
+            const allLeafNodes = getAllLeafNodes(source.value)
+            const isAllLeafIncluded = allLeafNodes.every((n) =>
+                customTypes.includes(n)
+            )
+
+            if (isAllLeafIncluded) {
+                applicableTypesGroups.value.push(source.title)
+                customTypes = customTypes.filter(
+                    (t) => !allLeafNodes.includes(t)
+                )
+            }
+        })
+
+        const allLeafNodes: any = []
+        applicableEntityTypesOptions.forEach((cat) => {
+            const leafNodes: any[] = cat.children.reduce((acc, cur) => {
+                if (cur.children) acc.push(...cur.children)
+                else acc.push(cur)
+                return acc
+            }, [])
+            allLeafNodes.push(...leafNodes)
+        })
+
+        applicableTypesGroups.value.push(
+            ...customTypes.map(
+                (leaf) => allLeafNodes.find((l) => l.value === leaf).title
+            )
+        )
+        return applicableTypesGroups.value
+    })
 </script>
 
 <style scoped></style>

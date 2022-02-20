@@ -1,18 +1,32 @@
 <template>
     <CardWrapper title="Overview" icon="Overview">
         <div class="grid grid-cols-2 gap-4">
+            <div v-if="internal" class="space-y-2">
+                <div class="text-gray-500">Name</div>
+                <div v-if="internal" class="text-gray-700">
+                    {{ form.displayName }}
+                </div>
+            </div>
             <a-form-item
+                v-else
                 label="Name"
                 :name="['displayName']"
                 class="mb-0 ant-form-undo-flex-direction"
             >
-                <a-input
-                    v-model:value="form.displayName"
-                    type="text"
-                    :disabled="internal"
-                />
+                <a-input v-model:value="form.displayName" type="text" />
             </a-form-item>
+
+            <div v-if="editing" class="space-y-2">
+                <div class="text-gray-500">Type</div>
+                <div class="text-gray-700">
+                    <AtlanIcon
+                        :icon="getDataTypeIcon(form.options.primitiveType)"
+                    />
+                    {{ getHumanTypeName(form.options.primitiveType) }}
+                </div>
+            </div>
             <a-form-item
+                v-else
                 class="mb-0 ant-form-undo-flex-direction"
                 :name="['options', 'primitiveType']"
                 label="Type"
@@ -20,7 +34,6 @@
                 <a-select
                     v-model:value="form.options.primitiveType"
                     show-search
-                    :disabled="editing"
                     :get-popup-container="(target) => target.parentNode"
                     :list-height="240"
                     :filter-option="customFilter"
@@ -69,6 +82,8 @@
     import { computed, ref } from 'vue'
     import { ATTRIBUTE_TYPES } from '~/constant/businessMetadataTemplate'
     import CardWrapper from '@/governance/custom-metadata/propertyDrawer/misc/wrapper.vue'
+    import { getDataTypeIcon } from '~/utils/dataType'
+    import useCustomMetadataHelpers from '~/composables/custommetadata/useCustomMetadataHelpers'
 
     const props = defineProps({
         form: { type: Object, required: true },
@@ -78,6 +93,8 @@
     const emit = defineEmits([])
 
     const { form } = useVModels(props, emit)
+
+    const { getHumanTypeName } = useCustomMetadataHelpers()
 
     const customFilter = (v, o) =>
         o.label.toLowerCase().includes(v.toLowerCase())

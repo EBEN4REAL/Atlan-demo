@@ -2,14 +2,18 @@
     <div
         class="relative col-span-2 p-4 space-y-4 border border-gray-300 rounded"
     >
+        <div v-if="disable" class="space-y-2">
+            <div class="mb-1 text-gray-500">Name</div>
+            <div v-if="disable" class="text-gray-700">
+                {{ selectedEnum }}
+            </div>
+        </div>
         <a-form-item
+            v-else
             class="mb-0 text-gray-500"
             label="Select Option"
             :name="['options', 'enumType']"
         >
-            <template #label>
-                <!-- <div class="text-gray-500">Select Option x</div> -->
-            </template>
             <a-select
                 v-model:value="selectedEnum"
                 show-search
@@ -56,7 +60,9 @@
 
         <div v-show="selectedEnumOptions?.length" class="">
             <div class="flex justify-between">
-                <div class="mb-2 font-normal font-size-sm">Enum options:</div>
+                <div class="mb-2 font-normal text-gray-500 font-size-sm">
+                    Values
+                </div>
                 <template v-if="editAccess">
                     <span
                         v-if="!enumEdit"
@@ -91,11 +97,11 @@
                     @change="(v) => (enumValueModel = v)"
                 />
             </template>
-            <p v-else>
+            <p v-else class="flex flex-wrap">
                 <a-tag
                     v-for="(e, x) in selectedEnumOptions"
                     :key="x"
-                    class="mb-1 lowercase border-0 rounded-full bg-gray-light"
+                    class="flex items-center justify-center mb-1 bg-gray-200 border-0 rounded h-7"
                     >{{ e.title }}</a-tag
                 >
             </p>
@@ -149,9 +155,10 @@
         props: {
             disable: { type: Boolean, required: true },
             editAccess: { type: Boolean, default: true },
+            default: { type: String, default: '' },
         },
         emits: ['change'],
-        setup(_, { emit }) {
+        setup(props, { emit }) {
             const createEnum = ref<boolean>(false)
             const selectedEnum = ref()
             const search = ref('')
@@ -325,7 +332,7 @@
 
             onMounted(() => {
                 if (!selectedEnum.value) {
-                    selectedEnum.value = enumList.value[0].name
+                    selectedEnum.value = props.default || enumList.value[0].name
                     handleChange(selectedEnum.value)
                 }
             })

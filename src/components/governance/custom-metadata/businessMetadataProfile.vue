@@ -1,7 +1,7 @@
 <template>
     <div class="relative">
         <div
-            class="flex flex-col items-start justify-between px-4 pb-4 bg-white border-b pt-7 gap-y-2"
+            class="flex flex-col items-start justify-between px-8 pb-4 bg-white border-b pt-7 gap-y-2"
         >
             <div class="flex w-full text-xl">
                 <div class="w-full text-xl">
@@ -37,7 +37,7 @@
             </div>
         </div>
 
-        <div class="p-4" style="height: calc(100vh - 145px)">
+        <div class="p-6" style="height: calc(100vh - 9.5rem)">
             <template v-if="localBm.attributeDefs.length">
                 <div class="pt-4 space-y-4 bg-white rounded-lg">
                     <div

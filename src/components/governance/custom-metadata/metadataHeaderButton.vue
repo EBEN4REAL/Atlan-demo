@@ -1,114 +1,119 @@
 <template>
-    <a-dropdown :trigger="['click']">
-        <a-button class="rounded" size="small">
-            <AtlanIcon icon="KebabMenu"></AtlanIcon>
-        </a-button>
-        <template #overlay>
-            <a-menu>
-                <div
-                    key="1"
-                    v-auth="map.UPDATE_BUSINESS_METADATA"
-                    class="rounded-t menu-item"
-                    :class="viewOnly ? 'text-gray-400 cursor-not-allowed' : ''"
-                    @click="() => (!viewOnly ? metadataModal.open() : '')"
-                >
-                    <AtlanIcon class="inline mb-1 mr-2" icon="Edit" />Edit
-                </div>
-                <div
-                    key="3"
-                    class="menu-item"
-                    @click.prevent.stop="
-                        copyAPI(metadata.displayName, 'Name Copied!')
-                    "
-                >
-                    <AtlanIcon
-                        class="inline mb-1 mr-2"
-                        icon="CopyOutlined"
-                    />Copy name
-                </div>
-                <div
-                    key="3"
-                    class="menu-item"
-                    @click.prevent.stop="copyAPI(metadata.guid, 'GUID Copied!')"
-                >
-                    <AtlanIcon
-                        class="inline mb-1 mr-2"
-                        icon="CopyOutlined"
-                    />Copy ID
-                </div>
-                <a-tooltip
-                    :title="
-                        !allowDelete
-                            ? `${metadata.displayName} is linked with ${assetCount} assets. You'll have to remove them before archiving.`
-                            : ''
-                    "
-                    :mouse-enter-delay="0"
-                    placement="left"
-                >
+    <a-button-group class="border-gray-300">
+        <a-dropdown
+            :visible="copyDropdown"
+            :trigger="['click']"
+            :overlay-style="{
+                'box-shadow': '0px 9px 32px rgba(0, 0, 0, 0.12)',
+                'border-radius': '4px',
+            }"
+            :overlayClassName="$style.copyDropdown"
+        >
+            <a-button
+                class="flex items-center justify-center w-8 h-8 p-0 border-gray-300"
+                size="sm"
+                @click="copyDropdown = true"
+            >
+                <AtlanIcon
+                    icon="CopyOutlined"
+                    class="text-gray-500"
+                ></AtlanIcon>
+            </a-button>
+            <template #overlay>
+                <a-menu click="shadow-xl border border-red-500">
                     <div
-                        key="4"
-                        v-auth="map.DELETE_BUSINESS_METADATA"
-                        class="rounded-b menu-item"
-                        :class="
-                            !allowDelete || viewOnly
-                                ? 'text-gray-400 cursor-not-allowed'
-                                : ''
-                        "
+                        key="1"
+                        class="menu-item"
                         @click.prevent.stop="
-                            () =>
-                                !viewOnly && allowDelete
-                                    ? (deleteConfirm = true)
-                                    : ''
+                            copyAPI(metadata.displayName, 'Name Copied!')
                         "
                     >
-                        <AtlanIcon
-                            class="inline mb-1 mr-2"
-                            :class="
-                                !allowDelete ? 'text-red-200' : 'text-error'
-                            "
-                            icon="Trash"
-                        />
-                        Delete
+                        Copy name
                     </div>
-                    <a-modal
-                        v-model:visible="deleteConfirm"
-                        :width="340"
-                        :closable="false"
+                    <div
+                        key="2"
+                        class="menu-item"
+                        @click.prevent.stop="
+                            copyAPI(metadata.guid, 'GUID Copied!')
+                        "
                     >
-                        <div class="p-4" style="height: 85px">
-                            <p class="mb-1 font-bold text-md">
-                                Delete {{ metadata.displayName }}
-                            </p>
-                            <p class="text-md">
-                                Are you sure you want to delete the custom
-                                metadata?
-                            </p>
-                        </div>
+                        Copy ID
+                    </div>
+                </a-menu>
+            </template>
+        </a-dropdown>
 
-                        <template #footer>
-                            <div class="flex justify-end p-2 space-x-2">
-                                <AtlanButton
-                                    color="minimal"
-                                    padding="compact"
-                                    size="sm"
-                                    @click="deleteConfirm = false"
-                                    >Cancel</AtlanButton
-                                >
-                                <AtlanButton
-                                    color="danger"
-                                    size="sm"
-                                    padding="compact"
-                                    :loading="isLoading"
-                                    @click="deleteCM"
-                                    >Delete</AtlanButton
-                                >
-                            </div>
-                        </template>
-                    </a-modal>
-                </a-tooltip>
-            </a-menu>
-        </template>
-    </a-dropdown>
+        <a-button
+            v-if="!viewOnly"
+            v-auth="map.UPDATE_BUSINESS_METADATA"
+            class="flex items-center justify-center w-8 h-8 p-0 border-gray-300"
+            @click="() => metadataModal?.open()"
+        >
+            <AtlanIcon class="" icon="Edit" />
+        </a-button>
+
+        <a-tooltip
+            :title="
+                !allowDelete
+                    ? `${metadata.displayName} is linked with ${assetCount} assets. You'll have to remove them before archiving.`
+                    : ''
+            "
+            :mouse-enter-delay="0"
+            placement="left"
+        >
+            <a-button
+                v-if="!viewOnly"
+                v-auth="map.DELETE_BUSINESS_METADATA"
+                class="flex items-center justify-center w-8 h-8 p-0 border-gray-300"
+                :class="!allowDelete ? 'text-gray-400 cursor-not-allowed' : ''"
+                @click.prevent.stop="
+                    () =>
+                        !viewOnly && allowDelete ? (deleteConfirm = true) : ''
+                "
+            >
+                <AtlanIcon
+                    class=""
+                    :class="!allowDelete ? 'text-red-200' : 'text-error'"
+                    icon="TrashAlt"
+                />
+            </a-button>
+            <a-modal
+                v-model:visible="deleteConfirm"
+                :width="340"
+                :closable="false"
+            >
+                <div class="p-4" style="height: 85px">
+                    <p class="mb-1 font-bold text-md">
+                        Delete {{ metadata.displayName }}
+                    </p>
+                    <p class="text-md">
+                        Are you sure you want to delete the custom metadata?
+                    </p>
+                </div>
+
+                <template #footer>
+                    <div class="flex justify-end p-2 space-x-2">
+                        <AtlanButton
+                            color="minimal"
+                            padding="compact"
+                            size="sm"
+                            @click="deleteConfirm = false"
+                            >Cancel</AtlanButton
+                        >
+                        <AtlanButton
+                            color="danger"
+                            size="sm"
+                            padding="compact"
+                            :loading="isLoading"
+                            @click="deleteCM"
+                            >Delete</AtlanButton
+                        >
+                    </div>
+                </template>
+            </a-modal>
+        </a-tooltip>
+    </a-button-group>
+
     <addMetadataModal
         ref="metadataModal"
         :metadata="metadata"
@@ -151,6 +156,7 @@
             const store = useTypedefStore()
             const metadataModal = ref(null)
             const openDeleteModal = ref(false)
+            const copyDropdown = ref(false)
             const viewOnly = computed(
                 () => props.metadata.options?.isLocked === 'true'
             )
@@ -158,6 +164,7 @@
             const copyAPI = (text: string, theMessage) => {
                 copyToClipboard(text)
                 message.success(theMessage)
+                copyDropdown.value = false
             }
 
             const { data, isReady, error, isLoading, mutate } =
@@ -224,6 +231,7 @@
             }
 
             return {
+                copyDropdown,
                 viewOnly,
                 isLoading,
                 deleteConfirm,
@@ -246,4 +254,10 @@
     }
 </style>
 
-<style lang="less"></style>
+<style lang="less" module>
+    .copyDropdown {
+        :global(.ant-dropdown-menu) {
+            @apply shadow-none !important;
+        }
+    }
+</style>

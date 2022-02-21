@@ -97,13 +97,9 @@
 
         <template v-if="data?.options?.isLocked === 'true'">
             <div
-                class="p-2 mx-5 mt-2 text-xs rounded bg-primary-light text-primary"
+                class="flex items-center p-2 mx-5 mt-2 text-xs rounded gap-x-2 bg-primary-light text-primary"
             >
-                <AtlanIcon
-                    icon="Atlan"
-                    class="mr-1 rounded-full text-primary"
-                />
-                <span>This metadata is managed by Atlan</span>
+                <InternalCMBanner />
             </div>
         </template>
 
@@ -375,10 +371,12 @@
     import page from '~/constant/accessControl/page'
     import useAuth from '~/composables/auth/useAuth'
     import PropertyPopover from '@/common/assets/preview/customMetadata/misc/propertyPopover.vue'
+    import InternalCMBanner from '@/common/customMetadata/internalCMBanner.vue'
 
     export default defineComponent({
         name: 'CustomMetadata',
         components: {
+            InternalCMBanner,
             PropertyPopover,
             Truncate,
             ReadOnly: defineAsyncComponent(() => import('./readOnly.vue')),

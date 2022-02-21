@@ -76,13 +76,9 @@
                             "
                         >
                             <div
-                                class="p-2 text-xs rounded bg-primary-light text-primary"
+                                class="flex items-center p-2 text-xs rounded gap-x-2 bg-primary-light text-primary"
                             >
-                                <AtlanIcon
-                                    icon="Atlan"
-                                    class="mr-1 rounded-full text-primary"
-                                />
-                                <span>This metadata is managed by Atlan</span>
+                              <InternalCMBanner />
                             </div>
                         </template>
                         <a-button
@@ -191,6 +187,7 @@
     import AvatarUpdate from './avatarUpdate.vue'
 
     import getAssetCount from '@/governance/custom-metadata/composables/getAssetCount'
+    import InternalCMBanner from '@/common/customMetadata/internalCMBanner.vue'
 
     // ? Store
     import { useTypedefStore } from '~/store/typedef'
@@ -205,6 +202,7 @@
             AtlanButton,
             CreateUpdateInfo,
             MetadataHeaderButton,
+            InternalCMBanner,
             AddPropertyDrawer,
             PropertyList,
             AvatarUpdate,

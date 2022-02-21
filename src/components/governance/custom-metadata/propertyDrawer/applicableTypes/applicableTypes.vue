@@ -10,12 +10,17 @@
         >
             <template v-if="internal">
                 <div class="flex flex-wrap">
-                    <a-tag
-                        v-for="(type, x) in typeGroups"
-                        :key="x"
-                        class="flex items-center justify-center mb-1 bg-gray-200 border-0 rounded h-7"
-                        >{{ type }}</a-tag
+                    <template v-if="typeGroups.length">
+                        <a-tag
+                            v-for="(type, x) in typeGroups"
+                            :key="x"
+                            class="flex items-center justify-center mb-1 bg-gray-200 border-0 rounded h-7"
+                            >{{ type }}</a-tag
+                        ></template
                     >
+                    <span v-else class="w-full text-center">
+                        No applicable type added
+                    </span>
                 </div>
             </template>
             <a-tree-select
@@ -123,7 +128,7 @@
     const typeGroups = computed(() => {
         const applicableTypesGroups = ref<string[]>([])
         let customTypes = JSON.parse(
-            JSON.stringify(form.value.options.customApplicableEntityTypes)
+            JSON.stringify(form.value.options.customApplicableEntityTypes ?? [])
         )
         applicableEntityTypesOptions.forEach((cat) => {
             if (!customTypes.length) return

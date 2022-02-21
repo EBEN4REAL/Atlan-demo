@@ -97,7 +97,7 @@
         getChannelAndMessageIdFromSlackLink,
         UnfurlSlackMessage,
         stripSlackText,
-    } from '~/composables/integrations/useSlack'
+    } from '~/composables/integrations/slack/useSlack'
     import DeleteResource from '@/common/widgets/resources/misc/deleteResource.vue'
     import EditResource from '@/common/widgets/resources/resourceInputModal.vue'
     import ShowLess from '@/UI/showLess.vue'

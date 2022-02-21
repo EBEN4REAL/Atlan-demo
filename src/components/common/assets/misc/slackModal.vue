@@ -43,8 +43,8 @@
                 <AtlanButton
                     type="primary"
                     :disabled="!channel || loading"
-                    @click="handleCtaClick"
                     size="sm"
+                    @click="handleCtaClick"
                 >
                     {{ ctaText }}
                 </AtlanButton>
@@ -70,7 +70,7 @@
     import {
         shareOnSlack,
         askQuestionOnSlack,
-    } from '~/composables/integrations/useSlack'
+    } from '~/composables/integrations/slack/useSlack'
     import access from '~/constant/accessControl/map'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
@@ -130,6 +130,7 @@
         channel.value = ''
         message.value = ''
     }
+
     const open = () => {
         clearAll()
         channel.value = channels.value[0].value
@@ -172,10 +173,8 @@
                     duration: 2,
                 })
                 console.log('data', data.value)
-                const slackUrl =
-                    'https://instadart-workspace.slack.com/archives/C0319D57ZSP/p1645128058242269'
-                // window.open(slackUrl, '_blank')
-                emit('success')
+
+                emit('success', data.value)
                 visible.value = false
                 // TODO: @ROHAN add analytics event for question asked
                 // useAddEvent('integration', 'slack', 'asset_shared', {

@@ -145,7 +145,7 @@
     import {
         isSlackLink,
         openSlackOAuth,
-    } from '~/composables/integrations/useSlack'
+    } from '~/composables/integrations/slack/useSlack'
     import EmptyScreen from '@/common/empty/index.vue'
     import SlackConnect from './misc/connectSlackCard.vue'
     import LinkPreviewCard from '@/common/widgets/resources/previewCard/linkPreviewCard.vue'

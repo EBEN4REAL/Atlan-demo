@@ -142,18 +142,17 @@
                         </template>
                     </template>
                     <a-button
-                        class="flex items-center justify-center"
                         v-if="
                             tenantSlackStatus.configured &&
                             tenantSlackStatus.channels.length
                         "
-                        @click="askQuestionOnSlack"
+                        class="flex items-center justify-center"
                     >
                         <SlackModal
                             :link="assetLink"
                             :asset-i-d="selectedAsset?.guid"
                             :asset-type="selectedAsset?.typeName"
-                            :askQuestionModal="true"
+                            :ask-question-modal="true"
                             @success="onSlackModalSuccess"
                         >
                             <AtlanIcon icon="Slack" class="mb-0.5" />
@@ -246,10 +245,11 @@
         toRefs,
         computed,
         provide,
+        inject,
     } from 'vue'
 
     import { useRoute, useRouter } from 'vue-router'
-    import { debouncedWatch } from '@vueuse/core'
+    import { debouncedWatch, whenever } from '@vueuse/core'
     import Tooltip from '@common/ellipsis/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
@@ -265,6 +265,12 @@
     import QueryDropdown from '@/common/query/queryDropdown.vue'
     import integrationStore from '~/store/integrations/index'
     import SlackModal from '~/components/common/assets/misc/slackModal.vue'
+    import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
+
+    import {
+        resourceId,
+        onSlackModalSuccess,
+    } from '~/composables/integrations/slack/useAskAQuestion'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -408,7 +414,6 @@
             const authStore = useAuthStore()
             const intStore = integrationStore()
             const { tenantSlackStatus } = toRefs(intStore)
-            const slackModalVisible = ref(false)
 
             const { refresh, isLoading: isEvaluating } = useEvaluate(
                 body,
@@ -525,22 +530,6 @@
                 })
             }
 
-            const askQuestionOnSlack = () => {
-                slackModalVisible.value = false
-                // const link = computed(() => {
-                // })
-            }
-
-            const resourceId = ref('')
-            provide('highlightResourceGuid', resourceId)
-            const onSlackModalSuccess = () => {
-                console.log('onSlackModalSuccess')
-                resourceId.value = 'a6bfeb90-0d02-477b-a10b-0d54a40953a4'
-                setTimeout(() => {
-                    switchTab(selectedAsset.value, 'Resources')
-                })
-            }
-
             const assetLink = computed(() => {
                 const baseUrl = window.location.origin
                 const url = `${baseUrl}${getProfilePath(
@@ -552,7 +541,25 @@
 
             provide('isProfile', isProfile)
 
+            const updateList = inject('updateList', () => ({}))
+            const updateDrawerList = inject('updateDrawerList', () => ({}))
+
+            watch(resourceId, () => {
+                const id = ref(selectedAsset.value.guid)
+                const { asset, isReady: isUpdateReady } = useCurrentUpdate({
+                    id,
+                })
+
+                whenever(isUpdateReady, () => {
+                    if (isDrawer.value) {
+                        updateDrawerList(asset.value)
+                    } else updateList(asset.value)
+                    switchTab(selectedAsset.value, 'Resources')
+                })
+            })
+
             return {
+                onSlackModalSuccess,
                 tabChildRef,
                 activeKey,
                 handleTabChange,
@@ -598,9 +605,7 @@
                 isCollectionCreatedByCurrentUser,
                 handleQueryAction,
                 tenantSlackStatus,
-                askQuestionOnSlack,
                 assetLink,
-                onSlackModalSuccess,
             }
         },
     })

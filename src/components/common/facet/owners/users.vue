@@ -2,7 +2,8 @@
     <div class="w-full" :class="listClass ? listClass : 'h-44'">
         <div
             v-if="userList.length < 1"
-            class="flex flex-col items-center justify-center h-full"
+            class="flex flex-col items-center justify-center"
+            :class="checkboxListClass ? checkboxListClass : 'h-40'"
         >
             <div class="flex flex-col items-center">
                 <span class="text-gray-500">No users found</span>
@@ -92,21 +93,28 @@
                 Loading users
             </div>
         </div>
-        <div class="pl-4" v-if="filterTotal">
+        <div class="pl-4" v-if="totalActiveUsers">
             <p class="text-xs text-gray-500">
-                {{ userList.length }} of {{ filterTotal }} users
+                {{ userList.length }} of {{ totalActiveUsers }} users
             </p>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, watch, computed, ref, toRefs, Ref } from 'vue'
+    import {
+        defineComponent,
+        watch,
+        computed,
+        ref,
+        toRefs,
+        onMounted,
+    } from 'vue'
     import { useVModels, onKeyStroke } from '@vueuse/core'
     import useFacetUsers from '~/composables/user/useFacetUsers'
     import Avatar from '~/components/common/avatar/avatar.vue'
     import whoami from '~/composables/user/whoami'
-
+    import { watchOnce } from '@vueuse/core'
     export default defineComponent({
         name: 'UsersFilter',
         components: {
@@ -303,6 +311,17 @@
             const imageUrl = (username: any) =>
                 `${window.location.origin}/api/service/avatars/${username}`
 
+            const totalActiveUsers = ref(0)
+
+            onMounted(() => {
+                /**filterTotal is the fiterRecord value from response (we need to add filter to get only active users), it'll change everytime someone searches - so saving it in totalActiveUsers for the first time we fetch the users assuming no searchText would be present at that point and we'll get active users count. */
+                watchOnce(filterTotal, (v) => {
+                    if (filterTotal.value) {
+                        totalActiveUsers.value = filterTotal.value
+                    }
+                })
+            })
+
             return {
                 loadMore,
                 isLoading,
@@ -318,6 +337,7 @@
                 isEnriching,
                 imageUrl,
                 username,
+                totalActiveUsers,
             }
         },
     })

@@ -253,6 +253,7 @@
                 console.log(facetsGTC)
                 facetsGTC.value = {
                     guidList: [],
+                    stateList:['ACTIVE','DELETED']
                 }
                 auditList.value.forEach((el) => {
                     if (

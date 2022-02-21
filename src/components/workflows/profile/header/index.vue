@@ -75,13 +75,13 @@
                                     {{ name(workflowObject) }}
 
                                     <span
-                                        class="text-gray-500"
                                         v-if="
                                             displayName(
                                                 packageObject,
                                                 name(workflowObject)
                                             )
                                         "
+                                        class="text-gray-500"
                                         >({{
                                             displayName(
                                                 packageObject,

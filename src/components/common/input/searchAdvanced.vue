@@ -28,9 +28,12 @@
                     class="w-auto h-4 pr-2 mr-2 border-r"
                 />
             </a-tooltip>
+
+            <AtlanLoader v-if="extraLoading" class="mb-0.5 h-4" />
             <AtlanIcon
+                v-else
                 icon="Search"
-                class="flex-none text-gray-700 focusIcon"
+                class="flex-none h-4 text-gray-700 focusIcon"
             />
         </template>
 
@@ -112,6 +115,8 @@
 
             const { modelValue } = useVModels(props, emit)
 
+            const extraLoading = ref(false)
+
             const { getConnectorImageMap, getConnectorLabelByName } =
                 useAssetInfo()
 
@@ -178,11 +183,20 @@
                 localValue.value = ''
                 handleChange()
             }
+            watch(isLoading, () => {
+                if (isLoading.value) {
+                    extraLoading.value = isLoading.value
+                } else
+                    setTimeout(() => {
+                        extraLoading.value = isLoading.value
+                    }, 500)
+            })
 
             return {
                 clear,
                 localValue,
                 searchBar,
+                extraLoading,
                 clearInput,
                 handleChange,
                 forceFocus,
@@ -227,7 +241,7 @@
             @apply border-gray-200 border-b shadow-none border-solid border-t-0 border-l-0 border-r-0 !important;
 
             &:global(.ant-input-affix-wrapper-focused) {
-                :global(.focusIcon) {
+                :global(.focusIcon h-5) {
                     @apply text-primary !important;
                 }
             }
@@ -258,7 +272,7 @@
             &:global(.ant-input-affix-wrapper-focused) {
                 @apply border-b-0  border-solid border-t-0 border-l-0 border-r-0  !important;
 
-                :global(.focusIcon) {
+                :global(.focusIcon h-5) {
                     @apply text-primary !important;
                 }
             }

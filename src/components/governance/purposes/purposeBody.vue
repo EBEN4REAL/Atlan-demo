@@ -196,13 +196,16 @@
 
         <div
             v-else-if="activeTabKey === 'linked_assets'"
-            class="h-full bg-white px-7"
+            class="h-full bg-white"
         >
             <div class="wrapper-height">
                 <AssetList
                     :filters="filterConfig"
                     :enable-sidebar-drawer="true"
                     :asset-list-style-obj="{ height: 'calc(100% - 9rem)' }"
+                    aggregation-tab-class="px-5 my-1"
+                    search-bar-class="px-5 my-1"
+                    asset-item-class="px-2"
                 />
                 <!-- <LinkedTerms
                 v-else-if="activeTabKey === '2'"

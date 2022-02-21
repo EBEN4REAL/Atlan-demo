@@ -7,14 +7,19 @@ export const getLastActiveTime = (lastLoginTime) => {
     }
     return ''
 }
-export const getLastActiveTimeAgo = (lastLoginTime) => {
+export const getLastActiveTimeAgo = (
+    lastLoginTime,
+    getResultInShortNotation = false
+) => {
     if (lastLoginTime) {
         const timeAgoString =
             useTimeAgo(lastLoginTime, {
-                max: 'week',
+                max: 'year',
                 fullDateFormatter: () => 'long time ago',
             }).value || ''
-        return getShortNotationDateTimeAgo(timeAgoString)
+        return getResultInShortNotation
+            ? getShortNotationDateTimeAgo(timeAgoString)
+            : timeAgoString
     }
     return ''
 }

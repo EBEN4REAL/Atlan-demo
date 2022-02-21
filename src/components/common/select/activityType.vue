@@ -5,6 +5,9 @@
         class="w-full"
         @change="handleChange"
     >
+        <template #suffixIcon>
+            <AtlanIcon icon="CaretDown" class="mb-0" />
+        </template>
         <a-select-option
             v-for="item in nonGroupList"
             :value="item.value"

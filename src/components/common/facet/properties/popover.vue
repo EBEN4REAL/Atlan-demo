@@ -35,7 +35,10 @@
                             @clear="handleRemove(index)"
                         />
                         <div
-                            v-if="index !== localValue.length - 1"
+                            v-if="
+                                index !== localValue.length - 1 &&
+                                attribute?.subTypeName !== 'announcement'
+                            "
                             class="flex text-gray-500"
                         >
                             AND
@@ -44,7 +47,13 @@
                     </template>
                 </div>
 
-                <a-divider v-if="attribute.typeName !== 'boolean'" class="my-2">
+                <a-divider
+                    v-if="
+                        attribute.typeName !== 'boolean' &&
+                        attribute?.subTypeName !== 'announcement'
+                    "
+                    class="my-2"
+                >
                     <a-button size="small" @click="handleAdd">
                         <AtlanIcon
                             icon="Add"

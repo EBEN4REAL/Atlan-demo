@@ -146,7 +146,7 @@ const useGlossaryTree = ({
                             i.typeName === 'AtlasGlossaryTerm'
                                 ? checkable
                                 : false,
-                        disabled: disabledGuids.includes(i.guid)
+                        disabled: disabledGuids.includes(i.guid),
                     }))
                     if (data.value && map) {
                         map?.forEach((el) => {
@@ -257,7 +257,7 @@ const useGlossaryTree = ({
                                 i.typeName === 'AtlasGlossaryTerm'
                                     ? checkable
                                     : false,
-                            disabled: disabledGuids.includes(i.guid)
+                            disabled: disabledGuids.includes(i.guid),
                         }))
                         if (map) {
                             map?.forEach((el) => {
@@ -470,7 +470,7 @@ const useGlossaryTree = ({
                                 i.typeName === 'AtlasGlossaryTerm'
                                     ? checkable
                                     : false,
-                            disabled: disabledGuids.includes(i.guid)
+                            disabled: disabledGuids.includes(i.guid),
                         }))
                         treeData.value.sort((a, b) => {
                             if (a.typeName === 'AtlasGlossaryTerm') return 1
@@ -872,6 +872,10 @@ const useGlossaryTree = ({
                 const parentCategory = {
                     guid: newParent?.guid,
                 }
+                console.log(newParent)
+                if (newParent?.typeName === 'AtlasGlossary') {
+                    parentCategory.guid = null
+                }
                 localParentCategory.value = parentCategory
                 handleParentCategoryUpdate()
             }
@@ -1081,8 +1085,7 @@ const useGlossaryTree = ({
                     isLeaf: i.typeName === 'AtlasGlossaryTerm',
                     checkable:
                         i.typeName === 'AtlasGlossaryTerm' ? checkable : false,
-                    disabled: disabledGuids.includes(i.guid)
-
+                    disabled: disabledGuids.includes(i.guid),
                 }))
                 map?.forEach((el) => {
                     if (el.typeName === 'AtlasGlossaryTerm') {
@@ -1178,19 +1181,27 @@ const useGlossaryTree = ({
         }
     }
 
-    const checkDuplicateCategoryNames = (parentCategoryGuid: string, name: string): boolean => {
+    const checkDuplicateCategoryNames = (
+        parentCategoryGuid: string,
+        name: string
+    ): boolean => {
         let parentStack: string[]
-        let nameExists: boolean = false;
+        let nameExists: boolean = false
 
         const checkDuplicate = (node: TreeDataItem) => {
             const currentPath = parentStack.pop()
-         
+
             // if the target node is reached
-            if (node.key === parentCategoryGuid || !currentPath || node.guid === parentCategoryGuid) {
-                if(node.children && node.children.length) {
-                    const index = node.children.findIndex((child) => {
-                        return child?.attributes?.name === name 
-                    }) ?? 0
+            if (
+                node.key === parentCategoryGuid ||
+                !currentPath ||
+                node.guid === parentCategoryGuid
+            ) {
+                if (node.children && node.children.length) {
+                    const index =
+                        node.children.findIndex((child) => {
+                            return child?.attributes?.name === name
+                        }) ?? 0
                     nameExists = index > -1
                 }
             }
@@ -1203,11 +1214,11 @@ const useGlossaryTree = ({
                     childNode.guid === currentPath
                 ) {
                     checkDuplicate(childNode)
-                } 
+                }
             }
         }
 
-        if(parentCategoryGuid) {
+        if (parentCategoryGuid) {
             // find the path to the node
             parentStack = recursivelyFindPath(parentCategoryGuid)[0]
             const parent = parentStack?.pop()
@@ -1217,13 +1228,15 @@ const useGlossaryTree = ({
                 }
             }
         } else {
-            const index = treeData.value.findIndex((child) => child?.attributes.name === name) ?? 0
+            const index =
+                treeData.value.findIndex(
+                    (child) => child?.attributes.name === name
+                ) ?? 0
             nameExists = index > -1
         }
 
-        return nameExists;
+        return nameExists
     }
-
 
     watch(parentGlossaryQualifiedName, (newParentGlossaryQF) => {
         offset.value = 0
@@ -1259,7 +1272,7 @@ const useGlossaryTree = ({
         dragAndDropNode,
         nodeToParentKeyMap,
         allKeys,
-        checkDuplicateCategoryNames
+        checkDuplicateCategoryNames,
     }
 }
 

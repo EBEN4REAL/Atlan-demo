@@ -5,7 +5,7 @@
     <div v-else ref="target" class="flex flex-col mb-3 gap-y-2">
         <!-- header starts here -->
         <div
-            class="flex justify-between items-center px-5 gap-x-4 group bg-gray-50 py-2 border-b border-gray-200"
+            class="flex items-center justify-between px-5 py-2 border-b border-gray-200 gap-x-4 group bg-gray-50"
         >
             <div class="flex-grow font-semibold text-gray-500">
                 <div class="flex gap-x-1">
@@ -94,6 +94,18 @@
             </template>
         </div>
         <!-- header ends here -->
+
+        <template v-if="data?.options?.isLocked === 'true'">
+            <div
+                class="p-2 mx-5 mt-2 text-xs rounded bg-primary-light text-primary"
+            >
+                <AtlanIcon
+                    icon="Atlan"
+                    class="mr-1 rounded-full text-primary"
+                />
+                <span>This metadata is managed by Atlan</span>
+            </div>
+        </template>
 
         <div
             class="flex flex-col flex-grow pl-5 pr-5 overflow-auto scrollheight"

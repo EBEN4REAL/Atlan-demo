@@ -11,16 +11,16 @@
             @blur="copyDropdown = false"
             placement="bottomLeft"
         >
-            <a-button
-                class="flex items-center justify-center w-8 h-8 p-0 border-gray-300"
-                size="sm"
+            <AtlanButton
+                class="flex items-center justify-center h-8 px-5 border border-r-0 rounded rounded-r-none cursor-pointer customShadow"
+                color="secondary"
                 @click="copyDropdown = true"
             >
                 <AtlanIcon
                     icon="CopyOutlined"
                     class="text-gray-500"
                 ></AtlanIcon>
-            </a-button>
+            </AtlanButton>
             <template #overlay>
                 <a-menu click="shadow-xl border border-red-500">
                     <div
@@ -45,14 +45,15 @@
             </template>
         </a-dropdown>
 
-        <a-button
+        <AtlanButton
             v-if="!viewOnly"
             v-auth="map.UPDATE_BUSINESS_METADATA"
-            class="flex items-center justify-center w-8 h-8 p-0 border-gray-300"
+            class="flex items-center justify-center h-8 px-5 border rounded-none cursor-pointer border-x-0 customShadow"
+            color="secondary"
             @click="() => metadataModal?.open()"
         >
             <AtlanIcon class="" icon="Edit" />
-        </a-button>
+        </AtlanButton>
 
         <a-tooltip
             :title="
@@ -63,10 +64,11 @@
             :mouse-enter-delay="0"
             placement="left"
         >
-            <a-button
+            <AtlanButton
                 v-if="!viewOnly"
                 v-auth="map.DELETE_BUSINESS_METADATA"
-                class="flex items-center justify-center w-8 h-8 p-0 border-gray-300"
+                class="flex items-center justify-center h-8 px-5 border border-l-0 rounded rounded-l-none cursor-pointer customShadow"
+                color="secondary"
                 :class="!allowDelete ? 'text-gray-400 cursor-not-allowed' : ''"
                 @click.prevent.stop="
                     () =>
@@ -78,7 +80,7 @@
                     :class="!allowDelete ? 'text-red-200' : 'text-error'"
                     icon="TrashAlt"
                 />
-            </a-button>
+            </AtlanButton>
             <a-modal
                 v-model:visible="deleteConfirm"
                 :width="340"
@@ -133,12 +135,10 @@
     import map from '~/constant/accessControl/map'
     import { useTypedefStore } from '~/store/typedef'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
-    import AtlanButton from '@/UI/button.vue'
 
     export default defineComponent({
         components: {
             addMetadataModal,
-            AtlanButton,
         },
         props: {
             metadata: {

@@ -287,6 +287,8 @@
                 if (!showSaveQueryModal.value) {
                     title.value = ''
                     description.value = ''
+                    selectedTerms.value = []
+                    currentStatus.value = 'is_null'
                 }
             })
             onMounted(async () => {

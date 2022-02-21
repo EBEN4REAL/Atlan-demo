@@ -3,7 +3,7 @@ export default function useUpdateGraph() {
     const highlightNodes = (graph, highlightedNode, nodesToHighlight) => {
         const graphNodes = graph.value.getNodes()
 
-        graph.value.freeze('highlightNodes')
+        // graph.value.freeze('highlightNodes')
         graphNodes.forEach((x) => {
             const itExists = nodesToHighlight.includes(x.id)
             const isHN = highlightedNode?.value === x.id
@@ -30,14 +30,14 @@ export default function useUpdateGraph() {
                 lineageNodeElement?.classList.add('isHighlightedNodePath')
             if (isGrayed) lineageNodeElement?.classList.add('isGrayed')
         })
-        graph.value.unfreeze('highlightNodes')
+        // graph.value.unfreeze('highlightNodes')
     }
 
     const highlightEdges = (graph, nodesToHighlight, edgesHighlighted) => {
         edgesHighlighted.value = []
         const graphEdges = graph.value.getEdges()
         const gray = nodesToHighlight.length ? '#d9d9d9' : '#aaaaaa'
-        graph.value.freeze('highlightEdges')
+        // graph.value.freeze('highlightEdges')
         graphEdges.forEach((x) => {
             const cell = graph.value.getCellById(x.id)
             const [source, target] = x.id.split('/')[1].split('@')
@@ -56,7 +56,7 @@ export default function useUpdateGraph() {
                 cell.attr('line/strokeWidth', 1.6)
             }
         })
-        graph.value.unfreeze('highlightEdges')
+        // graph.value.unfreeze('highlightEdges')
     }
 
     return {

@@ -1,9 +1,17 @@
 <template>
     <div class="flex flex-col h-full overflow-y-hidden">
         <div
-            class="flex items-center justify-between px-5 bg-gray-50 py-2 border-b border-gray-200"
+            class="flex items-center justify-between px-5 py-2 border-b border-gray-200 bg-gray-50"
         >
-            <span class="font-semibold text-gray-500">Activity</span>
+            <span class="flex items-center">
+                <PreviewTabsIcon
+                    :icon="tab.icon"
+                    :image="tab.image"
+                    :emoji="tab.emoji"
+                    height="h-4"
+                />
+                <span class="ml-1 font-semibold text-gray-500">Activity</span>
+            </span>
 
             <AtlanIcon
                 icon="Reload"
@@ -90,7 +98,7 @@
                                         )
                                     )
                                 "
-                                class="self-center align-text-bottom text-gray-500"
+                                class="self-center text-gray-500 align-text-bottom"
                             />
                         </div>
                         <Tooltip
@@ -195,6 +203,7 @@
     import { useAssetAuditSearch } from '~/composables/discovery/useAssetAuditSearch'
     import ActivityTypeSelect from '@/common/select/activityType.vue'
     import { activityTypeMap } from '~/constant/activityType'
+    import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import { default as glossaryLabel } from '@/glossary/constants/assetTypeLabel'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import { MinimalAttributes } from '~/constant/projection'
@@ -204,11 +213,22 @@
 
     export default defineComponent({
         name: 'ActivityTab',
-        components: { ActivityType, EmptyScreen, ActivityTypeSelect, Tooltip },
+        components: {
+            ActivityType,
+            EmptyScreen,
+            ActivityTypeSelect,
+            Tooltip,
+            PreviewTabsIcon,
+        },
+
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: true,
+            },
+            tab: {
+                type: Object,
+                required: false,
             },
         },
 
@@ -248,10 +268,10 @@
             }
             const fetchTermsAndCategories = () => {
                 const defaultAttributes = ref([...MinimalAttributes])
-                const offsetGTC= ref(0)
+                const offsetGTC = ref(0)
                 facetsGTC.value = {
                     guidList: [],
-                    stateList:['ACTIVE','DELETED']
+                    stateList: ['ACTIVE', 'DELETED'],
                 }
                 auditList.value.forEach((el) => {
                     if (
@@ -269,7 +289,7 @@
                 } = useDiscoverList({
                     dependentKey: dependentKeyGTC,
                     limit,
-                    offset:offsetGTC,
+                    offset: offsetGTC,
                     facets: facetsGTC,
                     attributes: defaultAttributes,
                     suppressLogs: true,

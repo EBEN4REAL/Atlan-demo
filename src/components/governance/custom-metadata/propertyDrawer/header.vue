@@ -11,17 +11,17 @@
         </div>
     </Shortcut>
     <div
-        class="flex items-center justify-between px-3 py-4 border-b border-gray-300"
+        class="flex items-center justify-between px-3 py-4 border-t border-gray-300"
     >
         <div class="flex items-center flex-grow gap-x-2">
-            <div
+            <!-- <div
                 class="flex items-center justify-center w-8 h-8 p-2 rounded-full bg-primary-light"
             >
                 <AtlanIcon icon="Metadata" class="text-primary" />
             </div>
             <div class="flex-grow font-bold">
                 <Truncate :tooltip-text="title" class="" :rows="2" />
-            </div>
+            </div> -->
         </div>
         <div class="flex items-center justify-end gap-x-4">
             <div v-if="!editing" class="flex items-center space-x-2">
@@ -33,8 +33,14 @@
                 <p class="p-0 m-0">Create more</p>
             </div>
             <template v-else>
+                <div class="">
+                    <AtlanButton color="minimal" size="sm" class="w-7">
+                        Cancel
+                    </AtlanButton>
+                </div>
                 <a-dropdown v-model:visible="visible" trigger="click">
                     <div
+                        v-if="false"
                         class="flex items-center justify-center w-8 h-8 rounded cursor-pointer"
                         :class="visible ? 'bg-gray-100' : 'hover:bg-gray-100'"
                     >

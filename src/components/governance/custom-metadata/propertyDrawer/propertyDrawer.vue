@@ -8,14 +8,24 @@
         class="flex flex-col propertyDrawer"
         :body-style="{ display: 'flex', 'flex-direction': 'column' }"
     >
-        <Header
-            v-model:createMore="createMore"
-            :title="form.displayName || undefined"
-            :editing="isEdit"
-            :loading="loading"
-            @close="handleClose"
-            @update="handleUpdateProperty"
-        />
+        <div
+            class="flex items-center justify-between px-3 py-4 border-b border-gray-300"
+        >
+            <div class="flex items-center flex-grow gap-x-2">
+                <div
+                    class="flex items-center justify-center w-8 h-8 p-2 rounded-full bg-primary-light"
+                >
+                    <AtlanIcon icon="Metadata" class="text-primary" />
+                </div>
+                <div class="flex-grow font-bold">
+                    <Truncate
+                        :tooltip-text="form.displayName || 'New Property'"
+                        class=""
+                        :rows="2"
+                    />
+                </div>
+            </div>
+        </div>
         <!-- Form =============================================================================================================== -->
         <a-form
             ref="formRef"
@@ -26,7 +36,7 @@
             :validate-trigger="['click', 'submit']"
         >
             <div
-                style="height: calc(100vh - 4rem)"
+                style="height: calc(100vh - 8.15rem)"
                 class="p-4 space-y-4 overflow-y-auto bg-gray-100"
             >
                 <Overview
@@ -43,11 +53,13 @@
                     :internal="viewOnly"
                     :editing="isEdit"
                 />
+
                 <ApplicableTypes
                     v-model:form="form"
                     :internal="viewOnly"
                     :editing="isEdit"
                 />
+
                 <Configurations
                     v-model:form="form"
                     :internal="viewOnly"
@@ -55,6 +67,15 @@
                 />
             </div>
         </a-form>
+
+        <Header
+            v-model:createMore="createMore"
+            :title="form.displayName || undefined"
+            :editing="isEdit"
+            :loading="loading"
+            @close="handleClose"
+            @update="handleUpdateProperty"
+        />
     </a-drawer>
 </template>
 
@@ -97,6 +118,7 @@
 
     export default defineComponent({
         components: {
+            Truncate,
             Overview,
             Header,
             Options,

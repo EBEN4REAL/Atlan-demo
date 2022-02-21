@@ -258,7 +258,31 @@
             const aggregations = ref([aggregationAttributeName])
             const postFacets = ref({})
             const dependentKey = ref('DEFAULT_COLUMNS')
-            const defaultAttributes = ref([...MinimalAttributes])
+
+            const columnAttributes = ref([
+                'name',
+                'displayName',
+                'description',
+                'displayDescription',
+                'userDescription',
+                'certificateStatus',
+                'meanings',
+                'category',
+
+                'dataType',
+
+                'isPrimary',
+
+                'isCustom',
+                'isPartition',
+                'isSort',
+                'isIndexed',
+                'isForeign',
+                'isDist',
+                'order',
+            ])
+
+            const defaultAttributes = ref([...columnAttributes.value])
             const preference = ref({
                 sort: 'order-asc',
             })
@@ -525,6 +549,7 @@
                 showColumnSidebar,
                 pagination,
                 selectedRowGuid,
+                defaultAttributes,
                 columns: [
                     {
                         width: 50,

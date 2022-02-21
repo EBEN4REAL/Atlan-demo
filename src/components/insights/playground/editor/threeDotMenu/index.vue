@@ -839,7 +839,7 @@
                     entity: {
                         attributes: { ...activeInlineTab.value.attributes },
                         typeName: 'Query',
-                        guid: activeInlineTab.value.attributes.__guid,
+                        guid: activeInlineTab.value.queryId,
                     },
                 }
                 if (isSameNodeOpenedInSidebar(queryInfo, activeInlineTab)) {

@@ -38,10 +38,10 @@
                 // typedefs
                 useTypedefs()
 
-                // // connections
+                // connections
                 useConnection()
 
-                // // glossary list
+                // glossary list
                 useGlossary()
 
                 const { call } = useIntegration(true)

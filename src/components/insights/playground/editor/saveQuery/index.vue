@@ -110,6 +110,7 @@
 
 <script lang="ts">
     import {
+        onUnmounted,
         ComputedRef,
         defineComponent,
         Ref,
@@ -284,6 +285,10 @@
             onMounted(async () => {
                 await nextTick()
                 titleBarRef.value?.focus()
+            })
+            onUnmounted(() => {
+                title.value = ''
+                description.value = ''
             })
 
             return {

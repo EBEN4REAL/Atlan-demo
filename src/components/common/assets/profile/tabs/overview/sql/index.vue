@@ -10,20 +10,12 @@
 
             <div class="flex flex-col w-full mt-4">
                 <!-- Preview Selector-->
-                <a-tooltip
-                    placement="right"
-                    :title="
-                        !showTablePreview &&
-                        'No sample data found for this asset'
-                    "
-                >
-                    <RaisedTab
-                        v-model:active="activePreviewTabKey"
-                        class="flex-none flex-grow-0 mb-4 mr-auto"
-                        :data="tabConfig"
-                        :disabled="!showTablePreview"
-                    />
-                </a-tooltip>
+
+                <RaisedTab
+                    v-model:active="activePreviewTabKey"
+                    class="flex-none flex-grow-0 mb-4 mr-auto"
+                    :data="tabConfig"
+                />
 
                 <OverviewColumns v-if="activePreviewTabKey === 'column'" />
                 <SampleDataTable
@@ -41,7 +33,6 @@
         defineComponent,
         PropType,
         defineAsyncComponent,
-        computed,
         ref,
         Ref,
         toRefs,
@@ -51,7 +42,6 @@
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import Readme from '@/common/widgets/readme/index.vue'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import RaisedTab from '@/UI/raisedTab.vue'
 
     export default defineComponent({
@@ -88,19 +78,9 @@
                 { key: 'table', label: 'Sample Data' },
             ]
 
-            const { assetType } = useAssetInfo()
-
-            const showTablePreview = computed(
-                () =>
-                    !['TablePartition', 'MaterialisedView'].includes(
-                        assetType(selectedAsset.value)
-                    )
-            )
-
             return {
                 activePreviewTabKey,
                 tabConfig,
-                showTablePreview,
             }
         },
     })

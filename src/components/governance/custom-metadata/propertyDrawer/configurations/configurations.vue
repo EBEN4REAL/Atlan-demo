@@ -48,7 +48,7 @@
                                 <div class="px-4 py-2 w-60">
                                     <b>
                                         {{
-                                            form.displayName ?? 'This property '
+                                            form.displayName || 'This property '
                                         }}
                                     </b>
                                     will be available in asset filtering

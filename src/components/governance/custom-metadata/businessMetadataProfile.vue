@@ -1,32 +1,32 @@
 <template>
     <div class="relative">
         <div
-            class="flex items-start justify-between px-4 pb-4 bg-white border-b pt-7"
+            class="flex flex-col items-start justify-between px-4 pb-4 bg-white border-b pt-7 gap-y-2"
         >
-            <div class="w-full text-xl">
-                <div class="flex gap-2 mb-2">
-                    <AvatarUpdate :metadata="localBm" />
-                    <div class="w-full">
-                        <Truncate
-                            class="mt-0.5"
-                            :tooltip-text="localBm.displayName"
-                            :rows="2"
-                        />
+            <div class="flex w-full text-xl">
+                <div class="w-full text-xl">
+                    <div class="flex gap-2 mb-2">
+                        <AvatarUpdate :metadata="localBm" />
+                        <div class="w-full">
+                            <Truncate
+                                class="mt-0.5"
+                                :tooltip-text="localBm.displayName"
+                                :rows="2"
+                            />
+                        </div>
                     </div>
-                </div>
-                <!-- <div>
+                    <!-- <div>
                     <p class="text-gray-500">{{ localBm.description }}</p>
                 </div> -->
+                </div>
+                <div class="flex items-center">
+                    <MetadataHeaderButton
+                        :metadata="localBm"
+                        :allow-delete="allowDelete"
+                        :asset-count="assetCount"
+                    />
+                </div>
             </div>
-            <div class="flex items-center">
-                <MetadataHeaderButton
-                    :metadata="localBm"
-                    :allow-delete="allowDelete"
-                    :asset-count="assetCount"
-                />
-            </div>
-        </div>
-        <div class="p-4 space-y-4" style="height: calc(100vh - 145px)">
             <div class="flex items-start justify-between">
                 <CreateUpdateInfo
                     :created-at="localBm.createTime"
@@ -35,6 +35,9 @@
                     :updated-by="localBm.updatedBy"
                 />
             </div>
+        </div>
+
+        <div class="p-4 space-y-4" style="height: calc(100vh - 145px)">
             <template v-if="localBm.attributeDefs.length">
                 <div
                     class="sticky top-0 z-10 flex items-center justify-between bg-primary-light"

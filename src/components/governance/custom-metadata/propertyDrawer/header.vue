@@ -23,7 +23,7 @@
                 <Truncate :tooltip-text="title" class="" :rows="2" />
             </div> -->
         </div>
-        <div class="flex items-center justify-end gap-x-4">
+        <div class="flex items-center justify-between w-full gap-x-4">
             <div v-if="!editing" class="flex items-center space-x-2">
                 <a-switch
                     v-model:checked="createMore"
@@ -33,8 +33,14 @@
                 <p class="p-0 m-0">Create more</p>
             </div>
             <template v-else>
+                <div class="flex-grow"></div>
                 <div class="">
-                    <AtlanButton color="minimal" size="sm" class="w-7">
+                    <AtlanButton
+                        color="minimal"
+                        size="sm"
+                        class="w-7"
+                        @click="$emit('close')"
+                    >
                         Cancel
                     </AtlanButton>
                 </div>

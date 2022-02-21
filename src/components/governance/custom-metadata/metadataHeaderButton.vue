@@ -12,8 +12,9 @@
             placement="bottomLeft"
         >
             <AtlanButton
-                class="flex items-center justify-center h-8 px-5 border border-r-0 rounded rounded-r-none cursor-pointer customShadow"
+                class="flex items-center justify-center h-8 px-5 border rounded cursor-pointer customShadow"
                 color="secondary"
+                :class="!viewOnly ? 'border-r-0 rounded-r-none' : ''"
                 @click="copyDropdown = true"
             >
                 <AtlanIcon

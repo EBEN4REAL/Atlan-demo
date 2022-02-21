@@ -1,14 +1,13 @@
 <template>
     <a-button-group class="border-gray-300">
         <a-dropdown
-            :visible="copyDropdown"
+            v-model:visible="copyDropdown"
             :trigger="['click']"
             :overlay-style="{
                 'box-shadow': '0px 9px 32px rgba(0, 0, 0, 0.12)',
                 'border-radius': '4px',
             }"
             :overlay-class-name="$style.copyDropdown"
-            @blur="copyDropdown = false"
             placement="bottomLeft"
         >
             <AtlanButton

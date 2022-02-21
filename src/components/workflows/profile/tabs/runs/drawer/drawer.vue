@@ -13,19 +13,40 @@
                 selectedPod?.name
             }}</span>
         </template>
-        <Overview :selected-pod="selectedPod" :selected-run="selectedRun" />
+        <a-tabs
+            v-model:activeKey="activeKey"
+            class="flex-1"
+            :destroy-inactive-tab-pane="true"
+        >
+            <template v-for="tab in tabs">
+                <a-tab-pane
+                    v-if="!tab.exclude?.includes(selectedPod?.type)"
+                    :key="tab.id"
+                    :tab="tab.label"
+                >
+                    <component
+                        :is="tab.component"
+                        :key="tab.id"
+                        :selected-pod="selectedPod"
+                        :selected-run="selectedRun"
+                    />
+                </a-tab-pane>
+            </template>
+        </a-tabs>
     </a-drawer>
 </template>
 
 <script lang="ts">
     // Vue
-    import { computed, defineComponent, toRefs } from 'vue'
+    import { computed, defineComponent, ref, toRefs } from 'vue'
     import Overview from './overview.vue'
+    import Outputs from './outputs.vue'
 
     export default defineComponent({
         name: 'NodeDrawer',
         components: {
             Overview,
+            Outputs,
         },
         props: {
             selectedPod: {
@@ -45,12 +66,23 @@
         emits: ['update:visible'],
         setup(props, { emit }) {
             const { visible } = toRefs(props)
+            const activeKey = ref('overview')
 
             const visibleComp = computed({
                 get: () => visible.value,
                 set: (val) => emit('update:visible', val),
             })
-            return { visibleComp }
+
+            const tabs = [
+                { id: 'overview', component: 'Overview', label: 'Overview' },
+                {
+                    id: 'outputs',
+                    component: 'Outputs',
+                    label: 'Outputs',
+                    exclude: ['DAG', 'Skipped'],
+                },
+            ]
+            return { visibleComp, tabs, activeKey }
         },
     })
 </script>

@@ -99,6 +99,12 @@ const useAssetAudit = (params: any, guid: string) => {
                 data.displayValue = 'added'
                 data.component = 'Category'
             }
+            if (relationshipAttributes.parentCategory || relationshipAttributes.hasOwnProperty('parentCategory')) {
+                data.value = []
+                data.displayValue = 'added'
+                data.component = 'Category'
+            }
+
             // data.displayValue = 'owners'
             // data.value = {}
             // if (attributes.ownerUsers) {
@@ -295,7 +301,7 @@ const useAssetAudit = (params: any, guid: string) => {
                     //     try {
                     //         parsedDetails = JSON.parse(eventDetail[1].trim())
                     //         data.value =
-                    //             filterTermTypeNameDisplayName(parsedDetails)
+                    //             filterparentCategory(parsedDetails)
                     //         data.displayValue = 'removed'
                     //         data.component = 'Terms'
                     //         return data

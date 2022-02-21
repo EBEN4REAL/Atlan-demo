@@ -204,27 +204,14 @@
                 >
 
                 <div class="flex flex-col">
-                    <span class="text-sm text-gray-700"
-                        >{{ lastSyncRunAt(selectedAsset, true) }} ({{
-                            lastSyncRunAt(selectedAsset, false)
-                        }})</span
-                    >
-                </div>
-            </div>
-
-            <div
-                class="flex flex-col text-sm"
-                v-if="lastSyncRun(selectedAsset)"
-            >
-                <span class="mb-1 text-gray-500"
-                    >Last synced by (Workflow)</span
-                >
-                <div class="flex flex-col">
                     <router-link
                         :to="lastSyncRun(selectedAsset)?.url"
                         class="text-primary hover:underline"
-                        >{{ lastSyncRun(selectedAsset)?.id }}</router-link
                     >
+                        {{ lastSyncRunAt(selectedAsset, true) }} ({{
+                            lastSyncRunAt(selectedAsset, false)
+                        }})
+                    </router-link>
                 </div>
             </div>
 

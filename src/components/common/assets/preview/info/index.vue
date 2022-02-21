@@ -3,8 +3,15 @@
         <div
             class="flex items-center justify-between px-5 py-2 border-b border-gray-200 bg-gray-50"
         >
-            <span class="font-semibold text-gray-500">Overview</span>
-
+            <span class="flex items-center">
+                <PreviewTabsIcon
+                    :icon="tab.icon"
+                    :image="tab.image"
+                    :emoji="tab.emoji"
+                    height="h-4"
+                />
+                <span class="font-semibold text-gray-500 ml-1">Overview</span>
+            </span>
             <span
                 v-if="isLoading || isLoadingClassification"
                 class="flex items-center"
@@ -909,6 +916,7 @@
     import { copyToClipboard } from '~/utils/clipboard'
     import { message } from 'ant-design-vue'
 
+    import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     export default defineComponent({
         name: 'AssetDetails',
         components: {
@@ -934,6 +942,7 @@
             ParentContext,
             FieldCount,
             DetailsContainer,
+            PreviewTabsIcon,
             SampleDataTable: defineAsyncComponent(
                 () =>
                     import(
@@ -959,6 +968,10 @@
                 default: false,
             },
             collectionData: {
+                type: Object,
+                required: false,
+            },
+            tab: {
                 type: Object,
                 required: false,
             },

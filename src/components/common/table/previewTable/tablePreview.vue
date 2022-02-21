@@ -225,7 +225,8 @@
                         col.data_type.toLowerCase() === 'any' ||
                         col.data_type.toLowerCase() === 'variant' ||
                         col.data_type.toLowerCase() === 'object' ||
-                        col.data_type.toLowerCase() === 'struct'
+                        col.data_type.toLowerCase() === 'struct' ||
+                        col.data_type.toLowerCase() === 'json'
                     ) {
                         variantTypeIndexes.value.push(col.dataIndex.toString())
                     }
@@ -251,10 +252,7 @@
                         align = 'right'
                         break
 
-                    case 'Text':
-                    case 'Array':
-                    case 'Object':
-                    case 'Variant':
+                    default:
                         align = 'left'
                         break
                 }
@@ -344,7 +342,8 @@
                             column?.data_type?.toLowerCase() === 'any' ||
                             column?.data_type?.toLowerCase() === 'variant' ||
                             column?.data_type?.toLowerCase() === 'object' ||
-                            column?.data_type?.toLowerCase() === 'struct'
+                            column?.data_type?.toLowerCase() === 'struct' ||
+                            column?.data_type?.toLowerCase() === 'json'
                         ) {
                             rows.forEach((element, i) => {
                                 if (element?.children?.length - 1 > x) {

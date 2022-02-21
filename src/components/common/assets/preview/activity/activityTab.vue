@@ -247,10 +247,8 @@
                 }
             }
             const fetchTermsAndCategories = () => {
-                console.log('fetching GTC', auditList)
                 const defaultAttributes = ref([...MinimalAttributes])
                 const offsetGTC= ref(0)
-                console.log(facetsGTC)
                 facetsGTC.value = {
                     guidList: [],
                     stateList:['ACTIVE','DELETED']

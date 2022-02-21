@@ -205,6 +205,7 @@
 
                 <div class="flex flex-col">
                     <router-link
+                        v-if="role === 'Admin'"
                         :to="lastSyncRun(selectedAsset)?.url"
                         class="text-primary hover:underline"
                     >
@@ -212,6 +213,11 @@
                             lastSyncRunAt(selectedAsset, false)
                         }})
                     </router-link>
+                    <span v-else class="text-sm text-gray-700"
+                        >{{ lastSyncRunAt(selectedAsset, true) }} ({{
+                            lastSyncRunAt(selectedAsset, false)
+                        }})
+                    </span>
                 </div>
             </div>
 
@@ -260,6 +266,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import { capitalizeFirstLetter } from '~/utils/string'
     import { copyToClipboard } from '~/utils/clipboard'
+    import whoami from '~/composables/user/whoami'
 
     export default defineComponent({
         name: 'PropertiesWidget',
@@ -310,6 +317,7 @@
                 sourceId,
             } = useAssetInfo()
 
+            const { role } = whoami()
             const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
 
             const handleClickUser = (username: string) => {
@@ -351,6 +359,7 @@
                 lastSyncRun,
                 sourceId,
                 map,
+                role,
             }
         },
     })

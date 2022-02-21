@@ -79,8 +79,8 @@
                                 class="p-2 text-xs rounded bg-primary-light text-primary"
                             >
                                 <AtlanIcon
-                                    icon="Overview"
-                                    class="mr-1 text-primary"
+                                    icon="Atlan"
+                                    class="mr-1 rounded-full text-primary"
                                 />
                                 <span>This metadata is managed by Atlan</span>
                             </div>
@@ -100,7 +100,7 @@
                         class="flex flex-col items-center justify-center space-y-8"
                         style="height: calc(100vh - 15rem)"
                     >
-                         <!-- <AtlanIcon icon="NoProperty" class="h-40" /> -->
+                         <AtlanIcon icon="NoProperty" class="h-40" />
                                 <p>{{`No properties found for "${attrsearchText}"`}}</p>
 
                             <AtlanButton

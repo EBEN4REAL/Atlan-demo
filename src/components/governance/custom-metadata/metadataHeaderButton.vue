@@ -2,13 +2,14 @@
     <a-button-group class="border-gray-300">
         <a-dropdown
             :visible="copyDropdown"
-            @blur="copyDropdown = false"
             :trigger="['click']"
             :overlay-style="{
                 'box-shadow': '0px 9px 32px rgba(0, 0, 0, 0.12)',
                 'border-radius': '4px',
             }"
-            :overlayClassName="$style.copyDropdown"
+            :overlay-class-name="$style.copyDropdown"
+            @blur="copyDropdown = false"
+            placement="bottomLeft"
         >
             <a-button
                 class="flex items-center justify-center w-8 h-8 p-0 border-gray-300"

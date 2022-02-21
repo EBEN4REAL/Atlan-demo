@@ -1,7 +1,5 @@
 <template>
-    <div
-        class="relative col-span-2 p-4 space-y-4 border border-gray-300 rounded"
-    >
+    <div class="relative col-span-2 space-y-4 rounded">
         <div v-if="disable" class="space-y-2">
             <div class="mb-1 text-gray-500">Name</div>
             <div v-if="disable" class="text-gray-700">

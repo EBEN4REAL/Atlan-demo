@@ -147,7 +147,7 @@
         onMounted,
         onBeforeMount,
     } from 'vue'
-    import { useVModels } from '@vueuse/core'
+    import { until, useVModels } from '@vueuse/core'
     import { useTestCredential } from '~/composables/credential/useTestCredential'
     import useGetCredential from '~/composables/credential/useGetCredential'
 
@@ -498,10 +498,11 @@
             })
 
             const handleUpdate = async () => {
-                await handleTestAuthentication(true)
-                // if (!errorTest.value) {
-                //     updateByID()
-                // }
+                handleTestAuthentication(true)
+                await until(isLoadingTest).toBe(false)
+                if (testData.value?.message) {
+                    updateByID()
+                }
             }
 
             watch(

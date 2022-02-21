@@ -204,7 +204,7 @@
             </div>
 
             <div
-                class="flex flex-col mt-3 mb-3 text-sm"
+                class="flex flex-col text-sm"
                 v-if="lastSyncRunAt(selectedAsset, true)"
             >
                 <span class="mb-1 text-gray-500"
@@ -219,6 +219,23 @@
                     >
                 </div>
             </div>
+
+            <div
+                class="flex flex-col text-sm"
+                v-if="lastSyncRun(selectedAsset)"
+            >
+                <span class="mb-1 text-gray-500"
+                    >Last synced by (Workflow)</span
+                >
+                <div class="flex flex-col">
+                    <router-link
+                        :to="lastSyncRun(selectedAsset)?.url"
+                        class="text-primary hover:underline"
+                        >{{ lastSyncRun(selectedAsset)?.id }}</router-link
+                    >
+                </div>
+            </div>
+
             <div class="flex flex-col text-sm">
                 <span class="mb-1 text-gray-500">Created at (on Atlan)</span>
 
@@ -315,6 +332,7 @@
                 resultMakerID,
                 sourceMetadataId,
                 sourceContentMetadataId,
+                lastSyncRun,
                 lastSyncRunAt,
                 sourceId,
             } = useAssetInfo()
@@ -357,6 +375,7 @@
                 sourceMetadataId,
                 sourceContentMetadataId,
                 lastSyncRunAt,
+                lastSyncRun,
                 sourceId,
                 map,
             }

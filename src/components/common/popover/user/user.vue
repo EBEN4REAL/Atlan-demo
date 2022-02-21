@@ -184,7 +184,7 @@
         props: {
             item: {
                 type: String,
-                required: false,
+                required: true,
                 default: '',
             },
             visible: {
@@ -211,6 +211,7 @@
                     $and: [{ username: item.value }],
                 },
             }
+
             const { userList, isLoading, getUserList } = useUsers(params, false)
             const selectedUser = computed(() =>
                 userList && userList.value && userList.value.length

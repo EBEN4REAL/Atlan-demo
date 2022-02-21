@@ -2,6 +2,7 @@
     <a-button-group class="border-gray-300">
         <a-dropdown
             :visible="copyDropdown"
+            @blur="copyDropdown = false"
             :trigger="['click']"
             :overlay-style="{
                 'box-shadow': '0px 9px 32px rgba(0, 0, 0, 0.12)',

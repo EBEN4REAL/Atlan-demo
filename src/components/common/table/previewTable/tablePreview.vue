@@ -23,6 +23,7 @@
         onMounted,
         onUnmounted,
     } from 'vue'
+    import 'regular-table'
 
     import Tooltip from '@common/ellipsis/index.vue'
     import { images, dataTypeCategoryList } from '~/constant/dataType'
@@ -67,6 +68,7 @@
                 default: '',
             },
         },
+
         setup(props) {
             const { dataList, columns } = toRefs(props)
             const tableRef = ref(null)

@@ -7,6 +7,7 @@
         description-placeholder="Add Description"
         :descriptionWordLimit="140"
         :show-description-limit="true"
+        :destroyOnClose="true"
     >
         <template #leftHeader>
             <div class="flex items-center mr-1 cursor-pointer">
@@ -282,13 +283,15 @@
                     message.error('No collection selected')
                 }
             }
+            watch(showSaveQueryModal, () => {
+                if (!showSaveQueryModal.value) {
+                    title.value = ''
+                    description.value = ''
+                }
+            })
             onMounted(async () => {
                 await nextTick()
                 titleBarRef.value?.focus()
-            })
-            onUnmounted(() => {
-                title.value = ''
-                description.value = ''
             })
 
             return {

@@ -82,7 +82,7 @@
                 </template>
             </div>
         </div>
-        <div>
+        <div v-if="total">
             <p class="pl-4 text-xs text-gray-500">
                 {{ list.length }} of {{ total }} groups
             </p>

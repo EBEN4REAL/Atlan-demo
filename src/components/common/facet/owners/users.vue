@@ -92,7 +92,7 @@
                 Loading users
             </div>
         </div>
-        <div class="pl-4">
+        <div class="pl-4" v-if="filterTotal">
             <p class="text-xs text-gray-500">
                 {{ userList.length }} of {{ filterTotal }} users
             </p>

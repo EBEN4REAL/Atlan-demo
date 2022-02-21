@@ -37,80 +37,103 @@
             </div>
         </div>
 
-        <div class="p-4 space-y-4" style="height: calc(100vh - 145px)">
+        <div class="p-4" style="height: calc(100vh - 145px)">
             <template v-if="localBm.attributeDefs.length">
-                <div
-                    class="sticky top-0 z-10 flex items-center justify-between bg-primary-light"
-                >
-                    <div class="mr-4">
-                        <div
-                            class="relative flex items-stretch w-full overflow-hidden"
-                        >
-                            <a-input
-                                v-model:value="attrsearchText"
-                                class="h-8 px-2 pl-2 w-80"
-                                :placeholder="'Search for property'"
+                <div class="pt-4 space-y-4 bg-white rounded-lg">
+                    <div
+                        class="sticky top-0 z-10 flex items-center justify-between px-4"
+                    >
+                        <div class="mr-4">
+                            <div
+                                class="relative flex items-stretch w-full overflow-hidden"
                             >
-                                <template #suffix>
-                                    <AtlanIcon
-                                        v-if="!attrsearchText"
-                                        icon="Search"
-                                        class="h-4"
-                                    />
-                                    <AtlanIcon
-                                        v-else
-                                        icon="Cancel"
-                                        class="h-3 text-gray-500"
-                                        @click="attrsearchText = ''"
-                                    />
-                                </template>
-                            </a-input>
+                                <a-input
+                                    v-model:value="attrsearchText"
+                                    class="h-8 px-2 pl-2 border border-gray-300 rounded-lg w-80"
+                                    :placeholder="'Search for property'"
+                                >
+                                    <template #prefix>
+                                        <AtlanIcon
+                                            v-if="!attrsearchText"
+                                            icon="Search"
+                                            class="h-4 border-gray-500"
+                                        />
+                                        <AtlanIcon
+                                            v-else
+                                            icon="Cancel"
+                                            class="h-3 text-gray-500"
+                                            @click="attrsearchText = ''"
+                                        />
+                                    </template>
+                                </a-input>
+                            </div>
                         </div>
+                        <template
+                            v-if="
+                                ['true', true].includes(
+                                    localBm.options?.isLocked
+                                )
+                            "
+                        >
+                            <div
+                                class="p-2 text-xs rounded bg-primary-light text-primary"
+                            >
+                                <AtlanIcon
+                                    icon="Overview"
+                                    class="mr-1 text-primary"
+                                />
+                                <span>This metadata is managed by Atlan</span>
+                            </div>
+                        </template>
+                        <a-button
+                            v-else
+                            v-auth="map.UPDATE_BUSINESS_METADATA"
+                            class=""
+                            type="primary"
+                            @click="addPropertyDrawer?.open(null, false)"
+                        >
+                            Add property
+                        </a-button>
                     </div>
-                    <a-button
-                        v-if="localBm.options?.isLocked !== 'true'"
-                        v-auth="map.UPDATE_BUSINESS_METADATA"
-                        class=""
-                        type="primary"
-                        @click="addPropertyDrawer.open(null, false)"
+                    <div
+                        v-if="!searchedAttributeList.length"
+                        class="flex items-center justify-center"
+                        style="height: calc(100vh - 15rem)"
                     >
-                        Add property
-                    </a-button>
-                </div>
-                <div v-if="!searchedAttributeList.length" class="mt-40">
-                    <a-empty
-                        :image="noPropertyImage"
-                        :image-style="{
-                            height: '115px',
-                            display: 'flex',
-                            justifyContent: 'center',
-                        }"
-                    >
-                        <template #description>
-                            <!-- <p
+                        <a-empty
+                            :image="noPropertyImage"
+                            :image-style="{
+                                height: '115px',
+                                display: 'flex',
+                                justifyContent: 'center',
+                            }"
+                        >
+                            <template #description>
+                                <!-- <p
                             v-if="checkAccess(map.UPDATE_BUSINESS_METADATA)"
                             class="font-bold"
                         >
                             Start adding properties
                         </p>-->
-                            <p>No properties found</p>
-                        </template>
+                                <p>No properties found</p>
+                            </template>
 
-                        <AtlanButton
-                            class="mx-auto"
-                            @click="attrsearchText = ''"
-                            >Clear Search</AtlanButton
-                        >
-                    </a-empty>
+                            <AtlanButton
+                                class="mx-auto"
+                                @click="attrsearchText = ''"
+                                >Clear Search</AtlanButton
+                            >
+                        </a-empty>
+                    </div>
+                    <PropertyList
+                        v-else
+                        :metadata="localBm"
+                        :properties="searchedAttributeList"
+                        :selected="selected"
+                        @remove-property="handleRemoveAttribute"
+                        @open-edit-drawer="openEdit"
+                    />
                 </div>
-                <PropertyList
-                    v-else
-                    :metadata="localBm"
-                    :properties="searchedAttributeList"
-                    :selected="selected"
-                    @remove-property="handleRemoveAttribute"
-                    @open-edit-drawer="openEdit"
-                />
             </template>
             <div v-else class="flex items-center justify-center h-full">
                 <a-empty

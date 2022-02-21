@@ -1,21 +1,21 @@
 <template>
-    <div>
-        <div class="overflow-hidden border rounded-lg">
+    <div class="">
+        <div class="overflow-hidden">
             <div
-                class="flex items-center justify-between border-b bg-gray-50"
+                class="flex items-center justify-between bg-gray-100"
                 style="height: 40px"
             >
-                <div class="flex font-bold">
+                <div class="flex text-gray-500 uppercase">
                     <div class="ml-4 cursor-pointer" style="width: 276px">
                         Property
                     </div>
-                    <div class="capitalize" style="width: 248px">Type</div>
+                    <div class="uppercase" style="width: 248px">Type</div>
                 </div>
                 <div style="width: 130px"></div>
             </div>
             <div
                 id="drag-container"
-                class="overflow-y-auto bg-white"
+                class="overflow-y-auto bg-white rounded-b-lg"
                 style="max-height: calc(100vh - 17.5rem)"
             >
                 <div
@@ -45,9 +45,7 @@
                                 icon="MoveItem"
                             />
                         </div>
-                        <!-- <div style="width: 44px">
-                            {{ index + 1 }}
-                        </div> -->
+
                         <div
                             class="leading-none cursor-pointer align-center"
                             style="width: 248px"

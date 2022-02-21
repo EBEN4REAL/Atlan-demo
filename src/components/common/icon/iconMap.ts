@@ -418,8 +418,10 @@ import TrendUp from '~/assets/images/icons/trendUp.svg'
 
 
 import ThreeDotsAlt from '~/assets/images/icons/3-dots-alt.svg'
+import NoProperty from '~/assets/images/admin/customMetadata/empty-property.svg'
 
 export default {
+    NoProperty,
     ThreeDotsAlt,
     Resources2,
     RunningQuery,

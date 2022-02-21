@@ -97,33 +97,17 @@
                     </div>
                     <div
                         v-if="!searchedAttributeList.length"
-                        class="flex items-center justify-center"
+                        class="flex flex-col items-center justify-center space-y-8"
                         style="height: calc(100vh - 15rem)"
                     >
-                        <a-empty
-                            :image="noPropertyImage"
-                            :image-style="{
-                                height: '115px',
-                                display: 'flex',
-                                justifyContent: 'center',
-                            }"
-                        >
-                            <template #description>
-                                <!-- <p
-                            v-if="checkAccess(map.UPDATE_BUSINESS_METADATA)"
-                            class="font-bold"
-                        >
-                            Start adding properties
-                        </p>-->
-                                <p>No properties found</p>
-                            </template>
+                         <!-- <AtlanIcon icon="NoProperty" class="h-40" /> -->
+                                <p>{{`No properties found for "${attrsearchText}"`}}</p>
 
                             <AtlanButton
                                 class="mx-auto"
                                 @click="attrsearchText = ''"
                                 >Clear Search</AtlanButton
                             >
-                        </a-empty>
                     </div>
                     <PropertyList
                         v-else
@@ -135,8 +119,32 @@
                     />
                 </div>
             </template>
-            <div v-else class="flex items-center justify-center h-full">
-                <a-empty
+            <div
+                v-else
+                class="flex flex-col items-center justify-center h-full gap-y-8"
+            >
+                <AtlanIcon icon="NoProperty" class="h-52" />
+                <div class="flex flex-col items-center space-y-8">
+                    <p
+                        v-if="checkAccess(map.UPDATE_BUSINESS_METADATA)"
+                        class="font-bold text-center"
+                    >
+                        Start Creating Properties
+                        <p class="mt-2 text-base font-normal text-gray-500">
+                            Create properties to manage custom fields
+                        </p>
+                    </p>
+                    <p v-else>This custom metadata has no properties</p>
+
+                    <a-button
+                        v-auth="map.UPDATE_BUSINESS_METADATA"
+                        type="primary"
+                        @click="addPropertyDrawer.open(undefined, false)"
+                    >
+                        New property
+                    </a-button>
+                </div>
+                <!-- <a-empty
                     :image="noPropertyImage"
                     :image-style="{
                         height: '115px',
@@ -160,7 +168,7 @@
                         @click="addPropertyDrawer.open(undefined, false)"
                         ><AtlanIcon icon="Add" class="inline" /> Add property
                     </a-button>
-                </a-empty>
+                </a-empty> -->
             </div>
         </div>
     </div>

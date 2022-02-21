@@ -17,7 +17,7 @@ export function useAuditBody(
     preference?: Record<string, any>
 ) {
     const base = bodybuilder()
-
+    console.log(base)
     if (queryText) {
         base.orQuery('match', 'name', {
             query: queryText,
@@ -65,6 +65,7 @@ export function useAuditBody(
     //filters
     Object.keys(facets ?? {}).forEach((mkey) => {
         const filterObject = facets[mkey]
+        console.log(filterObject)
         switch (mkey) {
             case 'entityId': {
                 if (filterObject) {
@@ -75,11 +76,20 @@ export function useAuditBody(
             case 'entityQualifiedName': {
                 if (filterObject) {
                     base.filter('bool', (q) => {
-                        q.orFilter(
-                            'wildcard',
-                            'entityQualifiedName',
-                            `${filterObject}/*`
-                        )
+                        if (facets?.typeNames?.includes('AtlasGlossary')) {
+                            q.orFilter(
+                                'wildcard',
+                                'entityQualifiedName',
+                                `*@${filterObject}`
+                            )
+                        } else {
+                            q.orFilter(
+                                'wildcard',
+                                'entityQualifiedName',
+                                `${filterObject}/*`
+                            )
+                        }
+console.log(q)
                         q.orFilter('term', 'entityQualifiedName', filterObject)
                         return q
                     })
@@ -157,7 +167,6 @@ export function useAuditBody(
             }
         }
     })
-
     // if (
     //     !facets?.typeNames?.includes('AtlasGlossary') &&
     //     !facets?.typeNames?.includes('AtlasGlossaryTerm') &&

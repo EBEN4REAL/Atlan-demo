@@ -28,12 +28,12 @@
                 :async="false"
                 tree-checkable
                 :placeholder="'Select asset types'"
-                :max-tag-count="5"
                 :get-popup-container="(target) => target.parentNode"
                 :allow-clear="false"
                 check-strictly
                 :show-checked-strategy="CHECKEDSTRATEGY"
                 show-arrow
+                :class="$style.treeSelect"
                 @change="handleApplicableEntityTypeChange"
             >
                 <template #suffixIcon>
@@ -179,4 +179,13 @@
     })
 </script>
 
-<style scoped></style>
+<style lang="less" module>
+    .treeSelect {
+        :global(.ant-select-selection-item) {
+            // @apply items-baseline;
+        }
+        :global(.ant-select-selection-item-remove) {
+            @apply flex items-center;
+        }
+    }
+</style>

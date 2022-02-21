@@ -20,6 +20,7 @@
                 <div class="text-gray-500">Type</div>
                 <div class="text-gray-700">
                     <AtlanIcon
+                        class="text-gray-700"
                         :icon="getDataTypeIcon(form.options.primitiveType)"
                     />
                     {{ getHumanTypeName(form.options.primitiveType) }}
@@ -49,11 +50,12 @@
                         :label="type.label"
                     >
                         <span class="flex items-center">
-                            <AtlanIcon
-                                class="inline h-4 mr-2 align-middle"
-                                :icon="type.icon"
-                            />
-
+                            <div class="pb-1">
+                                <AtlanIcon
+                                    class="inline h-4 mr-2 text-gray-700 align-middle"
+                                    :icon="type.icon"
+                                />
+                            </div>
                             <span class="inline align-middle">
                                 {{ type.label }}
                             </span>

@@ -3,7 +3,8 @@
         <div
             v-if="
                 attribute.typeName !== 'boolean' &&
-                attribute?.subTypeName !== 'user'
+                attribute?.subTypeName !== 'user' &&
+                attribute?.subTypeName !== 'announcement'
             "
             class="flex items-center gap-x-1"
         >

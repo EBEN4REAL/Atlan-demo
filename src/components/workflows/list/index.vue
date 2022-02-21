@@ -19,6 +19,7 @@
     import Item from './item.vue'
 
     export default defineComponent({
+        name: 'WorkflowList',
         components: { Item },
         props: {
             list: {

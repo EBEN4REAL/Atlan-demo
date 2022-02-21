@@ -11,6 +11,11 @@
         :multiple="multiple"
         @change="handleInputChange"
     ></GroupSelector>
+    <Announcement
+        v-else-if="dataType === 'announcement'"
+        v-model:value="localValue"
+        @change="handleInputChange"
+    ></Announcement>
     <MultiInput
         v-else-if="
             [
@@ -128,6 +133,7 @@
     import GroupSelector from '@/common/select/groups.vue'
     import EnumSelector from '@/common/select/enum.vue'
     import MultiInput from './customizedTagInput.vue'
+    import Announcement from '@common/select/announcement.vue'
     import { isFloat } from '~/utils/checkType'
 
     dayjs.extend(utc)
@@ -136,7 +142,13 @@
     // import useFileUploader from './useFileUploader'
 
     export default defineComponent({
-        components: { UserSelector, GroupSelector, EnumSelector, MultiInput },
+        components: {
+            UserSelector,
+            GroupSelector,
+            EnumSelector,
+            MultiInput,
+            Announcement,
+        },
         props: {
             modelValue: {},
             dataType: {

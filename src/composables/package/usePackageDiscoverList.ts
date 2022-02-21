@@ -139,10 +139,13 @@ export function usePackageDiscoverList({
             )
 
             if (found) {
-                found.count = aggregationMap(aggregationKey).find(
-                    (i) => i.key.toLowerCase() === item.toLowerCase()
-                )?.doc_count
-                temp.push(found)
+                temp.push({
+                    ...found,
+                    count:
+                        aggregationMap(aggregationKey).find(
+                            (i) => i.key.toLowerCase() === item.toLowerCase()
+                        )?.doc_count ?? 0,
+                })
             }
         })
         if (includeWithoutLabel) {

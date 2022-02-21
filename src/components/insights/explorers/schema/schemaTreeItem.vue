@@ -13,7 +13,7 @@
                 <PopoverAsset
                     :item="item"
                     placement="right"
-                    mouseEnterDelay="0.6"
+                    :mouseEnterDelay="1"
                 >
                     <template #button>
                         <AtlanBtn

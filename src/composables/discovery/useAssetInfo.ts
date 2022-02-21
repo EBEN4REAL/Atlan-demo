@@ -582,6 +582,19 @@ export default function useAssetInfo() {
         }
         return ''
     }
+    const lastSyncRun = (asset: assetInterface) => {
+        const runId = attributes(asset)?.lastSyncRun
+        if (runId) {
+            return {
+                id: runId,
+                url: `/workflows/${runId
+                    .split('-')
+                    .slice(0, -1)
+                    .join('-')}/runs?name=${runId}`,
+            }
+        }
+    }
+
     const lastSyncRunAt = (asset: assetInterface, raw: boolean = false) => {
         if (attributes(asset)?.lastSyncRunAt) {
             return raw
@@ -1294,6 +1307,7 @@ export default function useAssetInfo() {
         viewCount,
         parentOrganization,
         parentObject,
+        lastSyncRun,
         lastSyncRunAt,
         sourceId,
         fieldCount,

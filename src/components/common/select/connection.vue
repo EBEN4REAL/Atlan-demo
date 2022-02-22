@@ -1,14 +1,14 @@
 <template>
     <a-select
-        placeholder="Select a connection"
         v-model:value="selectedValue"
-        :allowClear="true"
-        :showSearch="true"
-        :filterOption="false"
+        placeholder="Select a connection"
+        :allow-clear="true"
+        :show-search="true"
+        :filter-option="false"
+        :get-popup-container="(target) => target.parentNode"
+        not-found-content="No connection found"
         @search="handleSearch"
         @change="handleChange"
-        :get-popup-container="(target) => target.parentNode"
-        notFoundContent="No connection found"
     >
         <template #suffixIcon>
             <AtlanIcon icon="CaretDown" class="mb-0" />
@@ -28,7 +28,7 @@
                             item.attributes.name
                         }}</span>
                     </div>
-                    <span class="text-xs text-gray-500" v-if="showCount"
+                    <span v-if="showCount" class="text-xs text-gray-500"
                         >{{ item.assetCount }} assets</span
                     >
                 </div>
@@ -45,6 +45,7 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import whoami from '~/composables/user/whoami'
     import { usePersonaStore } from '~/store/persona'
+    import { useConnectionByConnectorName } from '~/composables/connection/useConnection'
 
     export default defineComponent({
         props: {
@@ -146,6 +147,7 @@
                             )
                         }
                         if (connector.value) {
+                            /*   useConnectionByConnectorName(connector.value) */
                             return (
                                 item.attributes?.connectorName?.toLowerCase() ===
                                 connector.value.toLowerCase()

@@ -2,33 +2,79 @@
     <GlossaryOverview
         v-if="isGTC(selectedAsset)"
         :selected-asset="selectedAsset"
-        :readmeEditPermission="readmeEditPermission"
-    />
+        :readme-edit-permission="readmeEditPermission"
+    >
+        <template #readme>
+            <Readme
+                :asset="selectedAsset"
+                :is-edit="readmeEditPermission"
+                @editing="$emit('editing')"
+                @saved-changes="$emit('savedChanges')"
+            />
+        </template>
+    </GlossaryOverview>
     <BiOverview
         v-else-if="isBiAsset(selectedAsset)"
         :selected-asset="selectedAsset"
-        :readmeEditPermission="readmeEditPermission"
-    />
+        :readme-edit-permission="readmeEditPermission"
+    >
+        <template #readme>
+            <Readme
+                :asset="selectedAsset"
+                :is-edit="readmeEditPermission"
+                @editing="$emit('editing')"
+                @saved-changes="$emit('savedChanges')"
+            />
+        </template>
+    </BiOverview>
     <SaasOverview
         v-else-if="isSaasAsset(selectedAsset)"
         :selected-asset="selectedAsset"
-        :readmeEditPermission="readmeEditPermission"
-    />
+        :readme-edit-permission="readmeEditPermission"
+    >
+        <template #readme>
+            <Readme
+                :asset="selectedAsset"
+                :is-edit="readmeEditPermission"
+                @editing="$emit('editing')"
+                @saved-changes="$emit('savedChanges')"
+            />
+        </template>
+    </SaasOverview>
     <SQLOverview
         v-else-if="isSQLAsset(selectedAsset)"
         :selected-asset="selectedAsset"
-        :readmeEditPermission="readmeEditPermission"
-    />
+        :readme-edit-permission="readmeEditPermission"
+    >
+        <template #readme>
+            <Readme
+                :asset="selectedAsset"
+                :is-edit="readmeEditPermission"
+                @editing="$emit('editing')"
+                @saved-changes="$emit('savedChanges')"
+            />
+        </template>
+    </SQLOverview>
     <GeneralOverview
         v-else
         :selected-asset="selectedAsset"
-        :readmeEditPermission="readmeEditPermission"
-    />
+        :readme-edit-permission="readmeEditPermission"
+    >
+        <template #readme>
+            <Readme
+                :asset="selectedAsset"
+                :is-edit="readmeEditPermission"
+                @editing="$emit('editing')"
+                @saved-changes="$emit('savedChanges')"
+            />
+        </template>
+    </GeneralOverview>
 </template>
 
 <script lang="ts">
     import { defineComponent, PropType, computed, toRefs } from 'vue'
 
+    import Readme from '@common/widgets/readme/index.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import SQLOverview from './sql/index.vue'
     import BiOverview from './bi/index.vue'
@@ -45,6 +91,7 @@
             GlossaryOverview,
             GeneralOverview,
             SaasOverview,
+            Readme,
         },
         props: {
             selectedAsset: {
@@ -52,6 +99,7 @@
                 required: true,
             },
         },
+        emits: ['editing', 'savedChanges'],
         setup(props) {
             const {
                 isBiAsset,

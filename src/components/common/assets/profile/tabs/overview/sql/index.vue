@@ -24,7 +24,7 @@
                 />
             </div>
         </Summary>
-        <Readme :asset="selectedAsset" :isEdit="readmeEditPermission" />
+        <slot name="readme"></slot>
     </div>
 </template>
 
@@ -42,13 +42,13 @@
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import Readme from '@/common/widgets/readme/index.vue'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import RaisedTab from '@/UI/raisedTab.vue'
 
     export default defineComponent({
         name: 'NonBiOverview',
         components: {
             AnnouncementWidget,
-            Readme,
             Summary,
             RaisedTab,
             OverviewColumns: defineAsyncComponent(

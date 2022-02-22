@@ -259,10 +259,7 @@
 
     import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
 
-    import useAskAQuestion, {
-        resourceId,
-        onSlackModalSuccess,
-    } from '~/composables/integrations/slack/useAskAQuestion'
+    import { resourceId } from '~/composables/integrations/slack/useAskAQuestion'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -545,7 +542,6 @@
             })
 
             return {
-                onSlackModalSuccess,
                 tabChildRef,
                 activeKey,
                 handleTabChange,

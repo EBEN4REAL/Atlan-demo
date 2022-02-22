@@ -62,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-    import { defineProps, defineEmits, ref, watch, toRefs } from 'vue'
+    import { defineProps, defineEmits, ref, watch, toRefs, h } from 'vue'
     import { message as toast } from 'ant-design-vue'
 
     import intStore from '~/store/integrations/index'
@@ -74,6 +74,7 @@
     import access from '~/constant/accessControl/map'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import { resourceId } from '~/composables/integrations/slack/useAskAQuestion'
+    import SuccessToast from '@/common/assets/misc/slackHelpers/AskAQuestionSuccessToast.vue'
 
     const props = defineProps({
         link: {
@@ -169,20 +170,31 @@
         watch([isLoading, error], () => {
             if (!isLoading.value && !error.value) {
                 loading.value = false
-                toast.success({
-                    key: 'postQuestionOnSlack',
-                    content: 'Question posted',
-                    duration: 2,
-                })
+
                 console.log('data', data.value)
+
+                const { slackLink } = data.value
+                if (slackLink)
+                    toast.success({
+                        key: 'postQuestionOnSlack',
+                        content: h(SuccessToast, {
+                            link: [slackLink],
+                        }),
+                        class: ['successToast'],
+                        duration: 5,
+                    } as any)
+                else
+                    toast.success({
+                        key: 'postQuestionOnSlack',
+                        content: 'Question posted',
+                        duration: 2,
+                    })
 
                 emit('success', data.value)
                 visible.value = false
-                // TODO: @ROHAN add analytics event for question asked
-                // useAddEvent('integration', 'slack', 'asset_shared', {
-                //     asset_type: assetType.value,
-                //     has_message: !!message.value,
-                // })
+                useAddEvent('integration', 'slack', 'asset_question_posted', {
+                    asset_type: assetType.value,
+                })
             } else if (error.value) {
                 loading.value = false
                 const errMsg = error.value?.response?.data?.errorMessage
@@ -237,4 +249,10 @@
     }
 </script>
 
-<style scoped></style>
+<style lang="less">
+    .successToast {
+        .ant-message-success {
+            @apply flex items-center;
+        }
+    }
+</style>

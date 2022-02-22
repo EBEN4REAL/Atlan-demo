@@ -25,35 +25,10 @@
                     :selected-asset="asset"
                     :read-permission="isScrubbed(asset)"
                     @preview="$emit('preview', $event)"
-                    @saved-changes="
-                        () => {
-                            savedAllChanges = true
-                        }
-                    "
-                    @editing="
-                        () => {
-                            savedAllChanges = false
-                        }
-                    "
                 ></component>
             </a-tab-pane>
         </a-tabs>
     </div>
-    <a-modal
-        ref="unsavedChangesModalRef"
-        :visible="isRevealed"
-        title="Leave Page?"
-        ok-text="No"
-        cancel-text="Yes"
-        @ok="cancel"
-        @cancel="confirm"
-    >
-        <p class="px-4">
-            Leaving this page will cause you to
-            <span class="font-bold">lose your unsaved changes</span>. Do you
-            want to leave this page?
-        </p>
-    </a-modal>
 </template>
 
 <script lang="ts">
@@ -64,15 +39,8 @@
         toRefs,
         provide,
         computed,
-        ref,
     } from 'vue'
-    import {
-        onBeforeRouteLeave,
-        onBeforeRouteUpdate,
-        useRoute,
-        useRouter,
-    } from 'vue-router'
-    import { useConfirmDialog, onClickOutside } from '@vueuse/core'
+    import { useRoute, useRouter } from 'vue-router'
 
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
@@ -126,7 +94,6 @@
             const { asset, page } = toRefs(props)
             const { getAllowedActions } = useAssetEvaluate()
             const actions = computed(() => getAllowedActions(asset.value))
-            const savedAllChanges = ref(true)
             provide('actions', actions)
             provide('selectedAsset', asset)
 
@@ -135,50 +102,16 @@
             const route = useRoute()
             const router = useRouter()
 
-            const showUnsavedChangesModal = ref(false)
-
             const activeKey = computed({
                 get: () => route?.params?.tab,
                 set: (key) =>
                     router.replace(`/${page.value}/${route.params.id}/${key}`),
             })
 
-            const { isRevealed, reveal, confirm, cancel } = useConfirmDialog(
-                showUnsavedChangesModal
-            )
-
-            // on click outside logic
-            const unsavedChangesModalRef = ref(null)
-            onClickOutside(unsavedChangesModalRef, () => cancel())
-
-            /**
-             * A route guard that checks for unsaved changes, and correspondingly
-             * handles re-directions.
-             */
-            const unsavedChangesGuard = async () => {
-                if (!savedAllChanges.value) {
-                    const { isCanceled } = await reveal()
-                    if (!isCanceled) {
-                        savedAllChanges.value = true
-                    }
-                    return !isCanceled
-                }
-                return true
-            }
-
-            onBeforeRouteLeave(unsavedChangesGuard)
-            onBeforeRouteUpdate(unsavedChangesGuard)
-
             return {
                 getProfileTabs,
                 activeKey,
                 isScrubbed,
-                savedAllChanges,
-                confirm,
-                cancel,
-                showUnsavedChangesModal,
-                isRevealed,
-                unsavedChangesModalRef,
             }
         },
     })

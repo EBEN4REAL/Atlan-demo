@@ -8,8 +8,16 @@
             <Readme
                 :asset="selectedAsset"
                 :is-edit="readmeEditPermission"
-                @editing="$emit('editing')"
-                @saved-changes="$emit('savedChanges')"
+                @saved-changes="
+                    () => {
+                        savedAllChanges = true
+                    }
+                "
+                @editing="
+                    () => {
+                        savedAllChanges = false
+                    }
+                "
             />
         </template>
     </GlossaryOverview>
@@ -22,8 +30,16 @@
             <Readme
                 :asset="selectedAsset"
                 :is-edit="readmeEditPermission"
-                @editing="$emit('editing')"
-                @saved-changes="$emit('savedChanges')"
+                @saved-changes="
+                    () => {
+                        savedAllChanges = true
+                    }
+                "
+                @editing="
+                    () => {
+                        savedAllChanges = false
+                    }
+                "
             />
         </template>
     </BiOverview>
@@ -36,8 +52,16 @@
             <Readme
                 :asset="selectedAsset"
                 :is-edit="readmeEditPermission"
-                @editing="$emit('editing')"
-                @saved-changes="$emit('savedChanges')"
+                @saved-changes="
+                    () => {
+                        savedAllChanges = true
+                    }
+                "
+                @editing="
+                    () => {
+                        savedAllChanges = false
+                    }
+                "
             />
         </template>
     </SaasOverview>
@@ -50,8 +74,16 @@
             <Readme
                 :asset="selectedAsset"
                 :is-edit="readmeEditPermission"
-                @editing="$emit('editing')"
-                @saved-changes="$emit('savedChanges')"
+                @saved-changes="
+                    () => {
+                        savedAllChanges = true
+                    }
+                "
+                @editing="
+                    () => {
+                        savedAllChanges = false
+                    }
+                "
             />
         </template>
     </SQLOverview>
@@ -64,15 +96,41 @@
             <Readme
                 :asset="selectedAsset"
                 :is-edit="readmeEditPermission"
-                @editing="$emit('editing')"
-                @saved-changes="$emit('savedChanges')"
+                @saved-changes="
+                    () => {
+                        savedAllChanges = true
+                    }
+                "
+                @editing="
+                    () => {
+                        savedAllChanges = false
+                    }
+                "
             />
         </template>
     </GeneralOverview>
+    <a-modal
+        ref="unsavedChangesModalRef"
+        :visible="isRevealed"
+        title="Leave site?"
+        ok-text="Leave"
+        cancel-text="Stay"
+        @ok="cancel"
+        @cancel="confirm"
+    >
+        <p class="px-4">Changes that you made may not be saved.</p>
+    </a-modal>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, computed, toRefs } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        computed,
+        toRefs,
+        ref,
+        watch,
+    } from 'vue'
 
     import Readme from '@common/widgets/readme/index.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -82,6 +140,8 @@
     import SaasOverview from './saas/index.vue'
     import GeneralOverview from './general/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import { useConfirmDialog, onClickOutside } from '@vueuse/core'
+    import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router'
 
     export default defineComponent({
         name: 'OverviewTab',
@@ -121,13 +181,70 @@
                         'Readme'
                     ) && assetPermission('CREATE_README')
             )
+            const savedAllChanges = ref(true)
+            const showUnsavedChangesModal = ref(false)
 
+            const { isRevealed, reveal, confirm, cancel } = useConfirmDialog(
+                showUnsavedChangesModal
+            )
+
+            // on click outside logic
+            const unsavedChangesModalRef = ref(null)
+            onClickOutside(unsavedChangesModalRef, () => cancel())
+
+            /**
+             * A route guard that checks for unsaved changes, and correspondingly
+             * handles re-directions.
+             */
+            const unsavedChangesGuard = async () => {
+                if (!savedAllChanges.value) {
+                    const { isCanceled } = await reveal()
+                    if (isCanceled) {
+                        savedAllChanges.value = true
+                        return true
+                    }
+                    return false
+                }
+                return true
+            }
+
+            const beforeUnloadListener = (event) => {
+                event.preventDefault()
+                return (event.returnValue = '')
+            }
+
+            watch(savedAllChanges, () => {
+                if (savedAllChanges.value) {
+                    window.removeEventListener(
+                        'beforeunload',
+                        beforeUnloadListener,
+                        {
+                            capture: true,
+                        }
+                    )
+                } else {
+                    window.addEventListener(
+                        'beforeunload',
+                        beforeUnloadListener,
+                        {
+                            capture: true,
+                        }
+                    )
+                }
+            })
+
+            onBeforeRouteLeave(unsavedChangesGuard)
+            onBeforeRouteUpdate(unsavedChangesGuard)
             return {
                 isBiAsset,
                 isGTC,
                 isSQLAsset,
                 isSaasAsset,
                 readmeEditPermission,
+                cancel,
+                confirm,
+                isRevealed,
+                savedAllChanges,
             }
         },
     })

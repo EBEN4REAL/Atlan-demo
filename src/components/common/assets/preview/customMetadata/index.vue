@@ -5,7 +5,7 @@
     <div v-else ref="target" class="flex flex-col mb-3 gap-y-2 w-full">
         <!-- header starts here -->
         <div
-            class="flex justify-between items-center px-5 gap-x-4 group bg-gray-50 py-2 border-b border-gray-200"
+            class="flex items-center justify-between px-5 py-2 border-b border-gray-200 gap-x-4 group bg-gray-50"
         >
             <span class="flex items-center">
                 <PreviewTabsIcon
@@ -92,6 +92,14 @@
             </div>
         </div>
         <!-- header ends here -->
+
+        <template v-if="data?.options?.isLocked === 'true'">
+            <div
+                class="flex items-center p-2 mx-5 mt-2 text-xs rounded gap-x-2 bg-primary-light text-primary"
+            >
+                <InternalCMBanner />
+            </div>
+        </template>
 
         <div
             class="flex flex-col flex-grow pl-5 pr-5 overflow-auto scrollheight"
@@ -361,11 +369,13 @@
     import page from '~/constant/accessControl/page'
     import useAuth from '~/composables/auth/useAuth'
     import PropertyPopover from '@/common/assets/preview/customMetadata/misc/propertyPopover.vue'
+    import InternalCMBanner from '@/common/customMetadata/internalCMBanner.vue'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
 
     export default defineComponent({
         name: 'CustomMetadata',
         components: {
+            InternalCMBanner,
             PropertyPopover,
             Truncate,
             ReadOnly: defineAsyncComponent(() => import('./readOnly.vue')),

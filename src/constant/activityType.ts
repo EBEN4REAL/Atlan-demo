@@ -16,8 +16,26 @@ export const activityTypeMap = [
         value: 'terms-updated',
         label: 'Terms',
         action: 'ENTITY_UPDATE',
-        excludes: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
+        excludes: [
+            'AtlasGlossaryTerm',
+            'AtlasGlossaryCategory',
+            'AtlasGlossary',
+        ],
         exists: ['detail.relationshipAttributes.meanings'],
+    },
+    {
+        value: 'categories-updated',
+        label: 'Categories',
+        action: 'ENTITY_UPDATE',
+        includes: [
+            'AtlasGlossaryTerm',
+            'AtlasGlossaryCategory',
+            'AtlasGlossary',
+        ],
+        exists: [
+            'detail.relationshipAttributes.parentCategory',
+            'detail.relationshipAttributes.categories',
+        ],
     },
 
     {
@@ -111,5 +129,29 @@ export const activityTypeMap = [
             'detail.attributes.ownerUsers.keyword',
             'detail.attributes.ownerGroups.keyword',
         ],
+    },
+    {
+        value: 'entity-created',
+        label: 'Asset created',
+        action: 'ENTITY_CREATE',
+        includes: [
+            'AtlasGlossaryTerm',
+            'AtlasGlossaryCategory',
+            ,
+            'AtlasGlossary',
+        ],
+        exists: ['detail.attributes.qualifiedName'],
+    },
+    {
+        value: 'entity-deleted',
+        label: 'Asset deleted',
+        action: 'ENTITY_DELETE',
+        includes: [
+            'AtlasGlossaryTerm',
+            'AtlasGlossaryCategory',
+            ,
+            'AtlasGlossary',
+        ],
+        exists: ['detail.attributes.qualifiedName'],
     },
 ]

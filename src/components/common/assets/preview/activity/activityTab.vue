@@ -72,7 +72,12 @@
                     <div
                         v-if="
                             log.entityId !== item.guid &&
-                            ['AtlasGlossary'].includes(item.typeName)
+                            ['AtlasGlossary'].includes(item.typeName) &&
+                            getTermsAndCategoriesDetail(
+                                log.detail.guid ??
+                                    log.detail?.entityGuid ??
+                                    log?.entityId
+                            )?.guid
                         "
                         class="flex items-center mt-1 text-gray-700"
                     >
@@ -248,10 +253,10 @@
             }
             const fetchTermsAndCategories = () => {
                 const defaultAttributes = ref([...MinimalAttributes])
-                const offsetGTC= ref(0)
+                const offsetGTC = ref(0)
                 facetsGTC.value = {
                     guidList: [],
-                    stateList:['ACTIVE','DELETED']
+                    stateList: ['ACTIVE', 'DELETED'],
                 }
                 auditList.value.forEach((el) => {
                     if (
@@ -269,7 +274,7 @@
                 } = useDiscoverList({
                     dependentKey: dependentKeyGTC,
                     limit,
-                    offset:offsetGTC,
+                    offset: offsetGTC,
                     facets: facetsGTC,
                     attributes: defaultAttributes,
                     suppressLogs: true,

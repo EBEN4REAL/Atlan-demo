@@ -16,44 +16,49 @@
             attributes(selectedAsset)?.category?.toLowerCase() != 'saas'
         "
         class="flex flex-col"
-        @click="handleOpenModal"
     >
-        <p
+        <div
             class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
         >
-            SQL Query
-        </p>
+            <span>SQL Query</span>
+            <span
+                class="cursor-pointer text-primary hover:underline"
+                @click="handleOpenModal"
+                >Edit</span
+            >
+        </div>
 
         <div class="px-5">
             <div
                 class="flex flex-col p-4 border border-gray-200 rounded"
                 :class="{ 'cursor-pointer hover:shadow': editPermission }"
+                @click="handleOpenModal"
             >
                 <div class="flex items-center mb-3 gap-x-6">
                     <p class="flex items-center text-gray-500">
                         <AtlanIcon
+                            v-if="allowQuery(selectedAsset)"
                             icon="RunSuccess"
                             class="mr-1"
-                            v-if="allowQuery(selectedAsset)"
                         ></AtlanIcon>
                         <AtlanIcon
+                            v-else
                             icon="Decline"
                             class="mr-1"
-                            v-else
                         ></AtlanIcon>
                         Allow Query
                     </p>
 
                     <p class="flex items-center text-gray-500">
                         <AtlanIcon
+                            v-if="allowQueryPreview(selectedAsset)"
                             icon="RunSuccess"
                             class="mr-1"
-                            v-if="allowQueryPreview(selectedAsset)"
                         ></AtlanIcon>
                         <AtlanIcon
+                            v-else
                             icon="Decline"
                             class="mr-1"
-                            v-else
                         ></AtlanIcon>
                         Allow Preview
                     </p>
@@ -85,8 +90,8 @@
             <a-modal
                 v-model:visible="visible"
                 title="SQL Query Update"
-                :destroyOnClose="true"
-                :maskClosable="false"
+                :destroy-on-close="true"
+                :mask-closable="false"
             >
                 <div class="flex flex-col p-4 text-gray-500">
                     <div class="flex items-center mb-3 gap-x-6">
@@ -140,10 +145,10 @@
         PropType,
         watch,
     } from 'vue'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import { assetInterface } from '~/types/assets/asset.interface'
     import { useVModels } from '@vueuse/core'
     import RadioButtons from '@common/radio/customRadioButtonSingle.vue'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import { assetInterface } from '~/types/assets/asset.interface'
     import { CheckboxArray } from '~/types'
 
     export default defineComponent({

@@ -140,7 +140,7 @@
         toast.loading({
             key: 'postQuestionOnSlack',
             content: 'Posting on slack ...',
-            duration: 10,
+            duration: 5,
         })
 
         const { data, isLoading, error, isReady } = askQuestionOnSlack({

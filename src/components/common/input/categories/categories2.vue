@@ -8,7 +8,19 @@
             @visibleChange="onPopoverClose"
         >
             <template #content>
+                <SearchAdvanced
+                    v-model="queryText"
+                    :connectorName="facets?.hierarchy?.connectorName"
+                    :autofocus="true"
+                    ref="searchBar"
+                    :allowClear="true"
+                    @change="handleSearchChange"
+                    placeholder="Search terms & categories..."
+                    class="px-4 pb-2 mb-2"
+                ></SearchAdvanced>
+
                 <a-tree
+                    v-if="!queryText"
                     :key="popoverVisible"
                     class="glossary-tree"
                     :tree-data="treeData"
@@ -43,7 +55,50 @@
                         </div>
                     </template>
                 </a-tree>
-                <div :class="$style.categoryWidget" id="categoryWidget"></div>
+                <!-- list starts -->
+                <div
+                    v-if="isLoading && queryText"
+                    class="flex items-center justify-center flex-grow"
+                >
+                    <AtlanLoader class="h-10" />
+                </div>
+                <div
+                    v-else-if="list.length == 0 && !isLoading && queryText"
+                    class="flex-grow"
+                >
+                    <div
+                        v-if="checkable"
+                        class="flex flex-col items-center justify-center h-full my-2"
+                    >
+                        <div class="flex flex-col items-center">
+                            <span class="text-gray-500">No terms found</span>
+                        </div>
+                    </div>
+                </div>
+                <div v-else-if="queryText" :class="$style.searchResults">
+                    <AssetList
+                        ref="assetlistRef"
+                        :list="list"
+                        :selectedAsset="selectedGlossary"
+                        :isLoadMore="isLoadMore"
+                        :isLoading="isValidating"
+                        @loadMore="handleLoadMore"
+                        class="mt-3"
+                    >
+                        <template v-slot:default="{ item }">
+                            <GlossaryItem
+                                :item="item"
+                                :checkable="true"
+                                :checked="checkedNodeKeys?.includes(item.guid)"
+                                checkableItemType="AtlasGlossaryCategory"
+                                @check="onSearchItemCheck"
+                                class="mx-0"
+                            ></GlossaryItem>
+                        </template>
+                    </AssetList>
+                </div>
+
+                <div v-if="!queryText" :class="$style.categoryWidget" id="categoryWidget"></div>
             </template>
             <a-button
                 v-if="editPermission"
@@ -72,7 +127,7 @@
                     </div>
                     <Tooltip
                         :tooltip-text="category.label"
-                        classes="cursor-pointer text-gray-700 hover:text-white ml-0.5"
+                        classes="cursor-pointer text-gray-700 hover:text-white ml-0.5 group-hover:text-white"
                         @click="(e) => e.stopPropagation()"
                     />
 
@@ -107,18 +162,35 @@
         watch,
         onMounted,
     } from 'vue'
-    import { useVModels } from '@vueuse/core'
+    import { useDebounceFn, useVModels } from '@vueuse/core'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { TreeSelect } from 'ant-design-vue'
+    import AssetList from '@/common/assets/list/index.vue'
+    import GlossaryItem from '~/components/common/assets/list/glossaryAssetItem.vue'
 
     import GlossaryTree from '~/components/glossary/index.vue'
     import useCategoriesWidget from './useCategoriesWidget'
+    import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
+    import {
+        AssetAttributes,
+        AssetRelationAttributes,
+        GlossaryAttributes,
+    } from '~/constant/projection'
+
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import Tooltip from '@common/ellipsis/index.vue'
 
+    import SearchAdvanced from '@/common/input/searchAdvanced.vue'
+
     export default defineComponent({
         name: 'CategoriesWidget',
-        components: { GlossaryTree, Tooltip },
+        components: {
+            GlossaryTree,
+            Tooltip,
+            SearchAdvanced,
+            AssetList,
+            GlossaryItem,
+        },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
@@ -186,10 +258,7 @@
                             .qualifiedName ?? '',
                 })
 
-            const onCheck = (e, { checkedNodes, checked, node }) => {
-                console.log({ checkedNodes, checked, node })
-                console.log(checkedKeys.value)
-                console.log(checkedKeysSnapshot)
+            const handleCheckedNodesChange = (node) => {
                 if (checkedNodeKeys.value?.includes(node.guid)) {
                     checkedNodeKeys.value = checkedNodeKeys.value.filter(
                         (i) => i !== node?.guid
@@ -200,12 +269,18 @@
                 } else {
                     checkedNodeKeys.value.push(node.key)
                     checkedKeys.value.push({
-                        label: node?.title,
+                        label:
+                            node?.title ??
+                            node?.attributes?.name ??
+                            node?.displayText,
                         value: node?.guid,
                         attributes: node?.attributes,
                     })
                 }
                 updateLocalValue(checkedKeys.value)
+            }
+            const onCheck = (e, { checkedNodes, checked, node }) => {
+                handleCheckedNodesChange(node)
             }
             const onPopoverClose = async (visible) => {
                 popoverVisible.value = visible
@@ -329,6 +404,67 @@
                     (category) => category?.guid
                 )
             })
+            const onSearchItemCheck = (val) => {
+                console.log(val)
+                handleCheckedNodesChange(val)
+            }
+            // search related stuff
+            // TODO: extract this logic to a seperate component
+
+            const limit = ref(10)
+            const offset = ref(0)
+            const queryText = ref('')
+            const facets = ref({})
+            const postFacets = ref({
+                glossary: '__all',
+            })
+            const dependentKey = ref('GLOSSARY_CATEGORY_LIST')
+
+            const defaultAttributes = ref([
+                ...AssetAttributes,
+                ...GlossaryAttributes,
+            ])
+            const relationAttributes = ref([...AssetRelationAttributes])
+
+            facets.value = {
+                ...facets.value,
+                typeNames: ['AtlasGlossaryCategory'],
+                glossary:
+                    selectedAsset.value.attributes.anchor?.uniqueAttributes
+                        .qualifiedName ?? '',
+            }
+
+            const handleSearchChange = useDebounceFn(() => {
+                list.value = []
+                offset.value = 0
+                quickChange()
+            }, 250)
+            const {
+                list,
+                isLoading,
+                isLoadMore,
+                isValidating,
+                fetch,
+                quickChange,
+                cancelRequest,
+            } = useDiscoverList({
+                isCache: true,
+                dependentKey,
+                queryText,
+                facets,
+                postFacets,
+                limit,
+                offset,
+                attributes: defaultAttributes,
+                relationAttributes,
+                suppressLogs: true,
+            })
+            const handleLoadMore = () => {
+                if (isLoadMore.value) {
+                    offset.value += limit.value
+                }
+                quickChange()
+            }
 
             return {
                 icon,
@@ -347,6 +483,16 @@
                 checkedNodeKeys,
                 onCheck,
                 expandNode,
+                handleSearchChange,
+                list,
+                facets,
+                isLoadMore,
+                isLoading,
+                queryText,
+                handleLoadMore,
+                fetch,
+                isValidating,
+                onSearchItemCheck,
             }
         },
     })
@@ -369,6 +515,9 @@
         :global(.ant-popover-inner-content) {
             @apply px-0 py-3 !important;
             width: 350px !important;
+            max-height: 300px;
+            min-height: 300px;
+            overflow: auto;
         }
 
         :global(.ant-tree-checkbox) {

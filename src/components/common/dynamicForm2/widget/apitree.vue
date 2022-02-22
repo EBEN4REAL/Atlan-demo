@@ -27,7 +27,7 @@
     import { mergeDeep } from '~/utils/array'
 
     export default defineComponent({
-        name: 'FormBuilder',
+        name: 'APITreeForm',
         components: {
             APITreeSelect,
         },
@@ -38,7 +38,9 @@
                 default: () => {},
             },
             modelValue: {
+                type: Object,
                 required: false,
+                default: () => {},
             },
             configMap: {
                 required: false,
@@ -46,7 +48,9 @@
                 default: () => {},
             },
             isEdit: {
+                type: Boolean,
                 required: false,
+                default: () => false,
             },
         },
         emits: ['change', 'update:modelValue'],
@@ -57,33 +61,44 @@
 
             const { modelValue } = useVModels(props, emit)
 
-            // if (modelValue.value) {
-            //     if (!isEdit.value) {
-            //         Object.keys(modelValue.value)?.forEach((key) => {
-            //             if (modelValue.value[key].length > 0) {
-            //                 modelValue.value[key]?.forEach((item) => {
-            //                     tempArray.push(`${key}:${item}`)
-            //                 })
-            //             } else {
-            //                 tempArray.push(key)
-            //             }
-            //         })
-            //     } else {
-            //         const tempModel = JSON.parse(modelValue.value)
+            const initArray = []
 
-            //         Object.keys(tempModel)?.forEach((key) => {
-            //             if (tempModel[key].length > 0) {
-            //                 tempModel[key]?.forEach((item) => {
-            //                     tempArray.push(`${key}:${item}`)
-            //                 })
-            //             } else {
-            //                 tempArray.push(key)
-            //             }
-            //         })
-            //     }
-            // }
+            const objectToPath = (val, prefix) => {
+                // If any other type of data is input, return []
+                if (typeof val !== 'object') return []
+                // Base case, return prefix or empty array
+                if (!Object.keys(val)?.length) return prefix ? [prefix] : []
 
-            const localValue = ref([])
+                // Else return the keys as an array with prefix prepended
+                const ta = []
+                Object.keys(val).forEach((key) => {
+                    const fv = objectToPath(val[key], key)
+                    fv.forEach((fvl) => {
+                        if (prefix) ta.push(`${prefix}:${fvl}`)
+                        else ta.push(fvl)
+                    })
+                })
+                return ta
+            }
+
+            if (modelValue.value) {
+                try {
+                    // Setup flow
+                    if (!isEdit.value) {
+                        const tempModel = modelValue.value
+                        initArray.push(...objectToPath(tempModel))
+                    }
+                    // edit flow
+                    else {
+                        const tempModel = JSON.parse(modelValue.value)
+                        initArray.push(...objectToPath(tempModel))
+                    }
+                } catch (err) {
+                    console.error(err)
+                }
+            }
+
+            const localValue = ref(initArray)
 
             const handleChange = () => {
                 let valueMap = {}

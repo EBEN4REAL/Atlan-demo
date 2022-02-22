@@ -87,7 +87,7 @@
     import { useQueryCredentialByID } from '~/composables/credential/useQueryCredentialByID'
 
     export default defineComponent({
-        name: 'APITree',
+        name: 'APITreeSelect',
         props: {
             modelValue: {
                 required: false,
@@ -161,13 +161,15 @@
                 emit('change')
             }
 
-            const handleClick = () => {
+            const fetchCreds = () => {
                 if (credentialID.value) {
                     refreshCredByID()
                 } else {
                     refresh()
                 }
             }
+
+            const handleClick = () => fetchCreds()
             const treeData = ref([])
 
             const recursionTransform = (root, rootId, queue) => {
@@ -190,7 +192,7 @@
                     const item = queue.pop()
                     treeData.value.push({
                         id: item.value,
-                        value: item.value,
+                        value: item.value.toString(), // The API expects strings, so we convert numbers into strings
                         title: item.title,
                         pId: item.rootId,
                     })
@@ -207,14 +209,10 @@
             })
 
             const handleDropdownVisibleChange = (open) => {
-                if (treeData.value?.length === 0 && open) {
-                    if (credentialID.value) {
-                        refreshCredByID()
-                    } else {
-                        refresh()
-                    }
-                }
+                if (treeData.value?.length === 0 && open) fetchCreds()
             }
+
+            if (credentialID.value) refreshCredByID()
 
             // const treeData = computed(() => {
             //     const mappedConnection = list.map((i) => ({

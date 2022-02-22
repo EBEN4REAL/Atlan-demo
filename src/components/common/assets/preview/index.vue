@@ -141,23 +141,14 @@
                             </a-tooltip>
                         </template>
                     </template>
-                    <a-button
+                    <template
                         v-if="
                             tenantSlackStatus.configured &&
                             tenantSlackStatus.channels.length
                         "
-                        class="flex items-center justify-center"
                     >
-                        <SlackModal
-                            :link="assetLink"
-                            :asset-i-d="selectedAsset?.guid"
-                            :asset-type="selectedAsset?.typeName"
-                            :ask-question-modal="true"
-                            @success="onSlackModalSuccess"
-                        >
-                            <AtlanIcon icon="Slack" class="mb-0.5" />
-                        </SlackModal>
-                    </a-button>
+                        <SlackAskButton :asset="selectedAsset" />
+                    </template>
                 </a-button-group>
             </div>
         </div>
@@ -264,10 +255,11 @@
     import useCollectionInfo from '~/components/insights/explorers/queries/composables/useCollectionInfo'
     import QueryDropdown from '@/common/query/queryDropdown.vue'
     import integrationStore from '~/store/integrations/index'
-    import SlackModal from '~/components/common/assets/misc/slackModal.vue'
+    import SlackAskButton from '~/components/common/assets/misc/slackAskButton.vue'
+
     import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
 
-    import {
+    import useAskAQuestion, {
         resourceId,
         onSlackModalSuccess,
     } from '~/composables/integrations/slack/useAskAQuestion'
@@ -311,7 +303,7 @@
             linkedAssets: defineAsyncComponent(
                 () => import('./linkedAssets/linkedAssetsWrapper.vue')
             ),
-            SlackModal,
+            SlackAskButton,
         },
 
         props: {
@@ -530,15 +522,6 @@
                 })
             }
 
-            const assetLink = computed(() => {
-                const baseUrl = window.location.origin
-                const url = `${baseUrl}${getProfilePath(
-                    selectedAsset.value,
-                    true
-                )}`
-                return url
-            })
-
             provide('isProfile', isProfile)
 
             const updateList = inject('updateList', () => ({}))
@@ -608,7 +591,6 @@
                 isCollectionCreatedByCurrentUser,
                 handleQueryAction,
                 tenantSlackStatus,
-                assetLink,
             }
         },
     })

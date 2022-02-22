@@ -316,6 +316,14 @@
                         <AtlanIcon icon="Share" class="mb-0.5" />
                     </a-button>
                 </ShareMenu>
+                <template
+                    v-if="
+                        tenantSlackStatus.configured &&
+                        tenantSlackStatus.channels.length
+                    "
+                >
+                    <SlackAskButton :asset="item" />
+                </template>
                 <AssetMenu
                     @edit="handleEdit"
                     :asset="item"
@@ -381,10 +389,13 @@
     import Tooltip from '@/common/ellipsis/index.vue'
     import QueryDropdown from '@/common/query/queryDropdown.vue'
     import Name from '@/glossary/common/name.vue'
+    import integrationStore from '~/store/integrations/index'
+    import SlackAskButton from '~/components/common/assets/misc/slackAskButton.vue'
 
     export default defineComponent({
         name: 'AssetHeader',
         components: {
+            SlackAskButton,
             CertificateBadge,
             AtlanIcon,
             ShareMenu,
@@ -510,7 +521,11 @@
                 console.log(val)
             }
 
+            const intStore = integrationStore()
+            const { tenantSlackStatus } = toRefs(intStore)
+
             return {
+                tenantSlackStatus,
                 title,
                 getConnectorImage,
                 assetType,

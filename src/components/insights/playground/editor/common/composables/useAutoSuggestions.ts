@@ -130,17 +130,6 @@ function generateMarkdown(
     // return `![bears](http://placebear.com/200/200) The end ...`
 }
 
-export function getTableNameWithQuotes(
-    columnQualifiedName: string,
-    assetQuoteType: string
-) {
-    const spiltArray = columnQualifiedName?.split('/')
-    if (spiltArray?.length > 5) {
-        return `${assetQuoteType}${spiltArray[5]}${assetQuoteType}`
-    }
-    return ''
-}
-
 export function getContext(
     qualifiedName,
     assetQuoteType: string,

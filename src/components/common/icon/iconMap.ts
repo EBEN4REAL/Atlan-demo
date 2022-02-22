@@ -98,6 +98,7 @@ import Lineage from '~/assets/images/icons/lineage.svg'
 import Activity from '~/assets/images/icons/activity.svg'
 import Columns from '~/assets/images/icons/columns.svg'
 import Relation from '~/assets/images/icons/relation.svg'
+import RelationActive from '~/assets/images/icons/relations-active.svg'
 import User from '~/assets/images/icons/user.svg'
 import Chats from '~/assets/images/icons/chats.svg'
 import OpenTermProfile from '~/assets/images/icons/openTermProfile.svg'
@@ -450,6 +451,7 @@ export default {
     ShieldCheck,
     Hash,
     Column,
+    RelationActive,
     CreateGroups,
     NoGroups,
     NoUsers,

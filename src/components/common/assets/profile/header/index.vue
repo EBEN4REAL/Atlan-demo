@@ -316,12 +316,7 @@
                         <AtlanIcon icon="Share" class="mb-0.5" />
                     </a-button>
                 </ShareMenu>
-                <template
-                    v-if="
-                        tenantSlackStatus.configured &&
-                        tenantSlackStatus.channels.length
-                    "
-                >
+                <template v-if="!disableSlackAsk">
                     <SlackAskButton :asset="item" />
                 </template>
                 <AssetMenu
@@ -389,8 +384,8 @@
     import Tooltip from '@/common/ellipsis/index.vue'
     import QueryDropdown from '@/common/query/queryDropdown.vue'
     import Name from '@/glossary/common/name.vue'
-    import integrationStore from '~/store/integrations/index'
     import SlackAskButton from '~/components/common/assets/misc/slackAskButton.vue'
+    import { disableSlackAsk } from '~/composables/integrations/slack/useAskAQuestion'
 
     export default defineComponent({
         name: 'AssetHeader',
@@ -521,11 +516,8 @@
                 console.log(val)
             }
 
-            const intStore = integrationStore()
-            const { tenantSlackStatus } = toRefs(intStore)
-
             return {
-                tenantSlackStatus,
+                disableSlackAsk,
                 title,
                 getConnectorImage,
                 assetType,

@@ -141,12 +141,7 @@
                             </a-tooltip>
                         </template>
                     </template>
-                    <template
-                        v-if="
-                            tenantSlackStatus.configured &&
-                            tenantSlackStatus.channels.length
-                        "
-                    >
+                    <template v-if="!disableSlackAsk">
                         <SlackAskButton :asset="selectedAsset" />
                     </template>
                 </a-button-group>
@@ -254,12 +249,14 @@
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import useCollectionInfo from '~/components/insights/explorers/queries/composables/useCollectionInfo'
     import QueryDropdown from '@/common/query/queryDropdown.vue'
-    import integrationStore from '~/store/integrations/index'
     import SlackAskButton from '~/components/common/assets/misc/slackAskButton.vue'
 
     import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
 
-    import { resourceId } from '~/composables/integrations/slack/useAskAQuestion'
+    import {
+        resourceId,
+        disableSlackAsk,
+    } from '~/composables/integrations/slack/useAskAQuestion'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -401,8 +398,6 @@
 
             const body = ref({})
             const authStore = useAuthStore()
-            const intStore = integrationStore()
-            const { tenantSlackStatus } = toRefs(intStore)
 
             const { refresh, isLoading: isEvaluating } = useEvaluate(
                 body,
@@ -542,6 +537,7 @@
             })
 
             return {
+                disableSlackAsk,
                 tabChildRef,
                 activeKey,
                 handleTabChange,
@@ -586,7 +582,6 @@
                 hasCollectionWritePermission,
                 isCollectionCreatedByCurrentUser,
                 handleQueryAction,
-                tenantSlackStatus,
             }
         },
     })

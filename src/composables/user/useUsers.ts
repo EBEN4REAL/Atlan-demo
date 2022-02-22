@@ -20,15 +20,13 @@ export const getUserName = (user: any) => {
     /** remove ` (me) string if present from last name`; we add it here @see {@link src/composables/user/useFacetUsers.ts} */
     const lastNameArray = lastName?.split(' ') || []
     if (firstName && lastName) {
-        return `${firstName} ${
-            lastNameArray.length ? lastNameArray[0] || '' : lastName
-        }`
+        return `${firstName} ${lastNameArray.length ? lastNameArray[0] || '' : lastName
+            }`
     }
     return user.username
 }
 
-const getWorkspaceRole = (user: any) => {
-    const { roles, defaultRoles } = user
+export const getWorkspaceRole = ({ roles, defaultRoles }) => {
 
     const filterHelper = (a) =>
         a?.filter((role: string) => role.startsWith('$')) ?? []
@@ -171,8 +169,8 @@ export const useUsers = (
         if (data?.value?.records) {
             const escapedData = data?.value?.records
                 ? data?.value?.records?.map((user: any) =>
-                      getFormattedUser(user)
-                  )
+                    getFormattedUser(user)
+                )
                 : [] // to prevent maping undefined
             userList.value = escapedData
 

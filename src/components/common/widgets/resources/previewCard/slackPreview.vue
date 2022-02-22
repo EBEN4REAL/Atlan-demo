@@ -22,7 +22,10 @@
         >
             <div class="flex" @click="openLink(link.attributes.link)">
                 <template v-if="data">
-                    <div class="flex items-center w-10">
+                    <div
+                        class="flex items-center w-14"
+                        style="margin-right: 7px"
+                    >
                         <div class="relative">
                             <img
                                 class="rounded-full"
@@ -51,9 +54,10 @@
 
                         <!-- <ShowLess :text="stripSlackText(data.message.text ?? '')" /> -->
 
-                        <div class="" style="">
+                        <div class="text-xs" style="">
                             <Truncate
                                 placement="left"
+                                :rows="2"
                                 :tooltip-text="
                                     stripSlackText(data.message.text ?? '')
                                 "
@@ -137,7 +141,7 @@
     )
 
     const shouldHighlight = computed(
-        () => resourceId.value === link.value.guid && isReady.value
+        () => resourceId.value === link.value.guid && isReady?.value
     )
 
     whenever(shouldHighlight, () =>

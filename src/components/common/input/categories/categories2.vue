@@ -75,11 +75,9 @@
                         </div>
                     </div>
                 </div>
-                <div v-else-if="queryText" :class="$style.searchResults">
+                <div v-else-if="queryText" >
                     <AssetList
-                        ref="assetlistRef"
                         :list="list"
-                        :selectedAsset="selectedGlossary"
                         :isLoadMore="isLoadMore"
                         :isLoading="isValidating"
                         @loadMore="handleLoadMore"
@@ -92,7 +90,6 @@
                                 :checked="checkedNodeKeys?.includes(item.guid)"
                                 checkableItemType="AtlasGlossaryCategory"
                                 @check="onSearchItemCheck"
-                                class="mx-0"
                             ></GlossaryItem>
                         </template>
                     </AssetList>
@@ -259,7 +256,7 @@
                 })
 
             const handleCheckedNodesChange = (node) => {
-                if (checkedNodeKeys.value?.includes(node.guid)) {
+                if (checkedKeys.value?.find(i=>i?.value===node?.guid)) {
                     checkedNodeKeys.value = checkedNodeKeys.value.filter(
                         (i) => i !== node?.guid
                     )
@@ -406,6 +403,7 @@
             })
             const onSearchItemCheck = (val) => {
                 console.log(val)
+                
                 handleCheckedNodesChange(val)
             }
             // search related stuff

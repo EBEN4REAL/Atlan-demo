@@ -57,8 +57,6 @@
 
             const { modelValue } = useVModels(props, emit)
 
-            const tempArray = []
-
             // if (modelValue.value) {
             //     if (!isEdit.value) {
             //         Object.keys(modelValue.value)?.forEach((key) => {
@@ -85,7 +83,7 @@
             //     }
             // }
 
-            const localValue = ref(tempArray)
+            const localValue = ref([])
 
             const handleChange = () => {
                 let valueMap = {}
@@ -94,7 +92,7 @@
 
                 localValue.value.forEach((item) => {
                     let map = {}
-                    const arr = item.split(':')
+                    const arr = item.toString().split(':')
                     for (var i = 0; i < arr.length; i++) {
                         if (i == 0) {
                             map[arr[i]] = {}
@@ -132,16 +130,12 @@
             })
 
             return {
-                property,
                 componentProps,
                 formState,
                 credentialBody,
                 baseKey,
-                configMap,
                 localValue,
-                modelValue,
                 handleChange,
-                isEdit,
                 credentialID,
             }
         },

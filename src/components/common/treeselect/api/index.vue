@@ -87,6 +87,7 @@
     import { useQueryCredentialByID } from '~/composables/credential/useQueryCredentialByID'
 
     export default defineComponent({
+        name: 'APITree',
         props: {
             modelValue: {
                 required: false,

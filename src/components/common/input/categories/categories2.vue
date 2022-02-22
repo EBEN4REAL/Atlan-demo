@@ -205,6 +205,7 @@
                         attributes: node?.attributes,
                     })
                 }
+                updateLocalValue(checkedKeys.value)
             }
             const onPopoverClose = async (visible) => {
                 popoverVisible.value = visible
@@ -289,6 +290,9 @@
                     value: category.guid,
                     attributes: category.attributes,
                 }))
+                checkedNodeKeys.value = modelValue.value.map(
+                    (category) => category?.guid
+                )
             })
             const updateLocalValue = (newCheckedKeys) => {
                 console.log(checkedKeysSnapshot.value, newCheckedKeys)
@@ -321,6 +325,9 @@
                     value: category.guid,
                     attributes: category.attributes,
                 }))
+                checkedNodeKeys.value = localValue.value.map(
+                    (category) => category?.guid
+                )
             })
 
             return {
@@ -363,7 +370,7 @@
             @apply px-0 py-3 !important;
             width: 350px !important;
         }
- 
+
         :global(.ant-tree-checkbox) {
             @apply ml-1 my-auto !important;
         }

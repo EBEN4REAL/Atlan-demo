@@ -73,6 +73,7 @@
     } from '~/composables/integrations/slack/useSlack'
     import access from '~/constant/accessControl/map'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import { resourceId } from '~/composables/integrations/slack/useAskAQuestion'
 
     const props = defineProps({
         link: {
@@ -148,6 +149,7 @@
     }
 
     const handleSendQuestion = () => {
+        if (resourceId.value) resourceId.value = ''
         console.log('will send askQuestionOnSlack')
         loading.value = true
 

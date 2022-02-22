@@ -544,6 +544,7 @@
             const updateList = inject('updateList', () => ({}))
             const updateDrawerList = inject('updateDrawerList', () => ({}))
 
+            /** whenever resource ID is fetched, refresh the asset to load the generated resource, then switch tab */
             watch(resourceId, () => {
                 const id = ref(selectedAsset.value.guid)
                 const { asset, isReady: isUpdateReady } = useCurrentUpdate({
@@ -554,7 +555,9 @@
                     if (isDrawer.value) {
                         updateDrawerList(asset.value)
                     } else updateList(asset.value)
-                    switchTab(selectedAsset.value, 'Resources')
+
+                    if (resourceId.value)
+                        switchTab(selectedAsset.value, 'Resources')
                 })
             })
 

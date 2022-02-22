@@ -98,7 +98,7 @@
                     </AssetList>
                 </div>
 
-                <div v-if="!queryText" :class="$style.categoryWidget" id="categoryWidget"></div>
+                <div  :class="$style.categoryWidget" id="categoryWidget"></div>
             </template>
             <a-button
                 v-if="editPermission"

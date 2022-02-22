@@ -812,6 +812,29 @@
         top: -10%;
         height: 120%;
     }
+
+    .suggest-icon.codicon.codicon-symbol-keyword::before {
+        visibility: hidden !important;
+        width: 15px !important;
+        height: 15px !important;
+    }
+    .suggest-icon.codicon.codicon-symbol-field::before {
+        visibility: hidden !important;
+        width: 15px !important;
+        height: 15px !important;
+    }
+    .suggest-icon.codicon.codicon-symbol-text::before {
+        visibility: hidden !important;
+        width: 15px !important;
+        height: 15px !important;
+    }
+    .suggest-icon.codicon.codicon-symbol-text {
+        background-image: url('~/assets/images/insights/autocomplete/default.png') !important;
+        width: 15px !important;
+        height: 15px !important;
+        background-size: 15px 15px;
+        margin-top: 3px !important;
+    }
 </style>
 
 <style lang="less" module>
@@ -873,22 +896,6 @@
         margin-top: 3px !important;
     }
     :global(.suggest-icon.codicon.codicon-symbol-keyword) {
-        width: 15px !important;
-        height: 15px !important;
-        background-size: 15px 15px;
-        margin-top: 3px !important;
-    }
-    :global(.suggest-icon.codicon.codicon-symbol-keyword)::before {
-        visibility: hidden !important;
-    }
-    :global(.suggest-icon.codicon.codicon-symbol-field)::before {
-        visibility: hidden !important;
-    }
-    :global(.suggest-icon.codicon.codicon-symbol-text)::before {
-        visibility: hidden !important;
-    }
-    :global(.suggest-icon.codicon.codicon-symbol-text) {
-        background-image: url('~/assets/images/insights/autocomplete/default.png') !important;
         width: 15px !important;
         height: 15px !important;
         background-size: 15px 15px;

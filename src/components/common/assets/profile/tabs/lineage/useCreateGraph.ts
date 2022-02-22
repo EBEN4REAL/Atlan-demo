@@ -1,4 +1,5 @@
 import { NV, BNV } from './view'
+import { Graph, Point, Path } from '@antv/x6';
 
 interface PointBasic {
     x: number
@@ -14,7 +15,7 @@ export default function useCreateGraph(
     graphHeight
 ) {
     /* Build Graph Canvas */
-    const { Graph, Point, Path } = window.X6
+    //const { Graph, Point, Path } = window.X6
     const { DagreLayout } = window.layout
 
     Graph.registerConnector(

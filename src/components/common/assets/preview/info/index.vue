@@ -838,6 +838,15 @@
                     @change="handleCategoriesUpdate"
                 >
                 </Categories>
+                <Categories2
+                    v-model="localCategories"
+                    :selected-asset="selectedAsset"
+                    class="px-5"
+                    :edit-permission="editPermission"
+                    @change="handleCategoriesUpdate"
+                >
+                </Categories2>
+ 
             </div>
 
             <div
@@ -902,6 +911,7 @@
     import Classification from '@/common/input/classification/index.vue'
     import TermsWidget from '@/common/input/terms/index.vue'
     import Categories from '@/common/input/categories/categories.vue'
+    import Categories2 from '@/common/input/categories/categories2.vue'
     import RelatedTerms from '@/common/input/relatedTerms/relatedTerms.vue'
     import Connection from './connection.vue'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
@@ -933,6 +943,7 @@
             SQLSnippet,
             TermsWidget,
             Categories,
+Categories2 ,
             RelatedTerms,
             SourceCreated,
             SourceUpdated,

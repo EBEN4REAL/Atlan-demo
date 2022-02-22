@@ -7,11 +7,6 @@ export const getIntegrationById = (id) => {
     const pV = ref({ id })
     const { data, isLoading, error, isReady } = Integrations.getIntegrationById(pV)
 
-    // const records = ref([])
-
-    // watch(data, (v) => {
-    //     if (v) records.value = data.value?.records ?? null
-    // })
     return { data, isLoading, error }
 }
 
@@ -87,6 +82,48 @@ const useIntegrations = (immediate = true) => {
         error,
         isReady,
     }
+}
+
+const getIntegrationsConfigList = (immediate = true) => {
+
+    const options = {
+        asyncOptions: { immediate },
+        options: ref({ cancelToken: cancel.value.token })
+    }
+    const params = ref({})
+    const { data, isLoading, error, isReady, mutate } = Integrations.ListConfigs(params, options)
+
+    const records = ref([])
+
+    watch(data, (v) => {
+        if (v) records.value = data.value?.integrationConfigs ?? null
+    })
+
+    const call = async () => {
+        if (cancel.value) {
+            cancel.value.cancel('get cancelled')
+        }
+        cancel.value = axios.CancelToken.source()
+        options.options.value.cancelToken = cancel.value.token
+        await mutate()
+
+    }
+    return { data: records, isLoading, error, isReady, call }
+}
+
+
+export const fetchIntegrationConfig = (immediate = true) => {
+    const { setAllIntegrationsConfig } = integrationStore()
+
+    const { data, isLoading, error, isReady, call } = getIntegrationsConfigList(immediate)
+
+    watch(data, () => {
+        if (data?.value?.length) {
+            setAllIntegrationsConfig(data.value)
+        }
+    })
+
+    return { data, isLoading, error, isReady, call }
 }
 
 export default useIntegrations;

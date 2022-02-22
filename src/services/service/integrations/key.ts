@@ -4,6 +4,7 @@ import { BASE_PATH } from '..'
 // Integration & Integration types
 export const LIST_INTEGRATIONS_TYPES = 'LIST_INTEGRATIONS_TYPES'
 export const LIST_INTEGRATIONS = 'LIST_INTEGRATIONS'
+export const LIST_INTEGRATIONS_CONFIG = 'LIST_INTEGRATIONS_CONFIG'
 export const GET_INTEGRATION = 'GET_INTEGRATION'
 export const ARCHIVE_INTEGRATION = 'ARCHIVE_INTEGRATION'
 export const UPDATE_INTEGRATION = 'UPDATE_INTEGRATION'
@@ -15,6 +16,7 @@ export const CREATE_SLACK_APP = 'CREATE_SLACK_APP'
 
 export const map = {
     [LIST_INTEGRATIONS]: () => getAPIPath('/service', '/integrations'),
+    [LIST_INTEGRATIONS_CONFIG]: () => getAPIPath('/service', '/integrationtypes/configs'),
     [SHARE_SLACK]: () => getAPIPath('/service', `/slack/share`),
     [GET_INTEGRATION]: ({ id }: PathParams) =>
         getAPIPath('/service', `/integrations/${id}`),

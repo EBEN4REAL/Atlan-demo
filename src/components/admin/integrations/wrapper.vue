@@ -8,8 +8,8 @@
     <div v-else-if="error" class="flex items-center justify-center h-full">
         <ErrorView />
     </div>
-    <main class="mx-4 my-9">
-        <h1 class="mb-8 text-3xl">Integrations</h1>
+    <main class="mx-4 space-y-8 my-9">
+        <h1 class="text-3xl">Integrations</h1>
         <template v-for="i in integrations" :key="i.id">
             <component :is="i.component" />
         </template>
@@ -18,18 +18,20 @@
 
 <script lang="ts">
     import { computed, defineComponent, ref, toRefs, watch } from 'vue'
+    import { useRouter, useRoute } from 'vue-router'
     import integrationStore from '~/store/integrations/index'
     import ErrorView from '@/common/error/index.vue'
     import { integrations } from '~/constant/integrations'
     import useIntegrations from '~/composables/integrations/useIntegrations'
-    import { useRouter, useRoute } from 'vue-router'
     import slack from '@/admin/integrations/slack/index.vue'
+    import Jira from '@/admin/integrations/jira/jira.vue'
 
     export default defineComponent({
         name: 'IntegrationsWrapper',
         components: {
             ErrorView,
             slack,
+            Jira,
         },
         setup() {
             const store = integrationStore()

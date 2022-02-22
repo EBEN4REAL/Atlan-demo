@@ -178,6 +178,7 @@ import queryErorrIllus from '~/assets/images/icons/queryError.svg'
 import NoSavedQueriesAll from '~/assets/images/icons/saved-queries-all.svg'
 import EmptyQueriesTab from '~/assets/images/illustrations/empty_queries_tab.svg'
 import Slack from '~/assets/images/admin/integrations/slack.svg'
+import Jira from '~/assets/images/admin/integrations/jira.svg'
 import Teams from '~/assets/images/admin/integrations/teams.svg'
 import ExplorerTrigger from '~/assets/images/icons/explorer-trigger.svg'
 import ExplorerTriggerFilled from '~/assets/images/icons/explorer-trigger-filled.svg'
@@ -431,6 +432,7 @@ export default {
     SuccessQuery,
     IntegrationsActive,
     Integrations,
+    Jira,
     SlackToken,
     SafariLock,
     Gear,

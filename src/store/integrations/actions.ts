@@ -3,6 +3,7 @@ import { State } from './state'
 
 export interface Actions extends State {
     setAllIntegrationsList(list: any): void
+    setAllIntegrationsConfig(list: any): void
     removeIntegration(id: string): void
     updateIntegration(payload: any): void
 }
@@ -10,6 +11,9 @@ export interface Actions extends State {
 const actions: Actions = {
     setAllIntegrationsList(list) {
         this.allIntegrations = list
+    },
+    setAllIntegrationsConfig(list) {
+        this.integrationConfigs = list
     },
     updateIntegration(payload: any) {
         const { id } = payload

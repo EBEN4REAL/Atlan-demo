@@ -67,11 +67,10 @@
                     class="flex-grow"
                 >
                     <div
-                        v-if="checkable"
                         class="flex flex-col items-center justify-center h-full my-2"
                     >
                         <div class="flex flex-col items-center">
-                            <span class="text-gray-500">No terms found</span>
+                            <span class="text-gray-500">No categories found</span>
                         </div>
                     </div>
                 </div>

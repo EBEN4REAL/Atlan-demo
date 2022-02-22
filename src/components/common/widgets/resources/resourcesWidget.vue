@@ -97,12 +97,9 @@
                     }"
                 >
                     <div
-                        v-for="l in sortResources(resources)"
+                        v-for="(l, x) in sortResources(resources)"
                         :key="l.uniqueAttributes.qualifiedName"
                         class="flex-grow"
-                        :class="{
-                            'animate-yellow': highlightResourceGuid === l?.guid,
-                        }"
                     >
                         <LinkPreviewCard
                             v-if="
@@ -112,7 +109,11 @@
                             :link="l"
                             class="h-full"
                         />
-                        <SlackPreview v-else :link="l" />
+                        <SlackPreview
+                            v-else
+                            :ref="`SlackPreview-${x}`"
+                            :link="l"
+                        />
                     </div>
                     <template
                         v-if="
@@ -190,10 +191,8 @@
     const emit = defineEmits(['add', 'update', 'remove'])
 
     const wrapper = ref()
-    const addModalRef = ref()
 
     const minimal = computed(() => wrapper.value?.clientWidth < 500)
-    // const placeholderVisible = computed(() => !resources.value?.length)
 
     const {
         addStatus,
@@ -216,12 +215,6 @@
     provide('removeStatus', removeStatus)
     provide('entityName', entityName)
     provide('readOnly', readOnly)
-    const highlightResourceGuid = ref('a6bfeb90-0d02-477b-a10b-0d54a40953a4')
-    // const highlightResourceGuid = inject(
-    //     'highlightResourceGuid',
-    //     ref('f8533b45-7044-40ef-9fb9-b3938f41d38e')
-    // )
-    console.log('highlightResourceGuid', highlightResourceGuid.value)
 
     const store = integrationStore()
     const { tenantSlackStatus, userSlackStatus } = toRefs(store)
@@ -254,19 +247,4 @@
     }
 </script>
 
-<style scoped lang="less">
-    .animate-yellow {
-        animation: animateYellow 3s ease;
-    }
-    @keyframes animateYellow {
-        0% {
-            @apply bg-yellow-100;
-        }
-        20% {
-            @apply bg-yellow-100;
-        }
-        100% {
-            @apply bg-white;
-        }
-    }
-</style>
+<style scoped lang="less"></style>

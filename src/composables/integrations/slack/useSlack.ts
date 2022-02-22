@@ -230,7 +230,7 @@ export function openSlackOAuth({
 export const UnfurlSlackMessage = (body, asyncOptions) => {
     const { data, isLoading, error, isReady, mutate } =
         Integrations.UnfurlSlackMessage(body, { asyncOptions })
-    return { data, isLoading, error, mutate }
+    return { data, isLoading, error, mutate, isReady }
 }
 
 export const archiveSlack = (pV) => {

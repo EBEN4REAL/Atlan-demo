@@ -16,7 +16,10 @@
         </template>
     </LinkPreview>
     <template v-else>
-        <div class="p-2 border rounded cursor-pointer hover:bg-gray-100">
+        <div
+            class="p-2 border rounded cursor-pointer hover:bg-gray-100"
+            :class="shouldHighlight ? 'animate-yellow' : ''"
+        >
             <div class="flex" @click="openLink(link.attributes.link)">
                 <template v-if="data">
                     <div class="flex items-center w-10">
@@ -104,7 +107,8 @@
     import CardActions from '@/common/widgets/resources/misc/cardActionMenu.vue'
     import integrationStore from '~/store/integrations/index'
     import Truncate from '@/common/ellipsis/index.vue'
-
+    import { resourceId } from '~/composables/integrations/slack/useAskAQuestion'
+    import { whenever } from '@vueuse/core'
     const props = defineProps({
         link: {
             type: Object as PropType<Link>,
@@ -125,9 +129,22 @@
         }
     })
 
-    const { data, isLoading, error, mutate } = UnfurlSlackMessage(body, {
-        immediate: true,
-    })
+    const { data, isLoading, error, mutate, isReady } = UnfurlSlackMessage(
+        body,
+        {
+            immediate: true,
+        }
+    )
+
+    const shouldHighlight = computed(
+        () => resourceId.value === link.value.guid && isReady.value
+    )
+
+    whenever(shouldHighlight, () =>
+        setTimeout(() => {
+            resourceId.value = ''
+        }, 3000)
+    )
 
     watch(
         () => link.value.attributes.link,
@@ -161,11 +178,22 @@
         bottom: -3px;
         right: -3px;
         border-radius: 100px;
-        /* box-shadow: -1px 1px 4px white; */
         background: white;
         padding: 0.9px;
     }
-    // .min-w-link-left-col {
-    //     min-width: 2rem;
-    // }
+
+    .animate-yellow {
+        animation: animateYellow 3s ease;
+    }
+    @keyframes animateYellow {
+        0% {
+            @apply bg-yellow-100;
+        }
+        20% {
+            @apply bg-yellow-100;
+        }
+        100% {
+            @apply bg-white;
+        }
+    }
 </style>

@@ -1,40 +1,57 @@
 <template>
-    <a-select
-        v-model:value="selectedValue"
-        placeholder="Select a connection"
-        :allow-clear="true"
-        :show-search="true"
-        :filter-option="false"
-        :get-popup-container="(target) => target.parentNode"
-        not-found-content="No connection found"
-        @search="handleSearch"
-        @change="handleChange"
-    >
-        <template #suffixIcon>
-            <AtlanIcon icon="CaretDown" class="mb-0" />
-        </template>
-        <template
-            v-for="item in filteredList"
-            :key="item.attributes?.qualifiedName"
+    <div class="flex items-center w-full my-2">
+        <div class="mr-1">
+            <a-tooltip v-if="!isLoading" title="Connection" placement="right">
+                <AtlanIcon class="w-4 h-4" icon="Connection"
+            /></a-tooltip>
+            <a-spin v-else size="small" class="w-4 h-4"></a-spin>
+        </div>
+
+        <a-select
+            v-model:value="selectedValue"
+            placeholder="Select a connection"
+            :allow-clear="true"
+            :show-search="true"
+            class="w-full"
+            :filter-option="false"
+            :get-popup-container="(target) => target.parentNode"
+            not-found-content="No connection found"
+            @search="handleSearch"
+            @change="handleChange"
         >
-            <a-select-option :value="item.attributes?.qualifiedName">
-                <div class="flex flex-col">
-                    <div class="flex items-center">
-                        <img
-                            :src="getConnectorImage(item)"
-                            class="h-4 mr-1 mb-0.5"
-                            style="min-width: 1rem"
-                        /><span class="truncate">{{
-                            item.attributes.name
-                        }}</span>
+            <template #suffixIcon>
+                <AtlanIcon icon="CaretDown" class="mb-0" />
+            </template>
+            <template #notFoundContent>
+                <span v-if="isLoading">
+                    <a-spin size="small" class="mr-1" />searching connections
+                </span>
+                <AtlanIcon v-if="error" icon="Error"></AtlanIcon>
+            </template>
+
+            <template
+                v-for="item in filteredList"
+                :key="item.attributes?.qualifiedName"
+            >
+                <a-select-option :value="item.attributes?.qualifiedName">
+                    <div class="flex flex-col">
+                        <div class="flex items-center">
+                            <img
+                                :src="getConnectorImage(item)"
+                                class="h-4 mr-1 mb-0.5"
+                                style="min-width: 1rem"
+                            /><span class="truncate">{{
+                                item.attributes.name
+                            }}</span>
+                        </div>
+                        <span v-if="showCount" class="text-xs text-gray-500"
+                            >{{ item.assetCount }} assets</span
+                        >
                     </div>
-                    <span v-if="showCount" class="text-xs text-gray-500"
-                        >{{ item.assetCount }} assets</span
-                    >
-                </div>
-            </a-select-option>
-        </template>
-    </a-select>
+                </a-select-option>
+            </template>
+        </a-select>
+    </div>
 </template>
 
 <script lang="ts">
@@ -48,7 +65,6 @@
         watch,
     } from 'vue'
 
-    import useConnectionData from '~/composables/connection/useConnectionData'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import whoami from '~/composables/user/whoami'
     import { usePersonaStore } from '~/store/persona'
@@ -203,6 +219,8 @@
                 adminGroups,
                 adminUsers,
                 isAdminConnection,
+                isLoading,
+                error,
             }
         },
     })

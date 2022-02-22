@@ -8,7 +8,6 @@
                 <AtlanIcon icon="Slack" class="h-5 mb-1" />
                 <h2 class="text-xl font-bold">{{ title }}</h2>
             </div>
-            <!-- <template v-if="slack"> -->
             <div class="">
                 <h3 class="font-bold">Channel</h3>
                 <a-select
@@ -21,18 +20,10 @@
                 <h3 class="font-bold">{{ inputLabel }}</h3>
                 <a-textarea v-model:value="message" />
             </div>
-            <!-- </template> -->
-            <!-- <template v-else>
-                <div class="p-4">
-                    Please integrate your worksplace, in order to share on
-                    slack.
-                </div>
-            </template> -->
         </div>
 
         <template #footer>
             <div class="flex items-center justify-end w-full space-x-3">
-                <!-- <template v-if="slack"> -->
                 <AtlanButton
                     color="minimal"
                     padding="compact"
@@ -48,14 +39,6 @@
                 >
                     {{ ctaText }}
                 </AtlanButton>
-                <!-- </template> -->
-                <!-- <router-link
-                    v-else
-                    v-auth="access.CREATE_INTEGRATION"
-                    to="/admin/integration"
-                >
-                    <AtlanButton>Add integration</AtlanButton>
-                </router-link> -->
             </div>
         </template>
     </a-modal>

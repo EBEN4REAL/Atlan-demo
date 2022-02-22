@@ -4,7 +4,7 @@
         <template v-if="link">
             <component :is="Slack" class="h-3.5" />
             <a :href="link" target="_blank" class="text-primary hover:underline"
-                >Open in slack</a
+                >Open in Slack</a
             >
         </template>
     </span>

@@ -1,6 +1,5 @@
-import { ref } from 'vue'
-import { Graph } from '@antv/x6';
 import { DagreLayout } from '@antv/layout';
+import { Graph } from '@antv/x6';
 import { SimpleNodeView } from './view.js'
 
 export default function useCreateGraph(

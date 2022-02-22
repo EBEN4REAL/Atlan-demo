@@ -1,8 +1,9 @@
 import { ref, computed } from 'vue'
+import { DagreLayout } from '@antv/layout'
 import useLineageStore from '~/store/lineage'
 import useGraph from './useGraph'
 import useTransformGraph from './useTransformGraph'
-import { DagreLayout } from '@antv/layout'
+
 
 export default async function useComputeGraph(
     graph,

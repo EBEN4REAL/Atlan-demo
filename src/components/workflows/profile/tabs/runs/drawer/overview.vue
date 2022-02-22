@@ -69,8 +69,8 @@
             </div>
         </div>
         <div
-            class="flex flex-col gap-y-2"
             v-if="selectedPod?.finishedAt && selectedPod?.startedAt"
+            class="flex flex-col gap-y-2"
         >
             <div class="flex flex-col">
                 <p class="text-gray-500">Duration</p>
@@ -120,9 +120,10 @@
     import useWorkflowLogsDownload from '~/composables/package/useWorkflowLogsDownload'
     import useWorkflowLogsStream from '~/composables/package/useWorkflowLogsStream'
     import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
-    import WorkflowLogs from './logs.vue'
+    import WorkflowLogs from '../logs.vue'
 
     export default defineComponent({
+        name: 'NodeOverview',
         components: {
             WorkflowLogs,
         },
@@ -135,13 +136,11 @@
             },
             selectedRun: {
                 type: Object,
-                required: false,
+                required: true,
             },
         },
 
-        setup(props, { emit }) {
-            const { selectedPod, selectedRun } = toRefs(props)
-
+        setup() {
             const isLogVisible = ref(false)
 
             const {
@@ -159,7 +158,6 @@
             }
 
             return {
-                selectedPod,
                 formatDate,
                 difference,
                 phase,
@@ -169,7 +167,6 @@
                 getRunTextClassByPhase,
                 handleLogs,
                 isLogVisible,
-                selectedRun,
             }
         },
     })

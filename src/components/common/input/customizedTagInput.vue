@@ -72,6 +72,11 @@
     const focus = () => {
         inputRef.value.focus()
     }
+    const blur = () => {
+        inputRef.value.blur()
+    }
+
+    defineExpose({ focus, blur })
 
     const randomId = ref(`${new Date().getTime()}`)
 

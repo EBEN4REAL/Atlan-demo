@@ -261,6 +261,10 @@ export const archiveSlack = (pV) => {
             })
         } else {
             intStore.removeIntegration(pV.value.id)
+            // also remove tge user level slack integration if exists
+            if (intStore.userSlackStatus.id)
+                intStore.removeIntegration(intStore.userSlackStatus.id)
+
             message.success({
                 content: 'Slack integration disconnected successfully',
                 key: 'disconnect',

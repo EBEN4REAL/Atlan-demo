@@ -39,7 +39,14 @@
 
 <script lang="ts">
     import { useVModels } from '@vueuse/core'
-    import { defineComponent, ref, toRefs, computed, onMounted } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        toRefs,
+        computed,
+        onMounted,
+        watch,
+    } from 'vue'
 
     import useConnectionData from '~/composables/connection/useConnectionData'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -94,7 +101,9 @@
             const { modelValue } = useVModels(props, emit)
             const selectedValue = ref(modelValue.value)
 
-            const { list } = useConnectionData()
+            const { list, isLoading, error, mutate } =
+                useConnectionByConnectorName(connector.value)
+
             const queryText = ref('')
 
             const { getConnectorImage, createdBy, adminGroups, adminUsers } =
@@ -107,18 +116,6 @@
                     (item) => item.id === persona.value
                 )
                 return found?.metadataPolicies.map((i) => i.connectionId) || []
-            })
-
-            onMounted(() => {
-                if (connector.value) {
-                    if (!selectedValue.value) {
-                        if (filteredList.value.length === 1) {
-                            selectedValue.value =
-                                filteredList.value[0].attributes.qualifiedName
-                            handleChange(selectedValue.value)
-                        }
-                    }
-                }
             })
 
             const isAdminConnection = (item) => {
@@ -135,27 +132,11 @@
             }
 
             const filteredList = computed(() =>
-                list
-                    .filter((item) => {
-                        if (queryText.value && connector.value) {
-                            return (
-                                item.attributes?.connectorName?.toLowerCase() ===
-                                    connector.value.toLowerCase() &&
-                                item.attributes.name
-                                    .toLowerCase()
-                                    .includes(queryText.value.toLowerCase())
-                            )
-                        }
-                        if (connector.value) {
-                            /*   useConnectionByConnectorName(connector.value) */
-                            return (
-                                item.attributes?.connectorName?.toLowerCase() ===
-                                connector.value.toLowerCase()
-                            )
-                        }
+                list.value
+                    ?.filter((item) => {
                         if (queryText.value) {
-                            return item.attributes.name
-                                .toLowerCase()
+                            return item?.attributes?.name
+                                ?.toLowerCase()
                                 .includes(queryText.value.toLowerCase())
                         }
                         return true
@@ -192,6 +173,23 @@
             const handleSearch = (val) => {
                 queryText.value = val
             }
+            watch(connector, () => {
+                if (connector.value && connector.value !== '') {
+                    mutate()
+                }
+            })
+
+            onMounted(() => {
+                if (connector.value) {
+                    if (!selectedValue.value) {
+                        if (filteredList.value.length === 1) {
+                            selectedValue.value =
+                                filteredList.value[0].attributes.qualifiedName
+                            handleChange(selectedValue.value)
+                        }
+                    }
+                }
+            })
 
             return {
                 list,
@@ -199,7 +197,6 @@
                 selectedValue,
                 handleChange,
                 handleSearch,
-                showCount,
                 getConnectorImage,
                 applicableConnectionArray,
                 createdBy,

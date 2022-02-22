@@ -22,7 +22,7 @@ export const stripSlackText = (text) => {
     const urlRegex =
         /<https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()|]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)>/g
 
-    transformedText.replace(urlRegex, (match) => {
+    transformedText = transformedText.replace(urlRegex, (match) => {
         const stripped = match.replace(/<|>/g, '')
         return stripped.includes('|') ? stripped.split('|')[1] : stripped
     })

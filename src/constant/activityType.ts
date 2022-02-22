@@ -12,6 +12,16 @@ export const activityTypeMap = [
             'detail.attributes.description.keyword',
         ],
     },
+  {
+        value: 'announcement',
+        label: 'Announcement',
+        action: 'ENTITY_UPDATE',
+        exists: [
+            'detail.attributes.announcementMessage',
+            'detail.attributes.announcementTitle',
+        ],
+    },
+   
     {
         value: 'terms-updated',
         label: 'Terms',

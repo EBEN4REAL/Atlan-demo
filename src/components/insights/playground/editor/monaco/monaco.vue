@@ -780,6 +780,20 @@
     .c {
         font-family: 'Courier New', Courier, monospace;
     }
+    .monaco-list-row.show-file-icons.string-label.focused {
+        // @apply bg-gray-light !important;
+        background: #f3f3f3 !important;
+
+        @apply text-gray-700 !important;
+        border-radius: 3px !important;
+    }
+    .monaco-list-row.focused {
+        // @apply bg-gray-light !important;
+        background: #f3f3f3 !important;
+
+        @apply text-gray-700 !important;
+        border-radius: 3px !important;
+    }
 </style>
 <style lang="less">
     .monaco-list-row.show-file-icons.string-label.focused {

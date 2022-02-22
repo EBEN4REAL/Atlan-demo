@@ -44,12 +44,22 @@ export const activityTypeMap = [
                 label: 'Classification Added(Propagation)',
                 action: 'PROPAGATED_CLASSIFICATION_ADD',
                 exists: [],
+                excludes: [
+                    'AtlasGlossaryCategory',
+                    'AtlasGlossaryTerm',
+                    'AtlasGlossary',
+                ],
             },
             {
                 value: 'classification-removed-propagation',
                 label: 'Classification Removed(Propagation)',
                 action: 'PROPAGATED_CLASSIFICATION_DELETE',
                 exists: [],
+                excludes: [
+                    'AtlasGlossaryCategory',
+                    'AtlasGlossaryTerm',
+                    'AtlasGlossary',
+                ],
             },
         ],
     },

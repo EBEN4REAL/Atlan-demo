@@ -112,13 +112,18 @@
     <a-modal
         ref="unsavedChangesModalRef"
         :visible="isRevealed"
-        title="Leave site?"
         ok-text="Leave"
         cancel-text="Stay"
         @ok="cancel"
         @cancel="confirm"
     >
-        <p class="px-4">Changes that you made may not be saved.</p>
+        <template #title>
+            <p class="font-bold">Leave page?</p>
+        </template>
+        <p class="px-4">
+            There are some unsaved changes in Readme, which will be lost if you
+            don't save them.
+        </p>
     </a-modal>
 </template>
 

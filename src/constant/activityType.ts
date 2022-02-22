@@ -12,7 +12,7 @@ export const activityTypeMap = [
             'detail.attributes.description.keyword',
         ],
     },
-  {
+    {
         value: 'announcement',
         label: 'Announcement',
         action: 'ENTITY_UPDATE',
@@ -21,7 +21,7 @@ export const activityTypeMap = [
             'detail.attributes.announcementTitle',
         ],
     },
-   
+
     {
         value: 'terms-updated',
         label: 'Terms',
@@ -123,6 +123,72 @@ export const activityTypeMap = [
     },
 
     {
+        isGroup: true,
+        value: 'term-group',
+        label: 'Terms',
+        includes: [
+            'AtlasGlossary',
+        ],
+        excludes: [],
+        children: [
+            {
+                value: 'term-created',
+                label: 'Term Created',
+                action: 'ENTITY_CREATE',
+                typeName: 'AtlasGlossaryTerm',
+                exists: [],
+            },
+            {
+                value: 'term-deleted',
+                label: 'Term Deleted',
+                action: 'ENTITY_DELETE',
+                typeName: 'AtlasGlossaryTerm',
+                exists: [],
+            },
+            {
+                value: 'term-updated',
+                label: 'Term Updated',
+                action: 'ENTITY_UPDATE',
+                typeName: 'AtlasGlossaryTerm',
+                exists: [],
+            },
+        ],
+    },
+  {
+        isGroup: true,
+        value: 'category-group',
+        label: 'Terms',
+        includes: [
+            'AtlasGlossary',
+        ],
+        excludes: [],
+        children: [
+            {
+                value: 'category-created',
+                label: 'Category Created',
+                action: 'ENTITY_CREATE',
+                typeName: 'AtlasGlossaryCategory',
+                exists: [],
+            },
+            {
+                value: 'category-deleted',
+                label: 'Category Deleted',
+                action: 'ENTITY_DELETE',
+                typeName: 'AtlasGlossaryCategory',
+                exists: [],
+            },
+            {
+                value: 'category-updated',
+                label: 'Category Updated',
+                action: 'ENTITY_UPDATE',
+                typeName: 'AtlasGlossaryCategory',
+                exists: [],
+            },
+        ],
+    },
+
+   
+    {
         value: 'certificate',
         label: 'Certificate',
         action: 'ENTITY_UPDATE',
@@ -139,29 +205,5 @@ export const activityTypeMap = [
             'detail.attributes.ownerUsers.keyword',
             'detail.attributes.ownerGroups.keyword',
         ],
-    },
-    {
-        value: 'entity-created',
-        label: 'Asset created',
-        action: 'ENTITY_CREATE',
-        includes: [
-            'AtlasGlossaryTerm',
-            'AtlasGlossaryCategory',
-            ,
-            'AtlasGlossary',
-        ],
-        exists: ['detail.attributes.qualifiedName'],
-    },
-    {
-        value: 'entity-deleted',
-        label: 'Asset deleted',
-        action: 'ENTITY_DELETE',
-        includes: [
-            'AtlasGlossaryTerm',
-            'AtlasGlossaryCategory',
-            ,
-            'AtlasGlossary',
-        ],
-        exists: ['detail.attributes.qualifiedName'],
-    },
+    }
 ]

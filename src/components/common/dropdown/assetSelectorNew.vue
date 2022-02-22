@@ -1,0 +1,376 @@
+<template>
+    <!-- <a-select
+        :placeholder="placeholder"
+        :value="modelValue"
+        :allowClear="true"
+        :showSearch="true"
+        notFoundContent="No data available"
+        style="width: 100%; border-radius: 8px"
+        :class="[
+            $style.connector,
+            bgGrayForSelector ? `${$style.selector_bg}` : '',
+        ]"
+        @change="handleChange"
+        :disabled="disabled"
+        :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+        dropdownClassName="connectorDropdown"
+        :loading="isLoading"
+    >
+        <template v-for="item in dropdownOption" :key="item.label">
+            <a-select-option :value="item.value">
+                <div class="flex items-center truncate">
+                    <AtlanIcon
+                        :icon="typeName + `Gray`"
+                        class="w-auto h-4 mr-2"
+                    />
+                    <span class="parent-ellipsis-container-base"
+                        >{{ item?.label }}
+                    </span>
+                </div></a-select-option
+            >
+        </template>
+
+        <template #suffixIcon>
+            <AtlanIcon
+                icon="ChevronDown"
+                class="h-4 -mt-0.5 -ml-1"
+                color="#6F7590"
+            />
+        </template>
+    </a-select> -->
+
+    <div class="flex flex-row mb-2 space-x-2">
+        <a-input
+            v-model:value="queryText"
+            class="h-8 mt-1 text-base border-t-0 border-l-0 border-r-0 rounded-none"
+            :placeholder="`Search ${dropdownOption.length} ${searchPlaceholder}s`"
+            bordered="false"
+            :class="$style.inputSearch"
+        >
+            <template #prefix>
+                <AtlanIcon icon="Search" color="#6F7590" />
+            </template>
+        </a-input>
+    </div>
+
+    <div
+        class="flex w-full dropdown-container"
+        :class="isTableLoading ? 'flex-col' : ''"
+        style="min-height: 0"
+    >
+        <div
+            v-if="dropdownOption.length"
+            class="w-full overflow-y-auto"
+            style="min-height: 0"
+        >
+            <template v-for="item in dropdownOption" :key="item.label">
+                <div
+                    class="flex items-center justify-between w-full px-4 rounded cursor-pointer h-9 hover:bg-primary-light"
+                    @click="(e) => onSelectItem(item, e)"
+                    :class="
+                        modelValue === item.value
+                            ? 'bg-primary-light'
+                            : 'bg-white'
+                    "
+                >
+                    <div
+                        class="flex items-center justify-between w-full truncate parent-ellipsis-container"
+                    >
+                        <div
+                            class="flex items-center truncate parent-ellipsis-container"
+                        >
+                            <AtlanIcon
+                                :icon="typeName + `Gray`"
+                                class="w-auto h-4 mr-2"
+                            />
+                            <span class="parent-ellipsis-container-base"
+                                >{{ item?.label }}
+                            </span>
+                        </div>
+                    </div>
+                    <AtlanIcon
+                        icon="Check"
+                        class="ml-2 text-primary parent-ellipsis-container-base"
+                        v-if="modelValue === item.value"
+                    />
+                </div>
+            </template>
+        </div>
+        <div
+            v-else
+            class="flex items-center justify-between w-full px-4 rounded"
+            style="min-height: 0"
+        >
+            <!-- No Data Found -->
+            <a-spin icon="Loader" class="mt-1 ml-auto mr-auto"></a-spin>
+        </div>
+    </div>
+
+    <!-- <template v-for="item in dropdownOption" :key="item.label">
+        <div class="flex items-center truncate">
+            <AtlanIcon :icon="typeName + `Gray`" class="w-auto h-4 mr-2" />
+            <span class="parent-ellipsis-container-base"
+                >{{ item?.label }}
+            </span>
+        </div>
+    </template> -->
+</template>
+
+<script lang="ts">
+    import {
+        defineComponent,
+        watch,
+        toRefs,
+        computed,
+        PropType,
+        ref,
+    } from 'vue'
+    import { useAssetListing } from '~/components/insights/common/composables/useAssetListing'
+    import { isSelectFirstDefault } from '~/components/insights/common/composables/getDialectInfo'
+
+    import { message } from 'ant-design-vue'
+
+    export default defineComponent({
+        name: 'AssetSelectorNew',
+        components: {
+            VNodes: (_, { attrs }) => attrs.vnodes,
+        },
+        props: {
+            connector: {
+                type: Object as PropType<{
+                    id: string
+                    label: string
+                    image: string
+                    types: string[]
+                    hierarchy: Record<string, any>[]
+                    filterMaxLevel: number
+                }>,
+                required: false,
+            },
+            modelValue: {
+                type: String,
+                required: false,
+            },
+            filters: {
+                type: Object,
+                required: false,
+            },
+            searchPlaceholder: {
+                type: String,
+                required: true,
+            },
+            typeName: {
+                type: String,
+                required: false,
+            },
+            disabled: {
+                type: Boolean,
+                required: false,
+                default: () => false,
+            },
+            index: {
+                type: Number,
+                required: true,
+            },
+            bgGrayForSelector: {
+                type: Boolean,
+                default: true,
+            },
+        },
+        emits: ['update:modelValue', 'change', 'firstSelectByDefaultChange'],
+        setup(props, { emit }) {
+            const queryText = ref<String>('')
+
+            const {
+                disabled,
+                filters,
+                typeName,
+                modelValue,
+                connector,
+                index,
+            } = toRefs(props)
+            const initialBody = {
+                dsl: filters.value,
+                attributes: ['name', 'displayName'],
+            }
+            const { list, replaceBody, data, isLoading, error } =
+                useAssetListing({}, false)
+
+            watch(error, () => {
+                if (error.value) {
+                    console.log(typeName.value)
+                    message.error({
+                        content: `Failed to fetch ${typeName.value}s!`,
+                        duration: 3,
+                    })
+                }
+            })
+            const totalCount = computed(() => data.value?.approximateCount || 0)
+            watch(
+                [disabled, filters],
+                () => {
+                    if (!disabled.value) {
+                        initialBody.dsl = filters.value
+
+                        replaceBody(initialBody)
+                    }
+                },
+                { immediate: true }
+            )
+
+            const dropdownOption = computed(() => {
+                // const tree: Record<string, any>[] = []
+                // list.value.forEach((ls) => {
+                //     let treeNodeObj = {
+                //         label:
+                //             ls.attributes?.displayName || ls.attributes?.name,
+                //         value: ls.attributes.qualifiedName,
+                //         slots: {
+                //             title: 'title',
+                //         },
+                //         children: [],
+                //     }
+                //     tree.push(treeNodeObj)
+                //     console.log('selector tree data: ', tree)
+                // })
+                // tree.sort((x, y) => {
+                //     if (x.label < y.label) return -1
+                //     if (x.label > y.label) return 1
+                //     return 0
+                // })
+                // return tree
+                let data = list.value.map((ls) => ({
+                    label: ls.attributes?.displayName || ls.attributes?.name,
+                    value: ls.attributes.qualifiedName,
+                }))
+
+                if (queryText.value)
+                    data = data.filter((item) =>
+                        item.label.includes(queryText.value.toUpperCase())
+                    )
+
+                data.sort((x, y) => {
+                    if (x.label < y.label) return -1
+                    if (x.label > y.label) return 1
+                    return 0
+                })
+                console.log('data here: ', data)
+
+                return data
+            })
+
+            const handleChange = (checkedValues: string) => {
+                // console.log('checkedValue: ', checkedValues)
+                // emit('update:modelValue', checkedValues)
+                emit('change', checkedValues)
+            }
+
+            const checkifNeedsIsSelectFirstDefault = (
+                data: any[],
+                forceRefresh = false
+            ) => {
+                // debugger
+                if (
+                    isSelectFirstDefault(connector.value.id) &&
+                    index.value == 0
+                ) {
+                    if (data?.length > 0) {
+                        // debugger
+                        // emit(
+                        //     'firstSelectByDefaultChange',
+                        //     'connectionQualifiedName',
+                        //     filters.value.attributeValue,
+                        //     0
+                        // )
+                        emit(
+                            'firstSelectByDefaultChange',
+                            'databaseQualifiedName',
+                            data[0].value,
+                            1,
+                            forceRefresh
+                        )
+                    }
+                }
+            }
+
+            watch(dropdownOption, () => {
+                if (index.value == 0)
+                    checkifNeedsIsSelectFirstDefault(
+                        dropdownOption.value,
+                        dropdownOption.value?.length > 0
+                    )
+            })
+
+            const onSelectItem = (item, event) => {
+                const itemValue = item === undefined ? undefined : item.value
+
+                console.log('item: ', item)
+                console.log('itemValue: ', itemValue)
+
+                // console.log('item: ', item.value)
+                // console.log('itemevent: ', event)
+
+                // if (item === undefined) {
+                //     emit('update:modelValue', item)
+                //     emit('change', item)
+                // }
+                // emit('update:modelValue', itemValue)
+                emit('change', itemValue)
+            }
+
+            return {
+                index,
+                typeName,
+                list,
+                handleChange,
+                totalCount,
+                data,
+                isLoading,
+                dropdownOption,
+                queryText,
+                onSelectItem,
+                connector,
+                isSelectFirstDefault,
+            }
+        },
+    })
+</script>
+<style lang="less" module>
+    .connector {
+        :global(.ant-select-selector) {
+            box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05) !important;
+            background-color: #fbfbfb !important;
+            border: 1px solid #e9ebf1 !important;
+            color: #6f7590 !important;
+            border-radius: 8px !important;
+
+            input::placeholder {
+                color: #6f7590 !important;
+            }
+        }
+        :global(.ant-select-selection-search) {
+            input::placeholder {
+                color: #6f7590 !important;
+            }
+        }
+    }
+    .inputSearch {
+        border-color: #e9ebf1 !important;
+    }
+    .inputSearch:focus {
+        outline: none;
+    }
+    // input::placeholder {
+    //     color: #6f7590 !important;
+    // }
+    // .ant-menu-vertical > .ant-menu-item {
+
+    // }
+</style>
+<style lang="less" scoped>
+    .parent-ellipsis-container-base {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+</style>

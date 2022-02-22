@@ -9,20 +9,22 @@
         >
             <template #content>
                 <a-tree
+                    :key="popoverVisible"
                     class="glossary-tree"
                     :tree-data="treeData"
                     :block-node="true"
                     :load-data="onLoadData"
                     :treeDataSimpleMode="true"
                     :auto-expand-parent="false"
-                    :expanded-keys="expandedKeys"
-                    :checked-keys="checkedKeys"
+                    v-model:expanded-keys="expandedKeys"
+                    :checked-keys="checkedNodeKeys"
+                    @check="onCheck"
                     :checkable="true"
-                    :checkStrictly="false"
+                    :checkStrictly="true"
                     :blockNode="true"
                 >
                     <template #switcherIcon>
-                        <AtlanIcon icon="CaretRight" class="my-auto " />
+                        <AtlanIcon icon="CaretRight" class="my-auto" />
                     </template>
 
                     <template #title="item">
@@ -150,6 +152,10 @@
             const { selectedAsset } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
+            const expandedKeys = ref([])
+            const checkedNodeKeys = ref(
+                modelValue.value.map((category) => category.guid)
+            )
             const checkedKeys = ref(
                 modelValue.value.map((category) => ({
                     label: category.attributes?.name,
@@ -157,7 +163,13 @@
                     attributes: category.attributes,
                 }))
             )
-            const checkedKeysSnapshot = ref(checkedKeys.value)
+            const checkedKeysSnapshot = ref(
+                modelValue.value.map((category) => ({
+                    label: category.attributes?.name,
+                    value: category.guid,
+                    attributes: category.attributes,
+                }))
+            )
             const SHOW_ALL = TreeSelect.SHOW_ALL
             const popoverVisible = ref(false)
             const hasBeenEdited = ref(false)
@@ -174,12 +186,33 @@
                             .qualifiedName ?? '',
                 })
 
+            const onCheck = (e, { checkedNodes, checked, node }) => {
+                console.log({ checkedNodes, checked, node })
+                console.log(checkedKeys.value)
+                console.log(checkedKeysSnapshot)
+                if (checkedNodeKeys.value?.includes(node.guid)) {
+                    checkedNodeKeys.value = checkedNodeKeys.value.filter(
+                        (i) => i !== node?.guid
+                    )
+                    checkedKeys.value = checkedKeys.value?.filter(
+                        (i) => i?.value !== node?.guid
+                    )
+                } else {
+                    checkedNodeKeys.value.push(node.key)
+                    checkedKeys.value.push({
+                        label: node?.title,
+                        value: node?.guid,
+                        attributes: node?.attributes,
+                    })
+                }
+            }
             const onPopoverClose = async (visible) => {
                 popoverVisible.value = visible
                 if (visible) {
                     await initCategories()
                 }
                 if (!visible && hasBeenEdited.value) {
+                    console.log('closing with ', localValue.value)
                     modelValue.value = checkedKeys.value.map((cat) => ({
                         guid: cat.value,
                         typeName: 'AtlasGlossaryCategory',
@@ -192,6 +225,18 @@
                     checkedKeysSnapshot.value = checkedKeys.value
                 }
                 hasBeenEdited.value = false
+            }
+            const expandNode = (expanded: string[], event: any) => {
+                console.log(expanded, event)
+                const node = event?.node
+                const isExpanded = expandedKeys.value?.includes(node?.guid)
+                if (!isExpanded) {
+                    expandedKeys.value?.push(node?.guid)
+                } else if (isExpanded) {
+                    const index = expandedKeys.value?.indexOf(node?.guid)
+                    expandedKeys.value?.splice(index, 1)
+                }
+                expandedKeys.value = [...expandedKeys.value]
             }
 
             const handleDelete = (category: {
@@ -245,8 +290,8 @@
                     attributes: category.attributes,
                 }))
             })
-
-            watch(checkedKeys, (newCheckedKeys) => {
+            const updateLocalValue = (newCheckedKeys) => {
+                console.log(checkedKeysSnapshot.value, newCheckedKeys)
                 if (
                     checkedKeysSnapshot.value.length !== newCheckedKeys.length
                 ) {
@@ -264,6 +309,10 @@
                         hasBeenEdited.value = true
                     }
                 }
+                console.log(hasBeenEdited.value)
+            }
+            watch(checkedKeys, (newCheckedKeys) => {
+                updateLocalValue(newCheckedKeys)
             })
             watch(selectedAsset, () => {
                 localValue.value = categories(selectedAsset.value)
@@ -273,6 +322,7 @@
                     attributes: category.attributes,
                 }))
             })
+
             return {
                 icon,
                 onPopoverClose,
@@ -286,12 +336,16 @@
                 treeSelectRef,
                 handleDelete,
                 popoverVisible,
+                expandedKeys,
+                checkedNodeKeys,
+                onCheck,
+                expandNode,
             }
         },
     })
 </script>
 <style lang="less" module>
-      .categoryWidget {
+    .categoryWidget {
         max-height: 200px;
         min-height: 80px;
         @apply overflow-y-auto overflow-x-hidden;
@@ -304,9 +358,14 @@
             width: 100% !important;
         }
     }
-    .treeStyles{
-        :global(.ant-tree-checkbox){
-            @apply pl-1 my-auto !important;
+    .treeStyles {
+        :global(.ant-popover-inner-content) {
+            @apply px-0 py-3 !important;
+            width: 350px !important;
+        }
+ 
+        :global(.ant-tree-checkbox) {
+            @apply ml-1 my-auto !important;
         }
     }
 </style>

@@ -830,14 +830,14 @@
                 >
                     Categories
                 </p>
-                <Categories
-                    v-model="localCategories"
-                    :selected-asset="selectedAsset"
-                    class="px-5"
-                    :edit-permission="editPermission"
-                    @change="handleCategoriesUpdate"
-                >
-                </Categories>
+                <!-- <Categories -->
+                <!--     v-model="localCategories" -->
+                <!--     :selected-asset="selectedAsset" -->
+                <!--     class="px-5" -->
+                <!--     :edit-permission="editPermission" -->
+                <!--     @change="handleCategoriesUpdate" -->
+                <!-- > -->
+                <!-- </Categories> -->
                 <Categories2
                     v-model="localCategories"
                     :selected-asset="selectedAsset"

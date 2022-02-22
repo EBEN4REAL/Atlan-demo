@@ -197,6 +197,7 @@
                     :edit-permission="
                         selectedAssetUpdatePermission(selectedAsset, isDrawer)
                     "
+                    :tab="tab"
                     :data="tab.data"
                     :collection-data="{
                         collectionInfo,

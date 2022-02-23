@@ -1,6 +1,12 @@
 <template>
     <div class="w-full pb-3">
-        <a-dropdown overlayClassName="dropdown-overlay" :trigger="['click']">
+        <a-dropdown
+            :overlay-style="{
+                maxWidth: '10%',
+            }"
+            overlayClassName="dropdown-overlay"
+            :trigger="['click']"
+        >
             <div class="flex items-center w-full cursor-pointer">
                 <div class="flex flex-row items-center w-full">
                     <span class="mr-2" style="font-size: 28px"
@@ -67,10 +73,10 @@
                             <div class="submenu-title-content">
                                 <AtlanIcon
                                     :icon="getContextName(`icon`)"
-                                    class="w-4 h-4 mr-1 text-gray-500"
+                                    class="flex-shrink-0 w-4 h-4 mr-1 text-gray-500"
                                     style="margin-top: 0.125rem"
                                 ></AtlanIcon>
-                                <span>
+                                <span class="parent-ellipsis-container-base">
                                     <span class="text-gray-500"
                                         >Connection
                                     </span>
@@ -165,10 +171,10 @@
                             <div class="submenu-title-content">
                                 <AtlanIcon
                                     icon="DatabaseGray"
-                                    class="w-4 h-4 mr-1 text-gray-500"
+                                    class="flex-shrink-0 w-4 h-4 mr-1 text-gray-500"
                                     style="margin-top: 0.125rem"
                                 ></AtlanIcon>
-                                <span>
+                                <span class="parent-ellipsis-container-base">
                                     <span class="text-gray-500">Database</span>
                                     <br />
                                     <span class="text-base">{{
@@ -219,10 +225,10 @@
                             <div class="submenu-title-content">
                                 <AtlanIcon
                                     icon="SchemaGray"
-                                    class="w-4 h-4 mr-1 text-gray-500"
+                                    class="flex-shrink-0 w-4 h-4 mr-1 text-gray-500"
                                     style="margin-top: 0.125rem"
                                 ></AtlanIcon>
-                                <span>
+                                <span class="parent-ellipsis-container-base">
                                     <span class="text-gray-500">Schema</span>
                                     <br />
                                     <span class="text-base">{{
@@ -270,15 +276,7 @@
 </template>
 
 <script lang="ts">
-    import {
-        computed,
-        defineComponent,
-        PropType,
-        ref,
-        Ref,
-        toRefs,
-        reactive,
-    } from 'vue'
+    import { computed, defineComponent, PropType, ref, Ref, toRefs } from 'vue'
     import { capitalizeFirstLetter } from '~/utils/string'
     import { List } from '~/constant/status'
     import { useConnectionStore } from '~/store/connection'
@@ -288,7 +286,6 @@
     import AssetDropdownNewSchema from '~/components/common/dropdown/assetDropdownNewSchema.vue'
 
     import Tooltip from '@/common/ellipsis/index.vue'
-    import type { MenuProps } from 'ant-design-vue'
 
     export default defineComponent({
         components: {
@@ -743,7 +740,7 @@
         }
     }
     .parent-ellipsis-container-base {
-        white-space: nowrap;
+        white-space: nowrap !important;
         text-overflow: ellipsis;
         overflow: hidden;
     }

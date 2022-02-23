@@ -46,7 +46,7 @@
                         >
                             <AtlanIcon
                                 :icon="typeName + `Gray`"
-                                class="w-auto h-4 mr-2"
+                                class="flex-shrink-0 w-auto h-4 mr-2"
                             />
                             <span class="parent-ellipsis-container-base"
                                 >{{ item?.label }}

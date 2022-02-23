@@ -201,7 +201,7 @@ export default async function useComputeGraph({
             )
 
             const searchItem = ent
-            searchItems.value.push(searchItem)
+            if (ent.typeName !== 'vpNode') searchItems.value.push(searchItem)
 
             nodes.value.push(nodeData)
         })

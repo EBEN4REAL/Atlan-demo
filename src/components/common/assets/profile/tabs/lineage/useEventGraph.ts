@@ -1,7 +1,11 @@
-import { watch, ref, computed, Ref } from 'vue'
-import { message } from 'ant-design-vue'
+/** VUE */
+import { watch, ref, computed } from 'vue'
 import { watchOnce, whenever } from '@vueuse/core'
 
+/** PACKAGES */
+import { message } from 'ant-design-vue'
+
+/** COMPOSABLES */
 import useLineageStore from '~/store/lineage'
 import useLineageService from '~/services/meta/lineage/lineage_service'
 import useUpdateGraph from './useUpdateGraph'
@@ -9,20 +13,7 @@ import useGetNodes from './useGetNodes'
 import useGraph from './useGraph'
 import fetchColumns from './fetchColumns'
 
-const { highlightNodes, highlightEdges } = useUpdateGraph()
-const { useFetchLineage } = useLineageService()
-const {
-    createPortData,
-    toggleNodesEdges,
-    addNode,
-    addEdge,
-    createEdgeData,
-    createNodeData,
-} = useGraph()
-
-const lineageStore = useLineageStore()
-
-export default function useEventGraph(
+export default function useEventGraph({
     graph,
     lineage,
     baseEntity,
@@ -31,10 +22,8 @@ export default function useEventGraph(
     loaderCords,
     currZoom,
     resetSelections,
-    drawerActiveKey: Ref<string>,
-    selectedTypeInRelationDrawer: Ref<string>,
-    config,
-    graphPrefs,
+    drawerActiveKey,
+    preferences,
     mergedLineageData,
     sameSourceCount,
     sameTargetCount,
@@ -43,8 +32,15 @@ export default function useEventGraph(
     onSelectAsset,
     onCloseDrawer,
     addSubGraph,
-    renderLayout
-) {
+    renderLayout,
+}) {
+    const lineageStore = useLineageStore()
+    const { highlightNodes, highlightEdges, toggleNodesEdges } =
+        useUpdateGraph(graph)
+    const { useFetchLineage } = useLineageService()
+    const { createPortData, addNode, addEdge, createEdgeData, createNodeData } =
+        useGraph(graph)
+
     /** DATA */
     const edgesHighlighted = ref([])
     const nodesTranslated = ref([])
@@ -92,9 +88,8 @@ export default function useEventGraph(
         highlightedNode.value =
             guid && guid !== highlightedNode.value ? guid : ''
         const nodesToHighlight = getHighlights(highlightedNode)
-        highlightEdges(graph, nodesToHighlight, edgesHighlighted)
+        highlightEdges(nodesToHighlight, edgesHighlighted)
         highlightNodes(
-            graph,
             styleHighlightedNode ? highlightedNode : '',
             nodesToHighlight
         )
@@ -308,8 +303,8 @@ export default function useEventGraph(
             node.removePort(`${node.id}-allCols`)
     }
 
-    // createRelations
-    const createRelations = (relations) => {
+    // createPortRelations
+    const createPortRelations = (relations) => {
         const graphNodes = graph.value.getNodes()
         relations.forEach((x) => {
             const { fromEntityId, toEntityId, processId } = x
@@ -326,9 +321,9 @@ export default function useEventGraph(
                 targetPort: toEntityId,
             }
 
-            const edge = addEdge(graph, relation, {
+            const edge = addEdge(relation, {
                 stroke: '#5277d7',
-                arrowSize: graphPrefs.value.showArrow ? 12 : 0.1,
+                arrowSize: preferences.value.showArrow ? 12 : 0.1,
             })
             edge.toFront()
         })
@@ -370,7 +365,7 @@ export default function useEventGraph(
             controlShowMorePorts(node)
 
             const rel = getValidPortRelations(relations)
-            createRelations(rel)
+            createPortRelations(rel)
             translateSubsequentNodes(node)
         })
         // graph.value.unfreeze('renderColumnLineage')
@@ -594,10 +589,10 @@ export default function useEventGraph(
             }
         })
 
-        toggleNodesEdges(graph, false)
+        toggleNodesEdges(false)
 
         if (!translateCandidates.length) {
-            toggleNodesEdges(graph, true)
+            toggleNodesEdges(true)
             hideLoader()
             message.info(
                 'The selected column has no relations for the nodes on the graph'
@@ -642,7 +637,7 @@ export default function useEventGraph(
 
         watchOnce(data, () => {
             if (!data.value?.relations.length) {
-                toggleNodesEdges(graph, true)
+                toggleNodesEdges(true)
                 hideLoader()
                 message.info('No lineage data available for selected column')
                 return
@@ -680,7 +675,7 @@ export default function useEventGraph(
         edge.attr('line/targetMarker/stroke', reset ? '#aaaaaa' : '#5277d7')
 
         // Only change arrowhead size if showArrow is false
-        if (!graphPrefs.value.showArrow) {
+        if (!preferences.value.showArrow) {
             edge.attr('line/targetMarker/height', reset ? 0.1 : 12)
             edge.attr('line/targetMarker/width', reset ? 0.1 : 12)
         }
@@ -774,7 +769,7 @@ export default function useEventGraph(
                     toEntityId: newTarget,
                     processId,
                 }
-                createRelations([newRelation])
+                createPortRelations([newRelation])
             })
             activeNodesToggled.value[node.id].edges.push(...edges)
         })
@@ -873,7 +868,7 @@ export default function useEventGraph(
                         toEntityId: target,
                         processId,
                     }
-                    createRelations([relation])
+                    createPortRelations([relation])
                 })
 
                 activeNodesToggled.value[node.id].newEdgesId.forEach(
@@ -961,7 +956,7 @@ export default function useEventGraph(
                 toEntityId: `${rel.toEntityId}-invisiblePort`,
                 processId: rel.processId,
             }
-            createRelations([relation])
+            createPortRelations([relation])
             hideLoader()
         } else getColumnLineage(portId)
     }
@@ -993,7 +988,7 @@ export default function useEventGraph(
         chp.value.node = null
         chp.value.portId = ''
         chp.value.expandedNodes = []
-        toggleNodesEdges(graph, true)
+        toggleNodesEdges(true)
     }
 
     // handleVPNode
@@ -1038,7 +1033,7 @@ export default function useEventGraph(
                 true
             )
             nodes.value.push(nodeData)
-            addNode(graph, relations, childrenCounts, x)
+            addNode(relations, childrenCounts, x)
         })
 
         const nodesToAddIds = nodesToAdd.map((x) => x.guid)
@@ -1068,7 +1063,7 @@ export default function useEventGraph(
                 { stroke: '#aaaaaa' }
             )
             edges.value.push(edgeData)
-            addEdge(graph, relation)
+            addEdge(relation)
         })
 
         nodes.value = nodes.value.filter((x) => x.id !== node.id)
@@ -1092,7 +1087,7 @@ export default function useEventGraph(
         )
         nodeData.data.hiddenCount = nodesHidden.length
         nodes.value.push(nodeData)
-        addNode(graph, relations, childrenCounts, nodeData.entity)
+        addNode(relations, childrenCounts, nodeData.entity)
 
         // add back vp edge
         const from = mode === 'sameSource' ? id : node.id
@@ -1109,7 +1104,7 @@ export default function useEventGraph(
 
         const { edgeData } = createEdgeData(relation, {}, { stroke: '#aaaaaa' })
         edges.value.push(edgeData)
-        addEdge(graph, relation)
+        addEdge(relation)
         renderLayout(registerAllListeners)
 
         const cell = graph.value.getCellById(node.id)
@@ -1326,7 +1321,7 @@ export default function useEventGraph(
     })
 
     watch(
-        () => graphPrefs.value.showArrow,
+        () => preferences.value.showArrow,
         (val) => {
             const size = val ? 12 : 0.1
             graph.value.getEdges().forEach((edge) => {

@@ -4,6 +4,7 @@
         class="relative w-full overflow-hidden hide-scrollbar lineage"
         style="height: 82vh"
     >
+        <!-- Render Loader -->
         <div
             v-if="!isComputeDone"
             class="flex flex-col items-center justify-center bg-white w-100"
@@ -13,6 +14,7 @@
             <span class="mt-1 text-sm">Rendering graph...</span>
         </div>
 
+        <!-- Graph Process Loader -->
         <AtlanLoader
             v-if="loaderCords.x"
             class="absolute h-5 opacity-70"
@@ -31,7 +33,6 @@
             :highlighted-node="highlightedNode"
             :is-cyclic="false"
             :graph="graph"
-            @show-add-lineage="onShowAddLineage($event)"
         />
 
         <!-- Lineage Footer -->
@@ -53,41 +54,34 @@
             ></div>
         </LineageFooter>
 
-        <!-- Add Lineage -->
-        <LineageAdd
-            v-if="graph"
-            :visible="showAddLineage"
-            style="z-index: 600"
-            @cancel="showAddLineage = false"
-        />
+        <!-- AssetDrawer -->
         <AssetDrawer
             :guid="selectedAssetGuid"
             :show-drawer="isDrawerVisible && selectedAssetGuid"
             :show-mask="false"
             :drawer-active-key="drawerActiveKey"
+            :show-close-btn="false"
             @close-drawer="onCloseDrawer"
             @update="handleDrawerUpdate"
-            :showCloseBtn="false"
         />
     </div>
 </template>
 
 <script lang="ts">
-    /** PACKAGES */
+    /** VUE */
     import {
         defineComponent,
         ref,
         onMounted,
         onUnmounted,
         provide,
-        toRefs,
         inject,
         computed,
     } from 'vue'
+
     /** COMPONENTS */
     import LineageHeader from './lineageHeader.vue'
     import LineageFooter from './lineageFooter.vue'
-    import LineageAdd from './lineageAdd.vue'
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
 
     /** COMPOSABLES */
@@ -100,47 +94,39 @@
         components: {
             LineageHeader,
             LineageFooter,
-            LineageAdd,
             AssetDrawer,
         },
-        props: {
-            lineage: {
-                type: Object,
-                required: true,
-            },
-        },
-        setup(props, { emit }) {
+        setup(_, { emit }) {
             /** INJECTIONS */
-            const control = inject('control')
+            const lineage = inject('lineage')
             const baseEntity = inject('baseEntity')
             const selectedAsset = inject('selectedAsset')
-            const config = inject('config')
-            const graphPrefs = inject('preferences', ref({}))
+            const preferences = inject('preferences', ref({}))
+            const control = inject('control')
 
             /** DATA */
-            const isDrawerVisible = ref(false)
-            const { lineage } = toRefs(props)
             const graphHeight = ref(0)
             const graphWidth = ref(0)
             const resetSelections = ref(false)
             const graphContainer = ref(null)
             const minimapContainer = ref(null)
-            const lineageContainer = ref(null)
-            const graph = ref(null)
+            const lineageContainer = ref({})
+            const graph = ref({})
             const graphLayout = ref({})
-            const showAddLineage = ref(false)
             const showMinimap = ref(false)
             const searchItems = ref([])
-            const assetGuidToHighlight = ref('')
+            const assetGuidToHighlight = ref('') // TODO:
             const highlightedNode = ref('')
             const loaderCords = ref({})
             const currZoom = ref('...')
+            const isDrawerVisible = ref(false)
             const isComputeDone = ref(false)
             const drawerActiveKey = ref('Overview')
             const selectedTypeInRelationDrawer = ref('__all')
             let removeListeners = () => {}
 
             /** COMPUTED */
+            const selectedAssetGuid = computed(() => selectedAsset.value?.guid)
             const offsetLoaderCords = computed(() => {
                 const isFullScr = !!document.fullscreenElement
                 return {
@@ -152,7 +138,6 @@
                         : (loaderCords.value.y || 0) - 148,
                 }
             })
-            const selectedAssetGuid = computed(() => selectedAsset.value?.guid)
 
             /** METHODS */
             // onSelectAsset
@@ -162,29 +147,34 @@
                 openDrawer = true
             ) => {
                 if (openDrawer) isDrawerVisible.value = true
-                control('selectedAsset', item)
+                if (typeof control === 'function')
+                    control('selectedAsset', item)
                 if (highlight) assetGuidToHighlight.value = item.guid
             }
 
+            // onCloseDrawer
             const onCloseDrawer = () => {
                 isDrawerVisible.value = false
                 resetSelections.value = true
             }
 
+            // handleDrawerUpdate
             const handleDrawerUpdate = (asset) => {
-                control('selectedAsset', asset)
+                if (typeof control === 'function')
+                    control('selectedAsset', asset)
             }
+
             // initialize
             const initialize = async () => {
-                // useGraph
-                useCreateGraph(
+                // useCreateGraph
+                useCreateGraph({
                     graph,
                     graphLayout,
                     graphContainer,
                     minimapContainer,
                     graphWidth,
-                    graphHeight
-                )
+                    graphHeight,
+                })
 
                 // useComputeGraph
                 const {
@@ -195,18 +185,18 @@
                     sameTargetCount,
                     nodes,
                     edges,
-                } = await useComputeGraph(
+                } = await useComputeGraph({
                     graph,
                     graphLayout,
                     lineage,
                     searchItems,
                     currZoom,
                     isComputeDone,
-                    emit
-                )
+                    emit,
+                })
 
                 // useEventGraph
-                const { registerAllListeners } = useEventGraph(
+                const { registerAllListeners } = useEventGraph({
                     graph,
                     lineage,
                     baseEntity,
@@ -216,9 +206,7 @@
                     currZoom,
                     resetSelections,
                     drawerActiveKey,
-                    selectedTypeInRelationDrawer,
-                    config,
-                    graphPrefs,
+                    preferences,
                     mergedLineageData,
                     sameSourceCount,
                     sameTargetCount,
@@ -227,8 +215,8 @@
                     onSelectAsset,
                     onCloseDrawer,
                     addSubGraph,
-                    renderLayout
-                )
+                    renderLayout,
+                })
                 removeListeners = registerAllListeners
             }
 
@@ -237,30 +225,18 @@
             provide('onSelectAsset', onSelectAsset)
             provide('selectedTypeInRelation', selectedTypeInRelationDrawer)
 
-            // onShowAddLineage
-            const onShowAddLineage = () => {
-                showAddLineage.value = true
-            }
-
             /** LIFECYCLE */
             onMounted(async () => {
                 graphHeight.value = window.outerHeight
                 graphWidth.value = window.outerWidth
 
-                if (graph.value) graph.value.dispose()
-                await initialize()
-                if (selectedAsset.value?.guid) {
-                    const highlight =
-                        selectedAsset.value.guid !== baseEntity.value.guid
-                    if (!highlight) return
-                    onSelectAsset(selectedAsset.value, highlight)
-                }
+                if (Object.keys(graph.value).length) graph.value.dispose()
+                initialize()
             })
 
             onUnmounted(() => {
                 isComputeDone.value = false
-                // removedNodes.value = {}
-                if (graph.value) {
+                if (Object.keys(graph.value).length) {
                     if (typeof removeListeners === 'function')
                         removeListeners(true)
                     graph.value.dispose()
@@ -268,28 +244,24 @@
             })
 
             return {
-                isDrawerVisible,
+                lineage,
+                graph,
+                graphHeight,
+                graphWidth,
                 offsetLoaderCords,
                 selectedAssetGuid,
-                baseEntity,
-                graph,
+                currZoom,
                 showMinimap,
-                showAddLineage,
+                highlightedNode,
+                loaderCords,
+                drawerActiveKey,
+                isDrawerVisible,
+                isComputeDone,
                 lineageContainer,
                 graphContainer,
                 minimapContainer,
-                currZoom,
-                highlightedNode,
-                assetGuidToHighlight,
-                isComputeDone,
-                loaderCords,
-                graphHeight,
-                graphWidth,
-                drawerActiveKey,
-                onShowAddLineage,
                 onCloseDrawer,
                 handleDrawerUpdate,
-                graphPrefs,
             }
         },
     })
@@ -302,14 +274,6 @@
 </style>
 
 <style lang="less">
-    .node-added-shadow {
-        box-shadow: 0 2.8px 2.2px rgba(0, 179, 138, 0.12),
-            0 6.7px 5.3px rgba(0, 179, 138, 0.12),
-            0 12.5px 10px rgba(0, 179, 138, 0.12),
-            0 22.3px 17.9px rgba(0, 179, 138, 0.12),
-            0 41.8px 33.4px rgba(0, 179, 138, 0.12),
-            0 100px 80px rgba(0, 179, 138, 0.12);
-    }
     .l-m20px {
         left: -20px;
     }
@@ -323,6 +287,7 @@
             stroke-dashoffset: -1000;
         }
     }
+
     .hide-scrollbar,
     .x6-graph-scroller,
     .ant-tabs-content-holder {
@@ -420,34 +385,6 @@
                 & .x6-widget-minimap-viewport-zoom {
                     border: 1px solid #9296eb !important;
                 }
-            }
-        }
-
-        // Process Nodes
-        &-process {
-            border: 1px solid #e6e6eb;
-            border-radius: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #ffffff;
-            width: 60px;
-            height: 60px;
-            cursor: pointer;
-
-            &.isHighlightedNode {
-                border: 1px solid #5277d7;
-            }
-            &.isHighlightedNodePath {
-                border: 1px solid #5277d7;
-            }
-
-            & > .process-icon {
-                color: #64748b;
-            }
-
-            &.isGrayed > .process-icon {
-                color: #b6b9c5;
             }
         }
 

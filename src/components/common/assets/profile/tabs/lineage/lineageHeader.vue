@@ -5,11 +5,13 @@
 </template>
 
 <script lang="ts">
-    // Vue
+    /** VUE */
     import { defineComponent, toRefs } from 'vue'
 
-    // Components
+    /** COMPONENTS */
     import LineageSearch from './lineageSearch.vue'
+
+    /** COMPOSABLES */
     import useTransformGraph from './useTransformGraph'
 
     export default defineComponent({
@@ -25,6 +27,9 @@
         setup(props, { emit }) {
             /** DATA */
             const { graph } = toRefs(props)
+
+            /** METHODS */
+            // useTransformGraph
             const { fit } = useTransformGraph(graph, emit)
 
             return {

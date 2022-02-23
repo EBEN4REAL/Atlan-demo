@@ -72,9 +72,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.my_pat }}
           GITHUB_ACTOR: atlan-ci
 
-      - name: "cat package.json"
-        run: cat ./package.json
-
       - name: Setup pnpm
         uses: pnpm/action-setup@v2.0.1
         with:

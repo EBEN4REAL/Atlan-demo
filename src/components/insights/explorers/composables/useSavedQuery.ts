@@ -248,36 +248,6 @@ export function useSavedQuery(
         newTab.queryId = null
         newTab.qualifiedName = ''
         newTab.attributes = null
-        newTab.playground.editor.dataList = []
-        newTab.playground.editor.columnList = []
-        newTab.playground.editor.limitRows = {
-            checked: false,
-            rowsCount: -1,
-        }
-
-        newTab.playground.resultsPane = {
-            activeTab:
-                activeInlineTab.value?.playground.resultsPane.activeTab ?? 0,
-            result: {
-                title: '',
-                isQueryRunning: '',
-                isQueryAborted: false,
-                queryErrorObj: {},
-                errorDecorations: [],
-                totalRowsCount: -1,
-                executionTime: -1,
-                runQueryId: null,
-                buttonDisable: false,
-                eventSourceInstance: null,
-            },
-            metadata: {},
-            queries: {},
-            joins: {},
-            filters: {},
-            impersonation: {},
-            downstream: {},
-            sqlHelp: {},
-        }
         //open a new tab
         inlineTabAdd(newTab, tabsArray, activeInlineTabKey)
         activeInlineTabKey.value = newTab.key

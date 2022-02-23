@@ -5,7 +5,7 @@
     >
         <div
             v-if="item?.typeName === 'cta'"
-            class="flex items-center"
+            class="flex items-center flex-wrap"
             :class="!hasCreateAccess ? '' : 'space-y-0'"
         >
             <span v-if="!checkable" class="pr-1"> Add a </span>

@@ -109,6 +109,27 @@
                     </div>
                 </div>
                 <div v-if="connectorData.attributeValue" class="mt-5">
+                    <div
+                        v-if="!connectorData?.isConnectionQueryable"
+                        class="mb-5"
+                    >
+                        <a-alert type="error" banner>
+                            <template #message>
+                                <div>
+                                    Query is disabled on the selected connection
+                                    -
+                                    <router-link
+                                        :to="`/assets/${connectorData?.connectionGuid}`"
+                                        target="_blank"
+                                        class="font-semibold cursor-pointer text-primary hover:underline"
+                                        >{{
+                                            connectorData.attributeName
+                                        }}</router-link
+                                    >
+                                </div></template
+                            ></a-alert
+                        >
+                    </div>
                     <div class="flex items-center justify-between">
                         <div class="text-gray-500">
                             Select assets
@@ -536,9 +557,12 @@
                     const found = connectionStore.getList.find(
                         (conn) => conn.guid === policy.value.connectionId
                     )
+
                     return {
-                        attributeName: found ? 'connectionQualifiedName' : '',
+                        attributeName: found?.attributes?.name,
                         attributeValue: found?.attributes?.qualifiedName,
+                        isConnectionQueryable: found?.attributes?.allowQuery,
+                        connectionGuid: found?.guid,
                     }
                 },
                 set: (val) => {

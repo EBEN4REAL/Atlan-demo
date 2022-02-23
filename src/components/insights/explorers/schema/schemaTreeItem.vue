@@ -1411,6 +1411,9 @@
             )
 
             const previewVQBQuery = (item: any) => {
+                const { onRunCompletion, onQueryIdGeneration } =
+                    useRunQueryUtils(editorInstance, monacoInstance)
+
                 const activeInlineTabCopy = JSON.parse(
                     JSON.stringify(toRaw(activeInlineTab.value))
                 )

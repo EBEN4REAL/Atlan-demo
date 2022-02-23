@@ -585,6 +585,7 @@
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import TreeDeletePopover from '~/components/insights/common/treeDeletePopover.vue'
     import { Insights } from '~/services/meta/insights/index'
+    import { useActiveTab } from '~/components/insights/common/composables/useActiveTab'
 
     export default defineComponent({
         components: { SlackModal, EditQuery, TreeDeletePopover },
@@ -756,57 +757,14 @@
             const queryModalVisible = ref(false)
 
             const duplicateQuery = () => {
-                const activeInlineTabCopy: activeInlineTabInterface =
-                    JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
-                const label = `Copy ${activeInlineTabCopy.label}`
-                activeInlineTabCopy.label = label
-                /* IMP TO RESET */
-                activeInlineTabCopy.key = String(new Date().getTime())
-                activeInlineTabCopy.isSaved = false
-                activeInlineTabCopy.queryId = undefined
-                activeInlineTabCopy.qualifiedName = ''
-                activeInlineTabCopy.attributes = undefined
-                activeInlineTabCopy.playground.editor.dataList = []
-                activeInlineTabCopy.playground.editor.columnList = []
-                activeInlineTabCopy.playground.editor.limitRows = {
-                    checked: false,
-                    rowsCount: -1,
-                }
+                const { generateNewActiveTab } = useActiveTab()
+                const inlineTabData = generateNewActiveTab({
+                    activeInlineTab,
+                    label: `Copy ${activeInlineTab.value.label}`,
+                    editorText: activeInlineTab.value.playground.editor.text,
+                })
 
-                activeInlineTabCopy.playground.resultsPane = {
-                    activeTab:
-                        activeInlineTab.value?.playground.resultsPane
-                            .activeTab ?? 0,
-                    result: {
-                        title: '',
-                        isQueryRunning: '',
-                        isQueryAborted: false,
-                        queryErrorObj: {},
-                        errorDecorations: [],
-                        totalRowsCount: -1,
-                        executionTime: -1,
-                        runQueryId: undefined,
-                        buttonDisable: false,
-                        eventSourceInstance: undefined,
-                    },
-                    metadata: {},
-                    queries: {},
-                    joins: {},
-                    filters: {},
-                    impersonation: {},
-                    downstream: {},
-                    sqlHelp: {},
-                }
-
-                /* CAREFUL:-------Order is important here------ */
-                inlineTabAdd(activeInlineTabCopy, tabsArray, activeInlineTabKey)
-                activeInlineTabKey.value = activeInlineTabCopy.key
-                /* ----------------------------- */
-                // syncying inline tabarray in localstorage
-                syncInlineTabsInLocalStorage(tabsArray.value)
-                const queryParams = {}
-                if (route?.query?.vqb) queryParams.vqb = true
-                router.push({ path: `insights`, query: queryParams })
+                inlineTabAdd(inlineTabData, tabsArray, activeInlineTabKey)
             }
             const openCommandPallete = () => {
                 toRaw(editorInstance.value)?.focus()

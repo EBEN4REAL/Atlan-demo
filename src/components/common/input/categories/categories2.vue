@@ -263,7 +263,7 @@
                         (i) => i?.value !== node?.guid
                     )
                 } else {
-                    checkedNodeKeys.value.push(node.key)
+                    checkedNodeKeys.value.push(node.key??node?.guid)
                     checkedKeys.value.push({
                         label:
                             node?.title ??
@@ -401,8 +401,6 @@
                 )
             })
             const onSearchItemCheck = (val) => {
-                console.log(val)
-
                 handleCheckedNodesChange(val)
             }
             // search related stuff

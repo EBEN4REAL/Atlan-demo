@@ -9,8 +9,9 @@
                     :image="tab.image"
                     :emoji="tab.emoji"
                     height="h-4"
+                    class="mb-0.5"
                 />
-                <span class="font-semibold text-gray-500 ml-1">Overview</span>
+                <span class="ml-1 font-semibold text-gray-500">Overview</span>
             </span>
             <span
                 v-if="isLoading || isLoadingClassification"
@@ -561,12 +562,12 @@
                                 ? 'disabledButton'
                                 : ''
                         "
-                        @click="handleCollectionClick"
                         :disabled="
                             !collectionData?.hasCollectionReadPermission &&
                             !collectionData?.hasCollectionWritePermission &&
                             !collectionData?.isCollectionCreatedByCurrentUser
                         "
+                        @click="handleCollectionClick"
                     >
                         <div class="flex items-center">
                             <!-- <AtlanIcon
@@ -591,12 +592,12 @@
                             </span>
                         </div>
                         <AtlanIcon
-                            icon="Lock"
                             v-if="
                                 !collectionData?.hasCollectionReadPermission &&
                                 !collectionData?.hasCollectionWritePermission &&
                                 !collectionData?.isCollectionCreatedByCurrentUser
                             "
+                            icon="Lock"
                         />
                         <AtlanIcon v-else icon="External" />
                     </a-button>
@@ -618,28 +619,6 @@
                     {{ attributes(selectedAsset)?.parent?.attributes?.name }}
                 </div>
             </div>
-
-            <!-- <div
-            v-if="
-                selectedAsset?.guid &&
-                selectedAsset?.typeName === 'Query' &&
-                attributes(selectedAsset)?.parent?.typeName === 'Folder'
-            "
-            class="flex flex-col gap-y-4"
-        >
-            <div class="flex flex-col px-5 text-sm">
-                <div class="mb-1 text-sm text-gray-500">Collection</div>
-                <div class="text-sm text-gray-700">
-                    {{ selectedAsset?.collectionName }}
-                </div>
-            </div>
-            <div class="flex flex-col px-5 text-sm">
-                <div class="mb-1 text-sm text-gray-500">Folder</div>
-                <div class="text-sm text-gray-700">
-                    {{ attributes(selectedAsset)?.parent?.attributes?.name }}
-                </div>
-            </div>
-        </div> -->
 
             <div class="flex flex-col">
                 <div
@@ -685,7 +664,11 @@
             </div>
 
             <div
-                v-if="selectedAsset.guid && selectedAsset.typeName === 'Query'"
+                v-if="
+                    selectedAsset.guid &&
+                    selectedAsset.typeName === 'Query' &&
+                    readPermission
+                "
             >
                 <SavedQuery :selected-asset="selectedAsset" class="mx-4" />
             </div>
@@ -707,16 +690,16 @@
                     class="px-5"
                     :selected-asset="selectedAsset"
                     :edit-permission="editPermission"
-                    :showShortcut="true"
+                    :show-shortcut="true"
                     @change="handleOwnersChange"
                 />
             </div>
 
             <div
-                class="flex flex-col"
                 v-if="
                     selectedAsset.guid && selectedAsset.typeName == 'Connection'
                 "
+                class="flex flex-col"
             >
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
@@ -758,7 +741,7 @@
                             'ENTITY_ADD_CLASSIFICATION'
                         )
                     "
-                    :allowDelete="
+                    :allow-delete="
                         selectedAssetUpdatePermission(
                             selectedAsset,
                             isDrawer,
@@ -766,7 +749,7 @@
                         )
                     "
                     class="px-5"
-                    :showShortcut="true"
+                    :show-shortcut="true"
                     @change="handleClassificationChange"
                 >
                 </Classification>
@@ -796,7 +779,7 @@
                             'AtlasGlossaryTerm'
                         ) && editPermission
                     "
-                    :allowDelete="
+                    :allow-delete="
                         selectedAssetUpdatePermission(
                             selectedAsset,
                             isDrawer,
@@ -846,7 +829,6 @@
                     @change="handleCategoriesUpdate"
                 >
                 </Categories2>
- 
             </div>
 
             <div
@@ -898,6 +880,8 @@
         toRefs,
     } from 'vue'
     import SavedQuery from '@common/hovercards/savedQuery.vue'
+    import DetailsContainer from '@common/assets/misc/detailsOverflowContainer.vue'
+    import { message } from 'ant-design-vue'
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
     import SQL from '@/common/popover/sql.vue'
     import SQLSnippet from '@/common/sql/snippet.vue'
@@ -922,11 +906,9 @@
     import SubFolderCount from '@/common/widgets/summary/types/subFolderCount.vue'
     import ParentContext from '@/common/widgets/summary/types/parentContext.vue'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
-    import DetailsContainer from '@common/assets/misc/detailsOverflowContainer.vue'
     import { copyToClipboard } from '~/utils/clipboard'
-    import { message } from 'ant-design-vue'
-
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
+
     export default defineComponent({
         name: 'AssetDetails',
         components: {
@@ -943,7 +925,7 @@
             SQLSnippet,
             TermsWidget,
             Categories,
-Categories2 ,
+            Categories2,
             RelatedTerms,
             SourceCreated,
             SourceUpdated,
@@ -1096,11 +1078,7 @@ Categories2 ,
 
             // route to go to insights and select the collection
             const handleCollectionClick = () => {
-                const URL =
-                    `http://` +
-                    window.location.host +
-                    `/insights?col_id=` +
-                    collectionData?.value?.collectionInfo?.guid
+                const URL = `http://${window.location.host}/insights?col_id=${collectionData?.value?.collectionInfo?.guid}`
 
                 window.open(URL, '_blank')?.focus()
             }

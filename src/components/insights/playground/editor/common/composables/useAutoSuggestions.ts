@@ -388,7 +388,7 @@ const refreshBody = () => {
     body.value = {
         dsl: {
             from: 0,
-            size: 100,
+            size: 20,
             query: {
                 function_score: {
                     query: {

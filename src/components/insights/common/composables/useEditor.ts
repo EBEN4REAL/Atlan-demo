@@ -96,6 +96,10 @@ export function useEditor(
                     parseVariables[v.name] = `'${v.value?.format(
                         'YYYY-MM-DD'
                     )}'`
+                } else if (v?.type === 'string') {
+                    parseVariables[v.name] = `'${v.value}'`
+                } else if (v?.type === 'dropdown') {
+                    parseVariables[v.name] = v.value.map((el) => `'${el}'`)
                 } else {
                     parseVariables[v.name] = v.value
                 }

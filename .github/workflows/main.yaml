@@ -52,7 +52,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           token: ${{ secrets.my_pat }}
-          ref: ${{ github.ref }}
+          fetch-depth: 0
 
       - name: "cat package.json"
         run: cat ./package.json
@@ -67,7 +67,10 @@ jobs:
         with:
           tag-prefix: ""
         env:
+          GITHUB_USER: atlan-ci
+          GITHUB_EMAIL: it@atlan.com
           GITHUB_TOKEN: ${{ secrets.my_pat }}
+          GITHUB_ACTOR: atlan-ci
 
       - name: "cat package.json"
         run: cat ./package.json

@@ -52,10 +52,13 @@
                     {{ project_description }}
                 </span>
             </div>
-            <!-- <div
-                class="flex flex-wrap items-center h-12 gap-2 p-1 border rounded"
-            >
-                <Chip
+            <div class="flex flex-wrap items-center h-12 gap-2 rounded">
+                <a-select
+                    class="w-1/2"
+                    :class="$style.selector"
+                    placeholder="Select default project"
+                ></a-select>
+                <!-- <Chip
                     v-for="(channel, x) in channels"
                     :index="x"
                     :key="channel.name"
@@ -91,8 +94,8 @@
                             }
                         "
                     />
-                </div>
-            </div> -->
+                </div> -->
+            </div>
         </section>
         <section class="flex items-center justify-between p-6 gap-x-3">
             <AtlanButton
@@ -105,14 +108,14 @@
                 Disconnect
             </AtlanButton>
             <!-- v-auth="access.UPDATE_INTEGRATIONS" -->
-            <!-- <AtlanButton
+            <AtlanButton
                 :is-loading="updateLoading"
                 class="w-16"
                 :disabled="!isEdit"
                 @click="update"
             >
                 Save
-            </AtlanButton> -->
+            </AtlanButton>
         </section>
     </div>
 </template>
@@ -331,11 +334,17 @@
     })
 </script>
 
-<style scoped>
+<style module lang="less">
     .bg-slack {
         /* background: url('~/assets/images/admin/integrations/add-slack-bg.svg')
             no-repeat;
         background-size: contain;
         background-position-x: right; */
+    }
+
+    .selector {
+        :global(.ant-select-selector) {
+            @apply border border-gray-300 !important;
+        }
     }
 </style>

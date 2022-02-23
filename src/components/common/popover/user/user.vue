@@ -70,7 +70,7 @@
                                                 <span class=""
                                                     >Active
                                                     {{
-                                                        selectedUser?.last_active_time_ago
+                                                        selectedUser?.last_active_time_ago_short_notation
                                                     }}</span
                                                 >
                                             </a-tooltip>
@@ -184,7 +184,7 @@
         props: {
             item: {
                 type: String,
-                required: false,
+                required: true,
                 default: '',
             },
             visible: {
@@ -211,6 +211,7 @@
                     $and: [{ username: item.value }],
                 },
             }
+
             const { userList, isLoading, getUserList } = useUsers(params, false)
             const selectedUser = computed(() =>
                 userList && userList.value && userList.value.length

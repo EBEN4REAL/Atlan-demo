@@ -130,6 +130,42 @@ function generateMarkdown(
     // return `![bears](http://placebear.com/200/200) The end ...`
 }
 
+export function getContext(
+    qualifiedName,
+    assetQuoteType: string,
+    context: {
+        attributeName: string
+        attributeValue: string
+    },
+    useSchemaExplorerContext?: boolean
+) {
+    const { getDatabaseName, getSchemaName } = useConnector()
+
+    let contextPrefix = ''
+    if (useSchemaExplorerContext) {
+        contextPrefix += `${assetQuoteType}${
+            getDatabaseName(qualifiedName ?? '') ?? ''
+        }${assetQuoteType}.${assetQuoteType}${
+            getSchemaName(qualifiedName ?? '') ?? ''
+        }${assetQuoteType}.`
+        return contextPrefix
+    }
+    /*_______________CONTEXT_______ */
+    if (context.attributeName === 'connectionQualifiedName') {
+        contextPrefix += `${assetQuoteType}${
+            getDatabaseName(qualifiedName ?? '') ?? ''
+        }${assetQuoteType}.${assetQuoteType}${
+            getSchemaName(qualifiedName ?? '') ?? ''
+        }${assetQuoteType}.`
+    } else if (context.attributeName === 'databaseQualifiedName') {
+        contextPrefix += `${assetQuoteType}${
+            getSchemaName(qualifiedName ?? '') ?? ''
+        }${assetQuoteType}.`
+    }
+    return contextPrefix
+    /* _______________________________ */
+}
+
 export function entitiesToEditorKeyword(
     response: Promise<autosuggestionResponse>,
     type: string,
@@ -138,6 +174,10 @@ export function entitiesToEditorKeyword(
         connectionQualifiedName: string | undefined
         databaseName: string | undefined
         schemaName: string | undefined
+    },
+    context: {
+        attributeName: string
+        attributeValue: string
     }
 ) {
     const { getConnectorName } = useConnector()
@@ -168,20 +208,36 @@ export function entitiesToEditorKeyword(
 
                 switch (type) {
                     case 'TABLE': {
+                        // debugger
                         // console.log('su type: ', 'table')
                         /* When Schema Or database not selected TableQN will be used */
                         // let entityType = `${type}`
+                        let qualifiedName =
+                            entities[i].attributes.qualifiedName.split('/')
+                        const contextPrefix = getContext(
+                            entities[i].attributes.qualifiedName,
+                            assetQuoteType,
+                            context
+                        )
                         let entityType = ``
                         let insertText = `${assetQuoteType}${entities[i].attributes.name}${assetQuoteType}`
                         let label = entities[i].attributes.name
 
-                        let qualifiedName =
-                            entities[i].attributes.qualifiedName.split('/')
-                        let tableQN = `${assetQuoteType}${qualifiedName[3]}${assetQuoteType}.${assetQuoteType}${qualifiedName[4]}${assetQuoteType}.${assetQuoteType}${qualifiedName[5]}${assetQuoteType}`
+                        let tableQN = `${assetQuoteType}${qualifiedName[3].replaceAll(
+                            '"',
+                            ''
+                        )}${assetQuoteType}.${assetQuoteType}${qualifiedName[4].replaceAll(
+                            '"',
+                            ''
+                        )}${assetQuoteType}.${assetQuoteType}${qualifiedName[5].replaceAll(
+                            '"',
+                            ''
+                        )}${assetQuoteType}`
 
                         if (connectorsInfo.schemaName) {
                             var spilltedVal = tableQN.split('.')
-                            insertText = spilltedVal[2] as string
+                            insertText =
+                                `${contextPrefix}${spilltedVal[2]}` as string // tableName
                             entityType = `${type}: ${spilltedVal[1]}`
                             entityType = `${spilltedVal[1]}`
 
@@ -190,13 +246,15 @@ export function entitiesToEditorKeyword(
                             if (connectorsInfo.databaseName) {
                                 insertText = tableQN as string
                                 var spilltedVal = tableQN.split('.')
-                                insertText = `${spilltedVal[1]}.${spilltedVal[2]}`
+                                insertText =
+                                    `${contextPrefix}${spilltedVal[2]}` as string // tableName
                                 // entityType = `${type}: ${insertText}`
                                 entityType = `${insertText}`
                             } else {
+                                var spilltedVal = tableQN.split('.')
                                 insertText = tableQN as string
                                 // entityType = `${type}: ${insertText}`
-                                entityType = `${insertText}`
+                                entityType = `${spilltedVal[2]}`
                             }
                         }
 
@@ -225,7 +283,14 @@ export function entitiesToEditorKeyword(
                         // console.log('su type: ', 'col')
                         let qualifiedName =
                             entities[i].attributes.qualifiedName.split('/')
-                        let tableName = qualifiedName[qualifiedName.length - 2]
+                        const contextPrefix = getContext(
+                            entities[i].attributes.qualifiedName,
+                            assetQuoteType,
+                            context
+                        )
+                        let tableName = qualifiedName[
+                            qualifiedName.length - 2
+                        ].replaceAll('"', '')
 
                         keyword = {
                             // label: entities[i].attributes.name,
@@ -242,7 +307,7 @@ export function entitiesToEditorKeyword(
                                 entity: entities[i],
                             },
                             sortText: sortString,
-                            insertText: `${assetQuoteType}${entities[i].attributes.name}${assetQuoteType}`,
+                            insertText: `${contextPrefix}${assetQuoteType}${tableName}${assetQuoteType}.${assetQuoteType}${entities[i].attributes.name}${assetQuoteType}`,
                         }
                         words.push(keyword)
                         // }
@@ -323,7 +388,7 @@ const refreshBody = () => {
     body.value = {
         dsl: {
             from: 0,
-            size: 100,
+            size: 20,
             query: {
                 function_score: {
                     query: {
@@ -434,7 +499,11 @@ async function getSuggestionsUsingType(
         databaseName: string | undefined
         schemaName: string | undefined
     },
-    cancelTokenSource: Ref<any>
+    cancelTokenSource: Ref<any>,
+    context: {
+        attributeName: string
+        attributeValue: string
+    }
 ) {
     refreshBody()
     if (connectorsInfo.schemaName) {
@@ -491,7 +560,8 @@ async function getSuggestionsUsingType(
                     entitiesResponsPromise,
                     type,
                     currentWord,
-                    connectorsInfo
+                    connectorsInfo,
+                    context
                 )
                 // console.log('connector: ', connectorsInfo)
 
@@ -525,7 +595,8 @@ async function getSuggestionsUsingType(
                     entitiesResponsPromise,
                     type,
                     currentWord,
-                    connectorsInfo
+                    connectorsInfo,
+                    context
                 )
 
                 return suggestionsPromise
@@ -566,11 +637,12 @@ export async function useAutoSuggestions(
     const endLineNumber = changes.range.endLineNumber
 
     /* Connectors Info */
+    const context = activeInlineTab.value?.playground?.editor?.context
     const attributeValue =
         activeInlineTab.value?.playground?.editor?.context.attributeValue
     const connectionQualifiedName = getConnectionQualifiedName(attributeValue)
-    const databaseName = getDatabaseName(attributeValue)
-    const schemaName = getSchemaName(attributeValue)
+    const databaseName = getDatabaseName(attributeValue ?? '')
+    const schemaName = getSchemaName(attributeValue ?? '')
     /* ------------For BETA----------- */
     // const connectionQualifiedName =
     //     'default/snowflake/atlan-snowflake-crawler-wpwvc'
@@ -604,6 +676,7 @@ export async function useAutoSuggestions(
     })
     // tokens.push(' ')
     let currentWord = tokens[tokens.length - 1]
+
     /* If it is a first/nth character of first word */
     if (tokens.length < 2) {
         return getLocalSQLSugggestions(currentWord)
@@ -620,7 +693,8 @@ export async function useAutoSuggestions(
                 lastMatchedKeyword.token,
                 currentWord,
                 connectorsInfo,
-                cancelTokenSource
+                cancelTokenSource,
+                context
             )
         }
     }

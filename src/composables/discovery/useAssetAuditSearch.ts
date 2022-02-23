@@ -253,7 +253,7 @@ export function useAssetAuditSearch({
         quickChange,
         cancelRequest,
         isLoadMore,
-
+        isReady,
         error,
         refresh,
     }

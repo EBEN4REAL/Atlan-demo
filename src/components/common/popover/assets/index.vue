@@ -193,11 +193,14 @@
                 >
                     <div class="mb-1 text-sm text-gray-500">Owners</div>
                     <div class="flex flex-wrap gap-1">
-                        <UserPill
+                        <template
                             v-for="(user, idx) in item?.attributes?.ownerUsers"
                             :key="idx"
-                            :username="user"
-                        />
+                        >
+                            <PopOverUser :item="user">
+                                <UserPill :key="idx" :username="user" />
+                            </PopOverUser>
+                        </template>
                     </div>
                 </div>
                 <div class="flex mt-4">
@@ -237,10 +240,12 @@
     import UserPill from '@/common/pills/user.vue'
     import AtlanBtn from '@/UI/button.vue'
     import TermPill from '@/common/pills/term.vue'
+    import PopOverUser from '@/common/popover/user/user.vue'
 
     export default {
         name: 'PopoverAsset',
         components: {
+            PopOverUser,
             ClassificationPill,
             UserPill,
             CertificateBadge,

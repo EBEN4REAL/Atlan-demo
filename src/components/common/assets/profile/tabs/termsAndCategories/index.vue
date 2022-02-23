@@ -6,9 +6,9 @@
         :class="$style.glossaryTermsTab"
         :enableSidebarDrawer="true"
         customPlaceholder="Search terms & categories"
-        aggregationTabClass="px-6"
-        searchBarClass="px-6 my-1"
-        asset-list-class="mx-6 mt-1"
+        aggregation-tab-class="px-5 my-1"
+        search-bar-class="px-5 my-1"
+        asset-item-class="px-2"
     />
 </template>
 

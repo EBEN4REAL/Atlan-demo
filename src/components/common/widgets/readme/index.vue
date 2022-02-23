@@ -98,6 +98,7 @@
                         ? 'Add a Readme with an overview of your asset.'
                         : 'Readme hasn\'t been added for this asset.'
                 "
+                @change="$emit('editing')"
             />
         </div>
     </div>
@@ -126,7 +127,8 @@
                 required: true,
             },
         },
-        setup(props) {
+        emits: ['savedChanges', 'editing'],
+        setup(props, { emit }) {
             const { asset, isEdit: isEditAllowed } = toRefs(props)
             const editorDiv = ref<HTMLElement | null>(null)
 
@@ -147,6 +149,7 @@
             const handleUpdate = () => {
                 handleUpdateReadme()
                 isEditMode.value = false
+                emit('savedChanges')
             }
 
             const handleCancel = () => {
@@ -157,6 +160,7 @@
                 }
                 localReadmeContent.value = readmeContent(asset.value)
                 isEditMode.value = false
+                emit('savedChanges')
             }
 
             return {

@@ -1,33 +1,19 @@
 <template>
-    <router-view v-if="isItem" />
-    <div
-        class="flex w-full h-full overflow-x-hidden bg-primary-light"
-        :style="isItem ? 'display: none !important;' : ''"
-    >
-        <div class="flex-1 border-r border-gray-200">
-            <WorkflowDiscovery ref="assetdiscovery"></WorkflowDiscovery>
-        </div>
-
-        <div class="relative hidden bg-white asset-preview-container md:block">
-            <WorfklowPreview
-                :item="localSelected"
-                v-if="localSelected"
-            ></WorfklowPreview>
-        </div>
-    </div>
+    <KeepAlive>
+        <router-view v-if="isItem" />
+        <WorkflowDiscovery v-else ref="assetdiscovery" />
+    </KeepAlive>
 </template>
 
 <script lang="ts">
     import { computed, defineComponent, onMounted, provide, ref } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRoute } from 'vue-router'
-    import WorkflowDiscovery from '@/workflows/index.vue'
-    import WorfklowPreview from '@/workflows/preview/index.vue'
+    import WorkflowDiscovery from '@/workflows/workflowDiscovery.vue'
 
     export default defineComponent({
         components: {
             WorkflowDiscovery,
-            WorfklowPreview,
         },
         setup() {
             useHead({
@@ -64,12 +50,6 @@
         },
     })
 </script>
-<style scoped>
-    .asset-preview-container {
-        min-width: 420px !important;
-        max-width: 420px !important;
-    }
-</style>
 
 <route lang="yaml">
 meta:

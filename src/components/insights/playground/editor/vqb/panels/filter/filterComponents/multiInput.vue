@@ -1,15 +1,18 @@
 <template>
-    <div class="relative z-50 flex w-full" style="min-height: 34px">
+    <div class="relative flex w-full" style="min-height: 34px; z-index: 3">
         <a-select
             v-model:value="inputValue"
             :disabled="readOnly && !subpanel?.filter?.isVariable"
             mode="tags"
             :class="$style.multi_input"
-            class="z-10 w-full border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
-            style="height: 32px !important"
+            class="w-full border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
+            style="height: 32px !important; z-index: 2"
             placeholder="Enter Multiple Values"
             @change="handleChange"
-        />
+            :open="false"
+        >
+            <template #dropdownRender="{ menuNode: menu }" />
+        </a-select>
         <div class="absolute z-20 right-2 trigger-icon">
             <CustomVariableTrigger
                 v-if="!(readOnly && !subpanel?.filter?.isVariable)"
@@ -154,6 +157,9 @@
         :global(.ant-select-selector) {
             @apply border-gray-300 !important;
             @apply text-gray-700 !important;
+        }
+        :global(.ant-select-dropdown) {
+            display: none !important;
         }
         :global(.ant-select-selection-placeholder) {
             @apply text-gray-500 !important;

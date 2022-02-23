@@ -19,8 +19,8 @@
                 />
 
                 <component
-                    v-else-if="tab.component"
                     :is="tab.component"
+                    v-else-if="tab.component"
                     :key="tab.id"
                     :selected-asset="asset"
                     :read-permission="isScrubbed(asset)"

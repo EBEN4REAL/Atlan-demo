@@ -118,6 +118,11 @@
             selectedItems.value?.forEach((selectedItem) => {
                 map.value[selectedItem] = true
             })
+            watch(selectedItems, () => {
+                selectedItems.value?.forEach((selectedItem) => {
+                    map.value[selectedItem] = true
+                })
+            })
 
             const TotalColumnsCount = computed(
                 () => ColumnsData.value?.approximateCount || 0

@@ -1,10 +1,26 @@
-<svg  viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M16 3.5H18.75C18.9489 3.5 19.1397 3.58703 19.2803 3.74196C19.421 3.89688 19.5 4.107 19.5 4.32609V21.6739C19.5 21.893 19.421 22.1031 19.2803 22.258C19.1397 22.413 18.9489 22.5 18.75 22.5H5.25C5.05109 22.5 4.86032 22.413 4.71967 22.258C4.57902 22.1031 4.5 21.893 4.5 21.6739V4.32609C4.5 4.107 4.57902 3.89688 4.71967 3.74196C4.86032 3.58703 5.05109 3.5 5.25 3.5H8" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 5.5V4.83333C8 3.94928 8.42143 3.10143 9.17157 2.47631C9.92172 1.85119 10.9391 1.5 12 1.5C13.0609 1.5 14.0783 1.85119 14.8284 2.47631C15.5786 3.10143 16 3.94928 16 4.83333V5.5H8Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M10.5 11.5H16.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M10.5 14.5H16.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M10.5 17.5H16.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M7.5 11.5H8.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M7.5 14.5H8.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M7.5 17.5H8.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+<svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect
+        x="2.5"
+        y="3.5"
+        width="17"
+        height="15"
+        rx="1.5"
+        stroke="currentColor"
+    />
+    <path
+        d="m12.894 16.025.672.895v.158l-.672.897a.5.5 0 0 0-.083.43c.12.445.297.873.527 1.273a.5.5 0 0 0 .363.245l1.11.159.107.107.159 1.11a.5.5 0 0 0 .245.362c.4.23.828.408 1.273.528a.5.5 0 0 0 .43-.083l.89-.669c.057.002.113.002.17 0l.89.669a.5.5 0 0 0 .43.083 5.35 5.35 0 0 0 1.273-.528.5.5 0 0 0 .245-.362l.159-1.11.098-.1.008-.007 1.11-.159a.5.5 0 0 0 .363-.245c.23-.4.408-.828.528-1.273a.5.5 0 0 0-.083-.43l-.672-.895v-.159l.672-.896a.5.5 0 0 0 .083-.43 5.338 5.338 0 0 0-.528-1.273.5.5 0 0 0-.362-.245l-1.107-.158a6.037 6.037 0 0 0-.11-.11l-.159-1.108a.5.5 0 0 0-.245-.362 5.268 5.268 0 0 0-1.273-.528.5.5 0 0 0-.43.083l-.89.668a3.193 3.193 0 0 0-.17 0l-.89-.668a.5.5 0 0 0-.43-.083c-.445.12-.873.297-1.273.527a.5.5 0 0 0-.245.363l-.159 1.11a9.063 9.063 0 0 0-.107.107l-1.11.159a.5.5 0 0 0-.362.245c-.231.4-.409.828-.528 1.273a.5.5 0 0 0 .083.43Z"
+        fill="#E6E6EB"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    />
+    <path
+        d="M18 19.25a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5Z"
+        fill="#fff"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    />
+    <path stroke="currentColor" d="M3 7.5h17" />
+    <path stroke="currentColor" stroke-linecap="round" d="M5.5 10.5h8m-8 3h5" />
 </svg>

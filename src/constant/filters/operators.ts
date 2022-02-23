@@ -38,8 +38,6 @@ const date_mandatory = [
     // }
 ]
 
-
-
 export const operators = {
     enum: [
         {
@@ -239,6 +237,12 @@ export const operators = {
             label: 'Not Equals(!=)',
         },
     ],
+    string_announcement_mandatory: [
+        {
+            id: 'equals',
+            label: 'Equals(=)',
+        },
+    ],
     string_mandatory: [
         {
             id: 'equals',
@@ -264,7 +268,5 @@ export const operators = {
     date_mandatory,
     dateTime_mandatory: [...date_mandatory],
     date,
-    dateTime: [
-        ...date
-    ],
+    dateTime: [...date],
 }

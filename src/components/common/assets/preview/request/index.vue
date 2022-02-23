@@ -1,9 +1,18 @@
 <template>
     <div>
         <div
-            class="flex items-center justify-between px-5 bg-gray-50 py-2 border-b border-gray-200"
+            class="flex items-center justify-between px-5 py-2 border-b border-gray-200 bg-gray-50"
         >
-            <p class="font-semibold text-gray-500">Requests</p>
+            <span class="flex items-center">
+                <PreviewTabsIcon
+                    :icon="tab.icon"
+                    :image="tab.image"
+                    :emoji="tab.emoji"
+                    height="h-4"
+                />
+                <span class="font-semibold text-gray-500 ml-1">Requests</span>
+            </span>
+
             <a-dropdown trigger="click" placement="bottomRight">
                 <template #overlay>
                     <a-menu class="p-1 request-preview">
@@ -113,6 +122,7 @@
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
     import RequestItem from './requestItem.vue'
     import AtlanButton from '@/UI/button.vue'
+    import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
 
     const listStatus = [
         {
@@ -139,11 +149,15 @@
 
     export default defineComponent({
         name: 'RequestTab',
-        components: { VirtualList, RequestItem, AtlanButton },
+        components: { VirtualList, RequestItem, AtlanButton, PreviewTabsIcon },
         props: {
             selectedAsset: {
                 type: Object,
                 default: () => ({}),
+            },
+            tab: {
+                type: Object,
+                required: false,
             },
         },
         setup(props) {

@@ -1,11 +1,12 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
     <div
-        class="my-1 transition duration-100 rounded-lg hover:border-primary"
+        class="transition duration-100 hover:border-primary"
         :class="{
-            'border-primary  shadow bordern bg-primary-menu': isSelected,
+            'border-primary  shadow border bg-primary-menu': isSelected,
             'cursor-pointer': enableSidebarDrawer,
             'opacity-80': isLoading,
+            'my-1 rounded-lg': page === 'assets',
         }"
         @click="handlePreview(item)"
     >
@@ -39,54 +40,62 @@
                         @click.stop
                         @change="(e) => $emit('listItem:check', e, item)"
                 /></a-tooltip>
-                <div
-                    class="flex flex-col flex-1"
-                    :class="{ 'lg:pr-16': !isCompact }"
-                >
-                    <div class="flex items-center overflow-hidden">
+                <div class="flex flex-col flex-1" :class="{ '': !isCompact }">
+                    <div class="flex items-center justify-between">
                         <div
-                            v-if="
-                                ['column'].includes(
-                                    item.typeName?.toLowerCase()
-                                )
-                            "
-                            class="flex items-center mr-1"
+                            class="flex items-center overflow-hidden flex-grow"
                         >
-                            <component
-                                :is="dataTypeCategoryImage(item)"
-                                class="h-4 mb-1 text-gray-500"
+                            <div
+                                v-if="
+                                    ['column'].includes(
+                                        item.typeName?.toLowerCase()
+                                    )
+                                "
+                                class="flex items-center mr-1"
+                            >
+                                <component
+                                    :is="dataTypeCategoryImage(item)"
+                                    class="h-4 mb-1 text-gray-500"
+                                />
+                            </div>
+
+                            <Tooltip
+                                :clamp-percentage="assetNameTruncatePercentage"
+                                :tooltip-text="`${title(item)}`"
+                                :route-to="getProfilePath(item)"
+                                :classes="
+                                    isScrubbed(item)
+                                        ? 'text-md mb-0  font-semibold cursor-pointer text-primary hover:underline opacity-80 '
+                                        : 'text-md font-bold mb-0 cursor-pointer text-primary hover:underline  '
+                                "
+                                :should-open-in-new-tab="
+                                    openAssetProfileInNewTab
+                                "
+                                @click="(e) => e.stopPropagation()"
                             />
+
+                            <CertificateBadge
+                                v-if="certificateStatus(item)"
+                                :status="certificateStatus(item)"
+                                :username="certificateUpdatedBy(item)"
+                                :timestamp="certificateUpdatedAt(item)"
+                                class="mb-1 ml-1"
+                            ></CertificateBadge>
+
+                            <a-tooltip placement="right"
+                                ><template #title>Limited Access</template>
+                                <AtlanIcon
+                                    v-if="isScrubbed(item)"
+                                    icon="Lock"
+                                    class="h-4 mb-1 ml-2 text-gray-500"
+                                ></AtlanIcon
+                            ></a-tooltip>
                         </div>
-
-                        <Tooltip
-                            :clamp-percentage="assetNameTruncatePercentage"
-                            :tooltip-text="`${title(item)}`"
-                            :route-to="getProfilePath(item)"
-                            :classes="
-                                isScrubbed(item)
-                                    ? 'text-md mb-0  font-semibold cursor-pointer text-primary hover:underline opacity-80 '
-                                    : 'text-md font-bold mb-0 cursor-pointer text-primary hover:underline  '
-                            "
-                            :should-open-in-new-tab="openAssetProfileInNewTab"
-                            @click="(e) => e.stopPropagation()"
-                        />
-
-                        <CertificateBadge
-                            v-if="certificateStatus(item)"
-                            :status="certificateStatus(item)"
-                            :username="certificateUpdatedBy(item)"
-                            :timestamp="certificateUpdatedAt(item)"
-                            class="mb-1 ml-1"
-                        ></CertificateBadge>
-
-                        <a-tooltip placement="right"
-                            ><template #title>Limited Access</template>
-                            <AtlanIcon
-                                v-if="isScrubbed(item)"
-                                icon="Lock"
-                                class="h-4 mb-1 ml-2 text-gray-500"
-                            ></AtlanIcon
-                        ></a-tooltip>
+                        <div class>
+                            <a-tooltip :title="announcementType(item)">
+                                <AtlanIcon :icon="icon"></AtlanIcon>
+                            </a-tooltip>
+                        </div>
                     </div>
 
                     <div v-if="description(item)" class="flex mt-0.5">
@@ -1040,6 +1049,14 @@
                 <slot name="cta"></slot>
             </div>
         </div>
+        <hr
+            class="mx-2 text-gray-100 bg-gray-200"
+            :class="
+                (bulkSelectMode && isChecked) || isSelected || page === 'assets'
+                    ? 'invisible'
+                    : ''
+            "
+        />
 
         <AssetDrawer
             :guid="selectedAssetDrawerGuid"
@@ -1163,6 +1180,11 @@
                 default: false,
                 required: false,
             },
+            page: {
+                type: String,
+                required: false,
+                default: 'notAssets',
+            },
         },
         emits: ['listItem:check', 'unlinkAsset', 'preview', 'updateDrawer'],
         setup(props, { emit }) {
@@ -1239,7 +1261,24 @@
                 sourceChildCount,
                 fieldCount,
                 isCustom,
+                announcementType,
             } = useAssetInfo()
+
+            const icon = computed(() => {
+                if (!announcementType(item.value)) {
+                    return ''
+                }
+                switch (announcementType(item.value)?.toLowerCase()) {
+                    case 'information':
+                        return 'InformationAnnouncement'
+                    case 'issue':
+                        return 'IssuesAnnouncement'
+                    case 'warning':
+                        return 'WarningAnnouncement'
+                    default:
+                        return 'InformationAnnouncement'
+                }
+            })
 
             const handlePreview = (item: any) => {
                 if (enableSidebarDrawer.value === true) {
@@ -1387,6 +1426,8 @@
                 meanings,
                 isLoading,
                 classificationPopoverMouseEnterDelay,
+                icon,
+                announcementType,
             }
         },
     })

@@ -19,7 +19,7 @@
             </div>
         </div>
 
-        <div class="px-6 pb-3 flex items-center justify-between w-full">
+        <div class="flex items-center justify-between w-full px-6 pb-3">
             <AggregationTabs
                 :list="getAggregationByType"
                 v-model="postFacets.typeName"
@@ -34,7 +34,7 @@
             </div>
         </div>
 
-        <div class="flex flex-1 w-full h-full overflow-y-auto mb-3">
+        <div class="flex flex-1 w-full h-full mb-3 overflow-y-auto">
             <div
                 class="flex items-center justify-center w-full"
                 v-if="isLoading"

@@ -1,6 +1,9 @@
 /** VUE */
 import { ref, computed } from 'vue'
 
+/** PACKAGES */
+import { DagreLayout } from '@antv/layout'
+
 /** STORE */
 import useLineageStore from '~/store/lineage'
 
@@ -17,7 +20,7 @@ export default async function useComputeGraph({
     isComputeDone,
     emit,
 }) {
-    const { DagreLayout } = window.layout
+    // const { DagreLayout } = window.layout
     const lineageStore = useLineageStore()
     lineageStore.nodesColumnList = {}
     lineageStore.columnsLineage = {}

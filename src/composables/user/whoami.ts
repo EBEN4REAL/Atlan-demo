@@ -40,6 +40,9 @@ export default function whoami() {
     })
     const user =
         app?.appContext?.config?.globalProperties?.$keycloak?.tokenParsed
+
+    const isInternalUser = computed(() => email.value?.endsWith('@atlan.com'))
+
     return {
         groups,
         name,
@@ -47,5 +50,6 @@ export default function whoami() {
         role,
         user,
         email,
+        isInternalUser,
     }
 }

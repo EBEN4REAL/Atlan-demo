@@ -45,14 +45,11 @@ export default function useBusinessMetadata() {
   const selectedId = computed<string>({
     get: () => currentBmId.value,
     set: (val) => {
-      console.trace("check");
-
       currentBmId.value = val
     },
   })
 
   const select = (id) => {
-    console.trace('select')
     selectedId.value = id
     router.replace(`/governance/custom-metadata/${id}`)
   }

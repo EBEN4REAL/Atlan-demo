@@ -163,7 +163,7 @@ export function useBody(
     let connectorName = ''
 
     //filters
-    Object.keys(facets ?? {}).forEach((mkey) => {
+    Object.keys(facets ?? {})?.forEach((mkey) => {
         const filterObject = facets[mkey]
         switch (mkey) {
             case 'hierarchy': {
@@ -298,6 +298,7 @@ export function useBody(
 
                 break
             }
+
             case 'typeName': {
                 if (filterObject) {
                     if (filterObject !== '__all') {
@@ -436,13 +437,20 @@ export function useBody(
                 }
                 break
             }
+            case 'stateList': {
+                // if (filterObject) {
+                //     base.filter('terms', '__state', filterObject)
+                // }
+                state.value = null
+                break
+            }
             case 'column':
             case 'table':
             case 'sql':
             default: {
                 if (filterObject) {
                     console.log('filterObject', filterObject)
-                    Object.keys(filterObject).forEach((key) => {
+                    Object.keys(filterObject)?.forEach((key) => {
                         filterObject[key].forEach((element) => {
                             if (!element.operand) return
                             if (element.operator === 'isNull') {
@@ -570,7 +578,8 @@ export function useBody(
         }
     })
 
-    base.filter('term', '__state', state.value)
+    // don't apply state filter
+    if (state.value) base.filter('term', '__state', state.value)
 
     //post filters
     const postFilter = bodybuilder()
@@ -653,6 +662,17 @@ export function useBody(
                             'terms',
                             '__glossary',
                             { size: 50 },
+                            `${agg_prefix}_${mkey}`
+                        )
+                    }
+                    break
+                }
+                case 'connection': {
+                    if (mkey) {
+                        base.aggregation(
+                            'terms',
+                            'connectionQualifiedName',
+                            { size: 100 },
                             `${agg_prefix}_${mkey}`
                         )
                     }
@@ -758,7 +778,7 @@ export function useBody(
         },
     ]
 
-    if (connectorName.toLowerCase() === 'looker') {
+    if (connectorName?.toLowerCase() === 'looker') {
         functionArray.push({
             filter: {
                 match: {
@@ -785,7 +805,7 @@ export function useBody(
         })
     }
 
-    if (connectorName.toLowerCase() === 'powerbi') {
+    if (connectorName?.toLowerCase() === 'powerbi') {
         functionArray.push({
             filter: {
                 match: {
@@ -804,7 +824,7 @@ export function useBody(
         })
     }
 
-    if (connectorName.toLowerCase() === 'salesforce') {
+    if (connectorName?.toLowerCase() === 'salesforce') {
         functionArray.push({
             filter: {
                 match: {

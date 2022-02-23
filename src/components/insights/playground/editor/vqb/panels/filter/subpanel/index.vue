@@ -500,6 +500,7 @@
         flex-shrink: 0;
         padding: 2px 2px 6px 2px;
         white-space: nowrap;
-        overflow: hidden;
+        overflow-y: auto;
+        overflow-x: hidden;
     }
 </style>

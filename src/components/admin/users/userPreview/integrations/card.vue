@@ -41,7 +41,7 @@
                     </a-tooltip>
                 </template>
             </section>
-            <p class="text-gray-500">{{ integration.description }}</p>
+            <p class="text-sm text-gray-500">{{ integration.description }}</p>
         </main>
         <template v-if="status.configured">
             <div

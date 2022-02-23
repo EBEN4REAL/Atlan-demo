@@ -49,7 +49,7 @@
             <div class="">
                 <h2 class="text-lg font-bold">Projects</h2>
                 <span class="text-gray-500">
-                    projects_description - {{ placeholder_description }}
+                    {{ project_description }}
                 </span>
             </div>
             <!-- <div
@@ -221,7 +221,7 @@
             //     }
             // })
 
-            const { description, placeholder_description } = integrations.jira
+            const { description, project_description } = integrations.jira
 
             const userListAPIParams: any = reactive({
                 limit: 1,
@@ -315,7 +315,7 @@
                 userList,
                 uLoading,
                 uError,
-                placeholder_description,
+                project_description,
                 description,
                 tenantJiraStatus,
                 // body,

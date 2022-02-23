@@ -10,8 +10,8 @@ export const integrations = {
         component: 'Jira',
         name: 'Jira',
         id: 'jira',
-        description: "jira integration description",
-        placeholder_description: "placeholder_descriptions",
+        description: "Create and Link jira issues to assets and easily access them from asset profile ",
+        project_description: "Select default project for linking new issues to Atlan assets",
 
     }
 }
@@ -26,7 +26,7 @@ export const user_integration_list = {
     jira: {
         name: 'Jira',
         id: 'jira',
-        description: 'See rich previews for Jira projects & tickets',
+        description: 'Create & Link issues to assets from asset sidebar',
         category: 'Collaboration'
     }
 }

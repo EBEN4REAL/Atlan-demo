@@ -436,32 +436,6 @@
                     <hr v-if="!showVQB" />
                     <!-- Show these options when query is saved -->
                     <div v-if="activeInlineTab?.queryId" class="text-gray-700">
-                        <a-menu-item
-                            @click="queryModalVisible = true"
-                            class="px-4 py-2"
-                        >
-                            Rename query
-                        </a-menu-item>
-                        <a-menu-item
-                            key="editQuery"
-                            class="px-4 py-2"
-                            @click="
-                                () => {
-                                    openEdit()
-                                }
-                            "
-                            >Edit query</a-menu-item
-                        >
-                        <a-menu-item
-                            key="deleteQueryEditor"
-                            class="px-4 py-2 text-red-600"
-                            @click="
-                                () => {
-                                    showDeletePopover = true
-                                }
-                            "
-                            >Delete query</a-menu-item
-                        >
                         <a-sub-menu key="shareQueryMenu" class="text-gray-500">
                             <template #title>
                                 <div
@@ -518,6 +492,32 @@
                         <a-menu-item @click="duplicateQuery" class="px-4 py-2">
                             Duplicate query
                         </a-menu-item>
+                        <a-menu-item
+                            @click="queryModalVisible = true"
+                            class="px-4 py-2"
+                        >
+                            Rename query
+                        </a-menu-item>
+                        <a-menu-item
+                            key="editQuery"
+                            class="px-4 py-2"
+                            @click="
+                                () => {
+                                    openEdit()
+                                }
+                            "
+                            >Edit query</a-menu-item
+                        >
+                        <a-menu-item
+                            key="deleteQueryEditor"
+                            class="px-4 py-2 text-red-600"
+                            @click="
+                                () => {
+                                    showDeletePopover = true
+                                }
+                            "
+                            >Delete query</a-menu-item
+                        >
 
                         <!-- <a-menu-item class="px-4 py-2"
                             >Edit saved query</a-menu-item

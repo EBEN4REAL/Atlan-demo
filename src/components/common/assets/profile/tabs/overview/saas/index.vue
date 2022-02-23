@@ -14,7 +14,7 @@
                 <FieldsPreview />
             </div>
         </Summary>
-        <Readme :asset="selectedAsset" :isEdit="readmeEditPermission" />
+        <slot name="readme"></slot>
     </div>
 </template>
 
@@ -24,14 +24,12 @@
     import Summary from '@common/widgets/summary/index.vue'
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import Readme from '@/common/widgets/readme/index.vue'
     import FieldsPreview from './salesforceFieldsPreview.vue'
 
     export default defineComponent({
         name: 'SaasOverview',
         components: {
             AnnouncementWidget,
-            Readme,
             Summary,
             FieldsPreview,
         },

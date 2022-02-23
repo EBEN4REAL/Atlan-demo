@@ -214,7 +214,7 @@
     // import DynamicForm from '@/common/dynamicForm2/index.vue'
 
     export default defineComponent({
-        name: 'CredentialInput',
+        name: 'ConnectionInput',
         components: {
             FormItem: defineAsyncComponent(() =>
                 import('@/common/dynamicForm2/formItem.vue')

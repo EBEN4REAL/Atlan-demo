@@ -5,7 +5,7 @@
     >
         <div
             v-if="item?.typeName === 'cta'"
-            class="flex items-center"
+            class="flex items-center flex-wrap"
             :class="!hasCreateAccess ? '' : 'space-y-0'"
         >
             <span v-if="!checkable" class="pr-1"> Add a </span>
@@ -52,7 +52,7 @@
                                 icon="Category"
                                 class="m-0 mr-1 align-text-bottom"
                             />
-                            <p class="p-0 m-0">+ Category</p>
+                            <p class="p-0 m-0"> Category</p>
                         </div>
                     </div>
                 </template>

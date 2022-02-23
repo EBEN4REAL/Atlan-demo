@@ -1,44 +1,4 @@
 <template>
-    <!-- <a-select
-        :placeholder="placeholder"
-        :value="modelValue"
-        :allowClear="true"
-        :showSearch="true"
-        notFoundContent="No data available"
-        style="width: 100%; border-radius: 8px"
-        :class="[
-            $style.connector,
-            bgGrayForSelector ? `${$style.selector_bg}` : '',
-        ]"
-        @change="handleChange"
-        :disabled="disabled"
-        :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-        dropdownClassName="connectorDropdown"
-        :loading="isLoading"
-    >
-        <template v-for="item in dropdownOption" :key="item.label">
-            <a-select-option :value="item.value">
-                <div class="flex items-center truncate">
-                    <AtlanIcon
-                        :icon="typeName + `Gray`"
-                        class="w-auto h-4 mr-2"
-                    />
-                    <span class="parent-ellipsis-container-base"
-                        >{{ item?.label }}
-                    </span>
-                </div></a-select-option
-            >
-        </template>
-
-        <template #suffixIcon>
-            <AtlanIcon
-                icon="ChevronDown"
-                class="h-4 -mt-0.5 -ml-1"
-                color="#6F7590"
-            />
-        </template>
-    </a-select> -->
-
     <div class="flex flex-row mb-2 space-x-2">
         <a-input
             v-model:value="queryText"
@@ -46,6 +6,7 @@
             :placeholder="`Search ${dropdownOption.length} ${searchPlaceholder}s`"
             bordered="false"
             :class="$style.inputSearch"
+            allow-clear
         >
             <template #prefix>
                 <AtlanIcon icon="Search" color="#6F7590" />
@@ -97,12 +58,20 @@
             </template>
         </div>
         <div
-            v-else
+            v-else-if="dropdownOption === 0"
             class="flex items-center justify-between w-full px-4 rounded"
             style="min-height: 0"
         >
             <!-- No Data Found -->
-            <a-spin icon="Loader" class="mt-1 ml-auto mr-auto"></a-spin>
+            <!-- <a-spin icon="Loader" class="mt-1 ml-auto mr-auto"></a-spin> -->
+            <AtlanLoader class="h-8 mt-1 ml-auto mr-auto" />
+        </div>
+        <div
+            v-else-if="dropdownOption === 1"
+            class="flex items-center justify-between w-full px-4 rounded"
+            style="min-height: 0"
+        >
+            No Data Found
         </div>
     </div>
 
@@ -244,6 +213,10 @@
                     value: ls.attributes.qualifiedName,
                 }))
 
+                // console.log('selector data: ', data)
+                // Checking if there is no data that's been loaded yet, returns 0 to show AtlanLoader
+                if (data.length === 0) return 0
+
                 if (queryText.value)
                     data = data.filter((item) =>
                         item.label.includes(queryText.value.toUpperCase())
@@ -255,6 +228,9 @@
                     return 0
                 })
                 console.log('data here: ', data)
+
+                // Checking if there is no data found for the respective search term/selection, returns 1 to show "No Data Found"
+                if (data.length === 0) return 1
 
                 return data
             })
@@ -356,9 +332,11 @@
     }
     .inputSearch {
         border-color: #e9ebf1 !important;
+        border-right-width: 0 !important;
     }
     .inputSearch:focus {
         outline: none;
+        border-right-width: 0 !important;
     }
     // input::placeholder {
     //     color: #6f7590 !important;

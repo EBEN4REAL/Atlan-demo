@@ -55,12 +55,12 @@
                 <span class="text-gray-500"> {{ channel_description }} </span>
             </div>
             <div
-                class="flex flex-wrap items-center h-12 gap-2 p-1 border rounded"
+                class="flex flex-wrap items-center h-12 gap-2 p-1 mb-5 border rounded"
             >
                 <Chip
                     v-for="(channel, x) in channels"
-                    :index="x"
                     :key="channel.name"
+                    :index="x"
                     :content="channel.name"
                     icon="Number"
                     :class="
@@ -95,6 +95,11 @@
                     />
                 </div>
             </div>
+
+            <AddWorkflowChannel
+                v-model:workflowChannel="workflowChannel"
+                @change="handleWorkflowChannelChange"
+            />
         </section>
         <section class="flex items-center justify-between p-6 gap-x-3">
             <AtlanButton
@@ -133,6 +138,7 @@
         watch,
     } from 'vue'
     import { message, Modal } from 'ant-design-vue'
+    import { useTimeAgo } from '@vueuse/core'
     import AtlanButton from '@/UI/button.vue'
     import useTenantData from '~/composables/tenant/useTenantData'
     import {
@@ -147,17 +153,16 @@
     import { archiveSlack } from '~/composables/integrations/useSlack'
     import { integrations } from '~/constant/integrations'
     import { useUsers } from '~/composables/user/useUsers'
-    import { useTimeAgo } from '@vueuse/core'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import AddWorkflowChannel from '@/admin/integrations/slack/misc/addWorkflowChannel.vue'
 
     export default defineComponent({
         name: 'SlackIntegrationCard',
-        components: { AtlanButton, Chip },
+        components: { AtlanButton, Chip, AddWorkflowChannel },
         setup() {
             const { name: tenantName } = useTenantData()
 
             const store = integrationStore()
-            const { updateIntegration: updateStore } = store
 
             const { tenantSlackStatus } = toRefs(store)
 
@@ -166,6 +171,7 @@
             const channels: Ref<[{ name: string; invalid?: boolean }]> = ref([])
 
             const channelValue = ref([])
+            const workflowChannel = ref('')
 
             const isEdit = ref(false)
 
@@ -186,14 +192,18 @@
 
             onMounted(() => {
                 channels.value = tenantSlackStatus.value.channels as any
+                workflowChannel.value =
+                    tenantSlackStatus.value.alertsWorkflowChannel
             })
 
             const body = computed(() => ({
                 channels: channels.value.map((c) => ({ name: c.name })),
+                alertsWorkflowChannel: workflowChannel.value,
             }))
 
             const { data, isLoading, error, disconnect } = archiveSlack(pV)
 
+            // TODO @SAMIRAN HANDLE FAILED CHANNEL FOR WORKFLOW CHANNEL
             const handleFailed = (failedC) => {
                 failedC.forEach((c) => {
                     const index = channels.value.findIndex(
@@ -258,6 +268,7 @@
                         key: 'addChannel',
                         duration: 2,
                     })
+                    isEdit.value = false
                 }
             })
 
@@ -348,7 +359,13 @@
                 })
             }
 
+            const handleWorkflowChannelChange = () => {
+                isEdit.value = true
+            }
+
             return {
+                workflowChannel,
+                handleWorkflowChannelChange,
                 handleDisconnect,
                 useTimeAgo,
                 avatarURL,

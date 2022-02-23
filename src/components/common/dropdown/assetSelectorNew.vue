@@ -3,7 +3,11 @@
         <a-input
             v-model:value="queryText"
             class="h-8 mt-1 text-base border-t-0 border-l-0 border-r-0 rounded-none"
-            :placeholder="`Search ${dropdownOption.length} ${searchPlaceholder}s`"
+            :placeholder="
+                dropdownOption.length
+                    ? `Search ${dropdownOption.length} ${searchPlaceholder}s`
+                    : `Search ${searchPlaceholder}s`
+            "
             bordered="false"
             :class="$style.inputSearch"
             allow-clear
@@ -332,23 +336,18 @@
     }
     .inputSearch {
         border-color: #e9ebf1 !important;
-        border-right-width: 0 !important;
     }
     .inputSearch:focus {
         outline: none;
-        border-right-width: 0 !important;
     }
-    // input::placeholder {
-    //     color: #6f7590 !important;
-    // }
-    // .ant-menu-vertical > .ant-menu-item {
-
-    // }
 </style>
 <style lang="less" scoped>
     .parent-ellipsis-container-base {
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
+    }
+    .ant-input-affix-wrapper:hover {
+        border-right-width: 0 !important;
     }
 </style>

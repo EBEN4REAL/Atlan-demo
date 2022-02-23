@@ -82,15 +82,24 @@ export function useConnection() {
 export function useConnectionByConnectorName(connectorName) {
     const defaultBody = ref({})
 
-    const defaultAttributes = ref([])
-
-    const facets = ref({
-        connector: connectorName,
-        typeName: 'Connection',
-    })
+    const defaultAttributes = ref([
+        'connectorName',
+        'connectionName',
+        'connectionQualifiedName',
+        'defaultSchemaQualifiedName',
+        'defaultDatabaseQualifiedName',
+    ])
 
     const generateBody = () => {
-        const dsl = useBody('', 0, MAX_CONNECTIONS, facets?.value, {}, [], {})
+        const dsl = useBody(
+            '',
+            0,
+            MAX_CONNECTIONS,
+            { connector: connectorName },
+            { typeName: 'Connection' },
+            ['connection'],
+            {}
+        )
         defaultBody.value = {
             dsl,
             attributes: defaultAttributes?.value,
@@ -101,7 +110,7 @@ export function useConnectionByConnectorName(connectorName) {
     const localKey = ref(connectorName)
 
     generateBody()
-    const { data, isLoading, mutate, cancelRequest, error, isReady } =
+    const { data, isLoading, mutate, cancelRequest, error, aggregationMap } =
         useIndexSearch<assetInterface>(defaultBody, localKey, false, false, 1)
 
     const list = ref<assetInterface[]>([])
@@ -109,6 +118,16 @@ export function useConnectionByConnectorName(connectorName) {
     watch(data, () => {
         if (data.value?.entities) {
             list.value = [...data?.value?.entities]
+            list.value?.forEach((element, index) => {
+                const aggr = aggregationMap(GROUP_AGGREATION).find(
+                    (item) => item.key === element.attributes?.qualifiedName
+                )
+                if (aggr) {
+                    element.assetCount = aggr.doc_count + 1
+                } else {
+                    element.assetCount = 0 + 1
+                }
+            })
         } else {
             list.value = []
         }

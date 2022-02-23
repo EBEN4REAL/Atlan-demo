@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 const { NodeView } = window.X6
 
 export class NV extends NodeView {

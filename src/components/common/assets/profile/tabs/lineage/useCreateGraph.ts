@@ -5,14 +5,17 @@ interface PointBasic {
     y: number
 }
 
-export default function useCreateGraph(
+/**
+ * It creates a graph and a layout for the graph.
+ */
+export default function useCreateGraph({
     graph,
     graphLayout,
     graphContainer,
     minimapContainer,
     graphWidth,
-    graphHeight
-) {
+    graphHeight,
+}) {
     /* Build Graph Canvas */
     const { Graph, Point, Path } = window.X6
     const { DagreLayout } = window.layout
@@ -117,6 +120,19 @@ export default function useCreateGraph(
         true
     )
 
+    Graph.registerPortLayout(
+        'erPortPosition',
+        (portsPositionArgs) =>
+            portsPositionArgs.map((_, index) => ({
+                position: {
+                    x: 1,
+                    y: (index + 1) * 41 + 40,
+                },
+                angle: 0,
+            })),
+        true
+    )
+
     graph.value = new Graph({
         autoResize: true,
         interacting: false,
@@ -158,36 +174,18 @@ export default function useCreateGraph(
         },
     })
 
-    Graph.registerPortLayout(
-        'erPortPosition',
-        (portsPositionArgs) =>
-            portsPositionArgs.map((_, index) => ({
-                position: {
-                    x: 1,
-                    y: (index + 1) * 41 + 40,
-                },
-                angle: 0,
-            })),
-        true
-    )
-
     /* graphLayout */
     graphLayout.value = new DagreLayout({
         type: 'dagre',
         rankdir: 'LR',
         controlPoints: true,
-        nodesepFunc(x) {
+        nodesepFunc() {
             // vertical spacing btw nodes
             return 20
         },
-        ranksepFunc(x) {
+        ranksepFunc() {
             // horizontal spacing btw nodes
             return 190
         },
     })
-
-    return {
-        graph,
-        graphLayout,
-    }
 }

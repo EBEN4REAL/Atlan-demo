@@ -5,16 +5,16 @@
         </template>
         <template #footer>
             <div
-                v-if="(isLoadMore || isLoading) && list.length > 0"
+                v-if="(isLoadMore || extraLoading) && list.length > 0"
                 class="flex items-center justify-center"
             >
                 <button
-                    :disabled="isLoading"
+                    :disabled="extraLoading"
                     class="flex items-center justify-between px-3 py-2 transition-all duration-300 bg-white rounded-full text-primary"
-                    :class="isLoading ? 'px-3 py-2' : ''"
+                    :class="extraLoading ? 'px-3 py-2' : ''"
                     @click="$emit('loadMore')"
                 >
-                    <template v-if="!isLoading">
+                    <template v-if="!extraLoading">
                         <p
                             class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
                         >
@@ -30,7 +30,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, toRefs } from 'vue'
+    import { defineComponent, toRefs, ref, watch } from 'vue'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
 
     export default defineComponent({
@@ -60,12 +60,20 @@
         },
         emits: ['loadMore'],
         setup(props, { emit }) {
-            const { list, isLoadMore, isLoading } = toRefs(props)
+            const { isLoading } = toRefs(props)
 
+            const extraLoading = ref(false)
+
+            watch(isLoading, () => {
+                if (isLoading.value) {
+                    extraLoading.value = isLoading.value
+                } else
+                    setTimeout(() => {
+                        extraLoading.value = isLoading.value
+                    }, 700)
+            })
             return {
-                list,
-                isLoadMore,
-                isLoading,
+                extraLoading,
             }
         },
     })

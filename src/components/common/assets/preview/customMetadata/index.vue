@@ -2,7 +2,7 @@
     <div v-if="loading" class="flex items-center justify-center w-full h-full">
         <AtlanLoader class="h-8" />
     </div>
-    <div v-else ref="target" class="flex flex-col mb-3 gap-y-2 w-full">
+    <div v-else ref="target" class="flex flex-col w-full mb-3 gap-y-2">
         <!-- header starts here -->
         <div
             class="flex items-center justify-between px-5 py-2 border-b border-gray-200 gap-x-4 group bg-gray-50"
@@ -13,8 +13,7 @@
                     :image="tab.image"
                     :emoji="tab.emoji"
                     height="h-4"
-                    width="w-4"
-                    class="mr-2"
+                    class="mr-1"
                     :displayMode="true"
                     emojiSize="text-md"
                 />

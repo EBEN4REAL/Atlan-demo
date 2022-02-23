@@ -610,15 +610,15 @@
             watch(activeInlineTabKey, (newKey, prevKey) => {
                 // updateEditorModelOnTabOpen(editorStates, newKey as string)
 
-                if (!editorStates.get(newKey).viewState) {
-                    editor?.setSelection(new monaco.Selection(0, 0, 0, 0))
-                } else if (
-                    editorStates.get(newKey).viewState &&
-                    !editorStates.get(newKey).viewState?.cursorState[0]
-                        ?.inSelectionMode
-                ) {
-                    editor?.setSelection(new monaco.Selection(0, 0, 0, 0))
-                }
+                // if (!editorStates.get(newKey).viewState) {
+                //     editor?.setSelection(new monaco.Selection(0, 0, 0, 0))
+                // } else if (
+                //     editorStates.get(newKey).viewState &&
+                //     !editorStates.get(newKey).viewState?.cursorState[0]
+                //         ?.inSelectionMode
+                // ) {
+                //     editor?.setSelection(new monaco.Selection(0, 0, 0, 0))
+                // }
 
                 if (tabs.value[newKey]?.playground?.isVQB) {
                     return
@@ -752,15 +752,19 @@
                         tab.playground.editor.text,
                         'atlansql'
                     )
-                    updateEditorModel(
-                        editorStates,
-                        tab.key,
-                        {
-                            model: newModel,
-                            viewState: undefined,
-                        },
-                        tabs
-                    )
+                    // current active already restted
+                    // first it runs monaco on mount then this onMounted lifeycle hook
+                    if (activeInlineTabKey.value !== tab.key) {
+                        updateEditorModel(
+                            editorStates,
+                            tab.key,
+                            {
+                                model: newModel,
+                                viewState: undefined,
+                            },
+                            tabs
+                        )
+                    }
                 })
             })
 

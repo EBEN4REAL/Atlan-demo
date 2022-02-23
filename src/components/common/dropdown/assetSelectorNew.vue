@@ -2,7 +2,7 @@
     <div class="flex flex-row mb-2 space-x-2">
         <a-input
             v-model:value="queryText"
-            class="h-8 mt-1 text-base border-t-0 border-l-0 border-r-0 rounded-none"
+            class="h-8 text-base border-t-0 border-l-0 border-r-0 rounded-none"
             :placeholder="
                 dropdownOption.length
                     ? `Search ${dropdownOption.length} ${searchPlaceholder}s`

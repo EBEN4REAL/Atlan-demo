@@ -78,20 +78,56 @@ TR
                     </p>
                 </div>
                 <div v-if="hasWritePermission" v-auth="[map.CREATE_COLLECTION]">
-                    <a-button
-                        @click="toggleCreateQueryModal"
-                        class="flex items-center w-48 text-sm text-gray-700 border rounded hover:text-primary h-9"
-                    >
-                        <span
-                            ><AtlanIcon
-                                icon="NewQuery"
-                                class="h-4 m-0 mr-1 -mt-0.5" /></span
-                        >Create a new query</a-button
-                    >
+                    <div class="inline-flex items-center">
+                        <!-- <a-dropdown :trigger="['click']"> -->
+                        <a-button
+                            class="flex items-center text-sm text-gray-700 border rounded hover:text-primary h-9"
+                            @click="toggleCreateQueryModal"
+                        >
+                            <span
+                                ><AtlanIcon
+                                    icon="NewQuery"
+                                    class="h-4 m-0 mr-1 -mt-0.5" /></span
+                            >Create a new query</a-button
+                        >
+                        <!-- <template #overlay>
+                                <div
+                                    style="width: 176px; height: 104px"
+                                    class="p-2 mt-2 bg-white newTabDropdown"
+                                >
+                                    <div
+                                        class="flex items-center pl-2 newTabDropdownOption newTabDropdownOption1"
+                                        @click="toggleCreateQueryModal"
+                                    >
+                                        <AtlanIcon
+                                            icon="Query24"
+                                            class="w-6 h-6 mr-2"
+                                        />
+                                        <span class="text-xs font-bold">
+                                            New SQL Query
+                                        </span>
+                                    </div>
+                                    <div
+                                        class="flex items-center pl-2 mt-2 newTabDropdownOption newTabDropdownOption2"
+                                        @click="toggleCreateQueryModal"
+                                    >
+                                        <AtlanIcon
+                                            icon="Vqb24"
+                                            class="w-6 h-6 mr-2"
+                                        />
+                                        <span class="text-xs font-bold">
+                                            New Visual Query
+                                        </span>
+                                    </div>
+                                </div>
+                            </template> -->
+                        <!-- </a-dropdown> -->
+                    </div>
+
                     <p class="my-2 text-sm text-base text-gray-500">OR</p>
                     <a-button
                         @click="createFolderInput"
-                        class="flex items-center w-48 text-sm text-gray-700 border rounded hover:text-primary h-9"
+                        class="flex items-center text-sm text-gray-700 border rounded hover:text-primary h-9"
                     >
                         <span
                             ><AtlanIcon
@@ -392,6 +428,44 @@ TR
     }
 </style>
 <style lang="less" scoped>
+    .newTabDropdown {
+        // width: 176px;
+        // height: 104px;
+
+        background: #ffffff;
+
+        box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12),
+            0px 6px 16px rgba(0, 0, 0, 0.08),
+            0px 9px 28px 8px rgba(0, 0, 0, 0.05);
+        border-radius: 4px;
+    }
+    .newTabDropdownOption {
+        // width: 160px;
+        height: 40px;
+        @apply cursor-pointer;
+
+        // background: rgba(82, 119, 215, 0.1);
+        border-radius: 4px;
+        @apply transition-all;
+    }
+    .newTabDropdownOption1 {
+        background: rgba(82, 119, 215, 0.1);
+        color: #5277d7;
+
+        &:hover {
+            background: #5277d7;
+            color: #fff;
+        }
+    }
+    .newTabDropdownOption2 {
+        background: rgba(109, 109, 218, 0.1);
+        color: #6d6dda;
+
+        &:hover {
+            background: #6d6dda;
+            color: #fff;
+        }
+    }
     .no-svaved-query-icon {
         @apply w-32 !important;
     }

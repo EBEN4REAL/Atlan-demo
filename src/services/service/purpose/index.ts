@@ -7,10 +7,14 @@ import { useAPIPromise } from '~/services/api/useAPIPromise'
 
 import { useOptions } from '~/services/api/common'
 
-import { IPersona } from '~/types/accessPolicies/purposes'
+import { IPurpose } from '~/types/accessPolicies/purposes'
 
 const List = (params?: any, options?: useOptions) =>
     useAPI(map.LIST_PURPOSE, 'GET', { params }, options || {})
+
+const getPurposeByID = (id?: string, options?: useOptions) =>
+    useAPI(map.GET_PURPOSE_FROM_ID, 'GET', { pathVariables: { id } }, options || {})
+
 
 const listPurposes = (body, options) =>
     useAPI(
@@ -19,6 +23,7 @@ const listPurposes = (body, options) =>
         { initialState: [] },
         {
             asyncOptions: {
+                ...options.asyncOptions,
                 onError: (e) => {
                     throw e
                 },
@@ -27,8 +32,8 @@ const listPurposes = (body, options) =>
         // { resetOnExecute: false }
     )
 
-const Create = (body: IPersona, options?: useOptions) =>
-    useAPI<IPersona>(
+const Create = (body: IPurpose, options?: useOptions) =>
+    useAPI<IPurpose>(
         map.CREATE_PURPOSE,
         'POST',
         { body },
@@ -43,13 +48,13 @@ const Create = (body: IPersona, options?: useOptions) =>
         }
     )
 
-const createPersona = (body: IPersona) =>
+const createPersona = (body: IPurpose) =>
     useAPIPromise(map.CREATE_PURPOSE(), 'POST', {
         body: body,
     })
 
-const Update = (body: IPersona, options?: useOptions) =>
-    useAPI<IPersona>(
+const Update = (body: IPurpose, options?: useOptions) =>
+    useAPI<IPurpose>(
         map.CREATE_PURPOSE,
         'POST',
         {
@@ -61,7 +66,7 @@ const Update = (body: IPersona, options?: useOptions) =>
         options || {}
     )
 
-const updatePersona = (body: IPersona) =>
+const updatePersona = (body: IPurpose) =>
     useAPIPromise(map.UPDATE_PURPOSE({ guid: body.id! }), 'POST', {
         body: body,
     })
@@ -70,7 +75,7 @@ const updatePersonaUsers = ({ personaId, users, groups }) =>
         body: { users, groups },
     })
 
-const deletePersona = (id: string): Promise<IPersona> =>
+const deletePersona = (id: string): Promise<IPurpose> =>
     useAPIPromise(map.DELETE_PURPOSE({ guid: id }), 'DELETE', {})
 const enableDisablePurpose = (id: string, body: IEnableDisablePayload) =>
     useAPIPromise(map.ENABLE_DISABLE_PURPOSE({ id }), 'POST', {
@@ -78,6 +83,7 @@ const enableDisablePurpose = (id: string, body: IEnableDisablePayload) =>
     })
 export const Purpose = {
     List,
+    getPurposeByID,
     Create,
     Update,
     updatePersonaUsers,

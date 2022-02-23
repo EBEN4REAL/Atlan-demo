@@ -1,8 +1,20 @@
+import Snowflake from '~/assets/images/source/svg/Snowflake.svg?url'
+import Tableau from '~/assets/images/source/svg/Tableau.svg?url'
+import Redshift from '~/assets/images/source/svg/Redshift.svg?url'
+import Postgres from '~/assets/images/source/svg/postgres.svg?url'
+import Athena from '~/assets/images/source/svg/Athena.svg?url'
+import Databricks from '~/assets/images/source/svg/Databricks.svg?url'
+import PowerBI from '~/assets/images/source/svg/PowerBI.svg?url'
+import BigQuery from '~/assets/images/source/svg/Bigquery.svg?url'
+import Looker from '~/assets/images/source/svg/Looker.svg?url'
+import Salesforce from '~/assets/images/source/svg/Salesforce.svg?url'
+import MySQL from '~/assets/images/source/svg/MySQL.svg?url'
+
 export const SourceList = [
     {
         id: 'snowflake',
         label: 'Snowflake',
-        image: 'Snowflake',
+        image: Snowflake,
         filterMaxLevel: 2,
         connectionCount: 0,
         dialectConfig: {
@@ -56,7 +68,7 @@ export const SourceList = [
     {
         id: 'tableau',
         label: 'Tableau',
-        image: 'Tableau',
+        image: Tableau,
         hierarchy: [],
         types: [
             'TableauSite',
@@ -72,7 +84,7 @@ export const SourceList = [
     {
         id: 'redshift',
         label: 'Redshift',
-        image: 'Redshift',
+        image: Redshift,
 
         connectionCount: 0,
         dialectConfig: {
@@ -119,9 +131,58 @@ export const SourceList = [
         ],
     },
     {
+        id: 'mysql',
+        label: 'MySQL',
+        image: MySQL,
+        connectionCount: 0,
+        dialectConfig: {
+            abortQuery: true,
+        },
+        selectFirstAsDefault: true, // false by default
+        hierarchy: [
+            {
+                typeName: 'Database',
+                name: 'Database',
+                parent: '',
+                attribute: 'databaseQualifiedName',
+                level: 1,
+                image: 'Database',
+            },
+            {
+                typeName: 'Schema',
+                name: 'Schema',
+                parent: 'Database',
+                attribute: 'schemaQualifiedName',
+                level: 2,
+                image: 'Schema',
+            },
+            {
+                typeName: 'Table',
+                name: 'Table',
+                parent: 'Schema',
+                attribute: 'tableQualifiedName',
+                level: 3,
+            },
+            {
+                typeName: 'View',
+                name: 'View',
+                parent: 'Schema',
+                attribute: 'viewQualifiedName',
+                level: 3,
+            },
+            {
+                typeName: 'Procedure',
+                name: 'Procedure',
+                parent: 'Schema',
+                attribute: 'procedureQualifiedName',
+                level: 3,
+            },
+        ],
+    },
+    {
         id: 'databricks',
         label: 'Databricks',
-        image: 'Databricks',
+        image: Databricks,
         hierarchy: [
             {
                 typeName: 'Database',
@@ -182,7 +243,7 @@ export const SourceList = [
     {
         id: 'bigquery',
         label: 'BigQuery',
-        image: 'BigQuery',
+        image: BigQuery,
         hierarchy: [
             {
                 typeName: 'Database',
@@ -235,8 +296,39 @@ export const SourceList = [
     {
         id: 'postgres',
         label: 'Postgres',
-        image: 'Postgres',
-        hierarchy: [],
+        image: Postgres,
+        hierarchy: [
+            {
+                typeName: 'Database',
+                name: 'Database',
+                parent: '',
+                attribute: 'databaseQualifiedName',
+                level: 1,
+                image: 'Database',
+            },
+            {
+                typeName: 'Schema',
+                name: 'Schema',
+                parent: 'Database',
+                attribute: 'schemaQualifiedName',
+                level: 2,
+                image: 'Schema',
+            },
+            {
+                typeName: 'Table',
+                name: 'Table',
+                parent: 'Schema',
+                attribute: 'tableQualifiedName',
+                level: 3,
+            },
+            {
+                typeName: 'View',
+                name: 'View',
+                parent: 'Schema',
+                attribute: 'viewQualifiedName',
+                level: 3,
+            },
+        ],
         connectionCount: 0,
         dialectConfig: {
             abortQuery: true,
@@ -256,7 +348,7 @@ export const SourceList = [
     {
         id: 'athena',
         label: 'Athena',
-        image: 'Athena',
+        image: Athena,
         filterMaxLevel: 2,
         dialectConfig: {
             assetQuoteType: '"',
@@ -309,7 +401,7 @@ export const SourceList = [
     {
         id: 'powerbi',
         label: 'Power BI',
-        image: 'PowerBI',
+        image: PowerBI,
         connectionCount: 0,
         hierarchy: [],
         types: [
@@ -326,7 +418,7 @@ export const SourceList = [
     {
         id: 'looker',
         label: 'Looker',
-        image: 'Looker',
+        image: Looker,
         connectionCount: 0,
         hierarchy: [],
         types: [
@@ -344,7 +436,7 @@ export const SourceList = [
     {
         id: 'salesforce',
         label: 'Salesforce',
-        image: 'Salesforce',
+        image: Salesforce,
         connectionCount: 0,
         hierarchy: [],
         types: [

@@ -21,10 +21,12 @@
                 <Tooltip
                     :tooltip-text="`${title(selectedAsset)}`"
                     :route-to="getProfilePath(selectedAsset)"
-                    classes="text-base font-bold mb-0 cursor-pointer text-primary hover:underline "
-                    :should-open-in-new-tab="
-                        selectedAsset.typeName?.toLowerCase() === 'query'
+                    :classes="
+                        isScrubbed(selectedAsset)
+                            ? 'mb-0  font-semibold cursor-pointer text-primary hover:underline opacity-80 '
+                            : 'font-bold mb-0 cursor-pointer text-primary hover:underline '
                     "
+                    :should-open-in-new-tab="true"
                     @click="() => $emit('closeDrawer')"
                 />
 
@@ -58,8 +60,8 @@
                                 `/${connectionName(selectedAsset)}`
                             }}</span>
                         </template>
-                        <AtlanIcon
-                            :icon="getConnectorImage(selectedAsset)"
+                        <img
+                            :src="getConnectorImage(selectedAsset)"
                             class="h-4 mr-1 mb-0.5"
                         />
                     </a-tooltip>
@@ -158,7 +160,7 @@
                     ? 'height: calc(100% - 0px)'
                     : 'height: calc(100% - 84px)'
             "
-            tab-position="left"
+            tab-position="right"
             :destroy-inactive-tab-pane="true"
         >
             <a-tab-pane
@@ -195,6 +197,7 @@
                     :edit-permission="
                         selectedAssetUpdatePermission(selectedAsset, isDrawer)
                     "
+                    :tab="tab"
                     :data="tab.data"
                     :collection-data="{
                         collectionInfo,
@@ -204,6 +207,14 @@
                     }"
                 ></component>
             </a-tab-pane>
+            <template #moreIcon>
+                <div class="flex">
+                    <AtlanIcon
+                        icon="KebabMenuHorizontal"
+                        class="text-primary"
+                    ></AtlanIcon>
+                </div>
+            </template>
         </a-tabs>
     </div>
 </template>
@@ -261,7 +272,10 @@
                 () => import('./relations/index.vue')
             ),
             resources: defineAsyncComponent(
-                () => import('@common/widgets/resources/index.vue')
+                () =>
+                    import(
+                        '@/common/assets/preview/resources/resourcesWrapper.vue'
+                    )
             ),
             lineage: defineAsyncComponent(
                 () => import('./lineage/lineageTab.vue')
@@ -385,18 +399,11 @@
                 (prev) => {
                     if (prev) {
                         if (
-                            (!isDrawer.value &&
-                                authStore?.evaluations?.some(
-                                    (ev) =>
-                                        ev?.entityGuid ===
-                                        selectedAsset.value?.guid
-                                )) ||
-                            (isDrawer.value &&
-                                authStore?.secondaryEvaluations?.some(
-                                    (ev) =>
-                                        ev?.entityGuid ===
-                                        selectedAsset.value?.guid
-                                ))
+                            !isDrawer.value &&
+                            authStore?.evaluations?.some(
+                                (ev) =>
+                                    ev?.entityGuid === selectedAsset.value?.guid
+                            )
                         ) {
                             return
                         }
@@ -549,7 +556,7 @@
 
 <style lang="less" module>
     .previewtab {
-        &:global(.ant-tabs-left) {
+        &:global(.ant-tabs-right) {
             :global(.ant-tabs-nav-container) {
                 width: 48px !important;
                 @apply ml-0 !important;
@@ -560,12 +567,19 @@
                 @apply justify-center;
             }
 
-            :global(.ant-tabs-nav-wrap) {
-                @apply pt-3;
+            :global(.ant-tabs-tab:first-child) {
+                padding: 3px 8px !important;
+                @apply mt-3 !important;
+
+                @apply justify-center;
             }
 
             :global(.ant-tabs-content) {
                 @apply px-0 h-full !important;
+
+                :global(.ant-tabs-tab:first-child) {
+                    @apply mt-0 !important;
+                }
             }
             :global(.ant-tabs-ink-bar) {
                 @apply rounded-t-sm;

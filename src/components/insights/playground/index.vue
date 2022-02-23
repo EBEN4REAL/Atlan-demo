@@ -82,6 +82,7 @@
                                     }"
                                     @mouseenter="setTabHover(tab)"
                                     @mouseleave="setTabHover(null)"
+                                    @contextmenu.prevent="showContextMenu"
                                 >
                                     <div
                                         class="flex items-center text-gray-700"
@@ -149,8 +150,8 @@
                             >
                                 <div
                                     v-if="
-                                        tab.playground.editor.text.length > 0 ||
-                                        tab?.queryId
+                                        tab?.playground?.editor?.text?.length >
+                                            0 || tab?.queryId
                                     "
                                     class="w-1.5 h-1.5 rounded-full bg-primary absolute right-3.5 top-2.5"
                                 ></div>
@@ -170,23 +171,43 @@
                 </a-tabs>
             </div>
         </div>
-
         <div
             v-if="activeInlineTabKey"
             class="w-full"
             style="max-height: 100%; min-height: 92%; height: 100%"
             :class="$style.splitspane_playground"
         >
-            <splitpanes horizontal :push-other-panes="false">
+            <splitpanes
+                horizontal
+                :push-other-panes="false"
+                @resize="onHorizontalResize"
+            >
                 <pane
                     :max-size="100"
-                    :size="100 - outputPaneSize"
+                    :size="
+                        100 -
+                        (activeInlineTab.playground.resultsPane.outputPaneSize >
+                        0
+                            ? activeInlineTab.playground.resultsPane
+                                  .outputPaneSize
+                            : 0)
+                    "
                     min-size="30"
                     class="overflow-x-hidden"
                 >
                     <Editor :refreshQueryTree="refreshQueryTree" />
                 </pane>
-                <pane min-size="0" :size="outputPaneSize" max-size="70">
+                <pane
+                    min-size="0"
+                    :size="
+                        activeInlineTab.playground.resultsPane.outputPaneSize >
+                        0
+                            ? activeInlineTab.playground.resultsPane
+                                  .outputPaneSize
+                            : 0
+                    "
+                    max-size="70"
+                >
                     <ResultsPane />
                 </pane>
             </splitpanes>
@@ -232,6 +253,8 @@
     import ResultPaneFooter from '~/components/insights/playground/resultsPane/result/resultPaneFooter.vue'
     import { useRouter, useRoute } from 'vue-router'
     import { useActiveTab } from '~/components/insights/common/composables/useActiveTab'
+    import { useSpiltPanes } from '~/components/insights/common/composables/useSpiltPanes'
+    import { useDebounceFn } from '@vueuse/core'
 
     // import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
 
@@ -269,6 +292,7 @@
             }>
 
             const { getFirstQueryConnection } = useUtils()
+            const { horizontalPaneResize } = useSpiltPanes()
             const { inlineTabRemove, inlineTabAdd, setActiveTabKey } =
                 useInlineTab()
 
@@ -277,7 +301,6 @@
                 key: undefined,
             })
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
-            const outputPaneSize = inject('outputPaneSize') as Ref<number>
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
@@ -357,6 +380,7 @@
                 // }
             }
             const onEdit = (targetKey: string | MouseEvent, action: string) => {
+                console.log('edit triggered: ')
                 if (action === 'add') {
                     handleAdd(false)
                 } else {
@@ -511,8 +535,17 @@
                     tabHover.value = null
                 }
             }
+            const contentMenu = ref(true)
+            const showContextMenu = () => {
+                contentMenu.value = true
+            }
+            const onHorizontalResize = useDebounceFn((e) => {
+                horizontalPaneResize(e, activeInlineTab, tabs)
+            }, 500)
 
             return {
+                onHorizontalResize,
+                horizontalPaneResize,
                 fullSreenState,
                 saveModalRef,
                 saveQueryLoading,
@@ -527,13 +560,14 @@
                 activeInlineTab,
                 tabs,
                 activeInlineTabKey,
-                outputPaneSize,
                 handleAdd,
                 onEdit,
                 onTabClick,
                 setTabHover,
                 tabHover,
                 isSaving,
+                showContextMenu,
+                contentMenu,
             }
         },
     })

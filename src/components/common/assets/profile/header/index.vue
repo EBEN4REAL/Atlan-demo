@@ -8,7 +8,19 @@
         </a-button>
         <div class="flex items-center justify-between w-full ml-3">
             <div class="flex flex-col w-full">
-                <div class="flex items-center mb-0 overflow-hidden">
+                <div v-show="isEditMode">
+                    <Name
+                        v-model="isEditMode"
+                        :selected-asset="item"
+                        classes="text-base font-bold text-gray-700  mb-0"
+                        @updateName="handleNameUpdate"
+                    />
+                </div>
+
+                <div
+                    v-if="!isEditMode"
+                    class="flex items-center mb-0 overflow-hidden"
+                >
                     <div
                         v-if="['column'].includes(item.typeName?.toLowerCase())"
                         class="flex mr-1"
@@ -19,7 +31,7 @@
                         />
                     </div>
                     <Tooltip
-                        :tooltip-text="`${title(item)}`"
+                        :tooltip-text="entityTitle"
                         classes="text-base font-bold text-gray-700  mb-0"
                     />
 
@@ -61,8 +73,8 @@
                                     )}`
                                 }}</span>
                             </template>
-                            <AtlanIcon
-                                :icon="getConnectorImage(item)"
+                            <img
+                                :src="getConnectorImage(item)"
                                 class="h-4 mr-1 mb-0.5"
                             />
                         </a-tooltip>
@@ -112,8 +124,8 @@
                         class="flex text-sm text-gray-500 gap-x-2"
                     >
                         <div class="flex items-center text-gray">
-                            <AtlanIcon
-                                :icon="getConnectorImage(item)"
+                            <img
+                                :src="getConnectorImage(item)"
                                 class="h-4 mr-1 mb-0.5"
                             />
                             <span>{{
@@ -293,11 +305,8 @@
                     block
                     @click="handleBIRedirect"
                     ><div class="flex items-center justify-center px-1">
-                        <AtlanIcon
-                            :icon="getConnectorImage(item)"
-                            class="h-4 mr-1"
-                        />
-                        Open in
+                        <img :src="getConnectorImage(item)" class="h-4 mr-1" />
+                        View in
                         {{ getConnectorLabel(item) }}
                     </div>
                 </a-button>
@@ -308,6 +317,7 @@
                     </a-button>
                 </ShareMenu>
                 <AssetMenu
+                    @edit="handleEdit"
                     :asset="item"
                     :edit-permission="selectedAssetUpdatePermission(item)"
                 >
@@ -349,7 +359,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, computed, toRefs } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        computed,
+        toRefs,
+        ref,
+        watch,
+    } from 'vue'
     import { useMagicKeys, useActiveElement, whenever, and } from '@vueuse/core'
     import { useRouter } from 'vue-router'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -363,6 +380,7 @@
     import useAuth from '~/composables/auth/useAuth'
     import Tooltip from '@/common/ellipsis/index.vue'
     import QueryDropdown from '@/common/query/queryDropdown.vue'
+    import Name from '@/glossary/common/name.vue'
 
     export default defineComponent({
         name: 'AssetHeader',
@@ -373,6 +391,7 @@
             AssetMenu,
             Tooltip,
             QueryDropdown,
+            Name,
         },
         props: {
             item: {
@@ -385,6 +404,7 @@
         },
         setup(props) {
             const { item } = toRefs(props)
+            const isEditMode = ref(false)
             const {
                 title,
                 getConnectorImage,
@@ -421,6 +441,7 @@
                 isCustom,
             } = useAssetInfo()
 
+            const entityTitle = ref(title(item.value))
             const router = useRouter()
 
             const goToInsights = (openVQB) => {
@@ -477,6 +498,17 @@
                 if (v) back()
             }) */
             const { checkAccess } = useAuth()
+            const handleEdit = (asset) => {
+                isEditMode.value = true
+            }
+            watch(item, () => {
+                entityTitle.value = title(item.value)
+            })
+
+            const handleNameUpdate = (val) => {
+                entityTitle.value = val
+                console.log(val)
+            }
 
             return {
                 title,
@@ -517,7 +549,11 @@
                 handleClick,
                 sourceURL,
                 getConnectorLabel,
+                isEditMode,
+                handleEdit,
                 isCustom,
+                handleNameUpdate,
+                entityTitle,
             }
         },
     })

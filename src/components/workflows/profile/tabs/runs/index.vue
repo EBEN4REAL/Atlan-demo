@@ -20,7 +20,7 @@
                     <Sidebar
                         :key="runId"
                         :selectedRun="selectedRun"
-                        :isLoading="isLoading"
+                        :isLoading="firstLoad"
                         :error="error"
                         style="width: 300px"
                     ></Sidebar>
@@ -31,10 +31,7 @@
                 :key="runId"
                 ref="monitorGraphRef"
                 :graph-data="selectedRun"
-                class=""
                 @select="handleSelectPod"
-                :isLoading="isLoading"
-                :error="error"
                 @refresh="handleRefresh"
             />
         </div>
@@ -43,7 +40,9 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, computed, watch, ref, toRefs } from 'vue'
+    import { defineComponent, watch, ref, toRefs } from 'vue'
+    import { useRoute, useRouter } from 'vue-router'
+    import { useIntervalFn } from '@vueuse/core'
 
     // import { nodeViewProps } from '@tiptap/vue-3'
 
@@ -56,8 +55,6 @@
     import Sidebar from './sidebar.vue'
 
     import MonitorGraph from './monitorGraph.vue'
-    import { useRoute, useRouter } from 'vue-router'
-    import { useIntervalFn } from '@vueuse/core'
 
     export default defineComponent({
         name: 'WorkflowMonitorTab',
@@ -105,14 +102,22 @@
             })
 
             const isValidating = ref(false)
+            const firstLoad = ref(true)
 
             const {
                 data: selectedRun,
                 mutate,
                 isLoading,
-
                 error,
             } = useRunItem(path, false)
+
+            const unWatchLoad = watch(isLoading, () => {
+                console.log('unWatchLoad', isLoading.value)
+                if (!isLoading.value) {
+                    firstLoad.value = false
+                    unWatchLoad()
+                }
+            })
 
             watch(runId, () => {
                 console.log('changed run id', runId.value)
@@ -193,6 +198,7 @@
                 selectedRun,
                 router,
                 isLoading,
+                firstLoad,
                 error,
                 pause,
                 resume,

@@ -1,6 +1,20 @@
 <template>
     <div class="flex flex-col h-full" style="height: calc(100% - 84px)">
-        <div class="px-4 pt-3 pb-0">
+        <div
+            class="flex items-center justify-between px-5 py-2 border-b border-gray-200 bg-gray-50"
+        >
+            <span class="flex items-center">
+                <PreviewTabsIcon
+                    :icon="tab.icon"
+                    :image="tab.image"
+                    :emoji="tab.emoji"
+                    height="h-4"
+                />
+                <span class="font-semibold text-gray-500 ml-1">Columns</span>
+            </span>
+        </div>
+
+        <div class="px-5 pt-3 pb-0">
             <SearchAdvanced
                 v-model:value="queryText"
                 :autofocus="true"
@@ -24,7 +38,7 @@
 
         <AggregationTabs
             v-model="postFacets.dataType"
-            class="px-3 mb-1"
+            class="px-5 mt-2 mb-1"
             :list="columnDataTypeAggregationList"
             @change="handleDataTypeChange"
         ></AggregationTabs>
@@ -60,7 +74,7 @@
             <template #default="{ item }">
                 <ColumnItem
                     :item="item"
-                    class="m-1"
+                    class="px-2 my-1"
                     @update="handleListUpdate"
                 />
             </template>
@@ -90,14 +104,13 @@
     import ColumnItem from './assetItem.vue'
 
     import {
-        AssetAttributes,
-        AssetRelationAttributes,
-        InternalAttributes,
-        SQLAttributes,
+        MinimalAttributes,
+        DefaultRelationAttributes,
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import useEvaluate from '~/composables/auth/useEvaluate'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
 
     export default defineComponent({
         name: 'ColumnWidget',
@@ -109,12 +122,17 @@
             Sorting,
             EmptyView,
             ErrorView,
+            PreviewTabsIcon,
         },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: false,
                 default: () => {},
+            },
+            tab: {
+                type: Object,
+                required: false,
             },
         },
         setup(props) {
@@ -130,15 +148,34 @@
             const aggregations = ref([aggregationAttributeName])
             const postFacets = ref({})
             const dependentKey = ref('DEFAULT_COLUMNS')
-            const defaultAttributes = ref([
-                ...InternalAttributes,
-                ...AssetAttributes,
-                ...SQLAttributes,
+
+            const columnAttributes = ref([
+                'name',
+                'displayName',
+                'description',
+                'displayDescription',
+                'userDescription',
+                'certificateStatus',
+                'meanings',
+                'category',
+
+                'dataType',
+
+                'isPrimary',
+
+                'isCustom',
+                'isPartition',
+                'isSort',
+                'isIndexed',
+                'isForeign',
+                'isDist',
+                'order',
             ])
+            const defaultAttributes = ref([...columnAttributes.value])
             const preference = ref({
                 sort: 'order-asc',
             })
-            const relationAttributes = ref([...AssetRelationAttributes])
+            const relationAttributes = ref([...DefaultRelationAttributes])
 
             const updateFacet = () => {
                 facets.value = {}
@@ -273,6 +310,7 @@
                 error,
                 isValidating,
                 handleListUpdate,
+                columnAttributes,
             }
         },
     })

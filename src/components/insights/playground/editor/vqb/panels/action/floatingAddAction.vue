@@ -76,19 +76,6 @@
             const computedItems = computed(() => {
                 let _items: any = []
 
-                const aggregatePanel =
-                    activeInlineTab.value.playground.vqb.panels.find(
-                        (panel) => panel.id.toLowerCase() === 'aggregate'
-                    )
-
-                if (!aggregatePanel) {
-                    _items.push({
-                        id: 'aggregate',
-                        icon: 'Trigger',
-                        label: 'Aggregate',
-                    })
-                }
-
                 const join = activeInlineTab.value.playground.vqb.panels.find(
                     (panel) => panel.id.toLowerCase() === 'join'
                 )
@@ -122,6 +109,19 @@
                         label: 'Group',
                     })
                 }
+                const aggregatePanel =
+                    activeInlineTab.value.playground.vqb.panels.find(
+                        (panel) => panel.id.toLowerCase() === 'aggregate'
+                    )
+
+                if (!aggregatePanel) {
+                    _items.push({
+                        id: 'aggregate',
+                        icon: 'Trigger',
+                        label: 'Aggregate',
+                    })
+                }
+
                 const sortPanel =
                     activeInlineTab.value.playground.vqb.panels.find(
                         (panel) => panel.id.toLowerCase() === 'sort'

@@ -2,7 +2,7 @@ import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.inter
 export const inlineTabsDemoData: activeInlineTabInterface[] = [
     {
         key: '1',
-        attributes: undefined,
+        attributes: {},
         label: 'Untitled',
         isSaved: false,
         queryId: undefined,
@@ -75,6 +75,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
             },
             resultsPane: {
                 activeTab: 0,
+                outputPaneSize: 27.9,
                 result: {
                     title: `Result`,
                     runQueryId: undefined,

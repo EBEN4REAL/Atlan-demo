@@ -11,6 +11,7 @@
                 <CustomMetadataAvatar
                     class="mr-2"
                     :metadata="item"
+                    :internal="['true', true].includes(item?.options?.isLocked)"
                     size="16px"
                 />
                 <p
@@ -21,7 +22,7 @@
                             : 'text-gray hover:text-primary hover:font-semibold'
                     "
                 >
-                    <Truncate :tooltipText="item.displayName" />
+                    <Truncate :tooltip-text="item.displayName" />
                 </p>
                 <a-tooltip
                     v-if="item.description"
@@ -47,7 +48,7 @@
         components: { ExplorerList, CustomMetadataAvatar, Truncate },
         props: {
             finalList: { type: Object, required: true },
-            selectedBm: { type: [Object, null], required: true },
+            selectedBm: { type: Object, required: true },
         },
         emits: ['select'],
         setup(props, { emit }) {

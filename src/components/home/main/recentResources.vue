@@ -1,33 +1,50 @@
 <template>
     <transition v-if="list.length" name="fade">
         <div>
-            <h2 class="mb-3 text-lg font-bold text-gray-500">
-                Recent resources
+            <h2 class="mb-3 text-sm font-semibold text-gray-500">
+                <AtlanIcon icon="Link"></AtlanIcon> Recent Resources
             </h2>
-            <div v-if="isLoading">
-                <AtlanLoader class="h-10" />
+            <div
+                v-if="isLoading"
+                class="flex items-center justify-center border border-gray-200 rounded"
+                style="min-height: 150px"
+            >
+                <AtlanLoader class="w-full h-10" />
             </div>
-            <div v-else class="overflow-y-auto resources-container">
-                <div v-if="!list.length" class="flex flex-col">
+            <div
+                v-else
+                class="overflow-y-auto border border-gray-200 rounded resources-container"
+                style="min-height: 150px"
+            >
+                <div
+                    v-if="list.length == 0"
+                    class="flex flex-col items-center justify-center h-full"
+                >
                     <AtlanIcon
                         icon="EmptyResource2"
                         alt="EmptyResource"
                         class="w-auto h-32"
                     />
                 </div>
-                <div v-else>
+                <div v-else class="flex flex-col">
                     <div
                         v-for="(item, index) in list"
                         :key="index"
-                        class="mb-3"
+                        class="border-b last:border-0"
                     >
-                        <AssetTitleCtx :item="item.attributes.asset" />
                         <component
                             :is="getPreviewComponent(item?.attributes?.link)"
-                            :edit-permission="false"
-                            :item="item"
-                            class=""
-                        />
+                            :link="item"
+                            :asset-subtitle="true"
+                            class="border-none"
+                        >
+                            <template v-if="item.attributes?.asset" #subtitle>
+                                <AssetTitleCtx
+                                    :item="item.attributes.asset"
+                                    class="mt-2"
+                                ></AssetTitleCtx>
+                            </template>
+                        </component>
                     </div>
                 </div>
             </div>
@@ -41,6 +58,7 @@
         ref,
         toRefs,
         computed,
+        provide,
         defineAsyncComponent,
     } from 'vue'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
@@ -54,7 +72,8 @@
         getChannelAndMessageIdFromSlackLink,
     } from '~/composables/integrations/useSlack'
     import integrationStore from '~/store/integrations/index'
-    import AssetTitleCtx from '@/home/shared/assetTitleContext.vue'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import AssetTitleCtx from '@/common/widgets/resources/misc/assetTitleContext.vue'
 
     export default defineComponent({
         name: 'RecentResources',
@@ -63,13 +82,13 @@
             slackLinkPreview: defineAsyncComponent(
                 () =>
                     import(
-                        '@/common/widgets/resources/previews/slackLinkPreviewCard.vue'
+                        '@/common/widgets/resources/previewCard/slackPreview.vue'
                     )
             ),
             linkPreview: defineAsyncComponent(
                 () =>
                     import(
-                        '@/common/widgets/resources/previews/linkPreviewCard.vue'
+                        '@/common/widgets/resources/previewCard/linkPreviewCard.vue'
                     )
             ),
         },
@@ -78,6 +97,10 @@
             const limit = ref(15)
             const offset = ref(0)
             const queryText = ref('')
+
+            const readOnly = ref(true)
+            provide('readOnly', readOnly)
+
             const facets = ref({
                 typeNames: ['Link'],
             })
@@ -91,22 +114,22 @@
                 display: [],
             })
             const defaultAttributes = ref([
-                ...InternalAttributes,
-                ...AssetAttributes,
+                'link',
+                '__createdBy',
+                '__timestamp',
+                '__modificationTimestamp',
+                '__modifiedBy',
+                '__guid',
                 'asset',
             ])
             const store = integrationStore()
-            const hasAtleastOneSlackLink = computed(() => {
-                const linkArr = links(selectedAsset.value)
-                const slackLink = linkArr.some((link) =>
-                    isSlackLink(link?.attributes?.link)
-                )
-                return slackLink
-            })
+
             const { tenantSlackStatus, userSlackStatus } = toRefs(store)
             const relationAttributes = ref([
-                ...AssetRelationAttributes,
-                ...AssetAttributes,
+                'name',
+                'certificateStatus',
+                'certificateUpdatedAt',
+                'certificateUpdatedBy',
             ])
             function getPreviewComponent(url) {
                 if (
@@ -143,11 +166,28 @@
                 relationAttributes,
                 suppressLogs: true,
             })
+
+            // const { links } = useAssetInfo()
+            // const allResources = computed(() => {
+            //     if (list.value) {
+            //         return list.value.map((a) => ({
+            //             title: a.displayText,
+            //             links: links(a),
+            //         }))
+            //     }
+            //     return []
+            //     // return links(selectedAsset.value)?.sort((a, b) =>
+            //     //     // eslint-disable-next-line no-underscore-dangle
+            //     //     a.attributes.__timestamp < b.attributes.__timestamp
+            //     //         ? -1
+            //     //         : 1
+            //     // )
+            // })
             return {
+                // allResources,
                 isLoading,
                 list,
                 getPreviewComponent,
-                hasAtleastOneSlackLink,
                 userSlackStatus,
                 tenantSlackStatus,
             }

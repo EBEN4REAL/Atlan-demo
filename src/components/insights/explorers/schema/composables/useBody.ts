@@ -82,12 +82,6 @@ export function useBody(
     base.size(limit || 0)
 
     if (typeName === 'Column') {
-        if (sortOrderColumn && sortOrderColumn.length) {
-            let sortData = sortOrderColumn.split('-')
-            base.sort(`${sortData[0]}`, { order: sortData[1] })
-        } else {
-            // base.sort('order', { order: sort })
-        }
     } else {
         if (
             (typeName === 'Table' || Array.isArray(typeName)) &&
@@ -433,58 +427,10 @@ export function useBody(
                     {
                         filter: {
                             match: {
-                                certificateStatus: 'VERIFIED',
-                            },
-                        },
-                        weight: 5,
-                    },
-                    {
-                        filter: {
-                            match: {
-                                certificateStatus: 'DRAFT',
-                            },
-                        },
-                        weight: 4,
-                    },
-                    {
-                        filter: {
-                            match: {
-                                __typeName: 'Table',
-                            },
-                        },
-                        weight: 5,
-                    },
-                    {
-                        filter: {
-                            match: {
-                                __typeName: 'View',
-                            },
-                        },
-                        weight: 5,
-                    },
-                    {
-                        filter: {
-                            match: {
-                                __typeName: 'Column',
-                            },
-                        },
-                        weight: 3,
-                    },
-                    {
-                        filter: {
-                            match: {
-                                __typeName: 'AtlasGlossaryTerm',
-                            },
-                        },
-                        weight: 4,
-                    },
-                    {
-                        filter: {
-                            match: {
                                 isPrimary: true,
                             },
                         },
-                        weight: 10,
+                        weight: 5,
                     },
                     {
                         filter: {
@@ -492,7 +438,7 @@ export function useBody(
                                 isForeign: true,
                             },
                         },
-                        weight: 9,
+                        weight: 4,
                     },
                     {
                         filter: {
@@ -500,7 +446,7 @@ export function useBody(
                                 isPartition: true,
                             },
                         },
-                        weight: 8,
+                        weight: 3,
                     },
                 ],
                 boost_mode: 'sum',

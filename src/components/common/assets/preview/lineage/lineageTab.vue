@@ -7,32 +7,32 @@
             :asset-name="assetName"
             style="z-index: 600"
         />
-        <div class="flex items-center justify-between px-5 pt-4">
-            <span class="text-sm font-bold text-gray-500">Lineage</span>
+        <div
+            class="flex items-center justify-between px-5 bg-gray-50 py-2 border-b border-gray-200"
+        >
+            <span class="flex items-center">
+                <PreviewTabsIcon
+                    :icon="tab.icon"
+                    :image="tab.image"
+                    :emoji="tab.emoji"
+                    height="h-4"
+                />
+                <span class="font-semibold text-gray-500 ml-1">Lineage</span>
+            </span>
 
-            <AtlanButton
+            <div
+                class="flex items-center text-primary cursor-pointer"
                 v-if="isWithGraph"
-                size="sm"
-                padding="compact"
-                color="minimal"
-                class="text-primary"
-                :disabled="!downstreamGuids?.length"
                 @click="showImpactedAssets = true"
+                :disabled="!allEntities?.downstream?.length"
             >
-                <AtlanIcon icon="Download" />
-                Download Impact
-            </AtlanButton>
+                <AtlanIcon icon="External" class="mr-1" /> Download Impact
+            </div>
 
             <router-link v-else :to="getLineagePath(selectedAsset)">
-                <AtlanButton
-                    size="sm"
-                    padding="compact"
-                    color="minimal"
-                    class="text-primary"
-                >
-                    <AtlanIcon icon="External" />
-                    View Graph
-                </AtlanButton>
+                <div class="flex items-center text-primary cursor-pointer">
+                    <AtlanIcon icon="External" class="mr-1" /> View Graph
+                </div>
             </router-link>
         </div>
 
@@ -99,6 +99,7 @@
 
     // Services
     import useLineageService from '~/services/meta/lineage/lineage_service'
+    import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
 
     export default defineComponent({
         name: 'LineagePreviewTab',
@@ -109,11 +110,16 @@
             LineageImpactModal,
             RaisedTab,
             ErrorView,
+            PreviewTabsIcon,
         },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: true,
+            },
+            tab: {
+                type: Object,
+                required: false,
             },
         },
         setup(props) {

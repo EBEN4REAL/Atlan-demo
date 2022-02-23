@@ -13,7 +13,7 @@
                     <div class="flex items-center">
                         <component
                             :is="dataTypeCategoryImage(item)"
-                            class="h-4 mr-1 text-gray-500"
+                            class="h-4 mr-1 text-gray-500 mb-0.5"
                         />
                         <span
                             class="flex-shrink overflow-hidden font-bold truncate cursor-pointer text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
@@ -83,7 +83,7 @@
                                 :is-propagated="isPropagated(classification)"
                                 :allow-delete="false"
                                 :color="
-                                    classification.options?.color.toLowerCase()
+                                    classification.options?.color?.toLowerCase()
                                 "
                                 :created-by="classification?.createdBy"
                             ></ClassificationPill>
@@ -93,7 +93,7 @@
             </div>
         </div>
         <AssetDrawer
-            :data="item"
+            :guid="item?.guid"
             :show-drawer="showColumnDrawer"
             :show-mask="page === 'assets'"
             :showCloseBtn="page !== 'assets'"

@@ -117,7 +117,13 @@
                         <span class="data-type">{{ text?.toUpperCase() }}</span>
                     </template>
                     <template v-else-if="column.key === 'description'">
-                        <Tooltip :tooltip-text="text" />
+                        <EditableDescription
+                            :asset-item="record.item"
+                            :tooltip-text="text"
+                            :allow-editing="
+                                selectedAssetUpdatePermission(record.item, true)
+                            "
+                        />
                     </template>
                 </template>
             </a-table>
@@ -170,7 +176,7 @@
         </div>
 
         <AssetDrawer
-            :data="selectedRowData"
+            :guid="selectedRowGuid"
             :show-drawer="showColumnSidebar"
             @closeDrawer="handleCloseColumnSidebar"
             @update="handleListUpdate"
@@ -180,7 +186,7 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, watch, computed, ref, Ref, nextTick } from 'vue'
+    import { defineComponent, watch, ref, Ref, nextTick, computed } from 'vue'
 
     import { useDebounceFn } from '@vueuse/core'
     import { useRoute } from 'vue-router'
@@ -188,6 +194,7 @@
     // Components
     import ErrorView from '@common/error/discover.vue'
     import EmptyView from '@common/empty/index.vue'
+    import EditableDescription from '@common/assets/profile/tabs/columns/editableDescription.vue'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import Sorting from '@/common/select/sorting.vue'
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
@@ -198,19 +205,18 @@
     // Composables
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import {
-        AssetAttributes,
-        AssetRelationAttributes,
-        InternalAttributes,
-        SQLAttributes,
+        MinimalAttributes,
+        DefaultRelationAttributes,
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
-    import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     // Interfaces
     import { assetInterface } from '~/types/assets/asset.interface'
+    import useEvaluate from '~/composables/auth/useEvaluate'
 
     export default defineComponent({
         components: {
+            EditableDescription,
             SearchAdvanced,
             AssetDrawer,
             EmptyView,
@@ -224,7 +230,7 @@
             /** DATA */
             const columnsData = ref({})
             const selectedRow = ref(null)
-            const selectedRowData = ref({})
+            const selectedRowGuid = ref('')
             const showColumnSidebar = ref<boolean>(false)
             const queryText = ref('')
             const columnsList: Ref<assetInterface[]> = ref([])
@@ -240,6 +246,7 @@
                 certificateStatusMessage,
                 dataTypeCategoryImage,
                 isScrubbed,
+                selectedAssetUpdatePermission,
             } = useAssetInfo()
 
             const aggregationAttributeName = 'dataType'
@@ -251,17 +258,35 @@
             const aggregations = ref([aggregationAttributeName])
             const postFacets = ref({})
             const dependentKey = ref('DEFAULT_COLUMNS')
-            const { customMetadataProjections } = useTypedefData()
-            const defaultAttributes = ref([
-                ...InternalAttributes,
-                ...AssetAttributes,
-                ...SQLAttributes,
-                ...customMetadataProjections,
+
+            const columnAttributes = ref([
+                'name',
+                'displayName',
+                'description',
+                'displayDescription',
+                'userDescription',
+                'certificateStatus',
+                'meanings',
+                'category',
+
+                'dataType',
+
+                'isPrimary',
+
+                'isCustom',
+                'isPartition',
+                'isSort',
+                'isIndexed',
+                'isForeign',
+                'isDist',
+                'order',
             ])
+
+            const defaultAttributes = ref([...columnAttributes.value])
             const preference = ref({
                 sort: 'order-asc',
             })
-            const relationAttributes = ref([...AssetRelationAttributes])
+            const relationAttributes = ref([...DefaultRelationAttributes])
 
             const assetQualifiedName = computed(
                 () => selectedAsset.value?.attributes?.qualifiedName
@@ -330,14 +355,14 @@
 
             const handleCloseColumnSidebar = () => {
                 selectedRow.value = null
-                selectedRowData.value = {}
+                selectedRowGuid.value = ''
                 showColumnSidebar.value = false
             }
             const openColumnSidebar = (columnOrder) => {
                 selectedRow.value = columnOrder
                 columnsList.value.forEach((singleRow) => {
                     if (singleRow.attributes.order === columnOrder) {
-                        selectedRowData.value = singleRow
+                        selectedRowGuid.value = singleRow?.guid
                     }
                 })
 
@@ -366,8 +391,6 @@
             }
 
             const handleListUpdate = (asset: any) => {
-                selectedRowData.value = asset
-
                 const index = list.value.findIndex((i) => i.guid === asset.guid)
                 if (index > -1) {
                     list.value[index] = asset
@@ -412,6 +435,13 @@
                     }
                 },
             })
+
+            const bodyEvaluation = ref({})
+            const { refresh: refreshEvaluate } = useEvaluate(
+                bodyEvaluation,
+                false,
+                true
+            ) // true for secondaryEvaluations
 
             // rowClassName Antd
             const rowClassName = (record: { key: null }) =>
@@ -463,6 +493,15 @@
                     } else {
                         filterColumnsList()
                     }
+
+                    bodyEvaluation.value = {
+                        entities: list.value.map((item) => ({
+                            typeName: item.typeName,
+                            entityGuid: item.guid,
+                            action: 'ENTITY_UPDATE',
+                        })),
+                    }
+                    refreshEvaluate()
                 }
             )
 
@@ -509,7 +548,8 @@
                 handleChangeSort,
                 showColumnSidebar,
                 pagination,
-                selectedRowData,
+                selectedRowGuid,
+                defaultAttributes,
                 columns: [
                     {
                         width: 50,
@@ -536,6 +576,7 @@
                         key: 'description',
                     },
                 ],
+                selectedAssetUpdatePermission,
             }
         },
     })

@@ -6,27 +6,39 @@
         <a-spin v-if="isUpdating" />
         <template v-else>
             <div
-                v-if="metadata?.options?.imageId || metadata?.options?.emoji"
+                v-if="
+                    metadata?.options?.imageId ||
+                    metadata?.options?.logoUrl ||
+                    metadata?.options?.emoji
+                "
                 class=""
-                @click="popOverVisible = !popOverVisible"
             >
                 <template v-if="metadata?.options?.logoType === 'image'">
-                    <img
-                        :src="imageUrl"
-                        alt=""
-                        class="object-cover w-full"
-                        :style="{ height: size }"
-                    />
+                    <div class="relative">
+                        <img
+                            :src="imageUrl"
+                            alt=""
+                            class="object-contain w-full"
+                            :style="{ height: size }"
+                        />
+                        <span
+                            class="absolute flex bg-white -right-1 -bottom-0.5 rounded-full"
+                            style="padding: 1px"
+                        >
+                            <AtlanIcon
+                                v-if="internal"
+                                icon="Atlan"
+                                style="height: 10px"
+                                class="rounded-full"
+                            />
+                        </span>
+                    </div>
                 </template>
                 <template v-else class="">
                     {{ metadata?.options?.emoji }}
                 </template>
             </div>
-            <div
-                v-else
-                class="flex items-center justify-center w-full h-full"
-                @click="popOverVisible = !popOverVisible"
-            >
+            <div v-else class="flex items-center justify-center w-full h-full">
                 <AtlanIcon
                     icon="NoAvatar"
                     class="h-auto"
@@ -56,6 +68,10 @@
                 default: '28px',
             },
             isUpdating: {
+                type: Boolean,
+                default: false,
+            },
+            internal: {
                 type: Boolean,
                 default: false,
             },

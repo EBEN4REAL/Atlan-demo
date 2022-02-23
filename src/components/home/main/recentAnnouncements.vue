@@ -2,16 +2,31 @@
     <!--h2 class="mb-3 text-xl font-bold">Relevant for you</h2-->
     <transition v-if="list.length" name="fade">
         <div>
-            <h2 class="mb-3 text-lg font-bold text-gray-500">
-                Recent announcements
+            <h2 class="mb-3 text-sm font-semibold text-gray-500">
+                <AtlanIcon icon="InformationAnnouncement"></AtlanIcon> Recent
+                Announcements
             </h2>
-            <div v-if="isLoading">
-                <AtlanLoader class="h-10" />
+
+            <div
+                v-if="isLoading"
+                class="flex items-center justify-center border border-gray-200 rounded"
+                style="min-height: 150px"
+            >
+                <AtlanLoader class="w-full h-10" />
             </div>
-            <div v-else class="overflow-y-auto resources-container">
-                <div v-for="(item, index) in list" :key="index" class="mb-4">
-                    <AssetTitleCtx :item="item" />
-                    <AnnouncementWidget :selectedAsset="item" />
+            <div
+                v-else
+                class="overflow-y-auto border border-gray-200 rounded resources-container"
+                style="min-height: 150px"
+            >
+                <div v-for="(item, index) in list" :key="index" class="">
+                    <!-- <AssetTitleCtx :item="item" /> -->
+                    <AnnouncementWidget
+                        :selectedAsset="item"
+                        :noBorder="true"
+                        :showAssetName="true"
+                        class="mb-1 last:mb-0"
+                    />
                 </div>
             </div>
         </div>
@@ -27,11 +42,6 @@
         defineAsyncComponent,
     } from 'vue'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
-    import {
-        AssetAttributes,
-        InternalAttributes,
-        AssetRelationAttributes,
-    } from '~/constant/projection'
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
@@ -70,10 +80,17 @@
                 display: [],
             })
             const defaultAttributes = ref([
-                ...InternalAttributes,
-                ...AssetAttributes,
+                'name',
+                'displayName',
+                'announcementMessage',
+                'announcementTitle',
+                'announcementType',
+                'announcementUpdatedAt',
+                'announcementUpdatedBy',
+                'certificateStatus',
+                'certificateUpdatedBy',
+                'certificateStatusMessage',
             ])
-            const relationAttributes = ref([...AssetRelationAttributes])
 
             const {
                 list,
@@ -96,7 +113,6 @@
                 limit,
                 offset,
                 attributes: defaultAttributes,
-                relationAttributes,
                 suppressLogs: true,
             })
 

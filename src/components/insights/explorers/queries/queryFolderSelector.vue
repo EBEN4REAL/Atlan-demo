@@ -173,7 +173,7 @@
                                 padding="compact"
                                 class="h-6 py-1 text-center border-none cursor-pointer hover:text-primary"
                                 style="width: 102px"
-                                @click="closeDropdown('cancel')"
+                                @click.stop="(e) => closeDropdown('cancel', e)"
                             >
                                 <span>Cancel</span>
                             </AtlanBtn>
@@ -184,7 +184,7 @@
                                 padding="compact"
                                 class="h-6 py-1 ml-3 text-center text-white border-none cursor-pointer"
                                 style="width: 102px"
-                                @click="closeDropdown('save')"
+                                @click.stop="(e) => closeDropdown('save', e)"
                             >
                                 <span class="text-center">Done</span>
                             </AtlanBtn>
@@ -349,7 +349,6 @@
                     if (item?.typeName === 'Folder') {
                         selectedKey.value = [item.guid]
                         selectedFolder.value = item.title
-                        dropdownVisible.value = false
 
                         selectedFolderContext.value = {
                             ...parentFolder.value,
@@ -421,7 +420,8 @@
                 }
 
                 // console.log('data: ', previousContext.value)
-                dropdownVisible.value = !dropdownVisible.value
+                if (!dropdownVisible.value) dropdownVisible.value = true
+                // dropdownVisible.value = !dropdownVisible.value
             }
 
             const closeDropdown = (action) => {
@@ -431,10 +431,6 @@
                 // })
 
                 if (action === 'cancel') {
-                    console.log(
-                        'previousContext.value: ',
-                        previousContext.value
-                    )
                     if (previousContext?.value?.guid) {
                         if (previousContext.value?.typeName === 'Collection') {
                             onSelect(previousContext.value, 'root')
@@ -465,7 +461,10 @@
                     // emit('folderChange', { dataRef: previousContext.value })
                 } else {
                 }
-                dropdownVisible.value = false
+
+                setTimeout(() => {
+                    dropdownVisible.value = false
+                }, 100)
             }
             const showDropdown = () => {
                 dropdownVisible.value = true

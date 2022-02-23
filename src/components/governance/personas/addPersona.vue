@@ -37,11 +37,9 @@
     import { IPersona } from '~/types/accessPolicies/personas'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
-    import {
-        reFetchList,
-        selectedPersonaId,
-    } from './composables/usePersonaList'
+    import { selectedPersonaId } from './composables/usePersonaList'
     import usePersonaService from './composables/usePersonaService'
+    import { usePersonaStore } from '~/store/persona'
 
     export default defineComponent({
         name: 'AddPersona',
@@ -71,6 +69,8 @@
             }
 
             const { createPersona } = usePersonaService()
+            const personaStore = usePersonaStore()
+            const { updatePersona } = personaStore
 
             async function handleCreation() {
                 const messageKey = Date.now()
@@ -102,10 +102,9 @@
                     })
                     description.value = ''
                     title.value = ''
-                    reFetchList().then(() => {
-                        selectedPersonaId.value = newPersona.id!
-                        modalVisible.value = false
-                    })
+                    updatePersona(newPersona)
+                    selectedPersonaId.value = newPersona.id!
+                    modalVisible.value = false
                     useAddEvent('governance', 'persona', 'created')
                 } catch (error: any) {
                     message.error({

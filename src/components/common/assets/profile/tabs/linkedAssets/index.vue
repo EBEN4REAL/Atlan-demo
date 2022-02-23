@@ -28,10 +28,9 @@
                     class="pb-6 asset-list-height"
                     :enableSidebarDrawer="true"
                     customPlaceholder="Search linked assets"
-                    aggregationTabClass="px-6 "
-                    searchBarClass="pl-6 my-1"
-                    asset-list-class="mx-6 mt-1"
-                    asset-item-class="group"
+                    aggregation-tab-class="px-5 my-1"
+                    search-bar-class="pl-5 my-1"
+                    asset-item-class="px-2"
                 >
                     <template #searchAction>
                         <AtlanBtn
@@ -46,20 +45,24 @@
 
                     <template #assetItemCta="{ item }">
                         <a-dropdown>
-
                             <AtlanBtn
-                                class="flex items-center justify-center w-8 h-8 p-0 rounded cursor-pointer hover:border-primary-focus opacity-0 group-hover:opacity-100"
+                                class="flex items-center justify-center w-8 h-8 p-0 rounded opacity-0 cursor-pointer hover:border-primary-focus group-hover:opacity-100"
                                 size="sm"
                                 color="secondary"
                                 padding="compact"
                                 @click="(e) => e.stopPropagation()"
                             >
-                                <AtlanIcon icon="KebabMenu" class="text-gray-700"></AtlanIcon>
+                                <AtlanIcon
+                                    icon="KebabMenu"
+                                    class="text-gray-700"
+                                ></AtlanIcon>
                             </AtlanBtn>
 
                             <template #overlay>
                                 <a-menu>
-                                    <a-menu-item @click="() => unlinkOneAsset(item)">
+                                    <a-menu-item
+                                        @click="() => unlinkOneAsset(item)"
+                                    >
                                         Unlink asset
                                     </a-menu-item>
                                 </a-menu>
@@ -101,6 +104,7 @@
         :selectedAssetCount="selectedAssetCount"
         @closeDrawer="handleCancel"
         @saveAssets="saveAssets"
+        @unCheck="handleItemUncheck"
         :selected-asset="selectedAsset"
         v-model:selected-items="selectedItems"
     />
@@ -207,6 +211,19 @@
                             )
                     ) ?? []
             }
+            const handleItemUncheck = (item) => {
+                if (
+                    localAssignedEntities.value.find(
+                        (entity: any) => entity.guid === item.guid
+                    )
+                ) {
+                    localAssignedEntities.value =
+                        localAssignedEntities.value.filter(
+                            (entity) => entity.guid !== item.guid
+                        )
+                    localAssignedEntities.value.push(item)
+                }
+            }
             const handleCancel = () => {
                 constructPayload()
                 if (linkedAssets.value?.length || unlinkedAssets.value?.length)
@@ -245,9 +262,17 @@
             }
 
             watch(localAssignedEntities, () => {
+                console.log(linkedAssetsWrapperRef?.value?.filters)
                 if (linkedAssetsWrapperRef?.value?.quickChange) {
                     setTimeout(() => {
                         linkedAssetsWrapperRef.value.quickChange()
+                        if (
+                            linkedAssetsWrapperRef?.value?.list?.length < 2 &&
+                            linkedAssetsWrapperRef?.value?.postFilters
+                        ) {
+                            linkedAssetsWrapperRef.value.postFilters.typeName =
+                                '__all'
+                        }
                     }, 1000)
                 }
             })
@@ -267,7 +292,8 @@
                 isModalVisible,
                 handleModalCancel,
                 handleConfirmCancel,
-                unlinkOneAsset
+                unlinkOneAsset,
+                handleItemUncheck,
             }
         },
     })

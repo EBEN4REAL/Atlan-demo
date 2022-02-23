@@ -76,11 +76,6 @@
                                         'package.argoproj.io/name'
                                     ]
                                 }}
-                                ({{
-                                    item?.metadata.labels[
-                                        'package.argoproj.io/version'
-                                    ]
-                                }})
                             </div>
                         </div>
                     </div>
@@ -161,7 +156,7 @@
     import { useRoute, useRouter } from 'vue-router'
 
     export default defineComponent({
-        name: 'AssetPreview',
+        name: 'PackagePreview',
         components: {
             PreviewTabsIcon,
             Property: defineAsyncComponent(

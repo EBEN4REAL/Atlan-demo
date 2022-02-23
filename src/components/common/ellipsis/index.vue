@@ -5,9 +5,11 @@
         :destroy-tooltip-on-hide="true"
         :overlay-style="{ maxWidth: width }"
         :color="tooltipColor"
+        :overlayClassName="tooltipColor === 'white' ? 'tooltip-black' : ''"
         ><div
             :class="classes"
-            :style="{ maxWidth: clampPercentage, 'line-break': 'anywhere' }"
+            :style="{ maxWidth: clampPercentage }"
+            class="break-words"
         >
             <template v-if="routeTo">
                 <router-link
@@ -97,5 +99,8 @@
 <style lang="less" scoped>
     :global(div.ant-typography, .ant-typography p) {
         margin-bottom: 0 !important;
+    }
+    :global(.tooltip-black .ant-tooltip-inner) {
+        @apply p-3 text-gray-700 whitespace-pre-line;
     }
 </style>

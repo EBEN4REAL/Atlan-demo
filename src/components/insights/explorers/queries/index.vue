@@ -996,13 +996,6 @@
 
             /* Watcher for updating the node in tree */
             watch(assetSidebarUpdatedData, () => {
-                /* For classificationNames len ==1 for public */
-                // const inlineTab = inlineTabs.value.find(
-                //     (tab) => tab?.queryId === selectedAsset.value?.guid
-                // )
-
-                // console.log('query tree update:', assetSidebarUpdatedData.value)
-
                 if (assetSidebarUpdatedData?.value?.typeName === 'Query') {
                     console.log(
                         'query tree update:',
@@ -1015,27 +1008,6 @@
                         })
                     }
                 }
-                // const activeInlineTabCopy: activeInlineTabInterface =
-                //     Object.assign({}, activeInlineTab.value)
-                // if (selectedAsset.value?.guid) {
-                //     updateNode({
-                //         qualifiedName: qualifiedName(
-                //             selectedAsset as unknown as assetInterface
-                //         ),
-                //         entity: selectedAsset.value as any,
-                //     })
-                //     // }
-                //     // activeInlineTabCopy.status = selectedAsset.value.attributes
-                //     //     .certificateStatus as string
-                //     // activeInlineTabCopy.attributes =
-                //     //     selectedAsset.value.attributes
-
-                //     // modifyActiveInlineTab(
-                //     //     activeInlineTabCopy,
-                //     //     inlineTabs,
-                //     //     activeInlineTabCopy.isSaved
-                //     // )
-                // }
             })
 
             let searchTreeData = ref([])

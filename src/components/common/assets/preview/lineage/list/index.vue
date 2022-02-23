@@ -1,5 +1,5 @@
 <template>
-    <div class="mx-5 mt-3">
+    <div class="px-5 pb-0 mt-3">
         <SearchAndFilter
             v-model:value="queryText"
             :placeholder="getPlaceholder"
@@ -13,7 +13,7 @@
 
     <AggregationTabs
         v-model="selectedType"
-        class="px-4 mb-1"
+        class="px-5 mt-2 mb-1"
         :list="assetTypes"
     ></AggregationTabs>
 
@@ -28,7 +28,7 @@
                 :item-index="itemIndex"
                 :preference="preference"
                 :enable-sidebar-drawer="true"
-                class="mx-3"
+                class="px-2 hover:bg-primary-menu"
                 isCompact
             ></AssetItem>
         </template>

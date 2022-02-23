@@ -1,10 +1,12 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
     <div
-        class="my-0.5 rounded transition duration-100 hover:bg-primary-menu"
+        class="transition duration-100 hover:border-primary"
         :class="{
-            'outline-primary bg-primary-menu shadow-sm': isSelected,
+            'border-primary  shadow border bg-primary-menu': isSelected,
             'cursor-pointer': enableSidebarDrawer,
+            'opacity-80': isLoading,
+            'my-1 rounded-lg': page === 'assets',
         }"
         @click="handlePreview(item)"
     >
@@ -12,64 +14,88 @@
             class="flex flex-col"
             :class="[
                 !bulkSelectMode && isSelected
-                    ? 'border-primary bg-primary-menu'
+                    ? 'border-primary '
                     : 'border-transparent',
                 bulkSelectMode && isChecked ? 'bg-primary-menu' : '',
             ]"
         >
             <div class="flex items-start flex-1 px-3 py-3 asset-card">
-                <a-checkbox
-                    v-if="showCheckBox"
-                    :checked="isChecked"
-                    class="ml-2 mr-3 opacity-60 hover:opacity-100"
-                    :class="bulkSelectMode ? 'opacity-100' : 'opacity-0'"
-                    @click.stop
-                    @change="(e) => $emit('listItem:check', e, item)"
-                />
-                <div
-                    class="flex flex-col flex-1"
-                    :class="{ 'lg:pr-16': !isCompact }"
+                <a-tooltip
+                    placement="leftTop"
+                    :title="
+                        isScrubbed(item) && disableCheckboxForScrubbed
+                            ? `You don't have permission to link this asset to a term`
+                            : ''
+                    "
+                    :mouse-enter-delay="0.2"
                 >
-                    <div class="flex items-center overflow-hidden">
+                    <a-checkbox
+                        v-if="showCheckBox"
+                        :checked="isChecked"
+                        :disabled="
+                            isScrubbed(item) && disableCheckboxForScrubbed
+                        "
+                        class="ml-2 mr-3 opacity-60 hover:opacity-100"
+                        :class="bulkSelectMode ? 'opacity-100' : 'opacity-0'"
+                        @click.stop
+                        @change="(e) => $emit('listItem:check', e, item)"
+                /></a-tooltip>
+                <div class="flex flex-col flex-1" :class="{ '': !isCompact }">
+                    <div class="flex items-center justify-between">
                         <div
-                            v-if="
-                                ['column'].includes(
-                                    item.typeName?.toLowerCase()
-                                )
-                            "
-                            class="flex items-center mr-1"
+                            class="flex items-center overflow-hidden flex-grow"
                         >
-                            <component
-                                :is="dataTypeCategoryImage(item)"
-                                class="h-4 mb-1 text-gray-500"
+                            <div
+                                v-if="
+                                    ['column'].includes(
+                                        item.typeName?.toLowerCase()
+                                    )
+                                "
+                                class="flex items-center mr-1"
+                            >
+                                <component
+                                    :is="dataTypeCategoryImage(item)"
+                                    class="h-4 mb-1 text-gray-500"
+                                />
+                            </div>
+
+                            <Tooltip
+                                :clamp-percentage="assetNameTruncatePercentage"
+                                :tooltip-text="`${title(item)}`"
+                                :route-to="getProfilePath(item)"
+                                :classes="
+                                    isScrubbed(item)
+                                        ? 'text-md mb-0  font-semibold cursor-pointer text-primary hover:underline opacity-80 '
+                                        : 'text-md font-bold mb-0 cursor-pointer text-primary hover:underline  '
+                                "
+                                :should-open-in-new-tab="
+                                    openAssetProfileInNewTab
+                                "
+                                @click="(e) => e.stopPropagation()"
                             />
+
+                            <CertificateBadge
+                                v-if="certificateStatus(item)"
+                                :status="certificateStatus(item)"
+                                :username="certificateUpdatedBy(item)"
+                                :timestamp="certificateUpdatedAt(item)"
+                                class="mb-1 ml-1"
+                            ></CertificateBadge>
+
+                            <a-tooltip placement="right"
+                                ><template #title>Limited Access</template>
+                                <AtlanIcon
+                                    v-if="isScrubbed(item)"
+                                    icon="Lock"
+                                    class="h-4 mb-1 ml-2 text-gray-500"
+                                ></AtlanIcon
+                            ></a-tooltip>
                         </div>
-
-                        <Tooltip
-                            :clamp-percentage="assetNameTruncatePercentage"
-                            :tooltip-text="`${title(item)}`"
-                            :route-to="getProfilePath(item)"
-                            classes="text-md font-bold mb-0 cursor-pointer text-primary hover:underline "
-                            :should-open-in-new-tab="openAssetProfileInNewTab"
-                            @click="(e) => e.stopPropagation()"
-                        />
-
-                        <CertificateBadge
-                            v-if="certificateStatus(item)"
-                            :status="certificateStatus(item)"
-                            :username="certificateUpdatedBy(item)"
-                            :timestamp="certificateUpdatedAt(item)"
-                            class="mb-1 ml-1"
-                        ></CertificateBadge>
-
-                        <a-tooltip placement="right"
-                            ><template #title>Limited Access</template>
-                            <AtlanIcon
-                                v-if="isScrubbed(item)"
-                                icon="Lock"
-                                class="h-4 mb-1 ml-1"
-                            ></AtlanIcon
-                        ></a-tooltip>
+                        <div class>
+                            <a-tooltip :title="announcementType(item)">
+                                <AtlanIcon :icon="icon"></AtlanIcon>
+                            </a-tooltip>
+                        </div>
                     </div>
 
                     <div v-if="description(item)" class="flex mt-0.5">
@@ -82,7 +108,7 @@
                     </div>
 
                     <!-- Info bar -->
-                    <div class="flex flex-wrap items-center mt-1">
+                    <div class="flex flex-wrap items-center mt-1.5">
                         <div class="flex items-center mr-2">
                             <a-tooltip
                                 v-if="connectorName(item)"
@@ -94,10 +120,10 @@
                                         `/${connectionName(item)}`
                                     }}</span>
                                 </template>
-                                <AtlanIcon
-                                    :icon="getConnectorImage(item)"
+                                <img
+                                    :src="getConnectorImage(item)"
                                     class="h-4 mr-1 mb-0.5"
-                                ></AtlanIcon>
+                                />
                             </a-tooltip>
 
                             <AtlanIcon
@@ -135,45 +161,6 @@
                         </div>
 
                         <div class="flex items-center">
-                            <div
-                                v-if="categories(item)?.length > 0"
-                                class="flex items-center mr-3 text-sm text-gray-500 gap-x-1"
-                            >
-                                in
-                                <div
-                                    v-for="(cat, index) in categories(item)"
-                                    v-if="
-                                        ['atlasglossaryterm'].includes(
-                                            item.typeName?.toLowerCase()
-                                        )
-                                    "
-                                    :key="cat.guid"
-                                    class="flex"
-                                >
-                                    <AtlanIcon
-                                        icon="Category"
-                                        class="h-4 mt-0.5 mr-1"
-                                    ></AtlanIcon>
-                                    {{ cat.attributes?.name }}
-                                    <span
-                                        v-if="
-                                            index ===
-                                                categories(item).length - 2 &&
-                                            categories(item).length > 1
-                                        "
-                                        class="ml-1"
-                                    >
-                                        and
-                                    </span>
-                                    <span
-                                        v-else-if="
-                                            index !==
-                                            categories(item).length - 1
-                                        "
-                                        >,</span
-                                    >
-                                </div>
-                            </div>
                             <div
                                 v-if="parentCategory(item)"
                                 class="flex items-center mr-3 text-sm text-gray-500 gap-x-1"
@@ -226,11 +213,10 @@
                                         )
                                     "
                                     class="mr-2 text-gray-500"
-                                    ><span
-                                        class="font-semibold tracking-tight text-gray-500"
+                                    ><span class="text-gray-500"
                                         >{{ rowCount(item, false) }}
                                     </span>
-                                    Rows</span
+                                    rows</span
                                 >
                                 <template #title>
                                     <span
@@ -252,11 +238,10 @@
                                 </template>
                             </a-tooltip>
                             <span class="text-gray-500">
-                                <span
-                                    class="font-semibold tracking-tight text-gray-500"
-                                    >{{ columnCount(item, false) }}</span
-                                >
-                                Cols</span
+                                <span class="text-gray-500">{{
+                                    columnCount(item, false)
+                                }}</span>
+                                columns</span
                             >
                         </div>
 
@@ -269,14 +254,10 @@
                             class="flex mr-2 text-sm text-gray-500"
                         >
                             <div class="flex items-center text-gray">
-                                <!-- <img
+                                <img
                                     :src="getConnectorImage(item)"
-                                    class="h-3 mr-1 mb-0.5"
-                                /> -->
-                                <AtlanIcon
-                                    :icon="getConnectorImage(item)"
                                     class="h-4 mr-1 mb-0.5"
-                                ></AtlanIcon>
+                                />
                                 <span>{{
                                     `${connectorName(item)}/${connectionName(
                                         item
@@ -912,7 +893,7 @@
                         </div>
                     </div>
 
-                    <div class="flex flex-wrap gap-x-1">
+                    <div class="flex flex-wrap items-center gap-x-1">
                         <div
                             v-if="
                                 clsfList.length > 0 &&
@@ -927,6 +908,14 @@
                                 <PopoverClassification
                                     :classification="classification"
                                     :entity-guid="item.guid"
+                                    :mouse-enter-delay="
+                                        classificationPopoverMouseEnterDelay
+                                    "
+                                    @mouse-entered="
+                                        () => {
+                                            classificationPopoverMouseEnterDelay = 0.2
+                                        }
+                                    "
                                 >
                                     <ClassificationPill
                                         :name="classification.name"
@@ -981,6 +970,80 @@
                                 </div>
                             </template>
                         </div>
+                        <div
+                            v-if="categories(item)?.length > 0"
+                            class="flex items-center gap-x-2"
+                        >
+                            <div
+                                v-for="cat in categories(item).slice(0, 3)"
+                                :key="cat.guid"
+                                class="flex items-center px-2 py-1 mt-1 bg-white border rounded-full group hover:text-white hover:bg-primary"
+                                style="max-width: 200px"
+                            >
+                                <div class="w-4 mr-1">
+                                    <AtlanIcon
+                                        icon="Category"
+                                        class="h-4 text-purple group-hover:text-white"
+                                    ></AtlanIcon>
+                                </div>
+                                <Tooltip
+                                    :tooltip-text="cat.attributes?.name"
+                                    :route-to="`/glossary/${cat?.guid}`"
+                                    classes="cursor-pointer   hover:text-white  group-hover:text-white"
+                                    :should-open-in-new-tab="true"
+                                    @click="(e) => e.stopPropagation()"
+                                    placement="bottom"
+                                />
+                            </div>
+                        </div>
+
+                        <a-popover
+                            trigger="hover"
+                            placement="bottomLeft"
+                            v-if="categories(item)?.slice(3)?.length > 0"
+                            overlayClassName="max-w-xs"
+                        >
+                            <template #content>
+                                <div
+                                    class="flex flex-wrap items-center px-2 py-2 gap-x-2 gap-y-2"
+                                >
+                                    <div
+                                        v-for="cat in categories(item)?.slice(
+                                            3
+                                        )"
+                                        :key="cat.guid"
+                                        class="flex items-center px-2 py-1 bg-white border rounded-full hover:text-white hover:bg-primary group"
+                                        style="max-width: 200px"
+                                    >
+                                        <div class="w-4 mr-1">
+                                            <AtlanIcon
+                                                :icon="
+                                                    getEntityStatusIcon(
+                                                        'AtlasGlossaryCategory',
+                                                        certificateStatus(cat)
+                                                    )
+                                                "
+                                                class="h-4 text-purple group-hover:text-white"
+                                            ></AtlanIcon>
+                                        </div>
+                                        <Tooltip
+                                            :tooltip-text="cat.attributes?.name"
+                                            :route-to="`/glossary/${cat?.guid}`"
+                                            classes="cursor-pointer   hover:text-white group-hover:text-white"
+                                            :should-open-in-new-tab="true"
+                                            @click="(e) => e.stopPropagation()"
+                                            placement="bottom"
+                                        />
+                                    </div>
+                                </div>
+                            </template>
+
+                            <div
+                                class="flex items-center px-2 py-1 mt-1 mr-3 text-sm bg-transparent cursor-pointer gap-x-1 text-primary"
+                            >
+                                + {{ categories(item)?.slice(3)?.length }} more
+                            </div>
+                        </a-popover>
                     </div>
                 </div>
                 <slot name="cta"></slot>
@@ -989,11 +1052,14 @@
         <hr
             class="mx-2 text-gray-100 bg-gray-200"
             :class="
-                (bulkSelectMode && isChecked) || isSelected ? 'invisible' : ''
+                (bulkSelectMode && isChecked) || isSelected || page === 'assets'
+                    ? 'invisible'
+                    : ''
             "
         />
+
         <AssetDrawer
-            :data="selectedAssetDrawerData"
+            :guid="selectedAssetDrawerGuid"
             :show-drawer="showAssetSidebarDrawer"
             @closeDrawer="handleCloseDrawer"
             @update="handleListUpdate"
@@ -1017,6 +1083,7 @@
     import TermPill from '@/common/pills/term.vue'
     import useTermPopover from '@/common/popover/term/useTermPopover'
     import AtlanIcon from '@/common/icon/atlanIcon.vue'
+    import useGlossaryData from '~/composables/glossary2/useGlossaryData'
 
     export default defineComponent({
         name: 'AssetListItem',
@@ -1103,6 +1170,21 @@
                 type: Boolean,
                 default: false,
             },
+            disableCheckboxForScrubbed: {
+                type: Boolean,
+                default: false,
+                required: false,
+            },
+            isLoading: {
+                type: Boolean,
+                default: false,
+                required: false,
+            },
+            page: {
+                type: String,
+                required: false,
+                default: 'notAssets',
+            },
         },
         emits: ['listItem:check', 'unlinkAsset', 'preview', 'updateDrawer'],
         setup(props, { emit }) {
@@ -1115,10 +1197,14 @@
                 bulkSelectMode,
                 enableSidebarDrawer,
                 itemIndex,
+                isLoading,
             } = toRefs(props)
 
+            const { getEntityStatusIcon } = useGlossaryData()
             const showAssetSidebarDrawer = ref(false)
-            const selectedAssetDrawerData = ref({})
+            const selectedAssetDrawerGuid = ref('')
+
+            const classificationPopoverMouseEnterDelay = ref(1)
 
             const {
                 title,
@@ -1175,25 +1261,41 @@
                 sourceChildCount,
                 fieldCount,
                 isCustom,
+                announcementType,
             } = useAssetInfo()
+
+            const icon = computed(() => {
+                if (!announcementType(item.value)) {
+                    return ''
+                }
+                switch (announcementType(item.value)?.toLowerCase()) {
+                    case 'information':
+                        return 'InformationAnnouncement'
+                    case 'issue':
+                        return 'IssuesAnnouncement'
+                    case 'warning':
+                        return 'WarningAnnouncement'
+                    default:
+                        return 'InformationAnnouncement'
+                }
+            })
 
             const handlePreview = (item: any) => {
                 if (enableSidebarDrawer.value === true) {
                     showAssetSidebarDrawer.value = true
-                    selectedAssetDrawerData.value = item
+                    selectedAssetDrawerGuid.value = item?.guid
                 } else {
                     emit('preview', item, itemIndex.value)
                 }
             }
 
             const handleCloseDrawer = () => {
-                selectedAssetDrawerData.value = {}
+                selectedAssetDrawerGuid.value = ''
                 showAssetSidebarDrawer.value = false
             }
 
             const handleListUpdate = (asset) => {
                 emit('updateDrawer', asset)
-                selectedAssetDrawerData.value = asset
             }
 
             const isSelected = computed(() => {
@@ -1295,7 +1397,7 @@
                 classifications,
                 getProfilePath,
                 showAssetSidebarDrawer,
-                selectedAssetDrawerData,
+                selectedAssetDrawerGuid,
                 handleCloseDrawer,
                 isUserDescription,
                 isScrubbed,
@@ -1320,6 +1422,12 @@
                 terms,
                 fieldCount,
                 isCustom,
+                getEntityStatusIcon,
+                meanings,
+                isLoading,
+                classificationPopoverMouseEnterDelay,
+                icon,
+                announcementType,
             }
         },
     })

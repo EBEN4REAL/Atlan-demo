@@ -2,61 +2,61 @@
     <div v-if="loading" class="flex items-center justify-center w-full h-full">
         <AtlanLoader class="h-8" />
     </div>
-    <div v-else ref="target" class="flex flex-col mb-3 gap-y-2">
+    <div v-else ref="target" class="flex flex-col mb-3 gap-y-2 w-full">
         <!-- header starts here -->
-        <div class="flex justify-between h-12 px-5 pb-2 mt-4 gap-x-4 group">
-            <div class="flex-grow font-semibold text-gray-500">
-                <div class="flex gap-x-1">
-                    <Truncate
-                        :tooltip-text="data.label"
-                        :rows="2"
-                        width="500px"
-                        placement="left"
-                        :should-open-in-new-tab="true"
-                        :classes="
-                            checkAccess(page.PAGE_GOVERNANCE)
-                                ? 'text-primary hover:underline'
-                                : ''
-                        "
-                        v-bind="
-                            checkAccess(page.PAGE_GOVERNANCE)
-                                ? {
-                                      routeTo: `/governance/custom-metadata/${data.guid}`,
-                                  }
-                                : {}
-                        "
-                    />
-                    <!-- <div class="">
-                        <a
-                            v-if="checkAccess(page.PAGE_GOVERNANCE)"
-                            class="mb-1"
-                            :href="`/governance/custom-metadata/${data.guid}`"
-                            target="_blank"
-                            ><AtlanIcon icon="External"
-                        /></a>
-                    </div> -->
-
-                    <a-tooltip>
-                        <template #title>
-                            <span>{{ data?.description }}</span>
-                        </template>
-                        <div class="flex items-center">
-                            <AtlanIcon
-                                v-if="data?.description"
-                                class="text-gray-400 hover:text-gray-500"
-                                icon="Info"
-                            />
-                        </div>
-                    </a-tooltip>
-                </div>
-            </div>
-            <template
+        <div
+            class="flex items-center justify-between px-5 py-2 border-b border-gray-200 gap-x-4 group bg-gray-50"
+        >
+            <span class="flex items-center">
+                <PreviewTabsIcon
+                    :icon="tab.icon"
+                    :image="tab.image"
+                    :emoji="tab.emoji"
+                    height="h-4"
+                    width="w-4"
+                    class="mr-2"
+                    :displayMode="true"
+                    emojiSize="text-md"
+                />
+                <Truncate
+                    :tooltip-text="data.label"
+                    :rows="2"
+                    placement="left"
+                    :should-open-in-new-tab="true"
+                    :classes="
+                        checkAccess(page.PAGE_GOVERNANCE)
+                            ? 'text-primary hover:underline mr-1 font-semibold'
+                            : 'mr-1 line-clamp-1'
+                    "
+                    width="200px"
+                    v-bind="
+                        checkAccess(page.PAGE_GOVERNANCE)
+                            ? {
+                                  routeTo: `/governance/custom-metadata/${data.guid}`,
+                              }
+                            : {}
+                    "
+                />
+                <a-tooltip>
+                    <template #title>
+                        <span>{{ data?.description }}</span>
+                    </template>
+                    <div class="flex items-center">
+                        <AtlanIcon
+                            v-if="data?.description"
+                            class="text-gray-400 hover:text-gray-500"
+                            icon="Info"
+                        />
+                    </div>
+                </a-tooltip>
+            </span>
+            <div
                 v-if="
                     selectedAssetUpdatePermission(
                         selectedAsset,
                         isDrawer,
                         'ENTITY_UPDATE_BUSINESS_METADATA'
-                    )
+                    ) && !viewOnly
                 "
             >
                 <div
@@ -64,7 +64,7 @@
                         readOnly &&
                         applicableList.filter((i) => hasValue(i)).length
                     "
-                    class="opacity-0 group-hover:opacity-100"
+                    class=""
                 >
                     <span
                         class="font-bold cursor-pointer hover:underline text-primary"
@@ -82,16 +82,24 @@
                     </span>
                     <AtlanButton
                         :disabled="!isEdit"
-                        size="sm"
+                        size="small"
                         padding="compact"
                         @click="handleUpdate"
                     >
                         Update
                     </AtlanButton>
                 </div>
-            </template>
+            </div>
         </div>
         <!-- header ends here -->
+
+        <template v-if="data?.options?.isLocked === 'true'">
+            <div
+                class="flex items-center p-2 mx-5 mt-2 text-xs rounded gap-x-2 bg-primary-light text-primary"
+            >
+                <InternalCMBanner />
+            </div>
+        </template>
 
         <div
             class="flex flex-col flex-grow pl-5 pr-5 overflow-auto scrollheight"
@@ -254,7 +262,7 @@
                                         selectedAsset,
                                         isDrawer,
                                         'ENTITY_UPDATE_BUSINESS_METADATA'
-                                    )
+                                    ) && !viewOnly
                                 "
                             >
                                 <PropertyPopover
@@ -276,7 +284,7 @@
                                     selectedAsset,
                                     isDrawer,
                                     'ENTITY_UPDATE_BUSINESS_METADATA'
-                                )
+                                ) && !viewOnly
                             "
                             color="primary"
                             padding="compact"
@@ -361,15 +369,19 @@
     import page from '~/constant/accessControl/page'
     import useAuth from '~/composables/auth/useAuth'
     import PropertyPopover from '@/common/assets/preview/customMetadata/misc/propertyPopover.vue'
+    import InternalCMBanner from '@/common/customMetadata/internalCMBanner.vue'
+    import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
 
     export default defineComponent({
         name: 'CustomMetadata',
         components: {
+            InternalCMBanner,
             PropertyPopover,
             Truncate,
             ReadOnly: defineAsyncComponent(() => import('./readOnly.vue')),
             EditState: defineAsyncComponent(() => import('./editState.vue')),
             EmptyView,
+            PreviewTabsIcon,
         },
         props: {
             selectedAsset: {
@@ -385,6 +397,10 @@
                 required: false,
                 default: false,
             },
+            tab: {
+                type: Object,
+                required: false,
+            },
         },
         setup(props) {
             const { selectedAsset, data } = toRefs(props)
@@ -392,6 +408,7 @@
             const readOnly = ref(true)
             const loading = ref(false)
             const showMore = ref(false)
+            const viewOnly = ref(data.value.options?.isLocked === 'true')
             const guid = ref()
             const { checkAccess } = useAuth()
             const isEvaluating = inject('isEvaluating')
@@ -647,6 +664,7 @@
             })
 
             return {
+                viewOnly,
                 isEvaluating,
                 checkAccess,
                 page,

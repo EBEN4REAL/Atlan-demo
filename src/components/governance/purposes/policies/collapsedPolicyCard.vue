@@ -28,21 +28,21 @@
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
                     <div class="flex justify-items-end">
-                        <span v-if="splitAssets.a.length > 0" class="">
-                            {{ splitAssets.a.length }}
-                            {{ splitAssets.a.length === 1 ? 'User' : 'Users' }}
+                        <span v-if="policy.users.length > 0" class="">
+                            {{ policy.users.length }}
+                            {{ policy.users.length === 1 ? 'User' : 'Users' }}
                         </span>
                         <span
                             v-if="
-                                splitAssets.b.length > 0 &&
-                                splitAssets.a.length > 0
+                                policy.groups.length > 0 &&
+                                policy.users.length > 0
                             "
                             >&nbsp;and</span
                         >
-                        <span v-if="splitAssets.b.length > 0">
-                            &nbsp;{{ splitAssets.b.length }}
+                        <span v-if="policy.groups.length > 0">
+                            &nbsp;{{ policy.groups.length }}
                             {{
-                                splitAssets.b.length === 1 ? 'Group' : 'Groups'
+                                policy.groups.length === 1 ? 'Group' : 'Groups'
                             }}
                         </span>
                     </div>
@@ -219,6 +219,7 @@
                     maskPurpose.find((el) => el.value === policy.value.mask)
                         ?.label
             )
+            const visibleDelete = ref(false)
             return {
                 editToggle,
                 splitAssets,
@@ -230,7 +231,8 @@
                 actions,
                 handleClickPlicyCard,
                 permissions,
-                maskComputed
+                maskComputed,
+                visibleDelete,
             }
         },
     })

@@ -27,7 +27,6 @@
             <div v-if="list.length !== 0" :class="aggregationTabClass">
                 <AggregationTabs
                     v-model="postFilters.typeName"
-                    class="mt-3"
                     :list="assetTypeAggregationList"
                     @change="fetchList(0)"
                 />
@@ -44,7 +43,7 @@
             >
                 <ErrorView></ErrorView>
             </div>
-            <div v-if="list.length === 0 && !isValidating" class="h-full">
+            <div v-else-if="list.length === 0 && !isValidating" class="h-full">
                 <EmptyView
                     empty-screen="NoAssetsFound"
                     image-class="h-44"
@@ -94,6 +93,10 @@
                             @listItem:check="
                                 (e, item) => $emit('listItem:check', item)
                             "
+                            :disableCheckboxForScrubbed="
+                                disableCheckboxForScrubbed
+                            "
+                            class="hover:bg-primary-menu"
                         >
                             <template #cta>
                                 <slot :item="item" name="assetItemCta"> </slot>
@@ -125,13 +128,9 @@
     import AssetItem from '@/common/assets/list/assetItem.vue'
     import useAssetStore from '~/store/asset'
     import useFetchAssetList from './usefetchAssetList'
-    import useTypedefData from '~/composables/typedefs/useTypedefData'
     import {
-        AssetAttributes,
-        AssetRelationAttributes,
-        InternalAttributes,
-        SQLAttributes,
-        GlossaryAttributes,
+        DefaultRelationAttributes,
+        MinimalAttributes,
     } from '~/constant/projection'
 
     export default defineComponent({
@@ -221,7 +220,7 @@
             },
             aggregationTabClass: {
                 type: String,
-                default: '',
+                default: 'mt-3',
             },
             searchBarClass: {
                 type: String,
@@ -238,6 +237,11 @@
             searchBarSize: {
                 type: String,
                 default: 'large',
+                required: false,
+            },
+            disableCheckboxForScrubbed: {
+                type: Boolean,
+                default: false,
                 required: false,
             },
         },
@@ -264,16 +268,9 @@
             const searchDirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
 
             // set all the attributes that would be fetched
-            const { customMetadataProjections } = useTypedefData()
-            const defaultAttributes = ref([
-                ...InternalAttributes,
-                ...AssetAttributes,
-                ...SQLAttributes,
-                ...customMetadataProjections,
-                ...GlossaryAttributes,
-            ])
+            const defaultAttributes = ref([...MinimalAttributes])
 
-            const relationAttributes = ref([...AssetRelationAttributes])
+            const relationAttributes = ref([...DefaultRelationAttributes])
 
             // Preferences are to be shared for all asset lists
             const discoveryStore = useAssetStore()

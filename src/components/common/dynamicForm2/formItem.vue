@@ -27,7 +27,7 @@
                 >
                     <template #label>
                         <AtlanIcon
-                            icon="Lock"
+                            icon="Lock2"
                             class="h-3 mr-1 text-yellow-500 mb-0.5"
                             v-if="
                                 (property.ui.widget === 'password' ||
@@ -89,6 +89,7 @@
     import Date from './widget/date.vue'
     import Datetime from './widget/datetime.vue'
     import Sqltree from './widget/sqltree.vue'
+    import Apitree from './widget/apitree.vue'
     import Password from './widget/password.vue'
     import Connection from './widget/connection.vue'
     import Users from './widget/users.vue'
@@ -123,6 +124,7 @@
             AtlanIcon,
             ConnectionSelector,
             Datetime,
+            Apitree,
             Date,
         },
         props: {
@@ -231,14 +233,21 @@
                 if (configMap.value?.anyOf) {
                     configMap.value.anyOf.forEach((item) => {
                         item.required.forEach((i) => {
-                            if (configMap.value.properties[i]) {
+                            console.log('configMap', i)
+                            if (
+                                configMap.value.properties &&
+                                configMap.value.properties[i]
+                            ) {
                                 configMap.value.properties[i].ui.hidden = true
                             }
                         })
                     })
 
+                    console.log('configMap', configMap.value)
+
+                    const findMatch = []
                     configMap.value.anyOf.forEach((item) => {
-                        const loopStop = Object.keys(item.properties).some(
+                        const loopStop = Object.keys(item.properties).every(
                             (i) => {
                                 if (
                                     formState[getName(i)] ===
@@ -249,16 +258,24 @@
                             }
                         )
                         if (loopStop) {
-                            item.required.forEach((i) => {
-                                console.log(i)
-                                console.log(configMap.value.properties[i])
-
-                                configMap.value.properties[i].ui.hidden = false
-
-                                console.log(configMap.value)
-                            })
+                            findMatch.push(item)
                         }
                     })
+
+                    if (findMatch.length > 0) {
+                        findMatch.forEach((i) => {
+                            i.required.forEach((i) => {
+                                if (
+                                    configMap.value.properties &&
+                                    configMap.value.properties[i]
+                                ) {
+                                    configMap.value.properties[
+                                        i
+                                    ].ui.hidden = false
+                                }
+                            })
+                        })
+                    }
                 }
             }
 

@@ -24,7 +24,9 @@
                         :selected-asset="selectedGlossary"
                     />
                 </div>
-                <div class="h-full bg-white border-l asset-preview-container">
+                <div
+                    class="h-full bg-white border-l border-gray-300 asset-preview-container"
+                >
                     <GlossaryPreview
                         :selected-asset="localSelected"
                     ></GlossaryPreview>
@@ -114,8 +116,10 @@
                 localSelected.value = selectedGlossary.value
             }
             const handlePreview = (asset) => {
-                localSelected.value = asset
-                glossaryStore.setSelectedGTC(asset)
+                if (id?.value === asset?.guid) {
+                    localSelected.value = asset
+                    glossaryStore.setSelectedGTC(asset)
+                }
             }
 
             watch(selectedGlossary, () => {
@@ -221,6 +225,7 @@
             position: relative;
             touch-action: none;
             border-width: 0.5px !important;
+            @apply border-gray-300 !important;
             &:before {
                 content: '';
                 position: absolute;

@@ -6,26 +6,39 @@
                 ? `You don't have permission to view ${title} for this asset`
                 : title
         "
-        :mouse-enter-delay="0.5"
+        :mouse-enter-delay="0.1"
         ><div
             class="flex items-center justify-center"
-            :class="displayMode ? '' : 'relative w-full h-full'"
+            :class="displayMode ? `w-auto` : 'relative w-full h-full'"
         >
             <AtlanIcon
                 v-if="icon"
                 :icon="isActive && activeIcon ? activeIcon : icon"
-                :class="isActive && !activeIcon ? 'text-primary' : ''"
-                class="h-6"
+                :class="
+                    isActive && !activeIcon
+                        ? `text-primary ${height}`
+                        : `${height}`
+                "
             />
-            <img v-else-if="image" :src="imageUrl(image)" class="w-auto h-6" />
-            <span v-else-if="emoji" class="self-center float-left text-xl">
+            <img
+                v-else-if="image"
+                :src="imageUrl(image)"
+                :class="`${height}`"
+            />
+            <span
+                v-else-if="emoji"
+                :class="`self-center float-left ${emojiSize}`"
+            >
                 {{ emoji }}
             </span>
             <AtlanIcon
                 v-else
                 :icon="isActive ? 'Metadata' : 'Metadata'"
-                :class="isActive && !activeIcon ? 'text-primary' : ''"
-                class="h-6"
+                :class="
+                    isActive && !activeIcon
+                        ? `text-primary ${height}`
+                        : `${height}`
+                "
             />
             <AtlanIcon
                 v-if="isScrubbed"
@@ -77,10 +90,30 @@
                     return false
                 },
             },
+            height: {
+                type: String,
+                required: false,
+                default: () => 'h-6',
+            },
+            width: {
+                type: String,
+                required: false,
+                default: () => 'w-6',
+            },
+            emojiSize: {
+                type: String,
+                required: false,
+                default: () => 'text-xl',
+            },
         },
         setup(props, { emit }) {
-            const imageUrl = (url) =>
-                `${window.location.origin}/api/service/images/${url}?ContentDisposition=inline&name=${url}`
+            const imageUrl = (url) => {
+                if (url.startsWith('http')) {
+                    return url
+                }
+                const logo = `${window.location.origin}/api/service/images/${url}?ContentDisposition=inline&name=${url}`
+                return logo
+            }
             return { imageUrl }
         },
     })

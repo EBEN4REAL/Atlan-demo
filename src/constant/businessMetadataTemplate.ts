@@ -1,28 +1,4 @@
-import { AssetTypeList } from '~/constant/assetType'
-import assetCategories from '~/constant/assetCategories'
 import { CUSTOM_METADATA_ATTRIBUTE as CMA } from '~/types/typedefs/customMetadata.interface'
-
-const inApplicableTypeName = ['Connection']
-const otherTypes = [
-    {
-        title: 'Glossary Term',
-        value: 'AtlasGlossaryTerm',
-        key: 'AtlasGlossaryTerm',
-    },
-]
-
-export const applicableEntityTypesOptions = [
-    ...assetCategories.map((t) => ({
-        title: t.label,
-        value: t.id,
-        key: t.id,
-        children: t.children?.map((a) => ({
-            title: a.label,
-            value: a.id,
-            key: a.id,
-        })),
-    })),
-]
 
 /**
  * @desc default template for new BM attribute
@@ -36,15 +12,8 @@ export const DEFAULT_ATTRIBUTE: CMA = {
     name: '',
     displayName: '',
     options: {
-        /* applicableEntityTypes's value needs to be send stringified when adding/updating in Atlas hold this here: [JSON.stringify(applicableEntityTypes)] */
         applicableEntityTypes: JSON.stringify(['Asset']),
-        customApplicableEntityTypes: applicableEntityTypesOptions.reduce(
-            (acc, item) => [
-                ...acc,
-                ...(item?.children?.map((v) => v.value) ?? []),
-            ],
-            []
-        ),
+        customApplicableEntityTypes: [],
         maxStrLength: '100000000',
         isEnum: false,
         enumType: '',
@@ -83,14 +52,14 @@ export const ATTRIBUTE_INPUT_VALIDATION_RULES = {
         {
             required: true,
             message: 'Please provide attribute name',
-            trigger: 'submit',
+            trigger: ['submit', 'change'],
         },
     ],
     options: {
         enumType: [
             {
                 required: true,
-                message: 'Please select Enum type',
+                message: 'Please select Option type',
                 trigger: 'submit',
             },
         ],
@@ -145,7 +114,7 @@ export const ATTRIBUTE_TYPES = [
     {
         label: 'Decimal',
         id: 'float',
-        icon: 'Number',
+        icon: 'Float',
     },
     {
         label: 'Boolean',
@@ -158,7 +127,7 @@ export const ATTRIBUTE_TYPES = [
         icon: 'DateTime',
     },
     {
-        label: 'Enum',
+        label: 'Options',
         id: 'enum',
         icon: 'Enum',
     },
@@ -177,7 +146,11 @@ export const ATTRIBUTE_TYPES = [
         id: 'url',
         icon: 'Link',
     },
-
+    {
+        label: 'SQL',
+        id: 'SQL',
+        icon: 'Query',
+    },
 ]
 
 /**

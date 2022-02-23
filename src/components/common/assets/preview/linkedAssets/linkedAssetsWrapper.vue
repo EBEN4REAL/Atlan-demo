@@ -1,8 +1,11 @@
 <template>
     <div class="flex flex-col h-full">
-        <div class="flex items-center justify-between px-5 py-4">
+        <div
+            class="flex items-center justify-between px-5 bg-gray-50 py-2 border-b border-gray-200"
+        >
             <span class="font-semibold text-gray-500">Linked Assets</span>
         </div>
+
         <div class="px-4 h-full">
             <AssetList
                 class="flex-grow bg-white"

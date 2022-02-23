@@ -163,7 +163,7 @@ export function useBody(
     let connectorName = ''
 
     //filters
-    Object.keys(facets ?? {}).forEach((mkey) => {
+    Object.keys(facets ?? {})?.forEach((mkey) => {
         const filterObject = facets[mkey]
         switch (mkey) {
             case 'hierarchy': {
@@ -298,6 +298,7 @@ export function useBody(
 
                 break
             }
+
             case 'typeName': {
                 if (filterObject) {
                     if (filterObject !== '__all') {
@@ -436,12 +437,20 @@ export function useBody(
                 }
                 break
             }
+            case 'stateList': {
+                // if (filterObject) {
+                //     base.filter('terms', '__state', filterObject)
+                // }
+                state.value=null
+                break
+            }
             case 'column':
             case 'table':
             case 'sql':
             default: {
-                if (filterObject) {
-                    Object.keys(filterObject).forEach((key) => {
+                if (filterObject ) {
+                    console.log('filterObject', filterObject)
+                    Object.keys(filterObject)?.forEach((key) => {
                         filterObject[key].forEach((element) => {
                             if (!element.operand) return
                             if (element.operator === 'isNull') {
@@ -499,6 +508,12 @@ export function useBody(
                                         }`
                                     )
                                 }
+                                if (element.operator === 'contains') {
+                                    base.filter('wildcard', element.operand, {
+                                        value: `*${element.value}*`,
+                                    })
+                                }
+
                                 if (element.operator === 'pattern') {
                                     base.filter(
                                         'regexp',
@@ -563,7 +578,9 @@ export function useBody(
         }
     })
 
-    base.filter('term', '__state', state.value)
+    // don't apply state filter
+    if (state.value)
+        base.filter('term', '__state', state.value)
 
     //post filters
     const postFilter = bodybuilder()

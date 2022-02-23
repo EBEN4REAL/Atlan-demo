@@ -78,7 +78,7 @@
             )
 
             const asset: ComputedRef<Record<string, any>> = computed(() => {
-                const chunks = filter.value.attributeValue?.split('/') || []
+                const chunks = filter.value?.attributeValue?.split('/') || []
                 const blankAsset = {}
                 if (chunks?.length > 3) {
                     const connection = chunks.slice(0, 3).join('/')
@@ -89,7 +89,7 @@
                     // Splicing first 3 as they contain tenant/integration/connection
                     for (
                         let idx = 0;
-                        idx < list.value.length && idx < chunks?.length - 3;
+                        idx < list.value?.length && idx < chunks?.length - 3;
                         idx++
                     ) {
                         let attrName = list.value[idx].attribute

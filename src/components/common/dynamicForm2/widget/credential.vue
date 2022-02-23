@@ -19,8 +19,8 @@
                 <div class="flex flex-col">
                     <div class="flex items-center font-semibold">
                         <div class="flex items-center mr-1">
-                            <AtlanIcon
-                                :icon="getImage(connector(credential))"
+                            <img
+                                :src="getImage(connector(credential))"
                                 class="w-auto h-4 mr-1"
                             />
 
@@ -59,7 +59,7 @@
             </div>
             <div class="flex text-gray-500" v-if="isEditVisible">
                 <AtlanIcon
-                    icon="Lock"
+                    icon="Lock2"
                     class="h-5 mr-1 text-yellow-500"
                 ></AtlanIcon>
                 Sensitive details are not displayed for security reasons. Any
@@ -99,7 +99,7 @@
                         <div class="text-gray-500">Auth Type</div>
                         <div class="text-gray-700 capitalize">
                             <AtlanIcon
-                                icon="Lock"
+                                icon="Lock2"
                                 class="mb-0.5 text-yellow-400"
                             ></AtlanIcon>
                             {{ authType(credential) }}
@@ -147,7 +147,7 @@
         onMounted,
         onBeforeMount,
     } from 'vue'
-    import { useVModels } from '@vueuse/core'
+    import { until, useVModels } from '@vueuse/core'
     import { useTestCredential } from '~/composables/credential/useTestCredential'
     import useGetCredential from '~/composables/credential/useGetCredential'
 
@@ -498,10 +498,11 @@
             })
 
             const handleUpdate = async () => {
-                await handleTestAuthentication(true)
-                // if (!errorTest.value) {
-                //     updateByID()
-                // }
+                handleTestAuthentication(true)
+                await until(isLoadingTest).toBe(false)
+                if (testData.value?.message) {
+                    updateByID()
+                }
             }
 
             watch(

@@ -39,11 +39,11 @@
                 :enableSidebarDrawer="false"
                 :selectable="true"
                 :openAssetProfileInNewTab="true"
+                :disableCheckboxForScrubbed="true"
                 :selectedItems="checkedGuids"
                 :filters="filters"
-                assetListClass="px-0 mt-2"
-                aggregationTabClass="px-5"
-                searchBarClass="px-5"
+                aggregation-tab-class="px-5 my-1"
+                search-bar-class="px-5 my-1"
                 @listItem:check="handleAssetItemCheck"
                 @handleAssetCardClick="handleAssetCardClick"
             />
@@ -140,11 +140,11 @@
                 default: () => [],
             },
         },
-        emits: ['closeDrawer', 'saveAssets'],
+        emits: ['closeDrawer', 'saveAssets', 'unCheck'],
         setup(props, { emit }) {
             const { selectedItems } = useVModels(props, emit)
 
-            const filters = ref({excludeGtc: true})
+            const filters = ref({ excludeGtc: true })
             const childrenDrawer = ref(false)
             const drawerAsset = ref()
             const AssetListRef = ref()
@@ -176,6 +176,7 @@
                     selectedItems.value = selectedItems.value.filter(
                         (selectedItem) => selectedItem.guid !== item.guid
                     )
+                    emit('unCheck', item)
                 } else {
                     selectedItems.value.push(item)
                 }
@@ -214,7 +215,7 @@
                 handleAssetCardClick,
                 drawerAsset,
                 AssetListRef,
-                filters
+                filters,
             }
         },
     })

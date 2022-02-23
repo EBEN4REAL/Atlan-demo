@@ -138,25 +138,11 @@
             <!-- Spinner -->
         </div>
 
-        <a-drawer
-            placement="right"
-            :closable="true"
-            :key="graphData.name"
-            :mask="false"
+        <Drawer
             v-model:visible="drawerVisible"
-            :get-container="false"
-            :style="{ position: 'absolute' }"
-        >
-            <template #title>
-                <span class="font-semibold line-clamp-1">{{
-                    selectedPod?.name
-                }}</span>
-            </template>
-            <Drawer
-                :selectedPod="selectedPod"
-                :selected-run="graphData"
-            ></Drawer>
-        </a-drawer>
+            :selected-pod="selectedPod"
+            :selected-run="graphData"
+        ></Drawer>
 
         <!-- Monitor Controls -->
     </div>
@@ -180,7 +166,7 @@
     import useTransformGraph from './useTransformGraph'
     import useControlGraph from './useControlGraph'
 
-    import Drawer from './drawer.vue'
+    import Drawer from './drawer/drawer.vue'
     export default defineComponent({
         name: 'MonitorGraph',
         components: {
@@ -192,7 +178,7 @@
                 required: true,
             },
         },
-        emits: ['select'],
+        emits: ['select', 'refresh'],
         setup(props, { emit }) {
             /** DATA */
             const { graphData } = toRefs(props)
@@ -363,7 +349,13 @@
                     init(false)
                 }
 
-                drawerVisible.value = false
+                if (selectedPod.value?.id && drawerVisible.value) {
+                    let podData = graph.value.getCellById(
+                        selectedPod.value?.id
+                    )?.data
+                    if (podData) selectedPod.value = podData
+                }
+                // drawerVisible.value = false
             }
 
             watch(

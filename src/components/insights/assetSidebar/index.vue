@@ -5,18 +5,20 @@
     >
         <div
             v-if="activeInlineTab?.assetSidebar?.isVisible"
-            class="close-btn-add-policy"
+            class="absolute close-btn-add-policy"
             @click="handleClose"
         >
-            <AtlanIcon icon="Add" class="text-white" />
+            <AtlanIcon icon="Add" class="w-5 h-5 text-gray-500" />
         </div>
 
         <AssetPreview
+            v-if="!assetLoading"
             :selected-asset="
                 Object.keys(assetInfo)?.length ? assetInfo : selectedAsset
             "
             page="insights"
         ></AssetPreview>
+        <Loader v-else />
     </div>
     <div
         v-else
@@ -51,15 +53,13 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import AssetPreview from '~/components/common/assets/preview/index.vue'
-    import useAssetStore from '~/store/asset'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
-    import { SavedQueryInterface } from '~/types/insights/savedQuery.interface'
     import { QueryCollection } from '~/types/insights/savedQuery.interface'
-    import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
+    import Loader from '@common/loaders/page.vue'
 
     export default defineComponent({
-        components: { AssetPreview, AtlanIcon },
+        components: { AssetPreview, AtlanIcon, Loader },
         props: {},
         setup(props, { emit }) {
             // const storeDiscovery = useAssetStore()
@@ -74,9 +74,6 @@
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as Ref<string>
-
-            const { checkQueryOpenedInTab, checkPreviewOpenedInCurrentTab } =
-                useSavedQuery(tabs, activeInlineTab, activeInlineTabKey)
 
             const { closeAssetSidebar, fetchAssetData } = useAssetSidebar(
                 tabs,
@@ -203,6 +200,7 @@
             }
 
             return {
+                assetLoading,
                 handleClose,
                 selectedAsset,
                 tabs,
@@ -235,16 +233,9 @@
     }
     .close-btn-add-policy {
         // padding: 10px;
-        height: 32px;
-        width: 32px;
-        background: #3e4359cc;
-        position: fixed;
-        border-radius: 50%;
-        display: grid;
-        place-items: center;
+        right: 16px;
+        top: 11px;
         transform: rotate(45deg);
-        right: 430px;
-        top: 60px;
         z-index: 20;
         cursor: pointer;
     }

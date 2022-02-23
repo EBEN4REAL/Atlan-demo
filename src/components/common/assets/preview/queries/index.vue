@@ -27,7 +27,7 @@
         </div>
 
         <div v-else class="flex flex-col flex-grow">
-            <div class="px-4 pt-3 pb-0">
+            <div class="px-5 pt-3 pb-0">
                 <SearchAdvanced
                     v-model:value="queryText"
                     :autofocus="true"
@@ -65,8 +65,9 @@
                             :item-index="itemIndex"
                             :enable-sidebar-drawer="true"
                             :asset-name-truncate-percentage="'93%'"
-                            class="mx-3"
+                            class="px-2 hover:bg-primary-menu"
                             @updateDrawer="handleListUpdate"
+                            isCompact
                     /></Popover>
                 </template>
             </AssetList>
@@ -89,10 +90,8 @@
     import AssetItem from '@common/assets/list/assetItem.vue'
 
     import {
-        AssetAttributes,
-        AssetRelationAttributes,
-        InternalAttributes,
-        SQLAttributes,
+        DefaultRelationAttributes,
+        MinimalAttributes,
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -129,15 +128,11 @@
             })
             const postFacets = ref({})
             const dependentKey = ref('DEFAULT_QUERIES')
-            const defaultAttributes = ref([
-                ...InternalAttributes,
-                ...AssetAttributes,
-                ...SQLAttributes,
-            ])
+            const defaultAttributes = ref([...MinimalAttributes])
             const preference = ref({
                 sort: 'order-asc',
             })
-            const relationAttributes = ref([...AssetRelationAttributes])
+            const relationAttributes = ref([...DefaultRelationAttributes])
 
             const updateFacet = () => {
                 facets.value = {}

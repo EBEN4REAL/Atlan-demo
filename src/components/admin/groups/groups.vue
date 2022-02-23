@@ -115,7 +115,7 @@
                                     : ''
                             "
                         >
-                            <div class="pt-0">
+                            <div class="max-w-xs pt-0">
                                 {{ title }}
                             </div>
                             <div
@@ -165,7 +165,7 @@
                         "
                         class="flex px-4 font-normal tracking-wide text-gray-500 uppercase w-100 group-hover:text-gray-700"
                     >
-                        <div class="pt-0">{{ title }}</div>
+                        <div class="max-w-xs pt-0">{{ title }}</div>
                     </div>
                 </template>
 
@@ -180,7 +180,7 @@
                     >
                         <div
                             v-if="column.key === 'name'"
-                            class="flex items-center truncate pr-6"
+                            class="flex items-center pr-6 truncate"
                         >
                             <Avatar
                                 :avatar-size="32"
@@ -294,7 +294,17 @@
                                 :avatar-shape="'circle'"
                                 class="mr-2 mt-0.5"
                             />
-                            <div class="mt-0.5">{{ value }}</div>
+                            <a-tooltip placement="top">
+                                <template #title>
+                                    <div class="created-name">
+                                        {{ value }}
+                                    </div>
+                                </template>
+
+                                <div class="mt-0.5 truncate created-name">
+                                    {{ value }}
+                                </div>
+                            </a-tooltip>
                         </div>
                         <div
                             v-else-if="column.key === 'actions'"
@@ -767,6 +777,9 @@
     }
 </style>
 <style lang="less" scoped>
+    .created-name {
+        max-width: 130px;
+    }
     .content-popover-group-persona {
         min-width: 180px;
         height: auto;

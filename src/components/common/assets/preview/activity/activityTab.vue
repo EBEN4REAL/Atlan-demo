@@ -1,15 +1,26 @@
 <template>
     <div class="flex flex-col h-full overflow-y-hidden">
-        <div class="flex justify-between px-5 pt-4 pb-2">
-            <span class="font-semibold text-gray-500">Activity</span>
+        <div
+            class="flex items-center justify-between px-5 py-2 border-b border-gray-200 bg-gray-50"
+        >
+            <span class="flex items-center">
+                <PreviewTabsIcon
+                    :icon="tab.icon"
+                    :image="tab.image"
+                    :emoji="tab.emoji"
+                    height="h-4"
+                />
+                <span class="ml-1 font-semibold text-gray-500">Activity</span>
+            </span>
 
             <AtlanIcon
                 icon="Reload"
-                class="w-auto h-4 mt-1 cursor-pointer text-primary"
+                class="w-auto h-3 cursor-pointer text-primary"
                 @click="refreshAudits"
             />
         </div>
-        <div class="px-5 pb-4">
+
+        <div class="px-5 pb-4 mt-3">
             <ActivityTypeSelect
                 v-model="activityType"
                 :typeName="selectedAsset.typeName"
@@ -66,6 +77,42 @@
                             >Column</span
                         >)
                     </div>
+                    <div
+                        v-if="
+                            log.entityId !== item.guid &&
+                            ['AtlasGlossary'].includes(item.typeName)
+                        "
+                        class="flex items-center mt-1 text-gray-700"
+                    >
+                        <div class="w-4 mr-1">
+                            <AtlanIcon
+                                :icon="
+                                    getEntityStatusIcon(
+                                        log.typeName,
+                                        certificateStatus(
+                                            getTermsAndCategoriesDetail(
+                                                log.detail.guid ??
+                                                    log.detail?.entityGuid ??
+                                                    log?.entityId
+                                            )
+                                        )
+                                    )
+                                "
+                                class="self-center text-gray-500 align-text-bottom"
+                            />
+                        </div>
+                        <Tooltip
+                            :tooltip-text="
+                                getTermsAndCategoriesDetail(
+                                    log.detail.guid ??
+                                        log.detail?.entityGuid ??
+                                        log?.entityId
+                                )?.attributes?.name ?? ''
+                            "
+                            :classes="`font-bold`"
+                        />
+                    </div>
+
                     <div class="flex items-center mt-1 text-gray-500">
                         <div class="flex items-center">
                             <AtlanIcon icon="User" class="mr-1"></AtlanIcon>
@@ -125,7 +172,7 @@
                 </a-button>
             </div>
         </div>
-        <div v-else class="flex flex-col items-center">
+        <div v-else class="flex flex-col items-center justify-center h-full">
             <EmptyScreen
                 empty-screen="NoAssetsFound"
                 image-class="h-44"
@@ -156,14 +203,32 @@
     import { useAssetAuditSearch } from '~/composables/discovery/useAssetAuditSearch'
     import ActivityTypeSelect from '@/common/select/activityType.vue'
     import { activityTypeMap } from '~/constant/activityType'
+    import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
+    import { default as glossaryLabel } from '@/glossary/constants/assetTypeLabel'
+    import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
+    import { MinimalAttributes } from '~/constant/projection'
+    import useGlossaryData from '~/composables/glossary2/useGlossaryData'
+    import Tooltip from '@/common/ellipsis/index.vue'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         name: 'ActivityTab',
-        components: { ActivityType, EmptyScreen, ActivityTypeSelect },
+        components: {
+            ActivityType,
+            EmptyScreen,
+            ActivityTypeSelect,
+            Tooltip,
+            PreviewTabsIcon,
+        },
+
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: true,
+            },
+            tab: {
+                type: Object,
+                required: false,
             },
         },
 
@@ -171,6 +236,7 @@
             const { selectedAsset: item } = toRefs(props)
             const params = reactive({ count: 10 })
 
+            const { getEntityStatusIcon } = useGlossaryData()
             const limit = ref(10)
             const offset = ref(0)
             const fetchMoreAuditParams = reactive({ count: 10, startKey: '' })
@@ -179,17 +245,65 @@
             const activityType = ref('all')
 
             const facets = ref()
+            const facetsGTC = ref()
+            const termAndCategoriesList = ref()
+            const { certificateStatus, title } = useAssetInfo()
 
-            if (['Table', 'View'].includes(item.value.typeName)) {
+            if (
+                ['Table', 'View', 'AtlasGlossary'].includes(item.value.typeName)
+            ) {
                 facets.value = {
                     entityQualifiedName: item.value.attributes.qualifiedName,
+                }
+            }
+            if (['AtlasGlossary'].includes(item.value.typeName)) {
+                facets.value = {
+                    ...facets.value,
+                    typeNames: [item.value.typeName],
                 }
             } else {
                 facets.value = {
                     entityId: item.value.guid,
                 }
             }
-
+            const fetchTermsAndCategories = () => {
+                const defaultAttributes = ref([...MinimalAttributes])
+                const offsetGTC = ref(0)
+                facetsGTC.value = {
+                    guidList: [],
+                    stateList: ['ACTIVE', 'DELETED'],
+                }
+                auditList.value.forEach((el) => {
+                    if (
+                        el?.detail?.guid &&
+                        !facetsGTC.value?.guidList?.includes(el?.detail?.guid)
+                    ) {
+                        facetsGTC.value.guidList.push(el.detail.guid)
+                    }
+                })
+                const dependentKeyGTC = ref('term&categories')
+                const {
+                    list: newList,
+                    fetch,
+                    error,
+                } = useDiscoverList({
+                    dependentKey: dependentKeyGTC,
+                    limit,
+                    offset: offsetGTC,
+                    facets: facetsGTC,
+                    attributes: defaultAttributes,
+                    suppressLogs: true,
+                })
+                watch(newList, () => {
+                    termAndCategoriesList.value = [...newList.value]
+                })
+            }
+            const getTermsAndCategoriesDetail = (guid) => {
+                const found = termAndCategoriesList.value?.find(
+                    (el) => el?.guid === guid
+                )
+                return found
+            }
             const preference = ref({
                 sort: 'created-desc',
             })
@@ -201,7 +315,6 @@
                 }
                 return ''
             }
-
             const {
                 data,
                 list: auditList,
@@ -212,6 +325,7 @@
                 isLoadMore,
                 totalCount,
                 quickChange,
+                isReady,
             } = useAssetAuditSearch({
                 guid: item.value.guid,
                 isCache: false,
@@ -309,6 +423,16 @@
                     quickChange()
                 }
             }
+            watch(isReady, () => {
+                // fetch children terms and categories for glossary wide activity
+                if (
+                    isReady.value &&
+                    ['AtlasGlossary'].includes(item.value.typeName)
+                ) {
+                    console.log(auditList)
+                    fetchTermsAndCategories()
+                }
+            })
 
             return {
                 error,
@@ -334,6 +458,11 @@
                 activityType,
                 activityTypeMap,
                 handleActivityTypeChange,
+                glossaryLabel,
+                getTermsAndCategoriesDetail,
+                getEntityStatusIcon,
+                certificateStatus,
+                title,
             }
         },
     })

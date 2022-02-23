@@ -600,7 +600,34 @@ export function useSavedQuery(
                     /* ----------------------------------------------- */
                     activeInlineTabCopy.qualifiedName = qualifiedName
                     activeInlineTabCopy.queryId = guid
-                    modifyActiveInlineTab(activeInlineTabCopy, tabsArray, true)
+
+                    const {
+                        data: data2,
+                        error: error2,
+                        isLoading: isLoading2,
+                    } = Insights.GetSavedQuery(guid, {})
+
+                    watch([data2, error2, isLoading2], () => {
+                        if (isLoading2.value == false) {
+                            if (error2.value === undefined) {
+                                // console.log('saved query entity: ', data2.value)
+                                activeInlineTabCopy.assetSidebar.assetInfo =
+                                    data2.value?.entity
+
+                                activeInlineTabCopy.explorer.queries.collection.qualifiedName =
+                                    collectionQualifiedName
+
+                                activeInlineTabCopy.attributes =
+                                    data2?.value?.entity.attributes
+                                modifyActiveInlineTab(
+                                    activeInlineTabCopy,
+                                    tabsArray,
+                                    true
+                                )
+                                // activeInlineTabCopy.assetSidebar.assetInfo=data2.value?.entities
+                            }
+                        }
+                    })
                     if (routeToGuid) {
                         if (guid) {
                             const queryParams = { id: guid }
@@ -1130,12 +1157,19 @@ export function useSavedQuery(
 
                                 activeInlineTabCopy.explorer.queries.collection.qualifiedName =
                                     collectionQualifiedName
+
+                                activeInlineTabCopy.attributes =
+                                    data2?.value?.entity.attributes
+                                modifyActiveInlineTab(
+                                    activeInlineTabCopy,
+                                    tabsArray,
+                                    true
+                                )
                                 // activeInlineTabCopy.assetSidebar.assetInfo=data2.value?.entities
                             }
                         }
                     })
 
-                    modifyActiveInlineTab(activeInlineTabCopy, tabsArray, true)
                     if (routeToGuid) {
                         if (guid) {
                             const queryParams = { id: guid }

@@ -41,6 +41,13 @@
             </div>
         </div>
 
+        <div class="flex flex-col text-sm">
+            <span class="mb-1 text-gray-500">Package Version</span>
+            <div class="flex">
+                {{ item?.metadata.labels['package.argoproj.io/version'] }}
+            </div>
+        </div>
+
         <div
             class="flex flex-col text-sm"
             v-if="

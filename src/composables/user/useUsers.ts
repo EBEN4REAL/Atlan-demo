@@ -2,6 +2,10 @@ import { computed, ComputedRef, Ref, ref, watch } from 'vue'
 import { useTimeAgo } from '@vueuse/core'
 import axios from 'axios'
 import swrvState from '~/utils/swrvState'
+import {
+    getLastActiveTimeAgo,
+    getLastActiveTime,
+} from '~/composables/user/lastActiveTime'
 
 import { pluralizeString } from '~/utils/string'
 import { roleMap } from '~/constant/role'
@@ -122,6 +126,12 @@ export const getFormattedUser = (user: any) => {
         created_at_time_ago: user.createdTimestamp
             ? useTimeAgo(user.createdTimestamp).value
             : '',
+        last_active_time: getLastActiveTime(user?.lastLoginTime ?? ''),
+        last_active_time_ago: getLastActiveTimeAgo(user?.lastLoginTime ?? ''),
+        last_active_time_ago_short_notation: getLastActiveTimeAgo(
+            user?.lastLoginTime ?? '',
+            true
+        ),
     }
     return localUser
 }

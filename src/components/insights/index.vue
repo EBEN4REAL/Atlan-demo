@@ -544,10 +544,6 @@
                     if (isLoading.value === false) {
                         queryCollectionsLoading.value = false
                         if (error.value === undefined) {
-                            console.log(
-                                'queryCollections: ',
-                                data.value.entities
-                            )
                             if (
                                 data.value?.entities &&
                                 data.value?.entities?.length > 0
@@ -557,16 +553,7 @@
                                 queryCollections.value = []
                             }
 
-                            console.log('collection create:')
-                            if (activeInlineTab.value?.queryId) {
-                                const queryParams = {
-                                    id: activeInlineTab.value?.queryId,
-                                }
-                                router.push({
-                                    path: `insights`,
-                                    query: queryParams,
-                                })
-                            } else {
+                            if (!savedQueryGuidFromURL) {
                                 router.push({
                                     path: `insights`,
                                 })

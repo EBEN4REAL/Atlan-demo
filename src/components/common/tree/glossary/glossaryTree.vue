@@ -30,7 +30,7 @@
         :key="defaultGlossary"
         class="glossary-tree"
         :tree-data="treeData"
-        :draggable="true"
+        :draggable="isDraggable"
         :block-node="true"
         :load-data="onLoadData"
         :treeDataSimpleMode="true"
@@ -59,6 +59,7 @@
                 :class="treeItemClass"
                 :is-animating="isTreeNodeAnimating"
                 @addSelectedKey="handleAddSelectedKey"
+                @changeEditMode="handleChangeEditMode"
             />
         </template>
     </a-tree>
@@ -141,6 +142,7 @@
             const { selectedGlossary } = useAssetInfo()
             const isTreeNodeAnimating = ref(false)
             const glossaryStore = useGlossaryStore()
+            const isDraggable = ref(true)
             const parentGlossary = computed(() =>
                 glossaryStore.getGlossaryByQualifiedName(defaultGlossary.value)
             )
@@ -285,6 +287,10 @@
                     (localNode: any) => localNode.key
                 )
             })
+
+            const handleChangeEditMode = (val) => {
+                isDraggable.value = !val
+            }
             provide('addGTCNode', addGTCNode)
             provide('deleteGTCNode', deleteGTCNode)
             provide('treeData', treeData)
@@ -321,6 +327,8 @@
                 isTreeNodeAnimating,
                 checkDuplicateCategoryNames,
                 parentGlossary,
+                isDraggable,
+                handleChangeEditMode,
             }
         },
     })

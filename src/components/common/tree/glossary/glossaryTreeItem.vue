@@ -211,7 +211,7 @@
                 default: false,
             },
         },
-        emits: ['addSelectedKey'],
+        emits: ['addSelectedKey','changeEditMode'],
         setup(props, { emit }) {
             // data
             const { item } = toRefs(props)
@@ -278,7 +278,6 @@
                 }
             }
             const ctaToProfile = () => {
-                console.log(item.value)
                 if (item.value.categoryGuid)
                     router.push(`/glossary/${item.value.categoryGuid}`)
                 else router.push(`/glossary/${item.value.glossaryGuid}`)
@@ -304,8 +303,11 @@
             }
             const handleNameUpdate = (val) => {
                 entityTitle.value = val
-                console.log(val)
             }
+            watch(isEditMode,()=>{
+                console.log(isEditMode.value,"drag change");
+                emit('changeEditMode',isEditMode.value)
+            })
             return {
                 getEntityStatusIcon,
                 certificateStatus,

@@ -115,6 +115,8 @@
                         language: 'sql', // Defaults to "sql" (see the above list of supported dialects)
                         indent: '    ', // Defaults to two spaces
                     })
+                        .replaceAll('` ', '`') // needed for backticks, as formatter put space by default between backticks
+                        .replaceAll(' `', '`')
                 } catch (error) {
                     return text.value
                 }

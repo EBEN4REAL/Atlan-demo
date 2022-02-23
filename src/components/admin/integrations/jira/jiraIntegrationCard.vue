@@ -54,7 +54,7 @@
             </div>
             <div class="flex flex-wrap items-center h-12 gap-2 rounded">
                 <a-select
-                    class="w-1/2"
+                    class="w-1/3"
                     :class="$style.selector"
                     placeholder="Select default project"
                 ></a-select>

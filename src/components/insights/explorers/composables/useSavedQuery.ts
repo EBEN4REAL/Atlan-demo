@@ -23,6 +23,7 @@ import useRunQuery from '~/components/insights/playground/common/composables/use
 import useSetClassifications from '~/composables/discovery/useSetClassifications'
 import updateAsset from '~/composables/discovery/updateAsset'
 import { generateSQLQuery } from '~/components/insights/playground/editor/vqb/composables/generateSQLQuery'
+import { useRouter, useRoute } from 'vue-router'
 
 export function useSavedQuery(
     tabsArray: Ref<activeInlineTabInterface[]>,
@@ -30,6 +31,8 @@ export function useSavedQuery(
     activeInlineTabKey: Ref<string>,
     treeSelectedKeys?: Ref<string[]>
 ) {
+    const router = useRouter()
+    const route = useRoute()
     const { username } = whoami()
     const tenantStore = useTenantStore()
     const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
@@ -77,11 +80,7 @@ export function useSavedQuery(
         return false
     }
 
-    const openSavedQueryInNewTab = async (
-        savedQuery: SavedQuery,
-        isTabAdded: Ref<string>
-    ) => {
-        isTabAdded.value = savedQuery?.guid
+    const getNewTabFromSavedQuery = (savedQuery) => {
         let decodedVariables = decodeBase64Data(
             savedQuery?.attributes?.variablesSchemaBase64
         ) as CustomVaribaleInterface[]
@@ -232,7 +231,69 @@ export function useSavedQuery(
                 id: activeInlineTab.value?.assetSidebar.id ?? '',
             },
         }
+        return newTab || {}
+    }
 
+    const duplicateSavedQuery = (savedQuery) => {
+        // get new tab from saved query
+        const newTab = {
+            ...(getNewTabFromSavedQuery({ ...(savedQuery?.value ?? {}) }) ||
+                {}),
+        }
+        const label = `Copy ${newTab.label}`
+        // reset attributes
+        newTab.label = label
+        newTab.key = String(new Date().getTime())
+        newTab.isSaved = false
+        newTab.queryId = null
+        newTab.qualifiedName = ''
+        newTab.attributes = null
+        newTab.playground.editor.dataList = []
+        newTab.playground.editor.columnList = []
+        newTab.playground.editor.limitRows = {
+            checked: false,
+            rowsCount: -1,
+        }
+
+        newTab.playground.resultsPane = {
+            activeTab:
+                activeInlineTab.value?.playground.resultsPane.activeTab ?? 0,
+            result: {
+                title: '',
+                isQueryRunning: '',
+                isQueryAborted: false,
+                queryErrorObj: {},
+                errorDecorations: [],
+                totalRowsCount: -1,
+                executionTime: -1,
+                runQueryId: null,
+                buttonDisable: false,
+                eventSourceInstance: null,
+            },
+            metadata: {},
+            queries: {},
+            joins: {},
+            filters: {},
+            impersonation: {},
+            downstream: {},
+            sqlHelp: {},
+        }
+        //open a new tab
+        inlineTabAdd(newTab, tabsArray, activeInlineTabKey)
+        activeInlineTabKey.value = newTab.key
+        /* ----------------------------- */
+        // syncying inline tabarray in localstorage
+        syncInlineTabsInLocalStorage(tabsArray.value)
+        const queryParams = {}
+        if (route?.query?.vqb) queryParams.vqb = true
+        router.push({ path: `insights`, query: queryParams })
+    }
+    const openSavedQueryInNewTab = async (
+        savedQuery: SavedQuery,
+        isTabAdded: Ref<string>
+    ) => {
+        isTabAdded.value = savedQuery?.guid
+        const newTab = { ...(getNewTabFromSavedQuery(savedQuery) || {}) }
         const check = isInlineTabAlreadyOpened(newTab, tabsArray)
         if (!check) {
             // console.log('saved query tab not opened')
@@ -1360,5 +1421,6 @@ export function useSavedQuery(
         openSavedQueryInNewTabAndRun,
         checkQueryOpenedInTab,
         checkPreviewOpenedInCurrentTab,
+        duplicateSavedQuery,
     }
 }

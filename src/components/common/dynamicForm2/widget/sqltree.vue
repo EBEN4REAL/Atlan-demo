@@ -58,8 +58,12 @@
             const tempArray: string[] = []
 
             // Remove the ^ and $ character from the string if they are present
-            const stripString = (str: string) =>
-                str.replace(/^\^?(\w*)\$?$/g, '$1')
+            const stripString = (str: string) => {
+                let tmpStr = str
+                if (tmpStr.startsWith('^')) tmpStr = tmpStr.slice(1)
+                if (tmpStr.endsWith('$')) tmpStr = tmpStr.slice(0, -1)
+                return tmpStr
+            }
 
             if (modelValue.value) {
                 if (!isEdit.value) {

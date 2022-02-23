@@ -37,9 +37,9 @@
                                     @click.stop="() => {}"
                                     @visibleChange="addBackground"
                                 >
-                                    <div class="pl-2" v-if="hasWritePermission">
+                                    <div class="px-2" v-if="hasWritePermission">
                                         <AtlanIcon
-                                            icon="KebabMenu"
+                                            icon="KebabMenuHorizontal"
                                             class="w-4 h-4 my-auto"
                                         ></AtlanIcon>
                                     </div>
@@ -258,7 +258,7 @@
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
                                         : 'bg-gradient-to-l from-gray-light via-gray-light',
-                                    hasWritePermission ? 'right-6' : 'right-0',
+                                    hasWritePermission ? 'right-8' : 'right-0',
                                 ]"
                             >
                                 <div
@@ -305,7 +305,7 @@
                                 </div>
                             </div>
                             <div
-                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
+                                class="absolute top-0 right-2 flex items-center h-full text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
                                 :id="`${item.qualifiedName}-menu`"
                             >
                                 <a-dropdown
@@ -315,7 +315,7 @@
                                 >
                                     <div class="pl-2" v-if="hasWritePermission">
                                         <AtlanIcon
-                                            icon="KebabMenu"
+                                            icon="KebabMenuHorizontal"
                                             class="w-4 h-4 my-auto"
                                         ></AtlanIcon>
                                     </div>

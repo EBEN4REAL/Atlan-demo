@@ -3,7 +3,7 @@
         <a-dropdown :trigger="['click']" placement="bottomRight">
             <div
                 @click.prevent="toggleButtonState"
-                class="flex cursor-pointer h-6 items-center justify-center py-0.5 border-white text-gray-500"
+                class="flex items-center justify-center h-6 p-1 text-gray-500 border-white rounded cursor-pointer hover:bg-gray-light"
             >
                 <AtlanIcon class icon="KebabMenuHorizontal" />
             </div>
@@ -15,6 +15,7 @@
                         margin-top: 2px !important;
                     "
                     :class="$style.menu_class"
+                    class="py-1"
                 >
                     <a-sub-menu key="themes" v-if="!showVQB">
                         <template #title>
@@ -35,7 +36,7 @@
                                 </div>
                                 <AtlanIcon
                                     icon="ChevronRight"
-                                    class="ml-2 text-gray-500 -mt-0.5 -mt-0.5"
+                                    class="ml-2.5 text-gray-500 -mt-0.5"
                                 />
                             </div>
                         </template>
@@ -103,7 +104,7 @@
                                 </div>
                                 <AtlanIcon
                                     icon="ChevronRight"
-                                    class="ml-2 text-gray-500 -mt-0.5"
+                                    class="ml-2.5 text-gray-500 -mt-0.5"
                                 />
                             </div>
                         </template>
@@ -199,7 +200,7 @@
                                 </div>
                                 <AtlanIcon
                                     icon="ChevronRight"
-                                    class="ml-2 text-gray-500 -mt-0.5"
+                                    class="ml-2.5 text-gray-500 -mt-0.5"
                                 />
                             </div>
                         </template>
@@ -324,7 +325,7 @@
                                 </div>
                                 <AtlanIcon
                                     icon="ChevronRight"
-                                    class="ml-2 text-gray-500 -mt-0.5"
+                                    class="ml-2.5 text-gray-500"
                                 />
                             </div>
                         </template>
@@ -433,7 +434,7 @@
                         </div>
                     </a-sub-menu>
 
-                    <hr v-if="!showVQB" />
+                    <hr v-if="!showVQB" class="my-1" />
                     <!-- Show these options when query is saved -->
                     <div v-if="activeInlineTab?.queryId" class="text-gray-700">
                         <a-sub-menu key="shareQueryMenu" class="text-gray-500">
@@ -447,7 +448,7 @@
                                         <span class="text-gray-700">Share</span>
                                         <AtlanIcon
                                             icon="ChevronRight"
-                                            class="ml-2 text-gray-500 -mt-0.5"
+                                            class="ml-2.5 text-gray-500 -mt-0.5"
                                         />
                                     </div>
                                 </div>
@@ -525,7 +526,7 @@
                         <a-menu-item class="px-4 py-2 text-red-600"
                             >Delete query</a-menu-item
                         > -->
-                        <hr />
+                        <hr class="my-1" />
                     </div>
                     <a-menu-item
                         @click="openCommandPallete"
@@ -953,7 +954,8 @@
     .menu_class {
         // font-family: 'Avenir LT Pro' !important;
         :global(.ant-dropdown-menu-submenu-title) {
-            @apply px-4 !important;
+            @apply pl-4 !important;
+            @apply pr-3 !important;
             @apply py-2 !important;
         }
     }

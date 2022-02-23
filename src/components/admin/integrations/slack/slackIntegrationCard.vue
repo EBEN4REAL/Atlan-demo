@@ -199,8 +199,8 @@
             const body = computed(() => ({
                 channels: channels.value.map((c) => ({ name: c.name })),
                 alertsWorkflowChannel: workflowChannel.value
-                    ? [{ name: workflowChannel.value }]
-                    : [],
+                    ? { name: workflowChannel.value }
+                    : {},
             }))
 
             const { data, isLoading, error, disconnect } = archiveSlack(pV)

@@ -9,7 +9,7 @@
             :content="workflowChannel"
             icon="Number"
             :class="invalid ? 'border border-dashed border-red-500' : ''"
-            @remove="workflowChannel = ''"
+            @remove="remove"
         />
     </div>
     <div v-else class="flex items-center w-1/2 h-12 p-1 border rounded">
@@ -52,6 +52,11 @@
             workflowChannel.value = value
             emit('change', workflowChannel.value)
         } else workflowChannel.value = ''
+    }
+
+    const remove = () => {
+        workflowChannel.value = ''
+        emit('change', workflowChannel.value)
     }
 
     const { workflow_description } = integrations.slack

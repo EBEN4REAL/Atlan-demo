@@ -15,10 +15,9 @@
                     ref="searchBar"
                     :allowClear="true"
                     @change="handleSearchChange"
-                    :placeholder="`Search in ${list?.length} categories...`"
+                    :placeholder="`Search categories...`"
                     class="px-4 pb-2 mb-2"
                 ></SearchAdvanced>
-                {{list?.length}}
                 <a-tree
                     v-if="!queryText"
                     :key="popoverVisible"
@@ -433,7 +432,6 @@
             }
 
             const handleSearchChange = useDebounceFn(() => {
-                list.value = []
                 offset.value = 0
                 quickChange()
             }, 250)

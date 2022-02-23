@@ -61,15 +61,12 @@ export const tenantLevelOauthUrl = computed(() => {
     return jiraOauth
 })
 
-// export const userLevelOauthUrl = computed(() => {
-//     const store = integrationStore()
-//     const { userJiraStatus, tenantJiraStatus } = toRefs(store)
-//     const oauthBaseUrl =
-//         userJiraStatus.value.oAuth || tenantJiraStatus.value.oAuth
-//     const state = getJiraInstallUrlState(false)
-//     const jiraOauth = `${oauthBaseUrl}&state=${state}`
-//     return jiraOauth
-// })
+export const userLevelOauthUrl = computed(() => {
+    const oauthBaseUrl: URL = getOAuthBaseUrl()
+    const state = getJiraInstallUrlState(false)
+    const jiraOauth = `${oauthBaseUrl}&state=${state}`
+    return jiraOauth
+})
 
 const trackAddEvent = (tenant) => {
     if (tenant)
@@ -105,8 +102,8 @@ const handlePopupClose = async (
 }
 
 export function openJiraOAuth({
-    w = 500,
-    h = 600,
+    w = 600,
+    h = 500,
     tenant = false,
     callback = (status) => ({}),
 }) {
@@ -116,7 +113,6 @@ export function openJiraOAuth({
     const leftPosition = width ? (width - w) / 2 : 0
     const topPosition = height ? (height - h) / 2 : 0
     const windowConfig = `height=600,width=500,left=${leftPosition},top=${topPosition},resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no, status=yes`
-
     const new_window = window.open(
         tenant ? tenantLevelOauthUrl.value : userLevelOauthUrl.value,
         'popUpWindow',

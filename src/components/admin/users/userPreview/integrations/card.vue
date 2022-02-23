@@ -5,10 +5,10 @@
                 <div
                     class="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full"
                 >
-                    <AtlanIcon class="h-6" icon="Slack" />
+                    <AtlanIcon class="h-6" :icon="integration.name" />
                 </div>
                 <div class="">
-                    <h1 class="font-bold">Slack</h1>
+                    <h1 class="font-bold">{{ integration.name }}</h1>
                     <div class="text-xs text-gray-500">
                         {{ integration.category }}
                     </div>
@@ -23,18 +23,18 @@
                     <a-tooltip
                         :title="
                             disableConnect
-                                ? 'Please ask your admin to setup Slack integration from admin center first'
+                                ? `Please ask your admin to setup ${integration.name} integration from admin center first`
                                 : ''
                         "
                     >
                         <span
                             class="flex items-center gap-x-1"
-                            @click="() => !disableConnect && $emit('connect')"
                             :class="{
                                 'text-gray-400 cursor-not-allowed ':
                                     disableConnect,
                                 'text-primary cursor-pointer ': !disableConnect,
                             }"
+                            @click="() => !disableConnect && $emit('connect')"
                         >
                             <AtlanIcon icon="Add" /> Connect
                         </span>
@@ -47,7 +47,7 @@
             <div
                 class="flex items-center justify-between px-3 bg-gray-100 border-t rounded-b h-11"
             >
-                <div class="">{{ status.teamName }}</div>
+                <div class="">{{ status.teamName || status.orgName }}</div>
                 <a-popover
                     v-model:visible="popover"
                     trigger="click"
@@ -57,20 +57,21 @@
                         <div class="p-4 space-y-5">
                             <h1>
                                 Are you sure you want to disconnect from
-                                <b>Slack</b>?
+                                <b>{{ integration.name }}</b
+                                >?
                             </h1>
                             <div class="flex justify-end space-x-2">
                                 <AtlanButton
-                                    @click="popover = false"
                                     padding="compact"
                                     size="sm"
                                     color="minimal"
+                                    @click="popover = false"
                                     >Cancel</AtlanButton
                                 >
                                 <AtlanButton
-                                    @click="disconnect"
                                     padding="compact"
                                     size="sm"
+                                    @click="disconnect"
                                     >Confirm</AtlanButton
                                 >
                             </div>
@@ -104,7 +105,7 @@
         },
     })
 
-    const emit = defineEmits(['disconnect'])
+    const emit = defineEmits(['disconnect', 'connect'])
 
     const popover = ref(false)
 

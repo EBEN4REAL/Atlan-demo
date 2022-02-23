@@ -69,7 +69,7 @@ const getters: _GettersTree<State> & Getters = {
         const integrationConfig = JSON.parse(JSON.stringify(state.integrationConfigs.find(i => i.name.toLowerCase() === 'jira') ?? null))
 
         return {
-            oAuth: integration?.sourceMetadata?.oauthUrl ?? '',
+            oAuth: integration?.oauthUrl ?? '',
             id: integration?.id || null,
             createdBy: integration?.createdBy,
             createdAt: integration?.createdAt,

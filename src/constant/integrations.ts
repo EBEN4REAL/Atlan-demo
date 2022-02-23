@@ -26,7 +26,7 @@ export const user_integration_list = {
     jira: {
         name: 'Jira',
         id: 'jira',
-        description: 'See rich previews for jira tickets',
+        description: 'See rich previews for Jira projects & tickets',
         category: 'Collaboration'
     }
 }

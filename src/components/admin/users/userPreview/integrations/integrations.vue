@@ -5,12 +5,17 @@
             :integration="user_integration_list.slack"
             @refresh="$emit('success')"
         />
+        <UserJira
+            :integration="user_integration_list.jira"
+            @refresh="$emit('success')"
+        />
     </section>
 </template>
 
 <script setup lang="ts">
     import { user_integration_list } from '~/constant/integrations'
     import UserSlack from './wrappers/userSlack.vue'
+    import UserJira from './wrappers/userJira.vue'
 </script>
 
 <style scoped></style>

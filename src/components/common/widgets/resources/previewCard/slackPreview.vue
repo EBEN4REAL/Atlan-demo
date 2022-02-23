@@ -23,16 +23,16 @@
             <div class="flex" @click="openLink(link.attributes.link)">
                 <template v-if="data">
                     <div
-                        class="flex items-center w-14"
-                        style="margin-right: 7px"
+                        class="flex mt-1.5 items-start w-16"
+                        style="max-width: 40px"
                     >
-                        <div class="relative">
+                        <div class="relative w-10">
                             <img
                                 class="rounded-full"
                                 :src="data.user.image_32"
                                 alt=""
                             />
-                            <div class="absolute -right-1 -bottom-1">
+                            <div class="absolute right-1 -bottom-1">
                                 <AtlanIcon icon="Slack" class="" />
                             </div>
                         </div>
@@ -66,7 +66,7 @@
                             />
                         </div>
 
-                        <div class="flex text-xs text-gray-500">
+                        <div class="flex mt-1 text-xs text-gray-500">
                             <span v-if="data.message.reply_count" class="">
                                 {{ data.message.reply_count }}
                                 replies
@@ -77,7 +77,33 @@
                             </span>
                             <span v-else> Private dm</span>
                         </div>
+
+                        <!-- <div
+                            v-if="
+                                link.attributes.__modifiedBy &&
+                                link.attributes.__modificationTimestamp
+                            "
+                            class="text-xs text-gray-500"
+                        >
+                            Edited by {{ link.attributes.__modifiedBy }}
+                            {{
+                                useTimeAgo(
+                                    new Date(
+                                        link.attributes.__modificationTimestamp
+                                    )
+                                ).value
+                            }}
+                        </div>
+                        <div v-else class="text-xs text-gray-500">
+                            Added by {{ link.attributes.__createdBy }}
+                            {{
+                                useTimeAgo(
+                                    new Date(link.attributes.__timestamp)
+                                ).value
+                            }}
+                        </div> -->
                     </div>
+
                     <div v-if="!readOnly">
                         <CardActions v-bind="props">
                             <div @click="(e) => e.stopPropagation()">

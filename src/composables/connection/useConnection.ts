@@ -1,9 +1,12 @@
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { useConnectionStore } from '~/store/connection'
 
 import { useBody } from '~/composables/discovery/useBody'
 import useIndexSearch from '~/composables/discovery/useIndexSearch'
-import { ConnectionAttriibutes } from '~/constant/projection'
+import {
+    ConnectionAttriibutes,
+    InternalAttributes,
+} from '~/constant/projection'
 import { assetInterface } from '~/types/assets/asset.interface'
 
 export const MAX_CONNECTIONS = 200
@@ -88,14 +91,24 @@ export function useConnectionByConnectorName(connectorName) {
         'connectionQualifiedName',
         'defaultSchemaQualifiedName',
         'defaultDatabaseQualifiedName',
+        'adminUsers',
+        'adminGroups',
+        ...InternalAttributes,
     ])
+
+    const connector = computed(() => {
+        if (connectorName === '') {
+            return {}
+        }
+        return { connector: connectorName }
+    })
 
     const generateBody = () => {
         const dsl = useBody(
             '',
             0,
             MAX_CONNECTIONS,
-            { connector: connectorName },
+            connector.value,
             { typeName: 'Connection' },
             ['connection'],
             {}
@@ -107,7 +120,7 @@ export function useConnectionByConnectorName(connectorName) {
         }
     }
 
-    const localKey = ref(connectorName)
+    const localKey = ref('CONNECTIONS')
 
     generateBody()
     const { data, isLoading, mutate, cancelRequest, error, aggregationMap } =

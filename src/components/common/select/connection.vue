@@ -117,8 +117,9 @@
             const { modelValue } = useVModels(props, emit)
             const selectedValue = ref(modelValue.value)
 
-            const { list, isLoading, error, mutate } =
-                useConnectionByConnectorName(connector.value)
+            const { list, isLoading, error } = useConnectionByConnectorName(
+                connector.value
+            )
 
             const queryText = ref('')
 
@@ -189,14 +190,9 @@
             const handleSearch = (val) => {
                 queryText.value = val
             }
-            watch(connector, () => {
-                if (connector.value && connector.value !== '') {
-                    mutate()
-                }
-            })
 
-            onMounted(() => {
-                if (connector.value) {
+            watch(list, () => {
+                if (connector.value && connector.value !== '') {
                     if (!selectedValue.value) {
                         if (filteredList.value.length === 1) {
                             selectedValue.value =

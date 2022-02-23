@@ -1,12 +1,24 @@
 <template>
     <div class="flex flex-col h-full">
         <div
-            class="flex items-center justify-between px-5 bg-gray-50 py-2 border-b border-gray-200"
+            class="flex items-center justify-between px-5 py-2 border-b border-gray-200 bg-gray-50"
         >
-            <span class="font-semibold text-gray-500">Linked Assets</span>
+            <span class="flex items-center">
+                <PreviewTabsIcon
+                    :icon="tab.icon"
+                    :image="tab.image"
+                    :emoji="tab.emoji"
+                    height="h-4"
+                    :display-mode="true"
+                    class="mb-0.5"
+                />
+                <span class="ml-1 font-semibold text-gray-500"
+                    >Linked Assets</span
+                >
+            </span>
         </div>
 
-        <div class="px-4 h-full">
+        <div class="h-full px-4">
             <AssetList
                 class="flex-grow bg-white"
                 :filters="tabFilter"
@@ -23,18 +35,24 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import AssetList from '@/common/assetList/assetList.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
 
     export default defineComponent({
         name: 'LinkedAssetsPreviewWrapper',
         components: {
             LinkedAssets,
             AssetList,
+            PreviewTabsIcon,
         },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: false,
                 default: () => {},
+            },
+            tab: {
+                type: Object,
+                required: false,
             },
         },
         setup(props) {

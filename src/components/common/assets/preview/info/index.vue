@@ -9,6 +9,7 @@
                     :image="tab.image"
                     :emoji="tab.emoji"
                     height="h-4"
+                    class="mb-0.5"
                 />
                 <span class="ml-1 font-semibold text-gray-500">Overview</span>
             </span>
@@ -561,12 +562,12 @@
                                 ? 'disabledButton'
                                 : ''
                         "
-                        @click="handleCollectionClick"
                         :disabled="
                             !collectionData?.hasCollectionReadPermission &&
                             !collectionData?.hasCollectionWritePermission &&
                             !collectionData?.isCollectionCreatedByCurrentUser
                         "
+                        @click="handleCollectionClick"
                     >
                         <div class="flex items-center">
                             <!-- <AtlanIcon
@@ -591,12 +592,12 @@
                             </span>
                         </div>
                         <AtlanIcon
-                            icon="Lock"
                             v-if="
                                 !collectionData?.hasCollectionReadPermission &&
                                 !collectionData?.hasCollectionWritePermission &&
                                 !collectionData?.isCollectionCreatedByCurrentUser
                             "
+                            icon="Lock"
                         />
                         <AtlanIcon v-else icon="External" />
                     </a-button>
@@ -689,16 +690,16 @@
                     class="px-5"
                     :selected-asset="selectedAsset"
                     :edit-permission="editPermission"
-                    :showShortcut="true"
+                    :show-shortcut="true"
                     @change="handleOwnersChange"
                 />
             </div>
 
             <div
-                class="flex flex-col"
                 v-if="
                     selectedAsset.guid && selectedAsset.typeName == 'Connection'
                 "
+                class="flex flex-col"
             >
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
@@ -740,7 +741,7 @@
                             'ENTITY_ADD_CLASSIFICATION'
                         )
                     "
-                    :allowDelete="
+                    :allow-delete="
                         selectedAssetUpdatePermission(
                             selectedAsset,
                             isDrawer,
@@ -748,7 +749,7 @@
                         )
                     "
                     class="px-5"
-                    :showShortcut="true"
+                    :show-shortcut="true"
                     @change="handleClassificationChange"
                 >
                 </Classification>
@@ -778,7 +779,7 @@
                             'AtlasGlossaryTerm'
                         ) && editPermission
                     "
-                    :allowDelete="
+                    :allow-delete="
                         selectedAssetUpdatePermission(
                             selectedAsset,
                             isDrawer,
@@ -879,6 +880,8 @@
         toRefs,
     } from 'vue'
     import SavedQuery from '@common/hovercards/savedQuery.vue'
+    import DetailsContainer from '@common/assets/misc/detailsOverflowContainer.vue'
+    import { message } from 'ant-design-vue'
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
     import SQL from '@/common/popover/sql.vue'
     import SQLSnippet from '@/common/sql/snippet.vue'
@@ -903,11 +906,9 @@
     import SubFolderCount from '@/common/widgets/summary/types/subFolderCount.vue'
     import ParentContext from '@/common/widgets/summary/types/parentContext.vue'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
-    import DetailsContainer from '@common/assets/misc/detailsOverflowContainer.vue'
     import { copyToClipboard } from '~/utils/clipboard'
-    import { message } from 'ant-design-vue'
-
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
+
     export default defineComponent({
         name: 'AssetDetails',
         components: {
@@ -1077,11 +1078,7 @@
 
             // route to go to insights and select the collection
             const handleCollectionClick = () => {
-                const URL =
-                    `http://` +
-                    window.location.host +
-                    `/insights?col_id=` +
-                    collectionData?.value?.collectionInfo?.guid
+                const URL = `http://${window.location.host}/insights?col_id=${collectionData?.value?.collectionInfo?.guid}`
 
                 window.open(URL, '_blank')?.focus()
             }

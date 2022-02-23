@@ -54,7 +54,7 @@
     </div>
 
     <div
-        class="flex w-full dropdown-container"
+        class="flex w-full dropdown-container max-h-96"
         :class="isTableLoading ? 'flex-col' : ''"
         style="min-height: 0"
     >

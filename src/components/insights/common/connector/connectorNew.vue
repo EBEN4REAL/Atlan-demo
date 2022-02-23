@@ -1,50 +1,53 @@
 <template>
     <div class="w-full pb-3">
-        <a-dropdown :trigger="['click']">
+        <a-dropdown overlayClassName="dropdown-overlay" :trigger="['click']">
             <div class="flex items-center w-full cursor-pointer">
-                <div class="flex items-center w-full">
+                <div class="flex flex-row items-center w-full">
                     <span class="mr-2" style="font-size: 28px"
                         ><AtlanIcon
                             :icon="getContextName(`icon`)"
                             class="w-6 h-6 text-gray-500"
                         ></AtlanIcon
                     ></span>
-                    <div class="flex w-full bg">
-                        <div class="flex flex-col w-full">
-                            <div class="flex items-center w-full">
-                                <div class="flex w-full place-content-between">
-                                    <Tooltip
-                                        :tooltip-text="
-                                            getContextName(`database`)
-                                        "
-                                        classes="cursor-pointer text-base 
-                                    mr-1"
-                                        :class="[
-                                            getContextName(`database`) ===
-                                            'Select database context'
-                                                ? `${$style.empty_db_state}`
-                                                : `${$style.filled_db_state}`,
-                                        ]"
-                                    />
-                                    <div style="width: 8%">
-                                        <AtlanIcon
-                                            icon="ChevronDown"
-                                            class="w-4 h-4 text-gray-500"
-                                        ></AtlanIcon>
-                                    </div>
-                                </div>
-                            </div>
-                            <span
-                                :class="[
-                                    getContextName(`schema`) ===
-                                    'Select schema context'
-                                        ? `text-gray-500`
-                                        : ``,
-                                ]"
-                                class="mr-1 text-sm truncate hover:underline"
-                                >{{ getContextName(`schema`) }}</span
-                            >
-                        </div>
+                    <div class="flex flex-col w-full bg">
+                        <!-- <div
+                            class="flex items-center w-full text-sm cursor-pointer max-full place-content-between"
+                            :class="[
+                                getContextName(`database`) ===
+                                'Select database context'
+                                    ? `${$style.empty_db_state}`
+                                    : `${$style.filled_db_state}`,
+                            ]"
+                        >
+                            {{ getContextName(`database`) }}
+                        </div> -->
+                        <Tooltip
+                            :tooltip-text="getContextName(`database`)"
+                            classes="cursor-pointer text-base  text-gray-700 w-full"
+                            :class="[
+                                getContextName(`database`) ===
+                                'Select database context'
+                                    ? `${$style.empty_db_state}`
+                                    : `${$style.filled_db_state}`,
+                            ]"
+                        >
+                        </Tooltip>
+                        <span
+                            :class="[
+                                getContextName(`schema`) ===
+                                'Select schema context'
+                                    ? `text-gray-500`
+                                    : ``,
+                            ]"
+                            class="mr-1 text-sm truncate"
+                            >{{ getContextName(`schema`) }}</span
+                        >
+                    </div>
+                    <div class="w-4">
+                        <AtlanIcon
+                            icon="ChevronDown"
+                            class="w-4 h-4 text-gray-500"
+                        ></AtlanIcon>
                     </div>
                 </div>
             </div>
@@ -178,6 +181,12 @@
                                     <button
                                         @click="clearStateDBHandle"
                                         class="hover:text-primary"
+                                        :class="[
+                                            getContextName(`database`) ===
+                                            'Select database context'
+                                                ? `${$style.clear_btn_invisible}`
+                                                : `${$style.clear_btn_visible}`,
+                                        ]"
                                     >
                                         clear
                                     </button>
@@ -228,13 +237,21 @@
                                     <button
                                         @click="clearStateSchemaHandle"
                                         class="hover:text-primary"
+                                        :class="[
+                                            getContextName(`schema`) ===
+                                            'Select schema context'
+                                                ? `${$style.clear_btn_invisible}`
+                                                : `${$style.clear_btn_visible}`,
+                                        ]"
                                     >
                                         clear
                                     </button>
                                 </span>
                             </div></template
                         >
-                        <div class="w-56 pb-2">
+                        <div
+                            class="w-56 pb-2 overflow-x-hidden overflow-y-scroll"
+                        >
                             <AssetDropdownNewSchema
                                 v-if="connection"
                                 v-model:clearStateSchema="clearStateSchema"
@@ -250,72 +267,6 @@
             </template>
         </a-dropdown>
     </div>
-    <!-- <div class="w-full">
-        <a-tree-select
-            :ref="
-                (el) => {
-                    treeSelectRef = el
-                }
-            "
-            :class="[
-                $style.tree_selecttor,
-                bgGrayForSelector ? `${$style.selector_bg}` : '',
-            ]"
-            v-model:treeExpandedKeys="expandedKeys"
-            :value="selectedValue"
-            style="width: 100%"
-            :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-            :tree-data="treeData"
-            data-test-id="connector"
-            placeholder="Select a connector"
-            dropdownClassName="connectorDropdown"
-            :disabled="disabled"
-            @change="onChange"
-            @select="selectNode"
-            @blur="onBlur"
-        >
-            <template #title="node">
-                <div
-                    v-if="node.nodeType !== 'info-node'"
-                    class="flex items-center truncate selected-connetor"
-                    @click="toggleVisibilityOfChildren(node.title)"
-                >
-                    <img
-                        :src="getConnectorImage(node.connector)"
-                        class="w-4 h-4 mr-1"
-                        style="min-width: 1rem"
-                    />
-                    <div class="flex flex-col" v-if="!node?.connection">
-                        {{
-                            node.title?.length > 1
-                                ? `${capitalizeFirstLetter(node.title)}`
-                                : node.title
-                        }}
-                    </div>
-                    <div class="flex flex-col" v-else>
-                        {{ node.title }}
-                    </div>
-                </div>
-            </template>
-            <template #suffixIcon>
-                <AtlanIcon
-                    icon="ChevronDown"
-                    class="h-4 -mt-0.5 -ml-1"
-                    color="#6F7590"
-                />
-            </template>
-        </a-tree-select>
-
-        <AssetDropdown
-            v-if="connection"
-            :connector="filteredConnector"
-            :connection="selectedValue"
-            :filter="data"
-            @change="handleChange"
-            :bgGrayForSelector="bgGrayForSelector"
-            @label-change="setPlaceholder($event, 'asset')"
-        ></AssetDropdown>
-    </div> -->
 </template>
 
 <script lang="ts">
@@ -822,15 +773,27 @@
     .tree-select-nodes .ant-tree-list-holder-inner {
         padding-left: 1rem !important;
     }
-    .submenu .clear-btn {
-        visibility: hidden;
-    }
-    .submenu:hover .clear-btn {
-        visibility: visible;
-    }
+
     .tree-container {
         max-height: 450px;
         overflow: scroll;
+    }
+
+    .submenu .clear-btn {
+        visibility: hidden;
+    }
+
+    .submenu:hover .clear-btn {
+        visibility: visible;
+    }
+
+    .ant-dropdown-menu-submenu-disabled .clear-btn {
+        visibility: hidden !important;
+    }
+
+    .dropdown-overlay {
+        // max-width: 200px !important;
+        // @apply max-w-full;
     }
 </style>
 <style lang="less" module>
@@ -862,6 +825,14 @@
     }
 
     .filled_db_state {
-        @apply hover:underline font-bold !important;
+        @apply font-bold !important;
+        // @apply hover:underline !important;
+    }
+
+    // .clear_btn_visible {
+    //     visibility: visible !important;
+    // }
+    .clear_btn_invisible {
+        visibility: hidden !important;
     }
 </style>

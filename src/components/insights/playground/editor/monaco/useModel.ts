@@ -19,9 +19,9 @@ export function updateEditorModelOnTabOpen(
     text: string
 ) {
     if (!editorStates.has(key)) {
-        const newModel = monacoInstance.editor.createModel(text, 'atlansql')
-        editorStates.set(key, {
-            model: newModel,
+        const newModel = monacoInstance?.editor?.createModel(text, 'atlansql')
+        editorStates?.set(key, {
+            model: newModel ?? {},
             viewState: undefined,
         })
     }

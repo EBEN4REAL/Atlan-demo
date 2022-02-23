@@ -33,7 +33,7 @@
                 ref="searchBar"
                 :allowClear="true"
                 @change="handleSearchChange"
-                placeholder="Search terms & categories..."
+                :placeholder="checkable?'Search terms...':'Search terms & categories...'"
             >
                 <template  #filter>
                     <a-tooltip v-if="!queryText" >

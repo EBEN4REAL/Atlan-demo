@@ -441,14 +441,14 @@ export function useBody(
                 // if (filterObject) {
                 //     base.filter('terms', '__state', filterObject)
                 // }
-                state.value=null
+                state.value = null
                 break
             }
             case 'column':
             case 'table':
             case 'sql':
             default: {
-                if (filterObject ) {
+                if (filterObject) {
                     console.log('filterObject', filterObject)
                     Object.keys(filterObject)?.forEach((key) => {
                         filterObject[key].forEach((element) => {
@@ -579,8 +579,7 @@ export function useBody(
     })
 
     // don't apply state filter
-    if (state.value)
-        base.filter('term', '__state', state.value)
+    if (state.value) base.filter('term', '__state', state.value)
 
     //post filters
     const postFilter = bodybuilder()
@@ -663,6 +662,17 @@ export function useBody(
                             'terms',
                             '__glossary',
                             { size: 50 },
+                            `${agg_prefix}_${mkey}`
+                        )
+                    }
+                    break
+                }
+                case 'connection': {
+                    if (mkey) {
+                        base.aggregation(
+                            'terms',
+                            'connectionQualifiedName',
+                            { size: 100 },
                             `${agg_prefix}_${mkey}`
                         )
                     }
@@ -768,7 +778,7 @@ export function useBody(
         },
     ]
 
-    if (connectorName.toLowerCase() === 'looker') {
+    if (connectorName?.toLowerCase() === 'looker') {
         functionArray.push({
             filter: {
                 match: {
@@ -795,7 +805,7 @@ export function useBody(
         })
     }
 
-    if (connectorName.toLowerCase() === 'powerbi') {
+    if (connectorName?.toLowerCase() === 'powerbi') {
         functionArray.push({
             filter: {
                 match: {
@@ -814,7 +824,7 @@ export function useBody(
         })
     }
 
-    if (connectorName.toLowerCase() === 'salesforce') {
+    if (connectorName?.toLowerCase() === 'salesforce') {
         functionArray.push({
             filter: {
                 match: {

@@ -8,7 +8,7 @@
             style="z-index: 600"
         />
         <div
-            class="flex items-center justify-between px-5 bg-gray-50 py-2 border-b border-gray-200"
+            class="flex items-center justify-between px-5 py-2 border-b border-gray-200 bg-gray-50"
         >
             <span class="flex items-center">
                 <PreviewTabsIcon
@@ -16,12 +16,13 @@
                     :image="tab.image"
                     :emoji="tab.emoji"
                     height="h-4"
+                    class="mb-0.5"
                 />
-                <span class="font-semibold text-gray-500 ml-1">Lineage</span>
+                <span class="ml-1 font-semibold text-gray-500">Lineage</span>
             </span>
 
             <div
-                class="flex items-center text-primary cursor-pointer"
+                class="flex items-center cursor-pointer text-primary"
                 v-if="isWithGraph"
                 @click="showImpactedAssets = true"
                 :disabled="!allEntities?.downstream?.length"
@@ -30,7 +31,7 @@
             </div>
 
             <router-link v-else :to="getLineagePath(selectedAsset)">
-                <div class="flex items-center text-primary cursor-pointer">
+                <div class="flex items-center cursor-pointer text-primary">
                     <AtlanIcon icon="External" class="mr-1" /> View Graph
                 </div>
             </router-link>

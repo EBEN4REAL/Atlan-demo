@@ -1,29 +1,38 @@
+/** VUE */
 import { ref, computed } from 'vue'
+
+/** PACKAGES */
+import { DagreLayout } from '@antv/layout'
+
+/** STORE */
 import useLineageStore from '~/store/lineage'
+
+/** COMPOSABLES */
 import useGraph from './useGraph'
 import useTransformGraph from './useTransformGraph'
 
-export default async function useComputeGraph(
+export default async function useComputeGraph({
     graph,
     graphLayout,
     lineage,
     searchItems,
     currZoom,
     isComputeDone,
-    emit
-) {
-    const { DagreLayout } = window.layout
+    emit,
+}) {
+    // const { DagreLayout } = window.layout
     const lineageStore = useLineageStore()
     lineageStore.nodesColumnList = {}
     lineageStore.columnsLineage = {}
 
-    const { createNodeData, createEdgeData } = useGraph()
-    const { fit } = useTransformGraph(graph, emit)
-
     const model = ref(null)
     const edges = ref([])
     const nodes = ref([])
-    const mergedLineageData = ref()
+    const mergedLineageData = ref({})
+
+    const { createNodeData, createEdgeData } = useGraph()
+
+    const { fit } = useTransformGraph(graph, emit)
 
     mergedLineageData.value = { ...lineage.value }
     searchItems.value = []
@@ -50,8 +59,6 @@ export default async function useComputeGraph(
         return z.map((x) => x.guid)
     })
 
-    const isNodeExist = (id) => nodes.value.find((x) => x.id === id)
-
     const fromAndToIdSetForNodes = new Set()
 
     const createNodesFromEntityMap = (data, hasBase = true) => {
@@ -60,7 +67,8 @@ export default async function useComputeGraph(
         const { relations, childrenCounts, baseEntityGuid } = lineageData
 
         const getAsset = (id) => lineageData.guidEntityMap[id]
-        const assetExists = (id) => nodes.value.find((x) => x.id === id)
+
+        const isNodeExist = (id) => nodes.value.find((x) => x.id === id)
 
         relations.forEach((x) => {
             const { fromEntityId: from, toEntityId: to } = x
@@ -75,9 +83,10 @@ export default async function useComputeGraph(
             const { typeName: fromTypeName, guid: fromGuid } = getAsset(from)
             const { typeName: toTypeName, guid: toGuid } = getAsset(to)
 
-            if (assetExists(fromGuid) && assetExists(toGuid)) return
+            if (isNodeExist(fromGuid) && isNodeExist(toGuid)) return
 
             if ([fromTypeName, toTypeName].includes('column')) return
+
             // same source
             if (sameSourceCount.value[from]) {
                 sameSourceCount.value[from].count += 1
@@ -161,9 +170,9 @@ export default async function useComputeGraph(
             }
         })
 
-        const guidEntityMap = Object.values(lineageData.guidEntityMap)
+        const guidEntityMapValues = Object.values(lineageData.guidEntityMap)
 
-        guidEntityMap.forEach((entity) => {
+        guidEntityMapValues.forEach((entity) => {
             const ent = { ...entity }
             const { attributes, typeName, guid } = ent
 
@@ -192,16 +201,15 @@ export default async function useComputeGraph(
             )
 
             const searchItem = ent
-            searchItems.value.push(searchItem)
+            if (ent.typeName !== 'vpNode') searchItems.value.push(searchItem)
 
             nodes.value.push(nodeData)
         })
 
-        if (Object.keys(columnEntity).length) {
+        if (Object.keys(columnEntity).length)
             Object.entries(columnEntity).forEach(([parentGuid, columns]) => {
                 lineageStore.setNodesColumnList(parentGuid, columns)
             })
-        }
     }
 
     createNodesFromEntityMap(lineage.value)
@@ -211,8 +219,6 @@ export default async function useComputeGraph(
 
     const createNodeEdges = (data) => {
         const lineageData = { ...data }
-
-        const { relations } = lineageData
 
         // same source
         Object.entries(sameSourceCount.value).forEach(([k, v]) => {
@@ -238,7 +244,7 @@ export default async function useComputeGraph(
             })
         })
 
-        relations.forEach((x) => {
+        lineageData.relations.forEach((x) => {
             const { fromEntityId: from, toEntityId: to, processId } = x
 
             if (from === to) return
@@ -247,6 +253,7 @@ export default async function useComputeGraph(
 
             if (allTargetsHiddenIds.value.find((y) => [from, to].includes(y)))
                 return
+
             if (allSourcesHiddenIds.value.find((y) => [from, to].includes(y)))
                 return
 
@@ -262,7 +269,7 @@ export default async function useComputeGraph(
                 const fromTo = y.id.split('/')[1]
                 const [fromTwo, toTwo] = fromTo.split('@')
                 if (toTwo === from && fromTwo === to) {
-                    edgeExtraData = { edgeExtraData, isCyclicEdge: true }
+                    edgeExtraData = { ...edgeExtraData, isCyclicEdge: true }
                 }
             })
 
@@ -301,12 +308,10 @@ export default async function useComputeGraph(
             type: 'dagre',
             rankdir: 'LR',
             controlPoints: true,
-            nodesepFunc(x) {
-                // vertical spacing btw nodes
+            nodesepFunc() {
                 return 20
             },
-            ranksepFunc(x) {
-                // horizontal spacing btw nodes
+            ranksepFunc() {
                 return 190
             },
             preset: {
@@ -329,7 +334,6 @@ export default async function useComputeGraph(
         if (typeof registerAllListeners === 'function') registerAllListeners()
     }
     renderLayout(null)
-
     isComputeDone.value = true
 
     /* Transformations */
@@ -345,7 +349,8 @@ export default async function useComputeGraph(
 
         renderLayout(registerAllListeners)
 
-        if (!mergedLineageData.value) mergedLineageData.value = lineage.value
+        if (!Object.keys(mergedLineageData.value).length)
+            mergedLineageData.value = lineage.value
 
         const {
             baseEntityGuid,

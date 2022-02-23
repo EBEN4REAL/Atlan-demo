@@ -2,39 +2,28 @@
     <div class="flex flex-col w-full px-3">
         <ConnectorSelect
             v-model="localValue.connectorName"
-            :showCount="true"
+            :show-count="true"
             class="w-full"
             :persona="persona"
-            @change="handleConnectorChange"
         ></ConnectorSelect>
-        <div
-            class="flex items-center w-full my-2"
+
+        <ConnectionSelect
             v-if="localValue.connectorName"
-        >
-            <div class="mr-1">
-                <a-tooltip title="Connection" placement="right">
-                    <AtlanIcon class="w-4 h-4" icon="Connection"
-                /></a-tooltip>
-            </div>
-            <div style="width: calc(100% - 22px)" class="">
-                <ConnectionSelect
-                    :key="localValue.connectorName"
-                    :connector="localValue.connectorName"
-                    class="w-full"
-                    :persona="persona"
-                    v-model="localValue.connectionQualifiedName"
-                ></ConnectionSelect>
-            </div>
-        </div>
+            :key="localValue.connectorName"
+            v-model="localValue.connectionQualifiedName"
+            :connector="localValue.connectorName"
+            class="w-full"
+            :persona="persona"
+        ></ConnectionSelect>
 
         <AssetDropdown
             :key="localValue.connectionQualifiedName"
             class="mb-0"
             :persona="persona"
             :connector="filteredConnector"
-            @change="handleAssetChange"
-            :bgGrayForSelector="false"
+            :bg-gray-for-selector="false"
             :filter="localValue"
+            @change="handleAssetChange"
         ></AssetDropdown>
     </div>
 </template>
@@ -42,17 +31,21 @@
 <script lang="ts">
     import { defineComponent, ref, watch, computed } from 'vue'
 
+    import { useVModels } from '@vueuse/core'
     import ConnectorSelect from '@/common/select/connector.vue'
     import ConnectionSelect from '@/common/select/connection.vue'
     import AssetDropdown from '@/common/dropdown/hierarchy/assetDropdown.vue'
-
-    import { useVModels } from '@vueuse/core'
 
     import useAssetStore from '~/store/asset'
     import { useConnectionStore } from '~/store/connection'
 
     export default defineComponent({
         name: 'ConnectionFilter',
+        components: {
+            ConnectorSelect,
+            ConnectionSelect,
+            AssetDropdown,
+        },
         props: {
             modelValue: {
                 required: false,
@@ -60,11 +53,6 @@
                     return {}
                 },
             },
-        },
-        components: {
-            ConnectorSelect,
-            ConnectionSelect,
-            AssetDropdown,
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {

@@ -351,7 +351,19 @@
                                                 "
                                                 >Move query</a-menu-item
                                             >
-
+                                            <a-menu-item
+                                                key="duplicate"
+                                                @click="
+                                                    () => {
+                                                        removeBackground()
+                                                        actionClick(
+                                                            'duplicate',
+                                                            item
+                                                        )
+                                                    }
+                                                "
+                                                >Duplicate query</a-menu-item
+                                            >
                                             <a-menu-item
                                                 key="shareQuery"
                                                 @click="copyURL"
@@ -642,11 +654,8 @@
             ) as Ref<string>
 
             //add comment
-            const { openSavedQueryInNewTabAndRun } = useSavedQuery(
-                inlineTabs,
-                activeInlineTab,
-                activeInlineTabKey
-            )
+            const { openSavedQueryInNewTabAndRun, duplicateSavedQuery } =
+                useSavedQuery(inlineTabs, activeInlineTab, activeInlineTabKey)
 
             const { isSameNodeOpenedInSidebar } = useSchema()
             const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
@@ -743,6 +752,10 @@
                             onRunCompletion,
                             onQueryIdGeneration
                         )
+                        break
+                    }
+                    case 'duplicate': {
+                        duplicateSavedQuery(item)
                         break
                     }
                     case 'bookmark': {

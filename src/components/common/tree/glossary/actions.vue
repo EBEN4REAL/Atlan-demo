@@ -10,6 +10,37 @@
 
         <template #overlay>
             <a-menu>
+                <a-menu-item
+                    v-if="showLinks"
+                    key="copyLink"
+                    class="flex items-center"
+                    @click="handleCopyProfileLink"
+                >
+                    <div class="flex items-center">
+                        <AtlanIcon icon="CopyOutlined" class="m-0 mr-2" />
+                        <p class="p-0 m-0">
+                            Copy
+                            {{ assetTypeLabel[entity?.typeName] }}
+                            profile link
+                        </p>
+                    </div>
+                </a-menu-item>
+                <a-menu-item
+                    v-if="showLinks"
+                    key="copyName"
+                    class="flex items-center"
+                    @click="handleCopyName"
+                >
+                    <div class="flex items-center">
+                        <AtlanIcon icon="CopyOutlined" class="m-0 mr-2" />
+                        <p class="p-0 m-0">
+                            Copy
+                            {{ assetTypeLabel[entity?.typeName] }}
+                            name
+                        </p>
+                    </div>
+                </a-menu-item>
+
                 <a-menu-item v-if="showGtcCrud" key="edit" @click="closeMenu">
                     <div
                         class="flex items-center"
@@ -273,6 +304,26 @@
             const handleCancel = () => {
                 isModalVisible.value = false
             }
+            // copy profile link
+            const handleCopyProfileLink = () => {
+                const baseUrl = window.location.origin
+                const text = `${baseUrl}/glossary/${props.entity?.guid}`
+                copyToClipboard(text)
+                message.success({
+                    content: 'Copied!',
+                })
+                closeMenu()
+            }
+            const handleCopyName = () => {
+                copyToClipboard(
+                    props?.entity?.attributes?.name ??
+                        props?.entity?.displayText
+                )
+                message.success({
+                    content: 'Copied!',
+                })
+                closeMenu()
+            }
 
             return {
                 assetTypeLabel,
@@ -295,6 +346,8 @@
                 handleDelete,
                 shouldRedirect,
                 map,
+                handleCopyProfileLink,
+                handleCopyName,
             }
         },
     })

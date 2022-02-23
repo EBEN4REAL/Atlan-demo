@@ -38,8 +38,7 @@
         </template>
 
         <template #suffix>
-            <a-spin size="small" v-if="isLoading" class="mt-0.5 mx-1"></a-spin>
-            <template v-else-if="clearable && localValue">
+            <template v-if="clearable && localValue">
                 <div class="cursor-pointer" @click="clear">
                     <AtlanIcon icon="Cancel" class="text-gray-500" />
                 </div>
@@ -189,7 +188,7 @@
                 } else
                     setTimeout(() => {
                         extraLoading.value = isLoading.value
-                    }, 500)
+                    }, 700)
             })
 
             return {

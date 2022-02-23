@@ -193,7 +193,7 @@
                     "
                     :selected-asset="selectedAsset"
                     :is-drawer="isDrawer"
-                    :read-permission="isScrubbed(selectedAsset)"
+                    :read-permission="!isScrubbed(selectedAsset)"
                     :edit-permission="
                         selectedAssetUpdatePermission(selectedAsset, isDrawer)
                     "

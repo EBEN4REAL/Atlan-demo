@@ -15,17 +15,6 @@ export const iconDeprecated = `<svg width="21" height="21" viewBox="0 0 16 16" f
 </svg>
 `
 
-export const iconProcess = `<svg class="process-icon" width="20" height="20" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M2.5 3.4375L0.625 5L2.5 6.5625" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M7.5 3.4375L9.375 5L7.5 6.5625" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M6.25 1.5625L3.75 8.4375" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>`
-
-export const iconEllipse = `<svg width="6" height="8" viewBox="0 0 3 4" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="1.5" cy="2" r="1.5" fill="#C4C4C4"/>
-</svg>
-`
-
 export const iconPlus = `<svg width="20" height="20" viewBox="0 0 16 16"
 fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M8 2.5V13.5M13.5 8H2.5" stroke="#FFFFFF" stroke-width="2" 

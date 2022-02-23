@@ -42,10 +42,25 @@
                 <p class="mb-0 text-base font-bold text-gray-700">
                     Sample data unavailable!
                 </p>
+                <p
+                    v-if="!allowQueryPreview(parentConnection)"
+                    class="mt-2 mb-0 text-base text-gray-500"
+                >
+                    The connection
+                    <router-link
+                        :to="getProfilePath(parentConnection)"
+                        target="_blank"
+                        class="font-semibold cursor-pointer text-primary hover:underline"
+                        >{{ connectorName(parentConnection) }}/{{
+                            title(parentConnection)
+                        }}</router-link
+                    >
+                    doesn't allow sample data preview
+                </p>
             </div>
         </div>
         <div v-else class="w-full h-full">
-            <AtlanPreviewTable :dataList="results" :columns="tableColumns" />
+            <AtlanPreviewTable :data-list="results" :columns="tableColumns" />
         </div>
     </div>
 </template>
@@ -58,19 +73,18 @@
         ref,
         PropType,
         toRefs,
-        // inject,
-        // computed
+        onMounted,
     } from 'vue'
-    import Tooltip from '@/common/ellipsis/index.vue'
     import AtlanPreviewTable from '@/common/table/previewTable/tablePreview.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import useConnectionData from '~/composables/connection/useConnectionData'
 
     // API
     import { Insights } from '~/services/sql/query'
 
     export default defineComponent({
-        components: { Tooltip, AtlanPreviewTable },
+        components: { AtlanPreviewTable },
         props: {
             asset: {
                 type: Object as PropType<assetInterface>,
@@ -84,8 +98,17 @@
 
             const { asset } = toRefs(props)
 
-            const { connectionQualifiedName, databaseName, schemaName, title } =
-                useAssetInfo()
+            const {
+                connectionQualifiedName,
+                databaseName,
+                schemaName,
+                title,
+                allowQueryPreview,
+                connectorName,
+                getProfilePath,
+            } = useAssetInfo()
+
+            const { getConnection } = useConnectionData()
 
             const body = {
                 tableName: title(asset.value),
@@ -97,7 +120,30 @@
             }
 
             /** METHODS */
-            const { data, isLoading, error } = Insights.GetSampleData(body)
+            const { data, isLoading, error, mutate } = Insights.GetSampleData(
+                body,
+                {
+                    asyncOptions: {
+                        immediate: false,
+                        onError: (e) => {
+                            throw e
+                        },
+                    },
+                }
+            )
+
+            const parentConnection = ref(
+                getConnection(connectionQualifiedName(asset.value))
+            )
+
+            onMounted(() => {
+                if (
+                    parentConnection.value &&
+                    allowQueryPreview(parentConnection.value)
+                ) {
+                    mutate()
+                }
+            })
 
             /** WATCHERS */
             watch([data], () => {
@@ -123,6 +169,11 @@
                 results,
                 isLoading,
                 error,
+                allowQueryPreview,
+                getProfilePath,
+                connectorName,
+                title,
+                parentConnection,
             }
         },
     })

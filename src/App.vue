@@ -8,7 +8,7 @@
     import useTypedefs from '~/composables/typedefs/useTypedefs'
 
     import useTenant from '~/composables/tenant/useTenant'
-    import useConnection from '~/composables/connection/useConnection'
+    import { useConnection } from '~/composables/connection/useConnection'
     import useIntegration from '~/composables/integrations/useIntegrations'
     import usePermissions from '~/composables/auth/usePermissions'
     import { useAuthStore } from './store/auth'
@@ -38,10 +38,10 @@
                 // typedefs
                 useTypedefs()
 
-                // // connections
+                // connections
                 useConnection()
 
-                // // glossary list
+                // glossary list
                 useGlossary()
 
                 const { call } = useIntegration(true)

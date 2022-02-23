@@ -470,11 +470,13 @@ export default function useGraph() {
 
     const addEdge = (graph, relation, styles: EdgeStyle = {}) => {
         const graphEdges = graph.value.getEdges()
-        const exists = graphEdges.find((x) => x.id === relation.id)
-        if (exists) return
+        const edge = graphEdges.find((x) => x.id === relation.id)
+        if (edge) return edge
 
         const { edgeData } = createEdgeData(relation, {}, styles)
-        graph.value.addEdge(edgeData)
+        const createdEdge = graph.value.addEdge(edgeData)
+
+        return createdEdge
     }
 
     const removeEdge = (graph, type) => {
@@ -490,13 +492,13 @@ export default function useGraph() {
 
     const toggleNodesEdges = (graph, visible) => {
         const graphEdges = graph.value.getEdges()
-        graph.value.freeze('toggleNodesEdges')
+        // graph.value.freeze('toggleNodesEdges')
         graphEdges.forEach((x) => {
             const cell = graph.value.getCellById(x.id)
             cell.attr('line/stroke', visible ? '#aaaaaa' : '#dce0e5')
             cell.toBack()
         })
-        graph.value.unfreeze('toggleNodesEdges')
+        // graph.value.unfreeze('toggleNodesEdges')
     }
 
     return {

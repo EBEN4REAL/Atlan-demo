@@ -11,10 +11,12 @@
             [allowTabShortcut]: true,
             [$style.inputBox]: true,
             [$style.no_border]: noBorder,
+            [customClass]: true,
         }"
         class="px-0 text-sm text-gray-500 bg-transparent rounded-none focus:outline-none"
         @change="handleChange"
     >
+        <!-- <template #suffix>X</template> -->
         <template #prefix>
             <a-tooltip
                 :title="capitalizeFirstLetter(connectorName)"
@@ -26,14 +28,21 @@
                     class="w-auto h-4 pr-2 mr-2 border-r"
                 />
             </a-tooltip>
+
+            <AtlanLoader v-if="extraLoading" class="mb-0.5 h-4" />
             <AtlanIcon
+                v-else
                 icon="Search"
-                class="flex-none text-gray-700 focusIcon"
+                class="flex-none h-4 text-gray-700 focusIcon"
             />
         </template>
 
         <template #suffix>
-            <AtlanLoader v-if="isLoading" class="mt-0.5 mx-1 h-5" />
+            <template v-if="clearable && localValue">
+                <div class="cursor-pointer" @click="clear">
+                    <AtlanIcon icon="Cancel" class="text-gray-500" />
+                </div>
+            </template>
             <slot name="tab" />
             <slot name="filter" />
             <a-popover
@@ -82,6 +91,7 @@
         props: {
             autofocus: { type: Boolean, default: () => false },
             dot: { type: Boolean, default: () => false },
+            clearable: { type: Boolean, default: () => false },
             placeholder: { type: String, default: () => 'Search' },
             size: {
                 type: String as PropType<'default' | 'minimal' | 'large'>,
@@ -103,6 +113,8 @@
                 toRefs(props)
 
             const { modelValue } = useVModels(props, emit)
+
+            const extraLoading = ref(false)
 
             const { getConnectorImageMap, getConnectorLabelByName } =
                 useAssetInfo()
@@ -166,9 +178,24 @@
                 }
             })
 
+            const clear = () => {
+                localValue.value = ''
+                handleChange()
+            }
+            watch(isLoading, () => {
+                if (isLoading.value) {
+                    extraLoading.value = isLoading.value
+                } else
+                    setTimeout(() => {
+                        extraLoading.value = isLoading.value
+                    }, 500)
+            })
+
             return {
+                clear,
                 localValue,
                 searchBar,
+                extraLoading,
                 clearInput,
                 handleChange,
                 forceFocus,
@@ -213,7 +240,7 @@
             @apply border-gray-200 border-b shadow-none border-solid border-t-0 border-l-0 border-r-0 !important;
 
             &:global(.ant-input-affix-wrapper-focused) {
-                :global(.focusIcon) {
+                :global(.focusIcon h-5) {
                     @apply text-primary !important;
                 }
             }
@@ -244,7 +271,7 @@
             &:global(.ant-input-affix-wrapper-focused) {
                 @apply border-b-0  border-solid border-t-0 border-l-0 border-r-0  !important;
 
-                :global(.focusIcon) {
+                :global(.focusIcon h-5) {
                     @apply text-primary !important;
                 }
             }

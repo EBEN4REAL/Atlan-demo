@@ -97,7 +97,7 @@
                     }"
                 >
                     <div
-                        v-for="l in resources"
+                        v-for="l in sortResources(resources)"
                         :key="l.uniqueAttributes.qualifiedName"
                         class="flex-grow"
                     >
@@ -215,6 +215,15 @@
 
     const store = integrationStore()
     const { tenantSlackStatus, userSlackStatus } = toRefs(store)
+
+    /* eslint-disable no-underscore-dangle */
+    const sortResources = (_resources) =>
+        _resources?.sort((a, b) =>
+            (a.attributes.__modificationTimestamp ?? a.attributes.__timestamp) >
+            (b.attributes.__modificationTimestamp ?? b.attributes.__timestamp)
+                ? -1
+                : 1
+        )
 
     const hasAtleastOneSlackLink = computed(() => {
         const slackLink = resources.value.some((link) =>

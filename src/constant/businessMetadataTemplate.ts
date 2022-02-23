@@ -52,14 +52,14 @@ export const ATTRIBUTE_INPUT_VALIDATION_RULES = {
         {
             required: true,
             message: 'Please provide attribute name',
-            trigger: 'submit',
+            trigger: ['submit', 'change'],
         },
     ],
     options: {
         enumType: [
             {
                 required: true,
-                message: 'Please select Enum type',
+                message: 'Please select Option type',
                 trigger: 'submit',
             },
         ],
@@ -114,7 +114,7 @@ export const ATTRIBUTE_TYPES = [
     {
         label: 'Decimal',
         id: 'float',
-        icon: 'Number',
+        icon: 'Float',
     },
     {
         label: 'Boolean',

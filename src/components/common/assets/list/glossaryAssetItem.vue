@@ -79,7 +79,7 @@
                     </div>
                 </div>
                 <a-checkbox
-                    v-if="checkable && item.typeName === 'AtlasGlossaryTerm'"
+                    v-if="checkable && item.typeName === checkableItemType"
                     :checked="isChecked"
                 />
             </div>
@@ -137,6 +137,11 @@
                 required: false,
                 default: false,
             },
+            checkableItemType:{
+                type:String,
+                required:false,
+                default:()=>'AtlasGlossaryTerm'
+            }
         },
         emits: ['listItem:check', 'unlinkAsset', 'preview', 'check'],
         setup(props, { emit }) {

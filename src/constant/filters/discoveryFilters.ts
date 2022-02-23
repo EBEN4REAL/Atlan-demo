@@ -64,9 +64,10 @@ export const discoveryFilters = [
         exclude: false,
         analyticsKey: 'term',
     },
+
     {
         id: 'properties',
-        label: 'Properties',
+        label: 'PROPERTIES',
         component: 'properties',
         attributes: [
             {
@@ -142,6 +143,15 @@ export const discoveryFilters = [
                 description: 'All assets which have been archived',
                 isMandatory: true,
             },
+            {
+                name: 'announcementType',
+                displayName: 'Announcement',
+                typeName: 'string',
+                subTypeName: 'announcement',
+                description:
+                    'All assets which have the selected announcement type',
+                isMandatory: true,
+            },
         ],
         overallCondition: 'OR',
         isDeleted: false,
@@ -191,7 +201,7 @@ export const discoveryFilters = [
 
     {
         id: 'table',
-        label: 'Table/View',
+        label: 'TABLE/VIEW',
         component: 'properties',
         includes: ['Table', 'View', 'MaterialisedView', 'PartitionTable'],
         attributes: [
@@ -219,7 +229,7 @@ export const discoveryFilters = [
     },
     {
         id: 'column',
-        label: 'Column',
+        label: 'COLUMN',
         component: 'properties',
         includes: ['Column'],
         attributes: [
@@ -275,7 +285,7 @@ export const glossaryFilters = [
     },
     {
         id: 'properties',
-        label: 'Properties',
+        label: 'PROPERTIES',
         component: 'properties',
         attributes: [
             {

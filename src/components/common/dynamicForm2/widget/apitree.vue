@@ -27,7 +27,7 @@
     import { mergeDeep } from '~/utils/array'
 
     export default defineComponent({
-        name: 'FormBuilder',
+        name: 'APITreeForm',
         components: {
             APITreeSelect,
         },
@@ -38,7 +38,9 @@
                 default: () => {},
             },
             modelValue: {
+                type: Object,
                 required: false,
+                default: () => {},
             },
             configMap: {
                 required: false,
@@ -46,7 +48,9 @@
                 default: () => {},
             },
             isEdit: {
+                type: Boolean,
                 required: false,
+                default: () => false,
             },
         },
         emits: ['change', 'update:modelValue'],
@@ -57,35 +61,44 @@
 
             const { modelValue } = useVModels(props, emit)
 
-            const tempArray = []
+            const initArray = []
 
-            // if (modelValue.value) {
-            //     if (!isEdit.value) {
-            //         Object.keys(modelValue.value)?.forEach((key) => {
-            //             if (modelValue.value[key].length > 0) {
-            //                 modelValue.value[key]?.forEach((item) => {
-            //                     tempArray.push(`${key}:${item}`)
-            //                 })
-            //             } else {
-            //                 tempArray.push(key)
-            //             }
-            //         })
-            //     } else {
-            //         const tempModel = JSON.parse(modelValue.value)
+            const objectToPath = (val, prefix) => {
+                // If any other type of data is input, return []
+                if (typeof val !== 'object') return []
+                // Base case, return prefix or empty array
+                if (!Object.keys(val)?.length) return prefix ? [prefix] : []
 
-            //         Object.keys(tempModel)?.forEach((key) => {
-            //             if (tempModel[key].length > 0) {
-            //                 tempModel[key]?.forEach((item) => {
-            //                     tempArray.push(`${key}:${item}`)
-            //                 })
-            //             } else {
-            //                 tempArray.push(key)
-            //             }
-            //         })
-            //     }
-            // }
+                // Else return the keys as an array with prefix prepended
+                const ta = []
+                Object.keys(val).forEach((key) => {
+                    const fv = objectToPath(val[key], key)
+                    fv.forEach((fvl) => {
+                        if (prefix) ta.push(`${prefix}:${fvl}`)
+                        else ta.push(fvl)
+                    })
+                })
+                return ta
+            }
 
-            const localValue = ref(tempArray)
+            if (modelValue.value) {
+                try {
+                    // Setup flow
+                    if (!isEdit.value) {
+                        const tempModel = modelValue.value
+                        initArray.push(...objectToPath(tempModel))
+                    }
+                    // edit flow
+                    else {
+                        const tempModel = JSON.parse(modelValue.value)
+                        initArray.push(...objectToPath(tempModel))
+                    }
+                } catch (err) {
+                    console.error(err)
+                }
+            }
+
+            const localValue = ref(initArray)
 
             const handleChange = () => {
                 let valueMap = {}
@@ -94,7 +107,7 @@
 
                 localValue.value.forEach((item) => {
                     let map = {}
-                    const arr = item.split(':')
+                    const arr = item.toString().split(':')
                     for (var i = 0; i < arr.length; i++) {
                         if (i == 0) {
                             map[arr[i]] = {}
@@ -132,16 +145,12 @@
             })
 
             return {
-                property,
                 componentProps,
                 formState,
                 credentialBody,
                 baseKey,
-                configMap,
                 localValue,
-                modelValue,
                 handleChange,
-                isEdit,
                 credentialID,
             }
         },

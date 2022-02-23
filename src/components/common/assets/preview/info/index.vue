@@ -3,8 +3,15 @@
         <div
             class="flex items-center justify-between px-5 py-2 border-b border-gray-200 bg-gray-50"
         >
-            <span class="font-semibold text-gray-500">Overview</span>
-
+            <span class="flex items-center">
+                <PreviewTabsIcon
+                    :icon="tab.icon"
+                    :image="tab.image"
+                    :emoji="tab.emoji"
+                    height="h-4"
+                />
+                <span class="font-semibold text-gray-500 ml-1">Overview</span>
+            </span>
             <span
                 v-if="isLoading || isLoadingClassification"
                 class="flex items-center"
@@ -77,7 +84,8 @@
                     v-if="
                         (selectedAsset.typeName == 'View' ||
                             selectedAsset.typeName == 'MaterialisedView') &&
-                        definition(selectedAsset)
+                        definition(selectedAsset) &&
+                        definition(selectedAsset) !== '[]'
                     "
                     :sql="definition(selectedAsset)"
                 >
@@ -822,14 +830,23 @@
                 >
                     Categories
                 </p>
-                <Categories
+                <!-- <Categories -->
+                <!--     v-model="localCategories" -->
+                <!--     :selected-asset="selectedAsset" -->
+                <!--     class="px-5" -->
+                <!--     :edit-permission="editPermission" -->
+                <!--     @change="handleCategoriesUpdate" -->
+                <!-- > -->
+                <!-- </Categories> -->
+                <Categories2
                     v-model="localCategories"
                     :selected-asset="selectedAsset"
                     class="px-5"
                     :edit-permission="editPermission"
                     @change="handleCategoriesUpdate"
                 >
-                </Categories>
+                </Categories2>
+ 
             </div>
 
             <div
@@ -894,6 +911,7 @@
     import Classification from '@/common/input/classification/index.vue'
     import TermsWidget from '@/common/input/terms/index.vue'
     import Categories from '@/common/input/categories/categories.vue'
+    import Categories2 from '@/common/input/categories/categories2.vue'
     import RelatedTerms from '@/common/input/relatedTerms/relatedTerms.vue'
     import Connection from './connection.vue'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
@@ -908,6 +926,7 @@
     import { copyToClipboard } from '~/utils/clipboard'
     import { message } from 'ant-design-vue'
 
+    import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     export default defineComponent({
         name: 'AssetDetails',
         components: {
@@ -924,6 +943,7 @@
             SQLSnippet,
             TermsWidget,
             Categories,
+Categories2 ,
             RelatedTerms,
             SourceCreated,
             SourceUpdated,
@@ -933,6 +953,7 @@
             ParentContext,
             FieldCount,
             DetailsContainer,
+            PreviewTabsIcon,
             SampleDataTable: defineAsyncComponent(
                 () =>
                     import(
@@ -958,6 +979,10 @@
                 default: false,
             },
             collectionData: {
+                type: Object,
+                required: false,
+            },
+            tab: {
                 type: Object,
                 required: false,
             },

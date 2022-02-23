@@ -35,8 +35,11 @@
                                 {{ item?.options?.emoji }}
                             </span>
                             <span
-                                class="w-full text-xs uppercase text-gray hover:text-primary title"
-                                style="letter-spacing: 0.07em"
+                                class="w-full text-xs text-gray hover:text-primary title"
+                                :class="{
+                                    'tracking uppercase':
+                                        item?.component !== 'properties',
+                                }"
                             >
                                 <Truncate
                                     :tooltip-text="item.label"
@@ -382,3 +385,9 @@
         },
     })
 </script>
+
+<style lang="less" scoped>
+    .tracking {
+        letter-spacing: 0.07em;
+    }
+</style>

@@ -13,7 +13,7 @@ import {
     GlossaryAttributes,
     InternalAttributes,
     SQLAttributes,
-    SavedQueryAttributes
+    SavedQueryAttributes,
 } from '~/constant/projection'
 
 interface DiscoverListParams {
@@ -33,7 +33,7 @@ export function useCurrentUpdate({ id }: DiscoverListParams) {
         ...SQLAttributes,
         ...GlossaryAttributes,
         ...customMetadataProjections,
-        ...SavedQueryAttributes
+        ...SavedQueryAttributes,
     ])
     const relationAttributes = ref([...AssetRelationAttributes])
 

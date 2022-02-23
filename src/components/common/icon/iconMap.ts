@@ -98,6 +98,7 @@ import Lineage from '~/assets/images/icons/lineage.svg'
 import Activity from '~/assets/images/icons/activity.svg'
 import Columns from '~/assets/images/icons/columns.svg'
 import Relation from '~/assets/images/icons/relation.svg'
+import RelationActive from '~/assets/images/icons/relations-active.svg'
 import User from '~/assets/images/icons/user.svg'
 import Chats from '~/assets/images/icons/chats.svg'
 import OpenTermProfile from '~/assets/images/icons/openTermProfile.svg'
@@ -416,7 +417,15 @@ import Documentation from '~/assets/images/icons/documentation.svg'
 import Logout from '~/assets/images/icons/logout.svg'
 import TrendUp from '~/assets/images/icons/trendUp.svg'
 
+
+import ThreeDotsAlt from '~/assets/images/icons/3-dots-alt.svg'
+import NoProperty from '~/assets/images/admin/customMetadata/empty-property.svg'
+import TrashAlt from '~/assets/images/icons/Trash-alt.svg'
+
 export default {
+    TrashAlt,
+    NoProperty,
+    ThreeDotsAlt,
     Resources2,
     RunningQuery,
     FailedQuery,
@@ -450,6 +459,7 @@ export default {
     ShieldCheck,
     Hash,
     Column,
+    RelationActive,
     CreateGroups,
     NoGroups,
     NoUsers,

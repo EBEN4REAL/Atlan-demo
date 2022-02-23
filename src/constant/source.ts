@@ -9,6 +9,8 @@ import BigQuery from '~/assets/images/source/svg/Bigquery.svg?url'
 import Looker from '~/assets/images/source/svg/Looker.svg?url'
 import Salesforce from '~/assets/images/source/svg/Salesforce.svg?url'
 import MySQL from '~/assets/images/source/svg/MySQL.svg?url'
+// FIXME: Add an SVG for glue
+import Glue from '~/assets/images/source/glue.png'
 
 export const SourceList = [
     {
@@ -396,6 +398,53 @@ export const SourceList = [
             'MaterialisedView',
             'Query',
             'Folder',
+        ],
+    },
+    {
+        id: 'glue',
+        label: 'Glue',
+        image: Glue,
+        filterMaxLevel: 2,
+        hierarchy: [
+            {
+                typeName: 'Database',
+                name: 'Database',
+                parent: '',
+                attribute: 'databaseQualifiedName',
+                level: 1,
+                image: 'Database',
+            },
+            {
+                typeName: 'Schema',
+                name: 'Schema',
+                parent: 'Database',
+                attribute: 'schemaQualifiedName',
+                level: 2,
+                image: 'Schema',
+            },
+            {
+                typeName: 'Table',
+                name: 'Table',
+                parent: 'Schema',
+                attribute: 'tableQualifiedName',
+                level: 3,
+            },
+            {
+                typeName: 'View',
+                name: 'View',
+                parent: 'Schema',
+                attribute: 'viewQualifiedName',
+                level: 3,
+            },
+        ],
+        types: [
+            'Database',
+            'Schema',
+            'Table',
+            'Column',
+            'View',
+            'TablePartition',
+            'MaterialisedView',
         ],
     },
     {

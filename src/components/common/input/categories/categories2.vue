@@ -15,10 +15,10 @@
                     ref="searchBar"
                     :allowClear="true"
                     @change="handleSearchChange"
-                    placeholder="Search terms & categories..."
+                    :placeholder="`Search in ${list?.length} categories...`"
                     class="px-4 pb-2 mb-2"
                 ></SearchAdvanced>
-
+                {{list?.length}}
                 <a-tree
                     v-if="!queryText"
                     :key="popoverVisible"
@@ -62,25 +62,12 @@
                 >
                     <AtlanLoader class="h-10" />
                 </div>
-                <div
-                    v-else-if="list.length == 0 && !isLoading && queryText"
-                    class="flex-grow"
-                >
-                    <div
-                        class="flex flex-col items-center justify-center h-full my-2"
-                    >
-                        <div class="flex flex-col items-center">
-                            <span class="text-gray-500">No categories found</span>
-                        </div>
-                    </div>
-                </div>
-                <div v-else-if="queryText" >
+                <div v-if="queryText && list?.length && !isLoading">
                     <AssetList
                         :list="list"
                         :isLoadMore="isLoadMore"
                         :isLoading="isValidating"
                         @loadMore="handleLoadMore"
-                        class="mt-3"
                     >
                         <template v-slot:default="{ item }">
                             <GlossaryItem
@@ -93,8 +80,22 @@
                         </template>
                     </AssetList>
                 </div>
+                <div
+                    v-if="queryText && !list?.length && !isLoading"
+                    class="flex-grow"
+                >
+                    <div
+                        class="flex flex-col items-center justify-center h-full my-2"
+                    >
+                        <div class="flex flex-col items-center">
+                            <span class="text-gray-500"
+                                >No categories found</span
+                            >
+                        </div>
+                    </div>
+                </div>
 
-                <div  :class="$style.categoryWidget" id="categoryWidget"></div>
+                <div :class="$style.categoryWidget" id="categoryWidget"></div>
             </template>
             <a-button
                 v-if="editPermission"
@@ -255,7 +256,7 @@
                 })
 
             const handleCheckedNodesChange = (node) => {
-                if (checkedKeys.value?.find(i=>i?.value===node?.guid)) {
+                if (checkedKeys.value?.find((i) => i?.value === node?.guid)) {
                     checkedNodeKeys.value = checkedNodeKeys.value.filter(
                         (i) => i !== node?.guid
                     )
@@ -402,7 +403,7 @@
             })
             const onSearchItemCheck = (val) => {
                 console.log(val)
-                
+
                 handleCheckedNodesChange(val)
             }
             // search related stuff

@@ -204,6 +204,7 @@
                     highlightedNode,
                     loaderCords,
                     currZoom,
+                    searchItems,
                     resetSelections,
                     drawerActiveKey,
                     preferences,

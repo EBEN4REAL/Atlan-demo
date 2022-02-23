@@ -21,6 +21,7 @@ export default function useEventGraph({
     highlightedNode,
     loaderCords,
     currZoom,
+    searchItems,
     resetSelections,
     drawerActiveKey,
     preferences,
@@ -1033,6 +1034,7 @@ export default function useEventGraph({
                 true
             )
             nodes.value.push(nodeData)
+            if (x.typeName !== 'vpNode') searchItems.value.push(x)
             addNode(relations, childrenCounts, x)
         })
 

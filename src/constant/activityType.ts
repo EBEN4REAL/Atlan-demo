@@ -157,7 +157,7 @@ export const activityTypeMap = [
   {
         isGroup: true,
         value: 'category-group',
-        label: 'Terms',
+        label: 'Category',
         includes: [
             'AtlasGlossary',
         ],

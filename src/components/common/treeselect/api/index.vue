@@ -193,7 +193,9 @@
                     treeData.value.push({
                         id: item.value,
                         value: item.value.toString(), // The API expects strings, so we convert numbers into strings
-                        title: item.title,
+                        title:
+                            item.title ||
+                            item.value.toString()?.split(':').slice(-1)[0],
                         pId: item.rootId,
                     })
                     recursionTransform(item, item.value, queue)

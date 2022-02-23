@@ -1,5 +1,5 @@
 <template>
-    <div ref="wrapper" class="w-full h-full overflow-y-auto">
+    <div ref="wrapper" class="flex flex-col w-full h-full">
         <template v-if="minimal">
             <template v-if="resources?.length">
                 <div
@@ -58,7 +58,7 @@
                 </AddResource>
             </div>
         </template>
-        <section>
+        <section class="overflow-y-auto">
             <template v-if="!resources?.length">
                 <template v-if="$slots?.placeholder">
                     <slot name="placeholder" />

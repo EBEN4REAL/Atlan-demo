@@ -40,14 +40,15 @@ const getOAuthBaseUrl = () => {
     const { config: { clientId, oauthRedirectUrl, scopes } } = tenantJiraStatus.value
 
 
-    const url = new URL('https://auth.atlassian.com/authorize?audience=api.atlassian.com&response_type=code')
+    const url = new URL('https://auth.atlassian.com/authorize')
 
     if (clientId && oauthRedirectUrl && scopes.length)
         url.search = new URLSearchParams({
             client_id: clientId,
             redirect_uri: oauthRedirectUrl,
-            scope: scopes,
-            response_type: 'code'
+            scope: scopes.join(' '),
+            response_type: 'code',
+            audience: 'api.atlassian.com'
         }).toString()
 
     return url

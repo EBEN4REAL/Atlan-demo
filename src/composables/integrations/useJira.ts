@@ -8,6 +8,10 @@ import useIntegrations, {
 } from '~/composables/integrations/useIntegrations'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
+import { Integrations } from '~/services/service/integrations/index'
+const { jiraListProjects } = Integrations
+
+
 const { origin } = window.location
 
 export const getJiraInstallUrlState = (isTenant: boolean) => {
@@ -175,4 +179,23 @@ export const archiveJira = (pV) => {
         error,
         disconnect,
     }
+}
+
+
+export const listProjects = () => {
+    const {
+        data,
+        isLoading,
+        error,
+    } = jiraListProjects()
+
+    const projects = ref()
+
+    watch([data, error], () => {
+        if (data.value) {
+            const { values } = data.value
+            projects.value = values
+        }
+    })
+    return { projects, isLoading, error }
 }

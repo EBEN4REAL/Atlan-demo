@@ -23,6 +23,7 @@ interface JiraStatus {
     orgId?: string,
     avatar?: string,
     config?: any
+    // integrationConfig?: any
 }
 
 export interface Getters {
@@ -78,9 +79,10 @@ const getters: _GettersTree<State> & Getters = {
             orgName: integration?.sourceMetadata?.orgName,
             orgId: integration?.sourceMetadata?.orgId,
             avatar: integration?.sourceMetadata?.avatar,
-            config: {
-                ...(integrationConfig || {})
-            }
+            config: integration?.config,
+            // integrationConfig: {
+            //     ...(integrationConfig || {})
+            // }
         }
     },
     userJiraStatus: (state: State): JiraStatus => {

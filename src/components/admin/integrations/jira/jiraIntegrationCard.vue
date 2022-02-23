@@ -53,48 +53,11 @@
                 </span>
             </div>
             <div class="flex flex-wrap items-center h-12 gap-2 rounded">
-                <a-select
+                <ProjectSelector
+                    v-model="defaultProject.id"
                     class="w-1/3"
-                    :class="$style.selector"
-                    placeholder="Select default project"
-                ></a-select>
-                <!-- <Chip
-                    v-for="(channel, x) in channels"
-                    :index="x"
-                    :key="channel.name"
-                    :content="channel.name"
-                    icon="Number"
-                    :class="
-                        channel.invalid
-                            ? 'border border-dashed border-red-500'
-                            : ''
-                    "
-                    @remove="removeChannel"
+                    @change="handleProjectChange"
                 />
-
-                <div class="flex-grow inline-block mx-3">
-                    <input
-                        v-model="channelValue"
-                        class="w-full focus:outline-none"
-                        placeholder="Add public channels"
-                        @keydown.enter="addChannel"
-                        @blur="addChannel"
-                        @keydown.backspace="
-                            (e) => {
-                                if (!e?.target?.value)
-                                    removeChannel(
-                                        channelValue.valueOf.length - 1
-                                    )
-                            }
-                        "
-                        @keydown.tab="
-                            (e) => {
-                                e.preventDefault()
-                                addChannel(e)
-                            }
-                        "
-                    />
-                </div> -->
             </div>
         </section>
         <section class="flex items-center justify-between p-6 gap-x-3">
@@ -111,7 +74,7 @@
             <AtlanButton
                 :is-loading="updateLoading"
                 class="w-16"
-                :disabled="!isEdit"
+                :disabled="!unsavedChanges"
                 @click="update"
             >
                 Save
@@ -144,16 +107,19 @@
         refetchIntegration,
     } from '~/composables/integrations/useIntegrations'
     import integrationStore from '~/store/integrations/index'
-    import Chip from '@/UI/chip.vue'
     import access from '~/constant/accessControl/map'
-    import { archiveJira } from '~/composables/integrations/useJira'
+    import {
+        archiveJira,
+        listProjects,
+    } from '~/composables/integrations/useJira'
     import { integrations } from '~/constant/integrations'
     import { useUsers } from '~/composables/user/useUsers'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import ProjectSelector from '@/common/integrations/jira/jiraProjectsSelect.vue'
 
     export default defineComponent({
-        name: 'SlackIntegrationCard',
-        components: { AtlanButton, Chip },
+        name: 'JiraIntegrationCard',
+        components: { AtlanButton, ProjectSelector },
         setup() {
             const { name: tenantName } = useTenantData()
 
@@ -162,67 +128,67 @@
 
             const { tenantJiraStatus } = toRefs(store)
 
-            const pV = computed(() => ({ id: tenantJiraStatus.value.id }))
+            const pV = computed(() => ({
+                alias: 'jira',
+                id: tenantJiraStatus.value.id,
+            }))
 
-            const isEdit = ref(false)
+            const unsavedChanges = ref(false)
 
-            const { data, isLoading, error, disconnect } = archiveJira(pV)
+            const defaultProject = ref({ name: '', id: '' })
 
-            // const {
-            //     data: updateData,
-            //     isLoading: updateLoading,
-            //     error: updateError,
-            //     mutate: update,
-            // } = UpdateIntegration(pV, body, { immediate: false })
+            const { isLoading, disconnect } = archiveJira(pV)
 
-            // watch([updateLoading, updateError], () => {
-            //     if (updateLoading.value) {
-            //         message.loading({
-            //             content: 'Adding channels...',
-            //             key: 'addChannel',
-            //             duration: 2,
-            //         })
-            //     } else if (updateError.value) {
-            //         const errMsg =
-            //             updateError.value?.response?.data?.errorMessage || ''
-            //         const generalError = 'Network error'
-            //         const e = errMsg || generalError
-            //         message.error({
-            //             content: e,
-            //             key: 'addChannel',
-            //             duration: 2,
-            //         })
-            //     } else {
-            //         let updatedChannelCount = channels.value.length
-            //         if (updateData.value?.failedChannels) {
-            //             const { failedChannels } = updateData.value
-            //             handleFailed(failedChannels)
-            //             updatedChannelCount -= failedChannels.length
-            //             message.error({
-            //                 content: `Unable to add some channels: "${failedChannels.join(
-            //                     ', '
-            //                 )}"`,
-            //                 key: 'failedChannels',
-            //                 duration: 4,
-            //             })
-            //         }
-            //         refetchIntegration(pV.value.id)
-            //         useAddEvent(
-            //             'integration',
-            //             'slack',
-            //             'share_channels_updated',
-            //             {
-            //                 channel_count: updatedChannelCount,
-            //             }
-            //         )
+            const handleProjectChange = (value, option) => {
+                defaultProject.value.id = value
+                defaultProject.value.name = option.label
+                unsavedChanges.value = true
+            }
 
-            //         message.success({
-            //             content: 'Updated channels successfully.',
-            //             key: 'addChannel',
-            //             duration: 2,
-            //         })
-            //     }
-            // })
+            const body = computed(() => ({
+                config: { defaultProject: defaultProject.value },
+            }))
+
+            const {
+                data,
+                isLoading: updateLoading,
+                error,
+                mutate: update,
+            } = UpdateIntegration(pV, body, { immediate: false })
+
+            watch([updateLoading, error], () => {
+                if (updateLoading.value) {
+                    message.loading({
+                        content: 'saving default project ...',
+                        key: 'save',
+                        duration: 2,
+                    })
+                } else if (error.value) {
+                    const errMsg =
+                        updateError.value?.response?.data?.errorMessage || ''
+                    const generalError = 'Network error'
+                    const e = errMsg || generalError
+                    message.error({
+                        content: e,
+                        key: 'save',
+                        duration: 2,
+                    })
+                } else {
+                    if (data.value?.id) updateStore(data.value)
+                    useAddEvent(
+                        'integration',
+                        'jira',
+                        'default_project_updated'
+                    )
+
+                    message.success({
+                        content: 'Default project saved.',
+                        key: 'save',
+                        duration: 2,
+                    })
+                    unsavedChanges.value = false
+                }
+            })
 
             const { description, project_description } = integrations.jira
 
@@ -241,11 +207,6 @@
                     ],
                 },
             })
-
-            const avatarURL = computed(
-                () =>
-                    `${window.location.origin}/api/service/avatars/${tenantJiraStatus.value.createdBy}`
-            )
 
             const {
                 userList,
@@ -311,23 +272,32 @@
                 })
             }
 
+            onMounted(() => {
+                const {
+                    config: { defaultProject: _defaultProject },
+                } = tenantJiraStatus.value
+
+                if (_defaultProject) {
+                    defaultProject.value.id = _defaultProject.id
+                    defaultProject.value.id = _defaultProject.name
+                }
+            })
+
             return {
+                handleProjectChange,
+                defaultProject,
                 handleDisconnect,
                 useTimeAgo,
-                avatarURL,
                 userList,
-                uLoading,
-                uError,
                 project_description,
                 description,
                 tenantJiraStatus,
-                // body,
                 isLoading,
                 tenantName,
-                // updateLoading,
+                updateLoading,
                 disconnect,
-                // update,
-                isEdit,
+                update,
+                unsavedChanges,
                 access,
             }
         },
@@ -340,11 +310,5 @@
             no-repeat;
         background-size: contain;
         background-position-x: right; */
-    }
-
-    .selector {
-        :global(.ant-select-selector) {
-            @apply border border-gray-300 !important;
-        }
     }
 </style>

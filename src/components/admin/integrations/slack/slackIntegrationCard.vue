@@ -59,8 +59,8 @@
             >
                 <Chip
                     v-for="(channel, x) in channels"
-                    :index="x"
                     :key="channel.name"
+                    :index="x"
                     :content="channel.name"
                     icon="Number"
                     :class="
@@ -133,10 +133,10 @@
         watch,
     } from 'vue'
     import { message, Modal } from 'ant-design-vue'
+    import { useTimeAgo } from '@vueuse/core'
     import AtlanButton from '@/UI/button.vue'
     import useTenantData from '~/composables/tenant/useTenantData'
     import {
-        UpdateIntegration,
         archiveIntegration,
         getIntegrationById,
         refetchIntegration,
@@ -144,10 +144,12 @@
     import integrationStore from '~/store/integrations/index'
     import Chip from '@/UI/chip.vue'
     import access from '~/constant/accessControl/map'
-    import { archiveSlack } from '~/composables/integrations/useSlack'
+    import {
+        archiveSlack,
+        UpdateSlackConfig,
+    } from '~/composables/integrations/useSlack'
     import { integrations } from '~/constant/integrations'
     import { useUsers } from '~/composables/user/useUsers'
-    import { useTimeAgo } from '@vueuse/core'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
@@ -210,7 +212,7 @@
                 isLoading: updateLoading,
                 error: updateError,
                 mutate: update,
-            } = UpdateIntegration(pV, body, { immediate: false })
+            } = UpdateSlackConfig(pV, body, { immediate: false })
 
             watch([updateLoading, updateError], () => {
                 if (updateLoading.value) {

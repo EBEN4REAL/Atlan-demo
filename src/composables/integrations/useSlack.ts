@@ -299,3 +299,10 @@ export const createApp = (body) => {
         mutate,
     }
 }
+
+export const UpdateSlackConfig = (pV, body, asyncOptions) => {
+    const { data, isLoading, error, isReady, mutate } =
+        Integrations.UpdateSlackConfig(pV, body, { asyncOptions })
+    return { data, isLoading, error, mutate }
+}
+

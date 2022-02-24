@@ -10,13 +10,13 @@
                 <div class="flex items-center">
                     <div
                         v-if="type === 'meta'"
-                        class="flex items-center justify-center w-8 h-8 mr-2 rounded-full bg-primary-light -mt-0.5"
+                        class="flex items-center justify-center w-8 h-8 mr-2 rounded-full bg-primary-light"
                     >
                         <AtlanIcon icon="Policies" class="icon-blue" />
                     </div>
                     <div
                         v-if="type === 'data'"
-                        class="flex items-center justify-center w-8 h-8 mr-2 rounded-full bg-primary-light -mt-0.5"
+                        class="flex items-center justify-center w-8 h-8 mr-2 rounded-full bg-primary-light"
                     >
                         <AtlanIcon icon="QueryGrey" class="icon-blue-stroke" />
                     </div>

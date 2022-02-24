@@ -129,15 +129,18 @@
             </div>
         </div>
     </div>
-    <div class="flex flex-col items-center justify-center w-full h-full" v-else>
+
+    <!-- Finish Page -->
+    <div v-else class="flex flex-col items-center justify-center w-full h-full">
         <div
-            class="flex flex-col justify-center"
             v-if="isLoading || (!run.status && runLoading)"
+            class="flex flex-col justify-center"
         >
             <a-spin size="large" />
             <div>Setting up your workflow</div>
         </div>
 
+        <!-- Update details, but don't run now -->
         <template v-else-if="isEdit && !runOnUpdate">
             <a-result :status="updateStatus.status" :title="updateStatus.title">
                 <template v-if="updateStatus.status === 'loading'" #icon>
@@ -170,17 +173,17 @@
         </template>
 
         <a-result
+            v-else-if="run"
             :status="status"
             :title="title"
             :sub-title="subTitle"
-            v-else-if="run"
         >
             <template #extra>
                 <div>
                     <Run
-                        :run="run"
-                        :isLoading="runLoading"
                         v-if="run && !runOnUpdate"
+                        :run="run"
+                        :is-loading="runLoading"
                         class="mb-3"
                     ></Run>
 
@@ -191,9 +194,9 @@
                             >
                         </a-button>
                         <a-button
+                            v-if="run?.metadata"
                             class="ml-3"
                             @click="handleTrackLink"
-                            v-if="run?.metadata"
                         >
                             Monitor Run
                         </a-button>
@@ -201,8 +204,8 @@
                 </div>
 
                 <div
-                    class="flex flex-col items-center justify-center p-2 bg-gray-100 rounded gap-y-2"
                     v-if="errorMesssage"
+                    class="flex flex-col items-center justify-center p-2 bg-gray-100 rounded gap-y-2"
                 >
                     <span>{{ errorMesssage }}</span>
                     <a-button
@@ -220,27 +223,15 @@
 
 <script lang="ts">
     // Vue
-    import {
-        defineComponent,
-        inject,
-        ref,
-        watch,
-        toRefs,
-        computed,
-        onBeforeMount,
-        provide,
-    } from 'vue'
+    import { defineComponent, ref, watch, toRefs, computed, provide } from 'vue'
 
     import { message } from 'ant-design-vue'
     import { useIntervalFn, watchOnce } from '@vueuse/core'
     import { useRoute, useRouter } from 'vue-router'
 
     // Components
-    import EmptyView from '@common/empty/index.vue'
-
     import DynamicForm from '@/common/dynamicForm2/index.vue'
     import Schedule from './schedule.vue'
-    // import Sandbox from '../preview/sandbox.vue'
     import Run from './run.vue'
 
     import { createWorkflow } from '~/composables/package/useWorkflow'
@@ -259,8 +250,6 @@
         name: 'WorkflowSetupTab',
         components: {
             Run,
-
-            EmptyView,
             DynamicForm,
             Schedule,
         },
@@ -268,31 +257,27 @@
             workflowTemplate: {
                 type: Object,
                 required: false,
+                default: () => ({}),
             },
             workflowObject: {
                 type: Object,
                 required: false,
+                default: () => ({}),
             },
             configMap: {
                 type: Object,
                 required: false,
-                default() {
-                    return {}
-                },
+                default: () => ({}),
             },
             isEdit: {
                 type: Boolean,
                 required: false,
-                default() {
-                    return false
-                },
+                default: () => false,
             },
             defaultValue: {
                 type: Object,
                 required: false,
-                default() {
-                    return {}
-                },
+                default: () => ({}),
             },
         },
         emits: ['change', 'openLog', 'handleSetLogo'],
@@ -313,7 +298,6 @@
             const localConfigMap = ref(configMap.value)
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
             const route = useRoute()
-            const sandboxVisible = ref(false)
             const modelValue = ref(defaultValue.value)
             const selectedStep = ref('')
 
@@ -331,9 +315,7 @@
             provide('configMap', localConfigMap)
 
             const { name } = useWorkflowInfo()
-            const toggleSandbox = () => {
-                sandboxVisible.value = !sandboxVisible.value
-            }
+
             const isSandbox = computed(() => route?.query?.sandbox || '')
 
             const allowSchedule = computed(() => {
@@ -412,6 +394,7 @@
             const facets = ref({
                 workflowTemplate: '',
             })
+
             const {
                 list: runList,
                 fetch: fetchRun,
@@ -425,13 +408,9 @@
                 refreshInterval: 5000,
             })
 
-            const { pause, resume } = useIntervalFn(
-                () => {
-                    fetchRun()
-                },
-                5000,
-                { immediate: false }
-            )
+            const { pause, resume } = useIntervalFn(fetchRun, 5000, {
+                immediate: false,
+            })
 
             const run = ref({})
 
@@ -671,7 +650,7 @@
                             status.value = 'success'
                         })
 
-                        watch(nre, () => {
+                        watchOnce(nre, () => {
                             title.value = 'Workflow run has failed'
                             subTitle.value = ''
                             status.value = 'error'
@@ -702,15 +681,11 @@
 
             return {
                 emit,
-
-                workflowTemplate,
                 handleChange,
-
                 modelValue,
                 selectedStep,
                 currentStep,
                 steps,
-                configMap,
                 currentStepConfig,
                 handleNext,
                 stepForm,
@@ -731,8 +706,6 @@
                 handleStepClick,
                 cron,
                 isSandbox,
-                sandboxVisible,
-                toggleSandbox,
                 handleRefresh,
                 dirtyTimestamp,
                 localTemplate,
@@ -746,8 +719,6 @@
                 pause,
                 resume,
                 handleTrackLink,
-                isEdit,
-                defaultValue,
                 updateWorkflow,
                 isUpdateLoading,
                 isUpdateError,

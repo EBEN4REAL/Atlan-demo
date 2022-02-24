@@ -396,7 +396,7 @@
             ]
 
             watch(selectedPersonaDirty, () => {
-                // activeTabFilter.value = ''
+                activeTabFilter.value = ''
                 addpolicyVisible.value = false
             })
             async function savePolicyUI(

@@ -1,7 +1,7 @@
 <template>
     <div class="flex items-center text-xs text-gray-500">
         <a-popover
-            v-if="showPopover"
+            v-if="showPopover && role !== 'Guest'"
             v-model:visible="isEdit"
             placement="leftTop"
             :overlay-class-name="$style.certificatePopover"
@@ -14,7 +14,7 @@
                     class="bg-gray-100 mx-4 px-3 py-2 mb-3"
                 >
                     You don't have edit access to this asset, but you can
-                    suggest new Certificate to the 
+                    suggest new Certificate to the
                     <span class="text-primary cursor-pointer">
                         <a-popover placement="bottomRight">
                             <template #content>
@@ -23,7 +23,6 @@
                             <span>Workspace admins</span>
                         </a-popover>
                     </span>
-             
                 </div>
 
                 <CertificateFacet
@@ -53,7 +52,6 @@
                 </div>
             </template>
         </a-popover>
-
         <CertificatePill
             v-if="certificateStatus(selectedAsset)"
             class="w-full"
@@ -137,6 +135,7 @@
     import CertificateFacet from '@/common/facet/certificate/index.vue'
     import whoami from '~/composables/user/whoami'
     import Shortcut from '@/common/popover/shortcut.vue'
+    import CertificateBadge from '@common/badge/certificate/index.vue'
 
     export default defineComponent({
         name: 'CertificateWidget',
@@ -144,6 +143,7 @@
             CertificatePill,
             CertificateFacet,
             Shortcut,
+            CertificateBadge,
             AdminList: defineAsyncComponent(
                 () => import('@/common/info/adminList.vue')
             ),

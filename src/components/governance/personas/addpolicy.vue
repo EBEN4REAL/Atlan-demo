@@ -168,20 +168,6 @@
                             class="flex gap-x-1"
                         >
                             <div
-                                v-if="!isAddAll && policy.assets.length > 0"
-                                class="cursor-pointer"
-                                @click="handleAddAsset"
-                            >
-                                <span class="text-sm text-primary"> Add</span>
-                                <AtlanIcon
-                                    icon="ArrowRight"
-                                    class="ml-1 text-primary"
-                                />
-                                <span
-                                    class="h-5 mx-3 border-l border-gray-300 border-1"
-                                />
-                            </div>
-                            <div
                                 v-if="!isAddAll"
                                 :disabled="!connectorData.attributeValue"
                                 class="cursor-pointer"
@@ -192,6 +178,20 @@
                                 </span>
                                 <AtlanIcon
                                     icon="Add"
+                                    class="w-4 h-4 -mt-1 text-primary"
+                                />
+                            </div>
+                            <div
+                                v-if="!isAddAll && policy.assets.length > 0"
+                                class="cursor-pointer"
+                                @click="handleAddAsset"
+                            >
+                                <span
+                                    class="h-5 mx-3 border-l border-gray-300 border-1"
+                                />
+                                <span class="text-sm text-primary"> Add</span>
+                                <AtlanIcon
+                                    icon="ArrowRight"
                                     class="ml-1 text-primary"
                                 />
                             </div>
@@ -201,7 +201,7 @@
                         <div
                             class="flex flex-wrap h-auto gap-1 p-2 overflow-auto max-h-32"
                         >
-                            <div
+                            <!-- <div
                                 v-if="
                                     isEdit && !isAddAll
                                         ? canEdit
@@ -219,11 +219,11 @@
                                 >
                                     <AtlanIcon icon="Add" />
                                 </a-button>
-                            </div>
+                            </div> -->
                             <div
                                 v-for="asset in policy.assets"
                                 :key="asset"
-                                class="flex items-center justify-between px-2 py-1 border border-gray-200 rounded-full wrapper-asset"
+                                class="flex items-center justify-between px-2 py-1 border border-gray-200 wrapper-asset"
                                 :class="
                                     disabledForm
                                         ? ''
@@ -249,7 +249,7 @@
                                     @click="handleDeleteAsset(asset)"
                                 />
                             </div>
-                            <div
+                            <!-- <div
                                 v-if="
                                     isEdit && isAddAll
                                         ? canEdit
@@ -267,9 +267,9 @@
                                 >
                                     <AtlanIcon icon="Pencil" />
                                 </a-button>
-                            </div>
+                            </div> -->
 
-                            <!-- <div
+                            <div
                                 v-if="
                                     isEdit
                                         ? canEdit
@@ -282,15 +282,17 @@
                                         !isAddAll && policy.assets.length === 0
                                     "
                                     size="small"
+                                    class="w-8 h-8 border border-gray-200 rounded-full"
                                     @click="handleAddAsset"
                                 >
-                                    <span class="text-primary"> Add</span>
-                                    <AtlanIcon
+                                    <!-- <span class="text-primary"> Add</span> -->
+                                    <!-- <AtlanIcon
                                         icon="ArrowRight"
                                         class="ml-1 text-primary"
-                                    />
+                                    /> -->
+                                    <AtlanIcon icon="Add" />
                                 </a-button>
-                            </div> -->
+                            </div>
                         </div>
                         <div
                             v-if="rules.assets.show"
@@ -935,9 +937,9 @@
             })
             const handleChangeAssets = () => {
                 // remove default 'all asset'
-                if (!isAddAll.value) {
-                    handleDeleteAsset(connectorData.value.attributeValue)
-                }
+                // if (!isAddAll.value) {
+                //     handleDeleteAsset(connectorData.value.attributeValue)
+                // }
                 rules.value.assets.show = false
             }
             const splitName = (name) => {

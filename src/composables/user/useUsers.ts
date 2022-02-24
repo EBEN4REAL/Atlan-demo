@@ -146,12 +146,14 @@ const defaultCacheOption = {
 export const useUsers = (
     userListAPIParams,
     immediate = true,
-    cancelToken = null
+    cancelToken = null,
+    additionalOptions = {}
 ) => {
     const options: useOptions = {}
     let cancel = axios.CancelToken.source()
     options.options = ref({
         cancelToken: cancelToken?.token || cancel.token,
+        ...additionalOptions,
     })
 
     options.asyncOptions = ref({

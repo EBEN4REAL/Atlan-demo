@@ -24,6 +24,8 @@ export default function useFacetGroups(
         })
     }
 
+    console.log(params.value)
+
     const { data, mutate, isLoading, isReady, error } = Groups.List(params, {
         asyncOptions: {
             immediate,

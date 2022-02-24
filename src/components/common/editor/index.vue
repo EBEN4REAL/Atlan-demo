@@ -51,19 +51,22 @@
     import TextAlign from '@tiptap/extension-text-align'
     import Placeholder from '@tiptap/extension-placeholder'
     import Highlight from '@tiptap/extension-highlight'
+    import Mention from '@tiptap/extension-mention'
 
     import TableRow from '@tiptap/extension-table-row'
     import TableHeader from '@tiptap/extension-table-header'
     import TableCell from '@tiptap/extension-table-cell'
     import { CustomTable } from '@common/editor/extensions/table/extension'
 
+    import { TrailingNode } from '@common/editor/extensions/trailingNode'
     import SelectionMenu from './selectionMenu.vue'
     import SelectionMenuTable from './selectionMenuTable.vue'
     import SlashCommands from './extensions/slashCommands/commands'
     import suggestion from './extensions/slashCommands/suggestion'
     import ImageUpload from './extensions/imageUpload/extension'
     import CustomImage from './extensions/image/extension'
-    import { TrailingNode } from '@common/editor/extensions/trailingNode'
+    import mentionSuggestion from './extensions/mentions/suggestion'
+    import GDoc from './extensions/googleDoc/googleDocExtension'
 
     import LinkPreview from './extensions/linkPreview/linkPreview'
 
@@ -172,6 +175,12 @@
                     }),
                     CustomImage,
                     ImageUpload,
+                    Mention.configure({
+                        HTMLAttributes: {
+                            class: 'mention',
+                        },
+                        suggestion: mentionSuggestion,
+                    }),
                 ],
                 onUpdate({ editor: currEditor }) {
                     const content = currEditor.getHTML()

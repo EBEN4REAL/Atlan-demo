@@ -1,4 +1,4 @@
-import { reactive, watch, ref } from 'vue'
+import { computed, reactive, watch, ref } from 'vue'
 import { toRefs } from '@vueuse/core'
 import { activityInterface } from '~/types/activitylogs/activitylog.interface'
 import { eventMap } from '~/constant/events'
@@ -6,6 +6,7 @@ import { Entity } from '~/services/meta/entity'
 import { default as glossaryLabel } from '@/glossary/constants/assetTypeLabel'
 import { capitalizeFirstLetter } from '~/utils/string'
 import { certificateList } from '~/constant/certification'
+import useTypedefData from '~/composables/typedefs/useTypedefData'
 
 const useAssetAudit = (params: any, guid: string) => {
     const getEventByAction = (asset: any) =>
@@ -70,6 +71,8 @@ const useAssetAudit = (params: any, guid: string) => {
                 data.component = 'Certificate'
                 const icon = logs?.attributes?.certificateStatus?.toLowerCase()
                 if (icon?.length) data.icon = capitalizeFirstLetter(icon)
+                if (logs?.attributes?.certificateStatus === null)
+                    data.icon = 'Nostatus'
                 return data
             }
             if ('name' in attributes) {
@@ -333,6 +336,16 @@ const useAssetAudit = (params: any, guid: string) => {
                         try {
                             data.value = eventDetail
                             data.component = 'BusinessMetadata'
+                            const { customMetadataList } = useTypedefData()
+                            const found = computed(() => {
+                                return customMetadataList.value.find(
+                                    (item) => item.name === data?.value.typeName
+                                )
+                            })
+
+                            if (found.value) {
+                                data.icon = found
+                            }
 
                             return data
                         } catch (error) {
@@ -495,8 +508,7 @@ const useAssetAudit = (params: any, guid: string) => {
                         try {
                             parsedDetails = JSON.parse(eventDetail[1].trim())
                             data.value = parsedDetails
-                            data.component = 'BusinessMetadata'
-
+                            data.component = 'BusinessMetadata2'
                             return data
                         } catch (error) {
                             return null

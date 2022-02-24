@@ -43,13 +43,23 @@
             <a-timeline class="mx-5" :key="item.guid">
                 <a-timeline-item v-for="(log, index) in auditList" :key="index">
                     <template #dot>
+                        <div v-if="log?.action === 'BUSINESS_ATTRIBUTE_UPDATE'">
+                            <PreviewTabsIcon
+                                :icon="getAuditEventComponent(log)?.icon?.value?.options?.icon"
+                                :image="getAuditEventComponent(log)?.icon?.value?.options?.image"
+                                :emoji="getAuditEventComponent(log)?.icon?.value?.options?.emoji"
+                                height="h-4"
+                                class="mb-0.5"
+                            />
+                        </div>
                         <atlan-icon
-                            v-if="getAuditEventComponent(log)?.icon"
+                            v-else-if="getAuditEventComponent(log)?.icon"
                             :icon="getAuditEventComponent(log)?.icon"
+                            class="mb-1"
                         />
                         <div
                             v-else
-                            class="border ant-timeline-item-dot border-primary"
+                            class="border ant-timeline-item-dot border-primary mb-1"
                         ></div>
                     </template>
                     <div>

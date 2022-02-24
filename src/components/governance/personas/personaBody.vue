@@ -82,7 +82,7 @@
                 :class="
                     metaDataComputed.length > 0 || dataPolicyComputed.length > 0
                         ? 'bg-white rounded-lg'
-                        : ''
+                        : 'bg-white rounded-lg pb-16'
                 "
             >
                 <div class="p-4 border-b">

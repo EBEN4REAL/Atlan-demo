@@ -3,17 +3,14 @@ import tableau from '~/assets/images/source/tableau.png'
 import redshift from '~/assets/images/source/redshift.png'
 import postgres from '~/assets/images/source/postgres.png'
 import athena from '~/assets/images/source/athena.png'
+import databricks from '~/assets/images/source/databricks.png'
+import powerbi from '~/assets/images/source/powerbi.png'
+import bigquery from '~/assets/images/source/bigquery.png'
+import looker from '~/assets/images/source/looker.png'
 import mysql from '~/assets/images/source/mysql.png'
 import glue from '~/assets/images/source/glue.png'
-import powerbi from '~/assets/images/source/powerbi.png'
-import databricks from '~/assets/images/source/databricks.png'
-import looker from '~/assets/images/source/looker.png'
-import bigquery from '~/assets/images/source/bigquery.png'
 
-/**
- * Gets the mapped string for the Node type
- * @returns {String}
- */
+/* This is a mapping of the asset types. */
 export const getNodeTypeText = {
     // SQL
     Column: 'Column',
@@ -54,25 +51,28 @@ export const getNodeTypeText = {
     TableauMetric: 'Metric',
 }
 
-/**
- * Gets the image for the source of the node
- */
+/* This is a mapping of the source of the asset to the image. */
 export const getNodeSourceImage = {
     snowflake,
     tableau,
     redshift,
     postgres,
     athena,
+    databricks,
+    powerbi,
+    bigquery,
+    looker,
     mysql,
     glue,
-    powerbi,
-    databricks,
-    looker,
-    bigquery,
 }
 
-// FIXME: Shall we use the connectorName attribute here?
+/**
+ * Given an entity, return the source of the entity
+ * @param entity - The entity object.
+ * @returns The source of the entity.
+ */
 export const getSource = (entity) => {
+    // TODO:
     if (entity.typeName === 'vpNode') return null
 
     const item =
@@ -82,7 +82,13 @@ export const getSource = (entity) => {
     return item[0]
 }
 
+/**
+ * Given an entity, return the schema name of the entity
+ * @param entity - The entity object.
+ * @returns The schema name of the table or view.
+ */
 export const getSchema = (entity) => {
+    // TODO:
     const allowedTypes = ['Table', 'View']
     if (!allowedTypes.includes(entity.typeName)) return null
     const item =

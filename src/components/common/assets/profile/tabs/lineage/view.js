@@ -1,5 +1,7 @@
-import { NodeView } from '@antv/x6';
-//const { NodeView } = window.X6
+/* eslint-disable max-classes-per-file */
+import { NodeView } from '@antv/x6'
+
+// const { NodeView } = window.X6
 
 export class NV extends NodeView {
     renderMarkup() {

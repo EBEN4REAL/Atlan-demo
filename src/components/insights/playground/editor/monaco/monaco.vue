@@ -329,6 +329,7 @@
                     folding: true,
                     lineDecorationsWidth: 8,
                     lineNumbersMinChars: 2,
+                    wordBasedSuggestions: false,
                     language: 'atlansql',
                     value: activeInlineTab.value.playground.editor.text,
                     theme: editorConfig.value.theme,

@@ -37,7 +37,7 @@
                             <div class="flex items-center justify-between">
                                 <span class="text-gray-500">Show Arrows</span>
                                 <a-switch
-                                    v-model:checked="graphPrefs.showArrow"
+                                    v-model:checked="preferences.showArrow"
                                 />
                             </div>
                         </div>
@@ -134,7 +134,7 @@
 </template>
 
 <script lang="ts">
-    /** PACKAGES */
+    /** VUE */
     import { defineComponent, inject, ref, toRefs } from 'vue'
 
     /** COMPOSABLES */
@@ -171,7 +171,7 @@
         emits: ['on-zoom-change', 'on-show-minimap'],
         setup(props, { emit }) {
             /** INJECTIONS */
-            const graphPrefs = inject('preferences', ref({}))
+            const preferences = inject('preferences', ref({}))
 
             /** DATA */
             const { graph, lineageContainer, graphHeight, graphWidth } =
@@ -183,7 +183,7 @@
             const footerRoot = ref<HTMLElement>()
 
             /** METHODS */
-            // transform
+            // useTransformGraph
             const { zoom, fit, fullscreen } = useTransformGraph(graph, emit)
 
             // onFullscreen
@@ -207,6 +207,7 @@
                 emit('on-show-minimap', showMinimap.value)
             }
 
+            // toggleControlVisibility
             const toggleControlVisibility = () => {
                 if (isExpanded.value) {
                     isPreferencesVisible.value = false
@@ -222,7 +223,7 @@
                 isPreferencesVisible,
                 isExpanded,
                 footerRoot,
-                graphPrefs,
+                preferences,
                 zoom,
                 fit,
                 onShowMinimap,

@@ -119,18 +119,20 @@
         </template>
         <div
             v-else-if="
-                filteredPersonas?.length == 0 && isPersonaError === undefined
+                filteredPersonas?.length === 0 && isPersonaError === undefined
             "
-            class="flex flex-col items-center justify-center h-full"
+            class="flex flex-col items-center h-full"
         >
-            <component :is="AddPersonaIllustration"></component>
-            <div class="text-2xl font-bold">Start Creating Personas</div>
+            <component :is="AddPersonaIllustration" class="mt-7"></component>
+            <div class="mt-6 text-2xl font-bold text-gray-700">
+                Start Creating Personas
+            </div>
             <span class="mx-auto text-base text-gray-500 sub-title-empty-state"
                 >Persona management keeps your data assets safe by ensuring that
                 the right people have access to the right data.</span
             >
             <AtlanBtn
-                class="flex-none mx-auto mt-6"
+                class="flex-none mx-auto mt-8"
                 color="primary"
                 data-test-id="add-new-persona"
                 padding="compact"
@@ -142,7 +144,7 @@
                 </template>
                 Get started
             </AtlanBtn>
-            <div class="mt-6 cursor-pointer text-primary">
+            <div class="mt-5 cursor-pointer text-primary">
                 <a
                     href="https://ask.atlan.com/hc/en-us/articles/4413870860049-What-are-personas-"
                     target="_blank"
@@ -328,7 +330,7 @@
         background: #cf592e;
     }
     .sub-title-empty-state {
-        max-width: 550px;
+        max-width: 540px;
         text-align: center;
         margin-top: 16px !important;
     }

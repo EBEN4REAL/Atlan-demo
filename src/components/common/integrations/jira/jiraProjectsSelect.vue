@@ -18,7 +18,7 @@
 <script setup lang="ts">
     import { useVModels } from '@vueuse/core'
     import { computed } from 'vue'
-    import { listProjects } from '~/composables/integrations/useJira'
+    import { listProjects } from '~/composables/integrations/jira/useJira'
 
     const { projects, isLoading, error } = listProjects()
 

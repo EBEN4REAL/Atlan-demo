@@ -52,7 +52,7 @@
         tenantLevelOauthUrl,
         archiveJira,
         openJiraOAuth,
-    } from '~/composables/integrations/useJira'
+    } from '~/composables/integrations/jira/useJira'
     import { integrations } from '~/constant/integrations'
     import { fetchIntegrationConfig } from '~/composables/integrations/useIntegrations'
 

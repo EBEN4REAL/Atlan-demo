@@ -111,7 +111,7 @@
     import {
         archiveJira,
         listProjects,
-    } from '~/composables/integrations/useJira'
+    } from '~/composables/integrations/jira/useJira'
     import { integrations } from '~/constant/integrations'
     import { useUsers } from '~/composables/user/useUsers'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'

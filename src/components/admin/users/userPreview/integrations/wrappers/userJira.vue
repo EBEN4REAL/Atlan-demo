@@ -15,7 +15,7 @@
     import {
         archiveJira,
         openJiraOAuth,
-    } from '~/composables/integrations/useJira'
+    } from '~/composables/integrations/jira/useJira'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import { fetchIntegrationConfig } from '~/composables/integrations/useIntegrations'
 

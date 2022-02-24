@@ -5,7 +5,7 @@
     <div class="bg-gray-100 add-policy-container">
         <div>
             <div
-                class="fixed top-0 z-10 w-full p-3 bg-white border-b border-gray-300"
+                class="fixed top-0 z-10 w-full p-4 -mt-0.5 bg-white border-b border-gray-300"
             >
                 <div class="flex items-center">
                     <div

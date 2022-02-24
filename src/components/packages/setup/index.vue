@@ -30,44 +30,54 @@
                 class="flex justify-between px-6 py-3 bg-gray-100 border-t"
                 v-if="currentStep < steps.length"
             >
-                <a-button @click="handlePrevious" v-if="currentStep !== 0">
-                    <AtlanIcon icon="ChevronLeft" class="mr-1"></AtlanIcon
-                    >Back</a-button
+                <AtlanButton
+                    v-if="currentStep !== 0"
+                    padding="compact"
+                    color="secondary"
+                    size="sm"
+                    @click="handlePrevious"
                 >
-                <div v-if="currentStep == 0">
-                    <a-button
-                        @click="handleExit"
-                        v-if="!isEdit"
-                        class="font-bold text-red-500"
-                    >
-                        <AtlanIcon icon="ChevronLeft" class="mr-1"></AtlanIcon>
-                        Exit to Marketplace
-                    </a-button>
-                </div>
-                <a-button
-                    @click="handleNext"
-                    class="text-primary"
+                    <template #prefix>
+                        <AtlanIcon icon="ChevronLeft" />
+                    </template>
+                    Back
+                </AtlanButton>
+
+                <AtlanButton
+                    v-else-if="currentStep === 0 && !isEdit"
+                    padding="compact"
+                    color="secondary"
+                    size="sm"
+                    @click="handleExit"
+                >
+                    <template #prefix>
+                        <AtlanIcon icon="ChevronLeft" />
+                    </template>
+                    Back to Marketplace
+                </AtlanButton>
+
+                <AtlanButton
                     v-if="currentStep < steps.length - 1"
+                    padding="compact"
+                    size="sm"
+                    class="ml-auto"
+                    @click="handleNext"
                 >
                     Next
-                    <AtlanIcon
-                        icon="ChevronRight"
-                        class="ml-1 text-primary"
-                    ></AtlanIcon
-                ></a-button>
+                    <template #suffix>
+                        <AtlanIcon icon="ChevronRight" />
+                    </template>
+                </AtlanButton>
+
                 <a-popconfirm
-                    v-if="currentStep === steps.length - 1 && isEdit"
+                    v-else-if="currentStep === steps.length - 1 && isEdit"
                     ok-text="Yes"
                     :overlay-class-name="$style.popConfirm"
                     cancel-text="Cancel"
                     placement="topRight"
+                    :ok-button-props="{ size: 'default' }"
+                    :cancel-button-props="{ size: 'default' }"
                     @confirm="handleSubmit(false)"
-                    :ok-button-props="{
-                        size: 'default',
-                    }"
-                    :cancel-button-props="{
-                        size: 'default',
-                    }"
                 >
                     <template #icon> </template>
                     <template #title>
@@ -82,19 +92,22 @@
                             >Start a new run</a-checkbox
                         >
                     </template>
-                    <a-button type="primary"> Update </a-button>
+                    <AtlanButton padding="compact" size="sm">
+                        Update
+                    </AtlanButton>
                 </a-popconfirm>
 
                 <div
+                    v-else-if="currentStep === steps.length - 1 && !isEdit"
                     class="flex gap-x-2"
-                    v-if="currentStep === steps.length - 1 && !isEdit"
                 >
-                    <a-button
-                        class="px-6"
+                    <AtlanButton
+                        :color="allowSchedule ? 'secondary' : 'primary'"
+                        size="sm"
                         @click="handleSubmit(false)"
-                        :type="allowSchedule ? 'default' : 'primary'"
-                        >Run</a-button
                     >
+                        Run
+                    </AtlanButton>
 
                     <a-popconfirm
                         v-if="allowSchedule"
@@ -102,28 +115,25 @@
                         :overlay-class-name="$style.popConfirm"
                         cancel-text="Cancel"
                         placement="topRight"
+                        :ok-button-props="{ size: 'default' }"
+                        :cancel-button-props="{ size: 'default' }"
                         @confirm="handleSubmit(true)"
-                        :ok-button-props="{
-                            size: 'default',
-                        }"
-                        :cancel-button-props="{
-                            size: 'default',
-                        }"
                     >
                         <template #icon> </template>
                         <template #title>
                             <Schedule class="mb-3" v-model="cron"></Schedule>
                         </template>
-                        <a-button
-                            type="primary"
-                            class="px-6"
+
+                        <AtlanButton
                             v-if="allowSchedule"
-                            >Schedule & Run
-                            <AtlanIcon
-                                icon="ChevronRight"
-                                class="ml-1 text-white"
-                            ></AtlanIcon
-                        ></a-button>
+                            padding="compact"
+                            size="sm"
+                        >
+                            Schedule & Run
+                            <template #suffix>
+                                <AtlanIcon icon="ChevronRight" />
+                            </template>
+                        </AtlanButton>
                     </a-popconfirm>
                 </div>
             </div>
@@ -232,7 +242,7 @@
     } from 'vue'
 
     import { message } from 'ant-design-vue'
-    import { useIntervalFn, watchOnce } from '@vueuse/core'
+    import { useIntervalFn, watchOnce, useThrottleFn } from '@vueuse/core'
     import { useRoute, useRouter } from 'vue-router'
 
     // Components
@@ -360,16 +370,20 @@
                 selectedStep.value = event
             }
 
-            const handleNext = async () => {
-                if (stepForm.value) {
-                    const err = await stepForm.value.validateForm()
-                    if (err) {
-                        message.error('Please review the entered details')
-                    } else {
-                        currentStep.value += 1
+            const handleNext = useThrottleFn(
+                async () => {
+                    if (stepForm.value) {
+                        const err = await stepForm.value.validateForm()
+                        if (err) {
+                            message.error('Please review the entered details')
+                        } else {
+                            currentStep.value += 1
+                        }
                     }
-                }
-            }
+                },
+                isEdit.value ? 250 : 600,
+                false
+            )
 
             const handlePrevious = () => {
                 currentStep.value -= 1

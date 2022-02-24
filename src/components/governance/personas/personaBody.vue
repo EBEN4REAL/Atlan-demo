@@ -82,7 +82,12 @@
                 :class="
                     metaDataComputed.length > 0 || dataPolicyComputed.length > 0
                         ? 'bg-white rounded-lg'
-                        : 'bg-white rounded-lg pb-16'
+                        : (activeTabFilter === 'meta' &&
+                              metaDataComputed.length === 0) ||
+                          (activeTabFilter === 'data' &&
+                              dataPolicyComputed.length === 0)
+                        ? 'bg-white rounded-lg pb-14'
+                        : ''
                 "
             >
                 <div class="p-4 border-b">

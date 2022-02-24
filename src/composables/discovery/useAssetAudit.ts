@@ -3,6 +3,9 @@ import { toRefs } from '@vueuse/core'
 import { activityInterface } from '~/types/activitylogs/activitylog.interface'
 import { eventMap } from '~/constant/events'
 import { Entity } from '~/services/meta/entity'
+import { default as glossaryLabel } from '@/glossary/constants/assetTypeLabel'
+import { capitalizeFirstLetter } from '~/utils/string'
+import { certificateList } from '~/constant/certification'
 
 const useAssetAudit = (params: any, guid: string) => {
     const getEventByAction = (asset: any) =>
@@ -19,7 +22,7 @@ const useAssetAudit = (params: any, guid: string) => {
         parsedDetails?.name ?? ''
 
     const getEntityUpdateLogs = (logs: any) => {
-        const data = {
+        const data: activityInterface = {
             displayValue: 'Asset was updated',
             value: <any>[],
             component: '',
@@ -35,9 +38,11 @@ const useAssetAudit = (params: any, guid: string) => {
                 data.value = {}
                 if (attributes.ownerUsers) {
                     data.value.ownerUsers = attributes.ownerUsers
+                    data.icon = 'User'
                 }
                 if (attributes.ownerGroups) {
                     data.value.ownerGroups = attributes.ownerUsers
+                    data.icon = 'Group'
                 }
                 // if (attributes.ownerGroups) {
                 //     data.value.push(...ownerGroups)
@@ -49,6 +54,7 @@ const useAssetAudit = (params: any, guid: string) => {
 
             if ('userDescription' in attributes) {
                 data.value = attributes.userDescription
+                data.icon = 'Pencil'
 
                 data.displayValue = 'description'
                 data.component = 'Description'
@@ -62,12 +68,15 @@ const useAssetAudit = (params: any, guid: string) => {
                 data.value = logs
                 data.displayValue = 'certificate'
                 data.component = 'Certificate'
+                const icon = logs?.attributes?.certificateStatus?.toLowerCase()
+                if (icon?.length) data.icon = capitalizeFirstLetter(icon)
                 return data
             }
             if ('name' in attributes) {
                 data.value = attributes?.name
                 data.displayValue = 'name'
                 data.component = 'Name'
+                data.icon = 'Pencil'
                 return data
             }
             if (
@@ -78,6 +87,7 @@ const useAssetAudit = (params: any, guid: string) => {
                 data.value = logs
                 data.displayValue = 'announcement'
                 data.component = 'Announcement'
+                data.icon = 'Megaphone'
                 return data
             }
             if ('sql' in attributes) {
@@ -93,16 +103,22 @@ const useAssetAudit = (params: any, guid: string) => {
                 data.value = []
                 data.displayValue = 'added'
                 data.component = 'Terms'
+                data.icon = 'Term'
             }
             if (relationshipAttributes.categories) {
                 data.value = []
                 data.displayValue = 'added'
                 data.component = 'Category'
+                data.icon = 'Category'
             }
-            if (relationshipAttributes.parentCategory || relationshipAttributes.hasOwnProperty('parentCategory')) {
+            if (
+                relationshipAttributes.parentCategory ||
+                relationshipAttributes.hasOwnProperty('parentCategory')
+            ) {
                 data.value = []
                 data.displayValue = 'added'
                 data.component = 'Category'
+                data.icon = 'Category'
             }
 
             // data.displayValue = 'owners'
@@ -220,29 +236,34 @@ const useAssetAudit = (params: any, guid: string) => {
                         data.value = eventDetail
                         data.displayValue = 'updated'
                         data.component = 'Classifications'
+                        data.icon = 'Shield'
 
                         return data
                     case 'CLASSIFICATION_ADD':
                         data.value = eventDetail
                         data.displayValue = 'added'
                         data.component = 'Classifications'
+                        data.icon = 'Shield'
 
                         return data
                     case 'CLASSIFICATION_DELETE':
                         data.value = eventDetail
                         data.displayValue = 'removed'
                         data.component = 'Classifications'
+                        data.icon = 'Shield'
 
                         return data
                     case 'PROPAGATED_CLASSIFICATION_ADD':
                         data.value = eventDetail
                         data.displayValue = 'added via propagation'
                         data.component = 'Classifications'
+                        data.icon = 'Shield'
                         return data
                     case 'PROPAGATED_CLASSIFICATION_DELETE':
                         data.value = eventDetail
                         data.displayValue = 'removed via propagation'
                         data.component = 'Classifications'
+                        data.icon = 'Shield'
                         return data
                     // case 'CLASSIFICATION_DELETE':
                     //     try {
@@ -320,10 +341,36 @@ const useAssetAudit = (params: any, guid: string) => {
                     case 'ENTITY_CREATE':
                         data.value = eventDetail
                         data.component = 'Create'
+                        if (
+                            [
+                                'AtlasGlossary',
+                                'AtlasGlossaryTerm',
+                                'AtlasGlossaryCategory',
+                            ].includes(eventDetail?.typeName)
+                        ) {
+                            data.icon = capitalizeFirstLetter(
+                                glossaryLabel[eventDetail?.typeName]
+                            )
+                        } else {
+                            if (eventDetail?.typeName)
+                                data.icon = eventDetail?.typeName
+                        }
+
                         return data
                     case 'ENTITY_DELETE':
                         data.value = eventDetail
                         data.component = 'Delete'
+                        if (
+                            [
+                                'AtlasGlossary',
+                                'AtlasGlossaryTerm',
+                                'AtlasGlossaryCategory',
+                            ].includes(eventDetail?.typeName)
+                        ) {
+                            data.icon = capitalizeFirstLetter(
+                                glossaryLabel[eventDetail?.typeName]
+                            )
+                        }
                         return data
 
                     case 'ENTITY_UPDATE':

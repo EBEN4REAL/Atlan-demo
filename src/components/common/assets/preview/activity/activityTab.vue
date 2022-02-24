@@ -43,7 +43,12 @@
             <a-timeline class="mx-5" :key="item.guid">
                 <a-timeline-item v-for="(log, index) in auditList" :key="index">
                     <template #dot>
+                        <atlan-icon
+                            v-if="getAuditEventComponent(log)?.icon"
+                            :icon="getAuditEventComponent(log)?.icon"
+                        />
                         <div
+                            v-else
                             class="border ant-timeline-item-dot border-primary"
                         ></div>
                     </template>

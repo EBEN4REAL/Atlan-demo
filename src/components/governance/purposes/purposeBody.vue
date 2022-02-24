@@ -62,7 +62,17 @@
             class="flex flex-col px-6 pt-6"
             style="height: calc(100% - 155px)"
         >
-            <div class="bg-white rounded-lg">
+            <div
+                class="bg-white rounded-lg"
+                :class="
+                    (activeTabFilter === 'metaData' &&
+                        metaDataComputed.length === 0) ||
+                    (activeTabFilter === 'data' &&
+                        dataPolicyComputed.length === 0)
+                        ? 'pb-14'
+                        : ''
+                "
+            >
                 <div
                     v-if="!isEmpty"
                     class="flex items-center justify-between p-4 border-b"
@@ -181,24 +191,24 @@
                         />
                     </template>
                 </div>
-            </div>
-            <div
-                v-if="
-                    (activeTabFilter === 'meta' &&
-                        metaDataComputed.length === 0) ||
-                    (activeTabFilter === 'data' &&
-                        dataPolicyComputed.length === 0)
-                "
-                class="flex flex-col items-center justify-center h-full"
-            >
-                <component :is="NewPolicyIllustration"></component>
-                <span class="mt-5 text-xl font-bold text-gray">
-                    Policies not found
-                </span>
                 <div
-                    class="mt-1 text-base text-center text-gray-500 sub-title-empty"
+                    v-if="
+                        (activeTabFilter === 'metaData' &&
+                            metaDataComputed.length === 0) ||
+                        (activeTabFilter === 'data' &&
+                            dataPolicyComputed.length === 0)
+                    "
+                    class="flex flex-col items-center justify-center h-full"
                 >
-                    Create policies to manage access
+                    <component :is="NewPolicyIllustration"></component>
+                    <span class="mt-5 text-xl font-bold text-gray">
+                        Policies not found
+                    </span>
+                    <div
+                        class="mt-1 text-base text-center text-gray-500 sub-title-empty"
+                    >
+                        Create policies to manage access
+                    </div>
                 </div>
             </div>
             <div
@@ -246,6 +256,14 @@
                         </a-menu>
                     </template>
                 </a-dropdown>
+                <div class="mt-6 cursor-pointer text-primary">
+                    <a
+                        href="https://ask.atlan.com/hc/en-us/articles/4413877880209-How-to-build-access-policies"
+                        target="_blank"
+                    >
+                        Learn More <AtlanIcon icon="ArrowRight" />
+                    </a>
+                </div>
             </div>
         </div>
 
@@ -290,7 +308,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref, computed, toRefs } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        ref,
+        computed,
+        toRefs,
+        watch,
+    } from 'vue'
     import { message } from 'ant-design-vue'
     import ResourcesWidget from '@common/widgets/resources/resourcesWidgetV2/resourcesWidgetV2.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
@@ -328,6 +353,7 @@
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import usePurposeResources from '@/governance/purposes/composables/usePurposeResources'
     import RaisedTab from '@/UI/raisedTab.vue'
+    import NewPolicyIllustration from '~/assets/images/illustrations/new_policy.svg'
 
     export default defineComponent({
         name: 'PurposeBody',
@@ -579,6 +605,9 @@
                     !selectedPersonaDirty.value.metadataPolicies?.length &&
                     !selectedPersonaDirty.value.dataPolicies?.length
             )
+            watch(selectedPersonaDirty, () => {
+                activeTabFilter.value = 'all Persona'
+            })
             return {
                 addStatus,
                 updateStatus,
@@ -617,6 +646,7 @@
                 isEdit,
                 streams,
                 isEmpty,
+                NewPolicyIllustration,
             }
         },
     })

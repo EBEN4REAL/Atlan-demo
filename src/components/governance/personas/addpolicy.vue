@@ -603,7 +603,7 @@
             </AtlanBtn>
         </div>
         <div v-else-if="isEdit && !canEdit">
-            <div class="flex p-3 m-4 rounded bg-primary-light text-primary">
+            <div class="flex p-3 rounded bg-primary-light text-primary">
                 <AtlanIcon icon="Overview" class="mt-1 mr-1"></AtlanIcon>
                 <div>
                     You can only edit policies for connections in which you're

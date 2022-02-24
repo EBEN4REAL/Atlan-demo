@@ -5,18 +5,18 @@
     <div class="bg-gray-100 add-policy-container">
         <div>
             <div
-                class="fixed top-0 z-10 w-full p-3 bg-white border-b border-gray-300"
+                class="fixed top-0 z-10 w-full p-4 bg-white border-b border-gray-300"
             >
                 <div class="flex items-center">
                     <div
                         v-if="type === 'meta'"
-                        class="flex items-center justify-center w-8 h-8 mr-2 rounded-full bg-primary-light"
+                        class="flex items-center justify-center w-8 h-8 mr-2 rounded-full bg-primary-light -mt-0.5"
                     >
                         <AtlanIcon icon="Policies" class="icon-blue" />
                     </div>
                     <div
                         v-if="type === 'data'"
-                        class="flex items-center justify-center w-8 h-8 mr-2 rounded-full bg-primary-light"
+                        class="flex items-center justify-center w-8 h-8 mr-2 rounded-full bg-primary-light -mt-0.5"
                     >
                         <AtlanIcon icon="QueryGrey" class="icon-blue-stroke" />
                     </div>

@@ -4,10 +4,10 @@
     </div>
     <div class="bg-gray-100 add-policy-container">
         <div>
-            <div class="relative p-3 bg-white border-b border-gray-300">
+            <div class="relative p-4 bg-white border-b border-gray-300">
                 <div class="flex items-center">
                     <div
-                        class="flex items-center justify-center w-8 h-8 mr-2 rounded-full bg-primary-light"
+                        class="flex items-center justify-center w-8 h-8 mr-2 rounded-full bg-primary-light -mt-0.5"
                     >
                         <AtlanIcon
                             v-if="policyType === 'meta'"

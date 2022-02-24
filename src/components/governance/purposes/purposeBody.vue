@@ -223,9 +223,7 @@
                 <span class="mt-10 text-xl font-bold text-gray">
                     Create Policies
                 </span>
-                <div
-                    class="mt-2 text-base text-center text-gray-500 sub-title-empty"
-                >
+                <div class="mt-2 text-base text-center text-gray-500 w-60">
                     Create policies to manage metadata and data access
                 </div>
                 <a-dropdown trigger="click">

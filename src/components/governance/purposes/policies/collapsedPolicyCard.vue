@@ -136,7 +136,7 @@
                     }}
                 </span> -->
             </div>
-            <div class="flex justify-end flex-1 pr-8">
+            <div class="flex flex-1 pr-8">
                 <span v-if="!policy.allow" class="text-sm text-red-500">{{
                     type === 'meta' ? 'Denied Permission' : 'Denied Query'
                 }}</span>
@@ -367,12 +367,12 @@
                 background: rgb(250, 250, 250);
                 background: linear-gradient(
                     90deg,
-                    rgba(250, 250, 250, 0.779171043417367) 32%,
-                    rgba(250, 250, 250, 1) 53%
+                    rgba(250, 250, 250, 0.779171043417367) 9%,
+                    rgba(250, 250, 250, 1) 18%
                 );
 
                 padding: 10px 0;
-                width: 30%;
+                width: 40%;
                 top: 50%;
                 transform: translateY(-50%);
             }

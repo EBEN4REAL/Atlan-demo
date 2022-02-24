@@ -228,7 +228,7 @@
 
                                 <DataMaskingSelector
                                     v-model:maskType="policy.mask"
-                                    class="mb-6 w-80"
+                                    class="w-80"
                                     :type="'purpose'"
                                 />
                             </div>

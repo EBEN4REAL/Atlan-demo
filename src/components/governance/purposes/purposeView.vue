@@ -120,19 +120,21 @@
         </template>
         <div
             v-else-if="
-                filteredPurposes?.length == 0 && isPurposeError === undefined
+                filteredPurposes?.length === 0 && isPurposeError === undefined
             "
-            class="flex flex-col items-center justify-center h-full"
+            class="flex flex-col items-center h-full"
         >
-            <component :is="AddPersonaIllustration"></component>
-            <div class="text-2xl font-bold">Start Creating Purposes</div>
+            <component :is="AddPersonaIllustration" class="mt-7"></component>
+            <div class="mt-6 text-2xl font-bold text-gray-700">
+                Start Creating Purposes
+            </div>
             <span class="mx-auto text-base text-gray-500 sub-title-empty-state"
                 >Purposes will control permissions based on which users and
                 groups can view, edit or query assets tagged with that
                 Classification.</span
             >
             <AtlanBtn
-                class="flex-none mx-auto mt-6"
+                class="flex-none mx-auto mt-8"
                 color="primary"
                 padding="compact"
                 data-test-id="add-new-purpose"
@@ -144,7 +146,7 @@
                 </template>
                 Get started
             </AtlanBtn>
-            <div class="mt-6 cursor-pointer text-primary">
+            <div class="mt-5 cursor-pointer text-primary">
                 <a
                     href="https://ask.atlan.com/hc/en-us/articles/4418690792849-What-are-Purposes-in-Atlan-"
                     target="_blank"

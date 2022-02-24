@@ -193,7 +193,7 @@
             >
                 <component :is="NewPolicyIllustration"></component>
                 <span class="mt-5 text-xl font-bold text-gray">
-                    Policy not found
+                    Policies not found
                 </span>
                 <div
                     class="mt-1 text-base text-center text-gray-500 sub-title-empty"

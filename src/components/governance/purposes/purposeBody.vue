@@ -202,13 +202,13 @@
                 >
                     <component :is="NewPolicyIllustration"></component>
                     <span class="mt-5 text-xl font-bold text-gray">
-                        Policies not found
+                        {{ `No ${activeTabFilter} policies added` }}
                     </span>
-                    <div
+                    <!-- <div
                         class="mt-1 text-base text-center text-gray-500 sub-title-empty"
                     >
                         Create policies to manage access
-                    </div>
+                    </div> -->
                 </div>
             </div>
             <div

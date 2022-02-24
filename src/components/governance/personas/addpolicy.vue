@@ -10,15 +10,15 @@
                 <div class="flex items-center">
                     <div
                         v-if="type === 'meta'"
-                        class="p-2 mr-2 rounded-full bg-primary-light"
+                        class="flex items-center justify-center w-8 h-8 mr-2 rounded-full bg-primary-light"
                     >
                         <AtlanIcon icon="Policies" class="icon-blue" />
                     </div>
                     <div
                         v-if="type === 'data'"
-                        class="p-2 mr-2 rounded-full bg-primary-light"
+                        class="flex items-center justify-center w-8 h-8 mr-2 rounded-full bg-primary-light"
                     >
-                        <AtlanIcon icon="QueryGrey" />
+                        <AtlanIcon icon="QueryGrey" class="icon-blue-stroke" />
                     </div>
                     <span class="ml-1 text-base font-bold"
                         >{{
@@ -449,7 +449,7 @@
                     class="mt-5 bg-white shadow-section"
                 >
                     <div class="p-3 text-base font-bold text-gray-700 border-b">
-                        Configurations
+                        Configure permissions
                     </div>
                     <!-- <div class="flex flex-col mt-7 gap-y-2">
                         <div class="flex gap-1">
@@ -1019,6 +1019,11 @@
         .icon-blue {
             path {
                 fill: #5277d7 !important;
+            }
+        }
+        .icon-blue-stroke {
+            path {
+                stroke: #5277d7 !important;
             }
         }
         height: 100vh;

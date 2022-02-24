@@ -33,7 +33,7 @@
                         <span class="text-gray-500">{{ policy?.name }}</span>
                     </div> -->
                     <div>
-                        <span class="text-gray-500">{{ policy?.name }}</span>
+                        <span class="text-gray-700">{{ policy?.name }}</span>
                         <span class="text-gray-300 mx-1.5">•</span>
                         <span class="text-gray-500">{{
                             type === 'meta' ? 'Metadata' : 'Data'

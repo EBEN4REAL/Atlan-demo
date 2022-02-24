@@ -35,13 +35,13 @@
                             class="p-1 px-2 hover:bg-primary-light"
                         >
                             <a-popover placement="bottom">
-                                <template #content>
+                                <!-- <template #content>
                                     <div class="p-2 content-popover-permission">
                                         <span class="text-xs text-gray-600">
                                             {{ check.desc }}
                                         </span>
                                     </div>
-                                </template>
+                                </template> -->
                                 <a-checkbox
                                     :value="check.value"
                                     class="text-sm text-gray-700"

@@ -6,14 +6,18 @@
         <div>
             <div class="relative p-3 bg-white border-b border-gray-300">
                 <div class="flex items-center">
-                    <div class="p-2 mr-2 rounded-full bg-primary-light">
+                    <div
+                        class="flex items-center justify-center w-8 h-8 mr-2 rounded-full bg-primary-light"
+                    >
                         <AtlanIcon
                             v-if="policyType === 'meta'"
                             icon="Policies"
+                            class="icon-blue"
                         />
                         <AtlanIcon
                             v-if="policyType === 'data'"
                             icon="QueryGrey"
+                            class="icon-blue-stroke"
                         />
                     </div>
                     <span class="ml-1 text-base font-bold"
@@ -92,11 +96,11 @@
                         <div
                             class="p-3 text-sm font-bold text-gray-700 border-b"
                         >
-                            Users and Group<span class="ml-1 text-red-500"
+                            Users and Groups<span class="ml-1 text-red-500"
                                 >*</span
                             >
                         </div>
-                        <div class="relative p-3">
+                        <div class="relative p-3 overflow-y-scroll max-h-52">
                             <Owners
                                 :ref="
                                     (el) => {
@@ -104,6 +108,7 @@
                                     }
                                 "
                                 v-model:modelValue="selectedOwnersData"
+                                :align="{ offset: [-10, 230] }"
                                 :edit-permission="true"
                                 :read-only="false"
                                 :destroy-tooltip-on-hide="true"
@@ -691,6 +696,17 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        .icon-blue {
+            path {
+                fill: #5277d7 !important;
+                stroke: #5277d7 !important;
+            }
+        }
+        .icon-blue-stroke {
+            path {
+                stroke: #5277d7 !important;
+            }
+        }
     }
     .button-container {
         justify-content: flex-end;

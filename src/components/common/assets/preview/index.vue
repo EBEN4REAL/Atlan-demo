@@ -286,6 +286,10 @@
             linkedAssets: defineAsyncComponent(
                 () => import('./linkedAssets/linkedAssetsWrapper.vue')
             ),
+            Jira: defineAsyncComponent(
+                () =>
+                    import('@/common/assets/preview/integrations/jira/jira.vue')
+            ),
         },
 
         props: {

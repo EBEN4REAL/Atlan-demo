@@ -20,14 +20,14 @@ const UpdateSlackConfig = (pathVariables: Ref, body, options: useOptions) => use
 // Jira
 const jiraListProjects = (options = {}) =>
     useAPI<JiraListProjectsResponse>(map.JIRA_LIST_PROJECTS, 'GET', {}, options);
-const jiraListIssueTypes = (options = {}) =>
-    useAPI(map.JIRA_LIST_ISSUE_TYPES, 'GET', {}, options);
+const jiraListIssueTypes = <T>(options = {}) =>
+    useAPI<T>(map.JIRA_LIST_ISSUE_TYPES, 'GET', {}, options);
 const jiraGetIssueProperty = (params: Ref<{ issue: string, property: string }>, options = {}) =>
     useAPI(map.JIRA_GET_ISSUE_PROPERTY, 'GET', { params }, options);
 const jiraGetIssueConfigurations = (pathVariables: Ref<{ projectKey: string }>, options = {}) =>
     useAPI(map.JIRA_GET_ISSUE_CONFIGURATIONS, 'GET', { pathVariables }, options);
-const jiraSearch = (body: Ref, options = {}) =>
-    useAPI(map.JIRA_SEARCH, 'POST', { body }, options);
+const jiraSearch = <T>(body: Ref, options = {}) =>
+    useAPI<T>(map.JIRA_SEARCH, 'POST', { body }, options);
 const jiraLinkIssue = (body: Ref, params: Ref<{ id: string }>, options = {}) =>
     useAPI(map.JIRA_LINK_ISSUE, 'POST', { body, params }, options);
 const jiraUnlinkIssue = (body: Ref, params: Ref<{ id: string }>, options = {}) =>

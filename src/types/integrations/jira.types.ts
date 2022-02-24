@@ -26,6 +26,22 @@ export interface Project {
     "uuid": string
 }
 
+export interface Issue {
+    key: string,
+    id: string,
+    fields: {
+        summary: string
+        description: string
+    }
+}
+export interface IssueTypes {
+    "name": string,
+    "id": string,
+    "iconUrl": string,
+    "hierarchyLevel": number
+}
+
+
 export interface JiraListProjectsResponse {
     "startAt": number,
     "total": number,

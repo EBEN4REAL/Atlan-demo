@@ -9,7 +9,7 @@ import useIntegrations, {
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
 import { Integrations } from '~/services/service/integrations/index'
-const { jiraListProjects } = Integrations
+const { jiraListProjects, jiraSearch } = Integrations
 
 
 const { origin } = window.location
@@ -199,3 +199,4 @@ export const listProjects = () => {
     })
     return { projects, isLoading, error }
 }
+

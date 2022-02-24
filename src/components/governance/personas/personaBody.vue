@@ -82,7 +82,7 @@
                 :class="
                     metaDataComputed.length > 0 || dataPolicyComputed.length > 0
                         ? 'bg-white rounded-lg'
-                        : (activeTabFilter === 'meta' &&
+                        : (activeTabFilter === 'metaData' &&
                               metaDataComputed.length === 0) ||
                           (activeTabFilter === 'data' &&
                               dataPolicyComputed.length === 0)
@@ -198,7 +198,7 @@
                 </div>
                 <div
                     v-if="
-                        (activeTabFilter === 'meta' &&
+                        (activeTabFilter === 'metaData' &&
                             metaDataComputed.length === 0) ||
                         (activeTabFilter === 'data' &&
                             dataPolicyComputed.length === 0)

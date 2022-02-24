@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col p-4 bg-white rounded-md">
-        <div class="flex items-center mb-7">
+        <div class="flex items-center mb-4">
             <AtlanIcon icon="AssetIcon" class="h-8" />
             <div class="mx-2">
                 <span class="mb-1 text-base font-bold">Assets</span>
@@ -11,6 +11,9 @@
                 class="flex-grow bg-white"
                 :enable-sidebar-drawer="true"
                 :filters="filterConfig"
+                aggregation-tab-class="px-5 my-1"
+                search-bar-class="px-5 my-1"
+                asset-item-class="px-2"
             />
         </div>
     </div>

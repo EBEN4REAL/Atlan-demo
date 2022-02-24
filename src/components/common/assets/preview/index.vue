@@ -23,8 +23,8 @@
                     :route-to="getProfilePath(selectedAsset)"
                     :classes="
                         isScrubbed(selectedAsset)
-                            ? 'text-md mb-0  font-semibold cursor-pointer text-primary hover:underline opacity-80 '
-                            : 'text-md font-bold mb-0 cursor-pointer text-primary hover:underline '
+                            ? 'mb-0  font-semibold cursor-pointer text-primary hover:underline opacity-80 '
+                            : 'font-bold mb-0 cursor-pointer text-primary hover:underline '
                     "
                     :should-open-in-new-tab="true"
                     @click="() => $emit('closeDrawer')"
@@ -197,6 +197,7 @@
                     :edit-permission="
                         selectedAssetUpdatePermission(selectedAsset, isDrawer)
                     "
+                    :tab="tab"
                     :data="tab.data"
                     :collection-data="{
                         collectionInfo,
@@ -270,14 +271,11 @@
             relations: defineAsyncComponent(
                 () => import('./relations/index.vue')
             ),
-            // resources: defineAsyncComponent(
-            //     () =>
-            //         import(
-            //             '@/common/assets/preview/resources/resourcesWrapper.vue'
-            //         )
-            // ),
             resources: defineAsyncComponent(
-                () => import('@common/widgets/resources/index.vue')
+                () =>
+                    import(
+                        '@/common/assets/preview/resources/resourcesWrapper.vue'
+                    )
             ),
             lineage: defineAsyncComponent(
                 () => import('./lineage/lineageTab.vue')

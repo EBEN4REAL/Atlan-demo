@@ -1,86 +1,103 @@
 <template>
-    <div class="flex flex-col flex-1 h-full">
-        <div class="flex items-center justify-between px-6 py-3">
-            <div class="flex flex-col">
-                <div class="text-xl font-semibold text-gray-700">
-                    Workflow Center
+    <div class="flex w-full h-full overflow-x-hidden bg-primary-light">
+        <div class="flex-1 border-r border-gray-200">
+            <div class="flex flex-col flex-1 h-full">
+                <div class="flex items-center justify-between px-6 py-3">
+                    <div class="flex flex-col">
+                        <div class="text-xl font-semibold text-gray-700">
+                            Workflow Center
+                        </div>
+                        <div class="text-sm text-gray-500">
+                            Manage and monitor all your metadata workflows
+                        </div>
+                    </div>
+                    <a-button type="primary" @click="handleNewWorkflow"
+                        >New Workflow</a-button
+                    >
                 </div>
-                <div class="text-sm text-gray-500">
-                    Manage and monitor all your metadata workflows
+
+                <div class="flex items-center justify-between px-6 mb-2">
+                    <div class="flex items-center justify-between w-full">
+                        <AggregationTabs
+                            key="hello"
+                            :list="getAggregationByType"
+                            v-model="postFacets.typeName"
+                            @change="handlePackageTypeChange"
+                        ></AggregationTabs>
+                    </div>
+                    <a-input
+                        v-model:value="queryText"
+                        placeholder="Search Workflows"
+                        class="w-1/3"
+                    ></a-input>
                 </div>
-            </div>
-            <a-button type="primary" @click="handleNewWorkflow"
-                >New Workflow</a-button
-            >
-        </div>
 
-        <div class="flex items-center justify-between px-6 mb-2">
-            <div class="flex items-center justify-between w-full">
-                <AggregationTabs
-                    :list="getAggregationByType"
-                    v-model="postFacets.typeName"
-                    @change="handlePackageTypeChange"
-                ></AggregationTabs>
-            </div>
-            <a-input
-                v-model:value="queryText"
-                placeholder="Search Workflows"
-                class="w-1/3"
-            ></a-input>
-        </div>
+                <div class="flex flex-col h-full overflow-y-auto">
+                    <div
+                        v-if="isLoading || isLoadingPackage"
+                        class="flex items-center justify-center flex-grow"
+                    >
+                        <AtlanLoader class="h-10" />
+                    </div>
 
-        <div class="flex flex-col h-full overflow-y-auto">
-            <div
-                v-if="isLoading || isLoadingPackage"
-                class="flex items-center justify-center flex-grow"
-            >
-                <AtlanLoader class="h-10" />
-            </div>
+                    <div
+                        v-else-if="
+                            list.length === 0 && !isLoading && !isLoadingPackage
+                        "
+                        class="flex-grow"
+                    >
+                        <EmptyView
+                            empty-screen="EmptyDiscover"
+                            desc="No workflows found"
+                            class="mb-10"
+                        ></EmptyView>
+                    </div>
+                    <div
+                        v-else-if="error || errorPackage || errorRun"
+                        class="flex items-center justify-center flex-grow"
+                    >
+                        <ErrorView></ErrorView>
+                    </div>
 
-            <div
-                v-else-if="list.length === 0 && !isLoading && !isLoadingPackage"
-                class="flex-grow"
-            >
-                <EmptyView
-                    empty-screen="EmptyDiscover"
-                    desc="No workflows found"
-                    class="mb-10"
-                ></EmptyView>
-            </div>
-            <div
-                v-else-if="error || errorPackage || errorRun"
-                class="flex items-center justify-center flex-grow"
-            >
-                <ErrorView></ErrorView>
-            </div>
-
-            <WorkflowList
-                v-else
-                :list="list"
-                class="px-6 mb-4"
-                @select="handleSelect"
-            ></WorkflowList>
-            <div
-                v-if="(isLoadMore || isLoadingPackage) && list.length > 0"
-                class="flex items-center justify-center"
-            >
-                <button
-                    :disabled="isLoadingPackage"
-                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full text-primary"
-                    :class="isLoadingPackage ? 'px-2 w-9' : 'px-2'"
-                    @click="handleLoadMore"
-                >
-                    <template v-if="!isLoadingPackage">
-                        <p
-                            class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
+                    <WorkflowList
+                        v-else
+                        :key="listKey"
+                        :list="list"
+                        class="px-6 mb-4"
+                        @select="handleSelect"
+                    ></WorkflowList>
+                    <div
+                        v-if="
+                            (isLoadMore || isLoadingPackage) && list.length > 0
+                        "
+                        class="flex items-center justify-center"
+                    >
+                        <button
+                            :disabled="isLoadingPackage"
+                            class="flex items-center justify-between py-2 transition-all duration-300 bg-white rounded-full text-primary"
+                            :class="isLoadingPackage ? 'px-2 w-9' : 'px-2'"
+                            @click="handleLoadMore"
                         >
-                            Load more
-                        </p>
-                        <AtlanIcon icon="ArrowDown" />
-                    </template>
-                    <AtlanLoader v-else class="h-10" />
-                </button>
+                            <template v-if="!isLoadingPackage">
+                                <p
+                                    class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
+                                >
+                                    Load more
+                                </p>
+                                <AtlanIcon icon="ArrowDown" />
+                            </template>
+                            <AtlanLoader v-else class="h-10" />
+                        </button>
+                    </div>
+                </div>
             </div>
+        </div>
+        <div class="relative hidden bg-white asset-preview-container md:block">
+            <WorfklowPreview
+                v-if="selectedPackage"
+                :key="listKey"
+                :item="selectedPackage"
+            ></WorfklowPreview>
         </div>
     </div>
 </template>
@@ -94,10 +111,12 @@
         provide,
         inject,
         toRefs,
+        onActivated,
     } from 'vue'
 
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
+    import WorfklowPreview from '@/workflows/preview/index.vue'
 
     import { useRouter } from 'vue-router'
     import { debouncedWatch, useDebounceFn } from '@vueuse/core'
@@ -108,8 +127,9 @@
     import { usePackageDiscoverList } from '~/composables/package/usePackageDiscoverList'
 
     export default defineComponent({
-        name: 'PackageDiscovery',
+        name: 'WorkflowListing',
         components: {
+            WorfklowPreview,
             WorkflowList,
             AggregationTabs,
             EmptyView,
@@ -197,8 +217,6 @@
                 quickChangeRun()
             })
 
-            const handlePreview = inject('preview')
-
             const {
                 isLoading: isLoadingPackage,
                 error: errorPackage,
@@ -208,7 +226,6 @@
                 isLoadMore,
             } = usePackageDiscoverList({
                 isCache: true,
-                dependentKey: dependentKeyPackage,
                 facets: facetPackage,
                 postFacets,
                 limit: packageLimit,
@@ -217,6 +234,16 @@
                 aggregations: aggregationPackage,
             })
 
+            watch(
+                getAggregationByType,
+                () => {
+                    console.log(
+                        'getAggregationByType',
+                        getAggregationByType.value
+                    )
+                },
+                { deep: true }
+            )
             debouncedWatch(
                 queryText,
                 () => {
@@ -277,7 +304,6 @@
 
             const handleSelect = (item) => {
                 selectedPackage.value = item
-                handlePreview(item)
             }
 
             const handleSearchChange = useDebounceFn(() => {
@@ -306,6 +332,11 @@
                     quickChangePackage()
                 }
             }
+
+            const listKey = ref(Date.now())
+            onActivated(() => {
+                listKey.value = Date.now()
+            })
 
             return {
                 placeholder,
@@ -339,7 +370,6 @@
                 packageListFromWorkflows,
                 workflowDistinctList,
                 workflowMapByPackage,
-                handlePreview,
                 aggregationPackage,
                 postFacets,
                 getAggregationByType,
@@ -353,14 +383,18 @@
                 router,
                 queryText,
                 errorRun,
+                listKey,
             }
         },
     })
 </script>
-
-<style lang="less">
+<style scoped>
     .filters {
         max-width: 264px;
         width: 25%;
+    }
+    .asset-preview-container {
+        min-width: 420px !important;
+        max-width: 420px !important;
     }
 </style>

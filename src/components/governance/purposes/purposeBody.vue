@@ -43,10 +43,11 @@
                 @editDetails="$emit('editDetails')"
             />
             <PurposeReadme :purpose="selectedPersonaDirty" />
-            <div class="p-4 mt-3 bg-white border border-gray-200 rounded">
+            <div class="mt-3 bg-white border border-gray-200 rounded">
                 <ResourcesWidget
                     placeholder="Resources is the place to document all knowledge around the purpose"
                     :entity-name="persona.name"
+                    :read-only="false"
                     :resources="persona?.resources?.links ?? []"
                     :add-status="addStatus"
                     :update-status="updateStatus"
@@ -195,13 +196,16 @@
 
         <div
             v-else-if="activeTabKey === 'linked_assets'"
-            class="h-full bg-white px-7"
+            class="h-full bg-white"
         >
             <div class="wrapper-height">
                 <AssetList
                     :filters="filterConfig"
                     :enable-sidebar-drawer="true"
                     :asset-list-style-obj="{ height: 'calc(100% - 9rem)' }"
+                    aggregation-tab-class="px-5 my-1"
+                    search-bar-class="px-5 my-1"
+                    asset-item-class="px-2"
                 />
                 <!-- <LinkedTerms
                 v-else-if="activeTabKey === '2'"
@@ -243,7 +247,7 @@
         watch,
     } from 'vue'
     import { message } from 'ant-design-vue'
-    import ResourcesWidget from '@common/widgets/resources/resourcesWidgetV2/resourcesWidgetV2.vue'
+    import ResourcesWidget from '@common/widgets/resources/resourcesWidget.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import MinimalTab from '@/UI/minimalTab.vue'
     import AtlanBtn from '@/UI/button.vue'

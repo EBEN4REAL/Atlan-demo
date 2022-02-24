@@ -27,7 +27,6 @@
             <div v-if="list.length !== 0" :class="aggregationTabClass">
                 <AggregationTabs
                     v-model="postFilters.typeName"
-                    class="mt-3"
                     :list="assetTypeAggregationList"
                     @change="fetchList(0)"
                 />
@@ -221,7 +220,7 @@
             },
             aggregationTabClass: {
                 type: String,
-                default: '',
+                default: 'mt-3',
             },
             searchBarClass: {
                 type: String,

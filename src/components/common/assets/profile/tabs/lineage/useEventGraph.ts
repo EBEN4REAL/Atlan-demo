@@ -8,13 +8,11 @@ import useUpdateGraph from './useUpdateGraph'
 import useGetNodes from './useGetNodes'
 import useGraph from './useGraph'
 import fetchColumns from './fetchColumns'
-import fetchAsset from './fetchAsset'
 
 const { highlightNodes, highlightEdges } = useUpdateGraph()
 const { useFetchLineage } = useLineageService()
 const {
     createPortData,
-    createCustomPortData,
     toggleNodesEdges,
     addNode,
     addEdge,
@@ -57,6 +55,7 @@ export default function useEventGraph(
 
     /** METHODS */
     const showLoader = (e) => {
+        if (!e) return
         loaderCords.value = { x: e.clientX, y: e.clientY }
     }
 
@@ -206,12 +205,6 @@ export default function useEventGraph(
         return !!node
     }
 
-    // isCHPExpandedNode
-    const isCHPExpandedNode = (nodeId) => {
-        const node = chp.value.expandedNodes.find((x) => x.id === nodeId)
-        return !!node
-    }
-
     // resetPortStyle
     const resetPortStyle = (node, portId) => {
         if (!node || !portId) return
@@ -270,7 +263,7 @@ export default function useEventGraph(
                 const { portData } = createPortData(x)
                 return portData
             })
-            graph.value.freeze('controlPorts')
+            // graph.value.freeze('controlPorts')
             ports.forEach((x) => {
                 if (portExist(x.id)) {
                     node.removePort(x.id)
@@ -289,7 +282,7 @@ export default function useEventGraph(
                         setPortStyle(node, port.id, 'highlight')
                 })
             }
-            graph.value.unfreeze('controlPorts')
+            // graph.value.unfreeze('controlPorts')
             translateSubsequentNodes(node)
         }
     }
@@ -333,10 +326,11 @@ export default function useEventGraph(
                 targetPort: toEntityId,
             }
 
-            addEdge(graph, relation, {
+            const edge = addEdge(graph, relation, {
                 stroke: '#5277d7',
                 arrowSize: graphPrefs.value.showArrow ? 12 : 0.1,
             })
+            edge.toFront()
         })
     }
 
@@ -361,7 +355,7 @@ export default function useEventGraph(
     ) => {
         if (!relations?.length) return
 
-        graph.value.freeze('renderColumnLineage')
+        // graph.value.freeze('renderColumnLineage')
         trNodes.forEach((node) => {
             if (node.getPorts().length > 1) {
                 const ports = node.getPorts()
@@ -379,7 +373,7 @@ export default function useEventGraph(
             createRelations(rel)
             translateSubsequentNodes(node)
         })
-        graph.value.unfreeze('renderColumnLineage')
+        // graph.value.unfreeze('renderColumnLineage')
     }
 
     const getPortsForNode = (node, isFetchMore = false) => {
@@ -484,35 +478,119 @@ export default function useEventGraph(
         getPortsForNode(node, true)
     })
 
+    const isColumnNodeVisible = (parentName) => {
+        const graphNodes = graph.value.getNodes()
+        const node = graphNodes.find(
+            (x) => x.store.data.entity.attributes.qualifiedName === parentName
+        )
+        return !!node
+    }
+
+    const isColumnNodeHidden = (portId, parentName) => {
+        const portNode = getPortNode(portId)
+        const sameSourceCountTargetsHidden =
+            sameSourceCount.value?.[portNode.id]?.targertsHidden
+        const sameTargetCountSourcesHidden =
+            sameTargetCount.value?.[portNode.id]?.sourcesHidden
+
+        const isAnHiddenTarget = sameSourceCountTargetsHidden?.find(
+            (x) => x.attributes.qualifiedName === parentName
+        )
+        const isAnHiddenSource = sameTargetCountSourcesHidden?.find(
+            (x) => x.attributes.qualifiedName === parentName
+        )
+
+        return {
+            isAnHiddenTarget: !!isAnHiddenTarget,
+            isAnHiddenSource: !!isAnHiddenSource,
+        }
+    }
+
     // controlTranslate
     const controlTranslate = (portId, lineage) => {
         const translateCandidates = []
         const parentMap = new Map<string, any[]>()
+        const portNode = getPortNode(portId)
 
+        const nodesToAddQn = { isAnHiddenSource: [], isAnHiddenTarget: [] }
         Object.entries(lineage.guidEntityMap).forEach(([k, v]) => {
             if (k !== portId) {
                 const qnArr = v.attributes.qualifiedName.split('/')
                 qnArr.pop()
                 const parentName = qnArr.join('/')
-                const graphNodes = graph.value.getNodes()
-                const parentNode = graphNodes.find(
-                    (x) =>
-                        x.store.data.entity.attributes.qualifiedName ===
-                        parentName
-                )
-                const parentNodeExists = translateCandidates.find(
-                    (x) => x?.id === parentNode?.id
-                )
+                if (isColumnNodeVisible(parentName)) return
+                const { isAnHiddenSource, isAnHiddenTarget } =
+                    isColumnNodeHidden(portId, parentName)
 
-                if (parentNode && !parentNodeExists) {
-                    translateCandidates.push(parentNode)
-                    parentMap.set(parentNode.id, [v])
-                } else if (parentNode && parentMap.has(parentNode.id)) {
-                    parentMap.set(parentNode.id, [
-                        ...parentMap.get(parentNode.id),
-                        v,
-                    ])
-                }
+                if (isAnHiddenSource)
+                    nodesToAddQn.isAnHiddenSource.push(parentName)
+                if (isAnHiddenTarget)
+                    nodesToAddQn.isAnHiddenTarget.push(parentName)
+            }
+        })
+
+        Object.entries(nodesToAddQn).forEach(([k, v]) => {
+            if (!v.length) return
+            const prefix = k === 'isAnHiddenSource' ? 'vpNodeST' : 'vpNodeSS'
+            const vpNode = nodes.value.find(
+                (x) => x.id === `${prefix}-${portNode.id}`
+            )
+            const { guidEntityMap: gem } = mergedLineageData.value
+            const nodeIdsToAdd: string[] = Object.values(gem)
+                .filter((x) => v.includes(x.attributes.qualifiedName))
+                .map((x) => x.guid)
+            handleVPNode(vpNode, nodeIdsToAdd)
+        })
+
+        const isDefaultMode = !(
+            nodesToAddQn.isAnHiddenSource.length ||
+            nodesToAddQn.isAnHiddenTarget.length
+        )
+
+        if (!isDefaultMode) {
+            const node = graph.value
+                .getNodes()
+                .find((x) => x.id === portNode.id)
+            if (lineageStore.hasColumnList(node.id)) {
+                const { assets: columnList, total } =
+                    lineageStore.getNodesColumnList(node.id)
+
+                const caretElement = getCaretElement(node.id)
+                controlCaret(node.id, caretElement, true)
+
+                controlPorts(node, columnList, [])
+                if (columnList.length < total) controlShowMorePorts(node)
+                translateSubsequentNodes(node)
+
+                selectPort(node, e, portId)
+                const port = node.getPort(portId)
+                onSelectAsset(port.entity)
+                return
+            }
+        }
+
+        Object.entries(lineage.guidEntityMap).forEach(([k, v]) => {
+            if (k === portId) return
+            const qnArr = v.attributes.qualifiedName.split('/')
+            qnArr.pop()
+            const parentName = qnArr.join('/')
+            const graphNodes = graph.value.getNodes()
+            const parentNode = graphNodes.find(
+                (x) =>
+                    x.store.data.entity.attributes.qualifiedName === parentName
+            )
+            const parentNodeExists = translateCandidates.find(
+                (x) => x?.id === parentNode?.id
+            )
+
+            if (parentNode && !parentNodeExists) {
+                translateCandidates.push(parentNode)
+                parentMap.set(parentNode.id, [v])
+            } else if (parentNode && parentMap.has(parentNode.id)) {
+                parentMap.set(parentNode.id, [
+                    ...parentMap.get(parentNode.id),
+                    v,
+                ])
             }
         })
 
@@ -772,7 +850,6 @@ export default function useEventGraph(
         const nodeId = ele.getAttribute('data-cell-id')
         const graphNodes = graph.value.getNodes()
         const node = graphNodes.find((x) => x.id === nodeId)
-
         controlCaret(nodeId, x)
 
         if (!isExpandedNode(nodeId)) {
@@ -834,12 +911,12 @@ export default function useEventGraph(
     const removeCHPEdges = () => {
         const graphEdges = graph.value.getEdges()
         const edges = graphEdges.filter((x) => x.id.includes('port'))
-        graph.value.freeze('removeCHPEdges')
+        // graph.value.freeze('removeCHPEdges')
         edges.forEach((edge) => {
             const cell = graph.value.getCellById(edge.id)
             cell.remove()
         })
-        graph.value.unfreeze('removeCHPEdges')
+        // graph.value.unfreeze('removeCHPEdges')
     }
 
     // selectPort
@@ -869,12 +946,12 @@ export default function useEventGraph(
         const nodePorts = node.getPorts()
         nodePorts.shift()
 
-        graph.value.freeze('nodePortOp')
+        // graph.value.freeze('nodePortOp')
         nodePorts.forEach((port) => {
             if (port.id === portId) setPortStyle(node, portId, 'select')
             else resetPortStyle(node, port.id)
         })
-        graph.value.unfreeze('nodePortOp')
+        // graph.value.unfreeze('nodePortOp')
 
         const { relations } = lineage.value
         const rel = relations.find((x) => x.fromEntityId === portId)
@@ -895,9 +972,13 @@ export default function useEventGraph(
         removeCHPEdges()
 
         activeNodesToggled.value = {}
+        nodesCaretClicked.value = []
 
-        graph.value.freeze('deselectPort')
+        // graph.value.freeze('deselectPort')
         chp.value.expandedNodes.forEach((x) => {
+            if (x.id === chp.value.node.id) {
+                return
+            }
             const caretElement = getCaretElement(x.id)
             controlCaret(x.id, caretElement)
             const portsToRemove = x.getPorts()
@@ -907,7 +988,7 @@ export default function useEventGraph(
             }
             translateExpandedNodesToDefault(x)
         })
-        graph.value.unfreeze('deselectPort')
+        // graph.value.unfreeze('deselectPort')
 
         chp.value.node = null
         chp.value.portId = ''
@@ -916,7 +997,7 @@ export default function useEventGraph(
     }
 
     // handleVPNode
-    const handleVPNode = (node, nodeIdsToAdd = []) => {
+    const handleVPNode = (node, nodeIdsToAdd: string[] = []) => {
         const nodeIdArr = node.id.split('-')
         nodeIdArr.splice(0, 1)
         const id = nodeIdArr.join('-')
@@ -1225,13 +1306,6 @@ export default function useEventGraph(
     // CELL - MOUSEWHEEL
     graph.value.on('cell:mousewheel', () => {
         currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
-    })
-
-    // Set connector for duplicate relations
-    graph.value.getEdges().forEach((edge) => {
-        if (edge.store.data?.data?.isDup) {
-            edge.setConnector('beizAlt')
-        }
     })
 
     /** WATCHERS */

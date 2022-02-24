@@ -78,7 +78,7 @@
                         <p class="text-gray-500">
                             All future runs will use this new configuration
                         </p>
-                        <a-checkbox class="mt-3" v-model:value="runOnUpdate"
+                        <a-checkbox v-model:checked="runOnUpdate" class="mt-3"
                             >Start a new run</a-checkbox
                         >
                     </template>
@@ -138,6 +138,37 @@
             <div>Setting up your workflow</div>
         </div>
 
+        <template v-else-if="isEdit && !runOnUpdate">
+            <a-result :status="updateStatus.status" :title="updateStatus.title">
+                <template v-if="updateStatus.status === 'loading'" #icon>
+                    <AtlanLoader class="h-14" />
+                </template>
+                <template #extra>
+                    <div class="flex items-center justify-center">
+                        <a-button v-if="updateStatus.status === 'success'">
+                            <router-link to="/workflows">
+                                Back to Workflows</router-link
+                            >
+                        </a-button>
+                    </div>
+
+                    <div
+                        v-if="isUpdateError"
+                        class="flex flex-col items-center justify-center p-2 bg-gray-100 rounded gap-y-2"
+                    >
+                        <span>{{ isUpdateError }}</span>
+                        <a-button
+                            v-if="updateStatus.status === 'error'"
+                            @click="handleBackToSetup"
+                        >
+                            <AtlanIcon icon="ChevronLeft"></AtlanIcon>
+                            Back to setup
+                        </a-button>
+                    </div>
+                </template>
+            </a-result>
+        </template>
+
         <a-result
             :status="status"
             :title="title"
@@ -149,7 +180,7 @@
                     <Run
                         :run="run"
                         :isLoading="runLoading"
-                        v-if="run"
+                        v-if="run && !runOnUpdate"
                         class="mb-3"
                     ></Run>
 
@@ -201,7 +232,7 @@
     } from 'vue'
 
     import { message } from 'ant-design-vue'
-    import { useIntervalFn } from '@vueuse/core'
+    import { useIntervalFn, watchOnce } from '@vueuse/core'
     import { useRoute, useRouter } from 'vue-router'
 
     // Components
@@ -214,6 +245,8 @@
 
     import { createWorkflow } from '~/composables/package/useWorkflow'
     import { useWorkflowHelper } from '~/composables/package/useWorkflowHelper'
+    import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
+    import useWorkflowSubmit from '~/composables/package/useWorkflowSubmit'
     import useWorkflowUpdate from '~/composables/package/useWorkflowUpdate'
 
     import { useRunDiscoverList } from '~/composables/package/useRunDiscoverList'
@@ -297,6 +330,7 @@
             provide('workflowTemplate', localTemplate)
             provide('configMap', localConfigMap)
 
+            const { name } = useWorkflowInfo()
             const toggleSandbox = () => {
                 sandboxVisible.value = !sandboxVisible.value
             }
@@ -353,11 +387,25 @@
                 createWorkflow(body)
 
             const path = ref({})
-            const { mutate: updateWorkflow } = useWorkflowUpdate(
-                path,
-                body,
-                false
-            )
+            const {
+                mutate: updateWorkflow,
+                isLoading: isUpdateLoading,
+                error: isUpdateError,
+            } = useWorkflowUpdate(path, body, false)
+
+            const updateStatus = computed(() => {
+                if (isUpdateLoading.value)
+                    return { status: 'loading', title: 'Saving your changes' }
+                if (isUpdateError.value)
+                    return {
+                        status: 'error',
+                        title: 'Failed to update workflow',
+                    }
+                return {
+                    status: 'success',
+                    title: 'Your workflow has been updated',
+                }
+            })
 
             const limit = ref(1)
             const offset = ref(0)
@@ -401,7 +449,12 @@
             const handleTrackLink = () => {
                 if (run.value?.metadata?.name) {
                     router.push(
-                        `/workflows/${data.value.metadata.name}/runs?/runs?name=${run.value?.metadata?.name}`
+                        `/workflows/${
+                            data.value?.metadata?.name ||
+                            run.value?.metadata?.labels[
+                                'workflows.argoproj.io/workflow-template'
+                            ]
+                        }/runs?name=${run.value?.metadata?.name}`
                     )
                 }
 
@@ -600,6 +653,30 @@
                         name: workflowObject.value.metadata.name,
                     }
                     updateWorkflow()
+
+                    if (runOnUpdate.value) {
+                        const { data: nrd, error: nre } = useWorkflowSubmit(
+                            {
+                                namespace: 'default',
+                                resourceKind: 'WorkflowTemplate',
+                                resourceName: name(workflowObject.value),
+                            },
+                            true
+                        )
+
+                        watchOnce(nrd, () => {
+                            run.value = nrd.value
+                            title.value = 'Workflow is in progress'
+                            subTitle.value = ''
+                            status.value = 'success'
+                        })
+
+                        watch(nre, () => {
+                            title.value = 'Workflow run has failed'
+                            subTitle.value = ''
+                            status.value = 'error'
+                        })
+                    }
                 } else {
                     execute(true)
                 }
@@ -672,6 +749,9 @@
                 isEdit,
                 defaultValue,
                 updateWorkflow,
+                isUpdateLoading,
+                isUpdateError,
+                updateStatus,
                 path,
                 runOnUpdate,
                 router,

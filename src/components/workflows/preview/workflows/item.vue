@@ -1,10 +1,12 @@
 <template>
     <div class="p-2 border rounded cursor-pointer">
-        <div
-            class="flex flex-col font-semibold cursor-pointer text-primary"
-            @click="handleClick"
-        >
-            {{ item.metadata.name }}
+        <div class="flex items-center justify-between">
+            <span
+                class="font-semibold truncate cursor-pointer text-primary"
+                @click="handleClick"
+                >{{ item.metadata.name }}</span
+            >
+            <Dropdown :options="dropdownOptions" />
         </div>
         <!-- {{ runs(item.metadata.name) }} -->
 
@@ -31,9 +33,10 @@
     import { useRouter } from 'vue-router'
     import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
     import LastRun from './lastRun.vue'
+    import Dropdown from '@/UI/dropdown.vue'
 
     export default defineComponent({
-        components: { LastRun },
+        components: { LastRun, Dropdown },
         props: {
             item: {
                 type: Object,
@@ -44,6 +47,7 @@
                 required: false,
             },
         },
+        emits: ['archive'],
         setup(props, { emit }) {
             const { item, packageObject } = toRefs(props)
 
@@ -59,15 +63,23 @@
 
             const runs = (workflow) => runMap.value[workflow]
 
+            const dropdownOptions = [
+                {
+                    title: 'Delete',
+                    icon: 'Trash',
+                    class: 'text-red-700',
+                    handleClick: () =>
+                        emit('archive', item.value?.metadata?.name),
+                },
+            ]
             return {
-                item,
                 creationTimestamp,
                 cronString,
                 handleClick,
                 creatorUsername,
-                packageObject,
                 runs,
                 runMap,
+                dropdownOptions,
             }
         },
     })

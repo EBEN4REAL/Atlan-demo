@@ -202,7 +202,11 @@
                 >
                     <component :is="NewPolicyIllustration"></component>
                     <span class="mt-5 text-xl font-bold text-gray">
-                        {{ `No ${activeTabFilter} policies added` }}
+                        {{
+                            `No ${
+                                activeTabFilter === 'data' ? 'data' : 'metadata'
+                            } policies added`
+                        }}
                     </span>
                     <!-- <div
                         class="mt-1 text-base text-center text-gray-500 sub-title-empty"

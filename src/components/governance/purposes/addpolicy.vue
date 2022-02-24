@@ -217,7 +217,7 @@
                             <div
                                 class="p-3 text-sm font-bold text-gray-700 border-b"
                             >
-                                Configurations
+                                Configure permissions
                             </div>
                             <div class="p-3">
                                 <div class="flex items-center mb-2 gap-x-1">

@@ -15,7 +15,7 @@
                         margin-top: 2px !important;
                     "
                     :class="$style.menu_class"
-                    class="py-1"
+                    class="py-2"
                 >
                     <a-sub-menu key="themes" v-if="!showVQB">
                         <template #title>
@@ -36,7 +36,7 @@
                                 </div>
                                 <AtlanIcon
                                     icon="ChevronRight"
-                                    class="ml-2.5 text-gray-500 -mt-0.5"
+                                    class="ml-1 text-gray-500 -mt-0.5"
                                 />
                             </div>
                         </template>
@@ -104,7 +104,7 @@
                                 </div>
                                 <AtlanIcon
                                     icon="ChevronRight"
-                                    class="ml-2.5 text-gray-500 -mt-0.5"
+                                    class="ml-1 text-gray-500 -mt-0.5"
                                 />
                             </div>
                         </template>
@@ -200,7 +200,7 @@
                                 </div>
                                 <AtlanIcon
                                     icon="ChevronRight"
-                                    class="ml-2.5 text-gray-500 -mt-0.5"
+                                    class="ml-1 text-gray-500 -mt-0.5"
                                 />
                             </div>
                         </template>
@@ -325,7 +325,7 @@
                                 </div>
                                 <AtlanIcon
                                     icon="ChevronRight"
-                                    class="ml-2.5 text-gray-500"
+                                    class="ml-1 text-gray-500"
                                 />
                             </div>
                         </template>
@@ -448,7 +448,7 @@
                                         <span class="text-gray-700">Share</span>
                                         <AtlanIcon
                                             icon="ChevronRight"
-                                            class="ml-2.5 text-gray-500 -mt-0.5"
+                                            class="ml-1 text-gray-500 -mt-0.5"
                                         />
                                     </div>
                                 </div>
@@ -526,7 +526,7 @@
                         <a-menu-item class="px-4 py-2 text-red-600"
                             >Delete query</a-menu-item
                         > -->
-                        <hr class="my-1" />
+                        <hr class="my-1" v-if="!showVQB" />
                     </div>
                     <a-menu-item
                         @click="openCommandPallete"

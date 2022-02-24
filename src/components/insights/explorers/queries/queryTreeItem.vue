@@ -305,7 +305,7 @@
                                 </div>
                             </div>
                             <div
-                                class="absolute top-0 right-2 flex items-center h-full text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
+                                class="absolute top-0 flex items-center h-full text-gray-500 opacity-0 right-2 margin-align-top group-hover:opacity-100"
                                 :id="`${item.qualifiedName}-menu`"
                             >
                                 <a-dropdown
@@ -320,8 +320,9 @@
                                         ></AtlanIcon>
                                     </div>
                                     <template #overlay>
-                                        <a-menu>
+                                        <a-menu class="py-2">
                                             <a-menu-item
+                                                class="px-4 py-2 text-sm"
                                                 key="rename"
                                                 @click="renameFolder"
                                                 >Rename query</a-menu-item
@@ -329,6 +330,7 @@
 
                                             <a-menu-item
                                                 key="edit"
+                                                class="px-4 py-2 text-sm"
                                                 @click="
                                                     () => {
                                                         removeBackground()
@@ -343,6 +345,7 @@
 
                                             <a-menu-item
                                                 key="ChangeFolder"
+                                                class="px-4 py-2 text-sm"
                                                 @click="
                                                     () => {
                                                         removeBackground()
@@ -353,6 +356,7 @@
                                             >
                                             <a-menu-item
                                                 key="duplicate"
+                                                class="px-4 py-2 text-sm"
                                                 @click="
                                                     () => {
                                                         removeBackground()
@@ -366,12 +370,13 @@
                                             >
                                             <a-menu-item
                                                 key="shareQuery"
+                                                class="px-4 py-2 text-sm"
                                                 @click="copyURL"
                                                 >Copy link</a-menu-item
                                             >
                                             <a-menu-item
                                                 key="deleteFolder"
-                                                class="text-red-600"
+                                                class="px-4 py-2 text-sm text-red-600"
                                                 @click="
                                                     () => {
                                                         removeBackground()

@@ -277,21 +277,21 @@
                                 "
                                 class="flex gap-x-1"
                             >
-                                <a-button
+                                <div
                                     v-if="
                                         !isAddAll && policy.assets.length === 0
                                     "
                                     size="small"
-                                    class="w-8 h-8 border border-gray-200 rounded-full"
+                                    class="cursor-pointer"
                                     @click="handleAddAsset"
                                 >
-                                    <!-- <span class="text-primary"> Add</span> -->
-                                    <!-- <AtlanIcon
+                                    <span class="text-primary"> Add</span>
+                                    <AtlanIcon
                                         icon="ArrowRight"
                                         class="ml-1 text-primary"
-                                    /> -->
-                                    <AtlanIcon icon="Add" />
-                                </a-button>
+                                    />
+                                    <!-- <AtlanIcon icon="Add" /> -->
+                                </div>
                             </div>
                         </div>
                         <div

@@ -191,11 +191,15 @@
                 "
                 class="flex flex-col items-center justify-center h-full"
             >
-                <component :is="NoResultIllustration"></component>
-                <span class="text-sm font-bold text-gray">
-                    Sorry, we couldn’t find the policy you were looking
-                    for</span
+                <component :is="NewPolicyIllustration"></component>
+                <span class="mt-5 text-xl font-bold text-gray">
+                    Policy not found
+                </span>
+                <div
+                    class="mt-1 text-base text-center text-gray-500 sub-title-empty"
                 >
+                    Create policies to manage access
+                </div>
             </div>
             <div
                 v-if="isEmpty"
@@ -206,7 +210,7 @@
                     Create Policies
                 </span>
                 <div
-                    class="mt-1 text-base text-center text-gray-500 sub-title-empty"
+                    class="mt-2 text-base text-center text-gray-500 sub-title-empty"
                 >
                     Create policies to manage metadata and data access
                 </div>

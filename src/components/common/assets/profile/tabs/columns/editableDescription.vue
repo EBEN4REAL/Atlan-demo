@@ -8,7 +8,7 @@
     />
     <div
         v-else-if="!isEditing && localDescription.length === 0"
-        class="cursor-text text-transparent hover:text-gray-400"
+        class="text-transparent cursor-text hover:text-gray-400"
         @click.stop="handleEdit"
     >
         <p>{{ allowEditing ? 'Add a description' : '' }}</p>
@@ -45,56 +45,34 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, nextTick, ref, toRefs, unref } from 'vue'
-    import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
+    import {
+        defineComponent,
+        nextTick,
+        ref,
+        toRefs,
+        unref,
+        watch,
+        PropType,
+    } from 'vue'
     import Tooltip from '@common/ellipsis/index.vue'
+    import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
         name: 'EditableDescription',
         components: { Tooltip },
         props: {
             assetItem: {
-                type: Object,
-                required: true,
+                type: Object as PropType<assetInterface>,
+                required: false,
+                default: () => {},
             },
             tooltipText: {
                 type: String,
                 default: '',
             },
-            rows: {
-                type: Number,
-                default: 1,
-            },
-            width: {
-                type: String,
-                default: 'initial',
-            },
-            classes: {
-                type: String,
-                default: 'initial',
-            },
-            placement: {
-                type: String,
-                default: 'topRight',
-            },
-            routeTo: {
-                type: String,
-                required: false,
-            },
-            tooltipColor: {
-                type: String,
-                required: false,
-            },
-            shouldOpenInNewTab: {
-                type: Boolean,
-                required: false,
-                default: false,
-            },
-            clampPercentage: {
-                type: String,
-                required: false,
-                default: '95%',
-            },
+
             allowEditing: {
                 type: Boolean,
                 default: false,
@@ -104,10 +82,11 @@
         emits: ['updatedDescription'],
         setup(props, { emit }) {
             const truncated = ref<boolean>(false)
-            const { tooltipText, allowEditing, assetItem } = toRefs(props)
+            const { allowEditing, assetItem } = toRefs(props)
             const descriptionRef = ref(null)
             const pressedEsc = ref(false)
 
+            const { description } = useAssetInfo()
             const { localDescription, handleChangeDescription } =
                 updateAssetAttributes(assetItem, true)
             const originalDescription = ref(unref(localDescription))
@@ -167,8 +146,11 @@
             // The shortcut keys will change in accordance with this property.
             const isMac = window.navigator.userAgent.indexOf('Mac') !== -1
 
+            watch(assetItem, () => {
+                localDescription.value = description(assetItem.value)
+            })
+
             return {
-                tooltipText,
                 truncated,
                 isEditing,
                 handleEdit,

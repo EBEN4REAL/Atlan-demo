@@ -1,7 +1,9 @@
 import { ref, computed } from 'vue'
+import { DagreLayout } from '@antv/layout'
 import useLineageStore from '~/store/lineage'
 import useGraph from './useGraph'
 import useTransformGraph from './useTransformGraph'
+
 
 export default async function useComputeGraph(
     graph,
@@ -12,7 +14,7 @@ export default async function useComputeGraph(
     isComputeDone,
     emit
 ) {
-    const { DagreLayout } = window.layout
+    //const { DagreLayout } = window.layout
     const lineageStore = useLineageStore()
     lineageStore.nodesColumnList = {}
     lineageStore.columnsLineage = {}

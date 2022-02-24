@@ -17,6 +17,7 @@ const getChildren = (arr) => {
                 }]
             else {
                 children.push({
+                    isSource: true,
                     id: c.source,
                     label: c.source,
                     children: [{
@@ -102,6 +103,7 @@ export const applicableTypeList = () => {
             value: t.id,
             key: t.id,
             children: t.children?.map((a) => ({
+                ...a,
                 title: a.label,
                 value: a.id,
                 key: a.id,

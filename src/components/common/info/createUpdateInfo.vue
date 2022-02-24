@@ -1,50 +1,74 @@
 <template>
-    <p class="mb-0 text-sm text-gray" style="word-break: break-word">
-        <span v-if="createdAtString || createdBy">
-            Created {{ createdAtString }}
-            <span v-if="createdBy">
-                by
-                <template v-if="createdBy === 'service-account-atlan-argo'">
-                    <span class="ml-1"> <AtlanIcon icon="Atlan" /> Atlan</span>
+    <p class="mb-0 text-sm text-gray-500" style="word-break: break-word">
+        <span v-if="updatedBy || updatedAtString" class="space-x-1">
+            <span v-if="updatedBy">
+                Last updated by
+                <template v-if="updatedBy === 'service-account-atlan-argo'">
+                    <span class="mr-1">
+                        <AtlanIcon icon="Atlan" class="rounded-full" />
+                        Atlan</span
+                    >
                 </template>
                 <span
                     v-else
-                    class="underline cursor-pointer text-primary"
-                    @click="() => handleClickUser(createdBy)"
-                    >{{ createdBy }}</span
-                >
-            </span>
-        </span>
-        <span v-if="updatedAtString || updatedBy">
-            <span class="px-1">•</span>
-            Updated {{ updatedAtString }}
-            <template v-if="updatedBy === 'service-account-atlan-argo'">
-                <span class="ml-1"> <AtlanIcon icon="Atlan" /> Atlan</span>
-            </template>
-            <span v-else-if="updatedBy">
-                by
-                <span
-                    class="underline cursor-pointer text-primary"
+                    class="cursor-pointer hover:underline"
                     @click="() => handleClickUser(updatedBy)"
                 >
-                    {{ updatedBy }}</span
+                    <img
+                        v-if="showUpdaterImage"
+                        :src="imageUrl(updatedBy)"
+                        class="flex-none inline-block h-4 rounded-full"
+                        @error="showUpdaterImage = false"
+                    />
+                    {{ updatedBy }}
+                </span>
+            </span>
+            <span v-if="updatedAtString">
+                {{ updatedAtString }}
+            </span>
+        </span>
+        <span class="pl-2 pr-1 text-gray-300">•</span>
+        <span v-if="createdAtString || createdBy" class="space-x-1">
+            <span v-if="createdBy">
+                Created by
+                <template v-if="createdBy === 'service-account-atlan-argo'">
+                    <span class="mr-1">
+                        <AtlanIcon icon="Atlan" class="rounded-full" />
+                        Atlan</span
+                    >
+                </template>
+                <span
+                    v-else
+                    class="cursor-pointer hover:underline"
+                    @click="() => handleClickUser(createdBy)"
                 >
+                    <img
+                        v-if="showCreatorImage"
+                        :src="imageUrl(createdBy)"
+                        class="flex-none inline-block h-4 rounded-full"
+                        @error="showCreatorImage = false"
+                    />
+                    {{ createdBy }}
+                </span>
+            </span>
+            <span v-if="createdAtString">
+                {{ createdAtString }}
             </span>
         </span>
     </p>
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed } from 'vue'
+    import { defineComponent, computed, ref } from 'vue'
 
     // ? Composables
     import { useTimeAgo } from '@vueuse/core'
     import { useUserPreview } from '~/composables/user/showUserPreview'
-    import AtlanIcon from '../icon/atlanIcon.vue'
 
     // ? Utils
 
     export default defineComponent({
+        components: {},
         props: {
             createdAt: {
                 type: [Number, String],
@@ -78,20 +102,29 @@
                 }
                 return 0
             })
+
+            const imageUrl = (username: any) =>
+                `${window.location.origin}/api/service/avatars/${username}`
+
             const createdAtString = computed(() => {
                 if (props.createdAt) {
                     return useTimeAgo(props.createdAt).value
                 }
                 return 0
             })
+
+            const showCreatorImage = ref(true)
+            const showUpdaterImage = ref(true)
             return {
+                showUpdaterImage,
+                showCreatorImage,
+                imageUrl,
                 useTimeAgo,
                 updatedAtString,
                 createdAtString,
                 handleClickUser,
             }
         },
-        components: { AtlanIcon },
     })
 </script>
 

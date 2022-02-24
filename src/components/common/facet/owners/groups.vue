@@ -2,7 +2,8 @@
     <div class="w-full" :class="listClass ? listClass : 'h-44'">
         <div
             v-if="list.length < 1"
-            class="flex flex-col items-center justify-center h-full"
+            class="flex flex-col items-center justify-center"
+            :class="checkboxListClass ? checkboxListClass : 'h-40'"
         >
             <div v-if="isLoading || isEnriching">
                 <AtlanIcon
@@ -82,7 +83,7 @@
                 </template>
             </div>
         </div>
-        <div>
+        <div v-if="total">
             <p class="pl-4 text-xs text-gray-500">
                 {{ list.length }} of {{ total }} groups
             </p>

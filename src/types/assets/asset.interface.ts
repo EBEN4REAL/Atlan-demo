@@ -43,6 +43,7 @@ export interface assetInterface {
         sourceCreatedBy: string
         sourceCreatedAt: any
         sourceUpdatedAt: any
+        lastSyncRun: string
         tenantId: string
         definition: string
         announcementMessage: string

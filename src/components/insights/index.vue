@@ -251,6 +251,8 @@
                 setUserPreferenceToLocalStorage,
                 syncInlineTabsInLocalStorage,
                 syncActiveInlineTabKeyInLocalStorage,
+                setActiveExplorerTab,
+                getActiveExplorerTab,
             } = useLocalStorageSync()
             const {
                 tabsArray,
@@ -284,7 +286,7 @@
                     ? assetSidebarPaneSize.value
                     : 0
             )
-            const activeTabId = ref(tabsList[0].id)
+            const activeTabId = ref(getActiveExplorerTab() || tabsList[0].id)
 
             const activeTab = computed(() =>
                 tabsList.find((tab) => tab.id === activeTabId.value)
@@ -293,6 +295,7 @@
             const changeTab = (tab: TabInterface) => {
                 console.log('new tab', tab)
                 activeTabId.value = tab.id
+                setActiveExplorerTab(tab.id)
             }
             const editorInstance: Ref<any> = ref()
             const monacoInstance: Ref<any> = ref()

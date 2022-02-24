@@ -7,6 +7,7 @@
         description-placeholder="Add Description"
         :descriptionWordLimit="140"
         :show-description-limit="true"
+        :destroyOnClose="true"
     >
         <template #leftHeader>
             <div class="flex items-center mr-1 cursor-pointer">
@@ -110,6 +111,7 @@
 
 <script lang="ts">
     import {
+        onUnmounted,
         ComputedRef,
         defineComponent,
         Ref,
@@ -281,6 +283,14 @@
                     message.error('No collection selected')
                 }
             }
+            watch(showSaveQueryModal, () => {
+                if (!showSaveQueryModal.value) {
+                    title.value = ''
+                    description.value = ''
+                    selectedTerms.value = []
+                    currentStatus.value = 'is_null'
+                }
+            })
             onMounted(async () => {
                 await nextTick()
                 titleBarRef.value?.focus()

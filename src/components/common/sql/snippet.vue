@@ -21,7 +21,7 @@
             >
                 <template v-for="(line, i) in renderedLines" :key="i">
                     <div class="flex">
-                        <span class="mr-3" style="color: #a5a5a5">{{
+                        <span class="mr-3 select-none" style="color: #a5a5a5">{{
                             i + 1
                         }}</span>
                         <!-- :style="`color:${getTokenColor(kt)}`" -->
@@ -53,7 +53,9 @@
         >
             <template v-for="(line, i) in renderedLines" :key="i">
                 <div class="flex">
-                    <span class="mr-3" style="color: #a5a5a5">{{ i + 1 }}</span>
+                    <span class="mr-3 select-none" style="color: #a5a5a5">{{
+                        i + 1
+                    }}</span>
                     <!-- :style="`color:${getTokenColor(kt)}`" -->
                     <div
                         class="flex flex-wrap"

@@ -11,10 +11,12 @@
             [allowTabShortcut]: true,
             [$style.inputBox]: true,
             [$style.no_border]: noBorder,
+            [customClass]: true,
         }"
         class="px-0 text-sm text-gray-500 bg-transparent rounded-none focus:outline-none"
         @change="handleChange"
     >
+        <!-- <template #suffix>X</template> -->
         <template #prefix>
             <a-tooltip
                 :title="capitalizeFirstLetter(connectorName)"
@@ -36,6 +38,11 @@
         </template>
 
         <template #suffix>
+            <template v-if="clearable && localValue">
+                <div class="cursor-pointer" @click="clear">
+                    <AtlanIcon icon="Cancel" class="text-gray-500" />
+                </div>
+            </template>
             <slot name="tab" />
             <slot name="filter" />
             <a-popover
@@ -84,6 +91,7 @@
         props: {
             autofocus: { type: Boolean, default: () => false },
             dot: { type: Boolean, default: () => false },
+            clearable: { type: Boolean, default: () => false },
             placeholder: { type: String, default: () => 'Search' },
             size: {
                 type: String as PropType<'default' | 'minimal' | 'large'>,
@@ -170,6 +178,10 @@
                 }
             })
 
+            const clear = () => {
+                localValue.value = ''
+                handleChange()
+            }
             watch(isLoading, () => {
                 if (isLoading.value) {
                     extraLoading.value = isLoading.value
@@ -180,6 +192,7 @@
             })
 
             return {
+                clear,
                 localValue,
                 searchBar,
                 extraLoading,

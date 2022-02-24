@@ -7,21 +7,29 @@
         />
         <div class="flex flex-col flex-1 overflow-y-auto gap-y-3">
             <template v-for="workflow in list" :key="workflow.metadata.name">
-                <Item :item="workflow" :packageObject="item"></Item>
+                <Item
+                    :item="workflow"
+                    :packageObject="item"
+                    @archive="archiveWorkflow"
+                />
             </template>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, provide, ref, toRefs, watch } from 'vue'
-    import { debouncedWatch } from '@vueuse/core'
+    import { defineComponent, h, provide, ref, toRefs, watch } from 'vue'
+    import { debouncedWatch, until } from '@vueuse/core'
+    import { Modal, message } from 'ant-design-vue'
+
     import UserPill from '@/common/pills/user.vue'
     import PopOverUser from '@/common/popover/user/user.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
     import { useWorkflowDiscoverList } from '~/composables/package/useWorkflowDiscoverList'
     import { useRunDiscoverList } from '~/composables/package/useRunDiscoverList'
+    import { deleteWorkflowByName } from '~/composables/workflow/useWorkflowList'
+
     import Item from './item.vue'
 
     export default defineComponent({
@@ -117,6 +125,38 @@
 
             provide('runMap', runByWorkflowMap)
 
+            const archiveWorkflow = (name: string) => {
+                Modal.confirm({
+                    title: 'Delete Workflow',
+                    content: () =>
+                        h('span', [
+                            'Are you sure you want to delete ',
+                            h('b', [name]),
+                            ' workflow?',
+                        ]),
+                    okType: 'danger',
+                    autoFocusButton: null,
+                    okButtonProps: {
+                        type: 'primary',
+                    },
+                    okText: 'Delete',
+                    cancelText: 'Cancel',
+                    async onOk() {
+                        const { error, isLoading } = deleteWorkflowByName(
+                            name,
+                            true
+                        )
+                        await until(isLoading).toBe(false)
+                        if (error.value)
+                            message.error('Failed to delete workflow')
+                        else {
+                            message.success('Workflow deleted')
+                            quickChange(true)
+                        }
+                    },
+                })
+            }
+
             return {
                 limit,
                 offset,
@@ -126,6 +166,7 @@
                 quickChange,
                 quickChangeRun,
                 runByWorkflowMap,
+                archiveWorkflow,
             }
         },
     })

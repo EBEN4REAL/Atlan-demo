@@ -14,7 +14,7 @@
                 ></AnnouncementWidget>
             </template>
         </Summary>
-        <Readme :asset="selectedAsset" :is-edit="readmeEditPermission" />
+        <slot name="readme"></slot>
     </div>
 </template>
 
@@ -24,12 +24,11 @@
     import Summary from '@common/widgets/summary/index.vue'
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import Readme from '@/common/widgets/readme/index.vue'
     import BulkUploadProgress from '~/components/common/widgets/bulkUploadProgress/progressWidget.vue'
 
     export default defineComponent({
         name: 'GlossaryOverview',
-        components: { AnnouncementWidget, Readme, Summary, BulkUploadProgress },
+        components: { AnnouncementWidget, Summary, BulkUploadProgress },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,

@@ -3,7 +3,15 @@
         <div
             class="flex items-center justify-between px-5 py-2 border-b border-gray-200 bg-gray-50"
         >
-            <span class="font-semibold text-gray-500">Properties</span>
+            <span class="flex items-center">
+                <PreviewTabsIcon
+                    :icon="tab.icon"
+                    :image="tab.image"
+                    :emoji="tab.emoji"
+                    height="h-4"
+                />
+                <span class="ml-1 font-semibold text-gray-500">Properties</span>
+            </span>
         </div>
         <div class="flex flex-col px-5 pt-3 overflow-auto gap-y-5">
             <div
@@ -196,7 +204,7 @@
             </div>
 
             <div
-                class="flex flex-col mt-3 mb-3 text-sm"
+                class="flex flex-col text-sm"
                 v-if="lastSyncRunAt(selectedAsset, true)"
             >
                 <span class="mb-1 text-gray-500"
@@ -204,13 +212,23 @@
                 >
 
                 <div class="flex flex-col">
-                    <span class="text-sm text-gray-700"
+                    <router-link
+                        v-if="role === 'Admin'"
+                        :to="lastSyncRun(selectedAsset)?.url"
+                        class="text-primary hover:underline"
+                    >
+                        {{ lastSyncRunAt(selectedAsset, true) }} ({{
+                            lastSyncRunAt(selectedAsset, false)
+                        }})
+                    </router-link>
+                    <span v-else class="text-sm text-gray-700"
                         >{{ lastSyncRunAt(selectedAsset, true) }} ({{
                             lastSyncRunAt(selectedAsset, false)
-                        }})</span
-                    >
+                        }})
+                    </span>
                 </div>
             </div>
+
             <div class="flex flex-col text-sm">
                 <span class="mb-1 text-gray-500">Created at (on Atlan)</span>
 
@@ -256,6 +274,8 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import { capitalizeFirstLetter } from '~/utils/string'
     import { copyToClipboard } from '~/utils/clipboard'
+    import whoami from '~/composables/user/whoami'
+    import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
 
     export default defineComponent({
         name: 'PropertiesWidget',
@@ -263,6 +283,7 @@
             UserPill,
             PopOverUser,
             ConnectionInfo,
+            PreviewTabsIcon,
         },
         props: {
             selectedAsset: {
@@ -276,6 +297,10 @@
             page: {
                 type: String,
                 required: true,
+            },
+            tab: {
+                type: Object,
+                required: false,
             },
         },
         setup() {
@@ -301,10 +326,12 @@
                 resultMakerID,
                 sourceMetadataId,
                 sourceContentMetadataId,
+                lastSyncRun,
                 lastSyncRunAt,
                 sourceId,
             } = useAssetInfo()
 
+            const { role } = whoami()
             const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
 
             const handleClickUser = (username: string) => {
@@ -343,8 +370,10 @@
                 sourceMetadataId,
                 sourceContentMetadataId,
                 lastSyncRunAt,
+                lastSyncRun,
                 sourceId,
                 map,
+                role,
             }
         },
     })

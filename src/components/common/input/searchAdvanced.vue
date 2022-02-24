@@ -188,7 +188,7 @@
                 } else
                     setTimeout(() => {
                         extraLoading.value = isLoading.value
-                    }, 500)
+                    }, 700)
             })
 
             return {

@@ -93,19 +93,13 @@
                 </div>
 
                 <div
-                    v-if="isLoading"
-                    class="flex items-center justify-center flex-grow"
-                >
-                    <AtlanLoader class="h-10" />
-                </div>
-                <div
-                    v-if="!isLoading && error"
+                    v-if="!isLoading && error && !isValidating"
                     class="flex items-center justify-center flex-grow"
                 >
                     <ErrorView></ErrorView>
                 </div>
                 <div
-                    v-else-if="list.length === 0 && !isLoading"
+                    v-else-if="list.length === 0 && !isLoading && !isValidating"
                     class="flex-grow"
                 >
                     <EmptyView
@@ -124,6 +118,12 @@
                         class="mb-10"
                         @event="handleResetEvent"
                     ></EmptyView>
+                </div>
+                <div
+                    v-else-if="list.length === 0 && isValidating"
+                    class="flex items-center justify-center flex-grow"
+                >
+                    <AtlanLoader class="h-10" />
                 </div>
 
                 <!--                             :show-check-box="
@@ -586,7 +586,7 @@
             const handleResetEvent = () => {
                 facets.value = { ...initialFilters.value }
                 queryText.value = ''
-                handleFilterChange()
+                handleFilterChange(facets.value)
                 dirtyTimestamp.value = `dirty_${Date.now().toString()}`
                 searchDirtyTimestamp.value = `dirty_${Date.now().toString()}`
             }

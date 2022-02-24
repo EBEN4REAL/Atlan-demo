@@ -9,6 +9,7 @@
                     :image="tab.image"
                     :emoji="tab.emoji"
                     height="h-4"
+                    class="mb-0.5"
                 />
                 <span class="ml-1 font-semibold text-gray-500">Activity</span>
             </span>

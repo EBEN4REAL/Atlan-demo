@@ -342,7 +342,7 @@ import FolderNav24Active from '~/assets/images/icons/folder_open_24.svg'
 import Verified from '~/assets/images/status/verified.svg'
 import Draft from '~/assets/images/status/draft.svg'
 import Deprecated from '~/assets/images/status/deprecated.svg'
-import Nostatus from '~/assets/images/status/noStatus.svg'
+import Nostatus from '~/assets/images/status/nostatus.svg'
 import ShieldBlank from '~/assets/images/icons/ShieldBlank.svg'
 import Compass from '~/assets/images/icons/Compass.svg'
 import Policies from '~/assets/images/icons/Policies.svg'
@@ -826,7 +826,6 @@ export default {
     SidebarTriggerFilled,
     BeautifySql,
     TrendUp,
-    MySQL,
     Draft,
     Deprecated,
     Nostatus

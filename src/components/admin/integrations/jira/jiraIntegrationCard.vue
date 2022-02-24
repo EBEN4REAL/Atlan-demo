@@ -279,7 +279,7 @@
 
                 if (_defaultProject) {
                     defaultProject.value.id = _defaultProject.id
-                    defaultProject.value.id = _defaultProject.name
+                    defaultProject.value.name = _defaultProject.name
                 }
             })
 

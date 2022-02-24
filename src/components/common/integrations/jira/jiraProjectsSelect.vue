@@ -19,7 +19,6 @@
     import { useVModels } from '@vueuse/core'
     import { computed } from 'vue'
     import { listProjects } from '~/composables/integrations/useJira'
-    import { truncate } from '~/utils/string'
 
     const { projects, isLoading, error } = listProjects()
 

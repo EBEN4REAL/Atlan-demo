@@ -269,6 +269,7 @@
             )
 
             const {
+                fetchSelectedCollectionData,
                 isCollectionCreatedByCurrentUser,
                 hasCollectionReadPermission,
                 hasCollectionWritePermission,
@@ -388,6 +389,14 @@
             watch(activeInlineTabKey, () => {
                 syncActiveInlineTabKeyInLocalStorage(activeInlineTabKey.value)
                 syncInlineTabsInLocalStorage(toRaw(tabsArray.value))
+                fetchSelectedCollectionData()
+                selectFirstCollectionByDefault(
+                    queryCollections.value,
+                    activeInlineTab,
+                    tabsArray,
+                    false,
+                    undefined
+                )
             })
 
             /* Watcher for all the things changes in activeInline tab */
@@ -445,21 +454,6 @@
                 }
             })
 
-            watch(
-                () =>
-                    activeInlineTab.value?.explorer.queries.collection
-                        .qualifiedName,
-                () => {
-                    // console.log('collection change')
-                    selectFirstCollectionByDefault(
-                        queryCollections.value,
-                        activeInlineTab,
-                        tabsArray,
-                        false,
-                        undefined
-                    )
-                }
-            )
             watch(editorConfig, () => {
                 console.log('editorConfig CHanged')
                 setUserPreferenceToLocalStorage(editorConfig.value)

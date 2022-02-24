@@ -232,14 +232,6 @@ const useActiveQueryAccess = (
             : {}
     })
 
-    watch(
-        () => activeInlineTab?.value?.qualifiedName,
-        () => {
-            fetchSelectedCollectionData()
-        },
-        { deep: true }
-    )
-
     return {
         isQueryCreatedByCurrentUser,
         hasQueryReadPermission,

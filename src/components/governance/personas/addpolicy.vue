@@ -333,7 +333,7 @@
                         </div>
                     </div>
 
-                    <div class="flex items-center p-4 pb-1 mt-1 border-bottom">
+                    <div class="flex items-center p-3 border-bottom">
                         <span v-if="selectedPermission.length === 0">
                             <a-button
                                 v-if="isEdit ? canEdit : true"
@@ -350,9 +350,13 @@
                         </span>
                         <div v-else>
                             <div
-                                v-for="el in selectedPermission"
+                                v-for="(el, i) in selectedPermission"
                                 :key="el"
                                 class="flex flex-col h-auto mb-3 overflow-auto tag-permission max-h-32"
+                                :class="
+                                    i !== selectedPermission.length - 1 &&
+                                    'mb-6'
+                                "
                             >
                                 <div
                                     class="mb-2 text-sm text-gray-500 title-tag"
@@ -470,7 +474,7 @@
                         </div>
                     </div> -->
                     <div class="p-3">
-                        <div class="flex items-center mt-3 mb-2 gap-x-1">
+                        <div class="flex items-center mb-2 gap-x-1">
                             <span class="text-sm text-gray-500"
                                 >Masking(Optional)</span
                             >
@@ -478,7 +482,7 @@
 
                         <DataMaskingSelector
                             v-model:maskType="policy.type"
-                            class="mb-6 w-80"
+                            class="w-80"
                         />
                     </div>
                     <div class="p-3 bg-gray-100">

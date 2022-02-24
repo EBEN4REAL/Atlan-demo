@@ -164,7 +164,7 @@
                         </AtlanBtn>
                         </div> -->
                             <div
-                                class="flex items-center p-3 mt-1 border border-gray-200 border-dashed rounded border-bottom"
+                                class="flex items-center p-3 border border-gray-200 border-dashed rounded border-bottom"
                             >
                                 <span v-if="selectedPermission.length === 0">
                                     <a-button
@@ -181,9 +181,14 @@
                                 </span>
                                 <div v-else>
                                     <div
-                                        v-for="el in selectedPermission"
+                                        v-for="(el, i) in selectedPermission"
                                         :key="el"
-                                        class="flex flex-col h-auto mb-3 overflow-auto tag-permission max-h-32"
+                                        class="flex flex-col h-auto overflow-auto tag-permission max-h-32"
+                                        :class="
+                                            i !==
+                                                selectedPermission.length - 1 &&
+                                            'mb-6'
+                                        "
                                     >
                                         <div class="text-gray-500 title-tag">
                                             <AtlanIcon

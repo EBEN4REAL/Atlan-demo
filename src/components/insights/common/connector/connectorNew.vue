@@ -85,8 +85,13 @@
                                         getContextName(`connector`)
                                     }}</span>
                                 </span>
+                                <AtlanIcon
+                                    icon="CaretRight"
+                                    class="self-center flex-shrink-0 w-4 h-4 ml-auto text-gray-500"
+                                ></AtlanIcon>
                             </div>
                         </template>
+                        <template #expandIcon></template>
                         <div class="w-56 pt-1 pb-2">
                             <!-- <div
                                 class="flex flex-row space-x-2"
@@ -182,7 +187,7 @@
                                     }}</span>
                                 </span>
                                 <span
-                                    class="self-center ml-auto mr-6 text-gray-500 clear-btn"
+                                    class="self-center ml-auto mr-4 text-gray-500 clear-btn"
                                 >
                                     <button
                                         @click="clearStateDBHandle"
@@ -197,8 +202,14 @@
                                         clear
                                     </button>
                                 </span>
+                                <AtlanIcon
+                                    icon="CaretRight"
+                                    class="self-center flex-shrink-0 w-4 h-4 text-gray-500"
+                                ></AtlanIcon>
                             </div>
                         </template>
+                        <template #expandIcon></template>
+
                         <div
                             class="w-56 pb-2 overflow-x-hidden overflow-y-scroll max-h-96"
                         >
@@ -238,7 +249,7 @@
                                     }}</span>
                                 </span>
                                 <span
-                                    class="self-center ml-auto mr-6 text-gray-500 clear-btn"
+                                    class="self-center ml-auto mr-4 text-gray-500 clear-btn"
                                 >
                                     <button
                                         @click="clearStateSchemaHandle"
@@ -253,8 +264,13 @@
                                         clear
                                     </button>
                                 </span>
-                            </div></template
-                        >
+                                <AtlanIcon
+                                    icon="CaretRight"
+                                    class="self-center flex-shrink-0 w-4 h-4 text-gray-500"
+                                ></AtlanIcon></div
+                        ></template>
+                        <template #expandIcon></template>
+
                         <div
                             class="w-56 pb-2 overflow-x-hidden overflow-y-scroll"
                         >

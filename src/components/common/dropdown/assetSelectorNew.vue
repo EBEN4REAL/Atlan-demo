@@ -30,7 +30,7 @@
         >
             <template v-for="item in dropdownOption" :key="item.label">
                 <div
-                    class="flex items-center justify-between w-full px-4 rounded cursor-pointer h-9 hover:bg-primary-light"
+                    class="flex items-center justify-between w-full px-4 cursor-pointer h-9 hover:bg-primary-light"
                     @click="(e) => onSelectItem(item, e)"
                     :class="
                         modelValue === item.value

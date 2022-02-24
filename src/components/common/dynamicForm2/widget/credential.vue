@@ -121,7 +121,7 @@
         <div class="flex">
             <a-button
                 :loading="isLoadingTest"
-                @click="handleTestAuthentication"
+                @click="handleTestAuthentication(false)"
                 class="text-white bg-success border-success"
                 >Test Authentication</a-button
             >

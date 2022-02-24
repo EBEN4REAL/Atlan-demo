@@ -3,9 +3,9 @@
         class="flex flex-col p-4 bg-white border border-gray-300 rounded-lg shadow-lg cursor-pointer hover:border-primary hover:shadow-lg hover:translate-y-2"
         :class="isSelected ? 'border-primary shadow-lg ' : ''"
     >
-        <div class="flex items-center mb-2" v-if="item.metadata.annotations">
+        <div v-if="item.metadata.annotations" class="flex items-center mb-2">
             <div
-                class="relative w-10 h-10 p-2 mr-2 bg-white border border-gray-200 rounded-full"
+                class="relative flex-none w-10 h-10 p-2 mr-2 bg-white border border-gray-200 rounded-full"
             >
                 <img
                     v-if="
@@ -53,8 +53,8 @@
                     </a-tooltip>
                 </div>
             </div>
-            <div class="flex flex-col w-2/3">
-                <div
+            <div class="flex flex-col flex-1 overflow-hidden">
+                <span
                     class="text-sm font-bold truncate cursor-pointer overflow-ellipsis text-primary"
                     @click="handleClick"
                 >
@@ -63,7 +63,7 @@
                             'orchestration.atlan.com/name'
                         ]
                     }}
-                </div>
+                </span>
                 <div class="flex text-sm truncate overflow-ellipsis">
                     By
                     {{
@@ -73,13 +73,11 @@
             </div>
         </div>
 
-        <div class="text-sm line-clamp-3">
-            <span>
-                {{
-                    item.metadata.annotations['package.argoproj.io/description']
-                }}</span
-            >
-        </div>
+        <span class="text-sm line-clamp-3">
+            {{
+                item.metadata.annotations['package.argoproj.io/description']
+            }}</span
+        >
     </div>
 </template>
 
@@ -87,6 +85,7 @@
     import { computed, defineComponent, toRefs } from 'vue'
 
     export default defineComponent({
+        name: 'PackageItem',
         props: {
             item: {
                 type: Object,

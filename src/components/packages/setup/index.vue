@@ -232,7 +232,7 @@
     } from 'vue'
 
     import { message } from 'ant-design-vue'
-    import { useIntervalFn, watchOnce } from '@vueuse/core'
+    import { useIntervalFn, watchOnce, useThrottleFn } from '@vueuse/core'
     import { useRoute, useRouter } from 'vue-router'
 
     // Components
@@ -360,16 +360,20 @@
                 selectedStep.value = event
             }
 
-            const handleNext = async () => {
-                if (stepForm.value) {
-                    const err = await stepForm.value.validateForm()
-                    if (err) {
-                        message.error('Please review the entered details')
-                    } else {
-                        currentStep.value += 1
+            const handleNext = useThrottleFn(
+                async () => {
+                    if (stepForm.value) {
+                        const err = await stepForm.value.validateForm()
+                        if (err) {
+                            message.error('Please review the entered details')
+                        } else {
+                            currentStep.value += 1
+                        }
                     }
-                }
-            }
+                },
+                isEdit.value ? 250 : 600,
+                false
+            )
 
             const handlePrevious = () => {
                 currentStep.value -= 1

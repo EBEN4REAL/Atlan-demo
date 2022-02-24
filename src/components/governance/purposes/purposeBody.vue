@@ -606,7 +606,7 @@
                     !selectedPersonaDirty.value.dataPolicies?.length
             )
             watch(selectedPersonaDirty, () => {
-                activeTabFilter.value = 'all Persona'
+                if (isEmpty.value) activeTabFilter.value = 'all Persona'
             })
             return {
                 addStatus,

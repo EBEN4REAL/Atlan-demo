@@ -400,10 +400,6 @@
                 },
             ]
 
-            watch(selectedPersonaDirty, () => {
-                activeTabFilter.value = ''
-                addpolicyVisible.value = false
-            })
             async function savePolicyUI(
                 type: PolicyType,
                 dataPolicy: Object,
@@ -602,6 +598,10 @@
                     label: 'Data',
                 },
             ])
+            watch(selectedPersonaDirty, () => {
+                if (isEmpty.value) activeTabFilter.value = 'all Persona'
+                addpolicyVisible.value = false
+            })
             return {
                 addStatus,
                 updateStatus,

@@ -215,10 +215,7 @@
                     </div> -->
                 </div>
             </div>
-            <div
-                v-if="isEmpty"
-                class="flex flex-col items-center justify-center h-full"
-            >
+            <div v-if="isEmpty" class="flex flex-col items-center h-full pt-7">
                 <component :is="EmptyPolicyIllustration"></component>
                 <span class="mt-10 text-xl font-bold text-gray">
                     Create Policies

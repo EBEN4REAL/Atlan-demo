@@ -222,7 +222,7 @@
 
                 <div
                     v-if="isEmpty"
-                    class="flex flex-col items-center justify-center wrapper-empty-data"
+                    class="flex flex-col items-center h-full -pt-7"
                 >
                     <component :is="EmptyPolicyIllustration"></component>
                     <span class="mt-10 text-xl font-bold text-gray">
@@ -685,8 +685,5 @@
     }
     .content-wrapper {
         height: inherit;
-    }
-    .wrapper-empty-data {
-        height: 100%;
     }
 </style>

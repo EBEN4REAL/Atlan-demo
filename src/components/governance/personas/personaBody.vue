@@ -91,7 +91,7 @@
                         : ''
                 "
             >
-                <div class="p-4 border-b">
+                <div class="p-4" :class="!isEmpty && 'border-b'">
                     <div class="flex items-center justify-between">
                         <div class="w-1/2 pr-3">
                             <div

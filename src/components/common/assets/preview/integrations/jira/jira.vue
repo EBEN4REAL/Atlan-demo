@@ -30,7 +30,7 @@
         <Header
             :remove-mode="!!checkedIDs.length"
             @add="linkIssueVisible = true"
-            @cancel="checkedIDs = []"
+            @cancel="resetIDs"
             @remove="handleIssueUnLink"
         />
         <div
@@ -82,6 +82,8 @@
     const checkedIDs = ref<string[]>([])
     const unlinkErrorIDs = ref<string[]>([])
 
+    const allUnlinkPromises: any = []
+
     const callUnlinkIssue = (id) => {
         const {
             key,
@@ -103,7 +105,9 @@
             data: unlinkData,
             isLoading: linkLoading,
             error: unlinkError,
+            mutate: unlink,
         } = unlinkIssue(body, id)
+        allUnlinkPromises.push(unlink())
         watch([unlinkData, unlinkError], (v) => {
             if (unlinkError.value) {
                 unlinkErrorIDs.value.push(id)
@@ -113,6 +117,8 @@
                     duration: 3,
                 })
             } else {
+                const index = checkedIDs.value.indexOf(id)
+                if (index !== -1) checkedIDs.value.splice(index, 1)
                 message.success({
                     content: `"${key}: ${summary}" has been unlinked from "${asset.value.displayText}"`,
                     key: id,
@@ -122,6 +128,11 @@
         })
     }
 
+    const resetIDs = () => {
+        checkedIDs.value = []
+        unlinkErrorIDs.value = []
+    }
+
     const handleIssueUnLink = () => {
         message.loading({
             content: `unlinking issues to "${asset.value.displayText}"`,
@@ -129,6 +140,10 @@
             duration: 2,
         })
         checkedIDs.value.forEach((id) => callUnlinkIssue(id))
+
+        Promise.allSettled(allUnlinkPromises).then(() => {
+            mutate()
+        })
     }
 </script>
 

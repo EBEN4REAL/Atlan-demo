@@ -9,7 +9,7 @@
         <Header
             class="mb-4"
             :add-mode="!!checkedIDs.length"
-            @cancel="checkedIDs = []"
+            @cancel="resetIDs"
             @save="handleIssueLink"
         />
 
@@ -150,6 +150,8 @@
 
     const linkErrorIDs = ref<string[]>([])
 
+    const alllinkPromises: any = []
+
     const callLinkIssue = (id) => {
         const {
             key,
@@ -160,7 +162,9 @@
             data: linkData,
             isLoading: linkLoading,
             error: linkError,
+            mutate: link,
         } = linkIssue(body, id)
+        alllinkPromises.push(link())
         watch([linkData, linkError], (v) => {
             if (linkError.value) {
                 linkErrorIDs.value.push(id)
@@ -170,6 +174,8 @@
                     duration: 3,
                 })
             } else {
+                const index = checkedIDs.value.indexOf(id)
+                if (index !== -1) checkedIDs.value.splice(index, 1)
                 message.success({
                     content: `"${key}: ${summary}" has been linked to "${asset.value.displayText}"`,
                     key: id,
@@ -186,12 +192,19 @@
             duration: 2,
         })
         checkedIDs.value.forEach((id) => callLinkIssue(id))
+        Promise.allSettled(alllinkPromises).then(() => {
+            mutate()
+        })
+    }
+
+    const resetIDs = () => {
+        checkedIDs.value = []
+        linkErrorIDs.value = []
     }
 
     const reset = () => {
-        checkedIDs.value = []
+        resetIDs()
         offset.value = 0
-        linkErrorIDs.value = []
         mutate()
     }
 

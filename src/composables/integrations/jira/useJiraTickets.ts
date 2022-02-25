@@ -84,7 +84,7 @@ export const listIssueTypes = () => {
 }
 
 export const linkIssue = (_body, id) => {
-    const options = { asyncOptions: { immediate: true } }
+    const options = { asyncOptions: { immediate: false } }
     const body = computed(() => (
         {
             ..._body.value
@@ -102,7 +102,7 @@ export const linkIssue = (_body, id) => {
 }
 
 export const unlinkIssue = (_body, id) => {
-    const options = { asyncOptions: { immediate: true } }
+    const options = { asyncOptions: { immediate: false } }
     const body = computed(() => (
         {
             ..._body.value

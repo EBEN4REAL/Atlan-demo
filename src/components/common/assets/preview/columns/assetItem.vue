@@ -8,7 +8,7 @@
                 class="box-border flex flex-col flex-1 overflow-hidden gap-y-1"
             >
                 <div
-                    class="flex items-center justify-between mb-0 overflow-hidden"
+                    class="flex items-center justify-between mb-0 overflow-x-auto"
                 >
                     <div class="flex items-center">
                         <component
@@ -38,27 +38,12 @@
                         ></a-tooltip>
                     </div>
                     <div class="flex gap-x-2">
-                        <div
-                            v-if="
-                                isPrimary(item) ||
-                                isDist(item) ||
-                                isPartition(item)
-                            "
-                            class="text-yellow-400"
-                        >
-                            <AtlanIcon
-                                icon="PrimaryKey"
-                                class="mr-1 mb-0.5"
-                            ></AtlanIcon>
-                            <span class="text-xs">Pkey</span>
-                        </div>
-                        <div v-if="isForeign(item)" class="text-pink-700">
-                            <AtlanIcon
-                                icon="ForeignKey"
-                                class="mr-1 mb-0.5"
-                            ></AtlanIcon>
-                            <span class="text-xs">Fkey</span>
-                        </div>
+                        <ColumnKeys
+                            :is-primary="isPrimary(item)"
+                            :is-foreign="isForeign(item)"
+                            :is-partition="isPartition(item)"
+                            :is-sort="isSort(item)"
+                        />
                     </div>
                 </div>
                 <Description
@@ -121,6 +106,7 @@
     import { mergeArray } from '~/utils/array'
     import ClassificationPill from '@/common/pills/classification.vue'
     import PopoverClassification from '@/common/popover/classification/index.vue'
+    import ColumnKeys from '~/components/common/column/columnKeys.vue'
 
     export default defineComponent({
         name: 'ColumnListItem',
@@ -128,6 +114,7 @@
             CertificateBadge,
             Description,
             ClassificationPill,
+            ColumnKeys,
             PopoverClassification,
             AssetDrawer: defineAsyncComponent(
                 () => import('@/common/assets/preview/drawer.vue')
@@ -158,6 +145,7 @@
                 isDist,
                 isPartition,
                 isPrimary,
+                isSort,
                 certificateStatus,
                 certificateUpdatedAt,
                 certificateUpdatedBy,
@@ -222,6 +210,7 @@
                 isPartition,
                 isPrimary,
                 isForeign,
+                isSort,
                 certificateStatus,
                 certificateUpdatedAt,
                 certificateUpdatedBy,

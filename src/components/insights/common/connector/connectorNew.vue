@@ -93,7 +93,7 @@
                         </template>
                         <template #expandIcon></template>
                         <div
-                            class="pt-1 pb-2 w-60"
+                            class="pt-1 w-60"
                             :class="$style.schemaExplorerTreeStyles"
                         >
                             <!-- <div
@@ -220,7 +220,7 @@
                         <template #expandIcon></template>
 
                         <div
-                            class="pb-2 overflow-x-hidden overflow-y-scroll w-60 max-h-96"
+                            class="overflow-x-hidden overflow-y-hidden w-60 max-h-96"
                         >
                             <AssetDropdownNewDatabase
                                 v-if="connection"
@@ -280,9 +280,7 @@
                         ></template>
                         <template #expandIcon></template>
 
-                        <div
-                            class="w-56 pb-2 overflow-x-hidden overflow-y-scroll"
-                        >
+                        <div class="w-56 overflow-x-hidden overflow-y-hidden">
                             <AssetDropdownNewSchema
                                 v-if="connection"
                                 v-model:clearStateSchema="clearStateSchema"

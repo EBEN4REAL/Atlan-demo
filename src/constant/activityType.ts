@@ -126,9 +126,7 @@ export const activityTypeMap = [
         isGroup: true,
         value: 'term-group',
         label: 'Terms',
-        includes: [
-            'AtlasGlossary',
-        ],
+        includes: ['AtlasGlossary'],
         excludes: [],
         children: [
             {
@@ -154,13 +152,11 @@ export const activityTypeMap = [
             },
         ],
     },
-  {
+    {
         isGroup: true,
         value: 'category-group',
         label: 'Category',
-        includes: [
-            'AtlasGlossary',
-        ],
+        includes: ['AtlasGlossary'],
         excludes: [],
         children: [
             {
@@ -187,7 +183,6 @@ export const activityTypeMap = [
         ],
     },
 
-   
     {
         value: 'certificate',
         label: 'Certificate',
@@ -205,5 +200,14 @@ export const activityTypeMap = [
             'detail.attributes.ownerUsers.keyword',
             'detail.attributes.ownerGroups.keyword',
         ],
-    }
+    },
+    {
+        value: 'admins',
+        label: 'Admins',
+        action: 'ENTITY_UPDATE',
+        exists: [
+            'detail.attributes.adminUsers.keyword',
+            'detail.attributes.adminGroups.keyword',
+        ],
+    },
 ]

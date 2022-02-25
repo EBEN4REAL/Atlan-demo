@@ -30,8 +30,8 @@ const jiraSearch = <T>(body: Ref, options = {}) =>
     useAPI<T>(map.JIRA_SEARCH, 'POST', { body }, options);
 const jiraLinkIssue = (body: Ref, pathVariables: Ref<{ id: string }>, options = {}) =>
     useAPI(map.JIRA_LINK_ISSUE, 'POST', { body, pathVariables }, options);
-const jiraUnlinkIssue = (body: Ref, params: Ref<{ id: string }>, options = {}) =>
-    useAPI(map.JIRA_UNLINK_ISSUE, 'POST', { body, params }, options);
+const jiraUnlinkIssue = (body: Ref, pathVariables: Ref<{ id: string }>, options = {}) =>
+    useAPI(map.JIRA_UNLINK_ISSUE, 'POST', { body, pathVariables }, options);
 const jiraCreateIssue = (body: Ref, options = {}) =>
     useAPI(map.JIRA_CREATE_ISSUE, 'POST', { body }, options);
 

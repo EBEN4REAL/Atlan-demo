@@ -4,7 +4,7 @@ import { debouncedWatch, useDebounce } from '@vueuse/core'
 import { Integrations } from '~/services/service/integrations/index'
 import { Issue, IssueTypes } from '~/types/integrations/jira.types'
 
-const { jiraSearch, jiraListIssueTypes, jiraLinkIssue } = Integrations
+const { jiraSearch, jiraListIssueTypes, jiraLinkIssue, jiraUnlinkIssue } = Integrations
 
 const searchIssues = (jql, immediate = true) => {
     const options = { asyncOptions: { immediate } }
@@ -96,10 +96,25 @@ export const linkIssue = (_body, id) => {
     const pathVariables = computed(() => ({ id: issueID.value }))
 
     const { data, isLoading, error, mutate, isReady } = jiraLinkIssue(body, pathVariables, options)
-    // const call = async (_id) => {
-    //     issueID.value = _id
-    //     await mutate()
-    // }
+
+
+    return { data, isLoading, error, mutate, isReady }
+}
+
+export const unlinkIssue = (_body, id) => {
+    const options = { asyncOptions: { immediate: true } }
+    const body = computed(() => (
+        {
+            ..._body.value
+        }
+    ))
+
+    const issueID = ref(id)
+
+    const pathVariables = computed(() => ({ id: issueID.value }))
+
+    const { data, isLoading, error, mutate, isReady } = jiraUnlinkIssue(body, pathVariables, options)
+
 
     return { data, isLoading, error, mutate, isReady }
 }

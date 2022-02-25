@@ -7,8 +7,24 @@
                 <span class="font-semibold text-gray-500"> Linked Issues </span>
             </div>
             <div class="flex-grow"></div>
-
+            <template v-if="removeMode">
+                <div
+                    class="flex items-center text-gray-700 cursor-pointer hover:underline"
+                    @click="$emit('cancel')"
+                >
+                    Cancel
+                </div>
+                <AtlanButton
+                    padding="compact"
+                    size="sm"
+                    class="flex items-center h-5 px-4 text-xs cursor-pointer"
+                    @click="$emit('remove')"
+                >
+                    Unlink
+                </AtlanButton>
+            </template>
             <div
+                v-else
                 class="flex items-center cursor-pointer text-primary"
                 @click="$emit('add')"
             >
@@ -19,7 +35,11 @@
 </template>
 
 <script setup lang="ts">
-    const emit = defineEmits(['add'])
+    const emit = defineEmits(['add', 'remove', 'cancel'])
+
+    const props = defineProps({
+        removeMode: { type: Boolean, default: false },
+    })
 </script>
 
 <style scoped></style>

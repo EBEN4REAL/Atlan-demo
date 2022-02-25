@@ -93,6 +93,21 @@ const useAssetAudit = (params: any, guid: string) => {
                 data.icon = 'Megaphone'
                 return data
             }
+            if ('adminUsers' in attributes || 'adminGroups' in attributes) {
+                data.displayValue = 'admins'
+                data.value = {}
+                if (attributes.adminUsers) {
+                    data.value.adminUsers = attributes.adminUsers
+                    data.icon = 'User'
+                }
+                if (attributes.adminGroups) {
+                    data.value.adminGroups = attributes.adminUsers
+                    data.icon = 'Group'
+                }
+
+                data.component = 'Admins'
+                return data
+            }
             if ('sql' in attributes) {
                 data.value = attributes?.sql
                 data.displayValue = 'query'

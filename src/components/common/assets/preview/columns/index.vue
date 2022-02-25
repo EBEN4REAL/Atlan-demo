@@ -104,10 +104,7 @@
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import ColumnItem from './assetItem.vue'
 
-    import {
-        MinimalAttributes,
-        DefaultRelationAttributes,
-    } from '~/constant/projection'
+    import { DefaultRelationAttributes } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import useEvaluate from '~/composables/auth/useEvaluate'
     import { assetInterface } from '~/types/assets/asset.interface'

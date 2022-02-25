@@ -8,19 +8,20 @@
                 class="box-border flex flex-col flex-1 overflow-hidden gap-y-1"
             >
                 <div
-                    class="flex items-center justify-between mb-0 overflow-x-auto"
+                    class="flex flex-wrap items-center justify-between mb-0 overflow-hidden"
                 >
                     <div class="flex items-center">
                         <component
                             :is="dataTypeCategoryImage(item)"
                             class="h-4 mr-1 text-gray-500 mb-0.5"
                         />
-                        <span
-                            class="flex-shrink overflow-hidden font-bold truncate cursor-pointer text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+
+                        <Tooltip
+                            :tooltip-text="`${title(item)}`"
+                            classes="
+                                   font-bold cursor-pointer text-md text-primary hover:underline  "
                             @click="showColumnDrawer = true"
-                        >
-                            {{ title(item) }}
-                        </span>
+                        />
                         <CertificateBadge
                             v-if="certificateStatus(item)"
                             :status="certificateStatus(item)"
@@ -37,7 +38,7 @@
                             ></AtlanIcon
                         ></a-tooltip>
                     </div>
-                    <div class="flex gap-x-2">
+                    <div class="flex ml-1 gap-x-2">
                         <ColumnKeys
                             :is-primary="isPrimary(item)"
                             :is-foreign="isForeign(item)"
@@ -99,6 +100,7 @@
         defineAsyncComponent,
         inject,
     } from 'vue'
+    import Tooltip from '@common/ellipsis/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import Description from '@/common/input/description/index.vue'
@@ -116,6 +118,7 @@
             Description,
             ClassificationPill,
             ColumnKeys,
+            Tooltip,
             PopoverClassification,
             AssetDrawer: defineAsyncComponent(
                 () => import('@/common/assets/preview/drawer.vue')

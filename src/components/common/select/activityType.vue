@@ -37,7 +37,7 @@
     import { activityTypeMap } from '~/constant/activityType'
 
     export default defineComponent({
-        name: 'Activity Select',
+        name: 'ActivitySelect',
         props: {
             queryText: {
                 type: String,

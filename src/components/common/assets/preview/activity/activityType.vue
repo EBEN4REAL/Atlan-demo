@@ -35,6 +35,9 @@
             Owners: defineAsyncComponent(
                 () => import('./types/owners/index.vue')
             ),
+            Admins: defineAsyncComponent(
+                () => import('./types/admins/index.vue')
+            ),
             BusinessMetadata: defineAsyncComponent(
                 () => import('./types/businessMetadata/index.vue')
             ),

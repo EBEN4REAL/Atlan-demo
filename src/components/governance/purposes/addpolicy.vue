@@ -85,7 +85,7 @@
                             <!-- <div v-else>{{ policy.name }}</div> -->
                             <div
                                 v-if="rules.policyName.show"
-                                class="absolute text-xs text-red-500 -bottom-5"
+                                class="mt-1 text-xs text-red-500"
                                 data-test-id="policy-validation-name"
                             >
                                 {{ rules.policyName.text }}
@@ -116,7 +116,7 @@
                             />
                             <div
                                 v-if="rules.users.show"
-                                class="absolute text-xs text-red-500 -bottom-5"
+                                class="mt-2 text-xs text-red-500"
                                 data-test-id="policy-validation-owners"
                             >
                                 {{ rules.users.text }}

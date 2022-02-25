@@ -77,7 +77,8 @@
                                     record.is_primary ||
                                     record.is_foreign ||
                                     record.is_partition ||
-                                    record.is_sort,
+                                    record.is_sort ||
+                                    record.is_indexed,
                             }"
                         >
                             <div class="flex items-center">
@@ -116,7 +117,8 @@
                                     record.is_primary ||
                                     record.is_foreign ||
                                     record.is_partition ||
-                                    record.is_sort
+                                    record.is_sort ||
+                                    record.is_indexed
                                 "
                                 class="relative flex items-center h-full"
                             >
@@ -125,6 +127,7 @@
                                     :is-foreign="record.is_foreign"
                                     :is-partition="record.is_partition"
                                     :is-sort="record.is_sort"
+                                    :is-indexed="record.is_indexed"
                                 />
                             </div>
                         </div>
@@ -394,6 +397,7 @@
                     is_foreign: i.attributes.isForeign,
                     is_partition: i.attributes.isPartition,
                     is_sort: i.attributes.isSort,
+                    is_indexed: i.attributes.isIndexed,
                     description:
                         i.attributes.userDescription ||
                         i.attributes.description ||

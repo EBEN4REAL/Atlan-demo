@@ -208,6 +208,7 @@ export default function useAssetInfo() {
     const isDist = (asset: assetInterface) => attributes(asset)?.isDist
     const isForeign = (asset: assetInterface) => attributes(asset)?.isForeign
     const isSort = (asset: assetInterface) => attributes(asset)?.isSort
+    const isIndexed = (asset: assetInterface) => attributes(asset)?.isIndexed
 
     const connectionRowLimit = (asset: assetInterface) =>
         attributes(asset)?.rowLimit
@@ -1316,5 +1317,6 @@ export default function useAssetInfo() {
         picklistValues,
         formula,
         getConnectorLabelByName,
+        isIndexed,
     }
 }

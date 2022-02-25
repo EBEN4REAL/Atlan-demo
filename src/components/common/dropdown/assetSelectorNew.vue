@@ -53,11 +53,13 @@
                             </span>
                         </div>
                     </div>
-                    <AtlanIcon
-                        icon="Check"
-                        class="ml-2 text-primary parent-ellipsis-container-base"
-                        v-if="modelValue === item.value"
-                    />
+                    <span class="w-6">
+                        <AtlanIcon
+                            icon="Check"
+                            class="ml-2 text-primary parent-ellipsis-container-base"
+                            v-if="modelValue === item.value"
+                        />
+                    </span>
                 </div>
             </template>
         </div>
@@ -69,7 +71,7 @@
             <AtlanLoader class="h-8 mt-1 ml-auto mr-auto" />
         </div>
         <div
-            v-else-if="dropdownOption === 1"
+            v-else
             class="flex items-center justify-between w-full px-4 rounded"
             style="min-height: 0"
         >

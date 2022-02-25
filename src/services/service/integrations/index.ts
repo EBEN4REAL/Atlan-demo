@@ -28,8 +28,8 @@ const jiraGetIssueConfigurations = (pathVariables: Ref<{ projectKey: string }>, 
     useAPI(map.JIRA_GET_ISSUE_CONFIGURATIONS, 'GET', { pathVariables }, options);
 const jiraSearch = <T>(body: Ref, options = {}) =>
     useAPI<T>(map.JIRA_SEARCH, 'POST', { body }, options);
-const jiraLinkIssue = (body: Ref, params: Ref<{ id: string }>, options = {}) =>
-    useAPI(map.JIRA_LINK_ISSUE, 'POST', { body, params }, options);
+const jiraLinkIssue = (body: Ref, pathVariables: Ref<{ id: string }>, options = {}) =>
+    useAPI(map.JIRA_LINK_ISSUE, 'POST', { body, pathVariables }, options);
 const jiraUnlinkIssue = (body: Ref, params: Ref<{ id: string }>, options = {}) =>
     useAPI(map.JIRA_UNLINK_ISSUE, 'POST', { body, params }, options);
 const jiraCreateIssue = (body: Ref, options = {}) =>

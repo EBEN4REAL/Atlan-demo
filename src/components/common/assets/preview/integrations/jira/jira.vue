@@ -1,5 +1,5 @@
 <template>
-    <LinkIssueDrawer v-model:visible="linkIssueVisible" :asset-i-d="assetID" />
+    <LinkIssueDrawer v-model:visible="linkIssueVisible" :asset="asset" />
     <div
         v-if="isLoading"
         class="flex items-center justify-center w-full h-full"

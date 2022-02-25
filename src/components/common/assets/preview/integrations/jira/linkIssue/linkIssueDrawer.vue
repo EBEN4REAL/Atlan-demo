@@ -5,7 +5,12 @@
         :closable="false"
         :force-render="false"
     >
-        <Header class="mb-4" />
+        <Header
+            class="mb-4"
+            :add-mode="!!checkedIDs.length"
+            @cancel="checkedIDs = []"
+            @save="handleIssueLink"
+        />
 
         <div
             v-if="isLoading && !searchLoading"
@@ -26,7 +31,7 @@
 
         <div v-else class="flex flex-col gap-y-4">
             <main class="flex flex-col flex-grow overflow-y-hidden">
-                <div class="flex-shrink-0 px-4 mb-2">
+                <div class="flex-shrink-0 px-4 h-14">
                     <Search
                         v-model="searchText"
                         clearable
@@ -37,6 +42,12 @@
                         "
                         @change="searchLoading = true"
                     />
+                    <div
+                        v-if="checkedIDs.length"
+                        class="w-full my-1 text-xs text-right text-gray-500"
+                    >
+                        {{ checkedIDs.length }} issues selected
+                    </div>
                 </div>
 
                 <div
@@ -57,22 +68,24 @@
 
                 <div
                     v-else
-                    class="flex flex-col p-4 space-y-4 overflow-y-auto"
-                    style="height: calc(100vh - 9rem)"
+                    class="flex flex-col p-4 pt-1 overflow-y-auto gap-y-4"
+                    style="height: calc(100vh - 10.4rem)"
                 >
                     <template v-for="issue in issues" :key="issue.id">
                         <IssueCard
-                            v-model:checked="issue.checked"
-                            :show-checkbox="issues.some((i) => i.checked)"
+                            :checked="checkedIDs.includes(issue.id)"
+                            :show-checkbox="!!checkedIDs.length"
                             :issue="issue"
                             class="cursor-pointer hover:bg-gray-100"
-                            @click="() => (issue.checked = !issue.checked)"
+                            @click="handleClick"
                         />
                     </template>
                 </div>
             </main>
         </div>
-        <footer class="absolute flex justify-center w-full bottom-3">
+        <footer
+            class="absolute flex justify-center w-full pt-2 bg-white bottom-3"
+        >
             <Pagination
                 v-model:offset="offset"
                 :loading="isLoading || searchLoading"
@@ -86,27 +99,44 @@
 
 <script setup lang="ts">
     import { useVModels } from '@vueuse/core'
-    import { ref, Ref, watch, toRefs, onMounted } from 'vue'
-    import { listNotLinkedIssues } from '~/composables/integrations/jira/useJiraTickets'
+    import { ref, Ref, watch, toRefs, onMounted, computed, PropType } from 'vue'
+    import {
+        listNotLinkedIssues,
+        linkIssue,
+    } from '~/composables/integrations/jira/useJiraTickets'
     import IssueCard from '@/common/assets/preview/integrations/jira/issueCard.vue'
     import Search from '@/common/input/searchAdvanced.vue'
     import Header from '@/common/assets/preview/integrations/jira/linkIssue/header.vue'
     import AtlanLoader from '~/components/common/loaders/atlanLoader.vue'
     import ErrorView from '@/common/error/index.vue'
     import Pagination from '@/common/list/pagination.vue'
+    import { assetInterface } from '~/types/assets/asset.interface'
+    import { message } from 'ant-design-vue'
 
     const props = defineProps({
         visible: { type: Boolean, required: true },
-        assetID: { type: String, required: true },
+        asset: { type: Object as PropType<assetInterface>, required: true },
     })
 
     const emit = defineEmits(['add'])
 
     const { visible } = useVModels(props, emit)
 
-    const { assetID } = toRefs(props)
+    const { asset } = toRefs(props)
+    const assetID = computed(() => asset.value.guid)
 
     const linkIssueVisible = ref(false)
+
+    const checkedIDs = ref<string[]>([])
+
+    const handleClick = (issue) => {
+        if (checkedIDs.value.includes(issue.id)) {
+            const index = checkedIDs.value.indexOf(issue.id)
+            if (index !== -1) {
+                checkedIDs.value.splice(index, 1)
+            }
+        } else checkedIDs.value.push(issue.id)
+    }
 
     const {
         issues,
@@ -119,11 +149,72 @@
         pagination,
     } = listNotLinkedIssues(assetID)
 
-    watch([error, isLoading], (v) => {})
+    // watch([error, isLoading], (v) => {})
 
-    onMounted(() => {
-        // still mounted without open
+    const { href } = window.location
+
+    const body = computed(() => ({
+        guid: asset.value.guid,
+        name: asset.value.displayText,
+        qualifiedName: asset.value.attributes.qualifiedName,
+        integrationType: asset.value.attributes.connectorName,
+        typeName: asset.value.typeName,
+        assetUrl: href,
+    }))
+
+    // const {
+    //     data: linkData,
+    //     isLoading: linkLoading,
+    //     error: linkError,
+    //     call,
+    // } = linkIssue(body, '')
+
+    const callLinkIssue = (id) => {
+        const {
+            key,
+            fields: { summary },
+        } = issues.value.find((i) => i.id === id)
+
+        const {
+            data: linkData,
+            isLoading: linkLoading,
+            error: linkError,
+        } = linkIssue(body, id)
+        watch([linkData, linkError], (v) => {
+            console.log('v:', v)
+            if (linkError.value) {
+                message.error({
+                    content: `Failed to link "${key}: ${summary}"`,
+                    key: id,
+                    duration: 3,
+                })
+            } else {
+                message.success({
+                    content: `"${key}: ${summary}" has been linked to "${asset.value.displayText}"`,
+                    key: id,
+                    duration: 3,
+                })
+            }
+        })
+    }
+
+    const handleIssueLink = () => {
+        message.loading({
+            content: `linking issues to "${asset.value.displayText}"`,
+            key: 'link',
+            duration: 2,
+        })
+        checkedIDs.value.forEach((id) => callLinkIssue(id))
+    }
+
+    const reset = () => {
+        checkedIDs.value = []
         mutate()
+    }
+
+    watch(visible, (v) => {
+        // still mounted without open
+        if (v) reset()
     })
 </script>
 

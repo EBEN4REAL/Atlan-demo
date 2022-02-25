@@ -1,10 +1,10 @@
 <template>
     <section
-        class="flex items-center p-2 rounded shadow gap-x-2"
+        class="flex items-center p-2 transition ease-in-out rounded shadow gap-x-2"
         @click="$emit('click', issue)"
     >
         <div v-if="showCheckbox" class="">
-            <a-checkbox v-model:checked="checked" />
+            <a-checkbox :checked="checked" />
         </div>
         <div class="flex" style="max-width: 40px">
             <img
@@ -46,7 +46,7 @@
 
     const emit = defineEmits(['click'])
 
-    const { checked } = useVModels(props, emit)
+    // const { checked } = useVModels(props, emit)
 
     const { issue } = toRefs(props)
 

@@ -141,7 +141,7 @@
                         metaDataComputed.length > 0 ||
                         dataPolicyComputed.length > 0
                     "
-                    class="flex flex-col flex-grow overflow-y-auto"
+                    class="flex flex-col flex-grow overflow-y-auto container-card-policy"
                 >
                     <template
                         v-for="(policy, idx) in metaDataComputed"
@@ -677,6 +677,9 @@
     }
 </style>
 <style scoped lang="less">
+    .container-card-policy {
+        max-height: 65vh;
+    }
     .content-wrapper {
         height: inherit;
     }

@@ -9,9 +9,53 @@
         <div class="flex flex-col p-3">
             <div class="mt-1">
                 <div class="mb-2.5 text-gray-500">Channels</div>
-                <span class="text-sm cursor-pointer text-primary"
-                    ><AtlanIcon icon="Add" class="mr-2" />Add link</span
-                >
+                <a-popover trigger="click" placement="bottom">
+                    <template #content>
+                        <div class="p-3 bg-white w-72">
+                            <div class="flex">
+                                <div
+                                    class="flex items-center justify-center w-8 h-8 mr-3 border rounded-full border-primary"
+                                >
+                                    <AtlanIcon icon="Slack" />
+                                </div>
+                                <div
+                                    class="flex items-center justify-center w-8 h-8 border rounded-full"
+                                >
+                                    <AtlanIcon icon="Teams" />
+                                </div>
+                            </div>
+                            <div class="mt-4 text-sm text-gray-700">
+                                Slack Channel
+                            </div>
+                            <div class="mt-2">
+                                <a-input
+                                    placeholder="Paste link to your channel"
+                                >
+                                    <template #prefix>
+                                        <AtlanIcon icon="Link" />
+                                    </template>
+                                </a-input>
+                            </div>
+                            <div class="flex justify-end mt-4">
+                                <AtlanButton
+                                    padding="compact"
+                                    size="sm"
+                                    color="minimal"
+                                    class="mr-2"
+                                >
+                                    Cancel
+                                </AtlanButton>
+                                <AtlanButton padding="compact" size="sm">
+                                    <AtlanIcon icon="Edit" class="mr-1" />
+                                    Add
+                                </AtlanButton>
+                            </div>
+                        </div>
+                    </template>
+                    <span class="text-sm cursor-pointer text-primary"
+                        ><AtlanIcon icon="Add" class="mr-2" />Add link</span
+                    >
+                </a-popover>
             </div>
             <div class="mt-7">
                 <div class="mb-2.5 text-gray-500">Policies</div>

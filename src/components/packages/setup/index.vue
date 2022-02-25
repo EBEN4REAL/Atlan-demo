@@ -133,7 +133,7 @@
     <!-- Finish Page -->
     <div v-else class="flex flex-col items-center justify-center w-full h-full">
         <div
-            v-if="isLoading || (!run.status && runLoading)"
+            v-if="isLoading || (!run?.status && runLoading)"
             class="flex flex-col justify-center"
         >
             <a-spin size="large" />
@@ -223,7 +223,15 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, ref, watch, toRefs, computed, provide } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        watch,
+        toRefs,
+        computed,
+        provide,
+        Ref,
+    } from 'vue'
 
     import { message } from 'ant-design-vue'
     import { useIntervalFn, watchOnce } from '@vueuse/core'
@@ -452,7 +460,7 @@
                 // }
             }
 
-            const status = ref('')
+            const status: Ref<undefined | string> = ref(undefined)
             const title = ref('Setting up a workflow')
             const subTitle = ref(
                 'Saving & validating your inputs and credentials'
@@ -664,7 +672,7 @@
             }
 
             const handleBackToSetup = () => {
-                status.value = null
+                status.value = undefined
             }
             const router = useRouter()
             const handleExit = (key) => {

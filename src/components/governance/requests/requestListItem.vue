@@ -25,8 +25,16 @@
                                 'AtlasGlossary',
                             ].includes(request?.entityType)
                         "
+                        class="flex items-center"
                     >
-                        <atlan-icon icon="Term" class="mr-1"></atlan-icon>
+                        <atlan-icon
+                            :icon="
+                                capitalizeFirstLetter(
+                                    glossaryLabel[request?.entityType]
+                                )
+                            "
+                            class="mr-1 mb-1"
+                        ></atlan-icon>
                         <span class="text-primary">{{
                             request?.destinationEntity?.attributes?.name
                         }}</span>
@@ -289,6 +297,8 @@
     import Popover from '@/common/popover/assets/index.vue'
     import { RequestAttributes } from '~/types/atlas/requests'
     import CertificateBadge from '@common/badge/certificate/index.vue'
+    import { default as glossaryLabel } from '@/glossary/constants/assetTypeLabel'
+    import { capitalizeFirstLetter } from '~/utils/string'
     import {
         approveRequest,
         declineRequest,
@@ -484,6 +494,8 @@
                 timeUpdated,
                 createdAt,
                 updatedAt,
+                glossaryLabel,
+                capitalizeFirstLetter,
             }
         },
     })

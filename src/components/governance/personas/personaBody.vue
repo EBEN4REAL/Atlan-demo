@@ -58,7 +58,7 @@
                 :persona="persona"
                 @editDetails="$emit('editDetails')"
             />
-            <Readme :persona="selectedPersonaDirty" />
+
             <div class="mt-3 bg-white border border-gray-200 rounded">
                 <ResourcesWidget
                     placeholder="Resources is the place to document all knowledge around the persona"
@@ -73,6 +73,7 @@
                     @remove="handleRemoveResource"
                 />
             </div>
+            <Readme :persona="selectedPersonaDirty" />
         </div>
         <div
             v-if="activeTabKey === 'policies'"

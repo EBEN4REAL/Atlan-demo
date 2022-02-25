@@ -42,7 +42,7 @@
                 :persona="persona"
                 @editDetails="$emit('editDetails')"
             />
-            <PurposeReadme :purpose="selectedPersonaDirty" />
+
             <div class="mt-3 bg-white border border-gray-200 rounded">
                 <ResourcesWidget
                     placeholder="Resources is the place to document all knowledge around the purpose"
@@ -57,6 +57,7 @@
                     @remove="handleRemoveResource"
                 />
             </div>
+            <PurposeReadme :purpose="selectedPersonaDirty" />
         </div>
         <div
             v-else-if="activeTabKey === 'policies'"

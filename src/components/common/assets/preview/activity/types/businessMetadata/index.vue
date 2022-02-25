@@ -9,7 +9,7 @@
         <!--     class="mr-1" -->
         <!-- /> -->
         <span>
-            <b> {{ found.displayName }} </b> was updated</span
+            <b> {{ found?.displayName }} </b> was updated</span
         >
     </div>
 

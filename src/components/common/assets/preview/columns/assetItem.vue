@@ -43,6 +43,7 @@
                             :is-foreign="isForeign(item)"
                             :is-partition="isPartition(item)"
                             :is-sort="isSort(item)"
+                            :is-indexed="isIndexed(item)"
                         />
                     </div>
                 </div>
@@ -152,6 +153,7 @@
                 certificateStatusMessage,
                 selectedAssetUpdatePermission,
                 isScrubbed,
+                isIndexed,
             } = useAssetInfo()
 
             const { item } = toRefs(props)
@@ -226,6 +228,7 @@
                 selectedAssetUpdatePermission,
                 isScrubbed,
                 list,
+                isIndexed,
             }
         },
     })

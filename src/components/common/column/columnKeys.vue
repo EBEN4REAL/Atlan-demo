@@ -54,6 +54,15 @@
         <div
             class="flex items-center p-1 ml-2 mr-1 rounded"
             style="background-color: #edfdf9"
+            v-if="isIndexed"
+        >
+            <span v-if="requireLabel" class="" style="color: #00a680"
+                >Indexed key</span
+            >
+        </div>
+        <div
+            class="flex items-center p-1 ml-2 mr-1 rounded"
+            style="background-color: #edfdf9"
             v-if="isSort"
         >
             <span v-if="requireLabel" class="" style="color: #00a680"
@@ -96,6 +105,11 @@
                 default: false,
             },
             isDist: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+            isIndexed: {
                 type: Boolean,
                 required: false,
                 default: false,

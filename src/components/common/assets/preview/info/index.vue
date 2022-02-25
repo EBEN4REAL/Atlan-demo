@@ -175,40 +175,18 @@
                                 :is="dataTypeCategoryImage(selectedAsset)"
                                 class="h-4 mr-0.5 mb-0.5"
                             />
-                            <span class="text-sm uppercase">{{
+                            <span class="mr-1 text-sm uppercase">{{
                                 dataType(selectedAsset)
                             }}</span>
                         </div>
 
-                        <div
-                            v-if="
-                                isPrimary(selectedAsset) ||
-                                isDist(selectedAsset) ||
-                                isPartition(selectedAsset)
-                            "
-                            class="flex"
-                        >
-                            <AtlanIcon
-                                icon="PrimaryKey"
-                                class="mb-0.5 text-yellow-500"
-                            ></AtlanIcon>
-
-                            <span
-                                v-if="isPrimary(selectedAsset)"
-                                class="ml-1 text-sm text-gray-700"
-                                >Primary Key</span
-                            >
-                            <span
-                                v-if="isDist(selectedAsset)"
-                                class="ml-1 text-sm text-gray-700"
-                                >Dist Key</span
-                            >
-                            <span
-                                v-if="isPartition(selectedAsset)"
-                                class="ml-1 text-sm text-gray-700"
-                                >Partition Key</span
-                            >
-                        </div>
+                        <ColumnKeys
+                            :is-primary="isPrimary(selectedAsset)"
+                            :is-foreign="isForeign(selectedAsset)"
+                            :is-partition="isPartition(selectedAsset)"
+                            :is-sort="isSort(selectedAsset)"
+                            :is-indexed="isIndexed(selectedAsset)"
+                        />
                     </div>
                 </div>
                 <div v-if="tableName(selectedAsset)">
@@ -908,6 +886,7 @@
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import { copyToClipboard } from '~/utils/clipboard'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
+    import ColumnKeys from '~/components/common/column/columnKeys.vue'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -923,6 +902,7 @@
             RowInfoHoverCard,
             SQL,
             SQLSnippet,
+            ColumnKeys,
             TermsWidget,
             Categories,
             Categories2,
@@ -996,6 +976,9 @@
                 isDist,
                 isPartition,
                 isPrimary,
+                isForeign,
+                isSort,
+                isIndexed,
                 sourceUpdatedAt,
                 sourceCreatedAt,
                 definition,
@@ -1106,6 +1089,9 @@
                 isDist,
                 isPartition,
                 isPrimary,
+                isForeign,
+                isSort,
+                isIndexed,
                 definition,
                 sourceUpdatedAt,
                 sourceCreatedAt,

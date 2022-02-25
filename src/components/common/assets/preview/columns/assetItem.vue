@@ -38,7 +38,7 @@
                             ></AtlanIcon
                         ></a-tooltip>
                     </div>
-                    <div class="flex gap-x-2">
+                    <div class="flex ml-1 gap-x-2">
                         <ColumnKeys
                             :is-primary="isPrimary(item)"
                             :is-foreign="isForeign(item)"

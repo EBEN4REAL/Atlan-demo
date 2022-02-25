@@ -74,6 +74,21 @@ export function useRunBody(
                     }
                     break
                 }
+                case 'runName': {
+                    if (filterObject) {
+                        base.andFilter('nested', {
+                            path: 'metadata',
+                            ...bodybuilder()
+                                .query(
+                                    'term',
+                                    'metadata.name.keyword',
+                                    filterObject
+                                )
+                                .build(),
+                        })
+                    }
+                    break
+                }
             }
         })
     } catch (e) {

@@ -5,16 +5,16 @@
         </template>
         <template #footer>
             <div
-                v-if="(isLoadMore || extraLoading) && list.length > 0"
+                v-if="(isLoadMore || isLoading) && list.length > 0"
                 class="flex items-center justify-center"
             >
                 <button
-                    :disabled="extraLoading"
+                    :disabled="isLoading"
                     class="flex items-center justify-between px-3 py-2 transition-all duration-300 bg-white rounded-full text-primary"
-                    :class="extraLoading ? 'px-3 py-2' : ''"
+                    :class="isLoading ? 'px-3 py-2' : ''"
                     @click="$emit('loadMore')"
                 >
-                    <template v-if="!extraLoading">
+                    <template v-if="!isLoading">
                         <p
                             class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
                         >
@@ -59,23 +59,6 @@
             },
         },
         emits: ['loadMore'],
-        setup(props, { emit }) {
-            const { isLoading } = toRefs(props)
-
-            const extraLoading = ref(false)
-
-            watch(isLoading, () => {
-                if (isLoading.value) {
-                    extraLoading.value = isLoading.value
-                } else
-                    setTimeout(() => {
-                        extraLoading.value = isLoading.value
-                    }, 700)
-            })
-            return {
-                extraLoading,
-            }
-        },
     })
 </script>
 

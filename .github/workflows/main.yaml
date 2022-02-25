@@ -63,6 +63,7 @@ jobs:
           node-version: 12
 
       - name: "Automated Version Bump"
+        id: version-bump-a
         uses: "phips28/gh-action-bump-version@master"
         with:
           skip-tag: true

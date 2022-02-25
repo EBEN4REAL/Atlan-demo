@@ -97,15 +97,7 @@
 </template>
 
 <script lang="ts">
-    import {
-        computed,
-        defineComponent,
-        ref,
-        ComputedRef,
-        Ref,
-        toRefs,
-        PropType,
-    } from 'vue'
+    import { defineComponent, ref } from 'vue'
     import AtlanButton from '@/UI/button.vue'
     import Avatar from '~/components/common/avatar/index.vue'
     import useUserData from '~/composables/user/useUserData'

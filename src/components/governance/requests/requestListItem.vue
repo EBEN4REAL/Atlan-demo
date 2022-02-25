@@ -12,7 +12,7 @@
         <div class="flex items-center col-span-4 overflow-hidden">
             <!-- TODO: Uncomment for bulk selection -->
             <!-- <a-checkbox :checked="selected" class="mr-4" /> -->
-            <Popover :item="item">
+            <Popover :item="item" :showPreviewLink="true">
                 <div
                     class="cursor-pointer"
                     @mouseenter="$emit('mouseEnterAsset')"

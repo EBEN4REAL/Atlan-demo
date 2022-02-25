@@ -28,7 +28,7 @@
         name: 'AtlanButton',
         props: {
             size: {
-                type: String as PropType<'lg' | 'sm'>,
+                type: String as PropType<'lg' | 'sm' | 'icn'>,
                 default: () => 'lg',
                 required: false,
             },
@@ -40,7 +40,7 @@
                 required: false,
             },
             padding: {
-                type: String as PropType<'large' | 'compact'>,
+                type: String as PropType<'large' | 'compact' | 'icon'>,
                 default: () => 'large',
                 required: false,
             },
@@ -91,12 +91,20 @@
             height: 30px;
         }
 
+        &.icn {
+            @apply h-8;
+        }
+
         &.large {
             @apply px-8;
         }
 
         &.compact {
             @apply px-3;
+        }
+
+        &.icon {
+            @apply px-2;
         }
 
         &.primary {

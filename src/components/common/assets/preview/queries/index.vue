@@ -20,8 +20,8 @@
             <EmptyView
                 empty-screen="EmptyQueriesTab"
                 desc="This asset doesn't have any saved queries"
-                buttonText="Create a new query"
-                buttonColor="secondary"
+                button-text="Create a new query"
+                button-color="secondary"
                 @event="handleCreateQuery"
             ></EmptyView>
         </div>
@@ -55,23 +55,33 @@
                 :list="list"
                 :is-load-more="isLoadMore"
                 :is-loading="isValidating"
-                @loadMore="handleLoadMore"
                 class="mt-4"
+                @loadMore="handleLoadMore"
             >
                 <template #default="{ item, itemIndex }">
-                    <Popover :item="item">
+                    <Popover
+                        :item="item"
+                        @previewAsset="handleOpenDrawer(item.guid)"
+                    >
                         <AssetItem
                             :item="item"
                             :item-index="itemIndex"
-                            :enable-sidebar-drawer="true"
                             :asset-name-truncate-percentage="'93%'"
                             class="px-2 hover:bg-primary-menu"
+                            is-compact
+                            @preview="handleOpenDrawer(item.guid)"
                             @updateDrawer="handleListUpdate"
-                            isCompact
-                    /></Popover>
+                        />
+                    </Popover>
                 </template>
             </AssetList>
         </div>
+        <AssetDrawer
+            :guid="guidToFetch"
+            :show-drawer="drawerVisible"
+            @closeDrawer="handleCloseDrawer"
+            @update="handleListUpdate"
+        />
     </div>
 </template>
 
@@ -82,12 +92,12 @@
     import ErrorView from '@common/error/discover.vue'
     import EmptyView from '@common/empty/index.vue'
 
+    import AssetItem from '@common/assets/list/assetItem.vue'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import Sorting from '@/common/select/sorting.vue'
 
     import AssetList from '@/common/assets/list/index.vue'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
-    import AssetItem from '@common/assets/list/assetItem.vue'
 
     import {
         DefaultRelationAttributes,
@@ -97,6 +107,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import Popover from '@/common/popover/assets/index.vue'
+    import AssetDrawer from '@/common/assets/preview/drawer.vue'
 
     export default defineComponent({
         name: 'ColumnWidget',
@@ -109,6 +120,7 @@
             EmptyView,
             ErrorView,
             Popover,
+            AssetDrawer,
         },
         props: {
             selectedAsset: {
@@ -128,10 +140,16 @@
             })
             const postFacets = ref({})
             const dependentKey = ref('DEFAULT_QUERIES')
-            const defaultAttributes = ref([...MinimalAttributes])
+            const defaultAttributes = ref([
+                ...MinimalAttributes,
+                'ownerUsers',
+                'ownerGroups',
+            ])
             const preference = ref({
                 sort: 'order-asc',
             })
+            const guidToFetch = ref('')
+            const drawerVisible = ref(false)
             const relationAttributes = ref([...DefaultRelationAttributes])
 
             const updateFacet = () => {
@@ -199,6 +217,16 @@
                 window.open(getAssetQueryPath(selectedAsset.value))
             }
 
+            const handleOpenDrawer = (guid) => {
+                drawerVisible.value = true
+                guidToFetch.value = guid
+            }
+
+            const handleCloseDrawer = () => {
+                drawerVisible.value = false
+                guidToFetch.value = ''
+            }
+
             return {
                 isLoading,
                 queryText,
@@ -216,6 +244,10 @@
                 isValidating,
                 handleListUpdate,
                 handleCreateQuery,
+                handleOpenDrawer,
+                handleCloseDrawer,
+                drawerVisible,
+                guidToFetch,
             }
         },
     })

@@ -181,9 +181,9 @@
             <template #extra>
                 <div>
                     <Run
-                        v-if="run && !runOnUpdate"
+                        v-if="run"
                         :run="run"
-                        :is-loading="runLoading"
+                        :is-loading="runLoading || !run?.status?.progress"
                         class="mb-3"
                     ></Run>
 
@@ -296,7 +296,6 @@
             } = toRefs(props)
             const localTemplate = ref(workflowTemplate.value)
             const localConfigMap = ref(configMap.value)
-            const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
             const route = useRoute()
             const modelValue = ref(defaultValue.value)
             const selectedStep = ref('')
@@ -398,7 +397,7 @@
             const {
                 list: runList,
                 fetch: fetchRun,
-                isLoading: isRunLoading,
+                isLoading: runLoading,
             } = useRunDiscoverList({
                 isCache: false,
                 facets,
@@ -410,11 +409,10 @@
 
             const { pause, resume } = useIntervalFn(fetchRun, 5000, {
                 immediate: false,
+                immediateCallback: true,
             })
 
             const run = ref({})
-
-            const runLoading = computed(() => isRunLoading.value)
 
             watch(runList, () => {
                 if (runList.value?.length > 0) {
@@ -644,10 +642,14 @@
                         )
 
                         watchOnce(nrd, () => {
-                            run.value = nrd.value
+                            run.value = undefined
                             title.value = 'Workflow is in progress'
                             subTitle.value = ''
                             status.value = 'success'
+                            facets.value = {
+                                runName: nrd.value.metadata.name,
+                            }
+                            resume()
                         })
 
                         watchOnce(nre, () => {
@@ -673,10 +675,6 @@
                 if (step < currentStep.value) {
                     currentStep.value = step
                 }
-            }
-
-            const handleRefresh = () => {
-                dirtyTimestamp.value = `dirty_${Date.now().toString()}`
             }
 
             return {
@@ -706,14 +704,11 @@
                 handleStepClick,
                 cron,
                 isSandbox,
-                handleRefresh,
-                dirtyTimestamp,
                 localTemplate,
                 localConfigMap,
                 allowSchedule,
                 fetchRun,
                 runList,
-                isRunLoading,
                 runLoading,
                 run,
                 pause,

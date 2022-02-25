@@ -51,7 +51,12 @@
                         >
                             <a-tooltip placement="top">
                                 <template #title>
-                                    {{ policy.groups.length }} Groups
+                                    {{ policy.groups.length }}
+                                    {{
+                                        policy.groups.length > 1
+                                            ? 'Groups'
+                                            : 'Group'
+                                    }}
                                 </template>
                                 <AtlanIcon icon="Group" class="-mt-1" />
                                 {{ policy.groups.length }}

@@ -30,6 +30,7 @@ export interface assetInterface {
         isPartition: boolean
         isDist: boolean
         isForeign: boolean
+        isSort: boolean
         compiledQuery: string
         rawQuery: string
         rowLimit: number

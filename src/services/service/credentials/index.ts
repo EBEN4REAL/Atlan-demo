@@ -19,6 +19,18 @@ const Metadata = (
     options?: useOptions
 ) => useAPI(map.METADATA_CREDENTIAL, 'POST', { body }, options || {})
 
+const MetadataByID = (
+    pathVariables,
+    body: Ref<Record<string, any>> | Record<string, any>,
+    options?: useOptions
+) =>
+    useAPI(
+        map.METADATA_CREDENTIAL_BY_ID,
+        'POST',
+        { pathVariables, body },
+        options || {}
+    )
+
 const QueryByID = (
     pathVariables,
     body: Ref<Record<string, any>> | Record<string, any>,
@@ -69,6 +81,7 @@ export const Credential = {
     Test,
     Query,
     Metadata,
+    MetadataByID,
     TestByID,
     GetByID,
     UpdateByID,

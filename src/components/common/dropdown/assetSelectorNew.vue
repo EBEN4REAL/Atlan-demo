@@ -62,12 +62,10 @@
             </template>
         </div>
         <div
-            v-else-if="dropdownOption === 0"
+            v-else-if="dropdownOption === 0 && isLoading"
             class="flex items-center justify-between w-full px-4 rounded"
             style="min-height: 0"
         >
-            <!-- No Data Found -->
-            <!-- <a-spin icon="Loader" class="mt-1 ml-auto mr-auto"></a-spin> -->
             <AtlanLoader class="h-8 mt-1 ml-auto mr-auto" />
         </div>
         <div

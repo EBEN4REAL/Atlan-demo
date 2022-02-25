@@ -27,11 +27,16 @@
         <AtlanButton @click="linkIssueVisible = true">Link Issues</AtlanButton>
     </div>
 
-    <div ref="wrapper" class="w-full h-full overflow-y-auto">
+    <div ref="wrapper" class="w-full h-full">
         <Header @add="linkIssueVisible = true" />
-        <template v-for="issue in issues" :key="issue.id">
-            <IssueCard :issue="issue" class="mx-4 mt-4" />
-        </template>
+        <div
+            class="flex flex-col p-4 overflow-y-auto gap-y-4"
+            style="height: calc(100vh - 5.1rem)"
+        >
+            <template v-for="issue in issues" :key="issue.id">
+                <IssueCard :issue="issue" class="" />
+            </template>
+        </div>
     </div>
 </template>
 

@@ -47,7 +47,7 @@ const searchIssues = (jql, immediate = true) => {
         current: offset.value / pageSize.value + 1,
     }))
 
-    return { issues, isLoading, error, mutate, isReady, searchLoading, pagination, offset }
+    return { issues, isLoading, error, mutate, isReady, searchLoading, pagination, offset, totalResults }
 }
 
 export const listLinkedIssues = (assetID: Ref<string>) => {

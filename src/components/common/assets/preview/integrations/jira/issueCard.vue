@@ -14,10 +14,13 @@
                 class="rounded-full"
             />
         </div>
-        <aside class="overflow-hidden">
+        <aside class="w-full overflow-hidden">
             <h1 class="flex font-bold">
                 <img :src="issuetype.iconUrl" class="mr-1" />
-                <Truncate :tooltip-text="`${key}: ${summary}`" />
+                <Truncate
+                    :tooltip-text="`${key}: ${summary}`"
+                    class="flex-grow"
+                />
             </h1>
             <span class="text-xs">
                 <Truncate :tooltip-text="description" :rows="2" />

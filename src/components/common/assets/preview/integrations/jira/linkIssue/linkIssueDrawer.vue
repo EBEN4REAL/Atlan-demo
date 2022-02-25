@@ -37,8 +37,8 @@
                         v-model="searchText"
                         clearable
                         :placeholder="
-                            issues?.length
-                                ? `Search from ${issues?.length} issues to link`
+                            totalResults
+                                ? `Search from ${totalResults} issues to link`
                                 : ''
                         "
                         @change="searchLoading = true"
@@ -150,6 +150,7 @@
         searchLoading,
         offset,
         pagination,
+        totalResults,
     } = listNotLinkedIssues(assetID)
 
     const { href } = window.location

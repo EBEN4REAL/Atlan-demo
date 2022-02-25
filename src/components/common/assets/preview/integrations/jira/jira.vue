@@ -1,5 +1,9 @@
 <template>
-    <LinkIssueDrawer v-model:visible="linkIssueVisible" :asset="asset" />
+    <LinkIssueDrawer
+        v-model:visible="linkIssueVisible"
+        :asset="asset"
+        @close="mutate"
+    />
     <div
         v-if="isLoading"
         class="flex items-center justify-center w-full h-full"
@@ -10,7 +14,7 @@
         <ErrorView :error="error" />
     </div>
     <div
-        v-if="!issues.length"
+        v-if="!issues?.length"
         class="flex flex-col items-center justify-center w-full h-full px-10 text-center gap-y-5"
     >
         <!-- // need empty placeholder -->

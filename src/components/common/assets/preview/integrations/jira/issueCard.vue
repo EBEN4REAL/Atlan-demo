@@ -1,6 +1,7 @@
 <template>
     <section
-        class="flex items-center p-2 transition ease-in-out rounded shadow gap-x-2"
+        class="flex items-center p-2 rounded shadow gap-x-2"
+        :class="error ? 'border border-red-500 border-dashed' : ''"
         @click="$emit('click', issue)"
     >
         <div v-if="showCheckbox" class="">
@@ -13,7 +14,7 @@
                 class="rounded-full"
             />
         </div>
-        <aside>
+        <aside class="overflow-hidden">
             <h1 class="flex font-bold">
                 <img :src="issuetype.iconUrl" class="mr-1" />
                 <Truncate :tooltip-text="`${key}: ${summary}`" />
@@ -33,14 +34,15 @@
 
 <script setup lang="ts">
     import { computed, PropType, toRefs } from 'vue'
-    import { Issue } from '~/types/integrations/jira.types'
     import { useTimeAgo, useVModels } from '@vueuse/core'
+    import { Issue } from '~/types/integrations/jira.types'
     import { listIssueTypes } from '~/composables/integrations/jira/useJiraTickets'
     import Truncate from '@/common/ellipsis/index.vue'
 
     const props = defineProps({
         issue: { type: Object as PropType<Issue>, required: true },
         checked: { type: Boolean, default: false },
+        error: { type: Boolean, default: false },
         showCheckbox: { type: Boolean, default: false },
     })
 

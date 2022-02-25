@@ -4,6 +4,7 @@
         :mask="true"
         :closable="false"
         :force-render="false"
+        @close="$emit('close')"
     >
         <Header
             class="mb-4"
@@ -76,6 +77,7 @@
                             :checked="checkedIDs.includes(issue.id)"
                             :show-checkbox="!!checkedIDs.length"
                             :issue="issue"
+                            :error="linkErrorIDs.includes(issue.id)"
                             class="cursor-pointer hover:bg-gray-100"
                             @click="handleClick"
                         />
@@ -87,6 +89,7 @@
             class="absolute flex justify-center w-full pt-2 bg-white bottom-3"
         >
             <Pagination
+                v-if="visible"
                 v-model:offset="offset"
                 :loading="isLoading || searchLoading"
                 :page-size="pagination.pageSize"
@@ -118,7 +121,7 @@
         asset: { type: Object as PropType<assetInterface>, required: true },
     })
 
-    const emit = defineEmits(['add'])
+    const emit = defineEmits(['add', 'close'])
 
     const { visible } = useVModels(props, emit)
 
@@ -149,8 +152,6 @@
         pagination,
     } = listNotLinkedIssues(assetID)
 
-    // watch([error, isLoading], (v) => {})
-
     const { href } = window.location
 
     const body = computed(() => ({
@@ -162,12 +163,7 @@
         assetUrl: href,
     }))
 
-    // const {
-    //     data: linkData,
-    //     isLoading: linkLoading,
-    //     error: linkError,
-    //     call,
-    // } = linkIssue(body, '')
+    const linkErrorIDs = ref<string[]>([])
 
     const callLinkIssue = (id) => {
         const {
@@ -181,8 +177,8 @@
             error: linkError,
         } = linkIssue(body, id)
         watch([linkData, linkError], (v) => {
-            console.log('v:', v)
             if (linkError.value) {
+                linkErrorIDs.value.push(id)
                 message.error({
                     content: `Failed to link "${key}: ${summary}"`,
                     key: id,
@@ -209,6 +205,8 @@
 
     const reset = () => {
         checkedIDs.value = []
+        offset.value = 0
+        linkErrorIDs.value = []
         mutate()
     }
 

@@ -92,10 +92,13 @@
                             </div>
                         </template>
                         <template #expandIcon></template>
-                        <div class="w-56 pt-1 pb-2">
+                        <div
+                            class="pt-1 pb-2 w-60"
+                            :class="$style.schemaExplorerTreeStyles"
+                        >
                             <!-- <div
                                 class="flex flex-row space-x-2"
-                                :class="$style.schemaTreeStyles"
+                                :class="$style.schemaExplorerTreeStyles"
                             >
                                 <a-input
                                     class="h-8 mt-1 text-base border-t-0 border-l-0 border-r-0 rounded-none"
@@ -113,7 +116,9 @@
                                     </template>
                                 </a-input>
                             </div> -->
-                            <div class="tree-container">
+                            <div
+                                class="w-full overflow-x-hidden tree-container"
+                            >
                                 <a-tree
                                     v-model:expandedKeys="expandedKeys"
                                     v-model:selectedKeys="selectedKeys"
@@ -143,10 +148,13 @@
                                         <AtlanIcon icon="CaretRight" />
                                     </template>
                                     <template #title="node">
-                                        <div class="flex items-center truncate">
+                                        <div
+                                            class="flex items-center parent-ellipsis-container-base"
+                                            style="max-width: 14rem"
+                                        >
                                             <AtlanIcon
                                                 :icon="iconName(node)"
-                                                class="h-4 mr-2"
+                                                class="flex-shrink-0 h-4 mr-2"
                                             />
                                             <span
                                                 class="parent-ellipsis-container-base"
@@ -212,7 +220,7 @@
                         <template #expandIcon></template>
 
                         <div
-                            class="w-56 pb-2 overflow-x-hidden overflow-y-scroll max-h-96"
+                            class="pb-2 overflow-x-hidden overflow-y-scroll w-60 max-h-96"
                         >
                             <AssetDropdownNewDatabase
                                 v-if="connection"
@@ -843,6 +851,7 @@
     }
     .tree-select-nodes .ant-tree-list-holder-inner {
         padding-left: 1rem !important;
+        padding-right: 1rem !important;
     }
 
     .tree-container {
@@ -866,13 +875,36 @@
         // max-width: 200px !important;
         // @apply max-w-full;
     }
+    .ant-tree .ant-tree-node-content-wrapper .tree-select-nodes {
+        border-radius: 0 !important;
+    }
 </style>
 <style lang="less" module>
-    // .schemaTreeStyles {
-    //     :global(.ant-tree-treenode-switchers-open) {
-    //         transform: rotate(90deg);
-    //     }
-    // }
+    .schemaExplorerTreeStyles {
+        // :global(.ant-tree-treenode-switchers-open) {
+        //     transform: rotate(90deg);
+        // }
+        :global(.ant-tree-treenode) {
+            padding-bottom: 0px !important;
+            @apply hover:bg-gray-200 !important;
+        }
+        :global(.ant-tree-treenode-selected) {
+            padding-bottom: 0px !important;
+            @apply hover:bg-primary-light !important;
+            @apply bg-primary-light !important;
+        }
+        :global(.ant-tree-node-content-wrapper) {
+            @apply hover:bg-transparent !important;
+            max-width: 85% !important;
+            // @applybg-primary-light !important;
+        }
+        :global(.ant-tree-node-content-wrapper.ant-tree-node-selected) {
+            @apply bg-transparent !important;
+        }
+        :global(.ant-tree-switcher-noop) {
+            max-width: 0.5rem !important;
+        }
+    }
     .tree_selecttor {
         :global(.ant-select-selector) {
             box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05) !important;

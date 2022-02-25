@@ -30,12 +30,12 @@
         >
             <template v-for="item in dropdownOption" :key="item.label">
                 <div
-                    class="flex items-center justify-between w-full px-4 cursor-pointer h-9 hover:bg-primary-light"
+                    class="flex items-center justify-between w-full px-4 cursor-pointer h-9"
                     @click="(e) => onSelectItem(item, e)"
                     :class="
                         modelValue === item.value
-                            ? 'bg-primary-light'
-                            : 'bg-white'
+                            ? 'bg-primary-light hover:bg-primary-light'
+                            : 'bg-white hover:bg-gray-200'
                     "
                 >
                     <div

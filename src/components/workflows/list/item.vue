@@ -3,98 +3,84 @@
         class="flex flex-col p-4 bg-white border border-gray-200 rounded-lg shadow-sm cursor-pointer hover:border-primary hover:shadow-lg hover:translate-y-2"
         :class="isSelected ? 'border-primary shadow-lg' : ''"
     >
-        <div class="mb-3 border-b pb-3">
-            <div class="flex items-center justify-between">
-                <div
-                    class="flex items-center flex-grow border-gray-200"
-                    v-if="item.metadata?.annotations"
+        <div
+            v-if="item.metadata?.annotations"
+            class="flex items-center pb-3 mb-3 border-b border-gray-200"
+        >
+            <div
+                class="relative flex-none w-10 h-10 p-2 mr-2 bg-white border border-gray-200 rounded-full"
+            >
+                <img
+                    v-if="
+                        item.metadata?.annotations[
+                            'orchestration.atlan.com/icon'
+                        ]
+                    "
+                    class="self-center w-6 h-6"
+                    :src="
+                        item.metadata?.annotations[
+                            'orchestration.atlan.com/icon'
+                        ]
+                    "
+                />
+                <span
+                    v-else-if="
+                        item.metadata?.annotations[
+                            'orchestration.atlan.com/emoji'
+                        ]
+                    "
+                    class="self-center w-6 h-6"
                 >
-                    <div
-                        class="relative w-10 h-10 p-2 mr-2 bg-white border border-gray-200 rounded-full"
-                    >
-                        <img
-                            v-if="
-                                item.metadata?.annotations[
-                                    'orchestration.atlan.com/icon'
-                                ]
-                            "
-                            class="self-center w-6 h-6"
-                            :src="
-                                item.metadata?.annotations[
-                                    'orchestration.atlan.com/icon'
-                                ]
-                            "
-                        />
-                        <span
-                            v-else-if="
-                                item.metadata?.annotations[
-                                    'orchestration.atlan.com/emoji'
-                                ]
-                            "
-                            class="self-center w-6 h-6"
-                        >
-                            {{
-                                item.metadata?.annotations[
-                                    'orchestration.atlan.com/emoji'
-                                ]
-                            }}</span
-                        >
-                        <span v-else class="self-center w-6 h-6">
-                            {{ '\ud83d\udce6' }}</span
-                        >
+                    {{
+                        item.metadata?.annotations[
+                            'orchestration.atlan.com/emoji'
+                        ]
+                    }}</span
+                >
+                <span v-else class="self-center w-6 h-6">
+                    {{ '\ud83d\udce6' }}</span
+                >
 
-                        <div
-                            v-if="
-                                item.metadata?.labels[
-                                    'orchestration.atlan.com/certified'
-                                ] === 'true'
-                            "
-                            class="absolute -right-1 -top-2"
-                        >
-                            <a-tooltip title="Certified" placement="left">
-                                <AtlanIcon
-                                    icon="Verified"
-                                    class="ml-1"
-                                ></AtlanIcon>
-                            </a-tooltip>
-                        </div>
-                    </div>
-                    <div class="flex flex-col w-2/3">
-                        <div
-                            class="flex items-center font-semibold truncate overflow-ellipsis"
-                        >
-                            <span class="line-clamp-1">
-                                {{
-                                    item.metadata?.annotations[
-                                        'orchestration.atlan.com/name'
-                                    ]
-                                }}</span
-                            >
-
-                            <a-tooltip
-                                placement="right"
-                                :title="
-                                    item.metadata?.annotations[
-                                        'package.argoproj.io/description'
-                                    ]
-                                "
-                            >
-                                <AtlanIcon
-                                    icon="Info"
-                                    class="h-3 ml-1"
-                                ></AtlanIcon
-                            ></a-tooltip>
-                        </div>
-
-                        <div class="flex text-gray-500">
-                            {{
-                                item.metadata.annotations[
-                                    'package.argoproj.io/name'
-                                ]
-                            }}
-                        </div>
-                    </div>
+                <div
+                    v-if="
+                        item.metadata?.labels[
+                            'orchestration.atlan.com/certified'
+                        ] === 'true'
+                    "
+                    class="absolute -right-1 -top-2"
+                >
+                    <a-tooltip title="Certified" placement="left">
+                        <AtlanIcon icon="Verified" class="ml-1"></AtlanIcon>
+                    </a-tooltip>
                 </div>
+            </div>
+            <div class="flex flex-col flex-1 overflow-hidden">
+                <div class="flex items-center font-semibold">
+                    <span class="truncate line-clamp-1">
+                        {{
+                            item.metadata?.annotations[
+                                'orchestration.atlan.com/name'
+                            ]
+                        }}</span
+                    >
+
+                    <a-tooltip
+                        placement="right"
+                        :title="
+                            item.metadata?.annotations[
+                                'package.argoproj.io/description'
+                            ]
+                        "
+                    >
+                        <AtlanIcon
+                            icon="Info"
+                            class="flex-none h-3 ml-1"
+                        ></AtlanIcon
+                    ></a-tooltip>
+                </div>
+                <span class="text-gray-500">
+                    {{ item.metadata.annotations['package.argoproj.io/name'] }}
+                </span>
             </div>
         </div>
 
@@ -132,13 +118,14 @@
 
 <script lang="ts">
     import { computed, defineComponent, inject, toRefs } from 'vue'
+    import cronstrue from 'cronstrue'
     import RunWidget from './run.vue'
     import LastRun from './lastRun.vue'
-    import cronstrue from 'cronstrue'
     import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
     import Ellipsis from '@/common/ellipsis/index.vue'
 
     export default defineComponent({
+        name: 'WorkflowItem',
         components: { LastRun, Ellipsis },
         props: {
             item: {

@@ -1,5 +1,6 @@
 <template>
     <div class="grid grid-cols-3 gap-x-3">
+        <Summary :item="persona" />
         <div class="col-span-2 p-6 bg-white border border-gray-200 rounded">
             <div class="mb-1 text-gray-500">Classifications</div>
             <Classification
@@ -9,12 +10,12 @@
                 @change="updateClassifications"
             />
         </div>
-        <DetailsWidget
+        <!-- <DetailsWidget
             :item="persona"
             class="border border-gray-200"
             @editDetails="$emit('editDetails')"
         >
-            <!-- <template #actionBtn>
+            <template #actionBtn>
                 <div class="hidden">
                 <a-switch
                     class="ml-auto"
@@ -27,8 +28,8 @@
                 />
                 <span class="ml-2 text-sm text-gray">Enable Purpose</span>
             </div>
-            </template> -->
-        </DetailsWidget>
+            </template>
+        </DetailsWidget> -->
         <!-- <PurposeSummary :purpose="persona" @setActiveTab="setActiveTab">
         </PurposeSummary> -->
         <!-- <div class="pt-6 details-section">
@@ -142,10 +143,17 @@
     import { formatDateTime } from '~/utils/date'
     // import PurposeSummary from './PurposeSummary.vue'
     import DetailsWidget from '~/components/common/widgets/detailsWidget.vue'
+    import Summary from '@/common/widgets/summaryWidget.vue'
 
     export default defineComponent({
         name: 'PurposeMeta',
-        components: { Classification, PopOverUser, UserPill, DetailsWidget },
+        components: {
+            Classification,
+            PopOverUser,
+            UserPill,
+            DetailsWidget,
+            Summary,
+        },
         props: {
             persona: {
                 type: Object as PropType<IPurpose>,

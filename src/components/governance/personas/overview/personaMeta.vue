@@ -1,5 +1,6 @@
 <template>
     <div class="grid grid-cols-3 gap-3">
+        <Summary :item="persona" />
         <PersonaUsersGroups
             :key="persona.id"
             v-model:persona="persona"
@@ -7,12 +8,11 @@
             :cancel-token-for-groups="cancelTokenForGroups"
             :cancel-token-for-users="cancelTokenForUsers"
         />
-        <DetailsWidget
+        <!-- <DetailsWidget
             :item="persona"
             class="border border-gray-200"
             @editDetails="$emit('editDetails')"
-        >
-        </DetailsWidget>
+        /> -->
     </div>
 </template>
 
@@ -28,6 +28,7 @@
     import { formatDateTime } from '~/utils/date'
     import DetailsWidget from '@/common/widgets/detailsWidget.vue'
     import PersonaUsersGroups from '@/governance/personas/users/personaUsersGroups.vue'
+    import Summary from '@/common/widgets/summaryWidget.vue'
     import {
         enablePersona,
         isEditing,
@@ -44,6 +45,7 @@
             UserPill,
             DetailsWidget,
             PersonaUsersGroups,
+            Summary,
         },
         props: {
             persona: {

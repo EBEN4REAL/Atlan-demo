@@ -9,7 +9,11 @@
         <div class="flex flex-col p-3">
             <div class="mt-1">
                 <div class="mb-2.5 text-gray-500">Channels</div>
-                <a-popover trigger="click" placement="bottom">
+                <a-popover
+                    v-model:visible="showPopover"
+                    trigger="click"
+                    placement="bottom"
+                >
                     <template #content>
                         <div class="p-3 bg-white w-72">
                             <div class="flex">
@@ -42,6 +46,7 @@
                                     size="sm"
                                     color="minimal"
                                     class="mr-2"
+                                    @click="showPopover = false"
                                 >
                                     Cancel
                                 </AtlanButton>
@@ -84,7 +89,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType } from 'vue'
+    import { defineComponent, PropType, ref } from 'vue'
     import { useTimeAgo } from '@vueuse/core'
     import Avatar from '~/components/common/avatar/index.vue'
     import PopOverUser from '@/common/popover/user/user.vue'
@@ -114,6 +119,7 @@
         },
         emits: ['editDetails'],
         setup(props) {
+            const showPopover = ref(false)
             const imageUrl = (username: any) =>
                 `${window.location.origin}/api/service/avatars/${username}`
             const timeStamp = (time, raw: boolean = false) => {
@@ -128,6 +134,7 @@
             return {
                 imageUrl,
                 timeStamp,
+                showPopover,
             }
         },
     })

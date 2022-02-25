@@ -1,6 +1,6 @@
 <template>
     <div
-        class="grid w-full gap-4 md:grid-cols-3 sm:grid-cols-2 grid-flow-cols auto-rows-min"
+        class="grid w-full grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4 grid-flow-cols auto-rows-min"
     >
         <Item
             v-for="item in list"

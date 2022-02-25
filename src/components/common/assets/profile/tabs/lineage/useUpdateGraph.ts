@@ -41,6 +41,9 @@ export default function useUpdateGraph(graph) {
         graphEdges.forEach((x) => {
             const cell = graph.value.getCellById(x.id)
             const [source, target] = x.id.split('/')[1].split('@')
+
+            if (source.includes('vpNode') || target.includes('vpNode')) return
+
             const itExists =
                 nodesToHighlight.includes(source) &&
                 nodesToHighlight.includes(target)

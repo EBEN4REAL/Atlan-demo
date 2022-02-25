@@ -419,7 +419,7 @@ import QuestionRound from '~/assets/images/icons/question-round.svg'
 import Documentation from '~/assets/images/icons/documentation.svg'
 import Logout from '~/assets/images/icons/logout.svg'
 import TrendUp from '~/assets/images/icons/trendUp.svg'
-
+import NoAllow from '~/assets/images/icons/no-allow.svg'
 
 import ThreeDotsAlt from '~/assets/images/icons/3-dots-alt.svg'
 import NoProperty from '~/assets/images/admin/customMetadata/empty-property.svg'
@@ -828,5 +828,7 @@ export default {
     TrendUp,
     Draft,
     Deprecated,
-    Nostatus
+    Nostatus,
+    MySQL,
+    NoAllow,
 }

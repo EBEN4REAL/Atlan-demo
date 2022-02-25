@@ -156,7 +156,7 @@
     import { useRoute, useRouter } from 'vue-router'
 
     export default defineComponent({
-        name: 'PackagePreview',
+        name: 'Sidebar',
         components: {
             PreviewTabsIcon,
             Property: defineAsyncComponent(

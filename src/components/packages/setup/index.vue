@@ -30,44 +30,54 @@
                 class="flex justify-between px-6 py-3 bg-gray-100 border-t"
                 v-if="currentStep < steps.length"
             >
-                <a-button @click="handlePrevious" v-if="currentStep !== 0">
-                    <AtlanIcon icon="ChevronLeft" class="mr-1"></AtlanIcon
-                    >Back</a-button
+                <AtlanButton
+                    v-if="currentStep !== 0"
+                    padding="compact"
+                    color="secondary"
+                    size="sm"
+                    @click="handlePrevious"
                 >
-                <div v-if="currentStep == 0">
-                    <a-button
-                        @click="handleExit"
-                        v-if="!isEdit"
-                        class="font-bold text-red-500"
-                    >
-                        <AtlanIcon icon="ChevronLeft" class="mr-1"></AtlanIcon>
-                        Exit to Marketplace
-                    </a-button>
-                </div>
-                <a-button
-                    @click="handleNext"
-                    class="text-primary"
+                    <template #prefix>
+                        <AtlanIcon icon="ChevronLeft" />
+                    </template>
+                    Back
+                </AtlanButton>
+
+                <AtlanButton
+                    v-else-if="currentStep === 0 && !isEdit"
+                    padding="compact"
+                    color="secondary"
+                    size="sm"
+                    @click="handleExit"
+                >
+                    <template #prefix>
+                        <AtlanIcon icon="ChevronLeft" />
+                    </template>
+                    Back to Marketplace
+                </AtlanButton>
+
+                <AtlanButton
                     v-if="currentStep < steps.length - 1"
+                    padding="compact"
+                    size="sm"
+                    class="ml-auto"
+                    @click="handleNext"
                 >
                     Next
-                    <AtlanIcon
-                        icon="ChevronRight"
-                        class="ml-1 text-primary"
-                    ></AtlanIcon
-                ></a-button>
+                    <template #suffix>
+                        <AtlanIcon icon="ChevronRight" />
+                    </template>
+                </AtlanButton>
+
                 <a-popconfirm
-                    v-if="currentStep === steps.length - 1 && isEdit"
+                    v-else-if="currentStep === steps.length - 1 && isEdit"
                     ok-text="Yes"
                     :overlay-class-name="$style.popConfirm"
                     cancel-text="Cancel"
                     placement="topRight"
+                    :ok-button-props="{ size: 'default' }"
+                    :cancel-button-props="{ size: 'default' }"
                     @confirm="handleSubmit(false)"
-                    :ok-button-props="{
-                        size: 'default',
-                    }"
-                    :cancel-button-props="{
-                        size: 'default',
-                    }"
                 >
                     <template #icon> </template>
                     <template #title>
@@ -82,19 +92,22 @@
                             >Start a new run</a-checkbox
                         >
                     </template>
-                    <a-button type="primary"> Update </a-button>
+                    <AtlanButton padding="compact" size="sm">
+                        Update
+                    </AtlanButton>
                 </a-popconfirm>
 
                 <div
+                    v-else-if="currentStep === steps.length - 1 && !isEdit"
                     class="flex gap-x-2"
-                    v-if="currentStep === steps.length - 1 && !isEdit"
                 >
-                    <a-button
-                        class="px-6"
+                    <AtlanButton
+                        :color="allowSchedule ? 'secondary' : 'primary'"
+                        size="sm"
                         @click="handleSubmit(false)"
-                        :type="allowSchedule ? 'default' : 'primary'"
-                        >Run</a-button
                     >
+                        Run
+                    </AtlanButton>
 
                     <a-popconfirm
                         v-if="allowSchedule"
@@ -102,42 +115,42 @@
                         :overlay-class-name="$style.popConfirm"
                         cancel-text="Cancel"
                         placement="topRight"
+                        :ok-button-props="{ size: 'default' }"
+                        :cancel-button-props="{ size: 'default' }"
                         @confirm="handleSubmit(true)"
-                        :ok-button-props="{
-                            size: 'default',
-                        }"
-                        :cancel-button-props="{
-                            size: 'default',
-                        }"
                     >
                         <template #icon> </template>
                         <template #title>
                             <Schedule class="mb-3" v-model="cron"></Schedule>
                         </template>
-                        <a-button
-                            type="primary"
-                            class="px-6"
+
+                        <AtlanButton
                             v-if="allowSchedule"
-                            >Schedule & Run
-                            <AtlanIcon
-                                icon="ChevronRight"
-                                class="ml-1 text-white"
-                            ></AtlanIcon
-                        ></a-button>
+                            padding="compact"
+                            size="sm"
+                        >
+                            Schedule & Run
+                            <template #suffix>
+                                <AtlanIcon icon="ChevronRight" />
+                            </template>
+                        </AtlanButton>
                     </a-popconfirm>
                 </div>
             </div>
         </div>
     </div>
-    <div class="flex flex-col items-center justify-center w-full h-full" v-else>
+
+    <!-- Finish Page -->
+    <div v-else class="flex flex-col items-center justify-center w-full h-full">
         <div
-            class="flex flex-col justify-center"
             v-if="isLoading || (!run.status && runLoading)"
+            class="flex flex-col justify-center"
         >
             <a-spin size="large" />
             <div>Setting up your workflow</div>
         </div>
 
+        <!-- Update details, but don't run now -->
         <template v-else-if="isEdit && !runOnUpdate">
             <a-result :status="updateStatus.status" :title="updateStatus.title">
                 <template v-if="updateStatus.status === 'loading'" #icon>
@@ -170,17 +183,17 @@
         </template>
 
         <a-result
+            v-else-if="run"
             :status="status"
             :title="title"
             :sub-title="subTitle"
-            v-else-if="run"
         >
             <template #extra>
                 <div>
                     <Run
-                        :run="run"
-                        :isLoading="runLoading"
                         v-if="run && !runOnUpdate"
+                        :run="run"
+                        :is-loading="runLoading"
                         class="mb-3"
                     ></Run>
 
@@ -191,9 +204,9 @@
                             >
                         </a-button>
                         <a-button
+                            v-if="run?.metadata"
                             class="ml-3"
                             @click="handleTrackLink"
-                            v-if="run?.metadata"
                         >
                             Monitor Run
                         </a-button>
@@ -201,8 +214,8 @@
                 </div>
 
                 <div
-                    class="flex flex-col items-center justify-center p-2 bg-gray-100 rounded gap-y-2"
                     v-if="errorMesssage"
+                    class="flex flex-col items-center justify-center p-2 bg-gray-100 rounded gap-y-2"
                 >
                     <span>{{ errorMesssage }}</span>
                     <a-button
@@ -220,27 +233,15 @@
 
 <script lang="ts">
     // Vue
-    import {
-        defineComponent,
-        inject,
-        ref,
-        watch,
-        toRefs,
-        computed,
-        onBeforeMount,
-        provide,
-    } from 'vue'
+    import { defineComponent, ref, watch, toRefs, computed, provide } from 'vue'
 
     import { message } from 'ant-design-vue'
-    import { useIntervalFn, watchOnce } from '@vueuse/core'
+    import { useIntervalFn, watchOnce, useThrottleFn } from '@vueuse/core'
     import { useRoute, useRouter } from 'vue-router'
 
     // Components
-    import EmptyView from '@common/empty/index.vue'
-
     import DynamicForm from '@/common/dynamicForm2/index.vue'
     import Schedule from './schedule.vue'
-    // import Sandbox from '../preview/sandbox.vue'
     import Run from './run.vue'
 
     import { createWorkflow } from '~/composables/package/useWorkflow'
@@ -259,8 +260,6 @@
         name: 'WorkflowSetupTab',
         components: {
             Run,
-
-            EmptyView,
             DynamicForm,
             Schedule,
         },
@@ -268,31 +267,27 @@
             workflowTemplate: {
                 type: Object,
                 required: false,
+                default: () => ({}),
             },
             workflowObject: {
                 type: Object,
                 required: false,
+                default: () => ({}),
             },
             configMap: {
                 type: Object,
                 required: false,
-                default() {
-                    return {}
-                },
+                default: () => ({}),
             },
             isEdit: {
                 type: Boolean,
                 required: false,
-                default() {
-                    return false
-                },
+                default: () => false,
             },
             defaultValue: {
                 type: Object,
                 required: false,
-                default() {
-                    return {}
-                },
+                default: () => ({}),
             },
         },
         emits: ['change', 'openLog', 'handleSetLogo'],
@@ -313,7 +308,6 @@
             const localConfigMap = ref(configMap.value)
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
             const route = useRoute()
-            const sandboxVisible = ref(false)
             const modelValue = ref(defaultValue.value)
             const selectedStep = ref('')
 
@@ -331,9 +325,7 @@
             provide('configMap', localConfigMap)
 
             const { name } = useWorkflowInfo()
-            const toggleSandbox = () => {
-                sandboxVisible.value = !sandboxVisible.value
-            }
+
             const isSandbox = computed(() => route?.query?.sandbox || '')
 
             const allowSchedule = computed(() => {
@@ -360,16 +352,20 @@
                 selectedStep.value = event
             }
 
-            const handleNext = async () => {
-                if (stepForm.value) {
-                    const err = await stepForm.value.validateForm()
-                    if (err) {
-                        message.error('Please review the entered details')
-                    } else {
-                        currentStep.value += 1
+            const handleNext = useThrottleFn(
+                async () => {
+                    if (stepForm.value) {
+                        const err = await stepForm.value.validateForm()
+                        if (err) {
+                            message.error('Please review the entered details')
+                        } else {
+                            currentStep.value += 1
+                        }
                     }
-                }
-            }
+                },
+                isEdit.value ? 250 : 600,
+                false
+            )
 
             const handlePrevious = () => {
                 currentStep.value -= 1
@@ -412,6 +408,7 @@
             const facets = ref({
                 workflowTemplate: '',
             })
+
             const {
                 list: runList,
                 fetch: fetchRun,
@@ -425,13 +422,9 @@
                 refreshInterval: 5000,
             })
 
-            const { pause, resume } = useIntervalFn(
-                () => {
-                    fetchRun()
-                },
-                5000,
-                { immediate: false }
-            )
+            const { pause, resume } = useIntervalFn(fetchRun, 5000, {
+                immediate: false,
+            })
 
             const run = ref({})
 
@@ -671,7 +664,7 @@
                             status.value = 'success'
                         })
 
-                        watch(nre, () => {
+                        watchOnce(nre, () => {
                             title.value = 'Workflow run has failed'
                             subTitle.value = ''
                             status.value = 'error'
@@ -702,15 +695,11 @@
 
             return {
                 emit,
-
-                workflowTemplate,
                 handleChange,
-
                 modelValue,
                 selectedStep,
                 currentStep,
                 steps,
-                configMap,
                 currentStepConfig,
                 handleNext,
                 stepForm,
@@ -731,8 +720,6 @@
                 handleStepClick,
                 cron,
                 isSandbox,
-                sandboxVisible,
-                toggleSandbox,
                 handleRefresh,
                 dirtyTimestamp,
                 localTemplate,
@@ -746,8 +733,6 @@
                 pause,
                 resume,
                 handleTrackLink,
-                isEdit,
-                defaultValue,
                 updateWorkflow,
                 isUpdateLoading,
                 isUpdateError,

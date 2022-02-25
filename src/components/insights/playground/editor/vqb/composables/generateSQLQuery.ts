@@ -349,7 +349,7 @@ export function generateSQLQuery(
 
     if (groupPanel?.hide) {
         groupPanel?.subpanels.forEach((subpanel, i) => {
-            subpanel.columnsData.forEach((columnData) => {
+            subpanel?.columnsData?.forEach((columnData) => {
                 const tableName = getTableNameWithQuotes(
                     columnData.qualifiedName ?? ''
                 )
@@ -385,7 +385,7 @@ export function generateSQLQuery(
                         subpanel.column?.columnQualifiedName ??
                         ''
                 )
-                if (subpanel.column.label) {
+                if (subpanel?.column?.label) {
                     const tableName = getTableNameWithQuotes(
                         subpanel.column?.qualifiedName ??
                             subpanel.column?.columnsQualifiedName ??

@@ -1,12 +1,10 @@
 <template>
-    <div class="p-2 border rounded cursor-pointer">
+    <div class="p-2 border rounded cursor-pointer" @click="handleClick">
         <div class="flex items-center justify-between">
-            <span
-                class="font-semibold truncate cursor-pointer text-primary"
-                @click="handleClick"
-                >{{ item.metadata.name }}</span
-            >
-            <Dropdown :options="dropdownOptions" />
+            <span class="font-semibold truncate text-primary">{{
+                item.metadata.name
+            }}</span>
+            <Dropdown :options="dropdownOptions" @click.stop />
         </div>
         <!-- {{ runs(item.metadata.name) }} -->
 
@@ -36,15 +34,16 @@
     import Dropdown from '@/UI/dropdown.vue'
 
     export default defineComponent({
+        name: 'SidebarItem',
         components: { LastRun, Dropdown },
         props: {
             item: {
                 type: Object,
-                required: false,
+                required: true,
             },
             packageObject: {
                 type: Object,
-                required: false,
+                required: true,
             },
         },
         emits: ['archive'],

@@ -258,6 +258,9 @@ export default async function useComputeGraph({
                 return
 
             let edgeExtraData = {}
+            const styles = {
+                stroke: '#aaaaaa',
+            }
 
             const fromAndToId = `${from}@${to}`
             if (!fromAndToIdSetForEdges.has(fromAndToId)) {
@@ -265,12 +268,12 @@ export default async function useComputeGraph({
                 edgeExtraData = { isDup: true }
             } else return
 
-            edges.value.find((y) => {
+            edges.value.forEach((y) => {
                 const fromTo = y.id.split('/')[1]
                 const [fromTwo, toTwo] = fromTo.split('@')
-                if (toTwo === from && fromTwo === to) {
+
+                if (toTwo === from && fromTwo === to)
                     edgeExtraData = { ...edgeExtraData, isCyclicEdge: true }
-                }
             })
 
             const relation = {
@@ -287,9 +290,7 @@ export default async function useComputeGraph({
 
             if (x.type) relation.type = x.type
 
-            const { edgeData } = createEdgeData(relation, edgeExtraData, {
-                stroke: '#aaaaaa',
-            })
+            const { edgeData } = createEdgeData(relation, edgeExtraData, styles)
             edges.value.push(edgeData)
         })
     }

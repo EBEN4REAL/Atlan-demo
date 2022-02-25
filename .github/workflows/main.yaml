@@ -65,6 +65,7 @@ jobs:
       - name: "Automated Version Bump"
         uses: "phips28/gh-action-bump-version@master"
         with:
+          skip-tag: true
           tag-prefix: ""
         env:
           GITHUB_USER: atlan-ci

@@ -1,6 +1,12 @@
 <template>
-    <section class="flex items-center p-2 m-4 rounded shadow gap-x-2">
-        <div class="flex h-10">
+    <section
+        class="flex items-center p-2 rounded shadow gap-x-2"
+        @click="$emit('click', issue)"
+    >
+        <div v-if="showCheckbox" class="">
+            <a-checkbox v-model:checked="checked" />
+        </div>
+        <div class="flex" style="max-width: 40px">
             <img
                 :src="project.avatarUrls['24x24']"
                 alt=""
@@ -9,11 +15,12 @@
         </div>
         <aside>
             <h1 class="flex font-bold">
-                <img :src="issuetype.iconUrl" class="mr-1" />{{
-                    `${key}: ${summary}`
-                }}
+                <img :src="issuetype.iconUrl" class="mr-1" />
+                <Truncate :tooltip-text="`${key}: ${summary}`" />
             </h1>
-            <span class="text-xs">{{ description }}</span>
+            <span class="text-xs">
+                <Truncate :tooltip-text="description" :rows="2" />
+            </span>
             <div class="text-xs text-gray-500">
                 <span>{{ creator.displayName }}</span
                 >,
@@ -27,12 +34,19 @@
 <script setup lang="ts">
     import { computed, PropType, toRefs } from 'vue'
     import { Issue } from '~/types/integrations/jira.types'
-    import { useTimeAgo } from '@vueuse/core'
+    import { useTimeAgo, useVModels } from '@vueuse/core'
     import { listIssueTypes } from '~/composables/integrations/jira/useJiraTickets'
+    import Truncate from '@/common/ellipsis/index.vue'
 
     const props = defineProps({
         issue: { type: Object as PropType<Issue>, required: true },
+        checked: { type: Boolean, default: false },
+        showCheckbox: { type: Boolean, default: false },
     })
+
+    const emit = defineEmits(['click'])
+
+    const { checked } = useVModels(props, emit)
 
     const { issue } = toRefs(props)
 

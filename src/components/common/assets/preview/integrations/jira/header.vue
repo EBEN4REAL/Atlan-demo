@@ -8,13 +8,18 @@
             </div>
             <div class="flex-grow"></div>
 
-            <div class="flex items-center cursor-pointer text-primary">
+            <div
+                class="flex items-center cursor-pointer text-primary"
+                @click="$emit('add')"
+            >
                 <AtlanIcon icon="Add" class="mr-1 mb-0.5" /> Link
             </div>
         </div>
     </header>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+    const emit = defineEmits(['add'])
+</script>
 
 <style scoped></style>

@@ -13,11 +13,39 @@ export const activityTypeMap = [
         ],
     },
     {
+        value: 'announcement',
+        label: 'Announcement',
+        action: 'ENTITY_UPDATE',
+        exists: [
+            'detail.attributes.announcementMessage',
+            'detail.attributes.announcementTitle',
+        ],
+    },
+
+    {
         value: 'terms-updated',
         label: 'Terms',
         action: 'ENTITY_UPDATE',
-        excludes: ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'],
+        excludes: [
+            'AtlasGlossaryTerm',
+            'AtlasGlossaryCategory',
+            'AtlasGlossary',
+        ],
         exists: ['detail.relationshipAttributes.meanings'],
+    },
+    {
+        value: 'categories-updated',
+        label: 'Categories',
+        action: 'ENTITY_UPDATE',
+        includes: [
+            'AtlasGlossaryTerm',
+            'AtlasGlossaryCategory',
+            'AtlasGlossary',
+        ],
+        exists: [
+            'detail.relationshipAttributes.parentCategory',
+            'detail.relationshipAttributes.categories',
+        ],
     },
 
     {
@@ -44,12 +72,22 @@ export const activityTypeMap = [
                 label: 'Classification Added(Propagation)',
                 action: 'PROPAGATED_CLASSIFICATION_ADD',
                 exists: [],
+                excludes: [
+                    'AtlasGlossaryCategory',
+                    'AtlasGlossaryTerm',
+                    'AtlasGlossary',
+                ],
             },
             {
                 value: 'classification-removed-propagation',
                 label: 'Classification Removed(Propagation)',
                 action: 'PROPAGATED_CLASSIFICATION_DELETE',
                 exists: [],
+                excludes: [
+                    'AtlasGlossaryCategory',
+                    'AtlasGlossaryTerm',
+                    'AtlasGlossary',
+                ],
             },
         ],
     },
@@ -85,6 +123,72 @@ export const activityTypeMap = [
     },
 
     {
+        isGroup: true,
+        value: 'term-group',
+        label: 'Terms',
+        includes: [
+            'AtlasGlossary',
+        ],
+        excludes: [],
+        children: [
+            {
+                value: 'term-created',
+                label: 'Term Created',
+                action: 'ENTITY_CREATE',
+                typeName: 'AtlasGlossaryTerm',
+                exists: [],
+            },
+            {
+                value: 'term-deleted',
+                label: 'Term Deleted',
+                action: 'ENTITY_DELETE',
+                typeName: 'AtlasGlossaryTerm',
+                exists: [],
+            },
+            {
+                value: 'term-updated',
+                label: 'Term Updated',
+                action: 'ENTITY_UPDATE',
+                typeName: 'AtlasGlossaryTerm',
+                exists: [],
+            },
+        ],
+    },
+  {
+        isGroup: true,
+        value: 'category-group',
+        label: 'Category',
+        includes: [
+            'AtlasGlossary',
+        ],
+        excludes: [],
+        children: [
+            {
+                value: 'category-created',
+                label: 'Category Created',
+                action: 'ENTITY_CREATE',
+                typeName: 'AtlasGlossaryCategory',
+                exists: [],
+            },
+            {
+                value: 'category-deleted',
+                label: 'Category Deleted',
+                action: 'ENTITY_DELETE',
+                typeName: 'AtlasGlossaryCategory',
+                exists: [],
+            },
+            {
+                value: 'category-updated',
+                label: 'Category Updated',
+                action: 'ENTITY_UPDATE',
+                typeName: 'AtlasGlossaryCategory',
+                exists: [],
+            },
+        ],
+    },
+
+   
+    {
         value: 'certificate',
         label: 'Certificate',
         action: 'ENTITY_UPDATE',
@@ -101,5 +205,5 @@ export const activityTypeMap = [
             'detail.attributes.ownerUsers.keyword',
             'detail.attributes.ownerGroups.keyword',
         ],
-    },
+    }
 ]

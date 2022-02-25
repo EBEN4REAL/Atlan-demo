@@ -1,144 +1,308 @@
 <template>
     <div
-        class="relative bg-white border border-gray-300 rounded container-policy-card"
+        class="relative bg-white border-b hover:bg-gray-100 container-policy-card"
     >
         <div
-            class="flex flex-col px-3 py-3 rounded cursor-pointer group hover:bg-gray-100 card-policy"
-            :class="selectedPolicy.id === policy.id ? 'outline-primary' : ''"
+            class="flex items-center px-3 py-3 cursor-pointer card-policy"
+            :class="selectedPolicy.id === policy.id ? '' : ''"
             @click="handleClickPlicyCard"
         >
-            <div class="flex items-center mb-1">
-                <AtlanIcon
+            <div class="flex items-center flex-1">
+                <div
                     v-if="type === 'meta'"
-                    icon="Policies"
-                    class="-mt-1"
-                />
-                <AtlanIcon
+                    class="flex items-center justify-center mr-2 bg-gray-100 border border-gray-200 rounded-full w-9 h-9"
+                >
+                    <AtlanIcon v-if="type === 'meta'" icon="Policies" />
+                </div>
+                <div
                     v-if="type === 'data'"
-                    icon="QueryGrey"
-                    class="-mt-1"
-                />
-                <span class="ml-1 text-gray-500" data-test-id="policy-type">{{
-                    type === 'meta' ? 'Metadata Policy' : 'Data Policy'
-                }}</span>
-                <span class="mx-1 text-gray-500">/</span>
-                <span class="text-gray-500">{{ policy?.name }}</span>
-                <div class=""></div>
-            </div>
-            <div class="flex items-center justify-between">
-                <div class="flex items-center">
+                    class="flex items-center justify-center mr-2 bg-gray-100 border border-gray-200 rounded-full w-9 h-9"
+                >
+                    <AtlanIcon icon="QueryGrey" />
+                </div>
+                <div class="flex flex-col">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="flex items-center">
+                                <AtlanIcon
+                                    :icon="`${getImage(
+                                        connectionQfName?.split('/')[1]
+                                    )}`"
+                                    class="w-auto h-4 pr-1 rounded-tl rounded-bl"
+                                ></AtlanIcon>
+                                <span
+                                    >{{ connectorName }}/{{
+                                        connectionName
+                                    }}</span
+                                >
+                            </div>
+                            <!-- <div v-if="policy.assets.length > 0">
+                            <span class="text-gray-300 mx-1.5">•</span>
+                            <span v-if="!isAddAll" class="flex-none text-sm">
+                                {{ policy.assets.length }}
+                                {{
+                                    policy.assets.length > 1
+                                        ? 'assets'
+                                        : 'asset'
+                                }}
+                            </span>
+                            <span v-if="isAddAll" class="flex-none text-sm">
+                                All assets
+                            </span>
+                        </div> -->
+                            <!-- <div v-if="permissions.length > 0 && type === 'meta'">
+                            <span class="text-gray-300 mx-1.5">•</span>
+                            <span class="flex-none text-sm">
+                                {{ permissions.length }}
+                                {{
+                                    permissions.length > 1
+                                        ? 'permissions'
+                                        : 'permission'
+                                }}
+                            </span>
+                        </div>
+                        <div v-if="type === 'data'">
+                            <span class="text-gray-300 mx-1.5">•</span>
+                            <span class="flex-none text-sm">Query Access </span>
+                        </div>
+                        <div
+                            v-if="
+                                type === 'data' &&
+                                policy?.type &&
+                                policy?.type != 'null'
+                            "
+                        >
+                            <span class="text-gray-300 mx-1.5">•</span>
+                            <AtlanIcon
+                                icon="Lock"
+                                class="text-gray-300"
+                            ></AtlanIcon>
+                            <span v-if="maskComputed" class="flex-none text-sm">
+                                {{ maskComputed }}
+                            </span>
+                        </div> -->
+                        </div>
+                        <!-- <span v-if="!policy.allow" class="mr-6 denied-policy-pill">
+                        {{
+                            type === 'meta'
+                                ? 'Denied Permissions'
+                                : 'Denied Query'
+                        }}
+                    </span> -->
+                    </div>
                     <div class="flex items-center">
-                        <img
-                            :src="`${getImage(
-                                connectionQfName?.split('/')[1]
-                            )}`"
-                            class="w-auto h-4 pr-1 rounded-tl rounded-bl"
-                        />
-                        <span>{{ connectorName }}/{{ connectionName }}</span>
-                    </div>
-                    <div v-if="policy.assets.length > 0">
+                        <span class="text-gray-500">{{ policy?.name }}</span>
                         <span class="text-gray-300 mx-1.5">•</span>
-                        <span v-if="!isAddAll" class="flex-none text-sm">
-                            {{ policy.assets.length }}
-                            {{ policy.assets.length > 1 ? 'assets' : 'asset' }}
-                        </span>
-                        <span v-if="isAddAll" class="flex-none text-sm">
-                            All assets
-                        </span>
+                        <span
+                            class="ml-1 text-gray-500"
+                            data-test-id="policy-type"
+                            >{{
+                                type === 'meta'
+                                    ? 'Metadata Policy'
+                                    : 'Data Policy'
+                            }}</span
+                        >
                     </div>
-                    <div v-if="permissions.length > 0 && type === 'meta'">
-                        <span class="text-gray-300 mx-1.5">•</span>
-                        <span class="flex-none text-sm">
-                            {{ permissions.length }}
+                </div>
+            </div>
+            <div class="flex items-center flex-1 pl-5">
+                <div class="flex flex-1">
+                    <a-tooltip placement="top">
+                        <template #title>
+                            <div
+                                v-if="
+                                    policy.assets.length === 1 &&
+                                    isAllAssets(policy.assets[0])
+                                "
+                            >
+                                All Assets
+                            </div>
+                            <div v-else>
+                                {{ policy.assets.length }}
+                                {{
+                                    policy.assets.length > 1
+                                        ? 'assets'
+                                        : 'asset'
+                                }}
+                            </div>
+                        </template>
+                        <div class="flex items-center w-10">
+                            <AtlanIcon
+                                icon="AssetsInactiveLight"
+                                class="-mt-1"
+                            />
+                            <div
+                                v-if="
+                                    policy.assets.length !== 1 &&
+                                    !isAllAssets(policy.assets[0])
+                                "
+                                class="ml-1 font-semibold text-gray-500"
+                            >
+                                {{ policy.assets.length }}
+                            </div>
+                            <div
+                                v-else
+                                class="ml-1 font-semibold text-gray-500"
+                            >
+                                All
+                            </div>
+                        </div>
+                    </a-tooltip>
+                    <span
+                        v-if="permissions.length || maskComputed"
+                        class="text-gray-300 mx-1.5"
+                        >•</span
+                    >
+                    <a-tooltip v-if="permissions.length" placement="top">
+                        <template #title>
+                            <div v-if="permissions.length !== 9">
+                                {{ permissions.length }}
+                                {{
+                                    permissions.length > 1
+                                        ? 'permissions'
+                                        : 'permission'
+                                }}
+                            </div>
+                            <div v-if="permissions.length === 9">
+                                All permissions
+                            </div>
+                        </template>
+                        <div class="font-semibold text-gray-500">
+                            <AtlanIcon
+                                icon="ShieldBlank"
+                                class="-mt-1 icon-gray"
+                            />
                             {{
-                                permissions.length > 1
-                                    ? 'permissions'
-                                    : 'permission'
+                                permissions.length === 9
+                                    ? 'All'
+                                    : permissions.length
                             }}
-                        </span>
-                    </div>
-                    <div v-if="type === 'data'">
-                        <span class="text-gray-300 mx-1.5">•</span>
-                        <span class="flex-none text-sm">Query Access </span>
+                        </div>
+                    </a-tooltip>
+                    <a-tooltip v-if="maskComputed" placement="top">
+                        <template #title>
+                            {{ maskComputed }}
+                        </template>
+                        <div
+                            class="font-semibold text-gray-500 truncate max-w-5"
+                        >
+                            <AtlanIcon icon="Number" class="-mt-1 icon-gray" />
+                            {{ maskComputed }}
+                        </div>
+                    </a-tooltip>
+                </div>
+                <div class="relative flex flex-1">
+                    <!-- canDelete -->
+                    <!-- v-if="policy.allow" -->
+                    <div class="flex-1">
+                        <!-- <span v-if="policy.allow" class="text-gray-500">
+                            <AtlanIcon class="text-gray-500" icon="Check" />
+                            {{
+                                type === 'meta'
+                                    ? 'Permission Allowed'
+                                    : 'Query Allowed'
+                            }}
+                        </span> -->
+                        <span
+                            v-if="!policy.allow"
+                            class="text-sm text-red-500"
+                            >{{
+                                type === 'meta'
+                                    ? 'Denied Permission'
+                                    : 'Denied Query'
+                            }}</span
+                        >
                     </div>
                     <div
-                        v-if="
-                            type === 'data' &&
-                            policy?.type &&
-                            policy?.type != 'null'
-                        "
+                        class="items-center justify-end flex-1 gap-1 pr-3 default-s4"
                     >
-                        <span class="text-gray-300 mx-1.5">•</span>
-                        <!-- <AtlanIcon
-                            icon="Lock"
-                            class="text-gray-300"
-                        ></AtlanIcon> -->
-                        <span v-if="maskComputed" class="flex-none text-sm">
-                            {{ maskComputed }}
-                        </span>
+                        <a-tooltip placement="top">
+                            <template #title>
+                                <div class="text-gray-300">Created by</div>
+                                <div>
+                                    {{ policy.createdBy }}
+                                    {{ createdAtFormated }}
+                                </div>
+                            </template>
+                            <AtlanBtn
+                                class="px-2 bg-transparent border-none hover:bg-gray-200"
+                                size="sm"
+                                color="secondary"
+                                data-test-id="policy-delete"
+                                padding="compact"
+                            >
+                                <AtlanIcon icon="WarningIcon" />
+                            </AtlanBtn>
+                        </a-tooltip>
+                        <a-popover
+                            v-if="canDelete"
+                            v-model:visible="visibleDelete"
+                            trigger="click"
+                            placement="topRight"
+                            @onMouseleave="() => (visibleDelete = false)"
+                        >
+                            <template #content>
+                                <div class="popover-delete">
+                                    <span>
+                                        Are you sure you want to delete
+                                        <strong>{{ policy?.name }}</strong> ?
+                                    </span>
+                                    <div class="btn-wrapper">
+                                        <AtlanBtn
+                                            padding="compact"
+                                            color="minimal"
+                                            data-test-id="cancel"
+                                            class="btn-asset"
+                                            size="sm"
+                                            @click="
+                                                () => (visibleDelete = false)
+                                            "
+                                        >
+                                            Cancel
+                                        </AtlanBtn>
+                                        <AtlanBtn
+                                            padding="compact"
+                                            data-test-id="save"
+                                            class="btn-asset"
+                                            size="sm"
+                                            color="danger"
+                                            @click="removePolicy"
+                                        >
+                                            Delete
+                                        </AtlanBtn>
+                                    </div>
+                                </div>
+                            </template>
+                            <AtlanBtn
+                                class="px-2 bg-transparent border-none hover:text-red-500 hover:bg-gray-200"
+                                size="sm"
+                                color="secondary"
+                                data-test-id="policy-delete"
+                                padding="compact"
+                                @click.stop="() => (visibleDelete = true)"
+                            >
+                                <AtlanIcon icon="Delete" />
+                            </AtlanBtn>
+                        </a-popover>
+                        <AtlanBtn
+                            class="px-2 bg-transparent border-none"
+                            size="sm"
+                            color="secondary"
+                            data-test-id="policy-delete"
+                            padding="compact"
+                        >
+                            <AtlanIcon class="text-primary" icon="ArrowRight" />
+                        </AtlanBtn>
                     </div>
                 </div>
-                <span v-if="!policy.allow" class="mr-6 denied-policy-pill">
-                    {{
-                        type === 'meta' ? 'Denied Permissions' : 'Denied Query'
-                    }}
-                </span>
             </div>
         </div>
-
-        <a-popover
-            v-if="canDelete"
-            v-model:visible="visibleDelete"
-            trigger="click"
-            placement="topRight"
-            @onMouseleave="() => (visibleDelete = false)"
-        >
-            <template #content>
-                <div class="popover-delete">
-                    <span>
-                        Are you sure you want to delete
-                        <strong>{{ policy?.name }}</strong> ?
-                    </span>
-                    <div class="btn-wrapper">
-                        <AtlanBtn
-                            padding="compact"
-                            color="minimal"
-                            data-test-id="cancel"
-                            class="btn-asset"
-                            size="sm"
-                            @click="() => (visibleDelete = false)"
-                        >
-                            Cancel
-                        </AtlanBtn>
-                        <AtlanBtn
-                            padding="compact"
-                            data-test-id="save"
-                            class="btn-asset"
-                            size="sm"
-                            color="danger"
-                            @click="removePolicy"
-                        >
-                            Delete
-                        </AtlanBtn>
-                    </div>
-                </div>
-            </template>
-            <AtlanBtn
-                class="absolute flex-none px-2 border-r border-gray-300 border-none right-2 bottom-2 hover:text-red-500 button-hide"
-                size="sm"
-                color="secondary"
-                data-test-id="policy-delete"
-                padding="compact"
-                @click="() => (visibleDelete = true)"
-            >
-                <AtlanIcon icon="Delete" class="" />
-            </AtlanBtn>
-        </a-popover>
     </div>
 </template>
 
 <script lang="ts">
     import { computed, defineComponent, PropType, toRefs, ref } from 'vue'
+    import { useTimeAgo } from '@vueuse/core'
     import PillGroup from '@/UI/pill/pillGroup.vue'
     import AtlanBtn from '@/UI/button.vue'
     import {
@@ -262,6 +426,14 @@
                     maskPersona.find((el) => el.value === policy.value.type)
                         ?.label
             )
+            const createdAtFormated = useTimeAgo(policy.value.createdAt)
+            const isAllAssets = (name) => {
+                const splited = name.split('/')
+                if (splited && splited.length === 3) {
+                    return true
+                }
+                return false
+            }
             return {
                 getPopoverContent,
                 removePolicy,
@@ -280,6 +452,8 @@
                 isAddAll,
                 maskComputed,
                 permissions,
+                createdAtFormated,
+                isAllAssets,
             }
         },
     })
@@ -291,14 +465,53 @@
             fill: #00a680 !important;
         }
     }
+    .icon-gray {
+        path {
+            fill: #6f7590 !important;
+        }
+    }
 </style>
 <style lang="less" scoped>
+    .wrapper-asset-permission {
+        margin-right: 300px;
+    }
+    .icon-wrap {
+        height: fit-content !important;
+    }
     .container-policy-card {
+        &:last-child {
+            border-bottom-right-radius: 0.5rem;
+            border-bottom-left-radius: 0.5rem;
+        }
         .button-hide {
             opacity: 0;
             transition: all ease 0.3s;
         }
+        .default-s3 {
+            display: flex !important;
+        }
+        .default-s4 {
+            display: none !important;
+        }
         &:hover {
+            .default-s3 {
+                display: none !important;
+            }
+            .default-s4 {
+                display: flex !important;
+                position: absolute;
+                right: 0;
+                background: rgb(250, 250, 250);
+                background: linear-gradient(
+                    90deg,
+                    rgba(250, 250, 250, 0.779171043417367) 9%,
+                    rgba(250, 250, 250, 1) 18%
+                );
+                padding: 10px 0;
+                width: 100%;
+                top: 50%;
+                transform: translateY(-50%);
+            }
             .button-hide {
                 opacity: 1;
                 background-color: transparent !important;

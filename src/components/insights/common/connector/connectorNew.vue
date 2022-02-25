@@ -115,6 +115,8 @@
                             </div> -->
                             <div class="tree-container">
                                 <a-tree
+                                    v-model:expandedKeys="expandedKeys"
+                                    v-model:selectedKeys="selectedKeys"
                                     :class="[
                                         $style.tree_selecttor,
                                         bgGrayForSelector
@@ -122,8 +124,6 @@
                                             : '',
                                     ]"
                                     style="width: 100%"
-                                    v-model:treeExpandedKeys="expandedKeys"
-                                    v-model:selectedKeys="selectedKeys"
                                     :dropdownStyle="{
                                         maxHeight: '400px',
                                         overflow: 'auto',
@@ -131,12 +131,13 @@
                                     :tree-data="treeData"
                                     :allowClear="false"
                                     :block-node="true"
+                                    :auto-expand-parent="false"
                                     ref="treeRef"
                                     @change="onChange"
                                     :data-test-id="'conector'"
-                                    @click="handleOnClick"
-                                    @select="selectNodeTree"
                                     class="tree-select-nodes"
+                                    @select="selectNodeTree"
+                                    @click="selectNodeTree"
                                 >
                                     <template #switcherIcon>
                                         <AtlanIcon icon="CaretRight" />
@@ -421,6 +422,7 @@
                                 integrationName: getConnectorName(
                                     connection?.attributes
                                 ),
+                                isLeaf: true,
                                 children: [],
                                 title:
                                     connection.attributes.name ||
@@ -442,6 +444,7 @@
                         connector: item.id,
                         connection: undefined,
                         title: item.id,
+                        isLeaf: item?.connection ? true : false,
                         children,
                     }
                     if (props.showEmptyParents) tree.push(treeNodeObj)
@@ -510,32 +513,87 @@
                 let node = event['node']
 
                 console.log('node: ', node)
+                console.log('event:', event)
 
                 console.log('valueHere', value)
-                selectedKeys.value.splice(0, selectedKeys.value.length)
-                selectedKeys.value.push(value)
+                // debugger
 
-                if (node?.children?.length > 0 && !isLeafNodeSelectable.value) {
-                    expandNode([], node)
-                    return
+                if (!(event.event === 'select') && !event.connection) {
+                    //Code for expand based on event
+                    if (
+                        // !expandedKeys?.value?.includes(value) &&
+                        !node?.isLeaf
+                    ) {
+                        const isExpanded = expandedKeys.value?.includes(
+                            event.value
+                        )
+                        if (!isExpanded) {
+                            expandedKeys.value.push(event.value)
+                        } else if (isExpanded) {
+                            const index = expandedKeys.value?.indexOf(
+                                event.value
+                            )
+                            expandedKeys.value?.splice(index, 1)
+                        }
+                        // expandedKeys.value.push(value)
+                        console.log(
+                            'expandedKeys valueHere:',
+                            expandedKeys.value
+                        )
+                    }
                 }
-                const payload: Components.Schemas.FilterCriteria = {
-                    attributeName: undefined,
-                    attributeValue: undefined,
-                }
-                const chunks = value?.split('/')
 
-                if (chunks?.length == 1 && chunks[0]) {
-                    payload.attributeName = 'connectorName'
-                    payload.attributeValue = chunks[0]
-                } else if (chunks?.length > 2) {
-                    payload.attributeName = 'connectionQualifiedName'
-                    payload.attributeValue = chunks.slice(0, 3).join('/')
-                }
+                // if (
+                //     // !expandedKeys?.value?.includes(value) &&
+                //     !node?.isLeaf
+                // ) {
+                //     const isExpanded = expandedKeys.value?.includes(value)
+                //     if (!isExpanded) {
+                //         expandedKeys.value.push(value)
+                //     } else if (isExpanded) {
+                //         const index = expandedKeys.value?.indexOf(value)
+                //         expandedKeys.value?.splice(index, 1)
+                //     }
+                //     // expandedKeys.value.push(value)
+                //     console.log('expandedKeys valueHere:', expandedKeys.value)
+                // }
 
-                emit('update:data', payload)
-                emit('change')
-                emit('changeConnector')
+                // else if (
+                //     expandedKeys?.value?.includes(value) &&
+                //     !node?.isLeaf
+                // ) {
+                //     expandedKeys?.value?.splice(0, 1)
+                //     console.log(
+                //         'expandedKeysRemove valueHere:',
+                //         expandedKeys.value
+                //     )
+                // }
+                else {
+                    selectedKeys.value.splice(0, selectedKeys.value.length)
+                    selectedKeys.value.push(value)
+
+                    // if (node?.children?.length > 0 && !isLeafNodeSelectable.value) {
+                    //     expandNode([], node)
+                    //     return
+                    // }
+                    const payload: Components.Schemas.FilterCriteria = {
+                        attributeName: undefined,
+                        attributeValue: undefined,
+                    }
+                    const chunks = value?.split('/')
+
+                    if (chunks?.length == 1 && chunks[0]) {
+                        payload.attributeName = 'connectorName'
+                        payload.attributeValue = chunks[0]
+                    } else if (chunks?.length > 2) {
+                        payload.attributeName = 'connectionQualifiedName'
+                        payload.attributeValue = chunks.slice(0, 3).join('/')
+                    }
+
+                    emit('update:data', payload)
+                    emit('change')
+                    emit('changeConnector')
+                }
             }
 
             const selectNode = (value, node?: any) => {

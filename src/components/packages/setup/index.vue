@@ -143,7 +143,7 @@
     <!-- Finish Page -->
     <div v-else class="flex flex-col items-center justify-center w-full h-full">
         <div
-            v-if="isLoading || (!run.status && runLoading)"
+            v-if="isLoading || (!run?.status && runLoading)"
             class="flex flex-col justify-center"
         >
             <a-spin size="large" />
@@ -191,9 +191,9 @@
             <template #extra>
                 <div>
                     <Run
-                        v-if="run && !runOnUpdate"
+                        v-if="run"
                         :run="run"
-                        :is-loading="runLoading"
+                        :is-loading="runLoading || !run?.status?.progress"
                         class="mb-3"
                     ></Run>
 
@@ -233,7 +233,15 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, ref, watch, toRefs, computed, provide } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        watch,
+        toRefs,
+        computed,
+        provide,
+        Ref,
+    } from 'vue'
 
     import { message } from 'ant-design-vue'
     import { useIntervalFn, watchOnce, useThrottleFn } from '@vueuse/core'
@@ -306,7 +314,6 @@
             } = toRefs(props)
             const localTemplate = ref(workflowTemplate.value)
             const localConfigMap = ref(configMap.value)
-            const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
             const route = useRoute()
             const modelValue = ref(defaultValue.value)
             const selectedStep = ref('')
@@ -412,7 +419,7 @@
             const {
                 list: runList,
                 fetch: fetchRun,
-                isLoading: isRunLoading,
+                isLoading: runLoading,
             } = useRunDiscoverList({
                 isCache: false,
                 facets,
@@ -424,11 +431,10 @@
 
             const { pause, resume } = useIntervalFn(fetchRun, 5000, {
                 immediate: false,
+                immediateCallback: true,
             })
 
             const run = ref({})
-
-            const runLoading = computed(() => isRunLoading.value)
 
             watch(runList, () => {
                 if (runList.value?.length > 0) {
@@ -468,7 +474,7 @@
                 // }
             }
 
-            const status = ref('')
+            const status: Ref<undefined | string> = ref(undefined)
             const title = ref('Setting up a workflow')
             const subTitle = ref(
                 'Saving & validating your inputs and credentials'
@@ -658,10 +664,14 @@
                         )
 
                         watchOnce(nrd, () => {
-                            run.value = nrd.value
+                            run.value = undefined
                             title.value = 'Workflow is in progress'
                             subTitle.value = ''
                             status.value = 'success'
+                            facets.value = {
+                                runName: nrd.value.metadata.name,
+                            }
+                            resume()
                         })
 
                         watchOnce(nre, () => {
@@ -676,7 +686,7 @@
             }
 
             const handleBackToSetup = () => {
-                status.value = null
+                status.value = undefined
             }
             const router = useRouter()
             const handleExit = (key) => {
@@ -687,10 +697,6 @@
                 if (step < currentStep.value) {
                     currentStep.value = step
                 }
-            }
-
-            const handleRefresh = () => {
-                dirtyTimestamp.value = `dirty_${Date.now().toString()}`
             }
 
             return {
@@ -720,14 +726,11 @@
                 handleStepClick,
                 cron,
                 isSandbox,
-                handleRefresh,
-                dirtyTimestamp,
                 localTemplate,
                 localConfigMap,
                 allowSchedule,
                 fetchRun,
                 runList,
-                isRunLoading,
                 runLoading,
                 run,
                 pause,

@@ -1,11 +1,9 @@
 <template>
     <APITreeSelect
+        v-model="localValue"
         :credential="credentialBody"
         :credentialID="credentialID"
-        :query="property.ui.sql"
-        :include="property.ui.schemaIncludePattern"
-        :exclude="property.ui.schemaExcludePattern"
-        v-model="localValue"
+        :templateConfig="templateConfig"
         @change="handleChange"
     ></APITreeSelect>
 </template>
@@ -144,6 +142,17 @@
                 return formState[property.value.ui.credential]
             })
 
+            const templateConfig = computed(() => {
+                const config = {}
+                if (property.value?.ui?.metadataTransformerTemplateKey)
+                    config.metadataTransformerTemplateKey =
+                        property.value.ui.metadataTransformerTemplateKey
+                if (property.value?.ui?.metadataTemplateKey)
+                    config.metadataTemplateKey =
+                        property.value.ui.metadataTemplateKey
+                return config
+            })
+
             return {
                 componentProps,
                 formState,
@@ -152,6 +161,7 @@
                 localValue,
                 handleChange,
                 credentialID,
+                templateConfig,
             }
         },
     })

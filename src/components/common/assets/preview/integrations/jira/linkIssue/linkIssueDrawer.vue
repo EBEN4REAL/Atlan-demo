@@ -72,16 +72,11 @@
                     class="flex flex-col p-4 pt-1 overflow-y-auto gap-y-4"
                     style="height: calc(100vh - 10.4rem)"
                 >
-                    <template v-for="issue in issues" :key="issue.id">
-                        <IssueCard
-                            :checked="checkedIDs.includes(issue.id)"
-                            :show-checkbox="!!checkedIDs.length"
-                            :issue="issue"
-                            :error="linkErrorIDs.includes(issue.id)"
-                            class="cursor-pointer hover:bg-gray-100"
-                            @click="handleClick"
-                        />
-                    </template>
+                    <IssueList
+                        v-model:checkedIDs="checkedIDs"
+                        :issues="issues"
+                        :error-i-ds="linkErrorIDs"
+                    />
                 </div>
             </main>
         </div>
@@ -103,18 +98,18 @@
 <script setup lang="ts">
     import { useVModels } from '@vueuse/core'
     import { ref, Ref, watch, toRefs, onMounted, computed, PropType } from 'vue'
+    import { message } from 'ant-design-vue'
     import {
         listNotLinkedIssues,
         linkIssue,
     } from '~/composables/integrations/jira/useJiraTickets'
-    import IssueCard from '@/common/assets/preview/integrations/jira/issueCard.vue'
+    import IssueList from '@/common/assets/preview/integrations/jira/issueList.vue'
     import Search from '@/common/input/searchAdvanced.vue'
     import Header from '@/common/assets/preview/integrations/jira/linkIssue/header.vue'
     import AtlanLoader from '~/components/common/loaders/atlanLoader.vue'
     import ErrorView from '@/common/error/index.vue'
     import Pagination from '@/common/list/pagination.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { message } from 'ant-design-vue'
 
     const props = defineProps({
         visible: { type: Boolean, required: true },
@@ -128,18 +123,7 @@
     const { asset } = toRefs(props)
     const assetID = computed(() => asset.value.guid)
 
-    const linkIssueVisible = ref(false)
-
     const checkedIDs = ref<string[]>([])
-
-    const handleClick = (issue) => {
-        if (checkedIDs.value.includes(issue.id)) {
-            const index = checkedIDs.value.indexOf(issue.id)
-            if (index !== -1) {
-                checkedIDs.value.splice(index, 1)
-            }
-        } else checkedIDs.value.push(issue.id)
-    }
 
     const {
         issues,

@@ -1,7 +1,7 @@
 import { VueRenderer } from '@tiptap/vue-3'
 import tippy from 'tippy.js'
-import { reactive, computed } from 'vue'
-import { and, until } from '@vueuse/core'
+import { reactive, computed, watch } from 'vue'
+import { or, until } from '@vueuse/core'
 import MentionList from './index.vue'
 import { useUsers } from '~/composables/user/useUsers'
 import useGroups from '~/composables/group/useGroups'
@@ -13,14 +13,10 @@ export default {
             offset: 0,
             sort: 'firstName',
             filter: {
-                $and: [
-                    {
-                        $or: [
-                            { firstName: { $ilike: `${query}%` } },
-                            { lastName: { $ilike: `${query}%` } },
-                            { username: { $ilike: `${query}%` } },
-                        ],
-                    },
+                $or: [
+                    { firstName: { $ilike: `${query}%` } },
+                    { lastName: { $ilike: `${query}%` } },
+                    { username: { $ilike: `${query}%` } },
                 ],
             },
         })
@@ -30,33 +26,26 @@ export default {
         )
 
         const groupListAPIParams = reactive({
-            limit: 50,
+            limit: 5,
             offset: 0,
-            sort: '-createdAt',
-            filter: {},
+            sort: 'name',
+            filter: {
+                $or: [
+                    { alias: { $ilike: `${query}%` } },
+                    { name: { $ilike: `${query}%` } },
+                ],
+            },
         })
-        console.log(groupListAPIParams)
         const { groupList, isLoading: isGroupLoading } = useGroups(
             groupListAPIParams,
-            'LIST_GROUPS_MENTIONS_README'
+            '',
+            {}
         )
 
-        return until(and(isUserLoading, isGroupLoading))
+        return until(or(isUserLoading, isGroupLoading))
             .toBe(false)
             .then(() =>
-                [
-                    ...userList.value
-                        .concat(...groupList.value)
-                        .sort((x, y) => {
-                            const firstProperty = x.hasOwnProperty('alias')
-                                ? x.alias
-                                : x.username
-                            const secondProperty = y.hasOwnProperty('alias')
-                                ? y.alias
-                                : y.username
-                            return firstProperty.localeCompare(secondProperty)
-                        }),
-                ].slice(0, 5)
+                [...userList.value].concat([...groupList.value]).slice(0, 5)
             )
             .catch(() => [])
     },

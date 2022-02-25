@@ -1,11 +1,11 @@
 <template>
-    <div class="flex p-2" :class="{ 'bg-primary text-white': selected }">
+    <div class="flex p-2 w-100" :class="{ 'bg-primary text-white': selected }">
         <Avatar :username="user.username" />
-        <span class="ml-1">
-            <span class="font-semibold">{{ user.username }}</span>
+        <span class="ml-1 flex" style="max-width: 50%">
+            <span class="font-semibold truncate">{{ user.username }}</span>
         </span>
         <span class="mx-2">&bull;</span>
-        {{ fullName }}
+        <span class="truncate">{{ fullName }}</span>
     </div>
 </template>
 

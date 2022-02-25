@@ -1,11 +1,11 @@
 <template>
-    <div class="flex p-2" :class="{ 'bg-primary text-white': selected }">
+    <div class="flex p-2 w-100" :class="{ 'bg-primary text-white': selected }">
         <Avatar :is-group="true" />
-        <span class="ml-1">
-            <span class="font-semibold">{{ group.alias }}</span>
+        <span class="ml-1 flex" style="max-width: 50%">
+            <span class="font-semibold truncate">{{ group.alias }}</span>
         </span>
         <span class="mx-2">&bull;</span>
-        {{ group.name }}
+        <span class="truncate">{{ group.name }}</span>
     </div>
 </template>
 

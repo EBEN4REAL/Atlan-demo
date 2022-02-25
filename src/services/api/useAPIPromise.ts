@@ -18,7 +18,6 @@ export function useAPIPromise<T>(
 ): Promise<T> {
     switch (method) {
         case 'GET':
-            console.log(isRef(params))
             return fetcher<T>(
                 url,
                 isRef(params) ? params.value : params,

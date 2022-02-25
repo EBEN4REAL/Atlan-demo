@@ -1,6 +1,6 @@
 <template>
     <div
-        class="relative border border-gray-200 overflow-y-auto rounded-lg shadow-lg"
+        class="relative border border-gray-200 overflow-y-auto rounded-lg shadow-lg max-w-xs"
     >
         <template v-for="(mention, index) in items" :key="index">
             <UserMention
@@ -59,7 +59,9 @@
                 const item = items.value[selectedIndex.value]
 
                 if (item) {
-                    command.value({ id: item.username })
+                    command.value({
+                        id: item.username ? item.username : item.alias,
+                    })
                 }
             }
             const onKeyDown = ({ event }) => {

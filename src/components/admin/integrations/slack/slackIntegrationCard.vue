@@ -97,7 +97,8 @@
             </div>
 
             <AddWorkflowChannel
-                v-model:workflowChannel="workflowChannel"
+                v-model:workflowChannel="workflowChannel.name"
+                :invalid="workflowChannel.invalid"
                 @change="handleWorkflowChannelChange"
             />
         </section>
@@ -171,7 +172,7 @@
             const channels: Ref<[{ name: string; invalid?: boolean }]> = ref([])
 
             const channelValue = ref([])
-            const workflowChannel = ref('')
+            const workflowChannel = ref({ name: '', invalid: false })
 
             const isEdit = ref(false)
 
@@ -192,15 +193,20 @@
 
             onMounted(() => {
                 channels.value = tenantSlackStatus.value.channels as any
-                workflowChannel.value =
-                    tenantSlackStatus.value.alertsWorkflowChannel
+                workflowChannel.value.name =
+                    tenantSlackStatus.value?.alertsWorkflowChannel?.name || ''
             })
 
             const body = computed(() => ({
                 channels: channels.value.map((c) => ({ name: c.name })),
-                alertsWorkflowChannel: workflowChannel.value
-                    ? { name: workflowChannel.value }
-                    : {},
+
+                ...(workflowChannel.value.name
+                    ? {
+                          alertsWorkflowChannel: {
+                              name: workflowChannel.value.name,
+                          },
+                      }
+                    : {}),
             }))
 
             const { data, isLoading, error, disconnect } = archiveSlack(pV)
@@ -208,6 +214,8 @@
             // TODO @SAMIRAN HANDLE FAILED CHANNEL FOR WORKFLOW CHANNEL
             const handleFailed = (failedC) => {
                 failedC.forEach((c) => {
+                    if (c === workflowChannel.value.name)
+                        workflowChannel.value.invalid = true
                     const index = channels.value.findIndex(
                         (ch) => ch.name === c
                     )
@@ -361,8 +369,9 @@
                 })
             }
 
-            const handleWorkflowChannelChange = () => {
+            const handleWorkflowChannelChange = (v) => {
                 isEdit.value = true
+                if (!v) workflowChannel.value = { name: '', invalid: false }
             }
 
             return {

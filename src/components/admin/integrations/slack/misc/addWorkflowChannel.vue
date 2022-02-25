@@ -42,7 +42,7 @@
         workflowChannel: { type: String, default: '' },
     })
 
-    const emit = defineEmits(['change'])
+    const emit = defineEmits(['change', 'remove'])
 
     const { workflowChannel } = useVModels(props, emit)
 
@@ -50,13 +50,13 @@
         const value = e?.target?.value.trim() ?? null
         if (value) {
             workflowChannel.value = value
-            emit('change', workflowChannel.value)
+            emit('change', value)
         } else workflowChannel.value = ''
     }
 
     const remove = () => {
         workflowChannel.value = ''
-        emit('change', workflowChannel.value)
+        emit('change', '')
     }
 
     const { workflow_description } = integrations.slack

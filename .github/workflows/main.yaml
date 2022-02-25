@@ -63,16 +63,15 @@ jobs:
           node-version: 12
 
       - name: "Automated Version Bump"
-        id: version-bump-a
         uses: "phips28/gh-action-bump-version@master"
-        with:
-          skip-tag: true
-          tag-prefix: ""
         env:
           GITHUB_USER: atlan-ci
           GITHUB_EMAIL: it@atlan.com
           GITHUB_TOKEN: ${{ secrets.my_pat }}
           GITHUB_ACTOR: atlan-ci
+        with:
+          tag-prefix: ""
+          skip-tag:  'true'
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v2.0.1

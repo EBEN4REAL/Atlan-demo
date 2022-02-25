@@ -210,8 +210,17 @@
                         ></a-tooltip>
                     </div>
                     <div class="text-sm text-gray-700 break-all">
-                        <AtlanIcon icon="TableGray" class="w-auto h-4 mb-0.5" />
-                        {{ tableName(selectedAsset) }}
+                        <AtlanIcon
+                            icon="TableGray"
+                            class="w-auto h-4 mb-0.5 mr-1"
+                        />
+                        <router-link
+                            class="cursor-pointer text-primary hover:underline"
+                            :to="`/assets/${selectedAsset?.attributes?.table?.guid}`"
+                            target="_blank"
+                        >
+                            {{ tableName(selectedAsset) }}</router-link
+                        >
                     </div>
                 </div>
                 <div v-if="viewName(selectedAsset)">
@@ -235,9 +244,13 @@
                     <div class="text-sm text-gray-700">
                         <AtlanIcon
                             icon="ViewGray"
-                            class="w-auto h-4 mb-0.5 break-all"
+                            class="w-auto h-4 mb-0.5 break-all mr-1"
                         />
-                        {{ viewName(selectedAsset) }}
+                        <router-link
+                            :to="`/assets/${selectedAsset?.attributes?.view?.guid}`"
+                            target="_blank"
+                            >{{ viewName(selectedAsset) }}</router-link
+                        >
                     </div>
                 </div>
             </div>

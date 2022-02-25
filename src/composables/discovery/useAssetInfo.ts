@@ -207,6 +207,7 @@ export default function useAssetInfo() {
         attributes(asset)?.isPartition
     const isDist = (asset: assetInterface) => attributes(asset)?.isDist
     const isForeign = (asset: assetInterface) => attributes(asset)?.isForeign
+    const isSort = (asset: assetInterface) => attributes(asset)?.isSort
 
     const connectionRowLimit = (asset: assetInterface) =>
         attributes(asset)?.rowLimit
@@ -1250,6 +1251,7 @@ export default function useAssetInfo() {
         selectedGlossary,
         fieldsLookerQuery,
         isForeign,
+        isSort,
         categories,
         seeAlso,
         parentCategory,

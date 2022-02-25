@@ -159,11 +159,8 @@
                 'certificateStatus',
                 'meanings',
                 'category',
-
                 'dataType',
-
                 'isPrimary',
-
                 'isCustom',
                 'isPartition',
                 'isSort',

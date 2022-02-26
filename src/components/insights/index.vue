@@ -775,6 +775,16 @@
             }
 
             onMounted(() => {
+                const splitpaneElements =
+                    document.getElementsByClassName('splitpanes__pane')
+                console.log(splitpaneElements[0].style, 'parent_splitpanes')
+                setTimeout(() => {
+                    if (splitpaneElements?.length > 0) {
+                        Array.from(splitpaneElements).forEach((el) => {
+                            el.style.transition = 'all .2s ease-out'
+                        })
+                    }
+                }, 100)
                 fetchQueryCollections()
                 window.addEventListener('keydown', _keyListener)
 
@@ -783,15 +793,6 @@
                     schemaNameFromURL &&
                     tableNameFromURL
                 ) {
-                    // console.log('url params: ', {
-                    //     databaseQualifiedNameFromURL,
-                    //     schemaNameFromURL,
-                    //     tableNameFromURL,
-                    // })
-                    // if (columnNameFromURL.value) {
-                    // } else {
-                    // }
-
                     detectQuery()
                 }
             })
@@ -920,6 +921,9 @@
             -ms-flex-negative: 0;
             z-index: 3 !important;
             flex-shrink: 0;
+        }
+        :global(.splitpanes--vertical .splitpanes__pane) {
+            transition: none;
         }
 
         :global(.splitpanes--vertical > .splitpanes__splitter) {

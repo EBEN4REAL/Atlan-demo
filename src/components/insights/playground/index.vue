@@ -184,6 +184,7 @@
             >
                 <pane
                     :max-size="100"
+                    class="overflow-x-hidden horizontal_splitpane"
                     :size="
                         100 -
                         (activeInlineTab.playground.resultsPane.outputPaneSize >
@@ -193,12 +194,12 @@
                             : 0)
                     "
                     min-size="30"
-                    class="overflow-x-hidden"
                 >
                     <Editor :refreshQueryTree="refreshQueryTree" />
                 </pane>
                 <pane
                     min-size="0"
+                    class="horizontal_splitpane"
                     :size="
                         activeInlineTab.playground.resultsPane.outputPaneSize >
                         0
@@ -294,7 +295,8 @@
             }>
 
             const { getFirstQueryConnection } = useUtils()
-            const { horizontalPaneResize } = useSpiltPanes()
+            const { horizontalPaneResize, horizontalPaneAnimation } =
+                useSpiltPanes()
             const { inlineTabRemove, inlineTabAdd, setActiveTabKey } =
                 useInlineTab()
 
@@ -668,9 +670,14 @@
             const showContextMenu = () => {
                 contentMenu.value = true
             }
-            const onHorizontalResize = useDebounceFn((e) => {
+            const debouncdedHorizontalPane = useDebounceFn((e) => {
                 horizontalPaneResize(e, activeInlineTab, tabs)
             }, 500)
+
+            const onHorizontalResize = (e) => {
+                horizontalPaneAnimation()
+                debouncdedHorizontalPane(e)
+            }
 
             return {
                 onHorizontalResize,

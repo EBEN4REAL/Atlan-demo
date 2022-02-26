@@ -19,13 +19,28 @@ export function useSpiltPanes(activeInlineTab?: activeInlineTabInterface) {
     const explorerThreshold = 10
     const explorerPaneCollapsed = ref(false)
     const assetSidebarThreshold = 10
+    let resizeFlag
+    let resizeHorizontalFlag
 
     const assetSidebarPaneSize = ref(25)
 
     const paneResize = (event: any) => {
-        if (event.length > 0) {
-            // explorerPaneSize.value = event[0].size
-        }
+        const verticalSplitpaneElements =
+            document.getElementsByClassName('vertical_pane')
+
+        Array.from(verticalSplitpaneElements).forEach((el) => {
+            el.style.transition = 'none'
+        })
+
+        clearTimeout(resizeFlag)
+        resizeFlag = setTimeout(() => {
+            const verticalSplitpaneElements =
+                document.getElementsByClassName('vertical_pane')
+
+            Array.from(verticalSplitpaneElements).forEach((el) => {
+                el.style.transition = 'width .2s ease-out'
+            })
+        }, 100)
     }
     const horizontalPaneResize = (
         event,
@@ -39,6 +54,26 @@ export function useSpiltPanes(activeInlineTab?: activeInlineTabInterface) {
         }
     }
 
+    const horizontalPaneAnimation = () => {
+        const horizontalSplitpaneElements = document.getElementsByClassName(
+            'horizontal_splitpane'
+        )
+
+        Array.from(horizontalSplitpaneElements).forEach((el) => {
+            el.style.transition = 'none'
+        })
+        clearTimeout(resizeHorizontalFlag)
+        resizeHorizontalFlag = setTimeout(() => {
+            const horizontalSplitpaneElements = document.getElementsByClassName(
+                'horizontal_splitpane'
+            )
+
+            Array.from(horizontalSplitpaneElements).forEach((el) => {
+                el.style.transition = 'height .2s ease-out'
+            })
+        }, 100)
+    }
+
     return {
         MIN_EXPLORER_WIDTH,
         MAX_EXPLORER_WIDTH,
@@ -47,6 +82,7 @@ export function useSpiltPanes(activeInlineTab?: activeInlineTabInterface) {
         assetSidebarPaneSize,
         paneResize,
         horizontalPaneResize,
+        horizontalPaneAnimation,
         outputPaneSize,
     }
 }

@@ -43,7 +43,7 @@
                     :max-size="maxExplorerSize"
                     :size="explorerPaneSize"
                     :min-size="minExplorerSize"
-                    class="relative explorer_splitpane"
+                    class="relative explorer_splitpane vertical_pane"
                 >
                     <!--explorer pane start -->
                     <div
@@ -90,6 +90,7 @@
                     :style="{
                         marginLeft: explorerPaneSize === 0 ? '-1px' : '0px',
                     }"
+                    class="vertical_pane"
                 >
                     <Playground
                         :active-inline-tab-key="activeInlineTabKey"
@@ -102,7 +103,7 @@
                             ? sidebarPaneSize
                             : 0
                     "
-                    class="assetSidebar"
+                    class="assetSidebar vertical_pane"
                     :min-size="sidebarPaneSize"
                     :size="sidebarPaneSize"
                 >
@@ -775,15 +776,19 @@
             }
 
             onMounted(() => {
-                const splitpaneElements =
-                    document.getElementsByClassName('splitpanes__pane')
-                console.log(splitpaneElements[0].style, 'parent_splitpanes')
+                const horizontalSplitpaneElements =
+                    document.getElementsByClassName('horizontal_splitpane')
+
+                const verticalSplitpaneElements =
+                    document.getElementsByClassName('vertical_pane')
+
                 setTimeout(() => {
-                    if (splitpaneElements?.length > 0) {
-                        Array.from(splitpaneElements).forEach((el) => {
-                            el.style.transition = 'all .2s ease-out'
-                        })
-                    }
+                    Array.from(horizontalSplitpaneElements).forEach((el) => {
+                        el.style.transition = 'height .2s ease-out'
+                    })
+                    Array.from(verticalSplitpaneElements).forEach((el) => {
+                        el.style.transition = 'width .2s ease-out'
+                    })
                 }, 100)
                 fetchQueryCollections()
                 window.addEventListener('keydown', _keyListener)

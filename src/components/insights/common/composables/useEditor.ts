@@ -5,6 +5,7 @@ import { CustomVaribaleInterface } from '~/types/insights/customVariable.interfa
 import { editorConfigInterface } from '~/types/insights/editoConfig.interface'
 import { format, FormatOptions } from 'sql-formatter'
 import { useCustomVariable } from '~/components/insights/playground/editor/common/composables/useCustomVariable'
+import dayjs from 'dayjs'
 
 export function useEditor(
     tabs?: Ref<activeInlineTabInterface[]>,
@@ -88,14 +89,21 @@ export function useEditor(
             variables.length > 0 &&
             query?.match(/{{\s*[\w\.]+\s*}}/g)?.length > 0
         ) {
+            debugger
             const queryText = semicolonSeparateQuery(query)
             const parseVariables: { [key: string]: string } = {}
             variables.forEach((v) => {
                 /* Check for date type */
                 if (v?.type === 'date') {
-                    parseVariables[v.name] = `'${v.value?.format(
-                        'YYYY-MM-DD'
-                    )}'`
+                    if (typeof v.value !== 'string') {
+                        parseVariables[v.name] = `'${v.value?.format(
+                            'YYYY-MM-DD'
+                        )}'`
+                    } else {
+                        parseVariables[v.name] = `'${dayjs(v.value).format(
+                            'YYYY-MM-DD'
+                        )}'`
+                    }
                 } else if (v?.type === 'string') {
                     parseVariables[v.name] = `'${v.value}'`
                 } else if (v?.type === 'dropdown') {

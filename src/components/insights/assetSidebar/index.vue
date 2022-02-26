@@ -1,6 +1,9 @@
 <template>
     <div
-        v-if="selectedAsset?.guid && activeInlineTab?.assetSidebar?.isVisible"
+        v-if="
+            selectedAsset.assetInfo.guid &&
+            activeInlineTab?.assetSidebar?.isVisible
+        "
         class="relative z-20 flex flex-col h-full bg-white asset-preview-container"
     >
         <div class="absolute close-btn-add-policy" @click="handleClose">

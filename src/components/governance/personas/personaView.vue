@@ -53,7 +53,7 @@
             </SearchAndFilter>
         </div>
         <!-- persona cards -->
-        <div class="flex flex-wrap mt-5 gap-x-3 gap-y-3">
+        <div class="flex flex-wrap mt-7 gap-x-3 gap-y-6">
             <PersonaCard
                 v-for="persona in filteredPersonas"
                 :key="persona.id"

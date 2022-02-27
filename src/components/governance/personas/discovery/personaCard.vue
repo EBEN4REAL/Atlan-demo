@@ -6,7 +6,7 @@
         <div>
             <!-- header -->
             <div class="flex">
-                <span class="font-bold font-base">{{
+                <span class="text-primary font-base">{{
                     persona?.displayName
                 }}</span>
             </div>
@@ -34,10 +34,11 @@
                         class="w-3 h-3 mr-1 text-gray-400"
                     ></AtlanIcon>
                     <span class="text-xs text-gray-500">{{
-                        persona.metadataPolicies?.length
+                        persona.metadataPolicies?.length +
+                        persona.dataPolicies?.length
                     }}</span>
                 </div>
-                <div class="mx-2 bg-gray-300 dot"></div>
+                <!-- <div class="mx-2 bg-gray-300 dot"></div>
                 <div class="flex items-center">
                     <AtlanIcon
                         icon="Query"
@@ -46,7 +47,7 @@
                     <span class="text-xs text-gray-500">{{
                         persona.dataPolicies?.length
                     }}</span>
-                </div>
+                </div> -->
             </div>
             <div class="flex gap-x-1">
                 <img
@@ -110,7 +111,7 @@
 </script>
 <style lang="less" scoped>
     .persona-card {
-        width: 260px;
+        width: 23%;
         height: 120px;
     }
     .dot {

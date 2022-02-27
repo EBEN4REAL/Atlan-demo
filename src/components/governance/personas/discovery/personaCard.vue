@@ -1,6 +1,7 @@
 <template>
     <div
-        class="flex flex-col justify-between px-4 py-3 border rounded persona-card"
+        class="flex flex-col justify-between px-4 py-3 border rounded cursor-pointer persona-card hover:bg-gray-100"
+        @click="$emit('select', persona)"
     >
         <div>
             <!-- header -->
@@ -68,6 +69,7 @@
 
     export default defineComponent({
         name: 'PersonaCard',
+        emits: ['select'],
         components: { AtlanIcon },
         props: {
             persona: {

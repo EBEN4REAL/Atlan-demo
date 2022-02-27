@@ -20,6 +20,7 @@
                 v-for="persona in filteredPersonas"
                 :key="persona.id"
                 :persona="persona"
+                @select="selectPersona"
             ></PersonaCard>
         </div>
     </div>
@@ -270,6 +271,12 @@
                 modalDetailPolicyVisible.value = true
             }
             const whitelistedConnectionIds = ref([])
+
+            const selectPersona = (persona) => {
+                console.log('selectPersona', persona)
+                selectedPersonaId.value = persona.id
+            }
+
             onMounted(() => {
                 console.log('rohan', filteredPersonas?.value?.length)
                 if (!route.params.id && filteredPersonas?.value?.length) {
@@ -351,6 +358,7 @@
                 selectedPolicy,
                 whitelistedConnectionIds,
                 openEditModal,
+                selectPersona,
             }
         },
     })

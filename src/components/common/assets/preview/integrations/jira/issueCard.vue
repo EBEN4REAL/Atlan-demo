@@ -31,8 +31,7 @@
             <div class="text-xs text-gray-500">
                 <span>{{ creator.displayName }}</span
                 >,
-                <span v-if="updated">{{ useTimeAgo(updated).value }}</span>
-                <span v-else>{{ useTimeAgo(created).value }}</span>
+                <span>{{ useTimeAgo(created).value }}</span>
             </div>
         </aside>
     </section>

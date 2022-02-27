@@ -6,7 +6,7 @@
         <AtlanLoader class="h-10" />
     </div>
     <div
-        v-else-if="treeData.length === 0 && !isLoading"
+        v-else-if="treeData.length === 0 && !isLoading && !checkable"
         class="flex items-center justify-center h-full"
     >
         <AddGtcModal
@@ -25,6 +25,12 @@
                 </div>
             </template>
         </AddGtcModal>
+    </div>
+    <div v-else-if="treeData.length === 0 && !isLoading && checkable">
+        <EmptyView
+            empty-screen="EmptyGlossary"
+            desc="No terms found"
+        ></EmptyView>
     </div>
     <a-tree
         :key="defaultGlossary"

@@ -20,8 +20,7 @@
         <!-- // need empty placeholder -->
         <AtlanIcon icon="EmptyDiscover" class="h-40" />
         <span>
-            No issues linked to <b>{{ asset.displayText }}</b
-            >,
+            No issues linked to <b>{{ asset.displayText }}</b>
         </span>
         <AtlanButton @click="linkIssueVisible = true">Link Issues</AtlanButton>
     </div>

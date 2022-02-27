@@ -18,8 +18,11 @@
             <h1 class="flex font-bold">
                 <img :src="issuetype.iconUrl" class="mr-1" />
                 <Truncate
+                    :route-to="issueUrl"
+                    :should-open-in-new-tab="true"
                     :tooltip-text="`${key}: ${summary}`"
-                    class="flex-grow"
+                    class="flex-grow hover:underline"
+                    @click="(e) => e.stopPropagation()"
                 />
             </h1>
             <span class="text-xs">
@@ -41,6 +44,7 @@
     import { Issue } from '~/types/integrations/jira.types'
     import { listIssueTypes } from '~/composables/integrations/jira/useJiraTickets'
     import Truncate from '@/common/ellipsis/index.vue'
+    import integrationStore from '~/store/integrations/index'
 
     const props = defineProps({
         issue: { type: Object as PropType<Issue>, required: true },
@@ -70,6 +74,14 @@
         },
     } = issue.value
 
+    const store = integrationStore()
+
+    const { tenantJiraStatus } = toRefs(store)
+
+    const issueUrl = computed(() => {
+        const { orgUrl } = tenantJiraStatus.value
+        return `${orgUrl.replace('https://', '//')}/browse/${key}`
+    })
     // const { data: issueTypes, isLoading, error, mutate } = listIssueTypes()
 </script>
 

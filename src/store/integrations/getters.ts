@@ -19,6 +19,7 @@ interface JiraStatus {
     id: string,
     oAuth: string,
     orgName: string,
+    orgUrl: string,
     createdBy: string,
     orgId?: string,
     avatar?: string,
@@ -78,6 +79,7 @@ const getters: _GettersTree<State> & Getters = {
             configured: integration?.isConfigured,
             orgName: integration?.sourceMetadata?.orgName,
             orgId: integration?.sourceMetadata?.orgId,
+            orgUrl: integration?.orgUrl,
             avatar: integration?.sourceMetadata?.avatar,
             config: integration?.config,
             // integrationConfig: {
@@ -96,6 +98,7 @@ const getters: _GettersTree<State> & Getters = {
             configured: integration?.isConfigured,
             orgName: integration?.sourceMetadata?.orgName,
             orgId: integration?.sourceMetadata?.orgId,
+            orgUrl: integration?.orgUrl,
             avatar: integration?.sourceMetadata?.avatar
         }
     },

@@ -1,5 +1,30 @@
 <template>
+    <div v-if="true" class="flex flex-col px-6 py-10">
+        <span class="text-xl">Personas</span>
+        <!-- search & filter -->
+        <div class="w-1/3 mt-4">
+            <SearchAndFilter
+                v-model:value="searchTerm"
+                :placeholder="`Search ${
+                    filteredPersonas?.length ?? 0
+                } personas`"
+                class="mt-0 bg-white"
+                :autofocus="true"
+                size="bordered"
+            >
+            </SearchAndFilter>
+        </div>
+        <!-- persona cards -->
+        <div class="flex flex-wrap mt-5 gap-x-3 gap-y-3">
+            <PersonaCard
+                v-for="persona in filteredPersonas"
+                :key="persona.id"
+                :persona="persona"
+            ></PersonaCard>
+        </div>
+    </div>
     <ExplorerLayout
+        v-else
         title="Persona"
         :sidebar-visibility="Boolean(selectedPersonaId)"
     >
@@ -211,6 +236,7 @@
     import DetailPolicy from './overview/detailPolicy.vue'
     import usePermissions from '~/composables/auth/usePermissions'
     import { useAuthStore } from '~/store/auth'
+    import PersonaCard from '@/governance/personas/discovery/personaCard.vue'
 
     export default defineComponent({
         name: 'PersonaView',
@@ -224,6 +250,7 @@
             ExplorerList,
             AddPersona,
             DetailPolicy,
+            PersonaCard,
         },
         setup() {
             const router = useRouter()

@@ -1,6 +1,6 @@
 <template>
     <template v-if="selectedPersonaDirty">
-        <div class="px-3 bg-white">
+        <div class="sticky top-0 z-10 bg-white">
             <MinimalTab v-model:active="activeTabKey" :data="tabConfig">
                 <template #label="t">
                     <div class="flex items-center overflow-hidden">

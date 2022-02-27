@@ -1,25 +1,42 @@
 <template>
     <div v-if="true" class="flex flex-col px-6 py-10">
         <a-modal
-            :visible="selectedPersonaId"
+            :visible="personaViewModalVisible"
             :destroyOnClose="true"
-            :closable="true"
+            :closable="false"
             width="100%"
             wrapClassName="persona-modal"
             :centered="true"
+            :maskClosable="true"
+            @cancel="closePersonaViewModal"
         >
             <template #title>
-                <div>Title: Persona is selected mate</div>
+                <PersonaHeader
+                    v-model:openEditModal="openEditModal"
+                    :persona="selectedPersona"
+                    class=""
+                />
             </template>
             <template #footer>
-                <div class="flex items-center justify-between pb-1">
-                    <slot name="footerLeft"></slot>
-                    <div class="flex items-center justify-end w-full space-x-3">
-                        Hi
+                <div style="display: none">
+                    <div class="flex items-center justify-between pb-1">
+                        <slot name="footerLeft"></slot>
+                        <div
+                            class="flex items-center justify-end w-full space-x-3"
+                        >
+                            <!-- Hi -->
+                        </div>
                     </div>
                 </div>
             </template>
-            <div class="px-4 h-100">Body comes here</div>
+            <div class="h-full bg-primary-light">
+                <PersonaBody
+                    v-model:persona="selectedPersona"
+                    :whitelisted-connection-ids="whitelistedConnectionIds"
+                    @selectPolicy="handleSelectPolicy"
+                    @editDetails="openEditModal = true"
+                />
+            </div>
         </a-modal>
         <span class="text-xl">Personas</span>
         <!-- search & filter -->
@@ -231,7 +248,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, onMounted } from 'vue'
+    import { defineComponent, ref, watch, onMounted, computed } from 'vue'
     import ErrorView from '@common/error/index.vue'
     import { storeToRefs } from 'pinia'
     import { useRoute, useRouter } from 'vue-router'
@@ -297,6 +314,15 @@
                 console.log('selectPersona', persona)
                 selectedPersonaId.value = persona.id
             }
+
+            const closePersonaViewModal = () => {
+                selectedPersonaId.value = ''
+            }
+
+            // eslint-disable-next-line arrow-body-style
+            const personaViewModalVisible = computed(() => {
+                return !!selectedPersona.value
+            })
 
             // onMounted(() => {
             //     console.log('rohan', filteredPersonas?.value?.length)
@@ -380,18 +406,31 @@
                 whitelistedConnectionIds,
                 openEditModal,
                 selectPersona,
+                closePersonaViewModal,
+                personaViewModalVisible,
             }
         },
     })
 </script>
 <style lang="less">
     .persona-modal {
-        .ant-modal,
+        .ant-modal {
+            height: calc(100% - 100px);
+        }
         .ant-modal-body {
             height: calc(100% - 100px);
+            overflow-y: auto;
         }
         .ant-modal-content {
             height: calc(100%);
+        }
+        .ant-modal-header {
+            padding-bottom: 0px;
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+        .ant-modal-footer {
+            padding: 0px !important;
         }
     }
 </style>

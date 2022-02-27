@@ -53,7 +53,7 @@
                     v-for="imgPath in getUniqueTypeIcons().connectors"
                     :key="imgPath"
                     :src="imgPath"
-                    class="w-3 h-3"
+                    class="w-4 h-4"
                 />
             </div>
         </div>

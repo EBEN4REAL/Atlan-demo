@@ -1,5 +1,26 @@
 <template>
     <div v-if="true" class="flex flex-col px-6 py-10">
+        <a-modal
+            :visible="selectedPersonaId"
+            :destroyOnClose="true"
+            :closable="true"
+            width="100%"
+            wrapClassName="persona-modal"
+            :centered="true"
+        >
+            <template #title>
+                <div>Title: Persona is selected mate</div>
+            </template>
+            <template #footer>
+                <div class="flex items-center justify-between pb-1">
+                    <slot name="footerLeft"></slot>
+                    <div class="flex items-center justify-end w-full space-x-3">
+                        Hi
+                    </div>
+                </div>
+            </template>
+            <div class="px-4 h-100">Body comes here</div>
+        </a-modal>
         <span class="text-xl">Personas</span>
         <!-- search & filter -->
         <div class="w-1/3 mt-4">
@@ -277,41 +298,41 @@
                 selectedPersonaId.value = persona.id
             }
 
-            onMounted(() => {
-                console.log('rohan', filteredPersonas?.value?.length)
-                if (!route.params.id && filteredPersonas?.value?.length) {
-                    const id = filteredPersonas.value[0].id!
-                    selectedPersonaId.value = id
-                    router.replace(`/governance/personas/${id}`)
-                }
-            })
+            // onMounted(() => {
+            //     console.log('rohan', filteredPersonas?.value?.length)
+            //     if (!route.params.id && filteredPersonas?.value?.length) {
+            //         const id = filteredPersonas.value[0].id!
+            //         selectedPersonaId.value = id
+            //         router.replace(`/governance/personas/${id}`)
+            //     }
+            // })
 
-            watch(
-                isPersonaListReady,
-                () => {
-                    if (personaList?.value?.length) {
-                        if (route.params.id) {
-                            const find = personaList.value.find(
-                                (el) => el.id === route.params.id
-                            )
-                            if (find) {
-                                selectedPersonaId.value = route.params.id
-                            } else {
-                                if (filteredPersonas?.value?.length) {
-                                    selectedPersonaId.value =
-                                        filteredPersonas.value[0].id!
-                                }
-                            }
-                        } else {
-                            if (filteredPersonas?.value?.length) {
-                                selectedPersonaId.value =
-                                    filteredPersonas.value[0].id!
-                            }
-                        }
-                    }
-                },
-                { immediate: true }
-            )
+            // watch(
+            //     isPersonaListReady,
+            //     () => {
+            //         if (personaList?.value?.length) {
+            //             if (route.params.id) {
+            //                 const find = personaList.value.find(
+            //                     (el) => el.id === route.params.id
+            //                 )
+            //                 if (find) {
+            //                     selectedPersonaId.value = route.params.id
+            //                 } else {
+            //                     if (filteredPersonas?.value?.length) {
+            //                         selectedPersonaId.value =
+            //                             filteredPersonas.value[0].id!
+            //                     }
+            //                 }
+            //             } else {
+            //                 if (filteredPersonas?.value?.length) {
+            //                     selectedPersonaId.value =
+            //                         filteredPersonas.value[0].id!
+            //                 }
+            //             }
+            //         }
+            //     },
+            //     { immediate: true }
+            // )
 
             watch(selectedPersonaId, () => {
                 router.replace(
@@ -363,6 +384,17 @@
         },
     })
 </script>
+<style lang="less">
+    .persona-modal {
+        .ant-modal,
+        .ant-modal-body {
+            height: calc(100% - 100px);
+        }
+        .ant-modal-content {
+            height: calc(100%);
+        }
+    }
+</style>
 <style lang="less" scoped>
     .active {
         background: #00a680;

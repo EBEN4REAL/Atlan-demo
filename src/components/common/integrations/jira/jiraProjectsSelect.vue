@@ -7,7 +7,6 @@
         :placeholder="placeholder"
         :loading="isLoading"
         dropdown-class-name="max-h-72 overflow-y-scroll"
-        @change="handleChange"
     >
         <template #dropdownRender>
             <div
@@ -15,7 +14,7 @@
                 :key="o.value"
                 class="p-2 mx-1 rounded cursor-pointer hover:bg-gray-100"
                 :class="o.value === modelValue ? 'bg-primary-light' : ''"
-                @click="modelValue = o.value"
+                @click="handleChange(o.value, o)"
             >
                 <span class="flex items-center gap-x-2">
                     <img
@@ -60,6 +59,7 @@
     })
 
     const handleChange = (value, option) => {
+        modelValue.value = value
         emit('change', value, option)
     }
 

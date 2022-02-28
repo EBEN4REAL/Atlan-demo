@@ -6,30 +6,37 @@
         <div v-else>
             <div class="flex text-left gap-x-6">
                 <div class="flex flex-col">
-                    <div class="text-sm text-gray-500">Status</div>
-                    <div class="text-sm font-semibold text-gray-700">
+                    <span class="text-sm text-gray-500">Status</span>
+                    <span class="text-sm font-semibold text-gray-700">
                         <AtlanLoader
                             v-if="run?.status?.phase === 'Running'"
                             class="mr-1"
                         />
                         {{ run?.status?.phase }}
-                    </div>
+                    </span>
                 </div>
 
                 <div class="flex flex-col">
-                    <div class="text-sm text-gray-500">Started</div>
-                    <div class="text-sm text-gray-700">
+                    <span class="text-sm text-gray-500">Started</span>
+                    <span class="text-sm text-gray-700">
                         {{ startedTimeAgo }}
-                    </div>
+                    </span>
                 </div>
-                <div
-                    class="flex flex-col"
-                    v-if="run?.status?.phase !== 'Running'"
-                >
-                    <div class="text-sm text-gray-500">Duration</div>
-                    <div class="text-sm text-gray-700">
-                        {{ finishedTimeAgo }}
-                    </div>
+                <div class="flex flex-col">
+                    <span class="text-sm text-gray-500">
+                        {{
+                            run?.status?.phase === 'Running'
+                                ? 'Elapsed'
+                                : 'Duration'
+                        }}
+                    </span>
+                    <span class="text-sm text-gray-700">
+                        {{
+                            run?.status?.phase === 'Running'
+                                ? runtime
+                                : duration(run)
+                        }}
+                    </span>
                 </div>
             </div>
             <div class="flex items-center mt-3">
@@ -52,14 +59,17 @@
 <script lang="ts">
     // Vue
     import { computed, defineComponent, toRefs } from 'vue'
-    import { useTimeAgo } from '@vueuse/core'
+    import { useIntervalFn, useTimeAgo } from '@vueuse/core'
     import { formatDateTime } from '~/utils/date'
+    import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
 
     export default defineComponent({
-        name: 'WorkflowSetupTab',
+        name: 'WorkflowRun',
         props: {
             run: {
                 type: Object,
+                required: false,
+                default: () => ({}),
             },
             isLoading: {
                 type: Boolean,
@@ -71,6 +81,8 @@
         setup(props, { emit }) {
             const { run, isLoading } = toRefs(props)
 
+            const { startedAt, duration } = useWorkflowInfo()
+
             const percentage = computed(() => {
                 if (run?.value?.status?.progress?.split('/').length > 1) {
                     return (
@@ -81,18 +93,9 @@
                 return 0
             })
 
-            const startedTimeAgo = computed(() => {
-                if (run.value.status?.startedAt) {
-                    return formatDateTime(run.value.status?.startedAt)
-                }
-                return ''
-            })
-            const finishedTimeAgo = computed(() => {
-                if (run.value.status?.finishedAt) {
-                    return formatDateTime(run.value.status?.finishedAt)
-                }
-                return ''
-            })
+            const startedTimeAgo = computed(() => startedAt(run.value, false))
+
+            const runtime = computed(() => startedAt(run.value, true))
 
             const progressStatus = computed(() => {
                 if (run?.value.status?.phase === 'Running') {
@@ -108,13 +111,12 @@
             })
 
             return {
-                run,
                 useTimeAgo,
                 startedTimeAgo,
-                finishedTimeAgo,
                 percentage,
-                isLoading,
                 progressStatus,
+                runtime,
+                duration,
             }
         },
     })

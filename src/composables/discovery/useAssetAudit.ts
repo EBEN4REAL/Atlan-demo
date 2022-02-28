@@ -32,8 +32,6 @@ const useAssetAudit = (params: any, guid: string) => {
         if ('attributes' in logs) {
             const { attributes } = logs
 
-            // console.log(logs)
-            // console.log('ownerUsers' in attributes)
             if ('ownerUsers' in attributes || 'ownerGroups' in attributes) {
                 data.displayValue = 'owners'
                 data.value = {}
@@ -42,12 +40,9 @@ const useAssetAudit = (params: any, guid: string) => {
                     data.icon = 'User'
                 }
                 if (attributes.ownerGroups) {
-                    data.value.ownerGroups = attributes.ownerUsers
+                    data.value.ownerGroups = attributes.ownerGroups
                     data.icon = 'Group'
                 }
-                // if (attributes.ownerGroups) {
-                //     data.value.push(...ownerGroups)
-                // }
 
                 data.component = 'Owners'
                 return data
@@ -101,7 +96,7 @@ const useAssetAudit = (params: any, guid: string) => {
                     data.icon = 'User'
                 }
                 if (attributes.adminGroups) {
-                    data.value.adminGroups = attributes.adminUsers
+                    data.value.adminGroups = attributes.adminGroups
                     data.icon = 'Group'
                 }
 

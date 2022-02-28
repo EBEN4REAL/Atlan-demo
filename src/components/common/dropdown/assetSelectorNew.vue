@@ -192,6 +192,7 @@
             )
 
             const dropdownOption = computed(() => {
+                console.log('dropdownOption', dropdownOption)
                 // const tree: Record<string, any>[] = []
                 // list.value.forEach((ls) => {
                 //     let treeNodeObj = {
@@ -238,12 +239,6 @@
 
                 return data
             })
-
-            const handleChange = (checkedValues: string) => {
-                // console.log('checkedValue: ', checkedValues)
-                // emit('update:modelValue', checkedValues)
-                emit('change', checkedValues)
-            }
 
             const checkifNeedsIsSelectFirstDefault = (
                 data: any[],
@@ -302,7 +297,7 @@
                 index,
                 typeName,
                 list,
-                handleChange,
+                // handleChange,
                 totalCount,
                 data,
                 isLoading,

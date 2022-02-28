@@ -9,12 +9,9 @@
         >
             <div class="flex items-center w-full cursor-pointer">
                 <div class="flex flex-row items-center w-full">
-                    <span class="mr-2" style="font-size: 28px"
-                        ><AtlanIcon
-                            :icon="getContextName(`icon`)"
-                            class="w-6 h-6 text-gray-500"
-                        ></AtlanIcon
-                    ></span>
+                    <span class="flex-shrink-0 mr-2" style="font-size: 28px">
+                        <img :src="getContextName(`icon`)" class="w-6 h-6"
+                    /></span>
                     <div class="flex flex-col w-full bg">
                         <!-- <div
                             class="flex items-center w-full text-sm cursor-pointer max-full place-content-between"
@@ -71,11 +68,11 @@
                     >
                         <template #title>
                             <div class="submenu-title-content">
-                                <AtlanIcon
-                                    :icon="getContextName(`icon`)"
+                                <img
+                                    :src="getContextName(`icon`)"
                                     class="flex-shrink-0 w-4 h-4 mr-1 text-gray-500"
                                     style="margin-top: 0.125rem"
-                                ></AtlanIcon>
+                                />
                                 <span class="parent-ellipsis-container-base">
                                     <span class="text-gray-500"
                                         >Connection
@@ -149,11 +146,11 @@
                                     </template>
                                     <template #title="node">
                                         <div
-                                            class="flex items-center parent-ellipsis-container-base"
+                                            class="flex items-center rounded parent-ellipsis-container-base"
                                             style="max-width: 14rem"
                                         >
-                                            <AtlanIcon
-                                                :icon="iconName(node)"
+                                            <img
+                                                :src="iconName(node)"
                                                 class="flex-shrink-0 h-4 mr-2"
                                             />
                                             <span
@@ -261,14 +258,14 @@
                                     class="self-center ml-auto mr-4 text-gray-500 clear-btn"
                                 >
                                     <button
-                                        @click="clearStateSchemaHandle"
-                                        class="hover:text-primary"
                                         :class="[
                                             getContextName(`schema`) ===
                                             'Select schema context'
                                                 ? `${$style.clear_btn_invisible}`
                                                 : `${$style.clear_btn_visible}`,
                                         ]"
+                                        class="hover:text-primary"
+                                        @click="clearStateSchemaHandle"
                                     >
                                         clear
                                     </button>
@@ -304,7 +301,6 @@
     import { List } from '~/constant/status'
     import { useConnectionStore } from '~/store/connection'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
-    import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
     import AssetDropdownNewDatabase from '~/components/common/dropdown/assetDropdownNewDatabase.vue'
     import AssetDropdownNewSchema from '~/components/common/dropdown/assetDropdownNewSchema.vue'
 
@@ -312,7 +308,6 @@
 
     export default defineComponent({
         components: {
-            AssetDropdown,
             AssetDropdownNewDatabase,
             AssetDropdownNewSchema,
             Tooltip,
@@ -662,18 +657,30 @@
 
             const iconName = (node) => {
                 if (node?.connection === undefined) {
-                    if (node.title === 'bigquery') return 'BigQuery'
-                    if (node.title === 'mysql') return 'MySQL'
-
-                    return capitalizeFirstLetter(node.title)
+                    return store.getConnectorImageMapping[
+                        node.title?.toLowerCase()
+                    ]
+                    // return node.title
                 }
                 const el = node?.key?.split('/')
                 if (el && el.length) {
-                    if (el[1] === 'bigquery') return 'BigQuery'
-                    if (el[1] === 'mysql') return 'MySQL'
-                    return capitalizeFirstLetter(el[1])
+                    if (el[1] === 'bigquery')
+                        return store.getConnectorImageMapping[
+                            el[1]?.toLowerCase()
+                        ]
+                    if (el[1] === 'mysql')
+                        return store.getConnectorImageMapping[
+                            el[1]?.toLowerCase()
+                        ]
+                    return store.getConnectorImageMapping[el[1]?.toLowerCase()]
                 }
                 return ''
+
+                // if (chunks?.length > 2)
+                //         return store.getConnectorImageMapping[
+                //             chunks[1]?.toLowerCase()
+                //         ]
+                // }
             }
 
             /**
@@ -721,12 +728,16 @@
                 }
 
                 if (item === 'icon') {
-                    if (chunks?.length > 2) {
-                        if (chunks[1] === 'bigquery') return 'BigQuery'
-                        if (chunks[1] === 'mysql') return 'MySQL'
-                        return capitalizeFirstLetter(chunks[1])
-                    }
-                    return ''
+                    // if (chunks?.length > 2) {
+                    //     if (chunks[1] === 'bigquery') return 'BigQuery'
+                    //     if (chunks[1] === 'mysql') return 'MySQL'
+                    //     return capitalizeFirstLetter(chunks[1])
+                    // }
+                    // return ''
+                    if (chunks?.length > 2)
+                        return store.getConnectorImageMapping[
+                            chunks[1]?.toLowerCase()
+                        ]
                 }
 
                 if (item === 'database') {
@@ -876,6 +887,9 @@
     .ant-tree .ant-tree-node-content-wrapper .tree-select-nodes {
         border-radius: 0 !important;
     }
+    .ant-dropdown-trigger {
+        min-height: 2.5rem;
+    }
 </style>
 <style lang="less" module>
     .schemaExplorerTreeStyles {
@@ -885,15 +899,20 @@
         :global(.ant-tree-treenode) {
             padding-bottom: 0px !important;
             @apply hover:bg-gray-200 !important;
+            @apply rounded !important;
         }
         :global(.ant-tree-treenode-selected) {
             padding-bottom: 0px !important;
             @apply hover:bg-primary-light !important;
+            @apply rounded !important;
+
             @apply bg-primary-light !important;
         }
         :global(.ant-tree-node-content-wrapper) {
             @apply hover:bg-transparent !important;
             max-width: 85% !important;
+            @apply rounded !important;
+
             // @applybg-primary-light !important;
         }
         :global(.ant-tree-node-content-wrapper.ant-tree-node-selected) {

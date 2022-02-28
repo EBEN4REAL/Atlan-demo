@@ -55,11 +55,12 @@ export const searchTerm = ref('')
 export const facets = ref({})
 export const filteredPersonas = computed(() => {
     let result = []
-    const { hierarchy, owners } = facets.value
+    const { hierarchy, owners, permissions } = facets.value
     const hasFilters =
         !!searchTerm.value ||
         !!Object.keys(hierarchy || {}).length ||
-        !!(owners?.ownerUsers?.length || owners?.ownerGroups?.length)
+        !!(owners?.ownerUsers?.length || owners?.ownerGroups?.length) ||
+        !!permissions?.length
     result = personaList.value
     if (searchTerm.value) {
         result = personaList.value.filter((persona) => {
@@ -112,6 +113,21 @@ export const filteredPersonas = computed(() => {
             if (ownerGroups && ownerGroups.length) {
                 found = groups.some((group) => ownerGroups.includes(group))
             }
+            return found
+        })
+    }
+
+    if (permissions && permissions.length) {
+        result = result.filter((persona) => {
+            const metadataPolicies = persona?.metadataPolicies || []
+            let personaPerms = []
+            metadataPolicies.forEach((policy) => {
+                personaPerms = [...personaPerms, ...policy.actions]
+            })
+            console.log('personaPerms', personaPerms)
+            let found = personaPerms.some((permission) =>
+                permissions.includes(permission)
+            )
             return found
         })
     }

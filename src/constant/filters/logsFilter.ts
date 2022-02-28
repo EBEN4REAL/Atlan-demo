@@ -1,6 +1,23 @@
 // import { confidenceScore } from '~/constant/confidenceScore'
 import { statusRequest, assetTypes } from '~/constant/statusRequest'
 import { statusPersona } from '~/constant/statusPersona'
+import { personaScopeList } from '~/components/governance/personas/composables/useScopeService'
+
+const getPermissions = (permissionScopeList) => {
+    const permissions = []
+    permissionScopeList.forEach((scope) => {
+        const { scopes } = scope
+        scopes.forEach((scope) => {
+            const newScope = { ...scope }
+            newScope.id = scope.value
+            if (scope.filterLabel) {
+                newScope.label = scope.filterLabel
+            }
+            permissions.push(newScope)
+        })
+    })
+    return permissions
+}
 
 export const queryLogsFilter = [
     {
@@ -230,18 +247,30 @@ export const personaFilter = [
         },
         class: 'bg-transparent',
     },
-    // {
-    //     id: 'statusRequest',
-    //     label: 'STATUS',
-    //     component: 'CheckBoxOption',
-    //     overallCondition: 'OR',
-    //     attributes: [],
-    //     isDeleted: false,
-    //     isDisabled: false,
-    //     exclude: false,
-    //     class: 'bg-transparent',
-    //     data: statusPersona,
-    // },
+    {
+        id: 'statusRequest',
+        label: 'STATUS',
+        component: 'CheckBoxOption',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+        class: 'bg-transparent',
+        data: statusPersona,
+    },
+    {
+        id: 'permissions',
+        label: 'PERMISSION',
+        component: 'CheckBoxOption',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+        class: 'bg-transparent',
+        data: getPermissions(personaScopeList),
+    },
     // {
     //     id: 'confidenceScore',
     //     label: 'Confidence score',

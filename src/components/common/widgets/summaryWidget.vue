@@ -138,8 +138,9 @@
                     class="text-sm cursor-pointer text-primary"
                     @click="$emit('addPolicy')"
                 >
-                    <AtlanIcon icon="Add" class="mr-2" />
-                    Add policies
+                    <AtlanIcon v-if="!total" icon="Add" class="mr-2" />
+
+                    {{ titlePolices }}
                 </span>
             </div>
             <div class="mt-7">
@@ -163,7 +164,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref } from 'vue'
+    import { defineComponent, PropType, ref, toRefs, computed } from 'vue'
     import { useTimeAgo } from '@vueuse/core'
     import Avatar from '~/components/common/avatar/index.vue'
     import PopOverUser from '@/common/popover/user/user.vue'
@@ -198,6 +199,7 @@
         },
         emits: ['changeLink'],
         setup(props, { emit }) {
+            const { item } = toRefs(props)
             const link = ref('')
             const showPopover = ref(false)
             const imageUrl = (username: any) =>
@@ -219,6 +221,27 @@
                 emit('changeLink', '')
                 link.value = ''
             }
+            const countData = computed(() => item.value.dataPolicies?.length)
+            const countMeta = computed(
+                () => item.value.metadataPolicies?.length
+            )
+            const total = computed(() => countData.value + countMeta.value)
+            const titlePolices = computed(() => {
+                if (!total.value) {
+                    return 'Add policies'
+                }
+                const meta = countMeta.value
+                    ? `${countMeta.value} metadata ${
+                          countMeta.value > 1 ? 'policies' : 'policy'
+                      } `
+                    : ''
+                const data = countData.value
+                    ? `${countData.value} data ${
+                          countData.value > 1 ? 'policies' : 'policy'
+                      }`
+                    : ''
+                return `${meta}${data}`
+            })
             return {
                 imageUrl,
                 timeStamp,
@@ -226,6 +249,10 @@
                 link,
                 handleChangeLink,
                 handleRemove,
+                countData,
+                countMeta,
+                total,
+                titlePolices,
             }
         },
     })

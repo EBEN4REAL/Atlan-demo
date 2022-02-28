@@ -268,6 +268,17 @@
                     ]
             )
 
+            const connectionQFName = computed(() => {
+                if (formState[property.value.id]) {
+                    try {
+                        const conn = JSON.parse(formState[property.value.id])
+                        return conn?.attributes?.qualifiedName || ''
+                    } catch (e) {
+                        return ''
+                    }
+                }
+                return ''
+            })
             const {
                 data,
                 approximateCount,
@@ -314,6 +325,12 @@
                                         },
                                         {
                                             term: {
+                                                qualifiedName:
+                                                    connectionQFName.value,
+                                            },
+                                        },
+                                        {
+                                            term: {
                                                 __state: 'ACTIVE',
                                             },
                                         },
@@ -322,7 +339,6 @@
                             },
                         },
                     },
-
                     post_filter: {
                         bool: {
                             filter: {
@@ -346,41 +362,11 @@
 
             const seconds = Math.round(new Date().getTime() / 1000)
 
-            const selectedConnection = ref(
-                (() => {
-                    if (formState[property.value.id]) {
-                        try {
-                            const temp = JSON.parse(
-                                formState[property.value.id]
-                            )
-                            const found = list.value.find(
-                                (i) =>
-                                    i.attributes.qualifiedName ===
-                                    temp?.attributes?.qualifiedName
-                            )
-                            return found
-                        } catch (e) {
-                            return {}
-                        }
-                    }
-                    return {}
-                })()
-            )
+            const selectedConnection = ref({})
 
             watch(list, () => {
-                if (formState[property.value.id]) {
-                    try {
-                        const temp = JSON.parse(formState[property.value.id])
-                        const found = list.value.find(
-                            (i) =>
-                                i.attributes.qualifiedName ===
-                                temp?.attributes?.qualifiedName
-                        )
-                        selectedConnection.value = found
-                    } catch (e) {
-                        console.error(e)
-                    }
-                }
+                if (list.value.length)
+                    selectedConnection.value = list.value?.[0]
             })
 
             const {

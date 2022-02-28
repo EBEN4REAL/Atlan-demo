@@ -90,7 +90,7 @@
                     <div class="relative flex items-center">
                         <AtlanBtn
                             color="secondary"
-                            class="px-2 border-r-0 rounded-tr-none rounded-br-none cursor-pointer filter-button"
+                            class="px-2 border-r rounded-tr-none rounded-br-none cursor-pointer filter-button"
                             :class="{
                                 'text-primary border rounded py-1 border-primary':
                                     drawerFilter,
@@ -310,7 +310,7 @@
     import ErrorView from '@common/error/index.vue'
     import { storeToRefs } from 'pinia'
     import { useRoute, useRouter } from 'vue-router'
-    import AtlanBtn from '@/UI/button.vue'
+    // import AtlanBtn from '@/UI/button.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ExplorerLayout from '@/admin/explorerLayout.vue'
     import PersonaBody from './personaBody.vue'
@@ -342,7 +342,6 @@
         name: 'PersonaView',
         components: {
             ErrorView,
-            AtlanBtn,
             SearchAndFilter,
             PersonaBody,
             PersonaHeader,

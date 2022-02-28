@@ -215,6 +215,7 @@ export const personaFilter = [
         id: 'owners',
         label: 'Users',
         component: 'owners',
+        selectUserKey: 'id',
         overallCondition: 'OR',
         attributes: [],
         isDeleted: false,

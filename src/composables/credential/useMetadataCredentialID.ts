@@ -5,8 +5,10 @@ import axios from 'axios'
 import { Credential } from '~/services/service/credentials'
 import { useOptions } from '~/services/api/common'
 
-export function useMetadataCredential(
-    body: Record<string, any> | Ref<Record<string, any>>
+export function useMetadataCredentialByID(
+    path: string,
+    body: Record<string, any> | Ref<Record<string, any>>,
+    immediate
 ) {
     const options: useOptions = {}
     let cancel = axios.CancelToken.source()
@@ -15,11 +17,11 @@ export function useMetadataCredential(
     })
 
     options.asyncOptions = ref({
-        immediate: false,
+        immediate,
     })
 
     const { data, mutate, error, isLoading, isValidating, isReady } =
-        Credential.Metadata(body, options)
+        Credential.MetadataByID(path, body, options)
 
     const cancelRequest = () => {
         if (cancel) {

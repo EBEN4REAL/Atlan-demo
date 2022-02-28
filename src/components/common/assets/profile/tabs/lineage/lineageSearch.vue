@@ -2,7 +2,7 @@
     <div class="flex flex-col">
         <div class="flex items-center">
             <div class="control-item" @click="showSearch = !showSearch">
-                <a-tooltip placement="top" mouseEnterDelay="0.4">
+                <a-tooltip placement="top" mouse-enter-delay="0.4">
                     <template #title>
                         <span>search graph</span>
                     </template>
@@ -49,8 +49,8 @@
                 :class="{ selected: searchItem === item.guid }"
                 :item="item"
                 class="search-results__item"
+                disable-links
                 @click="setSearchItem(item)"
-                disableLinks
             ></AssetItem>
         </div>
     </div>
@@ -60,6 +60,7 @@
     // Vue
     import {
         defineComponent,
+        Ref,
         ref,
         inject,
         computed,
@@ -68,11 +69,15 @@
     } from 'vue'
     import { whenever } from '@vueuse/core'
 
+    // Utils
     import { getNodeSourceImage, getSource } from './util'
+
+    // Components
     import AssetItem from '@/common/assets/preview/lineage/list/assetItem.vue'
     import NoResultIllustration from '~/assets/images/illustrations/Illustration_no_search_results.svg'
 
     export default defineComponent({
+        name: 'LineageSearch',
         components: { AssetItem, NoResultIllustration },
         emits: ['select'],
         setup(_, { emit }) {
@@ -90,24 +95,28 @@
             /** COMPUTED */
             const filteredItems = computed(() => {
                 if (!query.value) return []
-                return searchItems.value.filter((i) =>
-                    (i.displayText || i.attributes.name)
-                        .toLowerCase()
-                        .includes(query.value.toLowerCase())
-                )
+                return searchItems.value.filter((i) => {
+                    if (i.typeName.includes('vpNode')) return false
+                    return (i?.displayText || i?.attributes.name)
+                        ?.toLowerCase()
+                        ?.includes(query.value.toLowerCase())
+                })
             })
 
             /** METHODS */
+            // setQuery
             const setQuery = (e) => {
                 query.value = e.target.value
             }
 
+            // setSearchItem
             const setSearchItem = (item) => {
                 searchItem.value = item.guid
                 onSelectAsset(item, true)
                 emit('select', item.guid)
             }
 
+            // onBlur
             const onBlur = () => {
                 setTimeout(() => {
                     showResults.value = false
@@ -116,16 +125,19 @@
                 if (!query.value) showSearch.value = false
             }
 
+            // onFocus
             const onFocus = () => {
                 showResults.value = true
             }
 
+            // onEsc
             const onEsc = (e) => {
                 e.target.blur()
                 showResults.value = false
                 showSearch.value = false
             }
 
+            // sourceImg
             const sourceImg = (entity) => {
                 const source = getSource(entity)
                 return getNodeSourceImage[source]
@@ -146,15 +158,15 @@
                 searchItems,
                 filteredItems,
                 searchItem,
+                searchBar,
                 showResults,
+                showSearch,
                 setQuery,
                 setSearchItem,
                 onBlur,
                 onFocus,
                 onEsc,
-                searchBar,
                 sourceImg,
-                showSearch,
             }
         },
     })

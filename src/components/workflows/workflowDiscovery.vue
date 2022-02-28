@@ -93,11 +93,11 @@
             </div>
         </div>
         <div class="relative hidden bg-white asset-preview-container md:block">
-            <WorfklowPreview
+            <WorkflowPreview
                 v-if="selectedPackage"
                 :key="listKey"
                 :item="selectedPackage"
-            ></WorfklowPreview>
+            ></WorkflowPreview>
         </div>
     </div>
 </template>
@@ -116,11 +116,11 @@
 
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
-    import WorfklowPreview from '@/workflows/preview/index.vue'
 
     import { useRouter } from 'vue-router'
     import { debouncedWatch, useDebounceFn } from '@vueuse/core'
     import WorkflowList from './list/index.vue'
+    import WorkflowPreview from '@/workflows/preview/index.vue'
     import { useWorkflowDiscoverList } from '~/composables/package/useWorkflowDiscoverList'
     import { useRunDiscoverList } from '~/composables/package/useRunDiscoverList'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
@@ -129,7 +129,7 @@
     export default defineComponent({
         name: 'WorkflowListing',
         components: {
-            WorfklowPreview,
+            WorkflowPreview,
             WorkflowList,
             AggregationTabs,
             EmptyView,
@@ -394,7 +394,7 @@
         width: 25%;
     }
     .asset-preview-container {
-        min-width: 420px !important;
-        max-width: 420px !important;
+        min-width: 360px !important;
+        max-width: 360px !important;
     }
 </style>

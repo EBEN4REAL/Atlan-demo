@@ -5,11 +5,18 @@
                 <div
                     class="flex justify-between px-5 py-2 border-b border-gray-200 gap-x-6 bg-gray-50"
                 >
-                    <div>
-                        <span class="font-semibold text-gray-500">
+                    <span class="flex items-center">
+                        <PreviewTabsIcon
+                            :icon="tab.icon"
+                            :image="tab.image"
+                            :emoji="tab.emoji"
+                            height="h-4"
+                            class="mb-0.5"
+                        />
+                        <span class="ml-1 font-semibold text-gray-500">
                             Resources
                         </span>
-                    </div>
+                    </span>
                     <div class="flex-grow"></div>
 
                     <AddResource v-if="!readOnly" @add="addCallback">
@@ -147,6 +154,7 @@
     import LinkPreviewCard from '@/common/widgets/resources/previewCard/linkPreviewCard.vue'
     import SlackPreview from '@/common/widgets/resources/previewCard/slackPreview.vue'
     import AddResource from '@/common/widgets/resources/resourceInputModal.vue'
+    import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
 
     import integrationStore from '~/store/integrations/index'
     import { Link } from '~/types/resources.interface'
@@ -181,6 +189,10 @@
             type: Boolean,
             required: false,
             default: true,
+        },
+        tab: {
+            type: Object,
+            required: false,
         },
     })
     const emit = defineEmits(['add', 'update', 'remove'])

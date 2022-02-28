@@ -5,13 +5,13 @@ import { Attributes } from '~/types/insights/savedQuery.interface'
 import { VQBInterface } from './VQB.interface'
 
 export interface activeInlineTabInterface {
-    attributes: Attributes
+    attributes: Attributes | null
     key: string
     label: String
     isSaved: boolean
     updateTime: number
     updatedBy: string
-    queryId: string | undefined
+    queryId: string | undefined | null
     status: string // draft | verified etc.
     connectionId: string
     description: string
@@ -62,7 +62,7 @@ export interface activeInlineTabInterface {
             outputPaneSize: number
             result: {
                 title: string
-                runQueryId: undefined | string
+                runQueryId: undefined | string | null
                 isQueryRunning: string
                 totalRowsCount: number
                 abortQueryFn: Function | undefined

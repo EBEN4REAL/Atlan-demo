@@ -10,20 +10,12 @@
 
             <div class="flex flex-col w-full mt-4">
                 <!-- Preview Selector-->
-                <a-tooltip
-                    placement="right"
-                    :title="
-                        !showTablePreview &&
-                        'No sample data found for this asset'
-                    "
-                >
-                    <RaisedTab
-                        v-model:active="activePreviewTabKey"
-                        class="flex-none flex-grow-0 mb-4 mr-auto"
-                        :data="tabConfig"
-                        :disabled="!showTablePreview"
-                    />
-                </a-tooltip>
+
+                <RaisedTab
+                    v-model:active="activePreviewTabKey"
+                    class="flex-none flex-grow-0 mb-4 mr-auto"
+                    :data="tabConfig"
+                />
 
                 <OverviewColumns v-if="activePreviewTabKey === 'column'" />
                 <SampleDataTable
@@ -32,7 +24,7 @@
                 />
             </div>
         </Summary>
-        <Readme :asset="selectedAsset" :isEdit="readmeEditPermission" />
+        <slot name="readme"></slot>
     </div>
 </template>
 
@@ -41,7 +33,6 @@
         defineComponent,
         PropType,
         defineAsyncComponent,
-        computed,
         ref,
         Ref,
         toRefs,
@@ -58,7 +49,6 @@
         name: 'NonBiOverview',
         components: {
             AnnouncementWidget,
-            Readme,
             Summary,
             RaisedTab,
             OverviewColumns: defineAsyncComponent(
@@ -88,19 +78,9 @@
                 { key: 'table', label: 'Sample Data' },
             ]
 
-            const { assetType } = useAssetInfo()
-
-            const showTablePreview = computed(
-                () =>
-                    !['TablePartition', 'MaterialisedView'].includes(
-                        assetType(selectedAsset.value)
-                    )
-            )
-
             return {
                 activePreviewTabKey,
                 tabConfig,
-                showTablePreview,
             }
         },
     })

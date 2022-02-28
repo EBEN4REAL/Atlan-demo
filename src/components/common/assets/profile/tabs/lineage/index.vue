@@ -34,16 +34,13 @@
                     <span class="mt-1 text-sm">Computing data...</span>
                 </div>
             </div>
-            <LineageGraph
-                v-if="Object.keys(lineage.guidEntityMap).length"
-                :lineage="lineage"
-            />
+            <LineageGraph v-if="Object.keys(lineage.guidEntityMap).length" />
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    // Vue
+    /** VUE */
     import {
         watch,
         defineComponent,
@@ -55,20 +52,20 @@
     import { useRoute } from 'vue-router'
     import { whenever } from '@vueuse/core'
 
-    // Libs
+    /** LIBS */
     import { message } from 'ant-design-vue'
 
-    // Components
+    /** COMPONENTS */
     import LineageGraph from './lineageGraph.vue'
     import EmptyState from '~/components/common/empty/index.vue'
 
-    // Store
+    /** STORE */
     import useAssetStore from '~/store/asset'
 
-    // API
+    /** API */
     import useLineageService from '~/services/meta/lineage/lineage_service'
 
-    // Constants
+    /** CONSTANTS */
     import { LineageAttributes } from '~/constant/projection'
 
     export default defineComponent({
@@ -79,19 +76,18 @@
             /** INITIALIZE */
             const route = useRoute()
             const assetStore = useAssetStore()
+            const { useFetchLineage } = useLineageService()
 
             /** DATA */
             const lineage: any = ref({})
             const baseEntity = ref({})
             const guid = ref(route.params?.id || '')
-
             const depth = ref(1)
             const direction = ref('BOTH')
-
             const loaderText = ref('Fetching Data...')
             const initialLoad = ref(true)
             const selectedAsset = ref(assetStore.getSelectedAsset)
-
+            const preferences = ref({ showArrow: false })
             const config = computed(() => ({
                 depth: depth.value,
                 guid: guid.value,
@@ -104,26 +100,24 @@
                 },
                 attributes: LineageAttributes,
             }))
-            const preferences = ref({ showArrow: false })
 
             /** METHODS */
             // useLineageService
-            const { useFetchLineage } = useLineageService()
             const { data, isLoading, isReady, mutate, error } =
                 useFetchLineage(config)
 
             watch(data, async () => {
+                lineage.value = { ...data.value }
                 if (!data.value.relations.length) {
-                    lineage.value = { ...data.value }
                     const { baseEntityGuid } = lineage.value
                     baseEntity.value = selectedAsset.value
                     lineage.value.guidEntityMap = {
                         [baseEntityGuid]: baseEntity.value,
                     }
-                } else lineage.value = { ...data.value }
-
-                const { guidEntityMap, baseEntityGuid } = lineage.value
-                baseEntity.value = guidEntityMap[baseEntityGuid]
+                } else {
+                    const { guidEntityMap, baseEntityGuid } = lineage.value
+                    baseEntity.value = guidEntityMap[baseEntityGuid]
+                }
             })
 
             // Control
@@ -138,11 +132,11 @@
             })
 
             /** PROVIDERS */
+            provide('lineage', lineage)
             provide('baseEntity', baseEntity)
             provide('selectedAsset', selectedAsset)
-            provide('config', config)
-            provide('control', control)
             provide('preferences', preferences)
+            provide('control', control)
 
             /** WATCHERS */
             whenever(error, () => {

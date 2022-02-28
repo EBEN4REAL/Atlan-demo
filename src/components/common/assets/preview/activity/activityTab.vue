@@ -9,6 +9,7 @@
                     :image="tab.image"
                     :emoji="tab.emoji"
                     height="h-4"
+                    class="mb-0.5"
                 />
                 <span class="ml-1 font-semibold text-gray-500">Activity</span>
             </span>
@@ -42,8 +43,23 @@
             <a-timeline class="mx-5" :key="item.guid">
                 <a-timeline-item v-for="(log, index) in auditList" :key="index">
                     <template #dot>
+                        <div v-if="log?.action === 'BUSINESS_ATTRIBUTE_UPDATE'">
+                            <PreviewTabsIcon
+                                :icon="getAuditEventComponent(log)?.icon?.value?.options?.icon"
+                                :image="getAuditEventComponent(log)?.icon?.value?.options?.image"
+                                :emoji="getAuditEventComponent(log)?.icon?.value?.options?.emoji"
+                                height="h-4"
+                                class="mb-0.5"
+                            />
+                        </div>
+                        <atlan-icon
+                            v-else-if="getAuditEventComponent(log)?.icon"
+                            :icon="getAuditEventComponent(log)?.icon"
+                            class="mb-1"
+                        />
                         <div
-                            class="border ant-timeline-item-dot border-primary"
+                            v-else
+                            class="border ant-timeline-item-dot border-primary mb-1"
                         ></div>
                     </template>
                     <div>
@@ -80,7 +96,12 @@
                     <div
                         v-if="
                             log.entityId !== item.guid &&
-                            ['AtlasGlossary'].includes(item.typeName)
+                            ['AtlasGlossary'].includes(item.typeName) &&
+                            getTermsAndCategoriesDetail(
+                                log.detail.guid ??
+                                    log.detail?.entityGuid ??
+                                    log?.entityId
+                            )?.guid
                         "
                         class="flex items-center mt-1 text-gray-700"
                     >

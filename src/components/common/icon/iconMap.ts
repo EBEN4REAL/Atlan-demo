@@ -98,6 +98,7 @@ import Lineage from '~/assets/images/icons/lineage.svg'
 import Activity from '~/assets/images/icons/activity.svg'
 import Columns from '~/assets/images/icons/columns.svg'
 import Relation from '~/assets/images/icons/relation.svg'
+import RelationActive from '~/assets/images/icons/relations-active.svg'
 import User from '~/assets/images/icons/user.svg'
 import Chats from '~/assets/images/icons/chats.svg'
 import OpenTermProfile from '~/assets/images/icons/openTermProfile.svg'
@@ -339,6 +340,9 @@ import FolderSearch from '~/assets/images/icons/folder-search.svg'
 import FolderNav24 from '~/assets/images/icons/folder_closed_24.svg'
 import FolderNav24Active from '~/assets/images/icons/folder_open_24.svg'
 import Verified from '~/assets/images/status/verified.svg'
+import Draft from '~/assets/images/status/draft.svg'
+import Deprecated from '~/assets/images/status/deprecated.svg'
+import Nostatus from '~/assets/images/status/nostatus.svg'
 import ShieldBlank from '~/assets/images/icons/ShieldBlank.svg'
 import Compass from '~/assets/images/icons/Compass.svg'
 import Policies from '~/assets/images/icons/Policies.svg'
@@ -415,7 +419,7 @@ import QuestionRound from '~/assets/images/icons/question-round.svg'
 import Documentation from '~/assets/images/icons/documentation.svg'
 import Logout from '~/assets/images/icons/logout.svg'
 import TrendUp from '~/assets/images/icons/trendUp.svg'
-
+import NoAllow from '~/assets/images/icons/no-allow.svg'
 
 import ThreeDotsAlt from '~/assets/images/icons/3-dots-alt.svg'
 import NoProperty from '~/assets/images/admin/customMetadata/empty-property.svg'
@@ -458,6 +462,7 @@ export default {
     ShieldCheck,
     Hash,
     Column,
+    RelationActive,
     CreateGroups,
     NoGroups,
     NoUsers,
@@ -821,5 +826,9 @@ export default {
     SidebarTriggerFilled,
     BeautifySql,
     TrendUp,
+    Draft,
+    Deprecated,
+    Nostatus,
     MySQL,
+    NoAllow,
 }

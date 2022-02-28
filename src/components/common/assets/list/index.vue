@@ -30,7 +30,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, toRefs } from 'vue'
+    import { defineComponent, toRefs, ref, watch } from 'vue'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
 
     export default defineComponent({
@@ -59,15 +59,6 @@
             },
         },
         emits: ['loadMore'],
-        setup(props, { emit }) {
-            const { list, isLoadMore, isLoading } = toRefs(props)
-
-            return {
-                list,
-                isLoadMore,
-                isLoading,
-            }
-        },
     })
 </script>
 

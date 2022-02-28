@@ -10,8 +10,10 @@
         :width="460"
         @close="$emit('close')"
     >
-        <div class="flex flex-col h-full">
-            <div class="flex items-center px-4 pt-4">
+        <div class="relative flex flex-col h-full bg-white">
+            <div
+                class="flex items-center p-4 bg-white border-b border-gray-300"
+            >
                 <AtlanBtn
                     class="border-none btn-add-assets"
                     size="sm"
@@ -23,14 +25,32 @@
                     <AtlanIcon icon="ArrowRight" class="-rotate-180" />
                 </AtlanBtn>
                 <span class="text-lg font-bold text-gray-700">Add Assets</span>
+                <div class="flex items-center ml-auto w-fit">
+                    <span
+                        v-if="selectedAssetCount"
+                        class="mr-3 text-sm font-bold text-gray-500"
+                        >{{
+                            `${selectedAssetCount} ${
+                                selectedAssetCount > 1 ? 'assets' : 'asset'
+                            } added`
+                        }}
+                    </span>
+                    <!-- <AtlanBtn
+                        padding="compact"
+                        class="px-7 h-fit"
+                        @click="saveAssets"
+                    >
+                        Add
+                    </AtlanBtn> -->
+                </div>
             </div>
 
             <RaisedTab
                 v-model:active="activeTab"
-                class="mx-4 mt-3 tab-select-asset"
+                class="mx-4 mt-3 bg-gray-200 tab-select-asset"
                 :data="tabConfig"
             />
-            <a-divider class="my-4" />
+            <div class="my-4" />
 
             <div
                 class="relative overflow-x-hidden overflow-y-hidden drawer_height"
@@ -70,7 +90,6 @@
                         :initial-filters="filterConfig"
                         checked-criteria="qualifiedName"
                         :preference="preference"
-                        class="asset-list-height"
                         page="personas"
                         :all-checkbox-area-click="true"
                     />
@@ -95,12 +114,14 @@
                 </div>
             </div>
 
-            <a-divider />
-            <div class="flex items-center justify-end m-2 gap-x-2">
-                <span class="mr-auto text-gray-500"
+            <div
+                class="absolute bottom-0 flex items-center justify-end w-full p-3 bg-white border-t border-gray-300 gap-x-2"
+            >
+                <span class="pl-2 mr-auto text-gray-500"
                     >{{ selectedAssetCount || 'No' }} items selected</span
                 >
                 <AtlanBtn
+                    size="sm"
                     padding="compact"
                     color="secondary"
                     data-test-id="cancel"
@@ -110,6 +131,7 @@
                     Cancel
                 </AtlanBtn>
                 <AtlanBtn
+                    size="sm"
                     padding="compact"
                     data-test-id="save"
                     class="btn-asset"

@@ -5,6 +5,7 @@ import { outputPaneSize } from '~/components/insights/common/composables/useSpil
 const InsightsLocalStorageKeys = {
     inlinetabs: 'insights_inlinetabs',
     activeInlineTab: 'insights_active_inlinetab',
+    activeExplorerTab: 'active_explorer_tab',
 }
 
 export function useLocalStorageSync() {
@@ -101,6 +102,20 @@ export function useLocalStorageSync() {
                 cursorStyle: 'line',
             }
     }
+    const setActiveExplorerTab = (activeTabId: string) => {
+        localStorage.setItem(
+            InsightsLocalStorageKeys.activeExplorerTab,
+            activeTabId
+        )
+    }
+
+    const getActiveExplorerTab = () => {
+        if (localStorage.getItem(InsightsLocalStorageKeys.activeExplorerTab))
+            return localStorage.getItem(
+                InsightsLocalStorageKeys.activeExplorerTab
+            )
+        return ''
+    }
     return {
         setUserPreferenceToLocalStorage,
         getUserPereferenceFromLocalStorage,
@@ -108,5 +123,7 @@ export function useLocalStorageSync() {
         getInlineTabsFromLocalStorage,
         syncActiveInlineTabKeyInLocalStorage,
         getActiveInlineTabKeyFromLocalStorage,
+        setActiveExplorerTab,
+        getActiveExplorerTab,
     }
 }

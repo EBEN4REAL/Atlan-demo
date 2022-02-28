@@ -59,6 +59,6 @@ export const filteredPurposes = computed(() => {
                 .includes(searchTerm.value?.toLowerCase())
         )
     }
-    return purposeList.value
+    return purposeList.value || []
 })
 

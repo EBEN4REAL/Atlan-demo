@@ -118,7 +118,7 @@ export async function addPolicy(type: String, dataPolicyProp: any) {
 }
 
 export async function updatePolicy(type: String, dataPolicyProp: any) {
-    const dataPolicy = dataPolicyProp
+    const dataPolicy = {...dataPolicyProp}
     const idPolicy = dataPolicyProp.id
     delete dataPolicy?.id
     if (dataPolicy.actions.includes('entity-update-classification')) {

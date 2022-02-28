@@ -98,7 +98,7 @@
     <CreateModal
         v-model:visible="createModal"
         :asset="asset"
-        @success="() => (visible = false)"
+        @success="handleIssueCreationSuccess"
     />
 </template>
 
@@ -217,6 +217,11 @@
         resetIDs()
         offset.value = 0
         mutate()
+    }
+
+    const handleIssueCreationSuccess = () => {
+        visible.value = false
+        emit('close')
     }
 
     watch(visible, (v) => {

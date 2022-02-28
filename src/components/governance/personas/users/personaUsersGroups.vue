@@ -152,7 +152,7 @@
                     v-if="filteredList.length || queryText"
                     v-model:value="queryText"
                     :style="'border: none!important'"
-                    class="mt-3 mb-2 bg-gray-100 border-none hover:outline-none hover:border-none"
+                    class="mt-3 mb-2 bg-gray-100 border-none shadow-none outline-none hover:outline-none hover:border-none focus-none"
                     :placeholder="placeholder"
                 >
                     <template #suffix>

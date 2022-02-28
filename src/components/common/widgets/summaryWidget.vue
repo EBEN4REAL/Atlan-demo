@@ -7,8 +7,11 @@
             </div>
         </div>
         <div
-            class="p-4 pb-0 mt-1"
-            :class="item?.attributes?.channelLink && 'hover:bg-gray-100'"
+            class="p-4 pb-2 mt-1"
+            :class="
+                item?.attributes?.channelLink &&
+                'hover:bg-gray-100 cursor-pointer container-channel'
+            "
         >
             <div class="mb-2.5 text-gray-500">Channels</div>
             <a-popover
@@ -18,7 +21,7 @@
             >
                 <template #content>
                     <div class="p-3 bg-white w-72">
-                        <div class="flex">
+                        <div class="flex items-center">
                             <div
                                 class="flex items-center justify-center w-8 h-8 mr-3 border rounded-full border-primary"
                             >
@@ -29,6 +32,13 @@
                                 >
                                     <AtlanIcon icon="Teams" />
                                 </div> -->
+                            <div
+                                v-if="item?.attributes?.channelLink"
+                                class="ml-auto text-xs text-gray-500 cursor-pointer"
+                                @click="handleRemove"
+                            >
+                                <AtlanIcon icon="Delete" class="mr-1" />Remove
+                            </div>
                         </div>
                         <div class="mt-4 text-sm text-gray-700">
                             Slack Channel
@@ -59,17 +69,29 @@
                                 @click="handleChangeLink"
                             >
                                 <AtlanIcon icon="Edit" class="mr-1" />
-                                Add
+                                {{
+                                    item?.attributes?.channelLink
+                                        ? 'Edit'
+                                        : 'Add'
+                                }}
                             </AtlanButton>
                         </div>
                     </div>
                 </template>
                 <div
-                    v-if="item?.attributes?.channelLink && isLoading"
-                    class="text-sm text-gray-700"
+                    v-if="item?.attributes?.channelLink && !isLoading"
+                    class="flex text-sm text-gray-700"
                 >
-                    <AtlanIcon icon="Slack" />
-                    Slack
+                    <a-tooltip placement="bottom">
+                        <template #title>{{
+                            item?.attributes?.channelLink
+                        }}</template>
+                        <AtlanIcon icon="Slack" />
+                        Slack
+                    </a-tooltip>
+                    <span class="ml-auto text-primary edit-channel">
+                        EDIT
+                    </span>
                 </div>
                 <span
                     v-else-if="!isLoading"
@@ -82,7 +104,7 @@
             </a-popover>
         </div>
         <div class="flex flex-col p-4 pt-0">
-            <div class="mt-7">
+            <div class="mt-5">
                 <div class="mb-2.5 text-gray-500">Policies</div>
                 <a-dropdown trigger="click">
                     <template #overlay>
@@ -187,8 +209,12 @@
             }
             const handleChangeLink = () => {
                 showPopover.value = false
-                console.log(link.value, '<<<<<<<<<')
                 emit('changeLink', link.value)
+            }
+            const handleRemove = () => {
+                showPopover.value = false
+                emit('changeLink', '')
+                link.value = ''
             }
             return {
                 imageUrl,
@@ -196,8 +222,20 @@
                 showPopover,
                 link,
                 handleChangeLink,
+                handleRemove,
             }
         },
     })
 </script>
-<style lang="less"></style>
+<style lang="less">
+    .container-channel {
+        .edit-channel {
+            display: none;
+        }
+        :hover {
+            .edit-channel {
+                display: flex;
+            }
+        }
+    }
+</style>

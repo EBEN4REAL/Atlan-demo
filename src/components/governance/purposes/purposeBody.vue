@@ -39,7 +39,7 @@
         <div v-if="activeTabKey === 'details'" class="p-6 overflow-y-auto">
             <PurposeMeta
                 class="flex flex-col"
-                :persona="persona"
+                :persona="selectedPersonaDirty"
                 @editDetails="$emit('editDetails')"
             />
 

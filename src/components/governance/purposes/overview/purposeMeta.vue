@@ -323,6 +323,10 @@
                     })
                     updatedSelectedData({
                         id: payload.id,
+                        attributes: {
+                            ...payload.attributes,
+                            channelLink: val,
+                        },
                     })
                 } catch (error) {
                     message.error(

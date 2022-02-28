@@ -58,6 +58,7 @@
         emits: ['update:persona', 'update:isEditMode'],
         setup(props) {
             const { persona } = toRefs(props)
+
             const loadingLink = ref(false)
             const cancelTokenForUsers = ref()
             const cancelTokenForGroups = ref()
@@ -166,6 +167,10 @@
                     })
                     updatedSelectedData({
                         id: payload.id,
+                        attributes: {
+                            ...payload.attributes,
+                            channelLink: val,
+                        },
                     })
                 } catch (error) {
                     message.error(

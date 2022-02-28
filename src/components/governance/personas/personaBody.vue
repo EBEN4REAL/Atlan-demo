@@ -55,7 +55,7 @@
         <div v-if="activeTabKey === 'details'" class="p-6 overflow-y-auto">
             <PersonaMeta
                 class="pb-0"
-                :persona="persona"
+                :persona="selectedPersonaDirty"
                 @editDetails="$emit('editDetails')"
             />
 

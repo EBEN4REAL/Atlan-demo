@@ -61,6 +61,7 @@
                 if (item) {
                     command.value({
                         id: item.username ? item.username : item.alias,
+                        'is-user': item.hasOwnProperty('username'),
                     })
                 }
             }

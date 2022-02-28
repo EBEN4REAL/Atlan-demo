@@ -1,6 +1,6 @@
 import { VueRenderer } from '@tiptap/vue-3'
 import tippy from 'tippy.js'
-import { reactive, computed, watch } from 'vue'
+import { reactive } from 'vue'
 import { or, until } from '@vueuse/core'
 import MentionList from './index.vue'
 import { useUsers } from '~/composables/user/useUsers'

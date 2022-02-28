@@ -391,6 +391,7 @@
                     if (requestError.value) {
                         message.error(`Request failed`)
                         isEdit.value = false
+                        requestLoading.value = false
                     }
                 })
                 whenever(requestReady, () => {

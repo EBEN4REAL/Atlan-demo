@@ -318,18 +318,21 @@
                     if (requestError.value) {
                         message.error(`Request failed`)
                         isEdit.value = false
+                        requestLoading.value = false
                     }
                 })
                 whenever(requestReady, () => {
                     if (requestReady.value) {
                         message.success(`Request raised`)
                         isEdit.value = false
+                        requestLoading.value = false
                     }
                 })
                 requestLoading.value = isRequestLoading.value
             }
             const handleCancelRequest = () => {
                 isEdit.value = false
+                requestLoading.value = false
             }
 
             return {

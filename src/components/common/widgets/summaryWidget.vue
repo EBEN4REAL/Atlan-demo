@@ -6,75 +6,82 @@
                 <div class="font-semibold text-gray-700">Summary</div>
             </div>
         </div>
-        <div class="flex flex-col p-4">
-            <div class="mt-1">
-                <div class="mb-2.5 text-gray-500">Channels</div>
-                <a-popover
-                    v-model:visible="showPopover"
-                    trigger="click"
-                    placement="bottom"
-                >
-                    <template #content>
-                        <div class="p-3 bg-white w-72">
-                            <div class="flex">
-                                <div
-                                    class="flex items-center justify-center w-8 h-8 mr-3 border rounded-full border-primary"
-                                >
-                                    <AtlanIcon icon="Slack" />
-                                </div>
-                                <!-- <div
+        <div
+            class="p-4 pb-0 mt-1"
+            :class="item?.attributes?.channelLink && 'hover:bg-gray-100'"
+        >
+            <div class="mb-2.5 text-gray-500">Channels</div>
+            <a-popover
+                v-model:visible="showPopover"
+                trigger="click"
+                placement="bottom"
+            >
+                <template #content>
+                    <div class="p-3 bg-white w-72">
+                        <div class="flex">
+                            <div
+                                class="flex items-center justify-center w-8 h-8 mr-3 border rounded-full border-primary"
+                            >
+                                <AtlanIcon icon="Slack" />
+                            </div>
+                            <!-- <div
                                     class="flex items-center justify-center w-8 h-8 border rounded-full"
                                 >
                                     <AtlanIcon icon="Teams" />
                                 </div> -->
-                            </div>
-                            <div class="mt-4 text-sm text-gray-700">
-                                Slack Channel
-                            </div>
-                            <div class="mt-2">
-                                <a-input
-                                    v-model:value="link"
-                                    placeholder="Paste link to your channel"
-                                >
-                                    <template #prefix>
-                                        <AtlanIcon icon="Link" />
-                                    </template>
-                                </a-input>
-                            </div>
-                            <div class="flex justify-end mt-4">
-                                <AtlanButton
-                                    padding="compact"
-                                    size="sm"
-                                    color="minimal"
-                                    class="mr-2"
-                                    @click="showPopover = false"
-                                >
-                                    Cancel
-                                </AtlanButton>
-                                <AtlanButton
-                                    padding="compact"
-                                    size="sm"
-                                    @click="handleChangeLink"
-                                >
-                                    <AtlanIcon icon="Edit" class="mr-1" />
-                                    Add
-                                </AtlanButton>
-                            </div>
                         </div>
-                    </template>
-                    <span v-if="isLoading">
-                        <AtlanIcon
-                            icon="CircleLoader"
-                            class="h-5 animate-spin"
-                        />
-                    </span>
-                    <span
-                        v-if="!isLoading"
-                        class="text-sm cursor-pointer text-primary"
-                        ><AtlanIcon icon="Add" class="mr-2" />Add link</span
-                    >
-                </a-popover>
-            </div>
+                        <div class="mt-4 text-sm text-gray-700">
+                            Slack Channel
+                        </div>
+                        <div class="mt-2">
+                            <a-input
+                                v-model:value="link"
+                                placeholder="Paste link to your channel"
+                            >
+                                <template #prefix>
+                                    <AtlanIcon icon="Link" />
+                                </template>
+                            </a-input>
+                        </div>
+                        <div class="flex justify-end mt-4">
+                            <AtlanButton
+                                padding="compact"
+                                size="sm"
+                                color="minimal"
+                                class="mr-2"
+                                @click="showPopover = false"
+                            >
+                                Cancel
+                            </AtlanButton>
+                            <AtlanButton
+                                padding="compact"
+                                size="sm"
+                                @click="handleChangeLink"
+                            >
+                                <AtlanIcon icon="Edit" class="mr-1" />
+                                Add
+                            </AtlanButton>
+                        </div>
+                    </div>
+                </template>
+                <div
+                    v-if="item?.attributes?.channelLink && isLoading"
+                    class="text-sm text-gray-700"
+                >
+                    <AtlanIcon icon="Slack" />
+                    Slack
+                </div>
+                <span
+                    v-else-if="!isLoading"
+                    class="text-sm cursor-pointer text-primary"
+                    ><AtlanIcon icon="Add" class="mr-2" />Add link</span
+                >
+                <span v-if="isLoading">
+                    <AtlanIcon icon="CircleLoader" class="h-5 animate-spin" />
+                </span>
+            </a-popover>
+        </div>
+        <div class="flex flex-col p-4 pt-0">
             <div class="mt-7">
                 <div class="mb-2.5 text-gray-500">Policies</div>
                 <a-dropdown trigger="click">

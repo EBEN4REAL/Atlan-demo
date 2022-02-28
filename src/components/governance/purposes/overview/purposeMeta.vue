@@ -1,6 +1,10 @@
 <template>
     <div class="grid grid-cols-3 gap-x-3">
-        <Summary :item="persona" />
+        <Summary
+            :item="persona"
+            :is-loading="loadingLink"
+            @changeLink="changeLink"
+        />
         <div class="col-span-2 p-6 bg-white border border-gray-200 rounded">
             <div class="mb-1 text-gray-500">Classifications</div>
             <Classification
@@ -134,6 +138,8 @@
         selectedPersonaDirty,
         saveClassifications,
         enablePurpose,
+        savePersona,
+        updatedSelectedData,
     } from '../composables/useEditPurpose'
     import { setActiveTab } from '../composables/usePurposeTabs'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
@@ -166,7 +172,7 @@
             const { persona } = toRefs(props)
             const enableDisableLoading = ref(false)
             const enablePersonaCheck = ref(true)
-
+            const loadingLink = ref(false)
             /* FIXME: FIND IF WE CAN DO IT IN OTHER WAY! */
             const mapClassificationsFromNames = computed(() => {
                 const arr: any[] = []
@@ -302,6 +308,31 @@
                         },
                     })
             }
+            const changeLink = async (val) => {
+                try {
+                    loadingLink.value = true
+                    const payload = { ...persona.value }
+                    delete payload.dataPolicies
+                    delete payload.metadataPolicies
+                    await savePersona({
+                        ...payload,
+                        attributes: {
+                            ...payload.attributes,
+                            channelLink: val,
+                        },
+                    })
+                    updatedSelectedData({
+                        id: payload.id,
+                    })
+                } catch (error) {
+                    message.error(
+                        error?.response?.data?.message ||
+                            'Some error occured...Please try again later.'
+                    )
+                } finally {
+                    loadingLink.value = false
+                }
+            }
             return {
                 timeStamp,
                 selectedPurpose,
@@ -313,6 +344,7 @@
                 setActiveTab,
                 handleEnableDisablePurpose,
                 enableDisableLoading,
+                changeLink,
             }
         },
     })

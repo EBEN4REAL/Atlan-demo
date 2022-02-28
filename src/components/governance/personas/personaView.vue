@@ -76,64 +76,68 @@
             </div>
         </a-modal>
         <span class="text-xl">Personas</span>
-        <!-- search & filter -->
-        <div class="flex justify-between">
-            <div class="w-1/3 mt-4">
-                <SearchAndFilter
-                    v-model:value="searchTerm"
-                    :placeholder="`Search ${
-                        filteredPersonas?.length ?? 0
-                    } personas`"
-                    class="max-w-lg shadow-none filter-request"
-                    :autofocus="true"
-                    size="default"
-                >
-                    <template #categoryFilter>
-                        <div class="relative flex items-center">
-                            <AtlanBtn
-                                color="secondary"
-                                class="px-2 border-r rounded-tr-none rounded-br-none cursor-pointer filter-button"
-                                :class="{
-                                    'text-primary border rounded py-1 border-primary':
-                                        drawerFilter,
-                                }"
-                                @click="handleClickFilter"
-                            >
-                                <AtlanIcon
-                                    icon="FilterFunnel"
-                                    class="w-4 h-4"
+
+        <a-spin v-if="isPersonaLoading" class="mx-auto my-auto" size="large" />
+        <div v-else>
+            <!-- search & filter -->
+            <div class="flex justify-between">
+                <div class="w-1/3 mt-4">
+                    <SearchAndFilter
+                        v-model:value="searchTerm"
+                        :placeholder="`Search ${
+                            filteredPersonas?.length ?? 0
+                        } personas`"
+                        class="max-w-lg shadow-none filter-request"
+                        :autofocus="true"
+                        size="default"
+                    >
+                        <template #categoryFilter>
+                            <div class="relative flex items-center">
+                                <AtlanBtn
+                                    color="secondary"
+                                    class="px-2 border-r rounded-tr-none rounded-br-none cursor-pointer filter-button"
+                                    :class="{
+                                        'text-primary border rounded py-1 border-primary':
+                                            drawerFilter,
+                                    }"
+                                    @click="handleClickFilter"
+                                >
+                                    <AtlanIcon
+                                        icon="FilterFunnel"
+                                        class="w-4 h-4"
+                                    />
+                                </AtlanBtn>
+                                <div
+                                    class="absolute border-r divide-gray-800 divider-filter"
+                                    :class="{
+                                        'text-primary border-r rounded border-primary top-0':
+                                            drawerFilter,
+                                    }"
                                 />
-                            </AtlanBtn>
-                            <div
-                                class="absolute border-r divide-gray-800 divider-filter"
-                                :class="{
-                                    'text-primary border-r rounded border-primary top-0':
-                                        drawerFilter,
-                                }"
-                            />
-                        </div>
-                    </template>
-                </SearchAndFilter>
+                            </div>
+                        </template>
+                    </SearchAndFilter>
+                </div>
+                <a-button
+                    padding="compact"
+                    size="sm"
+                    type="primary"
+                    :disabled="isEditing"
+                    data-test-id="add-persona"
+                    @click="() => (modalVisible = true)"
+                >
+                    <AtlanIcon icon="Add" />New Persona
+                </a-button>
             </div>
-            <a-button
-                padding="compact"
-                size="sm"
-                type="primary"
-                :disabled="isEditing"
-                data-test-id="add-persona"
-                @click="() => (modalVisible = true)"
-            >
-                <AtlanIcon icon="Add" />New Persona
-            </a-button>
-        </div>
-        <!-- persona cards -->
-        <div class="flex flex-wrap mt-7 gap-x-3 gap-y-6">
-            <PersonaCard
-                v-for="persona in filteredPersonas"
-                :key="persona.id"
-                :persona="persona"
-                @select="selectPersona"
-            ></PersonaCard>
+            <!-- persona cards -->
+            <div class="flex flex-wrap mt-7 gap-x-3 gap-y-6">
+                <PersonaCard
+                    v-for="persona in filteredPersonas"
+                    :key="persona.id"
+                    :persona="persona"
+                    @select="selectPersona"
+                ></PersonaCard>
+            </div>
         </div>
     </div>
     <ExplorerLayout

@@ -151,8 +151,7 @@
                 <a-input
                     v-if="filteredList.length || queryText"
                     v-model:value="queryText"
-                    :style="'border: none!important'"
-                    class="mt-3 mb-2 bg-gray-100 border-none shadow-none outline-none hover:outline-none hover:border-none focus-none"
+                    class="mt-3 mb-2 bg-gray-100 border-none shadow-none outline-none input-search-group-user"
                     :placeholder="placeholder"
                 >
                     <template #suffix>
@@ -890,6 +889,13 @@
         },
     })
 </script>
+<style lang="less">
+    .input-search-group-user {
+        input {
+            background: none !important;
+        }
+    }
+</style>
 <style lang="less" scoped>
     .card-container {
         :hover {

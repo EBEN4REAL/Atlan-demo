@@ -278,6 +278,7 @@
             } = useCollectionAccess(activeInlineTab)
 
             const {
+                fetchActiveQueryAcessCollection,
                 isQueryCreatedByCurrentUser,
                 hasQueryReadPermission,
                 hasQueryWritePermission,
@@ -387,6 +388,7 @@
                 syncActiveInlineTabKeyInLocalStorage(activeInlineTabKey.value)
                 syncInlineTabsInLocalStorage(toRaw(tabsArray.value))
                 fetchSelectedCollectionData()
+                fetchActiveQueryAcessCollection()
                 selectFirstCollectionByDefault(
                     queryCollections.value,
                     activeInlineTab,

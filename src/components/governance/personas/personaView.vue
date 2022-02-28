@@ -36,11 +36,12 @@
                 </div>
             </div>
         </a-drawer>
+        <AddPersona v-model:visible="modalVisible" />
         <a-modal
-            :visible="personaViewModalVisible"
+            v-model:visible="personaViewModalVisible"
             :destroyOnClose="true"
             :closable="false"
-            width="100%"
+            width="80%"
             wrapClassName="persona-modal"
             :centered="true"
             :maskClosable="true"
@@ -76,39 +77,54 @@
         </a-modal>
         <span class="text-xl">Personas</span>
         <!-- search & filter -->
-        <div class="w-1/3 mt-4">
-            <SearchAndFilter
-                v-model:value="searchTerm"
-                :placeholder="`Search ${
-                    filteredPersonas?.length ?? 0
-                } personas`"
-                class="max-w-lg shadow-none filter-request"
-                :autofocus="true"
-                size="default"
+        <div class="flex justify-between">
+            <div class="w-1/3 mt-4">
+                <SearchAndFilter
+                    v-model:value="searchTerm"
+                    :placeholder="`Search ${
+                        filteredPersonas?.length ?? 0
+                    } personas`"
+                    class="max-w-lg shadow-none filter-request"
+                    :autofocus="true"
+                    size="default"
+                >
+                    <template #categoryFilter>
+                        <div class="relative flex items-center">
+                            <AtlanBtn
+                                color="secondary"
+                                class="px-2 border-r rounded-tr-none rounded-br-none cursor-pointer filter-button"
+                                :class="{
+                                    'text-primary border rounded py-1 border-primary':
+                                        drawerFilter,
+                                }"
+                                @click="handleClickFilter"
+                            >
+                                <AtlanIcon
+                                    icon="FilterFunnel"
+                                    class="w-4 h-4"
+                                />
+                            </AtlanBtn>
+                            <div
+                                class="absolute border-r divide-gray-800 divider-filter"
+                                :class="{
+                                    'text-primary border-r rounded border-primary top-0':
+                                        drawerFilter,
+                                }"
+                            />
+                        </div>
+                    </template>
+                </SearchAndFilter>
+            </div>
+            <a-button
+                padding="compact"
+                size="sm"
+                type="primary"
+                :disabled="isEditing"
+                data-test-id="add-persona"
+                @click="() => (modalVisible = true)"
             >
-                <template #categoryFilter>
-                    <div class="relative flex items-center">
-                        <AtlanBtn
-                            color="secondary"
-                            class="px-2 border-r rounded-tr-none rounded-br-none cursor-pointer filter-button"
-                            :class="{
-                                'text-primary border rounded py-1 border-primary':
-                                    drawerFilter,
-                            }"
-                            @click="handleClickFilter"
-                        >
-                            <AtlanIcon icon="FilterFunnel" class="w-4 h-4" />
-                        </AtlanBtn>
-                        <div
-                            class="absolute border-r divide-gray-800 divider-filter"
-                            :class="{
-                                'text-primary border-r rounded border-primary top-0':
-                                    drawerFilter,
-                            }"
-                        />
-                    </div>
-                </template>
-            </SearchAndFilter>
+                <AtlanIcon icon="Add" />New Persona
+            </a-button>
         </div>
         <!-- persona cards -->
         <div class="flex flex-wrap mt-7 gap-x-3 gap-y-6">
@@ -310,7 +326,7 @@
     import ErrorView from '@common/error/index.vue'
     import { storeToRefs } from 'pinia'
     import { useRoute, useRouter } from 'vue-router'
-    // import AtlanBtn from '@/UI/button.vue'
+    import AtlanBtn from '@/UI/button.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ExplorerLayout from '@/admin/explorerLayout.vue'
     import PersonaBody from './personaBody.vue'
@@ -341,6 +357,7 @@
     export default defineComponent({
         name: 'PersonaView',
         components: {
+            // AtlanBtn,
             ErrorView,
             SearchAndFilter,
             PersonaBody,
@@ -383,13 +400,14 @@
             }
 
             const closePersonaViewModal = () => {
+                console.log(
+                    'personaViewModalVisible personaViewModalVisible personaViewModalVisible called'
+                )
                 selectedPersonaId.value = ''
             }
 
             // eslint-disable-next-line arrow-body-style
-            const personaViewModalVisible = computed(() => {
-                return !!selectedPersona.value
-            })
+            const personaViewModalVisible = ref(false)
             const handleClickFilter = () => {
                 drawerFilter.value = !drawerFilter.value
             }
@@ -417,37 +435,32 @@
             //     }
             // })
 
-            // watch(
-            //     isPersonaListReady,
-            //     () => {
-            //         if (personaList?.value?.length) {
-            //             if (route.params.id) {
-            //                 const find = personaList.value.find(
-            //                     (el) => el.id === route.params.id
-            //                 )
-            //                 if (find) {
-            //                     selectedPersonaId.value = route.params.id
-            //                 } else {
-            //                     if (filteredPersonas?.value?.length) {
-            //                         selectedPersonaId.value =
-            //                             filteredPersonas.value[0].id!
-            //                     }
-            //                 }
-            //             } else {
-            //                 if (filteredPersonas?.value?.length) {
-            //                     selectedPersonaId.value =
-            //                         filteredPersonas.value[0].id!
-            //                 }
-            //             }
-            //         }
-            //     },
-            //     { immediate: true }
-            // )
+            watch(
+                isPersonaListReady,
+                () => {
+                    if (personaList?.value?.length) {
+                        if (route.params.id) {
+                            const find = personaList.value.find(
+                                (el) => el.id === route.params.id
+                            )
+                            if (find) {
+                                selectedPersonaId.value = route.params.id
+                            }
+                        }
+                    }
+                },
+                { immediate: true }
+            )
 
             watch(selectedPersonaId, () => {
                 router.replace(
                     `/governance/personas/${selectedPersonaId.value}`
                 )
+                if (selectedPersonaId.value) {
+                    personaViewModalVisible.value = true
+                } else {
+                    personaViewModalVisible.value = false
+                }
             })
             watch(
                 decentralizedRoles,

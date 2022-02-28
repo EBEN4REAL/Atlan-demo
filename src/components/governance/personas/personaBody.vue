@@ -575,8 +575,8 @@
             }
             const isEmpty = computed(
                 () =>
-                    !selectedPersonaDirty.value.metadataPolicies?.length &&
-                    !selectedPersonaDirty.value.dataPolicies?.length &&
+                    !selectedPersonaDirty.value?.metadataPolicies?.length &&
+                    !selectedPersonaDirty.value?.dataPolicies?.length &&
                     !searchPersona.value
             )
             const {

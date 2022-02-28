@@ -8,9 +8,7 @@
         @update="handleDrawerUpdate"
     />
     <div v-if="isEdit" class="flex flex-col w-2/3">
-        <div
-            class="flex flex-col items-center px-3 py-2 border rounded justify-stretch gap-y-2"
-        >
+        <div class="flex flex-col px-3 py-2 border rounded gap-y-2">
             <div v-if="selectedConnection?.guid" class="flex flex-col flex-1">
                 <div class="flex items-center justify-between">
                     <div class="flex flex-col">
@@ -136,8 +134,8 @@
                 </div>
             </div>
             <template v-else-if="isLoading">
-                <AtlanLoader class="h-10 mx-auto" />
-                <span>Loading Connection Details</span>
+                <AtlanLoader class="self-center h-10" />
+                <span class="self-center">Loading Connection Details</span>
             </template>
             <div
                 v-else

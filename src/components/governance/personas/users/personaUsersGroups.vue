@@ -1,5 +1,5 @@
 <template>
-    <div class="py-6 bg-white rounded user-group-wrapper">
+    <div class="bg-white rounded user-group-wrapper">
         <!-- START Error State -->
         <div
             v-if="errorUsersGroups"
@@ -42,8 +42,11 @@
             v-else-if="!groupsError && !usersError"
             class="flex flex-col h-full overflow-y-hidden"
         >
-            <div class="flex items-center justify-between w-full px-6 mb-2">
-                <div class="flex mr-4 gap-x-2">
+            <div class="flex items-center justify-between w-full p-4 border-b">
+                <div
+                    v-if="filteredList.length || queryText"
+                    class="flex mr-4 gap-x-2"
+                >
                     <a-radio-group
                         v-model:value="listType"
                         class="flex flex-grow"
@@ -53,6 +56,10 @@
                         <a-radio-button value="groups">Groups</a-radio-button>
                     </a-radio-group>
                 </div>
+                <div class="flex items-center text-sm font-bold text-gray-700">
+                    <AtlanIcon icon="Group" class="w-auto h-4 mr-2" />
+                    Users and groups
+                </div>
                 <div>
                     <a-popover
                         v-model:visible="popoverVisible"
@@ -60,15 +67,16 @@
                         trigger="click"
                         :destroy-tooltip-on-hide="true"
                     >
-                        <a-button
-                            type="primary"
+                        <div
+                            class="text-sm cursor-pointer text-primary"
                             @click="
                                 () => {
                                     setPopoverState(!popoverVisible)
                                 }
                             "
-                            >Add User/Group</a-button
                         >
+                            <AtlanIcon icon="Add" class="mr-2" />Add
+                        </div>
                         <!-- <AtlanBtn
                             color="primary"
                             padding="compact"
@@ -141,6 +149,7 @@
             </div>
             <div class="px-6">
                 <SearchAndFilter
+                    v-if="filteredList.length || queryText"
                     v-model:value="queryText"
                     class="mt-3 mb-2 bg-white"
                     :placeholder="placeholder"

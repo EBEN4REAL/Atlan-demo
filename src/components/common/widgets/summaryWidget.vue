@@ -1,12 +1,12 @@
 <template>
     <div class="bg-white rounded">
-        <div class="flex items-center justify-between p-3 border-b">
+        <div class="flex items-center justify-between p-4 border-b">
             <div class="flex items-center">
                 <AtlanIcon icon="WarningIcon" class="mr-2" />
                 <div class="font-semibold text-gray-700">Summary</div>
             </div>
         </div>
-        <div class="flex flex-col p-3">
+        <div class="flex flex-col p-4">
             <div class="mt-1">
                 <div class="mb-2.5 text-gray-500">Channels</div>
                 <a-popover

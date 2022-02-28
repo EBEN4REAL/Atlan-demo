@@ -77,7 +77,7 @@
                 </template>
                 <div
                     v-else
-                    class="flex flex-col items-center justify-center h-40 gap-y-6"
+                    class="flex flex-col items-center justify-center h-48 gap-y-6"
                 >
                     <div class="w-24">
                         <AtlanIcon

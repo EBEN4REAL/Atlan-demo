@@ -105,6 +105,7 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+            const updateAssetCheck = inject('updateAssetCheck') as Ref<Boolean>
 
             const name: Ref<string> = ref(
                 queryData?.value?.attributes?.name ??
@@ -178,6 +179,7 @@
                 watch(data, () => {
                     message.success('Query renamed successfully')
                     if (data.value !== undefined) {
+                        updateAssetCheck.value = true
                         let parentGuid = queryData.value.attributes.parent.guid
 
                         refreshQueryTree(parentGuid, 'query')

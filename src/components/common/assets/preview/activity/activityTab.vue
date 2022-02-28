@@ -45,9 +45,18 @@
                     <template #dot>
                         <div v-if="log?.action === 'BUSINESS_ATTRIBUTE_UPDATE'">
                             <PreviewTabsIcon
-                                :icon="getAuditEventComponent(log)?.icon?.value?.options?.icon"
-                                :image="getAuditEventComponent(log)?.icon?.value?.options?.image"
-                                :emoji="getAuditEventComponent(log)?.icon?.value?.options?.emoji"
+                                :icon="
+                                    getAuditEventComponent(log)?.icon?.value
+                                        ?.options?.icon
+                                "
+                                :image="
+                                    getAuditEventComponent(log)?.icon?.value
+                                        ?.options?.image
+                                "
+                                :emoji="
+                                    getAuditEventComponent(log)?.icon?.value
+                                        ?.options?.emoji
+                                "
                                 height="h-4"
                                 class="mb-0.5"
                             />
@@ -59,13 +68,13 @@
                         />
                         <div
                             v-else
-                            class="border ant-timeline-item-dot border-primary mb-1"
+                            class="mb-1 border ant-timeline-item-dot border-primary"
                         ></div>
                     </template>
                     <div>
                         <ActivityType
-                            :data="getAuditEventComponent(log)"
                             v-if="getAuditEventComponent(log)"
+                            :data="getAuditEventComponent(log)"
                         />
                         <template v-else>
                             <div class="">

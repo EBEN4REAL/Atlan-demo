@@ -99,7 +99,7 @@
                     ><AtlanIcon icon="Add" class="mr-2" />Add link</span
                 >
                 <span v-if="isLoading">
-                    <AtlanIcon icon="CircleLoader" class="h-5 animate-spin" />
+                    <AtlanLoader class="h-5" />
                 </span>
             </a-popover>
         </div>

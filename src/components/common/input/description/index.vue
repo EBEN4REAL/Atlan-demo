@@ -137,6 +137,7 @@
             const descriptionRef: Ref<null | HTMLInputElement> = ref(null)
 
             const { description } = useAssetInfo()
+            const descriptionSnapshot = ref(modelValue.value)
 
             /**
              * A utility function to update the model value, and emit a `change`
@@ -171,6 +172,9 @@
             }
 
             const handleRequest = () => {
+                if (descriptionSnapshot.value === localValue.value) {
+                    return
+                }
                 const {
                     error: requestError,
                     isLoading: isRequestLoading,
@@ -192,6 +196,7 @@
                     if (requestReady.value) {
                         message.success(`Request raised`)
                         isEdit.value = false
+                        descriptionSnapshot.value = localValue.value
                     }
                 })
             }

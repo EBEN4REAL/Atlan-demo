@@ -106,7 +106,7 @@
         <div class="flex flex-col p-4 pt-0">
             <div class="mt-5">
                 <div class="mb-2.5 text-gray-500">Policies</div>
-                <a-dropdown trigger="click">
+                <!-- <a-dropdown trigger="click">
                     <template #overlay>
                         <a-menu>
                             <a-menu-item>
@@ -133,11 +133,14 @@
                             </a-menu-item>
                         </a-menu>
                     </template>
-                    <span class="text-sm cursor-pointer text-primary">
-                        <AtlanIcon icon="Add" class="mr-2" />
-                        Add policies
-                    </span>
-                </a-dropdown>
+                </a-dropdown> -->
+                <span
+                    class="text-sm cursor-pointer text-primary"
+                    @click="$emit('addPolicy')"
+                >
+                    <AtlanIcon icon="Add" class="mr-2" />
+                    Add policies
+                </span>
             </div>
             <div class="mt-7">
                 <div class="mb-2.5 text-gray-500">Created by</div>

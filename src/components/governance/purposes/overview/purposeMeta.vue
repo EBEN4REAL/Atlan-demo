@@ -4,6 +4,7 @@
             :item="persona"
             :is-loading="loadingLink"
             @changeLink="changeLink"
+            @addPolicy="setActiveTab('policies')"
         />
         <div class="col-span-2 p-6 bg-white border border-gray-200 rounded">
             <div class="mb-1 text-gray-500">Classifications</div>

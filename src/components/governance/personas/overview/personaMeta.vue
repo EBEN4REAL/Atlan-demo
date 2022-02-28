@@ -4,6 +4,7 @@
             :item="persona"
             :is-loading="loadingLink"
             @changeLink="changeLink"
+            @addPolicy="handleAddPolicy"
         />
         <PersonaUsersGroups
             :key="persona.id"
@@ -55,7 +56,7 @@
                 required: true,
             },
         },
-        emits: ['update:persona', 'update:isEditMode'],
+        emits: ['update:persona', 'update:isEditMode', 'setActiveTab'],
         setup(props) {
             const { persona } = toRefs(props)
 
@@ -181,6 +182,9 @@
                     loadingLink.value = false
                 }
             }
+            const handleAddPolicy = () => {
+                setActiveTab('policies')
+            }
             return {
                 setActiveTab,
                 timeStamp,
@@ -190,6 +194,7 @@
                 cancelTokenForUsers,
                 changeLink,
                 loadingLink,
+                handleAddPolicy,
             }
         },
     })

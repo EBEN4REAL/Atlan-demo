@@ -331,7 +331,11 @@
     import Addpolicy from './addpolicy.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import NewPolicyIllustration from '~/assets/images/illustrations/new_policy.svg'
-    import { activeTabKey, tabConfig } from './composables/usePersonaTabs'
+    import {
+        activeTabKey,
+        tabConfig,
+        setActiveTab,
+    } from './composables/usePersonaTabs'
     import {
         newIdTag,
         selectedPersonaDirty,

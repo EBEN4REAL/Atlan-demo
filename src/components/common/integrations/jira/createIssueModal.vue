@@ -55,17 +55,36 @@
                     <a-select
                         v-model:value="form.issueType"
                         :disabled="!form.projectId"
-                        :dropdown-class-name="$style.issueTypeDropdown"
+                        dropdown-class-name="max-h-72 overflow-y-scroll"
                         placeholder="Select issue type"
                         :options="issueTypeOptions"
                         class="w-full"
                     >
+                        <template #dropdownRender>
+                            <div
+                                v-for="o in issueTypeOptions"
+                                :key="o.value"
+                                class="p-2 mx-1 rounded cursor-pointer hover:bg-gray-100"
+                                :class="
+                                    o.value === form.issueType
+                                        ? 'bg-primary-light'
+                                        : ''
+                                "
+                                @click="form.issueType = o.value"
+                            >
+                                <span class="flex items-center gap-x-2">
+                                    <img
+                                        :src="o.meta.iconUrl"
+                                        class="h-5 rounded-full"
+                                    />
+                                    {{ o.label }}
+                                </span>
+                            </div>
+                        </template>
                         <template #suffixIcon>
-                            <AtlanIcon
-                                icon="CaretDown"
-                                class="text-gray-500"
-                            /> </template
-                    ></a-select>
+                            <AtlanIcon icon="CaretDown" class="text-gray-500" />
+                        </template>
+                    </a-select>
                 </a-form-item>
             </a-form>
         </div>
@@ -228,17 +247,6 @@
     .formComponent {
         :global(.ant-form-item-label) {
             @apply font-bold;
-        }
-    }
-    .issueTypeDropdown {
-        :global(.rc-virtual-list) {
-            @apply px-1;
-        }
-        :global(.ant-select-item) {
-            @apply p-2 rounded;
-        }
-        :global(.ant-select-item-option-selected) {
-            @apply bg-primary-light;
         }
     }
 </style>

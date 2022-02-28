@@ -3,12 +3,29 @@
         v-model:value="modelValue"
         class=""
         :class="$style.selector"
-        :dropdown-class-name="$style.projectsDropdown"
         :options="options"
         :placeholder="placeholder"
         :loading="isLoading"
+        dropdown-class-name="max-h-72 overflow-y-scroll"
         @change="handleChange"
     >
+        <template #dropdownRender>
+            <div
+                v-for="o in options"
+                :key="o.value"
+                class="p-2 mx-1 rounded cursor-pointer hover:bg-gray-100"
+                :class="o.value === modelValue ? 'bg-primary-light' : ''"
+                @click="modelValue = o.value"
+            >
+                <span class="flex items-center gap-x-2">
+                    <img
+                        :src="o.meta.avatarUrls['24x24']"
+                        class="h-5 rounded-full"
+                    />
+                    {{ o.label }}
+                </span>
+            </div>
+        </template>
         <template #suffixIcon>
             <AtlanIcon icon="CaretDown" class="text-gray-500" />
         </template>
@@ -19,7 +36,6 @@
     import { useVModels } from '@vueuse/core'
     import { computed, onMounted, watch } from 'vue'
     import { listProjects } from '~/composables/integrations/jira/useJira'
-    import booleanVue from '../../dynamicForm2/widget/boolean.vue'
 
     const { projects, isLoading, error } = listProjects()
 
@@ -61,17 +77,6 @@
     .selector {
         :global(.ant-select-selector) {
             @apply border border-gray-300 !important;
-        }
-    }
-    .projectsDropdown {
-        :global(.rc-virtual-list) {
-            @apply px-1;
-        }
-        :global(.ant-select-item) {
-            @apply p-2 rounded;
-        }
-        :global(.ant-select-item-option-selected) {
-            @apply bg-primary-light;
         }
     }
 </style>

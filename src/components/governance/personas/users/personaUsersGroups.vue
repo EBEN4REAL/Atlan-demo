@@ -151,20 +151,24 @@
                 <a-input
                     v-if="filteredList.length || queryText"
                     v-model:value="queryText"
-                    class="mt-3 mb-2 bg-gray-100 border-none hover:outline-none"
+                    :style="'border: none!important'"
+                    class="mt-3 mb-2 bg-gray-100 border-none hover:outline-none hover:border-none"
                     :placeholder="placeholder"
                 >
                     <template #suffix>
-                        <a-dropdown trigger="click">
+                        <a-dropdown placement="bottomRight" trigger="click">
                             <template #overlay>
-                                <a-menu>
-                                    <a-menu-item @click="listType = 'all'"
+                                <a-menu class="w-24">
+                                    <a-menu-item
+                                        class="p-2"
+                                        @click="listType = 'all'"
                                         >All ({{
                                             userList.length + groupList.length
                                         }})
                                     </a-menu-item>
                                     <a-menu-item
                                         v-if="userList.length"
+                                        class="p-2"
                                         @click="listType = 'users'"
                                         >Users ({{
                                             userList.length
@@ -172,6 +176,7 @@
                                     >
                                     <a-menu-item
                                         v-if="groupList.length"
+                                        class="p-2"
                                         @click="listType = 'groups'"
                                         >Groups ({{
                                             groupList.length

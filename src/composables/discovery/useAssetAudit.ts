@@ -107,6 +107,14 @@ const useAssetAudit = (params: any, guid: string) => {
                 data.value = attributes?.sql
                 data.displayValue = 'query'
                 data.component = 'ProcessSQL'
+                data.icon = 'Query'
+                return data
+            }
+            if ('rawQuery' in attributes) {
+                data.value = attributes?.rawQuery
+                data.displayValue = 'query'
+                data.component = 'ProcessSQL'
+                data.icon = 'Query'
                 return data
             }
         }

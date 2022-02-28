@@ -37,21 +37,24 @@
             return projects.value.map((p) => ({
                 label: p.name,
                 value: p.id,
+                meta: { ...p },
             }))
         }
         return []
     })
 
-    onMounted(() => {
-        watch(projects, (v) => {
-            if (v?.length && !modelValue.value && props.defaultSelectFirst)
-                modelValue.value = options.value[0].value
-        })
-    })
-
     const handleChange = (value, option) => {
         emit('change', value, option)
     }
+
+    onMounted(() => {
+        watch(projects, (v) => {
+            if (v?.length && !modelValue.value && props.defaultSelectFirst) {
+                modelValue.value = options.value[0].value
+                handleChange(options.value[0].value, options.value[0])
+            }
+        })
+    })
 </script>
 
 <style module lang="less">

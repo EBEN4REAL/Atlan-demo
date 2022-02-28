@@ -44,7 +44,7 @@
                         class="w-full"
                         placeholder="Select a project"
                         default-select-first
-                        @change="() => (form.issueType = undefined)"
+                        @change="handleProjectSelect"
                     />
                 </a-form-item>
                 <a-form-item
@@ -95,7 +95,7 @@
         listIssueTypes,
     } from '~/composables/integrations/jira/useJiraTickets'
 
-    import { CREATE_TICKET_FORM_RULES } from '~/constant/integrations/integrations/jira.constant'
+    import { CREATE_TICKET_FORM_RULES } from '~/constant/integrations/jira.constant'
 
     const props = defineProps({
         visible: { type: Boolean, required: true },
@@ -137,20 +137,34 @@
         }
     }
 
-    const { data: issueTypes } = listIssueTypes()
+    // const issueTypeOptions = computed(() => {
+    //     if (issueTypes.value?.length) {
+    //         return issueTypes.value
+    //             .filter((_t) => {
+    //                 const { scope } = _t
+    //                 const projectID = scope?.project?.id
+    //                 return projectID === form.value.projectId
+    //             })
+    //             .map((t) => ({ label: t.name, value: t.id }))
+    //     }
+    //     return []
+    // })
 
-    const issueTypeOptions = computed(() => {
-        if (issueTypes.value?.length) {
-            return issueTypes.value
-                .filter((_t) => {
-                    const { scope } = _t
-                    const projectID = scope?.project?.id
-                    return projectID === form.value.projectId
-                })
-                .map((t) => ({ label: t.name, value: t.id }))
-        }
-        return []
-    })
+    const issueTypeOptions = ref<any[]>([])
+
+    const handleProjectSelect = (v, option) => {
+        const {
+            meta: { issueTypes },
+        } = option
+        issueTypeOptions.value = [
+            ...issueTypes.map((type) => ({
+                label: type.name,
+                value: type.id,
+                meta: type,
+            })),
+        ]
+        form.value.issueType = undefined
+    }
 
     const { data, isLoading, error, mutate, isReady } = createIssue(form)
 

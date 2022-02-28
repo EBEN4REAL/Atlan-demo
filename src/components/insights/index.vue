@@ -197,6 +197,7 @@
             const isCollectionCreated = inject(
                 'isCollectionCreated'
             ) as Ref<Boolean>
+            const collectionSelectorChange = ref(false)
 
             const {
                 MIN_EXPLORER_WIDTH,
@@ -275,7 +276,7 @@
                 isCollectionCreatedByCurrentUser,
                 hasCollectionReadPermission,
                 hasCollectionWritePermission,
-            } = useCollectionAccess(activeInlineTab)
+            } = useCollectionAccess(activeInlineTab, collectionSelectorChange)
 
             const {
                 fetchActiveQueryAcessCollection,
@@ -382,6 +383,7 @@
                 writeAccessCollections,
                 limitRows: limitRows,
                 updateAssetCheck,
+                collectionSelectorChange,
             }
             useProvide(provideData)
             /*-------------------------------------*/

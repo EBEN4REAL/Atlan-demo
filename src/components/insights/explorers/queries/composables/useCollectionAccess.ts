@@ -7,7 +7,8 @@ import whoami from '~/composables/user/whoami'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
 const useCollectionAccess = (
-    activeInlineTab: ComputedRef<activeInlineTabInterface>
+    activeInlineTab: ComputedRef<activeInlineTabInterface>,
+    collectionSelectorChange: Ref<boolean>
 ) => {
     const { username: currentUser, groups: userGroups } = whoami()
 
@@ -195,6 +196,9 @@ const useCollectionAccess = (
         } else {
             return false
         }
+    })
+    watch(collectionSelectorChange, () => {
+        fetchSelectedCollectionData()
     })
 
     return {

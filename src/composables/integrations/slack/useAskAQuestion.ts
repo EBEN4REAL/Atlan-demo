@@ -4,6 +4,9 @@ import useAssetInfo from "~/composables/discovery/useAssetInfo"
 // import { useAuthStore } from '~/store/auth/index'
 import integrationStore from '~/store/integrations/index'
 
+
+
+
 export const disableSlackAsk = computed(() => {
 
     const intStore = integrationStore()
@@ -11,10 +14,6 @@ export const disableSlackAsk = computed(() => {
 
     if (!tenantSlackStatus.value.configured ||
         !tenantSlackStatus.value.channels.length) return true
-
-    // const auth = useAuthStore()
-
-    // const role = getWorkspaceRole({ roles: auth.roles || [], defaultRoles: auth.defaultRoles || [] })
 
     return false
 

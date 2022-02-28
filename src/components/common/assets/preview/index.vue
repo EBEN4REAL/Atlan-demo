@@ -141,7 +141,7 @@
                             </a-tooltip>
                         </template>
                     </template>
-                    <template v-if="!disableSlackAsk">
+                    <template v-if="!disableSlackAsk && linkEditPermission">
                         <SlackAskButton :asset="selectedAsset" />
                     </template>
                 </a-button-group>
@@ -374,6 +374,7 @@
                 assetTypeLabel,
                 getProfilePath,
                 isScrubbed,
+                assetPermission,
                 selectedAssetUpdatePermission,
             } = useAssetInfo()
 
@@ -536,7 +537,18 @@
                 })
             })
 
+            const linkEditPermission = computed(
+                () =>
+                    selectedAssetUpdatePermission(
+                        selectedAsset.value,
+                        isDrawer.value,
+                        'RELATIONSHIP_ADD',
+                        'Link'
+                    ) && assetPermission('CREATE_LINK')
+            )
+
             return {
+                linkEditPermission,
                 disableSlackAsk,
                 tabChildRef,
                 activeKey,

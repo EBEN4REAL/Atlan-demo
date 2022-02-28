@@ -21,7 +21,7 @@
     import {
         archiveSlack,
         openSlackOAuth,
-    } from '~/composables/integrations/useSlack'
+    } from '~/composables/integrations/slack/useSlack'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     const emit = defineEmits(['refresh'])
 

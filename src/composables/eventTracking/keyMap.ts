@@ -457,6 +457,12 @@ const keyMap = {
                     ...props
                 }),
             },
+            asset_question_posted: {
+                action: 'integration_slack_asset_question_posted',
+                properties: (props: { asset_type: string }) => ({
+                    ...props
+                }),
+            },
             message_cta_clicked: {
                 action: 'integration_slack_message_cta_clicked',
                 properties: (props: { type: string }) => ({

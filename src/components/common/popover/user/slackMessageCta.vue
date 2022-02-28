@@ -16,7 +16,7 @@
 
 <script lang="ts">
     import { toRefs, computed, ref } from 'vue'
-    import { getDeepLinkFromUserDmLink } from '~/composables/integrations/useSlack'
+    import { getDeepLinkFromUserDmLink } from '~/composables/integrations/slack/useSlack'
     import AtlanIcon from '../../icon/atlanIcon.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
 

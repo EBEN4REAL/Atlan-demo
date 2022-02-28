@@ -151,7 +151,7 @@
     import integrationStore from '~/store/integrations/index'
     import Chip from '@/UI/chip.vue'
     import access from '~/constant/accessControl/map'
-    import { archiveSlack } from '~/composables/integrations/useSlack'
+    import { archiveSlack } from '~/composables/integrations/slack/useSlack'
     import { integrations } from '~/constant/integrations'
     import { useUsers } from '~/composables/user/useUsers'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'

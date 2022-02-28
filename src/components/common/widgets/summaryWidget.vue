@@ -22,17 +22,18 @@
                                 >
                                     <AtlanIcon icon="Slack" />
                                 </div>
-                                <div
+                                <!-- <div
                                     class="flex items-center justify-center w-8 h-8 border rounded-full"
                                 >
                                     <AtlanIcon icon="Teams" />
-                                </div>
+                                </div> -->
                             </div>
                             <div class="mt-4 text-sm text-gray-700">
                                 Slack Channel
                             </div>
                             <div class="mt-2">
                                 <a-input
+                                    v-model:value="link"
                                     placeholder="Paste link to your channel"
                                 >
                                     <template #prefix>
@@ -50,23 +51,64 @@
                                 >
                                     Cancel
                                 </AtlanButton>
-                                <AtlanButton padding="compact" size="sm">
+                                <AtlanButton
+                                    padding="compact"
+                                    size="sm"
+                                    @click="handleChangeLink"
+                                >
                                     <AtlanIcon icon="Edit" class="mr-1" />
                                     Add
                                 </AtlanButton>
                             </div>
                         </div>
                     </template>
-                    <span class="text-sm cursor-pointer text-primary"
+                    <span v-if="isLoading">
+                        <AtlanIcon
+                            icon="CircleLoader"
+                            class="h-5 animate-spin"
+                        />
+                    </span>
+                    <span
+                        v-if="!isLoading"
+                        class="text-sm cursor-pointer text-primary"
                         ><AtlanIcon icon="Add" class="mr-2" />Add link</span
                     >
                 </a-popover>
             </div>
             <div class="mt-7">
                 <div class="mb-2.5 text-gray-500">Policies</div>
-                <span class="text-sm cursor-pointer text-primary"
-                    ><AtlanIcon icon="Add" class="mr-2" />Add policies</span
-                >
+                <a-dropdown trigger="click">
+                    <template #overlay>
+                        <a-menu>
+                            <a-menu-item>
+                                <div class="flex items-center">
+                                    <AtlanIcon
+                                        class="w-4 h-4 text-gray-700"
+                                        icon="Policies"
+                                    />
+                                    <span class="pl-2 text-sm"
+                                        >Metadata Policy</span
+                                    >
+                                </div>
+                            </a-menu-item>
+                            <a-menu-item>
+                                <div class="flex items-center">
+                                    <AtlanIcon
+                                        class="w-4 h-4 text-gray-700"
+                                        icon="QueryGrey"
+                                    />
+                                    <span class="pl-2 text-sm"
+                                        >Data Policy</span
+                                    >
+                                </div>
+                            </a-menu-item>
+                        </a-menu>
+                    </template>
+                    <span class="text-sm cursor-pointer text-primary">
+                        <AtlanIcon icon="Add" class="mr-2" />
+                        Add policies
+                    </span>
+                </a-dropdown>
             </div>
             <div class="mt-7">
                 <div class="mb-2.5 text-gray-500">Created by</div>
@@ -109,6 +151,11 @@
         name: 'SummaryWidget',
         components: { Avatar, PopOverUser, AtlanBtn },
         props: {
+            isLoading: {
+                type: Boolean,
+                default: false,
+                required: false,
+            },
             item: {
                 type:
                     (Object as PropType<IPersona>) ||
@@ -117,8 +164,9 @@
                 required: true,
             },
         },
-        emits: ['editDetails'],
-        setup(props) {
+        emits: ['changeLink'],
+        setup(props, { emit }) {
+            const link = ref('')
             const showPopover = ref(false)
             const imageUrl = (username: any) =>
                 `${window.location.origin}/api/service/avatars/${username}`
@@ -130,11 +178,17 @@
                 }
                 return ''
             }
-
+            const handleChangeLink = () => {
+                showPopover.value = false
+                console.log(link.value, '<<<<<<<<<')
+                emit('changeLink', link.value)
+            }
             return {
                 imageUrl,
                 timeStamp,
                 showPopover,
+                link,
+                handleChangeLink,
             }
         },
     })

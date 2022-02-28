@@ -52,17 +52,53 @@ watch(
 )
 // Filtered Persona List
 export const searchTerm = ref('')
+export const facets = ref({})
 export const filteredPersonas = computed(() => {
     let result = []
+    const { hierarchy } = facets.value
+    const hasFilters = !!searchTerm.value || !!hierarchy
+    result = personaList.value
     if (searchTerm.value) {
-        result = personaList.value.filter((ps) =>
-            ps.displayName
+        result = personaList.value.filter((persona) => {
+            // search term
+            const match = persona.displayName
                 ?.toLowerCase()
                 .includes(searchTerm.value?.toLowerCase())
-        )
-    } else {
-        result = personaList.value || []
+            return match
+        })
     }
+
+    if (hierarchy) {
+        console.log(
+            'usePersonaList hierarchy',
+            { ...hierarchy },
+            hierarchy?.connectorName
+        )
+        result = result.filter((persona) => {
+            const metadataPolicies = persona?.metadataPolicies || []
+            const dataPolicies = persona?.dataPolicies || []
+            const policies = [...metadataPolicies, ...dataPolicies]
+            const assets = policies.map((policy) => policy.assets[0])
+            let found = false
+            if (hierarchy?.attributeValue) {
+                found = assets.some((asset) =>
+                    asset.includes(hierarchy?.attributeValue)
+                )
+            } else if (hierarchy?.connectionQualifiedName) {
+                found = assets.some((asset) =>
+                    asset.includes(hierarchy?.connectionQualifiedName)
+                )
+            } else if (hierarchy?.connectorName) {
+                found = assets.some((asset) =>
+                    asset.includes(hierarchy?.connectorName)
+                )
+            }
+            return found
+        })
+    }
+    // if (!hasFilters) {
+    //     result = personaList.value || []
+    // }
     return result.sort((a, b) => {
         const current = a?.displayName?.toLowerCase()
         const last = b?.displayName?.toLowerCase()

@@ -327,6 +327,7 @@
         isPersonaError,
         isPersonaListReady,
         personaList,
+        facets,
     } from './composables/usePersonaList'
     import { isEditing } from './composables/useEditPersona'
     import AddPersonaIllustration from '~/assets/images/empty_state_personaV2.svg'
@@ -363,9 +364,7 @@
             const { decentralizedRoles } = storeToRefs(authStore)
             const openEditModal = ref(false)
             const drawerFilter = ref(false)
-            const facets = ref({
-                statusRequest: [],
-            })
+
             const connectorsData = ref({
                 attributeName: undefined,
                 attributeValue: undefined,

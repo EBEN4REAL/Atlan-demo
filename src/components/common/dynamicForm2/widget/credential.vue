@@ -1,10 +1,10 @@
 <template>
     <div
-        class="flex items-center justify-center flex-grow"
+        class="flex flex-col items-center justify-center flex-grow"
         style="height: 100px"
         v-if="isLoading"
     >
-        <a-spin icon="Loader" class="mt-1 mr-2"></a-spin>
+        <AtlanLoader icon="Loader" class="h-10 mx-auto mt-1" />
         Loading Credential Configuration
     </div>
     <div
@@ -24,11 +24,10 @@
                                 class="w-auto h-4 mr-1"
                             />
 
-                            <span class="ml-1 capitalize">{{
-                                connector(credential)
-                            }}</span>
+                            <span class="ml-1 capitalize"
+                                >{{ connector(credential) }} Credential</span
+                            >
                         </div>
-                        Credential
                     </div>
                     <div class="text-gray-500">
                         last updated {{ updatedAt(credential, true) }} ago by

@@ -898,6 +898,9 @@ const useGlossaryTree = ({
 
         console.log(node)
         console.log(assetToDrop)
+
+        const assetToDropParentQf = assetToDrop?.key?.split('_')[0]
+        const nodeParentQf = node?.key?.split('_')[0]
         if (assetToDrop?.typeName === 'AtlasGlossary') {
             message.error(
                 `Cannot reorder a Glossary. Try reordering a term/category instead.`,
@@ -905,14 +908,8 @@ const useGlossaryTree = ({
             )
         } else if (node?.typeName === 'AtlasGlossaryTerm') {
             const parentStack = recursivelyFindPath(node?.guid)[0]
-            const assetToDropParentQf = assetToDrop?.key?.split('_')[0]
-            const nodeParentQf = node?.key?.split('_')[0]
             if (assetToDropParentQf === nodeParentQf) {
-                message.error(
-                    `Term already a part of this category`,
-                    2
-                )
-
+                message.error(`Term already a part of this category`, 2)
                 return
             }
 
@@ -944,6 +941,14 @@ const useGlossaryTree = ({
             updateDragNodeAttributes(parentOfTerm)
         } else {
             let nodeParentGlossaryGuid
+            if (
+                assetToDropParentQf === node?.qualifiedName ||
+                assetToDropParentQf === node?.attributes?.qualifiedName
+            ) {
+                message.error(`Term already a part of this category`, 2)
+                return
+            }
+
             if (node?.typeName === 'AtlasGlossary')
                 nodeParentGlossaryGuid = node?.guid
             else nodeParentGlossaryGuid = node?.attributes?.anchor?.guid

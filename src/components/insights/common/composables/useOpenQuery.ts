@@ -1,13 +1,9 @@
 import { ref, toRaw, Ref } from 'vue'
-
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
-import useAssetInfo from '~/composables/discovery/useAssetInfo'
-import { useConnector } from '~/components/insights/common/composables/useConnector'
-import { getDialectInfo } from '~/components/insights/common/composables/getDialectInfo'
 import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
-import { generateUUID } from '~/utils/helper/generator'
 import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
 import { useEditor } from '~/components/insights/common/composables/useEditor'
+import { useActiveTab } from '~/components/insights/common/composables/useActiveTab'
 import { useRunQueryUtils } from '~/components/insights/common/composables/useRunQueryUtils'
 
 export default function useOpenQuery({
@@ -19,18 +15,8 @@ export default function useOpenQuery({
     monacoInstance,
     limitRows,
 }) {
-    const { title } = useAssetInfo()
-
     const { modifyActiveInlineTab, inlineTabAdd, modifyActiveInlineTabEditor } =
         useInlineTab()
-
-    const { getConnectorName } = useConnector()
-
-    const assetQuoteType = getDialectInfo(
-        getConnectorName(
-            activeInlineTab.value.playground.editor.context.attributeValue
-        ) ?? ''
-    )
 
     const { queryRun } = useRunQuery()
     const { focusEditor, setSelection } = useEditor()
@@ -55,120 +41,19 @@ export default function useOpenQuery({
         explorerContext,
         previewItem
     ) => {
-        const key = generateUUID()
-        const inlineTabData: activeInlineTabInterface = {
+        const { generateNewActiveTab } = useActiveTab()
+
+        const inlineTabData = generateNewActiveTab({
+            activeInlineTab,
             label: `${previewItem.title} preview`,
-            key,
-            favico: 'https://atlan.com/favicon.ico',
-            attributes: {},
-            isSaved: false,
-            queryId: undefined,
-            status: 'is_null',
-            connectionId: '',
-            description: '',
-            qualifiedName: '',
-            parentGuid: '',
-            parentQualifiedName: '',
-            isSQLSnippet: false,
-            savedQueryParentFolderTitle: undefined,
-            explorer: {
-                schema: {
-                    connectors: {
-                        ...explorerContext,
-                    },
-                },
-                queries: {
-                    connectors: {
-                        connector: previewItem.connectionQualifiedName,
-                    },
-                    collection: {
-                        // copy from last tab
-                        guid: activeInlineTab.value?.explorer?.queries
-                            ?.collection?.guid,
-                        qualifiedName:
-                            activeInlineTab.value?.explorer?.queries?.collection
-                                ?.qualifiedName,
-                        parentQualifiedName:
-                            activeInlineTab.value?.explorer?.queries?.collection
-                                ?.guid,
-                    },
-                },
+            editorText: query,
+            context,
+            schemaConnectors: explorerContext,
+            queryConnectors: {
+                connector: previewItem.connectionQualifiedName,
             },
-            playground: {
-                vqb: {
-                    panels: [
-                        {
-                            order: 1,
-                            id: 'columns',
-                            hide: true,
-                            subpanels: [
-                                {
-                                    id: '1',
-                                    tableQualifiedName: undefined,
-                                    columns: ['all'],
-                                    tableData: {
-                                        certificateStatus: undefined,
-                                        assetType: undefined,
-                                        item: {},
-                                    },
-                                    columnsData: [],
-                                },
-                            ],
-                            expand: true,
-                        },
-                    ],
-                },
-                editor: {
-                    context: {
-                        ...context,
-                    },
-                    text: query,
-                    dataList: [],
-                    columnList: [],
-                    variables: [],
-                    savedVariables: [],
-                    limitRows: {
-                        checked: false,
-                        rowsCount: -1,
-                    },
-                },
-                resultsPane: {
-                    activeTab:
-                        activeInlineTab.value?.playground?.resultsPane
-                            ?.activeTab ?? 0,
-                    outputPaneSize: 27.9,
-                    result: {
-                        title: `${key} Result`,
-                        runQueryId: undefined,
-                        isQueryRunning: '',
-                        queryErrorObj: {},
-                        totalRowsCount: -1,
-                        executionTime: -1,
-                        errorDecorations: [],
-                        abortQueryFn: undefined,
-                        eventSourceInstance: undefined,
-                        buttonDisable: false,
-                        isQueryAborted: false,
-                        tabQueryState: false,
-                    },
-                    metadata: {},
-                    queries: {},
-                    joins: {},
-                    filters: {},
-                    impersonation: {},
-                    downstream: {},
-                    sqlHelp: {},
-                },
-            },
-            assetSidebar: {
-                // for taking the previous state from active tab
-                openingPos: undefined,
-                isVisible: false,
-                assetInfo: {},
-                title: activeInlineTab.value?.assetSidebar.title ?? '',
-                id: activeInlineTab.value?.assetSidebar.id ?? '',
-            },
-        }
+        })
+
         inlineTabAdd(inlineTabData, tabs, activeInlineTabKey)
     }
 
@@ -210,12 +95,6 @@ export default function useOpenQuery({
             schema,
             catalog,
         })
-        // const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
-        //     {},
-        //     activeInlineTab.value
-        // )
-
-        // console.log('activeInlineTab: ', Object.keys(activeInlineTabCopy))
 
         let newQuery = query
 

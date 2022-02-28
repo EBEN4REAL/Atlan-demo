@@ -161,8 +161,10 @@
     import useActiveQueryAccess from '~/components/insights/explorers/queries/composables/useActiveQueryAccess'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
     import { getDialectInfo } from '~/components/insights/common/composables/getDialectInfo'
+    import { useQuery } from '~/components/insights/common/composables/useQuery'
 
     import { useRunQueryUtils } from '~/components/insights/common/composables/useRunQueryUtils'
+    import { instances } from '~/components/insights/playground/editor/monaco/useMonaco'
 
     import {
         explorerPaneSize,
@@ -183,8 +185,6 @@
         setup(props) {
             const observer = ref()
             const splitpaneRef = ref()
-            const isTabClosed: Ref<undefined | string> = ref(undefined)
-            const isTabAdded: Ref<undefined | string> = ref(undefined)
 
             const savedQueryInfo = inject('savedQueryInfo') as Ref<
                 SavedQuery | undefined
@@ -197,6 +197,7 @@
             const isCollectionCreated = inject(
                 'isCollectionCreated'
             ) as Ref<Boolean>
+            const collectionSelectorChange = ref(false)
 
             const {
                 MIN_EXPLORER_WIDTH,
@@ -206,6 +207,7 @@
                 assetSidebarPaneSize,
                 paneResize,
             } = useSpiltPanes()
+            const { getDetectQueryTab } = useQuery()
             const route = useRoute()
             // TODO: will be used for HOTKEYs
             const {
@@ -274,14 +276,18 @@
                 isCollectionCreatedByCurrentUser,
                 hasCollectionReadPermission,
                 hasCollectionWritePermission,
-            } = useCollectionAccess(activeInlineTab)
+            } = useCollectionAccess(activeInlineTab, collectionSelectorChange)
 
             const {
+                fetchActiveQueryAcessCollection,
                 isQueryCreatedByCurrentUser,
                 hasQueryReadPermission,
                 hasQueryWritePermission,
                 activeTabCollection,
             } = useActiveQueryAccess(activeInlineTab)
+
+            fetchActiveQueryAcessCollection()
+            fetchSelectedCollectionData()
 
             const sidebarPaneSize = computed(() =>
                 activeInlineTab.value?.assetSidebar?.isVisible
@@ -318,11 +324,8 @@
                 editorInstanceParam: any,
                 monacoInstanceParam?: any
             ) => {
-                console.log(
-                    editorInstanceParam,
-                    monacoInstanceParam,
-                    'settingInstance'
-                )
+                instances.monaco = monacoInstanceParam
+                instances.editor = editorInstanceParam
                 editorInstance.value = editorInstanceParam
                 if (monacoInstanceParam)
                     monacoInstance.value = monacoInstanceParam
@@ -379,9 +382,8 @@
                 readAccessCollections,
                 writeAccessCollections,
                 limitRows: limitRows,
-                isTabClosed: isTabClosed,
-                isTabAdded: isTabAdded,
                 updateAssetCheck,
+                collectionSelectorChange,
             }
             useProvide(provideData)
             /*-------------------------------------*/
@@ -391,6 +393,7 @@
                 syncActiveInlineTabKeyInLocalStorage(activeInlineTabKey.value)
                 syncInlineTabsInLocalStorage(toRaw(tabsArray.value))
                 fetchSelectedCollectionData()
+                fetchActiveQueryAcessCollection()
                 selectFirstCollectionByDefault(
                     queryCollections.value,
                     activeInlineTab,
@@ -412,15 +415,12 @@
 
             watch(savedQueryInfo, () => {
                 if (savedQueryInfo.value?.guid) {
-                    openSavedQueryInNewTab(
-                        {
-                            ...savedQueryInfo.value,
-                            parentTitle:
-                                savedQueryInfo.value?.attributes?.parent
-                                    ?.attributes?.name,
-                        },
-                        isTabAdded
-                    )
+                    openSavedQueryInNewTab({
+                        ...savedQueryInfo.value,
+                        parentTitle:
+                            savedQueryInfo.value?.attributes?.parent?.attributes
+                                ?.name,
+                    })
 
                     selectFirstCollectionByDefault(
                         queryCollections.value,
@@ -509,202 +509,30 @@
                 }
             }
 
-            // FIXME: refactor it
-
             const detectQuery = () => {
-                // for assetQuote Info of different sources
-                const assetQuoteType = getDialectInfo(
-                    getConnectorName(
-                        `${databaseQualifiedNameFromURL}/${schemaNameFromURL}/${tableNameFromURL}`
-                    ) ?? ''
-                )
-
-                let vqbData =
-                    openVQB === 'true'
-                        ? {
-                              selectedTables: [
-                                  {
-                                      tableQualifiedName: `${databaseQualifiedNameFromURL}/${schemaNameFromURL}/${tableNameFromURL}`,
-                                      addedBy: 'column',
-                                  },
-                              ],
-                              panels: [
-                                  {
-                                      order: 1,
-                                      id: 'columns',
-                                      hide: true,
-                                      subpanels: [
-                                          {
-                                              id: '1',
-                                              columns: ['all'],
-                                              tableData: {
-                                                  item: {},
-                                                  assetType: 'Table',
-                                              },
-                                              columnsData: [],
-                                              tableQualfiedName: `${databaseQualifiedNameFromURL}/${schemaNameFromURL}/${tableNameFromURL}`,
-                                          },
-                                      ],
-                                      expand: false,
-                                  },
-                              ],
-                          }
-                        : {
-                              selectedTables: [],
-                              panels: [
-                                  {
-                                      order: 1,
-                                      id: 'columns',
-                                      hide: false,
-                                      subpanels: [
-                                          {
-                                              id: '1',
-                                              tableQualifiedName: undefined,
-                                              columns: ['all'],
-                                              tableData: {
-                                                  certificateStatus: undefined,
-                                                  assetType: undefined,
-                                                  item: {},
-                                              },
-                                              columnsData: [],
-                                          },
-                                      ],
-                                      expand: true,
-                                  },
-                              ],
-                          }
-
-                const queryTab: activeInlineTabInterface = {
-                    key: generateUUID(),
-                    attributes: {},
-                    label: `${tableNameFromURL} preview`,
-                    isSaved: false,
-                    queryId: undefined,
-                    status: 'is_null',
-                    connectionId: '',
-                    description: '',
-                    qualifiedName: '',
-                    parentGuid: '',
-                    parentQualifiedName: '',
-                    isSQLSnippet: false,
-                    savedQueryParentFolderTitle: undefined,
-                    explorer: {
-                        schema: {
-                            connectors: {
-                                attributeName: undefined,
-                                attributeValue: undefined,
-                            },
-                        },
-                        queries: {
-                            connectors: {
-                                connector: undefined,
-                            },
-                            collection: {
-                                guid: '',
-                                qualifiedName: undefined,
-                                parentQualifiedName: undefined,
-                            },
-                        },
-                    },
-                    playground: {
-                        isVQB: openVQB === 'true' ? true : false,
-                        vqb: vqbData,
-                        editor: {
-                            text: '',
-                            context: {
-                                attributeName: undefined,
-                                attributeValue: undefined,
-                            },
-                            dataList: [],
-                            columnList: [],
-                            variables: [],
-                            savedVariables: [],
-                            limitRows: {
-                                checked: false,
-                                rowsCount: -1,
-                            },
-                        },
-                        resultsPane: {
-                            activeTab: 0,
-                            outputPaneSize: 27.9,
-                            result: {
-                                title: `Result`,
-                                runQueryId: undefined,
-                                isQueryRunning: '',
-                                queryErrorObj: {},
-                                totalRowsCount: -1,
-                                executionTime: -1,
-                                errorDecorations: [],
-                                eventSourceInstance: undefined,
-                                abortQueryFn: undefined,
-                                buttonDisable: false,
-                                isQueryAborted: false,
-                                tabQueryState: false,
-                            },
-                            metadata: {},
-                            queries: {},
-                            joins: {},
-                            filters: {},
-                            impersonation: {},
-                            downstream: {},
-                            sqlHelp: {},
-                        },
-                    },
-
-                    favico: 'https://atlan.com/favicon.ico',
-                    assetSidebar: {
-                        isVisible: false,
-                        assetInfo: {},
-                        title: '',
-                        id: '',
-                    },
-                }
-
-                let newQuery
-                if (columnNameFromURL) {
-                    // newQuery = `\/* ${tableNameFromURL} preview *\/\nSELECT ${columnNameFromURL} FROM \"${tableNameFromURL}\" LIMIT 50;\n`
-                    newQuery = `-- ${assetQuoteType}${tableNameFromURL}${assetQuoteType} preview \nSELECT ${assetQuoteType}${columnNameFromURL}${assetQuoteType} FROM ${assetQuoteType}${tableNameFromURL}${assetQuoteType} LIMIT 50;\n`
-                } else {
-                    // newQuery = `\/* ${tableNameFromURL} preview *\/\nSELECT * FROM \"${tableNameFromURL}\" LIMIT 50;\n`
-                    newQuery = `-- ${assetQuoteType}${tableNameFromURL}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableNameFromURL}${assetQuoteType} LIMIT 50;\n`
-                }
-
-                const attributeName = 'schemaQualifiedName'
-                const attributeValue = `${databaseQualifiedNameFromURL}/${schemaNameFromURL}`
-
-                // const newText = `${newQuery}${prevText}`
-                if (!(openVQB === 'true')) {
-                    queryTab.playground.editor.text = newQuery
-                }
-
-                queryTab.playground.editor.context = {
-                    attributeName,
-                    attributeValue,
-                }
-
-                queryTab.explorer.schema.connectors = {
-                    attributeName,
-                    attributeValue,
-                }
+                const queryTab = getDetectQueryTab({
+                    databaseQualifiedNameFromURL,
+                    schemaNameFromURL,
+                    tableNameFromURL,
+                    openVQB,
+                    columnNameFromURL,
+                    activeInlineTab,
+                })
 
                 inlineTabAdd(queryTab, tabsArray, activeInlineTabKey)
-
+                let vqb = openVQB === 'true' ? true : false
                 const activeInlineTabKeyCopy = activeInlineTabKey.value
 
                 const tabIndex = tabsArray.value.findIndex(
                     (tab) => tab.key === activeInlineTabKeyCopy
                 )
-
-                // console.log('detect query: ', newQuery)
-
-                let vqb = openVQB === 'true' ? true : false
                 queryRun(
                     tabIndex,
                     getData,
                     limitRows,
                     onRunCompletion,
                     onQueryIdGeneration,
-                    newQuery,
+                    queryTab.playground.editor.text,
                     editorInstance,
                     monacoInstance,
                     ref(vqb),
@@ -721,10 +549,6 @@
                     if (isLoading.value === false) {
                         queryCollectionsLoading.value = false
                         if (error.value === undefined) {
-                            console.log(
-                                'queryCollections: ',
-                                data.value.entities
-                            )
                             if (
                                 data.value?.entities &&
                                 data.value?.entities?.length > 0
@@ -734,16 +558,7 @@
                                 queryCollections.value = []
                             }
 
-                            console.log('collection create:')
-                            if (activeInlineTab.value?.queryId) {
-                                const queryParams = {
-                                    id: activeInlineTab.value?.queryId,
-                                }
-                                router.push({
-                                    path: `insights`,
-                                    query: queryParams,
-                                })
-                            } else {
+                            if (!savedQueryGuidFromURL) {
                                 router.push({
                                     path: `insights`,
                                 })

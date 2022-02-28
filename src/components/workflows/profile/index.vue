@@ -104,6 +104,7 @@
                 searchDirtyTimestamp.value = `dirty_${Date.now().toString()}`
                 // runName.value = run
                 router.push({
+                    params: { tab: 'runs' },
                     query: {
                         name: run,
                     },

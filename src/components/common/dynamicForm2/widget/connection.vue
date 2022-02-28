@@ -21,11 +21,10 @@
                                     class="w-auto h-4 mr-1"
                                 />
 
-                                <span class="ml-1 capitalize">{{
-                                    connector
-                                }}</span>
+                                <span class="ml-1 capitalize"
+                                    >{{ connector }} Connection</span
+                                >
                             </div>
-                            Connection
                         </div>
                         <div class="text-gray-500">
                             last updated

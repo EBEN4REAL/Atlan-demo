@@ -24,11 +24,10 @@
                                 class="w-auto h-4 mr-1"
                             />
 
-                            <span class="ml-1 capitalize">{{
-                                connector(credential)
-                            }}</span>
+                            <span class="ml-1 capitalize"
+                                >{{ connector(credential) }} Credential</span
+                            >
                         </div>
-                        Credential
                     </div>
                     <div class="text-gray-500">
                         last updated {{ updatedAt(credential, true) }} ago by

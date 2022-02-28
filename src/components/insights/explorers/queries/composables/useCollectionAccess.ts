@@ -7,7 +7,8 @@ import whoami from '~/composables/user/whoami'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
 const useCollectionAccess = (
-    activeInlineTab: ComputedRef<activeInlineTabInterface>
+    activeInlineTab: ComputedRef<activeInlineTabInterface>,
+    collectionSelectorChange: Ref<boolean>
 ) => {
     const { username: currentUser, groups: userGroups } = whoami()
 
@@ -151,14 +152,20 @@ const useCollectionAccess = (
     })
 
     const hasCollectionWritePermission = computed(() => {
-        let adminUsers = selectedCollectionData?.value?.entities[0].attributes
-            ?.adminUsers
-            ? selectedCollectionData?.value?.entities[0].attributes?.adminUsers
-            : []
-        let adminGroups = selectedCollectionData.value?.entities[0].attributes
-            ?.adminGroups
-            ? selectedCollectionData.value?.entities[0].attributes?.adminGroups
-            : []
+        let adminUsers = []
+        let adminGroups = []
+        if (selectedCollectionData?.value?.entities?.length > 0) {
+            adminUsers = selectedCollectionData?.value?.entities[0].attributes
+                ?.adminUsers
+                ? selectedCollectionData?.value?.entities[0].attributes
+                      ?.adminUsers
+                : []
+            adminGroups = selectedCollectionData.value?.entities[0].attributes
+                ?.adminGroups
+                ? selectedCollectionData.value?.entities[0].attributes
+                      ?.adminGroups
+                : []
+        }
 
         if (adminUsers?.length) {
             let v1 = adminUsers.find((el) => el === currentUser.value)
@@ -189,6 +196,9 @@ const useCollectionAccess = (
         } else {
             return false
         }
+    })
+    watch(collectionSelectorChange, () => {
+        fetchSelectedCollectionData()
     })
 
     return {

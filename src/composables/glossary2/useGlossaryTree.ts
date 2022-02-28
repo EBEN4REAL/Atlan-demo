@@ -895,6 +895,9 @@ const useGlossaryTree = ({
                 }
             })
         }
+
+        console.log(node)
+        console.log(assetToDrop)
         if (assetToDrop?.typeName === 'AtlasGlossary') {
             message.error(
                 `Cannot reorder a Glossary. Try reordering a term/category instead.`,
@@ -902,6 +905,13 @@ const useGlossaryTree = ({
             )
         } else if (node?.typeName === 'AtlasGlossaryTerm') {
             const parentStack = recursivelyFindPath(node?.guid)[0]
+            const assetToDropParentQf = assetToDrop?.key?.split('_')[0]
+            const nodeParentQf = node?.key?.split('_')[0]
+            console.log(assetToDropParentQf === nodeParentQf)
+            if(assetToDropParentQf === nodeParentQf){
+                return
+            }
+
             const parentOfTerm = {
                 guid: parentStack[1],
             }

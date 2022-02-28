@@ -23,6 +23,7 @@ import useRunQuery from '~/components/insights/playground/common/composables/use
 import useSetClassifications from '~/composables/discovery/useSetClassifications'
 import updateAsset from '~/composables/discovery/updateAsset'
 import { generateSQLQuery } from '~/components/insights/playground/editor/vqb/composables/generateSQLQuery'
+import { useActiveTab } from '~/components/insights/common/composables/useActiveTab'
 import { useRouter, useRoute } from 'vue-router'
 
 export function useSavedQuery(
@@ -79,8 +80,8 @@ export function useSavedQuery(
 
         return false
     }
-
-    const getNewTabFromSavedQuery = (savedQuery) => {
+    const getNewTabFromSavedQuery = (savedQuery: SavedQuery) => {
+        const { generateNewActiveTab } = useActiveTab()
         let decodedVariables = decodeBase64Data(
             savedQuery?.attributes?.variablesSchemaBase64
         ) as CustomVaribaleInterface[]
@@ -98,20 +99,25 @@ export function useSavedQuery(
             defaultSchemaQualifiedName,
             defaultDatabaseQualifiedName
         )
-        console.log(connectors, 'connectors')
-        console.log('saved query: ', savedQuery)
-
         const visualBuilderSchemaBase64 =
             savedQuery?.attributes?.visualBuilderSchemaBase64
         const isVisualQuery = savedQuery?.attributes?.isVisualQuery
 
         let decodedVQB = decodeBase64Data(visualBuilderSchemaBase64)
 
-        const newTab: activeInlineTabInterface = {
-            attributes: savedQuery?.attributes,
+        let newTab = generateNewActiveTab({
+            activeInlineTab,
             label: savedQuery?.attributes?.name ?? '',
+            assetInfo: savedQuery,
+            editorText: savedQuery?.attributes?.rawQuery
+                ? savedQuery?.attributes?.rawQuery
+                : '',
+        })
+
+        newTab = {
+            ...newTab,
+            attributes: savedQuery?.attributes,
             key: savedQuery?.guid,
-            favico: 'https://atlan.com/favicon.ico',
             isSaved: true,
             queryId: savedQuery?.guid,
             updateTime:
@@ -148,6 +154,7 @@ export function useSavedQuery(
                 },
             },
             playground: {
+                ...newTab.playground,
                 isVQB: isVisualQuery ? true : false,
                 vqb:
                     isVisualQuery && decodedVQB
@@ -195,45 +202,10 @@ export function useSavedQuery(
                         ...connectors,
                     },
                 },
-                resultsPane: {
-                    activeTab:
-                        activeInlineTab.value?.playground.resultsPane
-                            .activeTab ?? 0,
-                    outputPaneSize: 27.9,
-                    result: {
-                        title: savedQuery?.attributes?.name,
-                        isQueryRunning: '',
-                        isQueryAborted: false,
-                        queryErrorObj: {},
-                        errorDecorations: [],
-                        abortQueryFn: undefined,
-                        totalRowsCount: -1,
-                        executionTime: -1,
-                        runQueryId: undefined,
-                        buttonDisable: false,
-                        eventSourceInstance: undefined,
-                        tabQueryState: false,
-                    },
-                    metadata: {},
-                    queries: {},
-                    joins: {},
-                    filters: {},
-                    impersonation: {},
-                    downstream: {},
-                    sqlHelp: {},
-                },
-            },
-            assetSidebar: {
-                // for taking the previous state from active tab
-                isVisible: false,
-                assetInfo: savedQuery,
-                title: activeInlineTab.value?.assetSidebar.title ?? '',
-                id: activeInlineTab.value?.assetSidebar.id ?? '',
             },
         }
-        return newTab || {}
+        return newTab
     }
-
     const duplicateSavedQuery = (savedQuery) => {
         // get new tab from saved query
         const newTab = {
@@ -258,11 +230,8 @@ export function useSavedQuery(
         if (route?.query?.vqb) queryParams.vqb = true
         router.push({ path: `insights`, query: queryParams })
     }
-    const openSavedQueryInNewTab = async (
-        savedQuery: SavedQuery,
-        isTabAdded: Ref<string>
-    ) => {
-        isTabAdded.value = savedQuery?.guid
+
+    const openSavedQueryInNewTab = async (savedQuery: SavedQuery) => {
         const newTab = { ...(getNewTabFromSavedQuery(savedQuery) || {}) }
         const check = isInlineTabAlreadyOpened(newTab, tabsArray)
         if (!check) {
@@ -300,7 +269,6 @@ export function useSavedQuery(
 
     const openSavedQueryInNewTabAndRun = (
         savedQuery,
-        isTabAdded: Ref<string>,
         getData: (
             activeInlineTab,
             rows: any[],
@@ -313,15 +281,11 @@ export function useSavedQuery(
         onRunCompletion,
         onQueryIdGeneration
     ) => {
-        isTabAdded.value = savedQuery?.value?.guid
-        openSavedQueryInNewTab(
-            {
-                ...savedQuery?.value,
-                parentTitle:
-                    savedQuery?.value?.attributes?.parent?.attributes?.name,
-            },
-            isTabAdded
-        )
+        openSavedQueryInNewTab({
+            ...savedQuery?.value,
+            parentTitle:
+                savedQuery?.value?.attributes?.parent?.attributes?.name,
+        })
 
         const activeInlineTabKeyCopy = activeInlineTabKey.value
 
@@ -710,7 +674,6 @@ export function useSavedQuery(
 
     const saveQueryToDatabaseAndOpenInNewTab = (
         saveQueryData: any,
-        isTabAdded: Ref<string>,
         editorInstance: Ref<any>,
         saveQueryLoading: Ref<boolean>,
         showSaveQueryModal: Ref<boolean>,
@@ -858,13 +821,14 @@ export function useSavedQuery(
                     saveModalRef.value?.clearData()
                     // const guid = savedQuery.guid
                     console.log(data.value, 'saved')
+
                     if (savedQuery.guid) {
                         const queryParams = { id: savedQuery.guid }
                         if (route?.query?.vqb) queryParams.vqb = true
                         router.push({ path: `insights`, query: queryParams })
                     }
 
-                    openSavedQueryInNewTab(savedQuery, isTabAdded)
+                    openSavedQueryInNewTab(savedQuery)
                 } else {
                     if (
                         error?.value?.response?.data?.errorCode ===

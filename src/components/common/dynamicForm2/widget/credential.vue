@@ -1,10 +1,10 @@
 <template>
     <div
-        class="flex items-center justify-center flex-grow"
+        class="flex flex-col items-center justify-center flex-grow"
         style="height: 100px"
         v-if="isLoading"
     >
-        <a-spin icon="Loader" class="mt-1 mr-2"></a-spin>
+        <AtlanLoader icon="Loader" class="h-10 mx-auto mt-1" />
         Loading Credential Configuration
     </div>
     <div

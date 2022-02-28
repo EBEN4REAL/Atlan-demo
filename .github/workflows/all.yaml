@@ -2,14 +2,12 @@ name: Atlan Product Workflow
 on:
   push:
     branches:
-      - main
-
+      - beta
+      - staging
 jobs:
-  #steps:
   deploy:
     name: Deployment
     runs-on: ubuntu-latest
-    # needs: bump-version
 
     steps:
       - name: Get branch name
@@ -52,25 +50,6 @@ jobs:
         with:
           token: ${{ secrets.my_pat }}
           fetch-depth: 0
-
-      - name: "cat package.json"
-        run: cat ./package.json
-
-      - name: "Setup Node.js"
-        uses: "actions/setup-node@v1"
-        with:
-          node-version: 12
-
-      - name: "Automated Version Bump"
-        uses: "phips28/gh-action-bump-version@master"
-        env:
-          GITHUB_USER: atlan-ci
-          GITHUB_EMAIL: it@atlan.com
-          GITHUB_TOKEN: ${{ secrets.my_pat }}
-          GITHUB_ACTOR: atlan-ci
-        with:
-          tag-prefix: ""
-          skip-tag: "true"
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v2.0.1

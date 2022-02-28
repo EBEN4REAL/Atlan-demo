@@ -1,20 +1,21 @@
 <template>
     <div
-        v-if="selectedAsset?.guid"
+        v-if="
+            selectedAsset.assetInfo.guid &&
+            activeInlineTab?.assetSidebar?.isVisible
+        "
         class="relative z-20 flex flex-col h-full bg-white asset-preview-container"
     >
-        <div
-            v-if="activeInlineTab?.assetSidebar?.isVisible"
-            class="absolute close-btn-add-policy"
-            @click="handleClose"
-        >
+        <div class="absolute close-btn-add-policy" @click="handleClose">
             <AtlanIcon icon="Add" class="w-5 h-5 text-gray-500" />
         </div>
 
         <AssetPreview
             v-if="!assetLoading"
             :selected-asset="
-                Object.keys(assetInfo)?.length ? assetInfo : selectedAsset
+                Object.keys(assetInfo)?.length
+                    ? assetInfo
+                    : tabs[selectedIndex].assetSidebar?.assetInfo
             "
             page="insights"
         ></AssetPreview>
@@ -75,6 +76,12 @@
                 'activeInlineTabKey'
             ) as Ref<string>
 
+            const selectedIndex = computed(() => {
+                return tabs.value.findIndex(
+                    (tab) => tab.key === activeInlineTabKey.value
+                )
+            })
+
             const { closeAssetSidebar, fetchAssetData } = useAssetSidebar(
                 tabs,
                 activeInlineTab
@@ -84,7 +91,7 @@
             const assetInfo = ref({})
 
             const selectedAsset: Ref<any> = computed(() => {
-                return activeInlineTab.value?.assetSidebar?.assetInfo
+                return activeInlineTab.value?.assetSidebar
             })
 
             const queryCollections = inject('queryCollections') as ComputedRef<
@@ -97,7 +104,8 @@
                 let col = queryCollections.value?.find(
                     (col) =>
                         col.attributes.qualifiedName ===
-                        selectedAsset.value?.attributes?.collectionQualifiedName
+                        selectedAsset.value?.assetInfo?.attributes
+                            ?.collectionQualifiedName
                 )
                 if (col) {
                     return col?.displayText
@@ -130,12 +138,6 @@
                     }
                 })
             }
-
-            watch(selectedAsset, () => {
-                assetInfo.value = {}
-                // console.log('selected asset: ', selectedAsset.value)
-                fetchAsset()
-            })
 
             watch(
                 updateAssetCheck,
@@ -200,10 +202,11 @@
             }
 
             return {
+                selectedIndex,
+                tabs,
                 assetLoading,
                 handleClose,
                 selectedAsset,
-                tabs,
                 activeInlineTab,
                 closeAssetSidebar,
                 assetInfo,

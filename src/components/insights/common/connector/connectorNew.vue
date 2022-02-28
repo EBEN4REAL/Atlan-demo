@@ -67,11 +67,12 @@
                         popupClassName="submenu-popup"
                     >
                         <template #title>
-                            <div class="submenu-title-content">
+                            <div
+                                class="flex items-center justify-center submenu-title-content"
+                            >
                                 <img
                                     :src="getContextName(`icon`)"
-                                    class="flex-shrink-0 w-4 h-4 mr-1 text-gray-500"
-                                    style="margin-top: 0.125rem"
+                                    class="flex-shrink-0 w-6 h-6 mr-1 text-gray-500"
                                 />
                                 <span class="parent-ellipsis-container-base">
                                     <span class="text-gray-500"
@@ -179,11 +180,12 @@
 
                     <a-sub-menu class="submenu" key="sub2">
                         <template #title>
-                            <div class="submenu-title-content">
+                            <div
+                                class="flex items-center justify-center submenu-title-content"
+                            >
                                 <AtlanIcon
                                     icon="DatabaseGray"
-                                    class="flex-shrink-0 w-4 h-4 mr-1 text-gray-500"
-                                    style="margin-top: 0.125rem"
+                                    class="flex-shrink-0 w-6 h-6 mr-1 text-gray-500"
                                 ></AtlanIcon>
                                 <span class="parent-ellipsis-container-base">
                                     <span class="text-gray-500">Database</span>
@@ -239,11 +241,12 @@
                         "
                     >
                         <template #title>
-                            <div class="submenu-title-content">
+                            <div
+                                class="flex items-center justify-center submenu-title-content"
+                            >
                                 <AtlanIcon
                                     icon="SchemaGray"
-                                    class="flex-shrink-0 w-4 h-4 mr-1 text-gray-500"
-                                    style="margin-top: 0.125rem"
+                                    class="flex-shrink-0 w-6 h-6 mr-1 text-gray-500"
                                 ></AtlanIcon>
                                 <span class="parent-ellipsis-container-base">
                                     <span class="text-gray-500">Schema</span>
@@ -888,7 +891,7 @@
         border-radius: 0 !important;
     }
     .ant-dropdown-trigger {
-        min-height: 2.5rem;
+        min-height: 2.75rem;
     }
 </style>
 <style lang="less" module>

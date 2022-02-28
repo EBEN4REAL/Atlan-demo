@@ -6,7 +6,14 @@ import { Issue, IssueTypes } from '~/types/integrations/jira.types'
 const { jiraSearch, jiraCreateIssue, jiraListIssueTypes, jiraLinkIssue, jiraUnlinkIssue } = Integrations
 
 const searchIssues = (jql, immediate = true) => {
-    const options = { asyncOptions: { immediate } }
+    const options = {
+        asyncOptions: {
+            immediate,
+            onError: (e) => {
+                throw e
+            },
+        }
+    }
     const issues = ref<Issue[]>([])
 
     const pageSize = ref(10)
@@ -51,7 +58,14 @@ const searchIssues = (jql, immediate = true) => {
 
 export const createIssue = (body) => {
 
-    const options = { asyncOptions: { immediate: false } }
+    const options = {
+        asyncOptions: {
+            immediate: false,
+            onError: (e) => {
+                throw e
+            },
+        }
+    }
     const { data, isLoading, error, mutate, isReady } = jiraCreateIssue(body, options)
 
     return { data, isLoading, error, mutate, isReady }
@@ -91,7 +105,14 @@ export const listIssueTypes = () => {
 }
 
 export const linkIssue = (_body, id) => {
-    const options = { asyncOptions: { immediate: false } }
+    const options = {
+        asyncOptions: {
+            immediate: false,
+            onError: (e) => {
+                throw e
+            },
+        }
+    }
     const body = computed(() => (
         {
             ..._body.value
@@ -109,7 +130,14 @@ export const linkIssue = (_body, id) => {
 }
 
 export const unlinkIssue = (_body, id) => {
-    const options = { asyncOptions: { immediate: false } }
+    const options = {
+        asyncOptions: {
+            immediate: false,
+            onError: (e) => {
+                throw e
+            },
+        }
+    }
     const body = computed(() => (
         {
             ..._body.value

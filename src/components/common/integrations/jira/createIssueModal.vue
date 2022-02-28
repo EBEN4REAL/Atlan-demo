@@ -168,6 +168,7 @@
                 duration: 2,
             })
             emit('success', data.value)
+            visible.value = false
         } catch (_error) {
             const errMsg = _error?.response?.data?.errorMessage || ''
             const generalError = `Failed to create issue: "${form.value.summary}"`

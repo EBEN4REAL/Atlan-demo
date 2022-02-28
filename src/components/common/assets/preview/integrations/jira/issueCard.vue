@@ -18,6 +18,7 @@
             <h1 class="flex font-bold">
                 <img :src="issuetype.iconUrl" class="mr-1" />
                 <Truncate
+                    placement="left"
                     :route-to="issueUrl"
                     :should-open-in-new-tab="true"
                     :tooltip-text="`${key}: ${summary}`"
@@ -26,7 +27,11 @@
                 />
             </h1>
             <span class="text-xs">
-                <Truncate :tooltip-text="description" :rows="2" />
+                <Truncate
+                    placement="left"
+                    :tooltip-text="description"
+                    :rows="2"
+                />
             </span>
             <div class="text-xs text-gray-500">
                 <span>{{ creator.displayName }}</span

@@ -768,7 +768,6 @@
                     class="px-5"
                     :showShortcut="true"
                     @change="handleClassificationChange"
-                    :selected-asset="selectedAsset"
                 >
                 </Classification>
             </div>

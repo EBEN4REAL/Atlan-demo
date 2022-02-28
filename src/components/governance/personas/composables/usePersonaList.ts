@@ -55,8 +55,11 @@ export const searchTerm = ref('')
 export const facets = ref({})
 export const filteredPersonas = computed(() => {
     let result = []
-    const { hierarchy } = facets.value
-    const hasFilters = !!searchTerm.value || !!hierarchy
+    const { hierarchy, owners } = facets.value
+    const hasFilters =
+        !!searchTerm.value ||
+        !!Object.keys(hierarchy || {}).length ||
+        !!(owners?.ownerUsers?.length || owners?.ownerGroups?.length)
     result = personaList.value
     if (searchTerm.value) {
         result = personaList.value.filter((persona) => {
@@ -96,9 +99,26 @@ export const filteredPersonas = computed(() => {
             return found
         })
     }
-    // if (!hasFilters) {
-    //     result = personaList.value || []
-    // }
+
+    if (owners) {
+        const { ownerUsers, ownerGroups } = owners
+        result = result.filter((persona) => {
+            const users = persona?.users || []
+            const groups = persona?.groups || []
+            let found = false
+            if (ownerUsers && ownerUsers.length) {
+                found = users.some((user) => ownerUsers.includes(user))
+            }
+            if (ownerGroups && ownerGroups.length) {
+                found = groups.some((group) => ownerGroups.includes(group))
+            }
+            return found
+        })
+    }
+
+    if (!hasFilters) {
+        result = personaList.value || []
+    }
     return result.sort((a, b) => {
         const current = a?.displayName?.toLowerCase()
         const last = b?.displayName?.toLowerCase()

@@ -66,7 +66,7 @@
         archiveSlack,
         openSlackOAuth,
     } from '~/composables/integrations/useSlack'
-    import { integrations } from '~/constant/integrations'
+    import { integrations } from '~/constant/integrations/integrations'
     import { Modal } from 'ant-design-vue'
 
     export default defineComponent({

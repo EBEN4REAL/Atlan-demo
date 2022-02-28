@@ -53,7 +53,7 @@
         archiveJira,
         openJiraOAuth,
     } from '~/composables/integrations/jira/useJira'
-    import { integrations } from '~/constant/integrations'
+    import { integrations } from '~/constant/integrations/integrations'
     import { fetchIntegrationConfig } from '~/composables/integrations/useIntegrations'
 
     export default defineComponent({

@@ -21,7 +21,7 @@
     import { useRouter, useRoute } from 'vue-router'
     import integrationStore from '~/store/integrations/index'
     import ErrorView from '@/common/error/index.vue'
-    import { integrations } from '~/constant/integrations'
+    import { integrations } from '~/constant/integrations/integrations'
     import useIntegrations from '~/composables/integrations/useIntegrations'
     import slack from '@/admin/integrations/slack/index.vue'
     import Jira from '@/admin/integrations/jira/jira.vue'

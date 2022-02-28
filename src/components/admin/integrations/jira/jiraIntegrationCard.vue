@@ -112,7 +112,7 @@
         archiveJira,
         listProjects,
     } from '~/composables/integrations/jira/useJira'
-    import { integrations } from '~/constant/integrations'
+    import { integrations } from '~/constant/integrations/integrations'
     import { useUsers } from '~/composables/user/useUsers'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import ProjectSelector from '@/common/integrations/jira/jiraProjectsSelect.vue'

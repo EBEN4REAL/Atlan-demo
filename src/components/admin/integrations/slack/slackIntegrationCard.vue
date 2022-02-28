@@ -148,7 +148,7 @@
         archiveSlack,
         UpdateSlackConfig,
     } from '~/composables/integrations/useSlack'
-    import { integrations } from '~/constant/integrations'
+    import { integrations } from '~/constant/integrations/integrations'
     import { useUsers } from '~/composables/user/useUsers'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
 

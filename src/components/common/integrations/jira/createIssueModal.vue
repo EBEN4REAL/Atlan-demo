@@ -16,12 +16,29 @@
             <a-form
                 ref="formRef"
                 layout="vertical"
-                class=""
-                :rules="rules"
+                :class="$style.formComponent"
+                :rules="CREATE_TICKET_FORM_RULES"
                 :model="form"
                 :validate-trigger="['click', 'submit']"
             >
-                <a-form-item :name="['projectId']" label="Project" class="mb-2">
+                <a-form-item :name="['summary']" class="mb-4" label="Title">
+                    <a-input
+                        v-model:value="form.summary"
+                        placeholder="Add a title"
+                    />
+                </a-form-item>
+                <a-form-item
+                    :name="['description']"
+                    class="mb-4"
+                    label="Description"
+                >
+                    <a-textarea
+                        v-model:value="form.description"
+                        placeholder="Add a description"
+                    />
+                </a-form-item>
+
+                <a-form-item :name="['projectId']" label="Project" class="mb-4">
                     <ProjectSelector
                         v-model="form.projectId"
                         class="w-full"
@@ -32,7 +49,7 @@
                 </a-form-item>
                 <a-form-item
                     :name="['issueType']"
-                    class="mb-2"
+                    class="mb-4"
                     label="Issue type"
                 >
                     <a-select
@@ -42,23 +59,13 @@
                         placeholder="Select issue type"
                         :options="issueTypeOptions"
                         class="w-full"
-                    />
-                </a-form-item>
-                <a-form-item :name="['summary']" class="mb-2" label="Summary">
-                    <a-input
-                        v-model:value="form.summary"
-                        placeholder="Add a summary"
-                    />
-                </a-form-item>
-                <a-form-item
-                    :name="['description']"
-                    class="mb-2"
-                    label="Description"
-                >
-                    <a-textarea
-                        v-model:value="form.description"
-                        placeholder="Add a description"
-                    />
+                    >
+                        <template #suffixIcon>
+                            <AtlanIcon
+                                icon="CaretDown"
+                                class="text-gray-500"
+                            /> </template
+                    ></a-select>
                 </a-form-item>
             </a-form>
         </div>
@@ -88,6 +95,8 @@
         listIssueTypes,
     } from '~/composables/integrations/jira/useJiraTickets'
 
+    import { CREATE_TICKET_FORM_RULES } from '~/constant/integrations/integrations/jira.constant'
+
     const props = defineProps({
         visible: { type: Boolean, required: true },
         asset: { type: Object as PropType<assetInterface>, required: true },
@@ -115,8 +124,6 @@
         typeName: asset.value.typeName,
         assetUrl: `${origin}/assets/${asset.value.guid}/overview`,
     })
-
-    const setDefault = () => {}
 
     const reset = () => {
         form.value = {
@@ -181,37 +188,6 @@
         }
         emit('failure', error.value)
     }
-
-    const rules = {
-        projectId: [
-            {
-                required: true,
-                message: 'Project is required',
-                trigger: ['submit', 'change'],
-            },
-        ],
-        issueType: [
-            {
-                required: true,
-                message: 'Issue type is required',
-                trigger: ['submit', 'change'],
-            },
-        ],
-        summary: [
-            {
-                required: true,
-                message: 'Summary is required',
-                trigger: ['submit', 'change'],
-            },
-        ],
-        description: [
-            {
-                required: true,
-                message: 'Description is required',
-                trigger: ['submit', 'change'],
-            },
-        ],
-    }
 </script>
 
 <style lang="less">
@@ -235,6 +211,11 @@
 </style>
 
 <style module lang="less">
+    .formComponent {
+        :global(.ant-form-item-label) {
+            @apply font-bold;
+        }
+    }
     .issueTypeDropdown {
         :global(.rc-virtual-list) {
             @apply px-1;

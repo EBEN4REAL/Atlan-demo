@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-    import { user_integration_list } from '~/constant/integrations'
+    import { user_integration_list } from '~/constant/integrations/integrations'
     import UserSlack from './wrappers/userSlack.vue'
     import UserJira from './wrappers/userJira.vue'
 </script>

@@ -11,6 +11,7 @@
             :add-mode="!!checkedIDs.length"
             @cancel="resetIDs"
             @save="handleIssueLink"
+            @create="createModal = true"
         />
 
         <div
@@ -93,6 +94,12 @@
             />
         </footer>
     </a-drawer>
+
+    <CreateModal
+        v-model:visible="createModal"
+        :asset="asset"
+        @success="() => (visible = false)"
+    />
 </template>
 
 <script setup lang="ts">
@@ -110,6 +117,7 @@
     import ErrorView from '@/common/error/index.vue'
     import Pagination from '@/common/list/pagination.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import CreateModal from '@/common/integrations/jira/createIssueModal.vue'
 
     const props = defineProps({
         visible: { type: Boolean, required: true },
@@ -121,6 +129,9 @@
     const { visible } = useVModels(props, emit)
 
     const { asset } = toRefs(props)
+
+    const createModal = ref(false)
+
     const assetID = computed(() => asset.value.guid)
 
     const checkedIDs = ref<string[]>([])

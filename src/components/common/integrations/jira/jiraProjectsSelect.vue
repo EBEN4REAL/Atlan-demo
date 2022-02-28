@@ -5,7 +5,7 @@
         :class="$style.selector"
         :dropdown-class-name="$style.projectsDropdown"
         :options="options"
-        placeholder="Select default project"
+        :placeholder="placeholder"
         :loading="isLoading"
         @change="handleChange"
     >
@@ -17,13 +17,16 @@
 
 <script setup lang="ts">
     import { useVModels } from '@vueuse/core'
-    import { computed } from 'vue'
+    import { computed, onMounted, watch } from 'vue'
     import { listProjects } from '~/composables/integrations/jira/useJira'
+    import booleanVue from '../../dynamicForm2/widget/boolean.vue'
 
     const { projects, isLoading, error } = listProjects()
 
     const props = defineProps({
         modelValue: { type: String, required: true },
+        placeholder: { type: String, default: 'Select default project' },
+        defaultSelectFirst: { type: Boolean, default: false },
     })
     const emit = defineEmits(['change'])
 
@@ -37,6 +40,13 @@
             }))
         }
         return []
+    })
+
+    onMounted(() => {
+        watch(projects, (v) => {
+            if (v?.length && !modelValue.value && props.defaultSelectFirst)
+                modelValue.value = options.value[0].value
+        })
     })
 
     const handleChange = (value, option) => {

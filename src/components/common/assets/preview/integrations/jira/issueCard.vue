@@ -41,7 +41,6 @@
     import { computed, PropType, toRefs } from 'vue'
     import { useTimeAgo, useVModels } from '@vueuse/core'
     import { Issue } from '~/types/integrations/jira.types'
-    import { listIssueTypes } from '~/composables/integrations/jira/useJiraTickets'
     import Truncate from '@/common/ellipsis/index.vue'
     import integrationStore from '~/store/integrations/index'
 
@@ -81,7 +80,6 @@
         const { orgUrl } = tenantJiraStatus.value
         return `${orgUrl.replace('https://', '//')}/browse/${key}`
     })
-    // const { data: issueTypes, isLoading, error, mutate } = listIssueTypes()
 </script>
 
 <style scoped></style>

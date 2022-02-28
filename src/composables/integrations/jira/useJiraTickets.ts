@@ -1,10 +1,9 @@
 import { computed, ref, Ref, watch } from 'vue'
-import { R } from '../../../../node_modules/.vite/prosemirror-image-plugin';
 import { debouncedWatch, useDebounce } from '@vueuse/core'
 import { Integrations } from '~/services/service/integrations/index'
 import { Issue, IssueTypes } from '~/types/integrations/jira.types'
 
-const { jiraSearch, jiraListIssueTypes, jiraLinkIssue, jiraUnlinkIssue } = Integrations
+const { jiraSearch, jiraCreateIssue, jiraListIssueTypes, jiraLinkIssue, jiraUnlinkIssue } = Integrations
 
 const searchIssues = (jql, immediate = true) => {
     const options = { asyncOptions: { immediate } }
@@ -48,6 +47,14 @@ const searchIssues = (jql, immediate = true) => {
     }))
 
     return { issues, isLoading, error, mutate, isReady, searchLoading, pagination, offset, totalResults }
+}
+
+export const createIssue = (body) => {
+
+    const options = { asyncOptions: { immediate: false } }
+    const { data, isLoading, error, mutate, isReady } = jiraCreateIssue(body, options)
+
+    return { data, isLoading, error, mutate, isReady }
 }
 
 export const listLinkedIssues = (assetID: Ref<string>) => {

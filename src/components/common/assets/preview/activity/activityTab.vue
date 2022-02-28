@@ -73,13 +73,11 @@
                     </template>
                     <div>
                         <ActivityType
-                            v-if="getAuditEventComponent(log)"
+                            v-if="getAuditEventComponent(log)?.component"
                             :data="getAuditEventComponent(log)"
                         />
                         <template v-else>
-                            <div class="">
-                                {{ log.action }}
-                            </div>
+                            <span class="font-bold">Metadata</span> updated
                         </template>
 
                         <!-- <template

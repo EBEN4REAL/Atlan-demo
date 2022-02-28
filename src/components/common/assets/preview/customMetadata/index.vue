@@ -402,7 +402,7 @@
             },
         },
         setup(props) {
-            const { selectedAsset, data } = toRefs(props)
+            const { selectedAsset, data, isDrawer } = toRefs(props)
 
             const readOnly = ref(true)
             const loading = ref(false)
@@ -600,13 +600,16 @@
             }
 
             const updateList = inject('updateList') as Function
+            const updateDrawerList = inject('updateDrawerList') as Function
+
             whenever(isUpdateReady, () => {
                 if (
                     asset.value.typeName !== 'AtlasGlossary' &&
                     asset.value.typeName !== 'AtlasGlossaryCategory' &&
                     asset.value.typeName !== 'AtlasGlossaryTerm'
                 ) {
-                    updateList(asset.value)
+                    if (isDrawer.value) updateDrawerList(asset.value)
+                    else updateList(asset.value)
                 }
             })
 

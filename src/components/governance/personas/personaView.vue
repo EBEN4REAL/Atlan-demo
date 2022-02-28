@@ -1,5 +1,41 @@
 <template>
-    <div v-if="true" class="flex flex-col px-6 py-10">
+    <div v-if="true" class="flex flex-col px-6 py-7">
+        <a-drawer
+            :visible="drawerFilter"
+            :mask="false"
+            :placement="'left'"
+            style="width: 17%"
+            :closable="false"
+            :class="'drawer-filter-request'"
+        >
+            <div
+                class="relative h-full pb-10 overflow-scroll bg-gray-50"
+                :class="$style['request-filter-wrapper']"
+            >
+                <div
+                    v-if="drawerFilter"
+                    class="close-btn-sidebar button-close-drawer-request"
+                    @click="handleClickFilter"
+                >
+                    <AtlanIcon icon="Add" class="text-white" />
+                </div>
+                <div class="filter-container">
+                    <AssetFilters
+                        v-model="facets"
+                        :filter-list="personaFilter"
+                        :allow-custom-filters="false"
+                        :no-filter-title="'No filters applied'"
+                        :extra-count-filter="
+                            connectorsData.attributeValue ? 1 : 0
+                        "
+                        class="bg-gray-100 drawer-request"
+                        @change="handleFilterChange"
+                        @reset="handleResetEvent"
+                    >
+                    </AssetFilters>
+                </div>
+            </div>
+        </a-drawer>
         <a-modal
             :visible="personaViewModalVisible"
             :destroyOnClose="true"
@@ -46,10 +82,32 @@
                 :placeholder="`Search ${
                     filteredPersonas?.length ?? 0
                 } personas`"
-                class="mt-0 bg-white"
+                class="max-w-lg shadow-none filter-request"
                 :autofocus="true"
-                size="bordered"
+                size="default"
             >
+                <template #categoryFilter>
+                    <div class="relative flex items-center">
+                        <AtlanBtn
+                            color="secondary"
+                            class="px-2 border-r-0 rounded-tr-none rounded-br-none cursor-pointer filter-button"
+                            :class="{
+                                'text-primary border rounded py-1 border-primary':
+                                    drawerFilter,
+                            }"
+                            @click="handleClickFilter"
+                        >
+                            <AtlanIcon icon="FilterFunnel" class="w-4 h-4" />
+                        </AtlanBtn>
+                        <div
+                            class="absolute border-r divide-gray-800 divider-filter"
+                            :class="{
+                                'text-primary border-r rounded border-primary top-0':
+                                    drawerFilter,
+                            }"
+                        />
+                    </div>
+                </template>
             </SearchAndFilter>
         </div>
         <!-- persona cards -->
@@ -276,6 +334,8 @@
     import usePermissions from '~/composables/auth/usePermissions'
     import { useAuthStore } from '~/store/auth'
     import PersonaCard from '@/governance/personas/discovery/personaCard.vue'
+    import AssetFilters from '@/common/assets/filters/index.vue'
+    import { personaFilter } from '~/constant/filters/logsFilter'
 
     export default defineComponent({
         name: 'PersonaView',
@@ -290,6 +350,7 @@
             AddPersona,
             DetailPolicy,
             PersonaCard,
+            AssetFilters,
         },
         setup() {
             const router = useRouter()
@@ -301,6 +362,14 @@
             const authStore = useAuthStore()
             const { decentralizedRoles } = storeToRefs(authStore)
             const openEditModal = ref(false)
+            const drawerFilter = ref(false)
+            const facets = ref({
+                statusRequest: [],
+            })
+            const connectorsData = ref({
+                attributeName: undefined,
+                attributeValue: undefined,
+            })
             const handleCloseModalDetailPolicy = () => {
                 modalDetailPolicyVisible.value = false
             }
@@ -323,6 +392,23 @@
             const personaViewModalVisible = computed(() => {
                 return !!selectedPersona.value
             })
+            const handleClickFilter = () => {
+                drawerFilter.value = !drawerFilter.value
+            }
+
+            const handleFilterChange = () => {
+                console.log('facets.value', facets.value)
+            }
+            const handleResetEvent = () => {
+                // filters.value = {
+                //     status: 'active' as RequestStatus,
+                //     request_type: [],
+                // }
+                // connectorsData.value = {
+                //     attributeName: undefined,
+                //     attributeValue: undefined,
+                // }
+            }
 
             // onMounted(() => {
             //     console.log('rohan', filteredPersonas?.value?.length)
@@ -408,6 +494,13 @@
                 selectPersona,
                 closePersonaViewModal,
                 personaViewModalVisible,
+                handleClickFilter,
+                drawerFilter,
+                personaFilter,
+                facets,
+                connectorsData,
+                handleFilterChange,
+                handleResetEvent,
             }
         },
     })
@@ -435,6 +528,13 @@
     }
 </style>
 <style lang="less" scoped>
+    .button-close-drawer-request {
+        left: 18% !important;
+        top: 5px;
+    }
+    .filter-request {
+        height: 32px !important;
+    }
     .active {
         background: #00a680;
     }
@@ -445,5 +545,14 @@
         max-width: 540px;
         text-align: center;
         margin-top: 16px !important;
+    }
+</style>
+<style lang="less" module>
+    .request-filter-wrapper {
+        :global(.filter-head) {
+            background: inherit !important;
+            height: 52px;
+            @apply pt-4 !important;
+        }
     }
 </style>

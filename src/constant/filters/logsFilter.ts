@@ -1,5 +1,6 @@
 // import { confidenceScore } from '~/constant/confidenceScore'
 import { statusRequest, assetTypes } from '~/constant/statusRequest'
+import { statusPersona } from '~/constant/statusPersona'
 
 export const queryLogsFilter = [
     {
@@ -151,7 +152,7 @@ export const requestFilter = [
         },
         class: 'bg-transparent',
     },
-     {
+    {
         id: '__traitNames',
         label: 'Classifications',
         component: 'classifications',
@@ -160,7 +161,7 @@ export const requestFilter = [
         isDeleted: false,
         isDisabled: false,
         exclude: false,
-        showNone: false
+        showNone: false,
     },
     {
         id: 'statusRequest',
@@ -172,7 +173,7 @@ export const requestFilter = [
         isDisabled: false,
         exclude: false,
         class: 'bg-transparent',
-        data: statusRequest
+        data: statusRequest,
     },
     // {
     //     id: 'terms',
@@ -183,6 +184,61 @@ export const requestFilter = [
     //     isDeleted: false,
     //     isDisabled: false,
     //     exclude: false,
+    // },
+    // {
+    //     id: 'confidenceScore',
+    //     label: 'Confidence score',
+    //     component: 'CheckBoxOption',
+    //     overallCondition: 'OR',
+    //     attributes: [],
+    //     isDeleted: false,
+    //     isDisabled: false,
+    //     exclude: false,
+    //     class: 'bg-transparent',
+    //     data: confidenceScore
+    // },
+]
+
+export const personaFilter = [
+    {
+        id: 'hierarchy',
+        label: 'Connection',
+        component: 'hierarchy',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+        analyticsKey: 'connection',
+    },
+    {
+        id: 'owners',
+        label: 'Users',
+        component: 'owners',
+        overallCondition: 'OR',
+        // selectUserKey: "id",
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+        propsToComponent: {
+            showNone: false,
+            hideDisabledTabs: true,
+            enableTabs: ['users', 'groups'],
+        },
+        class: 'bg-transparent',
+    },
+    // {
+    //     id: 'statusRequest',
+    //     label: 'STATUS',
+    //     component: 'CheckBoxOption',
+    //     overallCondition: 'OR',
+    //     attributes: [],
+    //     isDeleted: false,
+    //     isDisabled: false,
+    //     exclude: false,
+    //     class: 'bg-transparent',
+    //     data: statusPersona,
     // },
     // {
     //     id: 'confidenceScore',

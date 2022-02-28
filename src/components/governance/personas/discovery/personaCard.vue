@@ -6,9 +6,7 @@
         <div>
             <!-- header -->
             <div class="flex">
-                <span class="text-primary font-base">{{
-                    persona?.displayName
-                }}</span>
+                <span class="font-base">{{ persona?.displayName }}</span>
             </div>
             <!-- body -->
             <div>

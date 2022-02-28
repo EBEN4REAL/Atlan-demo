@@ -349,7 +349,7 @@
         archiveSlack,
         createApp,
         openSlackOAuth,
-    } from '~/composables/integrations/useSlack'
+    } from '~/composables/integrations/slack/useSlack'
     import { useAuthStore } from '~/store/auth'
     import LearnMore from '@/admin/integrations/slack/misc/learnMore.vue'
 

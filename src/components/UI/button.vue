@@ -15,8 +15,9 @@
             <AtlanIcon
                 icon="CircleLoader"
                 class="inline mb-0.5 animate-spin"
-            ></AtlanIcon></span
-        ><slot />
+            ></AtlanIcon>
+        </span>
+        <slot />
         <slot name="suffix" />
     </button>
 </template>

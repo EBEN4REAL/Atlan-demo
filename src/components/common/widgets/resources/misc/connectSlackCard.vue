@@ -19,7 +19,7 @@
     import {
         isSlackLink,
         openSlackOAuth,
-    } from '~/composables/integrations/useSlack'
+    } from '~/composables/integrations/slack/useSlack'
 </script>
 
 <style scoped></style>

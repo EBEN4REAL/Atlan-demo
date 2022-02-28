@@ -1,5 +1,5 @@
 <template>
-    <div ref="wrapper" class="w-full h-full overflow-y-auto">
+    <div ref="wrapper" class="flex flex-col w-full h-full">
         <template v-if="minimal">
             <template v-if="resources?.length">
                 <div
@@ -65,7 +65,7 @@
                 </AddResource>
             </div>
         </template>
-        <section>
+        <section class="overflow-y-auto">
             <template v-if="!resources?.length">
                 <template v-if="$slots?.placeholder">
                     <slot name="placeholder" />
@@ -104,7 +104,7 @@
                     }"
                 >
                     <div
-                        v-for="l in sortResources(resources)"
+                        v-for="(l, x) in sortResources(resources)"
                         :key="l.uniqueAttributes.qualifiedName"
                         class="flex-grow"
                     >
@@ -116,7 +116,11 @@
                             :link="l"
                             class="h-full"
                         />
-                        <SlackPreview v-else :link="l" />
+                        <SlackPreview
+                            v-else
+                            :ref="`SlackPreview-${x}`"
+                            :link="l"
+                        />
                     </div>
                     <template
                         v-if="
@@ -143,12 +147,13 @@
         defineAsyncComponent,
         ref,
         provide,
+        inject,
     } from 'vue'
     import SlackUserLoginTrigger from '@common/integrations/slack/slackUserLoginTriggerCard.vue'
     import {
         isSlackLink,
         openSlackOAuth,
-    } from '~/composables/integrations/useSlack'
+    } from '~/composables/integrations/slack/useSlack'
     import EmptyScreen from '@/common/empty/index.vue'
     import SlackConnect from './misc/connectSlackCard.vue'
     import LinkPreviewCard from '@/common/widgets/resources/previewCard/linkPreviewCard.vue'
@@ -198,10 +203,8 @@
     const emit = defineEmits(['add', 'update', 'remove'])
 
     const wrapper = ref()
-    const addModalRef = ref()
 
     const minimal = computed(() => wrapper.value?.clientWidth < 500)
-    // const placeholderVisible = computed(() => !resources.value?.length)
 
     const {
         addStatus,
@@ -256,4 +259,4 @@
     }
 </script>
 
-<style scoped></style>
+<style scoped lang="less"></style>

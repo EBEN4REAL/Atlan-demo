@@ -44,7 +44,7 @@
 <script lang="ts">
     import { defineComponent, ref } from 'vue'
     import { useVModels } from '@vueuse/core'
-    import { getDeepLinkFromUserDmLink } from '~/composables/integrations/useSlack'
+    import { getDeepLinkFromUserDmLink } from '~/composables/integrations/slack/useSlack'
     import PopOverContent from '~/components/common/formGenerator/popOverContent.vue'
 
     export default defineComponent({

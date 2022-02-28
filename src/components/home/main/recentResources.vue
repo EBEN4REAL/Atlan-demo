@@ -70,7 +70,7 @@
     import {
         isSlackLink,
         getChannelAndMessageIdFromSlackLink,
-    } from '~/composables/integrations/useSlack'
+    } from '~/composables/integrations/slack/useSlack'
     import integrationStore from '~/store/integrations/index'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import AssetTitleCtx from '@/common/widgets/resources/misc/assetTitleContext.vue'

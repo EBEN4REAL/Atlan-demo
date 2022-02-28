@@ -121,8 +121,8 @@
 
             const isBaseTableAdded = computed(() => {
                 return (
-                    activeInlineTab.value.playground.vqb.selectedTables.length >
-                    0
+                    activeInlineTab.value.playground.vqb.selectedTables
+                        ?.length > 0
                 )
             })
             const addTablePanel = () => {

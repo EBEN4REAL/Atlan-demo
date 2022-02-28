@@ -907,8 +907,12 @@ const useGlossaryTree = ({
             const parentStack = recursivelyFindPath(node?.guid)[0]
             const assetToDropParentQf = assetToDrop?.key?.split('_')[0]
             const nodeParentQf = node?.key?.split('_')[0]
-            console.log(assetToDropParentQf === nodeParentQf)
-            if(assetToDropParentQf === nodeParentQf){
+            if (assetToDropParentQf === nodeParentQf) {
+                message.error(
+                    `Term already a part of this category`,
+                    2
+                )
+
                 return
             }
 

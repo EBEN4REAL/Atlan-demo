@@ -191,19 +191,8 @@ const useCollectionAccess = (
         }
     })
 
-    watch(
-        () =>
-            activeInlineTab?.value?.explorer?.queries?.collection
-                ?.qualifiedName,
-        async () => {
-            // console.log('activeInlineTab: ', activeInlineTab.value)
-
-            await fetchSelectedCollectionData()
-        },
-        { deep: true }
-    )
-
     return {
+        fetchSelectedCollectionData,
         isCollectionCreatedByCurrentUser,
         hasCollectionReadPermission,
         hasCollectionWritePermission,

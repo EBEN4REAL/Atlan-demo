@@ -43,7 +43,7 @@
                     :max-size="maxExplorerSize"
                     :size="explorerPaneSize"
                     :min-size="minExplorerSize"
-                    class="relative explorer_splitpane"
+                    class="relative explorer_splitpane vertical_pane"
                 >
                     <!--explorer pane start -->
                     <div
@@ -90,6 +90,7 @@
                     :style="{
                         marginLeft: explorerPaneSize === 0 ? '-1px' : '0px',
                     }"
+                    class="vertical_pane"
                 >
                     <Playground
                         :active-inline-tab-key="activeInlineTabKey"
@@ -102,7 +103,7 @@
                             ? sidebarPaneSize
                             : 0
                     "
-                    class="assetSidebar"
+                    class="assetSidebar vertical_pane"
                     :min-size="sidebarPaneSize"
                     :size="sidebarPaneSize"
                 >
@@ -269,6 +270,7 @@
             )
 
             const {
+                fetchSelectedCollectionData,
                 isCollectionCreatedByCurrentUser,
                 hasCollectionReadPermission,
                 hasCollectionWritePermission,
@@ -388,6 +390,14 @@
             watch(activeInlineTabKey, () => {
                 syncActiveInlineTabKeyInLocalStorage(activeInlineTabKey.value)
                 syncInlineTabsInLocalStorage(toRaw(tabsArray.value))
+                fetchSelectedCollectionData()
+                selectFirstCollectionByDefault(
+                    queryCollections.value,
+                    activeInlineTab,
+                    tabsArray,
+                    false,
+                    undefined
+                )
             })
 
             /* Watcher for all the things changes in activeInline tab */
@@ -445,21 +455,6 @@
                 }
             })
 
-            watch(
-                () =>
-                    activeInlineTab.value?.explorer.queries.collection
-                        .qualifiedName,
-                () => {
-                    // console.log('collection change')
-                    selectFirstCollectionByDefault(
-                        queryCollections.value,
-                        activeInlineTab,
-                        tabsArray,
-                        false,
-                        undefined
-                    )
-                }
-            )
             watch(editorConfig, () => {
                 console.log('editorConfig CHanged')
                 setUserPreferenceToLocalStorage(editorConfig.value)
@@ -775,6 +770,20 @@
             }
 
             onMounted(() => {
+                const horizontalSplitpaneElements =
+                    document.getElementsByClassName('horizontal_splitpane')
+
+                const verticalSplitpaneElements =
+                    document.getElementsByClassName('vertical_pane')
+
+                setTimeout(() => {
+                    Array.from(horizontalSplitpaneElements).forEach((el) => {
+                        el.style.transition = 'height .2s ease-out'
+                    })
+                    Array.from(verticalSplitpaneElements).forEach((el) => {
+                        el.style.transition = 'width .2s ease-out'
+                    })
+                }, 100)
                 fetchQueryCollections()
                 window.addEventListener('keydown', _keyListener)
 
@@ -783,15 +792,6 @@
                     schemaNameFromURL &&
                     tableNameFromURL
                 ) {
-                    // console.log('url params: ', {
-                    //     databaseQualifiedNameFromURL,
-                    //     schemaNameFromURL,
-                    //     tableNameFromURL,
-                    // })
-                    // if (columnNameFromURL.value) {
-                    // } else {
-                    // }
-
                     detectQuery()
                 }
             })
@@ -920,6 +920,9 @@
             -ms-flex-negative: 0;
             z-index: 3 !important;
             flex-shrink: 0;
+        }
+        :global(.splitpanes--vertical .splitpanes__pane) {
+            transition: none;
         }
 
         :global(.splitpanes--vertical > .splitpanes__splitter) {

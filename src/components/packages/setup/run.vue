@@ -1,7 +1,8 @@
 <template>
     <div class="p-6 bg-gray-100 rounded">
-        <div v-if="!run?.status">
-            <a-spin class="mt-1 mr-2" size="small"></a-spin>Loading Run Details
+        <div v-if="!run?.status" class="flex items-center">
+            <AtlanLoader class="h-5 mr-2" />
+            <span>Loading Run Details</span>
         </div>
         <div v-else>
             <div class="flex text-left gap-x-6">

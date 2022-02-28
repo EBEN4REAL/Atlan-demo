@@ -146,7 +146,7 @@
             v-if="isLoading || (!run?.status && runLoading)"
             class="flex flex-col justify-center"
         >
-            <a-spin size="large" />
+            <AtlanLoader class="h-10 mb-2" />
             <div>Setting up your workflow</div>
         </div>
 
@@ -191,7 +191,7 @@
             <template #extra>
                 <div>
                     <Run
-                        v-if="run"
+                        v-if="run && !errorMesssage"
                         :run="run"
                         :is-loading="runLoading || !run?.status?.progress"
                         class="mb-3"
@@ -217,14 +217,19 @@
                     v-if="errorMesssage"
                     class="flex flex-col items-center justify-center p-2 bg-gray-100 rounded gap-y-2"
                 >
-                    <span>{{ errorMesssage }}</span>
-                    <a-button
+                    <span class="text-error">{{ errorMesssage }}</span>
+                    <AtlanButton
                         v-if="status === 'error'"
+                        color="secondary"
+                        padding="compact"
+                        size="sm"
                         @click="handleBackToSetup"
                     >
-                        <AtlanIcon icon="ChevronLeft"></AtlanIcon>
-                        Back to setup
-                    </a-button>
+                        <template #prefix
+                            ><AtlanIcon icon="ChevronLeft"
+                        /></template>
+                        <span class="text-sm">Back to setup</span>
+                    </AtlanButton>
                 </div>
             </template>
         </a-result>
@@ -439,9 +444,20 @@
             watch(runList, () => {
                 if (runList.value?.length > 0) {
                     run.value = runList.value[0]
+
                     if (run.value.status?.phase !== 'Running') {
                         pause()
                     }
+
+                    if (run?.value.status?.phase === 'Succeeded')
+                        setRunState('success', 'Workflow completed 🎉')
+
+                    if (run?.value.status?.phase === 'Failed')
+                        setRunState(
+                            'error',
+                            'Worflow run has failed',
+                            'Go to Monitor Run > Failed Node > Logs for more details'
+                        )
                 }
             })
 
@@ -481,13 +497,21 @@
             )
             const errorMesssage = ref('')
 
+            const setRunState = (st: string, tl = '', sbtl = '', err = '') => {
+                status.value = st
+                title.value = tl
+                subTitle.value = sbtl
+                errorMesssage.value = err
+            }
+
             watch(data, () => {
-                title.value = 'Workflow is in progress'
-                subTitle.value =
+                setRunState(
+                    'success',
+                    'Workflow is in progress',
                     'You can also track the progress of workflows in the Workflow Center'
-                status.value = 'success'
+                )
                 facets.value = {
-                    workflowTemplate: data.value.metadata.name,
+                    workflowTemplate: data.value?.metadata.name,
                 }
                 fetchRun()
                 resume()
@@ -495,11 +519,12 @@
 
             watch(error, () => {
                 if (error.value) {
-                    status.value = 'error'
-                    title.value = 'Workflow setup has failed'
-                    subTitle.value =
-                        'Something went wrong during setup process. Reach out to support@atlan.com for any help.'
-                    errorMesssage.value = error.value?.response?.data?.message
+                    setRunState(
+                        'error',
+                        'Workflow setup has failed',
+                        'Something went wrong during setup process. Reach out to support@atlan.com for any help.',
+                        error.value?.response?.data?.message
+                    )
                 }
             })
 
@@ -664,10 +689,11 @@
                         )
 
                         watchOnce(nrd, () => {
-                            run.value = undefined
-                            title.value = 'Workflow is in progress'
-                            subTitle.value = ''
-                            status.value = 'success'
+                            setRunState(
+                                'success',
+                                'Workflow is in progress',
+                                'Workflow is running with the updated configuration'
+                            )
                             facets.value = {
                                 runName: nrd.value.metadata.name,
                             }
@@ -675,9 +701,12 @@
                         })
 
                         watchOnce(nre, () => {
-                            title.value = 'Workflow run has failed'
-                            subTitle.value = ''
-                            status.value = 'error'
+                            setRunState(
+                                'error',
+                                'Workflow run has failed',
+                                '',
+                                nre.value
+                            )
                         })
                     }
                 } else {

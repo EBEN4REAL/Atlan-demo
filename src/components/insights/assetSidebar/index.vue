@@ -11,12 +11,8 @@
         </div>
 
         <AssetPreview
-            v-if="!assetLoading"
-            :selected-asset="
-                Object.keys(assetInfo)?.length
-                    ? assetInfo
-                    : tabs[selectedIndex].assetSidebar?.assetInfo
-            "
+            v-if="!assetLoading && tabs[selectedIndex].assetSidebar.assetInfo"
+            :selected-asset="tabs[selectedIndex].assetSidebar.assetInfo"
             page="insights"
         ></AssetPreview>
         <Loader v-else />
@@ -128,7 +124,8 @@
                                 data.value?.entities?.length > 0
                             ) {
                                 // console.log('updated asset data: ', data.value)
-                                assetInfo.value = data.value.entities[0]
+                                activeInlineTab.value.assetSidebar.assetInfo =
+                                    data.value.entities[0]
                             } else {
                                 assetInfo.value = {}
                             }
@@ -158,11 +155,6 @@
             ) as Ref<Object>
 
             const updateList = (asset) => {
-                // let activeInlineTabCopy: activeInlineTabInterface = JSON.parse(
-                //     JSON.stringify(toRaw(activeInlineTab.value))
-                // )
-                // console.log('updated asset: ', asset)
-
                 let activeInlineTabCopy: activeInlineTabInterface = JSON.parse(
                     JSON.stringify(toRaw(activeInlineTab.value))
                 )
@@ -171,7 +163,13 @@
                 assetSidebarUpdatedData.value = asset
 
                 if (asset?.typeName === 'Query') {
-                    if (activeInlineTabCopy.queryId === asset?.guid) {
+                    const activeTabIndex = tabs.value.findIndex(
+                        (tab) => tab.queryId === asset?.guid
+                    )
+                    if (activeTabIndex > -1) {
+                        activeInlineTabCopy = JSON.parse(
+                            JSON.stringify(toRaw(tabs.value[activeTabIndex]))
+                        )
                         activeInlineTabCopy = {
                             ...activeInlineTabCopy,
                             updateTime:
@@ -187,9 +185,11 @@
                         }
                         activeInlineTabCopy.assetSidebar.assetInfo = asset
                     }
+                    // assetInfo.value = asset
                     modifyActiveInlineTab(activeInlineTabCopy, tabs, true, true)
                 } else {
                     activeInlineTabCopy.assetSidebar.assetInfo = asset
+                    // assetInfo.value = asset
                     modifyActiveInlineTab(activeInlineTabCopy, tabs, true, true)
                 }
                 // console.log('old data update: ', asset)

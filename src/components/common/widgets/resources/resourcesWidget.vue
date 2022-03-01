@@ -65,11 +65,11 @@
                 </AddResource>
             </div>
         </template>
-        <section class="overflow-y-auto">
+        <div>
             <template v-if="!resources?.length">
                 <template v-if="$slots?.placeholder">
                     <slot name="placeholder" />
-                    <div class="mt-5">
+                    <div>
                         <AddResource @add="addCallback">
                             <template #trigger>
                                 <AtlanButton class="mx-auto"
@@ -134,7 +134,7 @@
                     </template>
                 </div>
             </template>
-        </section>
+        </div>
     </div>
 </template>
 

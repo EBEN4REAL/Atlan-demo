@@ -53,6 +53,7 @@
                                 }`"
                                 :classes="'w-full '"
                                 placement="right"
+                                mouseLeaveDelay="0"
                             />
                         </div>
                     </div>
@@ -79,6 +80,7 @@
                 <Tooltip
                     ref="tooltipRef"
                     :tooltip-text="`${displayText}`"
+                    mouseLeaveDelay="0"
                     :classes="`  hover:text-primary  align-text-bottom  ${
                         size === 'default'
                             ? 'text-base font-bold  mt-0.5'

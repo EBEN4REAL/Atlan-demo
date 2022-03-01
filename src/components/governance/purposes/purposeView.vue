@@ -323,7 +323,7 @@
                         }
                     }
                 },
-                { immediate: true }
+                { immediate: false }
             )
 
             onMounted(() => {

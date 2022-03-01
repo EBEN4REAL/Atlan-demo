@@ -93,15 +93,42 @@
                         </div>
                     </div>
                     <div class="relative mt-4 bg-white shadow-section">
-                        <div
-                            class="p-3 text-sm font-bold text-gray-700 border-b"
-                        >
-                            Users and Groups<span class="ml-1 text-red-500"
-                                >*</span
+                        <div class="flex justify-between p-3 border-b">
+                            <div class="text-sm font-bold text-gray-700">
+                                Users and Groups<span class="ml-1 text-red-500"
+                                    >*</span
+                                >
+                            </div>
+                            <div
+                                v-if="!allUser"
+                                class="cursor-pointer"
+                                @click="addAllUser"
                             >
+                                <span class="text-sm text-primary">
+                                    Include all
+                                </span>
+                                <AtlanIcon
+                                    icon="Add"
+                                    class="w-4 h-4 -mt-1 text-primary"
+                                />
+                            </div>
                         </div>
                         <div class="relative p-3 overflow-y-scroll max-h-52">
+                            <div
+                                v-if="allUser"
+                                class="flex items-center justify-between w-24 px-2 py-1 border border-gray-200 rounded-full"
+                                :class="'hover:bg-primary-light cursor-pointer'"
+                            >
+                                <span class="asset-name"> All users </span>
+
+                                <AtlanIcon
+                                    icon="Cross"
+                                    class="h-3 ml-3 text-red-500 rotate-45"
+                                    @click="allUser = ''"
+                                />
+                            </div>
                             <Owners
+                                v-else
                                 :ref="
                                     (el) => {
                                         refOwners = el
@@ -445,6 +472,7 @@
             // const { scopeList } = useScopeService().listScopes('persona')
             const { scopeList } = useScopeService().listScopes('purpose')
             const policyType = ref('')
+            const allUser = ref('all-users')
             const refOwners = ref()
             const isShow = ref(false)
             const policyNameRef = ref()
@@ -455,7 +483,13 @@
                 ownerUsers: [],
                 ownerGroups: [],
             })
-
+            const addAllUser = () => {
+                allUser.value = 'all-users'
+                selectedOwnersData.value = {
+                    ownerUsers: [],
+                    ownerGroups: [],
+                }
+            }
             const rules = ref({
                 policyName: {
                     text: 'Enter a policy name!',
@@ -679,6 +713,8 @@
                 selectedOwnersData,
                 handleOwnersChange,
                 refOwners,
+                allUser,
+                addAllUser,
             }
         },
     })

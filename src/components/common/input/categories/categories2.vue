@@ -48,7 +48,7 @@
                             </div>
                             <Tooltip
                                 :tooltip-text="item.title"
-                                mouseLeaveDelay="0"
+                                :mouseLeaveDelay="0"
                                 classes="cursor-pointer   "
                                 @click="(e) => e.stopPropagation()"
                             />
@@ -124,7 +124,7 @@
                     </div>
                     <Tooltip
                         :tooltip-text="category.label"
-                        mouseLeaveDelay="0"
+                        :mouseLeaveDelay="0"
                         classes="cursor-pointer text-gray-700 hover:text-white ml-0.5 group-hover:text-white"
                         @click="(e) => e.stopPropagation()"
                     />

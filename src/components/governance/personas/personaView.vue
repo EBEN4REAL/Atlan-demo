@@ -1,5 +1,5 @@
 <template>
-    <div v-if="true" class="flex flex-col px-6 py-7">
+    <div v-if="true" class="flex flex-col h-full px-6 py-7">
         <a-drawer
             :visible="drawerFilter"
             :mask="false"
@@ -75,10 +75,10 @@
                 />
             </div>
         </a-modal>
-        <span class="text-xl">Personas</span>
 
         <a-spin v-if="isPersonaLoading" class="mx-auto my-auto" size="large" />
-        <div v-else>
+        <div v-else-if="personaList && personaList.length" class="h-full">
+            <span class="text-xl">Personas</span>
             <!-- search & filter -->
             <div class="flex justify-between">
                 <div class="w-1/3 mt-4">
@@ -130,7 +130,10 @@
                 </a-button>
             </div>
             <!-- persona cards -->
-            <div class="flex flex-wrap mt-7 gap-x-3 gap-y-6">
+            <div
+                v-if="filteredPersonas && filteredPersonas.length"
+                class="flex flex-wrap gap-x-3 gap-y-6 mt-7"
+            >
                 <PersonaCard
                     v-for="persona in filteredPersonas"
                     :key="persona.id"
@@ -138,7 +141,68 @@
                     @select="selectPersona"
                 ></PersonaCard>
             </div>
+            <div
+                v-else
+                class="flex flex-col items-center justify-center h-full"
+            >
+                <component :is="NewPolicyIllustration"></component>
+                <span class="mt-3 text-lg">No personas found</span>
+                <!-- <a-button type="primary">Clear filters</a-button> -->
+            </div>
         </div>
+
+        <div
+            v-else-if="
+                (personaList === null || personaList?.length == 0) &&
+                isPersonaError === undefined
+            "
+            class="flex flex-col items-center h-full"
+        >
+            <component :is="AddPersonaIllustration" class="mt-7"></component>
+            <div class="mt-6 text-2xl font-bold text-gray-700">
+                Start Creating Personas
+            </div>
+            <span class="mx-auto text-base text-gray-500 sub-title-empty-state"
+                >Persona management keeps your data assets safe by ensuring that
+                the right people have access to the right data.</span
+            >
+            <a-button
+                class="flex-none mx-auto mt-8"
+                type="primary"
+                data-test-id="add-new-persona"
+                @click.prevent="() => (modalVisible = true)"
+            >
+                <template #prefix>
+                    <AtlanIcon icon="Add" />
+                </template>
+                Get started
+            </a-button>
+            <div class="mt-5 cursor-pointer text-primary">
+                <a
+                    href="https://ask.atlan.com/hc/en-us/articles/4413870860049-What-are-personas-"
+                    target="_blank"
+                >
+                    Learn More <AtlanIcon icon="ArrowRight" />
+                </a>
+            </div>
+        </div>
+        <ErrorView v-else :error="isPersonaError">
+            <div class="mt-3">
+                <a-button
+                    data-test-id="try-again"
+                    size="large"
+                    type="primary"
+                    ghost
+                    @click="
+                        () => {
+                            reFetchList()
+                        }
+                    "
+                >
+                    <fa icon="fal sync" class="mr-2"></fa>Try again
+                </a-button>
+            </div>
+        </ErrorView>
     </div>
     <ExplorerLayout
         v-else
@@ -357,6 +421,7 @@
     import PersonaCard from '@/governance/personas/discovery/personaCard.vue'
     import AssetFilters from '@/common/assets/filters/index.vue'
     import { personaFilter } from '~/constant/filters/logsFilter'
+    import NewPolicyIllustration from '~/assets/images/illustrations/new_policy.svg'
 
     export default defineComponent({
         name: 'PersonaView',
@@ -430,14 +495,18 @@
                 // }
             }
 
-            // onMounted(() => {
-            //     console.log('rohan', filteredPersonas?.value?.length)
-            //     if (!route.params.id && filteredPersonas?.value?.length) {
-            //         const id = filteredPersonas.value[0].id!
-            //         selectedPersonaId.value = id
-            //         router.replace(`/governance/personas/${id}`)
-            //     }
-            // })
+            onMounted(() => {
+                if (personaList?.value?.length) {
+                    if (route.params.id) {
+                        const find = personaList.value.find(
+                            (el) => el.id === route.params.id
+                        )
+                        if (find) {
+                            selectedPersonaId.value = route.params.id
+                        }
+                    }
+                }
+            })
 
             watch(
                 isPersonaListReady,
@@ -516,6 +585,8 @@
                 connectorsData,
                 handleFilterChange,
                 handleResetEvent,
+                NewPolicyIllustration,
+                personaList,
             }
         },
     })

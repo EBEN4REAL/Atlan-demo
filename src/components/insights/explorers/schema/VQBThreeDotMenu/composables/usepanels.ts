@@ -97,10 +97,10 @@ export function addFilter(
         }
         activeInlineTab.value.playground.vqb.panels.push(panel)
     }
-    useAddEvent('insights', 'query', 'panelAdd', {
-        panel_type: 'filter',
-        panel_source: 'schema explorer',
-    })
+    // useAddEvent('insights', 'query', 'panelAdd', {
+    //     panel_type: 'filter',
+    //     panel_source: 'schema explorer',
+    // })
 }
 
 export function addAggregate(
@@ -189,10 +189,10 @@ export function addAggregate(
         }
         activeInlineTab.value.playground.vqb.panels.push(panel)
     }
-    useAddEvent('insights', 'query', 'panelAdd', {
-        panel_type: 'aggregate',
-        panel_source: 'schema explorer',
-    })
+    // useAddEvent('insights', 'query', 'panelAdd', {
+    //     panel_type: 'aggregate',
+    //     panel_source: 'schema explorer',
+    // })
 }
 
 function getTableQualifiedNameFromColumnQualifiedName(
@@ -278,10 +278,10 @@ export function addGroup(
         }
         activeInlineTab.value.playground.vqb.panels.push(panel)
     }
-    useAddEvent('insights', 'query', 'panelAdd', {
-        panel_type: 'group',
-        panel_source: 'schema explorer',
-    })
+    // useAddEvent('insights', 'query', 'panelAdd', {
+    //     panel_type: 'group',
+    //     panel_source: 'schema explorer',
+    // })
 }
 export function addTable(
     activeInlineTab: Ref<activeInlineTabInterface>,
@@ -343,10 +343,10 @@ export function addTable(
             },
         ]
     }
-    useAddEvent('insights', 'query', 'panelAdd', {
-        panel_type: 'columns',
-        panel_source: 'schema explorer',
-    })
+    // useAddEvent('insights', 'query', 'panelAdd', {
+    //     panel_type: 'columns',
+    //     panel_source: 'schema explorer',
+    // })
 }
 
 function getTableNameFromColumnQualifiedName(columnQualifiedName: string) {
@@ -562,8 +562,8 @@ export function addJoin(
 
         activeInlineTab.value.playground.vqb.panels.push(panel)
     }
-    useAddEvent('insights', 'query', 'panelAdd', {
-        panel_type: 'join',
-        panel_source: 'schema explorer',
-    })
+    // useAddEvent('insights', 'query', 'panelAdd', {
+    //     panel_type: 'join',
+    //     panel_source: 'schema explorer',
+    // })
 }

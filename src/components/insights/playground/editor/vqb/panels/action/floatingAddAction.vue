@@ -143,10 +143,10 @@
                 collapseAllPanelsExceptCurrent(panelInfo.value, activeInlineTab)
                 emit('add', type, panel)
                 syncSortAggregateAndGroupPanel(activeInlineTab)
-                useAddEvent('insights', 'query', 'panelAdd', {
-                    panel_type: type,
-                    panel_source: 'action menu',
-                })
+                // useAddEvent('insights', 'query', 'panelAdd', {
+                //     panel_type: type,
+                //     panel_source: 'action menu',
+                // })
             }
             return {
                 isContextTableSelected,

@@ -103,7 +103,7 @@
                             :edit-permission="true"
                         >
                             <a-button class="flex items-center justify-center">
-                                <AtlanIcon icon="Share" class="mb-0.5" />
+                                <AtlanIcon :icon="action.icon" class="mb-0.5" />
                             </a-button>
                         </component>
                         <template v-else>
@@ -111,6 +111,8 @@
                                 <QueryDropdown
                                     v-if="
                                         showCTA(action.id) &&
+                                        connectorName(selectedAsset) !==
+                                            'glue' &&
                                         action.id === 'query' &&
                                         (assetType(selectedAsset) === 'Table' ||
                                             assetType(selectedAsset) === 'View')
@@ -141,6 +143,19 @@
                             </a-tooltip>
                         </template>
                     </template>
+                    <KebabMenu
+                        :asset="selectedAsset"
+                        :edit-permission="
+                            selectedAssetUpdatePermission(
+                                selectedAsset,
+                                isDrawer
+                            )
+                        "
+                    >
+                        <a-button class="flex items-center justify-center">
+                            <AtlanIcon icon="KebabMenu" class="mb-0.5" />
+                        </a-button>
+                    </KebabMenu>
                     <template v-if="!disableSlackAsk && linkEditPermission">
                         <SlackAskButton :asset="selectedAsset" />
                     </template>
@@ -246,6 +261,7 @@
     import useEvaluate from '~/composables/auth/useEvaluate'
     import useAssetEvaluate from '~/composables/discovery/useAssetEvaluation'
     import ShareMenu from '@/common/assets/misc/shareMenu.vue'
+    import KebabMenu from '@/common/assets/misc/kebabMenu.vue'
     import NoAccess from '@/common/assets/misc/noAccess.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import useCollectionInfo from '~/components/insights/explorers/queries/composables/useCollectionInfo'
@@ -268,7 +284,7 @@
             NoAccess,
             Tooltip,
             QueryDropdown,
-
+            KebabMenu,
             info: defineAsyncComponent(() => import('./info/index.vue')),
             columns: defineAsyncComponent(() => import('./columns/index.vue')),
             actions: defineAsyncComponent(() => import('./actions/index.vue')),

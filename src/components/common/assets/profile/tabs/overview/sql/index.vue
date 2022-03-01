@@ -14,7 +14,11 @@
                 <RaisedTab
                     v-model:active="activePreviewTabKey"
                     class="flex-none flex-grow-0 mb-4 mr-auto"
-                    :data="tabConfig"
+                    :data="
+                        connectorName(selectedAsset) === 'glue'
+                            ? [{ key: 'column', label: 'Column Preview' }]
+                            : tabConfig
+                    "
                 />
 
                 <OverviewColumns v-if="activePreviewTabKey === 'column'" />
@@ -41,7 +45,6 @@
     import Summary from '@common/widgets/summary/index.vue'
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import Readme from '@/common/widgets/readme/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import RaisedTab from '@/UI/raisedTab.vue'
 
@@ -72,6 +75,8 @@
         setup(props) {
             const { selectedAsset } = toRefs(props)
 
+            const { connectorName } = useAssetInfo()
+
             const activePreviewTabKey: Ref<'column' | 'table'> = ref('column')
             const tabConfig = [
                 { key: 'column', label: 'Column Preview' },
@@ -81,6 +86,7 @@
             return {
                 activePreviewTabKey,
                 tabConfig,
+                connectorName,
             }
         },
     })

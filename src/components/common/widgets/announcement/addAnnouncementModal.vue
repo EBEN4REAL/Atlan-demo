@@ -103,6 +103,11 @@
                 required: false,
                 default: false,
             },
+            editPermission: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
         },
         setup(props) {
             const { asset } = toRefs(props)
@@ -117,7 +122,7 @@
 
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
 
-            const { updating } = toRefs(props)
+            const { updating, editPermission } = toRefs(props)
 
             const { isLoading, localAnnouncement, handleAnnouncementUpdate } =
                 updateAssetAttributes(asset)
@@ -156,9 +161,11 @@
             }
 
             const showModal = async () => {
-                visible.value = true
-                await nextTick()
-                titleBar.value?.focus()
+                if (editPermission.value) {
+                    visible.value = true
+                    await nextTick()
+                    titleBar.value?.focus()
+                }
             }
 
             const handleMenuClick = (announcement) => {

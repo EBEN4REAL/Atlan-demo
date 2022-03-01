@@ -36,7 +36,11 @@
             </MinimalTab>
         </div>
 
-        <div v-if="activeTabKey === 'details'" class="p-6 overflow-y-auto">
+        <div
+            v-if="activeTabKey === 'details'"
+            class="p-6 overflow-y-auto"
+            style="max-height: 91%"
+        >
             <PurposeMeta
                 class="flex flex-col"
                 :persona="persona"

@@ -406,7 +406,8 @@
             height: calc(100% - 100px);
         }
         .ant-modal-body {
-            height: calc(100% - 66px);
+            // height: calc(100% - 66px);
+            height: calc(100% - 50px);
             overflow-y: hidden;
             border-radius: 4px;
         }

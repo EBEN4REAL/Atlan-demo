@@ -320,39 +320,21 @@
                                         ></AtlanIcon>
                                     </div>
                                     <template #overlay>
-                                        <a-menu class="py-2">
+                                        <a-menu
+                                            class="py-2 text-gray-700"
+                                            style="min-width: 180px"
+                                        >
                                             <a-menu-item
                                                 class="px-4 py-2 text-sm"
-                                                key="rename"
-                                                @click="renameFolder"
-                                                >Rename query</a-menu-item
+                                                key="schedule"
+                                                @click="scheduleQuery"
+                                                >Schedule</a-menu-item
                                             >
-
                                             <a-menu-item
-                                                key="edit"
-                                                class="px-4 py-2 text-sm"
-                                                @click="
-                                                    () => {
-                                                        removeBackground()
-                                                        actionClick(
-                                                            'info',
-                                                            item
-                                                        )
-                                                    }
-                                                "
-                                                >Edit query</a-menu-item
-                                            >
-
-                                            <a-menu-item
-                                                key="ChangeFolder"
-                                                class="px-4 py-2 text-sm"
-                                                @click="
-                                                    () => {
-                                                        removeBackground()
-                                                        showFolderPopover = true
-                                                    }
-                                                "
-                                                >Move query</a-menu-item
+                                                key="shareQuery"
+                                                class="px-4 py-2 text-sm border-b border-gray-300"
+                                                @click="copyURL"
+                                                >Copy link</a-menu-item
                                             >
                                             <a-menu-item
                                                 key="duplicate"
@@ -366,14 +348,43 @@
                                                         )
                                                     }
                                                 "
-                                                >Duplicate query</a-menu-item
+                                                >Duplicate</a-menu-item
                                             >
+
                                             <a-menu-item
-                                                key="shareQuery"
-                                                class="px-4 py-2 text-sm"
-                                                @click="copyURL"
-                                                >Copy link</a-menu-item
+                                                key="ChangeFolder"
+                                                class="px-4 py-2 text-sm border-b border-gray-300"
+                                                @click="
+                                                    () => {
+                                                        removeBackground()
+                                                        showFolderPopover = true
+                                                    }
+                                                "
+                                                >Move Query</a-menu-item
                                             >
+
+                                            <a-menu-item
+                                                class="px-4 py-2 text-sm"
+                                                key="rename"
+                                                @click="renameFolder"
+                                                >Rename</a-menu-item
+                                            >
+
+                                            <a-menu-item
+                                                key="edit"
+                                                class="px-4 py-2 text-sm border-b border-gray-300"
+                                                @click="
+                                                    () => {
+                                                        removeBackground()
+                                                        actionClick(
+                                                            'info',
+                                                            item
+                                                        )
+                                                    }
+                                                "
+                                                >Edit</a-menu-item
+                                            >
+
                                             <a-menu-item
                                                 key="deleteFolder"
                                                 class="px-4 py-2 text-sm text-red-600"
@@ -383,7 +394,7 @@
                                                         showDeletePopover = true
                                                     }
                                                 "
-                                                >Delete query</a-menu-item
+                                                >Delete</a-menu-item
                                             >
                                         </a-menu>
                                     </template>
@@ -1173,6 +1184,8 @@
                 })
             }
 
+            const scheduleQuery = () => {}
+
             let isDeleteLoading = ref(false)
 
             const pushGuidToURL = (guid: string | undefined) => {
@@ -1495,6 +1508,7 @@
             }
 
             return {
+                scheduleQuery,
                 evaluatePermisson,
                 permissions,
                 canUserDeleteFolder,

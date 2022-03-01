@@ -3,22 +3,26 @@ import { usePurposeStore } from '~/store/purpose'
 import usePurpose from '~/composables/purpose/usePurpose'
 import { Purpose } from '~/services/service/purpose'
 
-
 const purposeStore = usePurposeStore()
 const { updatePurpose: handleUpdateList } = purposeStore
 const { getList: purposeList } = toRefs(purposeStore)
 
-const { mutate: reFetchList, isLoading: isPurposeLoading, error: isPurposeError, isReady: isPurposeListReady } = usePurpose(false)
+const {
+    mutate: reFetchList,
+    isLoading: isPurposeLoading,
+    error: isPurposeError,
+    isReady: isPurposeListReady,
+} = usePurpose(false)
 
 const refetchPurpose = (id) => {
-    const { data, isLoading, isReady, error, mutate } = Purpose.getPurposeByID(id)
+    const { data, isLoading, isReady, error, mutate } =
+        Purpose.getPurposeByID(id)
     watch([data, error], () => {
         if (data?.value) {
             handleUpdateList(data.value)
         }
     })
 }
-
 
 export {
     reFetchList,
@@ -27,7 +31,7 @@ export {
     isPurposeListReady,
     isPurposeLoading,
     isPurposeError,
-    handleUpdateList
+    handleUpdateList,
 }
 
 // Selected purpose Details
@@ -45,12 +49,12 @@ watch(
             return
         }
         selectedPurpose.value = undefined
-
     },
     { immediate: true, deep: true }
 )
 // Filtered Purpose List
 export const searchTerm = ref('')
+export const facets = ref({})
 export const filteredPurposes = computed(() => {
     if (searchTerm.value) {
         return purposeList.value.filter((ps) =>
@@ -61,4 +65,3 @@ export const filteredPurposes = computed(() => {
     }
     return purposeList.value || []
 })
-

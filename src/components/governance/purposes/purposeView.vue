@@ -1,126 +1,162 @@
 <template>
-    <ExplorerLayout
-        title="Purpose"
-        sub-title=""
-        :sidebar-visibility="Boolean(selectedPurposeId)"
-    >
-        <template #sidebar>
-            <div class="flex items-center px-4 mb-3">
-                <SearchAndFilter
-                    v-model:value="searchTerm"
-                    :placeholder="`Search ${
-                        filteredPurposes?.length ?? 0
-                    } purposes`"
-                    class="mt-0 bg-white"
-                    :autofocus="true"
-                    size="minimal"
-                >
-                </SearchAndFilter>
-                <a-tooltip>
-                    <template #title>New Purpose</template>
-                    <AtlanBtn
-                        :disabled="isEditing"
-                        class="flex-none px-2 ml-4"
-                        size="sm"
-                        color="secondary"
-                        padding="compact"
-                        data-test-id="add-purpose"
-                        @click="() => (modalVisible = true)"
-                    >
-                        <AtlanIcon icon="Add" /> </AtlanBtn
-                ></a-tooltip>
-            </div>
-
-            <ExplorerList
-                v-model:selected="selectedPurposeId"
-                type="purposes"
-                :disabled="isEditing"
-                :list="filteredPurposes"
-                data-key="id"
+    <div v-if="true" class="flex flex-col h-full px-6 py-7">
+        <a-drawer
+            :visible="drawerFilter"
+            :mask="false"
+            :placement="'left'"
+            style="width: 17%"
+            :closable="false"
+            :class="'drawer-filter-request'"
+        >
+            <div
+                class="relative h-full pb-10 overflow-scroll bg-gray-50"
+                :class="$style['request-filter-wrapper']"
             >
-                <template #default="{ item, isSelected }">
-                    <div
-                        class="flex items-center justify-between w-full"
-                        @click="handleSelectPurpose(item)"
+                <div
+                    v-if="drawerFilter"
+                    class="close-btn-sidebar button-close-drawer-request"
+                    @click="handleClickFilter"
+                >
+                    <AtlanIcon icon="Add" class="text-white" />
+                </div>
+                <div class="filter-container">
+                    <AssetFilters
+                        v-model="facets"
+                        :filter-list="purposeFilter"
+                        :allow-custom-filters="false"
+                        :no-filter-title="'No filters applied'"
+                        :extra-count-filter="
+                            connectorsData.attributeValue ? 1 : 0
+                        "
+                        class="bg-gray-100 drawer-request"
+                        @change="handleFilterChange"
+                        @reset="handleResetEvent"
                     >
-                        <div
-                            class="flex flex-col"
-                            :data-test-id="item.displayName"
-                        >
-                            <span
-                                class="text-sm capitalize truncate"
-                                :class="
-                                    isSelected
-                                        ? 'text-primary font-semibold'
-                                        : 'text-gray-700 hover:text-primary hover:font-semibold'
-                                "
-                                style="max-width: 190px"
-                            >
-                                {{ item.displayName }}
-                            </span>
-                            <div class="flex gap-x-1">
-                                <span
-                                    v-if="item.tags.length > 0"
-                                    class="text-sm text-gray-500"
-                                >
-                                    {{ item.tags.length }}
-                                    classifications</span
-                                >
-
-                                <span
-                                    v-if="
-                                        item.dataPolicies.length > 0 ||
-                                        item.metadataPolicies.length > 0
-                                    "
-                                    class="text-sm text-gray-500"
-                                >
-                                    {{
-                                        item.metadataPolicies.length +
-                                        item.dataPolicies.length
-                                    }}
-                                    policies</span
-                                >
-                            </div>
-
-                            <!-- <div class="w-1.5 h-1.5 rounded-full success"></div> -->
-                        </div>
-                        <a-tooltip
-                            v-if="item.description"
-                            tabindex="-1"
-                            :title="item.description"
-                            placement="right"
-                        >
-                            <span
-                                ><AtlanIcon icon="Info" class="ml-1"></AtlanIcon
-                            ></span>
-                        </a-tooltip>
-                    </div>
-                </template>
-            </ExplorerList>
-        </template>
-
+                    </AssetFilters>
+                </div>
+            </div>
+        </a-drawer>
         <AddPurpose
             v-model:visible="modalVisible"
             v-model:persona="selectedPurpose"
             :persona-list="purposeList"
         />
-
+        <a-modal
+            v-model:visible="purposeViewModalVisible"
+            :destroyOnClose="true"
+            :closable="false"
+            width="80%"
+            wrapClassName="persona-modal"
+            :centered="true"
+            :maskClosable="true"
+            @cancel="closePurposeViewModal"
+        >
+            <template #title>
+                <PurposeHeader
+                    v-model:openEditModal="openEditModal"
+                    :persona="selectedPurpose"
+                />
+            </template>
+            <template #footer>
+                <div style="display: none">
+                    <div class="flex items-center justify-between pb-1">
+                        <slot name="footerLeft"></slot>
+                        <div
+                            class="flex items-center justify-end w-full space-x-3"
+                        >
+                            <!-- Hi -->
+                        </div>
+                    </div>
+                </div>
+            </template>
+            <div class="h-full bg-primary-light">
+                <PurposeBody
+                    v-model:persona="selectedPurpose"
+                    :whitelisted-connection-ids="whitelistedConnectionIds"
+                    @selectPolicy="handleSelectPolicy"
+                    @editDetails="openEditModal = true"
+                />
+            </div>
+        </a-modal>
         <a-spin v-if="isPurposeLoading" class="mx-auto my-auto" size="large" />
-        <template v-else-if="selectedPurpose">
-            <PurposeHeader
-                v-model:openEditModal="openEditModal"
-                :persona="selectedPurpose"
-            />
-            <PurposeBody
-                v-model:persona="selectedPurpose"
-                :whitelisted-connection-ids="whitelistedConnectionIds"
-                @selectPolicy="handleSelectPolicy"
-                @editDetails="openEditModal = true"
-            />
-        </template>
+        <div v-else-if="purposeList && purposeList.length" class="h-full">
+            <span class="text-xl">Purposes</span>
+
+            <!-- search & filter -->
+            <div class="flex justify-between">
+                <div class="w-1/3 mt-4">
+                    <SearchAndFilter
+                        v-model:value="searchTerm"
+                        :placeholder="`Search ${
+                            filteredPurposes?.length ?? 0
+                        } purposes`"
+                        class="max-w-lg shadow-none filter-request"
+                        :autofocus="true"
+                        size="default"
+                    >
+                        <template #categoryFilterRight>
+                            <div class="relative flex items-center">
+                                <AtlanBtn
+                                    color="secondary"
+                                    class="px-2 border-l rounded-tl-none rounded-bl-none cursor-pointer filter-button"
+                                    :class="{
+                                        'text-primary border rounded py-1 border-primary':
+                                            drawerFilter,
+                                    }"
+                                    @click="handleClickFilter"
+                                >
+                                    <AtlanIcon
+                                        icon="FilterFunnel"
+                                        class="w-4 h-4"
+                                    />
+                                </AtlanBtn>
+                                <div
+                                    class="absolute border-r divide-gray-800 divider-filter"
+                                    :class="{
+                                        'text-primary border-r rounded border-primary top-0':
+                                            drawerFilter,
+                                    }"
+                                />
+                            </div>
+                        </template>
+                    </SearchAndFilter>
+                </div>
+                <a-button
+                    padding="compact"
+                    size="sm"
+                    type="primary"
+                    :disabled="isEditing"
+                    data-test-id="add-persona"
+                    @click="() => (modalVisible = true)"
+                >
+                    <AtlanIcon icon="Add" />New Purpose
+                </a-button>
+            </div>
+            <!-- persona cards -->
+            <div
+                v-if="filteredPurposes && filteredPurposes.length"
+                class="grid grid-cols-4 gap-4 gap-y-6 mt-7"
+            >
+                <PurposeCard
+                    v-for="persona in filteredPurposes"
+                    :key="persona.id"
+                    :purpose="persona"
+                    @select="selectPurpose"
+                ></PurposeCard>
+            </div>
+            <div
+                v-else
+                class="flex flex-col items-center justify-center h-full"
+            >
+                <component :is="NewPolicyIllustration"></component>
+                <span class="mt-3 text-lg">No personas found</span>
+                <!-- <a-button type="primary">Clear filters</a-button> -->
+            </div>
+        </div>
+
         <div
             v-else-if="
-                (filteredPurposes === null || filteredPurposes?.length == 0) &&
+                (purposeList === null || purposeList?.length == 0) &&
                 isPurposeError === undefined
             "
             class="flex flex-col items-center h-full"
@@ -134,10 +170,9 @@
                 groups can view, edit or query assets tagged with that
                 Classification.</span
             >
-            <AtlanBtn
+            <a-button
                 class="flex-none mx-auto mt-8"
-                color="primary"
-                padding="compact"
+                type="primary"
                 data-test-id="add-new-purpose"
                 size="sm"
                 @click.prevent="() => (modalVisible = true)"
@@ -146,7 +181,7 @@
                     <AtlanIcon icon="Add" />
                 </template>
                 Get started
-            </AtlanBtn>
+            </a-button>
             <div class="mt-5 cursor-pointer text-primary">
                 <a
                     href="https://ask.atlan.com/hc/en-us/articles/4418690792849-What-are-Purposes-in-Atlan-"
@@ -173,7 +208,7 @@
                 </a-button>
             </div>
         </ErrorView>
-    </ExplorerLayout>
+    </div>
 </template>
 
 <script lang="ts">
@@ -198,23 +233,28 @@
         isPurposeListReady,
         isPurposeLoading,
         isPurposeError,
+        facets,
     } from './composables/usePurposeList'
     import { isEditing } from './composables/useEditPurpose'
     import AddPersonaIllustration from '~/assets/images/empty_state_policyV2.svg'
     import ErrorIllustration from '~/assets/images/error.svg'
     import { useAuthStore } from '~/store/auth'
+    import { purposeFilter } from '~/constant/filters/logsFilter'
+    import NewPolicyIllustration from '~/assets/images/illustrations/new_policy.svg'
+    import PurposeCard from '@/governance/purposes/discovery/purposeCard.vue'
 
     export default defineComponent({
         name: 'PurposeView',
         components: {
             ErrorView,
-            AtlanBtn,
+            // AtlanBtn,
             SearchAndFilter,
             PurposeBody,
             PurposeHeader,
             ExplorerLayout,
             ExplorerList,
             AddPurpose,
+            PurposeCard,
         },
         setup() {
             const router = useRouter()
@@ -225,6 +265,12 @@
             const authStore = useAuthStore()
             const { roles } = storeToRefs(authStore)
             const openEditModal = ref(false)
+            const drawerFilter = ref(false)
+
+            const connectorsData = ref({
+                attributeName: undefined,
+                attributeValue: undefined,
+            })
 
             const handleCloseModalDetailPolicy = () => {
                 modalDetailPolicyVisible.value = false
@@ -235,9 +281,34 @@
             }
             const whitelistedConnectionIds = ref([])
 
-            const handleSelectPurpose = (purpose) => {
-                router.replace(`/governance/purposes/${purpose.id}`)
+            const selectPurpose = (purpose) => {
+                selectedPurposeId.value = purpose.id
             }
+
+            const closePurposeViewModal = () => {
+                selectedPurposeId.value = ''
+            }
+
+            // eslint-disable-next-line arrow-body-style
+            const purposeViewModalVisible = ref(false)
+            const handleClickFilter = () => {
+                drawerFilter.value = !drawerFilter.value
+            }
+
+            const handleFilterChange = () => {
+                console.log('facets.value', facets.value)
+            }
+            const handleResetEvent = () => {
+                // filters.value = {
+                //     status: 'active' as RequestStatus,
+                //     request_type: [],
+                // }
+                // connectorsData.value = {
+                //     attributeName: undefined,
+                //     attributeValue: undefined,
+                // }
+            }
+
             watch(
                 isPurposeListReady,
                 () => {
@@ -247,11 +318,6 @@
                         )
                         if (findedPurpose) {
                             selectedPurposeId.value = findedPurpose.id
-                        } else {
-                            selectedPurposeId.value = purposeList.value[0].id
-                            router.replace(
-                                `/governance/purposes/${purposeList.value[0].id}`
-                            )
                         }
                     }
                 },
@@ -259,11 +325,23 @@
             )
 
             onMounted(() => {
-                if (isPurposeListReady.value) {
-                    selectedPurposeId.value = purposeList.value[0].id
-                    router.replace(
-                        `/governance/purposes/${purposeList.value[0].id}`
+                if (purposeList?.value?.length) {
+                    const findedPurpose = purposeList.value.find(
+                        (el) => el.id === route.params.id
                     )
+                    if (findedPurpose) {
+                        selectedPurposeId.value = findedPurpose.id
+                    }
+                }
+            })
+            watch(selectedPurposeId, () => {
+                router.replace(
+                    `/governance/purposes/${selectedPurposeId.value}`
+                )
+                if (selectedPurposeId.value) {
+                    purposeViewModalVisible.value = true
+                } else {
+                    purposeViewModalVisible.value = false
                 }
             })
             watch(
@@ -305,12 +383,52 @@
                 selectedPolicy,
                 whitelistedConnectionIds,
                 openEditModal,
-                handleSelectPurpose,
+                closePurposeViewModal,
+                purposeViewModalVisible,
+                handleClickFilter,
+                drawerFilter,
+                purposeFilter,
+                facets,
+                connectorsData,
+                handleFilterChange,
+                handleResetEvent,
+                NewPolicyIllustration,
+                selectPurpose,
             }
         },
     })
 </script>
+<style lang="less">
+    .persona-modal {
+        .ant-modal {
+            height: calc(100% - 100px);
+        }
+        .ant-modal-body {
+            height: calc(100% - 66px);
+            overflow-y: hidden;
+            border-radius: 4px;
+        }
+        .ant-modal-content {
+            height: calc(100%);
+        }
+        .ant-modal-header {
+            padding-bottom: 0px;
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+        .ant-modal-footer {
+            padding: 0px !important;
+        }
+    }
+</style>
 <style lang="less" scoped>
+    .button-close-drawer-request {
+        left: 18% !important;
+        top: 5px;
+    }
+    .filter-request {
+        height: 32px !important;
+    }
     .success {
         background: #00a680;
     }
@@ -318,5 +436,15 @@
         max-width: 550px;
         text-align: center;
         margin-top: 16px !important;
+    }
+</style>
+
+<style lang="less" module>
+    .request-filter-wrapper {
+        :global(.filter-head) {
+            background: inherit !important;
+            height: 52px;
+            @apply pt-4 !important;
+        }
     }
 </style>

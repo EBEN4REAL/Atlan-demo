@@ -605,8 +605,8 @@
             ])
             const isEmpty = computed(
                 () =>
-                    !selectedPersonaDirty.value.metadataPolicies?.length &&
-                    !selectedPersonaDirty.value.dataPolicies?.length
+                    !selectedPersonaDirty.value?.metadataPolicies?.length &&
+                    !selectedPersonaDirty.value?.dataPolicies?.length
             )
             watch(selectedPersonaDirty, () => {
                 if (isEmpty.value) activeTabFilter.value = 'all Persona'

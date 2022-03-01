@@ -469,9 +469,6 @@
             }
 
             const closePersonaViewModal = () => {
-                console.log(
-                    'personaViewModalVisible personaViewModalVisible personaViewModalVisible called'
-                )
                 selectedPersonaId.value = ''
             }
 
@@ -522,7 +519,7 @@
                         }
                     }
                 },
-                { immediate: true }
+                { immediate: false }
             )
 
             watch(selectedPersonaId, () => {

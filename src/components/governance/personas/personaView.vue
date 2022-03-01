@@ -147,7 +147,9 @@
             >
                 <component :is="NewPolicyIllustration"></component>
                 <span class="mt-3 text-lg">No personas found</span>
-                <!-- <a-button type="primary">Clear filters</a-button> -->
+                <!-- <a-button type="primary" class="mt-2" @click="handleResetEvent"
+                    >Clear filters</a-button
+                > -->
             </div>
         </div>
 
@@ -299,14 +301,8 @@
                 console.log('facets.value', facets.value)
             }
             const handleResetEvent = () => {
-                // filters.value = {
-                //     status: 'active' as RequestStatus,
-                //     request_type: [],
-                // }
-                // connectorsData.value = {
-                //     attributeName: undefined,
-                //     attributeValue: undefined,
-                // }
+                facets.value = {}
+                searchTerm.value = ''
             }
 
             onMounted(() => {

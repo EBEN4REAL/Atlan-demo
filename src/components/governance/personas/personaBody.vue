@@ -313,6 +313,7 @@
         computed,
         watch,
         toRefs,
+        onMounted,
     } from 'vue'
     import { message } from 'ant-design-vue'
     import ResourcesWidget from '@common/widgets/resources/resourcesWidget.vue'
@@ -609,6 +610,11 @@
                 if (isEmpty.value) activeTabFilter.value = 'all Persona'
                 addpolicyVisible.value = false
             })
+
+            onMounted(() => {
+                activeTabKey.value = 'details'
+            })
+
             return {
                 addStatus,
                 updateStatus,

@@ -322,6 +322,7 @@
         computed,
         toRefs,
         watch,
+        onMounted,
     } from 'vue'
     import { message } from 'ant-design-vue'
     import ResourcesWidget from '@common/widgets/resources/resourcesWidget.vue'
@@ -614,6 +615,9 @@
             )
             watch(selectedPersonaDirty, () => {
                 if (isEmpty.value) activeTabFilter.value = 'all Persona'
+            })
+            onMounted(() => {
+                activeTabKey.value = 'details'
             })
             return {
                 addStatus,

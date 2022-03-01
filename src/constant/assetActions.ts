@@ -17,6 +17,13 @@ export const assetActions = [
         label: 'Share',
         description: 'Share asset link',
         icon: 'Share',
-        component: 'ShareMenu'
+        component: 'ShareMenu',
+    },
+    {
+        id: 'kebab',
+        label: '',
+        description: '',
+        icon: 'KebabMenu',
+        component: 'KebabMenu',
     },
 ]

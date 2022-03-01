@@ -100,10 +100,10 @@
                 containerHovered.value = false
                 submenuHovered.value = false
                 syncSortAggregateAndGroupPanel(activeInlineTab)
-                useAddEvent('insights', 'query', 'panelAdd', {
-                    panel_type: type,
-                    panel_source: 'action menu',
-                })
+                // useAddEvent('insights', 'query', 'panelAdd', {
+                //     panel_type: type,
+                //     panel_source: 'action menu',
+                // })
             }
 
             const computedItems = computed(() => {

@@ -275,8 +275,9 @@
                 >
                     <QueryDropdown
                         v-if="
-                            assetType(item) === 'Table' ||
-                            assetType(item) === 'View'
+                            (assetType(item) === 'Table' ||
+                                assetType(item) === 'View') &&
+                            connectorName(item) !== 'glue'
                         "
                         @handleClick="goToInsights"
                     >

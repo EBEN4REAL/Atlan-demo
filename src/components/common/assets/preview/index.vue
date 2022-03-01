@@ -111,6 +111,8 @@
                                 <QueryDropdown
                                     v-if="
                                         showCTA(action.id) &&
+                                        connectorName(selectedAsset) !==
+                                            'glue' &&
                                         action.id === 'query' &&
                                         (assetType(selectedAsset) === 'Table' ||
                                             assetType(selectedAsset) === 'View')

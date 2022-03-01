@@ -35,7 +35,8 @@
                 v-if="
                     isGTC(selectedAsset) ||
                     selectedAsset.typeName === 'Connection' ||
-                    selectedAsset.typeName === 'Process'
+                    selectedAsset.typeName === 'Process' ||
+                    selectedAsset.typeName === 'Query'
                 "
                 class="flex flex-col"
             >
@@ -713,7 +714,6 @@
                         'AtlasGlossary',
                         'AtlasGlossaryCategory',
                         'Connection',
-                        'Query',
                     ].includes(selectedAsset.typeName)
                 "
                 class="flex flex-col"

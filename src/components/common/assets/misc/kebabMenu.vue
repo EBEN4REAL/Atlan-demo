@@ -8,13 +8,14 @@
         <template #overlay>
             <a-menu class="" style="min-width: 200px" mode="vertical">
                 <a-menu-item
-                    v-if="editPermission"
                     key="announcement"
+                    :disabled="!editPermission"
                     class="px-4 py-2"
                     @click="closeMenu"
                     ><AnnouncementModal
                         :updating="announcementTitle(asset) ? true : false"
                         :asset="asset"
+                        :edit-permission="editPermission"
                         ><template #trigger>
                             <div class="flex items-center">
                                 <AtlanIcon icon="Megaphone" />

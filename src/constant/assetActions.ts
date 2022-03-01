@@ -19,11 +19,4 @@ export const assetActions = [
         icon: 'Share',
         component: 'ShareMenu',
     },
-    {
-        id: 'kebab',
-        label: '',
-        description: '',
-        icon: 'KebabMenu',
-        component: 'KebabMenu',
-    },
 ]

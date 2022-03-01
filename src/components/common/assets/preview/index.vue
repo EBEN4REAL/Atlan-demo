@@ -141,6 +141,19 @@
                             </a-tooltip>
                         </template>
                     </template>
+                    <KebabMenu
+                        :asset="selectedAsset"
+                        :edit-permission="
+                            selectedAssetUpdatePermission(
+                                selectedAsset,
+                                isDrawer
+                            )
+                        "
+                    >
+                        <a-button class="flex items-center justify-center">
+                            <AtlanIcon icon="KebabMenu" class="mb-0.5" />
+                        </a-button>
+                    </KebabMenu>
                     <template v-if="!disableSlackAsk && linkEditPermission">
                         <SlackAskButton :asset="selectedAsset" />
                     </template>
@@ -270,7 +283,6 @@
             Tooltip,
             QueryDropdown,
             KebabMenu,
-
             info: defineAsyncComponent(() => import('./info/index.vue')),
             columns: defineAsyncComponent(() => import('./columns/index.vue')),
             actions: defineAsyncComponent(() => import('./actions/index.vue')),

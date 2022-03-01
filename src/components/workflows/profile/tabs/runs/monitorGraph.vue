@@ -157,11 +157,13 @@
         toRefs,
         watch,
         computed,
+        Ref,
     } from 'vue'
-
+    import { DagreLayout } from '@antv/layout'
+    import { Graph } from '@antv/x6'
     /** COMPOSABLES */
     import useCreateGraph from './useCreateGraph'
-    import useComputeGraph from './useComputeGraph'
+    import useComputeGraph from './useComputeGraph2'
     import useHighlight from './useHighlight'
     import useTransformGraph from './useTransformGraph'
     import useControlGraph from './useControlGraph'
@@ -189,8 +191,8 @@
             const minimapContainer = ref(null)
             const monitorContainer = ref(null)
             const highlightLoadingCords = ref({})
-            const graph = ref(null)
-            const graphLayout = ref(null)
+            const graph: Ref<Graph> = ref(null)
+            const graphLayout: Ref<DagreLayout> = ref(null)
             const highlightedNode = ref('')
             const currZoom = ref('...')
             const currZoomDec = ref(null)
@@ -204,6 +206,9 @@
 
             const expandedNodes = ref([])
             const drawerVisible = ref(false)
+
+            const ns = ref([])
+            const ed = ref([])
 
             // Ref indicating if the all the nodes and edges of the graph
             // have been rendered or not.
@@ -246,31 +251,17 @@
                         graphLayout
                     )
 
-                    graph.value.on('blank:mousewheel', () => {
-                        lastZoom.value = graph.value.zoom()
-                        currZoom.value = `${(graph.value.zoom() * 100).toFixed(
-                            0
-                        )}%`
-                    })
-                    graph.value.on('cell:mousewheel', () => {
-                        lastZoom.value = graph.value.zoom()
-                        currZoom.value = `${(graph.value.zoom() * 100).toFixed(
-                            0
-                        )}%`
-                    })
                     isLoadingRefresh.value = true
                     isGraphRendered.value = false
 
-                    const { nodes, init } = useComputeGraph(
+                    const { nodes, edges } = useComputeGraph(
                         graph,
                         graphLayout,
-                        graphData,
-                        currZoom,
-                        lastZoom,
-                        currentScroll,
-                        true
+                        graphData
                     )
-                    init(true)
+                    // TODO: Remove debug variables ns and ed
+                    ns.value = nodes.value
+                    ed.value = edges.value
                     firstNode.value = nodes.value[0]
 
                     // // useHighlight
@@ -282,71 +273,17 @@
                         emit,
                         selectedPod.value
                     )
-                    // mousewheel events
-
-                    // // The graph is rendered asynchronously, so any synchronous
-                    // // interactions need to take place after the render is complete.
-                    // // Once it is complete, change the value of the ref.
-                    graph.value.on('render:done', () => {
-                        isGraphRendered.value = true
-                        graph.value.getScrollbarPosition(currentScroll.value)
-                    })
-
-                    graph.value.on(
-                        'node:selected',
-                        (args: {
-                            cell: Cell
-                            node: Node
-                            options: Model.SetOptions
-                        }) => {
-                            console.log(selectedPod.value)
-                            console.log(args.cell.id)
-                            if (args.cell.id === selectedPod.value.id) {
-                                drawerVisible.value = !drawerVisible.value
-                            } else if (drawerVisible.value) {
-                                selectedPod.value = args?.cell?.data
-                            } else {
-                                selectedPod.value = args?.cell?.data
-                                drawerVisible.value = !drawerVisible.value
-                            }
-                        }
-                    )
-
-                    // graph.value.on(
-                    //     'node:unselected',
-                    //     (args: {
-                    //         cell: Cell
-                    //         node: Node
-                    //         options: Model.SetOptions
-                    //     }) => {
-                    //         // console.log(selectedPod.value)
-                    //         console.log(args?.cell?.id)
-                    //         // if (args.cell.id === selectedPod.value.id) {
-                    //         //     drawerVisible.value = !drawerVisible.value
-                    //         // } else if (drawerVisible.value) {
-                    //         //     selectedPod.value = args?.cell?.data
-                    //         // } else {
-                    //         //     drawerVisible.value = !drawerVisible.value
-                    //         // }
-                    //     }
-                    // )
-
-                    isLoadingRefresh.value = false
                 } else {
                     const { nodes, init } = useComputeGraph(
                         graph,
                         graphLayout,
-                        forceData,
-                        currZoom,
-                        lastZoom,
-                        currentScroll,
-                        true
+                        forceData
                     )
+
                     graph.value.on('render:done', () => {
                         isGraphRendered.value = true
                         graph.value.getScrollbarPosition(currentScroll.value)
                     })
-                    init(false)
                 }
 
                 if (selectedPod.value?.id && drawerVisible.value) {
@@ -408,6 +345,9 @@
                 currentScroll,
                 drawerVisible,
                 selectedPod,
+
+                ns,
+                ed,
             }
         },
     })

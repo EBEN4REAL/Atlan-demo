@@ -126,7 +126,7 @@
                     data-test-id="add-persona"
                     @click="() => (modalVisible = true)"
                 >
-                    <AtlanIcon icon="Add" />New Persona
+                    <AtlanIcon icon="Add" class="mr-1" />New Persona
                 </a-button>
             </div>
             <!-- persona cards -->

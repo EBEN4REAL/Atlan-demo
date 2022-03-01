@@ -23,8 +23,8 @@
             <div class="flex items-center">
                 <div class="flex items-center">
                     <AtlanIcon
-                        icon="User"
-                        class="w-3 h-3 mr-1 text-gray-400"
+                        icon="ClassificationShield"
+                        class="w-3 h-3 mr-1 text-gray-500 stroke-current mb-0.5"
                     ></AtlanIcon>
                     <span class="text-xs text-gray-500">{{
                         purpose.tags.length
@@ -34,7 +34,7 @@
                 <div class="flex items-center">
                     <AtlanIcon
                         icon="Policies"
-                        class="w-3 h-3 mr-1 text-gray-400"
+                        class="w-3 h-3 mr-1 text-gray-400 mb-0.5"
                     ></AtlanIcon>
                     <span class="text-xs text-gray-500">{{
                         purpose.metadataPolicies?.length +

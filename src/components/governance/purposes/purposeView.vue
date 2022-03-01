@@ -129,7 +129,7 @@
                     data-test-id="add-persona"
                     @click="() => (modalVisible = true)"
                 >
-                    <AtlanIcon icon="Add" />New Purpose
+                    <AtlanIcon icon="Add" class="mr-1" />New Purpose
                 </a-button>
             </div>
             <!-- persona cards -->

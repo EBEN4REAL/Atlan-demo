@@ -85,33 +85,40 @@ export const filteredPersonas = computed(() => {
             const assets = policies.map((policy) => policy.assets[0])
             let found = false
             if (hierarchy?.attributeValue) {
-                found = assets.some((asset) =>
-                    asset.includes(hierarchy?.attributeValue)
-                )
+                found =
+                    found ||
+                    assets.some((asset) =>
+                        asset.includes(hierarchy?.attributeValue)
+                    )
             } else if (hierarchy?.connectionQualifiedName) {
-                found = assets.some((asset) =>
-                    asset.includes(hierarchy?.connectionQualifiedName)
-                )
+                found =
+                    found ||
+                    assets.some((asset) =>
+                        asset.includes(hierarchy?.connectionQualifiedName)
+                    )
             } else if (hierarchy?.connectorName) {
-                found = assets.some((asset) =>
-                    asset.includes(hierarchy?.connectorName)
-                )
+                found =
+                    found ||
+                    assets.some((asset) =>
+                        asset.includes(hierarchy?.connectorName)
+                    )
             }
             return found
         })
     }
 
-    if (owners) {
+    if (owners?.ownerUsers?.length || owners?.ownerGroups?.length) {
         const { ownerUsers, ownerGroups } = owners
         result = result.filter((persona) => {
             const users = persona?.users || []
             const groups = persona?.groups || []
             let found = false
             if (ownerUsers && ownerUsers.length) {
-                found = users.some((user) => ownerUsers.includes(user))
+                found = found || users.some((user) => ownerUsers.includes(user))
             }
             if (ownerGroups && ownerGroups.length) {
-                found = groups.some((group) => ownerGroups.includes(group))
+                found =
+                    found || groups.some((group) => ownerGroups.includes(group))
             }
             return found
         })

@@ -6,7 +6,10 @@
         <div>
             <!-- header -->
             <div class="flex">
-                <span class="font-base">{{ persona?.displayName }}</span>
+                <span
+                    class="mb-0 font-bold cursor-pointer ant-typography ant-typography-ellipsis ant-typography-single-line text-md text-primary hover:underline"
+                    >{{ persona?.displayName }}</span
+                >
             </div>
             <!-- body -->
             <div>

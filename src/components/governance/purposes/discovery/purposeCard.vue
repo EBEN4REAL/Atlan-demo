@@ -13,7 +13,9 @@
             </div>
             <!-- body -->
             <div>
-                <span class="text-gray-500">{{ purpose?.description }}</span>
+                <span class="text-gray-500">{{
+                    purpose?.description || 'No description'
+                }}</span>
             </div>
         </div>
         <!-- footer -->

@@ -241,7 +241,7 @@
         )
 
     const hasAtleastOneSlackLink = computed(() => {
-        const slackLink = resources.value.some((link) =>
+        const slackLink = resources.value?.some((link) =>
             isSlackLink(link.attributes.link)
         )
         return slackLink

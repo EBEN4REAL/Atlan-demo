@@ -52,7 +52,11 @@
             </MinimalTab>
         </div>
 
-        <div v-if="activeTabKey === 'details'" class="p-6 overflow-y-auto">
+        <div
+            v-if="activeTabKey === 'details'"
+            class="p-6 overflow-y-auto"
+            style="max-height: 98%"
+        >
             <PersonaMeta
                 class="pb-0"
                 :persona="persona"

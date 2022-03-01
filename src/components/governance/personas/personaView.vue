@@ -598,7 +598,7 @@
         }
         .ant-modal-body {
             height: calc(100% - 100px);
-            overflow-y: auto;
+            overflow-y: hidden;
         }
         .ant-modal-content {
             height: calc(100%);

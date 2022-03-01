@@ -1,21 +1,18 @@
 <template>
     <div
-        v-if="selectedAsset?.guid"
+        v-if="
+            selectedAsset.assetInfo.guid &&
+            activeInlineTab?.assetSidebar?.isVisible
+        "
         class="relative z-20 flex flex-col h-full bg-white asset-preview-container"
     >
-        <div
-            v-if="activeInlineTab?.assetSidebar?.isVisible"
-            class="absolute close-btn-add-policy"
-            @click="handleClose"
-        >
+        <div class="absolute close-btn-add-policy" @click="handleClose">
             <AtlanIcon icon="Add" class="w-5 h-5 text-gray-500" />
         </div>
 
         <AssetPreview
-            v-if="!assetLoading"
-            :selected-asset="
-                Object.keys(assetInfo)?.length ? assetInfo : selectedAsset
-            "
+            v-if="!assetLoading && tabs[selectedIndex].assetSidebar.assetInfo"
+            :selected-asset="tabs[selectedIndex].assetSidebar.assetInfo"
             page="insights"
         ></AssetPreview>
         <Loader v-else />
@@ -75,6 +72,12 @@
                 'activeInlineTabKey'
             ) as Ref<string>
 
+            const selectedIndex = computed(() => {
+                return tabs.value.findIndex(
+                    (tab) => tab.key === activeInlineTabKey.value
+                )
+            })
+
             const { closeAssetSidebar, fetchAssetData } = useAssetSidebar(
                 tabs,
                 activeInlineTab
@@ -84,7 +87,7 @@
             const assetInfo = ref({})
 
             const selectedAsset: Ref<any> = computed(() => {
-                return activeInlineTab.value?.assetSidebar?.assetInfo
+                return activeInlineTab.value?.assetSidebar
             })
 
             const queryCollections = inject('queryCollections') as ComputedRef<
@@ -97,7 +100,8 @@
                 let col = queryCollections.value?.find(
                     (col) =>
                         col.attributes.qualifiedName ===
-                        selectedAsset.value?.attributes?.collectionQualifiedName
+                        selectedAsset.value?.assetInfo?.attributes
+                            ?.collectionQualifiedName
                 )
                 if (col) {
                     return col?.displayText
@@ -120,7 +124,8 @@
                                 data.value?.entities?.length > 0
                             ) {
                                 // console.log('updated asset data: ', data.value)
-                                assetInfo.value = data.value.entities[0]
+                                activeInlineTab.value.assetSidebar.assetInfo =
+                                    data.value.entities[0]
                             } else {
                                 assetInfo.value = {}
                             }
@@ -130,12 +135,6 @@
                     }
                 })
             }
-
-            watch(selectedAsset, () => {
-                assetInfo.value = {}
-                // console.log('selected asset: ', selectedAsset.value)
-                fetchAsset()
-            })
 
             watch(
                 updateAssetCheck,
@@ -156,11 +155,6 @@
             ) as Ref<Object>
 
             const updateList = (asset) => {
-                // let activeInlineTabCopy: activeInlineTabInterface = JSON.parse(
-                //     JSON.stringify(toRaw(activeInlineTab.value))
-                // )
-                // console.log('updated asset: ', asset)
-
                 let activeInlineTabCopy: activeInlineTabInterface = JSON.parse(
                     JSON.stringify(toRaw(activeInlineTab.value))
                 )
@@ -169,7 +163,13 @@
                 assetSidebarUpdatedData.value = asset
 
                 if (asset?.typeName === 'Query') {
-                    if (activeInlineTabCopy.queryId === asset?.guid) {
+                    const activeTabIndex = tabs.value.findIndex(
+                        (tab) => tab.queryId === asset?.guid
+                    )
+                    if (activeTabIndex > -1) {
+                        activeInlineTabCopy = JSON.parse(
+                            JSON.stringify(toRaw(tabs.value[activeTabIndex]))
+                        )
                         activeInlineTabCopy = {
                             ...activeInlineTabCopy,
                             updateTime:
@@ -185,9 +185,11 @@
                         }
                         activeInlineTabCopy.assetSidebar.assetInfo = asset
                     }
+                    // assetInfo.value = asset
                     modifyActiveInlineTab(activeInlineTabCopy, tabs, true, true)
                 } else {
                     activeInlineTabCopy.assetSidebar.assetInfo = asset
+                    // assetInfo.value = asset
                     modifyActiveInlineTab(activeInlineTabCopy, tabs, true, true)
                 }
                 // console.log('old data update: ', asset)
@@ -200,10 +202,11 @@
             }
 
             return {
+                selectedIndex,
+                tabs,
                 assetLoading,
                 handleClose,
                 selectedAsset,
-                tabs,
                 activeInlineTab,
                 closeAssetSidebar,
                 assetInfo,

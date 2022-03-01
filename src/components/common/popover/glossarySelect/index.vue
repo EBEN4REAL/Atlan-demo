@@ -52,6 +52,7 @@
                                     item.attributes.name
                                 }`"
                                 :classes="'w-full '"
+                                placement="right"
                             />
                         </div>
                     </div>

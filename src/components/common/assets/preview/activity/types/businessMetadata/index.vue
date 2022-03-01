@@ -1,15 +1,15 @@
 <template>
     <div class="flex items-center">
-        <PreviewTabsIcon
-            :displayMode="true"
-            :image="found.options.imageId"
-            :emoji="found.options.emoji"
-            :is-active="false"
-            :is-scrubbed="false"
-            class="mr-1"
-        />
+        <!-- <PreviewTabsIcon -->
+        <!--     :displayMode="true" -->
+        <!--     :image="found.options.imageId" -->
+        <!--     :emoji="found.options.emoji" -->
+        <!--     :is-active="false" -->
+        <!--     :is-scrubbed="false" -->
+        <!--     class="mr-1" -->
+        <!-- /> -->
         <span>
-            <b> {{ found.displayName }} </b> was updated</span
+            <b> {{ found?.displayName }} </b> was updated</span
         >
     </div>
 

@@ -1,7 +1,7 @@
 <template>
     <a-select
         :value="maskType"
-        class="mb-6 w-80"
+        class="w-80"
         data-test-id="datamasking-select"
         @update:value="$emit('update:maskType', $event)"
     >

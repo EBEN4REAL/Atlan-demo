@@ -748,6 +748,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     })
 
     return {
+        mutateUpdate,
         entity,
         isLoading,
         localName,

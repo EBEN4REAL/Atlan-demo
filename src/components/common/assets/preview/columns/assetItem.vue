@@ -8,19 +8,20 @@
                 class="box-border flex flex-col flex-1 overflow-hidden gap-y-1"
             >
                 <div
-                    class="flex items-center justify-between mb-0 overflow-hidden"
+                    class="flex flex-wrap items-center justify-between mb-0 overflow-hidden"
                 >
                     <div class="flex items-center">
                         <component
                             :is="dataTypeCategoryImage(item)"
                             class="h-4 mr-1 text-gray-500 mb-0.5"
                         />
-                        <span
-                            class="flex-shrink overflow-hidden font-bold truncate cursor-pointer text-md text-primary hover:underline overflow-ellipsis whitespace-nowrap"
+
+                        <Tooltip
+                            :tooltip-text="`${title(item)}`"
+                            classes="
+                                   font-bold cursor-pointer text-md text-primary hover:underline  "
                             @click="showColumnDrawer = true"
-                        >
-                            {{ title(item) }}
-                        </span>
+                        />
                         <CertificateBadge
                             v-if="certificateStatus(item)"
                             :status="certificateStatus(item)"
@@ -37,28 +38,14 @@
                             ></AtlanIcon
                         ></a-tooltip>
                     </div>
-                    <div class="flex gap-x-2">
-                        <div
-                            v-if="
-                                isPrimary(item) ||
-                                isDist(item) ||
-                                isPartition(item)
-                            "
-                            class="text-yellow-400"
-                        >
-                            <AtlanIcon
-                                icon="PrimaryKey"
-                                class="mr-1 mb-0.5"
-                            ></AtlanIcon>
-                            <span class="text-xs">Pkey</span>
-                        </div>
-                        <div v-if="isForeign(item)" class="text-pink-700">
-                            <AtlanIcon
-                                icon="ForeignKey"
-                                class="mr-1 mb-0.5"
-                            ></AtlanIcon>
-                            <span class="text-xs">Fkey</span>
-                        </div>
+                    <div class="flex ml-1 gap-x-2">
+                        <ColumnKeys
+                            :is-primary="isPrimary(item)"
+                            :is-foreign="isForeign(item)"
+                            :is-partition="isPartition(item)"
+                            :is-sort="isSort(item)"
+                            :is-indexed="isIndexed(item)"
+                        />
                     </div>
                 </div>
                 <Description
@@ -113,6 +100,7 @@
         defineAsyncComponent,
         inject,
     } from 'vue'
+    import Tooltip from '@common/ellipsis/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import Description from '@/common/input/description/index.vue'
@@ -121,6 +109,7 @@
     import { mergeArray } from '~/utils/array'
     import ClassificationPill from '@/common/pills/classification.vue'
     import PopoverClassification from '@/common/popover/classification/index.vue'
+    import ColumnKeys from '~/components/common/column/columnKeys.vue'
 
     export default defineComponent({
         name: 'ColumnListItem',
@@ -128,6 +117,8 @@
             CertificateBadge,
             Description,
             ClassificationPill,
+            ColumnKeys,
+            Tooltip,
             PopoverClassification,
             AssetDrawer: defineAsyncComponent(
                 () => import('@/common/assets/preview/drawer.vue')
@@ -158,12 +149,14 @@
                 isDist,
                 isPartition,
                 isPrimary,
+                isSort,
                 certificateStatus,
                 certificateUpdatedAt,
                 certificateUpdatedBy,
                 certificateStatusMessage,
                 selectedAssetUpdatePermission,
                 isScrubbed,
+                isIndexed,
             } = useAssetInfo()
 
             const { item } = toRefs(props)
@@ -222,6 +215,7 @@
                 isPartition,
                 isPrimary,
                 isForeign,
+                isSort,
                 certificateStatus,
                 certificateUpdatedAt,
                 certificateUpdatedBy,
@@ -237,6 +231,7 @@
                 selectedAssetUpdatePermission,
                 isScrubbed,
                 list,
+                isIndexed,
             }
         },
     })

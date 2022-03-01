@@ -191,7 +191,7 @@
                         size="sm"
                         color="secondary"
                         padding="compact"
-                        class="flex items-center justify-between h-6 ml-2 border-gray-300 group"
+                        class="flex items-center justify-between h-7 ml-2 border-gray-300 group"
                         :class="isUpdating ? 'px-4.5' : 'px-2'"
                         :disabled="
                             activeInlineTab.isSaved && activeInlineTab.queryId
@@ -249,7 +249,7 @@
                         size="sm"
                         color="secondary"
                         padding="compact"
-                        class="flex items-center h-6 px-3 ml-2 border-gray-300"
+                        class="flex items-center h-7 px-3 ml-2 border-gray-300"
                         @click="$emit('onClickSaveQuery')"
                     >
                         <div
@@ -321,10 +321,11 @@
                             class="w-4 h-4 mr-1"
                             v-if="readOnly"
                         />
-                        <AtlanIcon
+                        <img
                             v-if="connectionName"
-                            :icon="connectorAsset?.image"
-                            class="w-4 h-4 mx-1 connector_icon"
+                            :src="getConnectorImage(connectorAsset?.id)"
+                            class="w-4 h-4 mr-1"
+                            style="min-width: 1rem"
                         />
                     </div>
                     <div
@@ -332,18 +333,6 @@
                         v-if="!activeInlineTab?.assetSidebar?.isVisible"
                     >
                         <div class="flex items-center">
-                            <!-- <AtlanIcon
-                            icon="Lock"
-                            class="w-4 h-4 mr-1"
-                            v-if="readOnly"
-                        />
-                        <img
-                            v-if="connectionName"
-                            :src="connectorAsset?.image"
-                            class="w-4 h-4 mx-1 connector_icon"
-                        /> -->
-                            <!-- <span v-if="connectionName">{{ connectionName }}</span> -->
-
                             <div v-if="connectionName">
                                 <div
                                     class="flex items-center"
@@ -462,7 +451,7 @@
                                 :edit-permission="isQueryRunning !== 'loading'"
                             >
                                 <AtlanBtn
-                                    class="flex items-center h-6 px-3 button-shadow bg-primary"
+                                    class="flex items-center h-7 px-3 button-shadow bg-primary"
                                     size="sm"
                                     color="primary"
                                     padding="compact"
@@ -646,6 +635,10 @@
             const connectorName = computed(() =>
                 getConnectorName(connectorsData.value.attributeValue)
             )
+            const getConnectorImage = (sourceid) => {
+                return store.getConnectorImageMapping[sourceid?.toLowerCase()]
+            }
+
             const connectionName = computed(() => {
                 // console.log('store list: ', store.getList)
                 let data = getConnectionQualifiedName(
@@ -725,6 +718,7 @@
             })
 
             return {
+                getConnectorImage,
                 showVQB,
                 popoverVisible,
                 onPopoverVisibleChange,

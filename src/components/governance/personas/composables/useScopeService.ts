@@ -110,7 +110,7 @@ const personaScopeList = [
             {
                 value: 'entity-create',
                 label: 'create',
-                desc: 'Create entities',
+                desc: 'Create entities within selected assets',
             },
             {
                 value: 'entity-read',
@@ -120,18 +120,18 @@ const personaScopeList = [
             {
                 value: 'entity-update',
                 label: 'update',
-                desc: 'Update asset metadata',
+                desc: 'Access to update asset metadata',
             },
 
             {
                 value: 'entity-delete',
                 label: 'delete',
-                desc: 'Delete/Archive assets',
+                desc: 'Permission to delete selected assets',
             },
             {
                 value: 'link-assets',
                 label: 'Link other assets',
-                desc: 'Link other assets like readme, resources.',
+                desc: 'Permission to link assets like readme, resources to this asset',
             },
         ],
         type: 'Assets',

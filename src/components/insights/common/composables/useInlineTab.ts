@@ -4,6 +4,12 @@ import { useLocalStorageSync } from './useLocalStorageSync'
 import { inlineTabsDemoData } from '../dummyData/demoInlineTabData'
 import { QueryCollection } from '~/types/insights/savedQuery.interface'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
+import { instances } from '~/components/insights/playground/editor/monaco/useMonaco'
+import {
+    editorStates,
+    updateEditorModelOnTabClosed,
+    updateEditorModelOnTabOpen,
+} from '~/components/insights/playground/editor/monaco/useModel'
 
 export function useInlineTab(
     treeSelectedKeys?: Ref<string[]>,
@@ -87,6 +93,7 @@ export function useInlineTab(
         activeInlineTabKey: Ref<string>,
         pushGuidToURL: Function
     ) => {
+        updateEditorModelOnTabClosed(editorStates, inlineTabKey)
         let lastIndex = 0
         tabsArray.value.forEach((tab, i) => {
             if (tab.key === inlineTabKey) {
@@ -204,6 +211,13 @@ export function useInlineTab(
         tabsArray: Ref<activeInlineTabInterface[]>,
         activeInlineTabKey: Ref<string>
     ) => {
+        updateEditorModelOnTabOpen(
+            editorStates,
+            inlineTab.key,
+            instances.monaco,
+            inlineTab.playground.editor.text
+        )
+        instances.editor?.setModel(editorStates.get(inlineTab.key).model)
         tabsArray.value.push(inlineTab)
         activeInlineTabKey.value = inlineTab.key
         useAddEvent('insights', 'tab', 'opened', {

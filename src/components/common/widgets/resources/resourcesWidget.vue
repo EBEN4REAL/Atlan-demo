@@ -1,15 +1,22 @@
 <template>
-    <div ref="wrapper" class="w-full h-full overflow-y-auto">
+    <div ref="wrapper" class="flex flex-col w-full h-full">
         <template v-if="minimal">
             <template v-if="resources?.length">
                 <div
                     class="flex justify-between px-5 py-2 border-b border-gray-200 gap-x-6 bg-gray-50"
                 >
-                    <div>
-                        <span class="font-semibold text-gray-500">
+                    <span class="flex items-center">
+                        <PreviewTabsIcon
+                            :icon="tab.icon"
+                            :image="tab.image"
+                            :emoji="tab.emoji"
+                            height="h-4"
+                            class="mb-0.5"
+                        />
+                        <span class="ml-1 font-semibold text-gray-500">
                             Resources
                         </span>
-                    </div>
+                    </span>
                     <div class="flex-grow"></div>
 
                     <AddResource v-if="!readOnly" @add="addCallback">
@@ -58,7 +65,7 @@
                 </AddResource>
             </div>
         </template>
-        <section>
+        <section class="overflow-y-auto">
             <template v-if="!resources?.length">
                 <template v-if="$slots?.placeholder">
                     <slot name="placeholder" />
@@ -97,7 +104,7 @@
                     }"
                 >
                     <div
-                        v-for="l in sortResources(resources)"
+                        v-for="(l, x) in sortResources(resources)"
                         :key="l.uniqueAttributes.qualifiedName"
                         class="flex-grow"
                     >
@@ -109,7 +116,11 @@
                             :link="l"
                             class="h-full"
                         />
-                        <SlackPreview v-else :link="l" />
+                        <SlackPreview
+                            v-else
+                            :ref="`SlackPreview-${x}`"
+                            :link="l"
+                        />
                     </div>
                     <template
                         v-if="
@@ -136,17 +147,19 @@
         defineAsyncComponent,
         ref,
         provide,
+        inject,
     } from 'vue'
     import SlackUserLoginTrigger from '@common/integrations/slack/slackUserLoginTriggerCard.vue'
     import {
         isSlackLink,
         openSlackOAuth,
-    } from '~/composables/integrations/useSlack'
+    } from '~/composables/integrations/slack/useSlack'
     import EmptyScreen from '@/common/empty/index.vue'
     import SlackConnect from './misc/connectSlackCard.vue'
     import LinkPreviewCard from '@/common/widgets/resources/previewCard/linkPreviewCard.vue'
     import SlackPreview from '@/common/widgets/resources/previewCard/slackPreview.vue'
     import AddResource from '@/common/widgets/resources/resourceInputModal.vue'
+    import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
 
     import integrationStore from '~/store/integrations/index'
     import { Link } from '~/types/resources.interface'
@@ -182,14 +195,16 @@
             required: false,
             default: true,
         },
+        tab: {
+            type: Object,
+            required: false,
+        },
     })
     const emit = defineEmits(['add', 'update', 'remove'])
 
     const wrapper = ref()
-    const addModalRef = ref()
 
     const minimal = computed(() => wrapper.value?.clientWidth < 500)
-    // const placeholderVisible = computed(() => !resources.value?.length)
 
     const {
         addStatus,
@@ -244,4 +259,4 @@
     }
 </script>
 
-<style scoped></style>
+<style scoped lang="less"></style>

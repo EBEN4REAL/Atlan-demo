@@ -244,6 +244,11 @@ export const discoveryFilters = [
                 typeName: 'boolean',
             },
             {
+                name: 'isForeign',
+                displayName: 'Foreign Key',
+                typeName: 'boolean',
+            },
+            {
                 name: 'isPartition',
                 displayName: 'Partition Key',
                 typeName: 'boolean',

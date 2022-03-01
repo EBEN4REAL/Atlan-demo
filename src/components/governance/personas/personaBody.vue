@@ -79,31 +79,161 @@
             class="flex flex-col px-6 pt-6"
             style="height: calc(100% - 155px)"
         >
-            <div class="mb-3">
-                <div class="flex items-center justify-between">
-                    <div class="w-1/2 pr-3">
-                        <div
-                            v-if="totalPolicy !== 0"
-                            class="px-1 container-tabs"
-                        >
-                            <a-radio-group
-                                v-model:value="activeTabFilter"
-                                class="flex flex-grow"
+            <div
+                :class="
+                    metaDataComputed.length > 0 || dataPolicyComputed.length > 0
+                        ? 'bg-white rounded-lg'
+                        : (activeTabFilter === 'metaData' &&
+                              metaDataComputed.length === 0) ||
+                          (activeTabFilter === 'data' &&
+                              dataPolicyComputed.length === 0)
+                        ? 'bg-white rounded-lg pb-14'
+                        : ''
+                "
+            >
+                <div class="p-4" :class="!isEmpty && 'border-b'">
+                    <div class="flex items-center justify-between">
+                        <div class="w-1/2 pr-3">
+                            <div
+                                v-if="totalPolicy !== 0"
+                                class="px-1 container-tabs"
                             >
-                                <a-radio-button value="all Persona"
-                                    >All</a-radio-button
+                                <RaisedTab
+                                    v-model:active="activeTabFilter"
+                                    :data="streams"
+                                />
+                                <!-- <a-radio-group
+                                    v-model:value="activeTabFilter"
+                                    class="flex flex-grow"
                                 >
-                                <a-radio-button value="metaData"
-                                    >Metadata</a-radio-button
-                                >
-                                <a-radio-button value="data"
-                                    >Data</a-radio-button
-                                >
-                            </a-radio-group>
+                                    <a-radio-button value="all Persona"
+                                        >All</a-radio-button
+                                    >
+                                    <a-radio-button value="metaData"
+                                        >Metadata</a-radio-button
+                                    >
+                                    <a-radio-button value="data"
+                                        >Data</a-radio-button
+                                    >
+                                </a-radio-group> -->
+                            </div>
                         </div>
+                        <a-dropdown v-if="!isEmpty" trigger="click">
+                            <a-button type="primary">
+                                <div class="flex items-center gap-x-1">
+                                    New Policy
+
+                                    <AtlanIcon
+                                        icon="ChevronDown"
+                                        class="text-white"
+                                    />
+                                </div>
+                            </a-button>
+
+                            <template #overlay>
+                                <a-menu>
+                                    <a-menu-item
+                                        v-for="(
+                                            option, index
+                                        ) in addPolicyDropdownConfig"
+                                        :key="index"
+                                        @click="option.handleClick()"
+                                    >
+                                        <div class="flex items-center">
+                                            <AtlanIcon
+                                                v-if="option.icon"
+                                                class="w-4 h-4 text-gray-700"
+                                                :icon="option.icon"
+                                            />
+                                            <span class="pl-2 text-sm">{{
+                                                option.title
+                                            }}</span>
+                                        </div>
+                                    </a-menu-item>
+                                </a-menu>
+                            </template>
+                        </a-dropdown>
+                    </div>
+                </div>
+                <div
+                    v-if="
+                        metaDataComputed.length > 0 ||
+                        dataPolicyComputed.length > 0
+                    "
+                    class="flex flex-col flex-grow overflow-y-auto container-card-policy"
+                >
+                    <template
+                        v-for="(policy, idx) in metaDataComputed"
+                        :key="idx"
+                    >
+                        <PolicyCard
+                            :policy="policy"
+                            type="meta"
+                            :selected-policy="selectedPolicy"
+                            :whitelisted-connection-ids="
+                                whitelistedConnectionIds
+                            "
+                            @edit="setEditFlag('meta', policy.id!)"
+                            @delete="deletePolicyUI(policy.id)"
+                            @cancel="discardPolicy('meta', policy.id)"
+                            @clickCard="handleSelectPolicy"
+                        />
+                    </template>
+                    <template
+                        v-for="(policy, idx) in dataPolicyComputed"
+                        :key="idx"
+                    >
+                        <PolicyCard
+                            :policy="policy"
+                            type="data"
+                            :selected-policy="selectedPolicy"
+                            :whitelisted-connection-ids="
+                                whitelistedConnectionIds
+                            "
+                            @edit="setEditFlag('data', policy.id!)"
+                            @delete="deletePolicyUI(policy.id)"
+                            @cancel="discardPolicy('data', policy.id!)"
+                            @clickCard="handleSelectPolicy"
+                        />
+                    </template>
+                </div>
+                <div
+                    v-if="
+                        (activeTabFilter === 'metaData' &&
+                            metaDataComputed.length === 0) ||
+                        (activeTabFilter === 'data' &&
+                            dataPolicyComputed.length === 0)
+                    "
+                    class="flex flex-col items-center justify-center h-full"
+                >
+                    <component :is="NewPolicyIllustration"></component>
+                    <span class="mt-5 text-xl font-bold text-gray">
+                        {{
+                            `No ${
+                                activeTabFilter === 'data' ? 'data' : 'metadata'
+                            } policies added`
+                        }}
+                    </span>
+                    <!-- <div
+                        class="mt-1 text-base text-center text-gray-500 sub-title-empty"
+                    >
+                        Create policies to manage access
+                    </div> -->
+                </div>
+
+                <div
+                    v-if="isEmpty"
+                    class="flex flex-col items-center h-full -pt-7"
+                >
+                    <component :is="EmptyPolicyIllustration"></component>
+                    <span class="mt-10 text-xl font-bold text-gray">
+                        Create Policies
+                    </span>
+                    <div class="mt-2 text-base text-center text-gray-500 w-60">
+                        Create policies to manage metadata and data access
                     </div>
                     <a-dropdown trigger="click">
-                        <a-button type="primary">
+                        <a-button type="primary" class="mt-7">
                             <div class="flex items-center gap-x-1">
                                 New Policy
 
@@ -137,70 +267,15 @@
                             </a-menu>
                         </template>
                     </a-dropdown>
+                    <div class="mt-6 cursor-pointer text-primary">
+                        <a
+                            href="https://ask.atlan.com/hc/en-us/articles/4413877880209-How-to-build-access-policies"
+                            target="_blank"
+                        >
+                            Learn More <AtlanIcon icon="ArrowRight" />
+                        </a>
+                    </div>
                 </div>
-            </div>
-            <div
-                v-if="
-                    metaDataComputed.length > 0 || dataPolicyComputed.length > 0
-                "
-                class="flex flex-col flex-grow overflow-y-auto gap-y-3"
-            >
-                <template v-for="(policy, idx) in metaDataComputed" :key="idx">
-                    <PolicyCard
-                        :policy="policy"
-                        type="meta"
-                        :selected-policy="selectedPolicy"
-                        :whitelisted-connection-ids="whitelistedConnectionIds"
-                        @edit="setEditFlag('meta', policy.id!)"
-                        @delete="deletePolicyUI(policy.id)"
-                        @cancel="discardPolicy('meta', policy.id)"
-                        @clickCard="handleSelectPolicy"
-                    />
-                </template>
-                <template
-                    v-for="(policy, idx) in dataPolicyComputed"
-                    :key="idx"
-                >
-                    <PolicyCard
-                        :policy="policy"
-                        type="data"
-                        :selected-policy="selectedPolicy"
-                        :whitelisted-connection-ids="whitelistedConnectionIds"
-                        @edit="setEditFlag('data', policy.id!)"
-                        @delete="deletePolicyUI(policy.id)"
-                        @cancel="discardPolicy('data', policy.id!)"
-                        @clickCard="handleSelectPolicy"
-                    />
-                </template>
-            </div>
-            <div
-                v-if="
-                    (activeTabFilter === 'meta' &&
-                        metaDataComputed.length === 0) ||
-                    (activeTabFilter === 'data' &&
-                        dataPolicyComputed.length === 0)
-                "
-                class="flex flex-col items-center justify-center h-full"
-            >
-                <component :is="NoResultIllustration"></component>
-                <span class="text-sm font-bold text-gray">
-                    Sorry, we couldn’t find the policy you were looking
-                    for</span
-                >
-            </div>
-
-            <div
-                v-if="
-                    !selectedPersonaDirty.metadataPolicies?.length &&
-                    !selectedPersonaDirty.dataPolicies?.length &&
-                    !searchPersona
-                "
-                class="flex flex-col items-center justify-center wrapper-empty-data"
-            >
-                <component :is="NewPolicyIllustration"></component>
-                <span class="text-2xl font-bold text-gray">
-                    Create Policies</span
-                >
             </div>
         </div>
     </template>
@@ -209,7 +284,7 @@
         :closable="false"
         :visible="addpolicyVisible"
         :width="450"
-        :mask="false"
+        class="drawer-add-persona"
         @close="handleCloseAddPolicy"
     >
         <Addpolicy
@@ -248,13 +323,13 @@
     import Readme from './overview/PersonaReadme.vue'
     import { IPurpose } from '~/types/accessPolicies/purposes'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-    import NewPolicyIllustration from '~/assets/images/illustrations/new_policy.svg'
+    import EmptyPolicyIllustration from '~/assets/images/empty_policy.svg'
     import NoResultIllustration from '~/assets/images/illustrations/Illustration_no_search_results.svg'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import { filterMethod, sortMethodArrOfObject } from '~/utils/helper/search'
     import Addpolicy from './addpolicy.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
-
+    import NewPolicyIllustration from '~/assets/images/illustrations/new_policy.svg'
     import { activeTabKey, tabConfig } from './composables/usePersonaTabs'
     import {
         newIdTag,
@@ -272,6 +347,7 @@
         deletePolicyV2,
     } from './composables/useEditPersona'
     import { refetchPersona } from './composables/usePersonaList'
+    import RaisedTab from '@/UI/raisedTab.vue'
 
     export default defineComponent({
         name: 'PersonaBody',
@@ -287,6 +363,7 @@
             AggregationTabs,
             Addpolicy,
             Readme,
+            RaisedTab,
         },
         props: {
             persona: {
@@ -326,10 +403,6 @@
                 },
             ]
 
-            watch(selectedPersonaDirty, () => {
-                // activeTabFilter.value = ''
-                addpolicyVisible.value = false
-            })
             async function savePolicyUI(
                 type: PolicyType,
                 dataPolicy: Object,
@@ -500,7 +573,12 @@
             const handleCloseAdd = () => {
                 addpolicyVisible.value = false
             }
-
+            const isEmpty = computed(
+                () =>
+                    !selectedPersonaDirty.value.metadataPolicies?.length &&
+                    !selectedPersonaDirty.value.dataPolicies?.length &&
+                    !searchPersona.value
+            )
             const {
                 addStatus,
                 updateStatus,
@@ -509,7 +587,24 @@
                 handleUpdateResource,
                 handleRemoveResource,
             } = usePersonaResources(persona)
-
+            const streams = computed(() => [
+                {
+                    key: 'all Persona',
+                    label: 'All',
+                },
+                {
+                    key: 'metaData',
+                    label: 'Metadata',
+                },
+                {
+                    key: 'data',
+                    label: 'Data',
+                },
+            ])
+            watch(selectedPersonaDirty, () => {
+                if (isEmpty.value) activeTabFilter.value = 'all Persona'
+                addpolicyVisible.value = false
+            })
             return {
                 addStatus,
                 updateStatus,
@@ -528,7 +623,7 @@
                 savePolicyUI,
                 deletePolicyUI,
                 discardPolicy,
-                NewPolicyIllustration,
+                EmptyPolicyIllustration,
                 searchPersona,
                 tabFilterList,
                 activeTabFilter,
@@ -544,25 +639,55 @@
                 isEdit,
                 loadingPolicy,
                 NoResultIllustration,
+                isEmpty,
+                streams,
+                NewPolicyIllustration,
             }
         },
     })
 </script>
 
-<style lang="less" module>
-    .container-tabs {
-        .assetbar {
-            :global(.ant-tabs-tab:first-child) {
-                border-top-left-radius: 24px !important;
-            }
+<style lang="less">
+    .drawer-add-persona {
+        .ant-drawer-content {
+            overflow: visible !important;
+        }
+        .close-btn-sidebar {
+            position: absolute !important;
+            background: white !important;
         }
     }
 </style>
+<style lang="less">
+    .container-tabs {
+        width: 200px
+        // .ant-radio-button-wrapper {
+        //     &::before {
+        //         display: none !important;
+        //     }
+        //     @apply bg-gray-100;
+        //     &.ant-radio-button-wrapper-checked {
+        //         box-shadow: 0px 1px 4px 0px #0000001f;
+
+        //         @apply bg-white;
+        //     }
+        //     border: none !important;
+        // }
+        // .assetbar {
+        //     :global(.ant-tabs-tab:first-child) {
+        //         border-top-left-radius: 24px !important;
+        //     }
+        // }
+    }
+</style>
 <style scoped lang="less">
+    .container-card-policy {
+        max-height: 65vh;
+    }
+    .sub-title-empty {
+        max-width: 250px;
+    }
     .content-wrapper {
         height: inherit;
-    }
-    .wrapper-empty-data {
-        height: 100%;
     }
 </style>

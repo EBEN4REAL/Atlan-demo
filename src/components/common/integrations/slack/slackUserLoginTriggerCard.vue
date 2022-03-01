@@ -24,7 +24,7 @@
     // components
     import { defineComponent } from 'vue'
 
-    import { openSlackOAuth } from '~/composables/integrations/useSlack'
+    import { openSlackOAuth } from '~/composables/integrations/slack/useSlack'
 
     export default defineComponent({
         components: {},

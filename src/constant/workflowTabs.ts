@@ -28,6 +28,5 @@ export const workflowTabs = [
         component: 'Config',
         icon: 'Setup',
         tooltip: 'Setup',
-        isInternal: true,
     },
 ]

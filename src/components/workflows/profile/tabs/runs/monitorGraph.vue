@@ -169,6 +169,7 @@
     import useControlGraph from './useControlGraph'
 
     import Drawer from './drawer/drawer.vue'
+    import useEventGraph from './useEventGraph'
     export default defineComponent({
         name: 'MonitorGraph',
         components: {
@@ -194,13 +195,11 @@
             const graph: Ref<Graph> = ref(null)
             const graphLayout: Ref<DagreLayout> = ref(null)
             const highlightedNode = ref('')
-            const currZoom = ref('...')
-            const currZoomDec = ref(null)
+            const currZoom = ref('100%')
             const showMinimap = ref(false)
             const isFullscreen = ref(false)
             const isRunning = ref(true)
             const isLoadingRefresh = ref(false)
-            const firstNode = ref({})
 
             const currentScroll = ref({})
 
@@ -209,6 +208,7 @@
 
             const ns = ref([])
             const ed = ref([])
+            const baseNodeId = computed(() => graphData?.value?.metadata?.name)
 
             // Ref indicating if the all the nodes and edges of the graph
             // have been rendered or not.
@@ -228,63 +228,57 @@
             const { zoom, fullscreen, handleRecenter } = useTransformGraph(
                 graph,
                 currZoom,
-                firstNode
+                baseNodeId
             )
+
             const onFullscreen = () => {
                 isFullscreen.value = !isFullscreen.value
                 fullscreen(monitorContainer)
             }
 
-            const lastZoom = ref(null)
-
             // initialize
-            const initialize = (reload = false, forceData) => {
-                if (reload) {
-                    if (graph.value) {
-                        graph.value.dispose()
-                    }
-
-                    useCreateGraph(
-                        graph,
-                        graphContainer,
-                        minimapContainer,
-                        graphLayout
-                    )
-
-                    isLoadingRefresh.value = true
-                    isGraphRendered.value = false
-
-                    const { nodes, edges } = useComputeGraph(
-                        graph,
-                        graphLayout,
-                        graphData
-                    )
-                    // TODO: Remove debug variables ns and ed
-                    ns.value = nodes.value
-                    ed.value = edges.value
-                    firstNode.value = nodes.value[0]
-
-                    // // useHighlight
-                    useHighlight(
-                        graph,
-                        nodes,
-                        highlightLoadingCords,
-                        highlightedNode,
-                        emit,
-                        selectedPod.value
-                    )
-                } else {
-                    const { nodes, init } = useComputeGraph(
-                        graph,
-                        graphLayout,
-                        forceData
-                    )
-
-                    graph.value.on('render:done', () => {
-                        isGraphRendered.value = true
-                        graph.value.getScrollbarPosition(currentScroll.value)
-                    })
+            const initialize = () => {
+                if (graph.value) {
+                    graph.value.dispose()
                 }
+
+                useCreateGraph(
+                    graph,
+                    graphContainer,
+                    minimapContainer,
+                    graphLayout
+                )
+
+                isLoadingRefresh.value = true
+                isGraphRendered.value = false
+
+                const { nodes, edges } = useComputeGraph(
+                    graph,
+                    graphLayout,
+                    graphData
+                )
+                // TODO: Remove debug variables ns and ed
+                ns.value = nodes.value
+                ed.value = edges.value
+
+                // // useHighlight
+                useHighlight(
+                    graph,
+                    nodes,
+                    highlightLoadingCords,
+                    highlightedNode,
+                    emit,
+                    selectedPod.value
+                )
+
+                useEventGraph({
+                    graph,
+                    currZoom,
+                    isLoadingRefresh,
+                    isGraphRendered,
+                    drawerVisible,
+                    selectedPod,
+                })
 
                 if (selectedPod.value?.id && drawerVisible.value) {
                     let podData = graph.value.getCellById(
@@ -299,11 +293,7 @@
                 graphData,
                 () => {
                     console.log('change graph data')
-                    if (!lastZoom.value) {
-                        initialize(true, true)
-                    } else {
-                        initialize(false, false)
-                    }
+                    initialize(true, true)
                     // this is causing API runs & archived get hit multiple times
                     // and as a result, view logs toolbar always get override
                 },
@@ -324,7 +314,6 @@
                 monitorContainer,
                 graphContainer,
                 currZoom,
-                currZoomDec,
                 showMinimap,
                 isFullscreen,
                 isRunning,
@@ -340,7 +329,6 @@
                 graph,
 
                 expandedNodes,
-                lastZoom,
                 graphLayout,
                 currentScroll,
                 drawerVisible,

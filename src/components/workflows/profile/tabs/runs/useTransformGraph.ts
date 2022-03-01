@@ -1,4 +1,4 @@
-export default function useTransformGraph(graph, currZoom, firstNode) {
+export default function useTransformGraph(graph, currZoom, firstNodeId) {
     const zoom = (factor) => {
         graph.value.zoom(factor)
         currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
@@ -9,10 +9,9 @@ export default function useTransformGraph(graph, currZoom, firstNode) {
         else targetEle.value.requestFullscreen()
     }
     const handleRecenter = () => {
-        console.log('firsy', firstNode.value.id)
-        const cell = graph.value.getCellById(`${firstNode.value.id}`)
+        const cell = graph.value.getCellById(`${firstNodeId.value}`)
         if (cell) graph.value.centerCell(cell, { padding: { top: -300 } })
-        // const cell = graph.value.getCellById(firstNode.value.id)
+        // const cell = graph.value.getCellById(firstNodeId.value)
         // if (cell) graph.value.centerCell(cell, { padding: { top: -300 } })
         // graph.value.centerPoint(0, 400)
         // graph.value.centerCell(cell)

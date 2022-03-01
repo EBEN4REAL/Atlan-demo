@@ -91,11 +91,11 @@
                         :autofocus="true"
                         size="default"
                     >
-                        <template #categoryFilter>
+                        <template #categoryFilterRight>
                             <div class="relative flex items-center">
                                 <AtlanBtn
                                     color="secondary"
-                                    class="px-2 border-r rounded-tr-none rounded-br-none cursor-pointer filter-button"
+                                    class="px-2 border-l rounded-tl-none rounded-bl-none cursor-pointer filter-button"
                                     :class="{
                                         'text-primary border rounded py-1 border-primary':
                                             drawerFilter,

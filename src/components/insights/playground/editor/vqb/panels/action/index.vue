@@ -62,6 +62,7 @@
     import { useUtils } from '~/components/insights/playground/editor/vqb/composables/useUtils'
     import { useSort } from '~/components/insights/playground/editor/vqb/composables/useSort'
     import { useUtils as useAddPanelsUtils } from './useUtils'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'Columns',
@@ -99,6 +100,10 @@
                 containerHovered.value = false
                 submenuHovered.value = false
                 syncSortAggregateAndGroupPanel(activeInlineTab)
+                useAddEvent('insights', 'query', 'panelAdd', {
+                    panel_type: type,
+                    panel_source: 'action menu',
+                })
             }
 
             const computedItems = computed(() => {

@@ -11,10 +11,12 @@ const keyMap = {
         global_context: {
             changed: {
                 action: 'discovery_global_context_changed',
-                properties: (props: { type: 'persona' | 'purpose' | 'all_assets' }) => ({
+                properties: (props: {
+                    type: 'persona' | 'purpose' | 'all_assets'
+                }) => ({
                     type: props.type,
                 }),
-            }
+            },
         },
         aggregate_tab: {
             changed: {
@@ -228,6 +230,13 @@ const keyMap = {
             link_copied: {
                 action: 'insights_query_link_copied',
             },
+            panelAdd: {
+                action: 'insights_vqb_panel_added',
+                properties: (props) => ({
+                    panel_type: props?.panel_type,
+                    panel_source: props?.panel_source,
+                }),
+            },
             run: {
                 action: 'insights_query_run',
                 properties: (props) => ({
@@ -437,46 +446,54 @@ const keyMap = {
         integration: {
             added: {
                 action: 'admin_integration_added',
-                properties: (props: { integration: string, level: string }) => ({
-                    ...props
+                properties: (props: {
+                    integration: string
+                    level: string
+                }) => ({
+                    ...props,
                 }),
             },
             removed: {
                 action: 'admin_integration_removed',
-                properties: (props: { integration: string, level: string }) => ({
-                    ...props
+                properties: (props: {
+                    integration: string
+                    level: string
+                }) => ({
+                    ...props,
                 }),
-            }
-        }
+            },
+        },
     },
     integration: {
         slack: {
             asset_shared: {
                 action: 'integration_slack_asset_shared',
-                properties: (props: { asset_type: string, has_message: boolean }) => ({
-                    ...props
+                properties: (props: {
+                    asset_type: string
+                    has_message: boolean
+                }) => ({
+                    ...props,
                 }),
             },
             asset_question_posted: {
                 action: 'integration_slack_asset_question_posted',
                 properties: (props: { asset_type: string }) => ({
-                    ...props
+                    ...props,
                 }),
             },
             message_cta_clicked: {
                 action: 'integration_slack_message_cta_clicked',
                 properties: (props: { type: string }) => ({
-                    ...props
+                    ...props,
                 }),
             },
             share_channels_updated: {
                 action: 'integration_slack_share_channels_updated',
                 properties: (props: { channel_count: string }) => ({
-                    ...props
+                    ...props,
                 }),
-            }
-
-        }
-    }
+            },
+        },
+    },
 }
 export default keyMap

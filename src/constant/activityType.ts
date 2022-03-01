@@ -210,4 +210,10 @@ export const activityTypeMap = [
             'detail.attributes.adminGroups.keyword',
         ],
     },
+    {
+        value: 'query',
+        label: 'Query',
+        action: 'ENTITY_UPDATE',
+        exists: ['detail.attributes.rawQuery', 'detail.attributes.sql'],
+    },
 ]

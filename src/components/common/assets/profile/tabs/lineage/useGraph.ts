@@ -71,8 +71,8 @@ export default function useGraph(graph) {
 
         const computedData = {
             id: guid,
+            isSelectedNode: null,
             isHighlightedNode: null,
-            isHighlightedNodePath: null,
             isGrayed: false,
             hiddenCount: 0,
             ...dataObj,
@@ -100,8 +100,8 @@ export default function useGraph(graph) {
                     return `
                 <div class="flex items-center">
                     <div id="${guid}" class="lineage-node group ${isVpNode ? 'isVpNode' : ''} 
+                    ${data?.isSelectedNode === data?.id? 'isSelectedNode': ''}
                     ${data?.isHighlightedNode === data?.id? 'isHighlightedNode': ''}
-                    ${data?.isHighlightedNodePath === data?.id? 'isHighlightedNodePath': ''}
                     ${data?.isGrayed ? 'isGrayed' : ''} ${isBase ? 'isBase' : ''}">
                         <div class=" ${isBase ? 'inscr' : 'hidden'}">BASE</div>
                         ${
@@ -286,6 +286,7 @@ export default function useGraph(graph) {
     }
 
     const createPortData = (item) => {
+        console.log('item:', item)
         let text =
             item.displayText.charAt(0).toUpperCase() +
             item.displayText.slice(1).toLowerCase()

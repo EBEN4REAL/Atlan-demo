@@ -3,12 +3,12 @@ import bodybuilder from 'bodybuilder'
 import { assetInterface } from '~/types/assets/asset.interface'
 import useIndexSearch from '~/composables/discovery/useIndexSearch'
 
-export default function fetchColumns({
-    viewQualifiedName,
-    tableQualifiedName,
+export default function fetchColumns(
+    typeName,
+    qualifiedName,
     offset = 0,
-    limit = 2000,
-}) {
+    limit = 5
+) {
     const attributes = [
         'dataType',
         'qualifiedName',
@@ -40,18 +40,19 @@ export default function fetchColumns({
             prop: 'exists',
         },
         {
-            key: 'viewQualifiedName',
-            value: viewQualifiedName,
-            type: 'should',
-            prop: 'terms',
-        },
-        {
-            key: 'tableQualifiedName',
-            value: tableQualifiedName,
+            key: `${typeName}QualifiedName`,
+            value: qualifiedName,
             type: 'should',
             prop: 'terms',
         },
     ]
+
+    facets.push({
+        key: `${typeName === 'view' ? 'table' : 'view'}QualifiedName`,
+        value: ['def'],
+        type: 'should',
+        prop: 'terms',
+    })
 
     base.sort(name, type)
     base.from(offset)

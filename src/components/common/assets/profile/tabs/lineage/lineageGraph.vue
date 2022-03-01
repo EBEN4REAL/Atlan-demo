@@ -27,13 +27,7 @@
         </div>
 
         <!-- Lineage Header -->
-        <LineageHeader
-            v-if="isComputeDone"
-            :base-entity-guid="lineage.baseEntityGuid"
-            :highlighted-node="highlightedNode"
-            :is-cyclic="false"
-            :graph="graph"
-        />
+        <LineageHeader v-if="isComputeDone" :graph="graph" />
 
         <!-- Lineage Footer -->
         <LineageFooter
@@ -115,8 +109,7 @@
             const graphLayout = ref({})
             const showMinimap = ref(false)
             const searchItems = ref([])
-            const assetGuidToHighlight = ref('') // TODO:
-            const highlightedNode = ref('')
+            const selectedNodeId = ref('')
             const loaderCords = ref({})
             const currZoom = ref('...')
             const isDrawerVisible = ref(false)
@@ -149,7 +142,6 @@
                 if (openDrawer) isDrawerVisible.value = true
                 if (typeof control === 'function')
                     control('selectedAsset', item)
-                if (highlight) assetGuidToHighlight.value = item.guid
             }
 
             // onCloseDrawer
@@ -198,10 +190,8 @@
                 // useEventGraph
                 const { registerAllListeners } = useEventGraph({
                     graph,
-                    lineage,
                     baseEntity,
-                    assetGuidToHighlight,
-                    highlightedNode,
+                    selectedNodeId,
                     loaderCords,
                     currZoom,
                     searchItems,
@@ -253,7 +243,7 @@
                 selectedAssetGuid,
                 currZoom,
                 showMinimap,
-                highlightedNode,
+                selectedNodeId,
                 loaderCords,
                 drawerActiveKey,
                 isDrawerVisible,
@@ -428,7 +418,7 @@
                 border: 1px solid #5277d7 !important;
                 background-color: #ffffff !important;
 
-                &.isHighlightedNode {
+                &.isSelectedNode {
                     border: 1px solid #5277d7 !important;
                 }
 
@@ -490,7 +480,7 @@
         }
 
         .isGrayed {
-            border: 1px solid #e6e6eb !important;
+            border: 1px solid #e6e6eb;
 
             .node-text {
                 color: #6f7590 !important;
@@ -501,7 +491,7 @@
             }
         }
 
-        .isHighlightedNode {
+        .isSelectedNode {
             border: 1px solid #5277d7 !important;
             background-color: #f4f6fd !important;
             @apply text-primary;
@@ -518,7 +508,7 @@
             }
         }
 
-        .isHighlightedNodePath {
+        .isHighlightedNode {
             border: 1px solid #5277d7;
             background-color: #ffffff;
         }

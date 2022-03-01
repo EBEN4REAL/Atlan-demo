@@ -25,7 +25,7 @@
                         class="w-3 h-3 mr-1 text-gray-400"
                     ></AtlanIcon>
                     <span class="text-xs text-gray-500">{{
-                        persona.users.length
+                        persona.users.length + persona.groups.length
                     }}</span>
                 </div>
                 <div class="mx-2 bg-gray-300 dot"></div>

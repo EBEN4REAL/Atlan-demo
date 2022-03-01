@@ -54,14 +54,13 @@ watch(
 export const searchTerm = ref('')
 export const facets = ref({})
 export const filteredPersonas = computed(() => {
-    let result = []
+    let result = personaList.value
     const { hierarchy, owners, permissions } = facets.value
     const hasFilters =
         !!searchTerm.value ||
         !!Object.keys(hierarchy || {}).length ||
         !!(owners?.ownerUsers?.length || owners?.ownerGroups?.length) ||
         !!permissions?.length
-    result = personaList.value
     if (searchTerm.value) {
         result = personaList.value.filter((persona) => {
             // search term

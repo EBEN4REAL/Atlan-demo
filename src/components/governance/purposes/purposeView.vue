@@ -242,6 +242,7 @@
     import { purposeFilter } from '~/constant/filters/logsFilter'
     import NewPolicyIllustration from '~/assets/images/illustrations/new_policy.svg'
     import PurposeCard from '@/governance/purposes/discovery/purposeCard.vue'
+    import AssetFilters from '@/common/assets/filters/index.vue'
 
     export default defineComponent({
         name: 'PurposeView',
@@ -255,6 +256,7 @@
             ExplorerList,
             AddPurpose,
             PurposeCard,
+            AssetFilters,
         },
         setup() {
             const router = useRouter()

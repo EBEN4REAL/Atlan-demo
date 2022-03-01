@@ -109,7 +109,6 @@
 </script>
 <style lang="less" scoped>
     .persona-card {
-        width: 24%;
         height: 120px;
     }
     .dot {

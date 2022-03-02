@@ -174,8 +174,21 @@
 
             const filteredList = computed(() => {
                 const sortedList = glossaryList.value
-                return sortedList.sort((a, b) =>
-                    a?.displayText > b?.displayText ? 1 : -1
+                return sortedList.sort(
+                    (a, b) => {
+                        if (
+                            a?.displayText?.toLowerCase() <
+                            b?.displayText?.toLowerCase()
+                        )
+                            return -1
+                        if (
+                            a?.displayText?.toLowerCase() >
+                            b?.displayText?.toLowerCase()
+                        )
+                            return 1
+                        return 0
+                    }
+                    // a?.displayText > b?.displayText ? 1 : -1
                 )
             })
 
@@ -218,7 +231,7 @@
 <style lang="less">
     .glossarySelectPopover {
         .ant-popover-inner-content {
-            width: 250px !important;
+            width: 300px !important;
         }
     }
 </style>

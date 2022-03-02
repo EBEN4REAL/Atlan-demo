@@ -188,14 +188,23 @@ export const blockMenu: CommandItem[] = [
                       .run()
                 : editor.chain().focus().insertTable().run(),
     },
-    /*   {
+    {
         title: 'Google doc',
         key: 'googleDoc',
         helpText: '',
         icon: 'Gdoc',
         border: true,
-        command: ({ editor, range }) => editor.chain().focus().toggleImageBlock().run(),
-    }, */
+        disabled: () => false,
+        command: ({ editor, range }) =>
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .insertGoogleDoc()
+                      .run()
+                : editor.chain().focus().insertGoogleDoc().run(),
+    },
 ]
 
 export const menuData: CommandItem[] = [
@@ -319,4 +328,12 @@ export const menuDataTable: CommandItem[] = [
         command: ({ editor }) => editor.chain().focus().deleteTable().run(),
     },
     // table
+]
+
+export const BLOCK_TIPPY_MENU = [
+    'uploadimage',
+    'image',
+    'googleDoc',
+    'iframe',
+    'table',
 ]

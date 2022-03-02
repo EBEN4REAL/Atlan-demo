@@ -1,7 +1,10 @@
 <template>
     <div class="w-full h-full bg-white editor">
         <bubble-menu
-            v-if="!editor?.isActive('uploadimage') && editor"
+            v-if="
+                editor &&
+                !BLOCK_TIPPY_MENU.some((item) => editor?.isActive(item))
+            "
             class="w-full bubble-menu"
             :tippy-options="{
                 duration: 100,
@@ -15,11 +18,7 @@
             <selection-menu :editor="editor" :editable="isEditMode" />
         </bubble-menu>
         <bubble-menu
-            v-if="
-                !editor?.isActive('uploadimage') &&
-                editor?.isActive('customTable') &&
-                editor
-            "
+            v-if="editor && editor?.isActive('customTable')"
             class="w-full bubble-menu"
             :tippy-options="{
                 duration: 100,
@@ -57,15 +56,18 @@
     import TableCell from '@tiptap/extension-table-cell'
     import { CustomTable } from '@common/editor/extensions/table/extension'
 
+    import { TrailingNode } from '@common/editor/extensions/trailingNode'
     import SelectionMenu from './selectionMenu.vue'
     import SelectionMenuTable from './selectionMenuTable.vue'
     import SlashCommands from './extensions/slashCommands/commands'
     import suggestion from './extensions/slashCommands/suggestion'
     import ImageUpload from './extensions/imageUpload/extension'
     import CustomImage from './extensions/image/extension'
-    import { TrailingNode } from '@common/editor/extensions/trailingNode'
+    import IFrame from './extensions/iframe/extension'
+    import GoogleDoc from './extensions/googleDoc/extension'
 
     import LinkPreview from './extensions/linkPreview/linkPreview'
+    import { BLOCK_TIPPY_MENU } from '~/constant/readmeMenuItems'
 
     export default defineComponent({
         name: 'TiptapEditor',
@@ -172,6 +174,8 @@
                     }),
                     CustomImage,
                     ImageUpload,
+                    IFrame,
+                    GoogleDoc,
                 ],
                 onUpdate({ editor: currEditor }) {
                     const content = currEditor.getHTML()
@@ -210,6 +214,7 @@
                 getEditorContent,
                 shouldShowLegacyMenu,
                 shouldShowTableMenu,
+                BLOCK_TIPPY_MENU,
             }
         },
     })

@@ -38,7 +38,7 @@
     }
 
     a {
-        @apply text-blue-500 !important;
+        @apply text-blue-500;
     }
 
     ul > li::before {
@@ -428,4 +428,8 @@ placeholder:after {
 }
 .imageResizeBoxControl {
     z-index: 1000;
+}
+
+.embed-input::placeholder {
+    @apply text-gray-500;
 }

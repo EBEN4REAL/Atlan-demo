@@ -78,17 +78,19 @@
     const linkIssueVisible = ref(false)
     const createModal = ref(false)
 
-    const handleIssueCreationSuccess = () => {}
-
-    const store = integrationStore()
-    const { userJiraStatus } = toRefs(store)
-
     const {
         issues,
         isLoading,
         error,
         mutate: fetchLinkedIssues,
     } = listLinkedIssues(assetID)
+
+    const handleIssueCreationSuccess = () => {
+        fetchLinkedIssues()
+    }
+
+    const store = integrationStore()
+    const { userJiraStatus } = toRefs(store)
 
     const checkedIDs = ref<string[]>([])
     const unlinkErrorIDs = ref<string[]>([])

@@ -1,43 +1,79 @@
 <template>
     <section
-        class="flex items-center p-2 rounded shadow gap-x-2"
-        :class="error ? 'border border-red-500 border-dashed' : ''"
+        class="flex p-3 border shadow gap-x-4"
+        :class="error ? ' border-red-500 border-dashed' : 'border-gray-200'"
+        style="border-radius: 8px"
         @click="$emit('click', issue)"
     >
-        <div v-if="showCheckbox" class="">
+        <div v-if="showCheckbox">
             <a-checkbox :checked="checked" />
         </div>
-        <div class="flex" style="max-width: 40px">
-            <img
-                :src="project.avatarUrls['24x24']"
-                alt=""
-                class="rounded-full"
-            />
-        </div>
-        <aside class="w-full overflow-hidden">
-            <h1 class="flex font-bold">
-                <img :src="issuetype.iconUrl" class="mr-1" />
-                <Truncate
-                    placement="left"
-                    :route-to="issueUrl"
-                    :should-open-in-new-tab="true"
-                    :tooltip-text="`${key}: ${summary}`"
-                    class="flex-grow hover:underline"
-                    @click="(e) => e.stopPropagation()"
+        <aside class="flex-grow space-y-2">
+            <header class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <img
+                        :src="issuetype.iconUrl"
+                        style="max-height: 14px; max-width: 14px"
+                        class="mr-1"
+                    />
+                    <span>{{ key }}</span>
+                </div>
+                <div class="flex-grow"></div>
+                <span class="mr-1 text-xs text-gray-600">{{
+                    useTimeAgo(created).value
+                }}</span>
+                <img
+                    style="max-height: 16px; max-width: 16px"
+                    class="rounded-full"
+                    :src="creator.avatarUrls['24x24']"
+                    alt=""
                 />
-            </h1>
-            <span class="text-xs">
-                <Truncate
-                    placement="left"
-                    :tooltip-text="description"
-                    :rows="2"
-                />
-            </span>
-            <div class="text-xs text-gray-500">
-                <span>{{ creator.displayName }}</span
-                >,
-                <span>{{ useTimeAgo(created).value }}</span>
-            </div>
+            </header>
+            <main class="flex flex-col space-y-1">
+                <div class="flex items-center flex-grow">
+                    <Truncate
+                        placement="left"
+                        :route-to="issueUrl"
+                        :should-open-in-new-tab="true"
+                        :tooltip-text="summary"
+                        classes="text-primary hover:underline"
+                        @click="(e) => e.stopPropagation()"
+                    />
+                </div>
+
+                <span class="text-xs">
+                    <Truncate
+                        classes="text-gray-600"
+                        placement="left"
+                        :tooltip-text="description"
+                        :rows="2"
+                    />
+                </span>
+            </main>
+            <footer class="flex gap-x-2">
+                <div class="flex items-center p-1 bg-gray-100 rounded gap-x-1">
+                    <img
+                        :src="priority.iconUrl"
+                        style="height: 16px; width: 16px"
+                    />
+                </div>
+                <div
+                    class="flex items-center px-2 py-1 text-gray-700 bg-gray-100 rounded gap-x-1"
+                >
+                    {{ status.name }}
+                </div>
+                <div
+                    class="flex items-center px-2 py-1 bg-gray-100 rounded gap-x-1"
+                >
+                    <img
+                        style="height: 16px; width: 16px"
+                        :src="project.avatarUrls['24x24']"
+                        alt=""
+                        class="rounded-full"
+                    />
+                    <div class="text-xs text-gray-600">{{ project.key }}</div>
+                </div>
+            </footer>
         </aside>
     </section>
 </template>
@@ -74,6 +110,7 @@
             issuetype,
             project,
             priority,
+            status,
         },
     } = issue.value
 

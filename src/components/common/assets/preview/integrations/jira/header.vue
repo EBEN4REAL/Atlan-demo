@@ -27,21 +27,30 @@
             <div
                 v-else-if="assetIssueCount"
                 class="flex items-center px-2 py-1 rounded cursor-pointer hover:bg-gray-200 text-primary"
-                @click="$emit('add')"
+                @click="() => (addVisible = true)"
             >
-                <AtlanIcon icon="Add" class="mr-1 mb-0.5" /> Add Issue
+                <AddIssue v-model:visible="addVisible">
+                    <div class="">
+                        <AtlanIcon icon="Add" class="mr-1 mb-0.5" /> Add Issue
+                    </div>
+                </AddIssue>
             </div>
         </div>
     </header>
 </template>
 
 <script setup lang="ts">
+    import { ref } from 'vue'
+    import AddIssue from '@/common/assets/preview/integrations/jira/misc/addIssuePopover.vue'
+
     const emit = defineEmits(['add', 'remove', 'cancel'])
 
     const props = defineProps({
         removeMode: { type: Boolean, default: false },
         assetIssueCount: { type: Number, required: true },
     })
+
+    const addVisible = ref(false)
 </script>
 
 <style scoped></style>

@@ -76,6 +76,7 @@
                     <IssueList
                         v-model:checkedIDs="checkedIDs"
                         :issues="issues"
+                        :checkbox="true"
                         :error-i-ds="linkErrorIDs"
                     />
                 </div>

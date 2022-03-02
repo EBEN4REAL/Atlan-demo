@@ -2,10 +2,10 @@
     <template v-for="issue in issues" :key="issue.id">
         <IssueCard
             :checked="checkedIDs.includes(issue.id)"
-            :show-checkbox="!!checkedIDs.length"
+            :show-checkbox="checkbox"
             :issue="issue"
             :error="errorIDs.includes(issue.id)"
-            class="cursor-pointer hover:bg-gray-100"
+            class="cursor-pointer"
             @click="handleClick"
         />
     </template>
@@ -18,6 +18,7 @@
 
     const props = defineProps({
         issues: { type: Object, required: true },
+        checkbox: { type: Boolean, default: false },
         errorIDs: { type: Array, default: () => [] },
         checkedIDs: { type: Array, default: () => [] },
     })

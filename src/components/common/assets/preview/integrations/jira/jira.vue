@@ -6,7 +6,7 @@
     />
     <Header
         :remove-mode="!!checkedIDs.length"
-        :assetIssueCount="issues?.length || 0"
+        :asset-issue-count="issues?.length || 0"
         @add="linkIssueVisible = true"
         @cancel="resetIDs"
         @remove="handleIssueUnLink"
@@ -33,7 +33,7 @@
         <span class="text-gray-600 mb-9">
             Jira tickets linked to this assets will appear over here
         </span>
-        <AtlanButton @click="linkIssueVisible = true" class="px-5" size="sm">
+        <AtlanButton class="px-5" size="sm" @click="linkIssueVisible = true">
             <AtlanIcon icon="Add" />
             Add Issue</AtlanButton
         >
@@ -42,11 +42,12 @@
     <div ref="wrapper" class="w-full h-full">
         <div
             class="flex flex-col p-4 overflow-y-auto gap-y-4"
-            style="height: calc(100vh - 5.1rem)"
+            style="height: calc(100vh - 11.5rem)"
         >
             <IssueList
                 v-model:checkedIDs="checkedIDs"
                 :issues="issues"
+                :checkbox="false"
                 :error-i-ds="unlinkErrorIDs"
             />
         </div>
@@ -63,15 +64,17 @@
         ref,
         watch,
     } from 'vue'
+    import { message } from 'ant-design-vue'
     import Header from '@/common/assets/preview/integrations/jira/header.vue'
     import IssueCard from '@/common/assets/preview/integrations/jira/issueCard.vue'
     import LinkIssueDrawer from '@/common/assets/preview/integrations/jira/linkIssue/linkIssueDrawer.vue'
     import IssueList from '@/common/assets/preview/integrations/jira/issueList.vue'
-    import { unlinkIssue } from '~/composables/integrations/jira/useJiraTickets'
+    import {
+        unlinkIssue,
+        listLinkedIssues,
+    } from '~/composables/integrations/jira/useJiraTickets'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { listLinkedIssues } from '~/composables/integrations/jira/useJiraTickets'
     import ErrorView from '@/common/error/index.vue'
-    import { message } from 'ant-design-vue'
 
     const props = defineProps({
         selectedAsset: {

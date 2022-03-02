@@ -68,7 +68,10 @@ export const actions: Actions = {
     updateGlossary(value) {
         this.list.forEach((el, idx) => {
             if (el?.guid === value?.guid) {
+                const temp=this.list[idx]
                 this.list[idx] = value
+                this.list[idx].termsCount=temp?.termsCount
+                this.list[idx].categoryCount=temp?.categoryCount
             }
         })
     },

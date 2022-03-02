@@ -6,7 +6,12 @@ export function getBISourceTypes() {
     store.getList.forEach((item) => {
         if (item?.attributes) {
             // console.log('bi: ', item)
-            if (item.attributes?.category === 'BI' || item.attributes?.category === 'bi')
+            if (
+                item.attributes?.category.toLowerCase() === 'bi' ||
+                item.attributes?.connectorName?.toLowerCase() ===
+                    'salesforce' ||
+                item.attributes?.connectorName?.toLowerCase() === 'glue'
+            )
                 BItypes.add(item.attributes?.connectorName)
         }
     })

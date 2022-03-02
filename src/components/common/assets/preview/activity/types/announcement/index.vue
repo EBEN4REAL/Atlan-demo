@@ -36,7 +36,12 @@
     </div>
 
     <div v-else>
-        <div v-if="data.value?.attributes.announcementTitle === ''">
+        <div
+            v-if="
+                data.value?.attributes.announcementTitle === '' ||
+                !data.value?.attributes.announcementTitle
+            "
+        >
             <div class="mb-3"><b>Announcement </b> was removed</div>
         </div>
     </div>

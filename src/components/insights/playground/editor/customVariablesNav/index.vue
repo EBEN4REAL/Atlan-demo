@@ -6,6 +6,7 @@
                     size="sm"
                     color="secondary"
                     padding="compact"
+                    :disabled="readOnly"
                     class="flex items-center justify-between px-0 mx-3 my-3 add-btn group"
                     @click="onAddVariable"
                     style="min-width: 30px; height: 30px"
@@ -56,7 +57,7 @@
                 </p>
 
                 <div
-                    class="relative flex items-center pr-1 bg-white rounded group border-container"
+                    class="relative flex items-center bg-white rounded group border-container"
                     style="width: 162px; height: 34px !important"
                 >
                     <div v-if="variable.type === 'dropdown'">
@@ -202,6 +203,7 @@
                         :value="getDaysJsWrappedValue(variable.value)"
                         @change="(e) => onChange(variable, e)"
                         :bordered="false"
+                        :disabled="readOnly"
                         style="padding-right: 0 !important"
                         class="truncate border-0 focus:border-0 focus:outline-none"
                         :allowClear="false"
@@ -209,9 +211,13 @@
                     </a-date-picker>
                     <a-input
                         v-else
-                        class="border-none outline-none outline-0 group focus:outline-0 focus:border-none focus:shadow-none"
-                        style="width: 138px; height: 32px"
+                        class="w-full border-none outline-none outline-0 group focus:outline-0 focus:border-none focus:shadow-none"
+                        :class="readOnly ? 'bg-white text-gray-100' : ''"
+                        :style="`height: 32px; ${
+                            readOnly ? 'color: #00000040 !important' : ''
+                        }`"
                         v-model:value="variable.value"
+                        :disabled="readOnly"
                         @change="onChange(variable)"
                         :placeholder="`Enter a ${variable.type}`"
                         :type="variable.type === 'number' ? 'number' : 'text'"
@@ -227,8 +233,15 @@
                             class="absolute right-0 z-10 p-1 px-1.5 rounded opacity-0 group-hover:opacity-100"
                         >
                             <span
-                                @click="() => toggleDropdown(variable)"
-                                class="p-1 rounded cursor-pointer group-hover:bg-gray-light"
+                                @click="
+                                    () => !readOnly && toggleDropdown(variable)
+                                "
+                                class="p-1 rounded group-hover:bg-gray-light"
+                                :class="
+                                    readOnly
+                                        ? 'cursor-not-allowed'
+                                        : 'cursor-pointer'
+                                "
                             >
                                 <AtlanIcon
                                     class="w-4 h-4 text-gray-500 mb-0.5"
@@ -805,7 +818,27 @@
                 activeVariable.value.value = val
             }
 
+            /* Accesss */
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
+
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
+
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser.value
+                    ? false
+                    : hasQueryWritePermission.value
+                    ? false
+                    : true
+            )
+
             return {
+                readOnly,
                 getDaysJsWrappedValue,
                 onChange,
                 onCopyVariable,

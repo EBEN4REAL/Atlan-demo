@@ -269,14 +269,19 @@
             <a-button-group>
                 <a-tooltip
                     v-if="
-                        !isGTC(item) && !isBiAsset(item) && !isSaasAsset(item)
+                        !isGTC(item) &&
+                        !isBiAsset(item) &&
+                        !isSaasAsset(item) &&
+                        connectorName(item) !== 'glue'
                     "
                     title="Query"
                 >
                     <QueryDropdown
                         v-if="
                             assetType(item) === 'Table' ||
-                            assetType(item) === 'View'
+                            assetType(item) === 'View' ||
+                            assetType(item) === 'TablePartition' ||
+                            assetType(item) === 'MaterialisedView'
                         "
                         @handleClick="goToInsights"
                     >

@@ -830,5 +830,6 @@ export default {
     Deprecated,
     Nostatus,
     MySQL,
+    Mysql: MySQL,
     NoAllow,
 }

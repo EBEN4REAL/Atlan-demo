@@ -853,6 +853,10 @@
                 return count
             })
 
+            const showcustomToolBar = inject(
+                'showcustomToolBar'
+            ) as Ref<boolean>
+
             const {
                 treeData: treeData,
                 loadedKeys: loadedKeys,
@@ -889,6 +893,7 @@
                     readFolders: permissions.value.public.readFolders,
                 },
                 collection: selectedCollection,
+                showcustomToolBar,
             })
 
             const { data1: searchResults, isLoading1: searchLoading } =

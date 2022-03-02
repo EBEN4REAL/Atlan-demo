@@ -218,7 +218,7 @@ export const assetTypeList: {
     },
     {
         id: 'AtlasGlossaryCategory',
-        label: 'Categories',
+        label: 'Category',
         fullLabel: 'Glossary Category',
         isDiscoverable: true,
         image: 'Category',

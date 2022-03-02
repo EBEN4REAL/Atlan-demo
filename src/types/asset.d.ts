@@ -15,5 +15,5 @@ export interface AtlanTableAttributes extends BaseAttributes {
 export interface AtlanConnectionAttributes extends BaseAttributes {
     integrationName?: string
     allowQuery?: boolean
-    allowPreview?: boolean
+    allowQueryPreview?: boolean
 }

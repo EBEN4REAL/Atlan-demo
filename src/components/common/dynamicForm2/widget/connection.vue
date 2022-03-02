@@ -198,6 +198,8 @@
         ref,
         inject,
     } from 'vue'
+    import bodybuilder from 'bodybuilder'
+
     import { useConnectionStore } from '~/store/connection'
     import useIndexSearch from '~/composables/discovery/useIndexSearch'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -277,6 +279,7 @@
                 }
                 return ''
             })
+
             const {
                 data,
                 approximateCount,
@@ -298,62 +301,30 @@
                     'adminUsers',
                     'adminGroups',
                     'allowQuery',
-                    'allowPreview',
+                    'allowQueryPreview',
+                    'certificateStatus',
+                    'certificateUpdatedAt',
+                    'certificateUpdatedBy',
                 ],
-                dsl: {
-                    from: 0,
-                    size: 10,
-                    aggs: {
-                        group_by_connection: {
-                            terms: {
-                                field: 'connectionQualifiedName',
-                                size: 100,
-                            },
-                        },
-                    },
-                    query: {
-                        bool: {
-                            filter: {
-                                bool: {
-                                    must: [
-                                        {
-                                            term: {
-                                                connectorName: connector.value,
-                                            },
-                                        },
-                                        {
-                                            term: {
-                                                qualifiedName:
-                                                    connectionQFName.value,
-                                            },
-                                        },
-                                        {
-                                            term: {
-                                                __state: 'ACTIVE',
-                                            },
-                                        },
-                                    ],
-                                },
-                            },
-                        },
-                    },
-                    post_filter: {
-                        bool: {
-                            filter: {
-                                bool: {
-                                    must: [
-                                        {
-                                            term: {
-                                                '__typeName.keyword':
-                                                    'Connection',
-                                            },
-                                        },
-                                    ],
-                                },
-                            },
-                        },
-                    },
-                },
+                dsl: bodybuilder()
+                    .aggregation(
+                        'terms',
+                        'connectionQualifiedName',
+                        'group_by_connection',
+                        { size: 100 }
+                    )
+                    .filter('term', 'connectorName', connector.value)
+                    // TODO: Need to remove this to show existing connections
+                    .filter('term', 'qualifiedName', connectionQFName.value)
+                    .filter('term', '__state', 'ACTIVE')
+                    .size(10)
+                    .rawOption(
+                        'post_filter',
+                        bodybuilder()
+                            .filter('term', '__typeName.keyword', 'Connection')
+                            .build().query
+                    )
+                    .build(),
             })
 
             const list = computed(() => data.value?.entities || [])

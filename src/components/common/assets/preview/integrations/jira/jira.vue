@@ -11,8 +11,11 @@
         @cancel="resetIDs"
         @remove="handleIssueUnLink"
     />
+    <div v-if="!userJiraStatus.configured" class="flex items-center h-full">
+        <EmptyPlaceholder />
+    </div>
     <div
-        v-if="isLoading"
+        v-else-if="isLoading"
         class="flex items-center justify-center w-full h-full"
     >
         <AtlanLoader class="h-10" />
@@ -20,26 +23,11 @@
     <div v-else-if="error" class="">
         <ErrorView :error="error" />
     </div>
-    <div
-        v-if="!issues?.length"
-        class="flex flex-col items-center justify-center w-full h-full px-10 text-center"
-    >
-        <!-- // need empty placeholder -->
-        <AtlanIcon
-            icon="EmptyJira"
-            class="mb-8"
-            style="width: 272px; height: 212px"
-        />
-        <span class="text-gray-600 mb-9">
-            Jira tickets linked to this assets will appear over here
-        </span>
-        <AtlanButton class="px-5" size="sm" @click="linkIssueVisible = true">
-            <AtlanIcon icon="Add" />
-            Add Issue</AtlanButton
-        >
+    <div v-else-if="!issues?.length" class="flex items-center h-full">
+        <EmptyPlaceholder />
     </div>
 
-    <div ref="wrapper" class="w-full h-full">
+    <div v-else ref="wrapper" class="w-full h-full">
         <div
             class="flex flex-col p-4 overflow-y-auto gap-y-4"
             style="height: calc(100vh - 11.5rem)"
@@ -55,15 +43,7 @@
 </template>
 
 <script setup lang="ts">
-    import {
-        defineComponent,
-        PropType,
-        computed,
-        toRefs,
-        defineAsyncComponent,
-        ref,
-        watch,
-    } from 'vue'
+    import { PropType, computed, toRefs, ref, watch, onMounted } from 'vue'
     import { message } from 'ant-design-vue'
     import Header from '@/common/assets/preview/integrations/jira/header.vue'
     import IssueCard from '@/common/assets/preview/integrations/jira/issueCard.vue'
@@ -75,6 +55,9 @@
     } from '~/composables/integrations/jira/useJiraTickets'
     import { assetInterface } from '~/types/assets/asset.interface'
     import ErrorView from '@/common/error/index.vue'
+    import EmptyPlaceholder from '@/common/assets/preview/integrations/jira/misc/emptyPlaceholder.vue'
+    import integrationStore from '~/store/integrations/index'
+    import { until } from '@vueuse/core'
 
     const props = defineProps({
         selectedAsset: {
@@ -86,8 +69,15 @@
     const { selectedAsset: asset } = toRefs(props)
     const assetID = computed(() => asset.value.guid)
     const linkIssueVisible = ref(false)
+    const store = integrationStore()
+    const { userJiraStatus } = toRefs(store)
 
-    const { issues, isLoading, error, mutate } = listLinkedIssues(assetID)
+    const {
+        issues,
+        isLoading,
+        error,
+        mutate: fetchLinkedIssues,
+    } = listLinkedIssues(assetID)
 
     const checkedIDs = ref<string[]>([])
     const unlinkErrorIDs = ref<string[]>([])
@@ -152,9 +142,22 @@
         checkedIDs.value.forEach((id) => callUnlinkIssue(id))
 
         Promise.allSettled(allUnlinkPromises).then(() => {
-            mutate()
+            fetchLinkedIssues()
         })
     }
+
+    onMounted(() => {
+        if (userJiraStatus.value.configured) fetchLinkedIssues()
+    })
+
+    watch(
+        () => userJiraStatus.value.configured,
+        (v) => {
+            if (v) {
+                fetchLinkedIssues()
+            }
+        }
+    )
 </script>
 
 <style scoped></style>

@@ -292,7 +292,7 @@ export default function useAssetInfo() {
                 }
             })
         }
-        debugger
+
         const allTabs = [
             ...getTabs(previewTabs, assetType(asset)),
             ...(tenantJiraStatus.value.configured ? getTabs([JiraPreviewTab], assetType(asset)) : []),

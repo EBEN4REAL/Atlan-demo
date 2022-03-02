@@ -4,6 +4,7 @@ import { useAuthStore } from '~/store/auth'
 import integrationStore from '~/store/integrations/index'
 import useIntegrations, {
     archiveIntegration,
+    fetchIntegrationConfig,
     refetchIntegration,
 } from '~/composables/integrations/useIntegrations'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
@@ -135,6 +136,18 @@ export function openJiraOAuth({
             )
         }
     }, 500)
+}
+
+export const connectJira = ({ callback = null, tenant = false }:
+    { callback?: any, tenant: boolean }): any => {
+    const { isLoading, call } =
+        fetchIntegrationConfig(false)
+
+    const connect = async () => {
+        await call()
+        openJiraOAuth({ tenant, callback: callback ? (s: string) => callback(s) : () => ({}) })
+    }
+    return { isLoading, connect }
 }
 
 export const archiveJira = (pV) => {

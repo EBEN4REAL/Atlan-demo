@@ -1,5 +1,5 @@
 <template>
-    <a-popover v-model:visible="visible" :trigger="'click'" placement="bottom">
+    <a-popover v-model:visible="visible" :trigger="'click'">
         <template #content>
             <div class="p-2">
                 <!-- connect with jira banner -->
@@ -17,9 +17,14 @@
                     <div
                         class="flex cursor-pointer items-center px-2 py-1.5 text-xs text-white bg-gray-800 rounded gap-x-1"
                         style="width: 82px"
-                        @click="() => openJiraOAuth({ tenant: false })"
+                        @click="handleConnect"
                     >
-                        <AtlanIcon icon="Jira" style="height: 14px" /> Connect
+                        <AtlanIcon
+                            icon="Jira"
+                            style="height: 14px"
+                            :loading="ConfigLoading"
+                        />
+                        Connect
                     </div>
                 </div>
 
@@ -68,17 +73,26 @@
 <script setup lang="ts">
     import { toRefs, useVModels } from '@vueuse/core'
     import integrationStore from '~/store/integrations/index'
-    import { openJiraOAuth } from '~/composables/integrations/jira/useJira'
+    import { connectJira } from '~/composables/integrations/jira/useJira'
 
     const props = defineProps({
         visible: { type: Boolean, required: true },
     })
 
-    const emit = defineEmits(['link', 'create'])
+    const emit = defineEmits(['link', 'create', 'jiraConnect'])
     const { visible } = useVModels(props, emit)
 
     const store = integrationStore()
     const { userJiraStatus } = toRefs(store)
+
+    const callback = (status) => {
+        emit('jiraConnect', status)
+    }
+
+    const { isLoading: configLoading, connect: handleConnect } = connectJira({
+        callback,
+        tenant: false,
+    })
 </script>
 
 <style lang="less" scoped>

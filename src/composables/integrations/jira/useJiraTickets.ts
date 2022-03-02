@@ -75,7 +75,7 @@ export const listLinkedIssues = (assetID: Ref<string>) => {
 
     const jql = computed(() => `(issue.property[atlan].guid = ${assetID.value}) ORDER BY created DESC`)
 
-    return searchIssues(jql)
+    return searchIssues(jql, false)
 
 }
 

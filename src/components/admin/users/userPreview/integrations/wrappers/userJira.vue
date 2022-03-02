@@ -14,7 +14,7 @@
     import integrationStore from '~/store/integrations/index'
     import {
         archiveJira,
-        openJiraOAuth,
+        connectJira,
     } from '~/composables/integrations/jira/useJira'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import { fetchIntegrationConfig } from '~/composables/integrations/useIntegrations'
@@ -33,16 +33,11 @@
     const { userJiraStatus, tenantJiraStatus } = toRefs(store)
     const pV = computed(() => ({ id: userJiraStatus.value.id }))
     const { data, isLoading, error, disconnect } = archiveJira(pV)
-    const { isLoading: configLoading, call: mutate } =
-        fetchIntegrationConfig(false)
 
-    const handleConnect = async () => {
-        await mutate()
-        openJiraOAuth({
-            tenant: false,
-            callback: (s: string) => callback(s),
-        })
-    }
+    const { isLoading: configLoading, connect: handleConnect } = connectJira({
+        callback,
+        tenant: false,
+    })
 
     watch([data, error], () => {
         if (!error.value)

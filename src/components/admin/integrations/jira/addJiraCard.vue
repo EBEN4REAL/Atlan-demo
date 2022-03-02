@@ -32,7 +32,7 @@
         <div class="">
             <AtlanButton
                 v-auth="access.CREATE_INTEGRATION"
-                :loading="configLoading"
+                :loading="isLoading"
                 @click="handleConnect"
             >
                 Connect
@@ -52,6 +52,7 @@
         tenantLevelOauthUrl,
         archiveJira,
         openJiraOAuth,
+        connectJira,
     } from '~/composables/integrations/jira/useJira'
     import { integrations } from '~/constant/integrations/integrations'
     import { fetchIntegrationConfig } from '~/composables/integrations/useIntegrations'
@@ -114,17 +115,13 @@
             //     })
             // }
 
-            const { isLoading: configLoading, call } =
-                fetchIntegrationConfig(false)
-
-            const handleConnect = async () => {
-                await call()
-                openJiraOAuth({ tenant: true })
-            }
+            const { isLoading, connect: handleConnect } = connectJira({
+                tenant: true,
+            })
 
             return {
                 handleConnect,
-                configLoading,
+                isLoading,
                 description,
                 openJiraOAuth,
                 tenantJiraStatus,

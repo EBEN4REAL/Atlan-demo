@@ -8,7 +8,38 @@
             :trigger="['click']"
         >
             <div class="flex items-center w-full cursor-pointer">
-                <div class="flex flex-row items-center w-full">
+                <div
+                    v-if="
+                        getContextName(`database`) === 'Select database context'
+                    "
+                    class="flex flex-row items-center w-full"
+                >
+                    <div class="flex flex-col w-full bg">
+                        <div class="flex flex-shrink-0 mr-2">
+                            <img
+                                :src="getContextName(`icon`)"
+                                class="w-4 h-4 mr-1 mt-0.5"
+                            />
+                            <Tooltip
+                                :tooltip-text="getContextName(`connector`)"
+                                classes="cursor-pointer text-base text-gray-700 w-full"
+                                :class="[$style.filled_db_state]"
+                            >
+                            </Tooltip>
+                        </div>
+
+                        <span class="mr-1 text-sm text-gray-500 truncate"
+                            >Select database context</span
+                        >
+                    </div>
+                    <div class="w-4">
+                        <AtlanIcon
+                            icon="ChevronDown"
+                            class="w-4 h-4 text-gray-500"
+                        ></AtlanIcon>
+                    </div>
+                </div>
+                <div v-else class="flex flex-row items-center w-full">
                     <span class="flex-shrink-0 mr-2" style="font-size: 28px">
                         <img :src="getContextName(`icon`)" class="w-6 h-6"
                     /></span>

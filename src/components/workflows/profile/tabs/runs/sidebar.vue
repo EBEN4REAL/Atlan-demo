@@ -238,7 +238,12 @@
     import { computed, defineComponent, inject, ref, toRefs, watch } from 'vue'
     import useWorkflowRunRetry from '~/composables/package/useWorkflowRunRetry'
     import { Modal, message } from 'ant-design-vue'
-    import { promiseTimeout, useTimeout, useTimeoutFn } from '@vueuse/core'
+    import {
+        promiseTimeout,
+        useTimeout,
+        useTimeoutFn,
+        watchOnce,
+    } from '@vueuse/core'
     import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
     import useWorkflowLogsStream from '~/composables/package/useWorkflowLogsStream'
     import WorkflowLogs from './logs.vue'
@@ -316,8 +321,6 @@
                         }
                     )
                 }
-
-                console.log('failed', temp)
                 return temp
             })
 
@@ -354,16 +357,13 @@
                             key: messageKey.value,
                         })
 
-                        watch(data, () => {
-                            const {} = useTimeoutFn(() => {
-                                /* ... */
-                                // handleNewRun(name(data.value))
-                                message.success({
-                                    content: 'Run started',
-                                    key: messageKey.value,
-                                    duration: 10,
-                                })
-                            }, 2000)
+                        watchOnce(data, () => {
+                            handleNewRun(name(data.value))
+                            message.success({
+                                content: 'Run started',
+                                key: messageKey.value,
+                                duration: 10,
+                            })
                         })
                     },
                     // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -388,18 +388,18 @@
                             key: messageKey.value,
                         })
 
-                        watch(data, () => {
-                            const {} = useTimeoutFn(() => {
-                                /* ... */
-                                // handleNewRun(name(data.value))
-                                message.success({
-                                    content:
-                                        'Run will be stopped and all the tasks will be cancelled',
-                                    key: messageKey.value,
-                                    duration: 10,
-                                })
-                                window.location.reload()
-                            }, 5000)
+                        watchOnce(data, () => {
+                            message.success({
+                                content:
+                                    'Run will be stopped and all the tasks will be cancelled',
+                                key: messageKey.value,
+                            })
+                            // const {} = useTimeoutFn(() => {
+                            //     /* ... */
+                            //     // handleNewRun(name(data.value))
+
+                            //     // window.location.reload()
+                            // }, 5000)
                         })
                     },
                     // eslint-disable-next-line @typescript-eslint/no-empty-function

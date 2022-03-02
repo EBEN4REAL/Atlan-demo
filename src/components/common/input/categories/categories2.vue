@@ -18,6 +18,13 @@
                     :placeholder="`Search categories...`"
                     class="px-4 pb-2 mb-2"
                 ></SearchAdvanced>
+                <div v-if="!treeData?.length">
+                    <EmptyView
+                        empty-screen="EmptyDiscover"
+                        desc="No categories found"
+                        class="my-10"
+                    ></EmptyView>
+                </div>
                 <a-tree
                     v-if="!queryText"
                     :key="popoverVisible"
@@ -176,6 +183,7 @@
     } from '~/constant/projection'
 
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import EmptyView from '@common/empty/index.vue'
     import Tooltip from '@common/ellipsis/index.vue'
 
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
@@ -188,6 +196,7 @@
             SearchAdvanced,
             AssetList,
             GlossaryItem,
+            EmptyView,
         },
         props: {
             selectedAsset: {

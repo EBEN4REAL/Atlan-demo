@@ -419,12 +419,12 @@
                 if (asset) {
                     console.log(
                         asset?.typeName,
-                        asset?.attriutes?.anchor,
+                        asset?.attributes?.anchor?.guid,
                         'add'
                     )
                     glossaryStore.updateAssetCount(
                         asset?.typeName,
-                        asset?.attriutes?.anchor,
+                        asset?.attributes?.anchor?.guid,
                         'add'
                     )
                     if (asset.typeName === 'AtlasGlossary') {

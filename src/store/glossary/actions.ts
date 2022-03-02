@@ -41,7 +41,7 @@ export const actions: Actions = {
                 foundIdx = idx
             }
         })
-
+        console.log(foundIdx)
         if (action === 'add') {
             console.log(this.list[foundIdx])
             if (typeName === 'AtlasGlossaryTerm') {

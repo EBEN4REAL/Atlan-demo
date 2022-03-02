@@ -115,7 +115,12 @@
                                             'glue' &&
                                         action.id === 'query' &&
                                         (assetType(selectedAsset) === 'Table' ||
-                                            assetType(selectedAsset) === 'View')
+                                            assetType(selectedAsset) ===
+                                                'View' ||
+                                            assetType(selectedAsset) ===
+                                                'TablePartition' ||
+                                            assetType(selectedAsset) ===
+                                                'MaterialisedView')
                                     "
                                     @handleClick="handleQueryAction"
                                 >
@@ -131,7 +136,10 @@
                                     </template>
                                 </QueryDropdown>
                                 <a-button
-                                    v-else-if="showCTA(action.id)"
+                                    v-else-if="
+                                        showCTA(action.id) &&
+                                        connectorName(selectedAsset) !== 'glue'
+                                    "
                                     class="flex items-center justify-center"
                                     @click="handleAction(action.id)"
                                 >

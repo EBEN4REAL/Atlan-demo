@@ -10,7 +10,14 @@ export const assetActions = [
         label: 'Query',
         description: 'Run a sample query',
         icon: 'Query',
-        includes: ['Table', 'View', 'Column', 'Query'],
+        includes: [
+            'Table',
+            'View',
+            'Column',
+            'Query',
+            'TablePartition',
+            'MaterialisedView',
+        ],
     },
     {
         id: 'share',

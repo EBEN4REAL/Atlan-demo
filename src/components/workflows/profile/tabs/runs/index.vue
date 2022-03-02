@@ -4,15 +4,16 @@
             <div class="absolute z-10 rounded left-10 top-10">
                 <div class="flex flex-col">
                     <RunsSelect
-                        :key="runId"
-                        v-model="selectedRunName"
-                        :workflowName="workflowName"
-                        style="min-width: 150px"
+                        ref="runSelector"
                         class="mb-3 shadow"
+                        style="min-width: 150px"
+                        :model-value="path.name"
+                        :workflow-name="workflowName"
+                        @update:model-value="handleRunSelect"
                     />
 
                     <Sidebar
-                        :key="runId"
+                        :key="path.name"
                         :selectedRun="selectedRun"
                         :isLoading="firstLoad"
                         :error="error"
@@ -26,9 +27,8 @@
             />
 
             <MonitorGraph
-                :key="runId"
+                :key="path.name"
                 :graph-data="selectedRun"
-                @select="handleSelectPod"
                 @refresh="handleRefresh"
             />
         </div>
@@ -37,60 +37,40 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, watch, ref, toRefs } from 'vue'
+    import { defineComponent, watch, ref, toRefs, computed } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
-    import { useIntervalFn } from '@vueuse/core'
-
-    // import { nodeViewProps } from '@tiptap/vue-3'
-
-    // import WorkflowMixin from '~/mixins/workflow'
-    import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
+    import { useIntervalFn, whenever } from '@vueuse/core'
 
     import RunsSelect from '@/common/select/runs.vue'
-
+    import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
     import useRunItem from '~/composables/package/useRunItem'
-    import Sidebar from './sidebar.vue'
 
+    import Sidebar from './sidebar.vue'
     import MonitorGraph from './monitorGraph.vue'
 
     export default defineComponent({
         name: 'WorkflowMonitorTab',
         components: { RunsSelect, MonitorGraph, Sidebar },
-        // mixins: [WorkflowMixin],
         props: {
             workflowName: {
                 type: String,
                 required: false,
                 default: '',
             },
-            workflowObject: {
-                type: Object,
-                required: false,
-                default: () => {},
-            },
-            runId: {
-                type: String,
-                required: false,
-                default: '',
-            },
         },
-        setup(props, { emit }) {
-            const { workflowName, runId } = toRefs(props)
-            const selectedRunName = ref(runId.value)
-
+        setup(props) {
             const router = useRouter()
             const route = useRoute()
-
-            const { phase, startedAt, finishedAt, duration } = useWorkflowInfo()
-
             const dependentKey = ref()
-            const path = ref({
-                name: selectedRunName.value,
-            })
-
             const isValidating = ref(false)
             const firstLoad = ref(true)
+            const runSelector = ref(undefined)
 
+            const path = computed(() => ({
+                name: route.query.name,
+            }))
+
+            const { phase, startedAt, finishedAt, duration } = useWorkflowInfo()
             const {
                 data: selectedRun,
                 mutate,
@@ -105,26 +85,20 @@
                 }
             })
 
-            watch(runId, () => {
-                selectedRunName.value = runId.value
-            })
+            const handleRunSelect = (newRunId) => {
+                if (newRunId && route.query.name !== newRunId) {
+                    router.replace({
+                        query: {
+                            name: newRunId,
+                        },
+                    })
+                }
+            }
 
             watch(
-                selectedRunName,
+                path,
                 async () => {
-                    if (selectedRunName.value) {
-                        path.value = {
-                            name: selectedRunName.value,
-                        }
-
-                        if (route.query.name !== selectedRunName.value) {
-                            router.replace({
-                                query: {
-                                    name: selectedRunName.value,
-                                },
-                            })
-                        }
-
+                    if (path.value.name) {
                         isValidating.value = true
                         await mutate()
                         isValidating.value = false
@@ -135,23 +109,18 @@
 
             const { pause, resume } = useIntervalFn(
                 async () => {
-                    if (phase(selectedRun.value) === 'Running') {
-                        mutate()
-                    } else {
-                        pause()
-                    }
+                    if (phase(selectedRun.value) === 'Running') mutate()
+                    else pause()
                 },
                 5000,
                 { immediate: false }
             )
 
-            watch(selectedRun, () => {
-                if (selectedRun.value) {
-                    if (phase(selectedRun.value) === 'Running') {
-                        resume()
-                    } else {
-                        pause()
-                    }
+            whenever(selectedRun, () => {
+                if (phase(selectedRun.value) === 'Running') resume()
+                else {
+                    pause()
+                    runSelector.value?.quickChange()
                 }
             })
 
@@ -162,7 +131,7 @@
             }
 
             return {
-                selectedRunName,
+                handleRunSelect,
                 phase,
                 startedAt,
                 finishedAt,
@@ -179,6 +148,7 @@
                 isValidating,
                 route,
                 handleRefresh,
+                path,
             }
         },
     })

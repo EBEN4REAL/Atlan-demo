@@ -120,7 +120,7 @@
                     </a-tooltip>
                 </div>
                 <div class="w-8 text-sm text-gray-500 select-none">
-                    {{ currZoom }}
+                    {{ currZoom * 100 }}%
                 </div>
             </div>
         </div>
@@ -197,7 +197,7 @@
             const graphLayout: Ref<DagreLayout> = ref(null)
             const highlightLoadingCords = ref({})
             const highlightedNode = ref('')
-            const currZoom = ref(1)
+            const currZoom = ref(0.5)
             const showMinimap = ref(false)
             const isFullscreen = ref(false)
             const isRunning = ref(true)
@@ -285,6 +285,8 @@
                     drawerVisible,
                     selectedPod,
                 })
+
+                graph.value.zoom(currZoom.value, { absolute: true })
 
                 if (selectedPod.value?.id && drawerVisible.value) {
                     let podData = graph.value.getCellById(

@@ -1,5 +1,7 @@
 <template>
-    <div class="w-full pb-3 dropdown-schema-explorer">
+    <div
+        class="w-full pt-2 pb-2 pl-2 pr-2 rounded dropdown-schema-explorer hover:bg-gray-200"
+    >
         <a-dropdown
             :overlay-style="{
                 maxWidth: '10%',

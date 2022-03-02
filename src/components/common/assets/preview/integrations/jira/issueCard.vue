@@ -1,8 +1,8 @@
 <template>
     <section
-        class="flex p-3 border shadow gap-x-4"
-        :class="error ? ' border-red-500 border-dashed' : 'border-gray-200'"
+        class="flex p-3 bg-white border shadow gap-x-4"
         style="border-radius: 8px"
+        :class="checked ? ' border-primary' : 'border-gray-200'"
         @click="$emit('click', issue)"
     >
         <div v-if="showCheckbox">
@@ -19,15 +19,29 @@
                     <span>{{ key }}</span>
                 </div>
                 <div class="flex-grow"></div>
-                <span class="mr-1 text-xs text-gray-600">{{
-                    useTimeAgo(created).value
-                }}</span>
-                <img
-                    style="max-height: 16px; max-width: 16px"
-                    class="rounded-full"
-                    :src="creator.avatarUrls['24x24']"
-                    alt=""
-                />
+                <template v-if="footer">
+                    <span class="mr-1 text-xs text-gray-600">{{
+                        useTimeAgo(created).value
+                    }}</span>
+                    <img
+                        style="max-height: 16px; max-width: 16px"
+                        class="rounded-full"
+                        :src="creator.avatarUrls['24x24']"
+                        alt=""
+                    />
+                </template>
+                <div
+                    v-else
+                    class="flex items-center px-2 py-1 text-gray-500 rounded gap-x-1"
+                >
+                    <img
+                        style="height: 16px; width: 16px"
+                        :src="project.avatarUrls['24x24']"
+                        alt=""
+                        class="rounded-full"
+                    />
+                    <div class="text-xs text-gray-600">{{ project.key }}</div>
+                </div>
             </header>
             <main class="flex flex-col space-y-1">
                 <div class="flex items-center flex-grow">
@@ -50,20 +64,20 @@
                     />
                 </span>
             </main>
-            <footer class="flex gap-x-2">
-                <div class="flex items-center p-1 bg-gray-100 rounded gap-x-1">
+            <footer v-if="footer" class="flex gap-x-2">
+                <div class="flex items-center p-1 bg-gray-200 rounded gap-x-1">
                     <img
                         :src="priority.iconUrl"
                         style="height: 16px; width: 16px"
                     />
                 </div>
                 <div
-                    class="flex items-center px-2 py-1 text-gray-700 bg-gray-100 rounded gap-x-1"
+                    class="flex items-center px-2 py-1 text-xs text-gray-500 bg-gray-200 rounded gap-x-1"
                 >
                     {{ status.name }}
                 </div>
                 <div
-                    class="flex items-center px-2 py-1 bg-gray-100 rounded gap-x-1"
+                    class="flex items-center px-2 py-1 bg-gray-200 rounded gap-x-1"
                 >
                     <img
                         style="height: 16px; width: 16px"
@@ -71,7 +85,9 @@
                         alt=""
                         class="rounded-full"
                     />
-                    <div class="text-xs text-gray-600">{{ project.key }}</div>
+                    <div class="text-xs text-gray-500">
+                        {{ project.key }}
+                    </div>
                 </div>
             </footer>
         </aside>
@@ -88,6 +104,7 @@
     const props = defineProps({
         issue: { type: Object as PropType<Issue>, required: true },
         checked: { type: Boolean, default: false },
+        footer: { type: Boolean, default: true },
         error: { type: Boolean, default: false },
         showCheckbox: { type: Boolean, default: false },
     })

@@ -3,6 +3,7 @@
         <IssueCard
             :checked="checkedIDs.includes(issue.id)"
             :show-checkbox="checkbox"
+            :footer="footer"
             :issue="issue"
             :error="errorIDs.includes(issue.id)"
             :class="checkbox ? 'cursor-pointer' : ''"
@@ -19,6 +20,7 @@
     const props = defineProps({
         issues: { type: Object, required: true },
         checkbox: { type: Boolean, default: false },
+        footer: { type: Boolean, default: true },
         errorIDs: { type: Array, default: () => [] },
         checkedIDs: { type: Array, default: () => [] },
     })

@@ -1,106 +1,111 @@
 <template>
     <a-drawer
         v-model:visible="visible"
-        :mask="true"
+        :mask="false"
+        :width="421"
         :closable="false"
-        :force-render="false"
+        :destroy-on-close="true"
         @close="$emit('close')"
     >
-        <Header
-            class="mb-4"
-            :add-mode="!!checkedIDs.length"
-            @cancel="resetIDs"
-            @save="handleIssueLink"
-            @create="createModal = true"
-        />
-
-        <div
-            v-if="isLoading && !searchLoading"
-            class="flex items-center justify-center w-full h-full"
-        >
-            <AtlanLoader class="h-10" />
-        </div>
-        <div v-else-if="error" class="">
-            <ErrorView :error="error" />
-        </div>
-        <div
-            v-if="!issues?.length && !searchText && !searchLoading"
-            class="flex items-center justify-center w-full h-full"
-        >
-            <!-- // need empty placeholder -->
-            No issues exists, create one!
-        </div>
-
-        <div v-else class="flex flex-col gap-y-4">
-            <main class="flex flex-col flex-grow overflow-y-hidden">
-                <div class="flex-shrink-0 px-4 h-14">
-                    <Search
-                        v-model="searchText"
-                        clearable
-                        :placeholder="
-                            totalResults
-                                ? `Search from ${totalResults} issues to link`
-                                : ''
-                        "
-                        @change="searchLoading = true"
-                    />
-                    <div
-                        v-if="checkedIDs.length"
-                        class="w-full my-1 text-xs text-right text-gray-500"
-                    >
-                        {{ checkedIDs.length }} issues selected
-                    </div>
-                </div>
-
-                <div
-                    v-if="searchLoading"
-                    class="flex items-center justify-center w-full h-full"
-                >
-                    <AtlanLoader class="h-10" />
-                </div>
-                <div v-else-if="error" class="">
-                    <ErrorView :error="error" />
-                </div>
-                <div
-                    v-else-if="!issues?.length && searchText"
-                    class="flex items-center justify-center w-full h-full"
-                >
-                    No issue found with for "{{ searchText }}"
-                </div>
-
-                <div
-                    v-else
-                    class="flex flex-col p-4 pt-1 overflow-y-auto gap-y-4"
-                    style="height: calc(100vh - 10.4rem)"
-                >
-                    <IssueList
-                        v-model:checkedIDs="checkedIDs"
-                        :issues="issues"
-                        :checkbox="true"
-                        :error-i-ds="linkErrorIDs"
-                    />
-                </div>
-            </main>
-        </div>
-        <footer
-            class="absolute flex justify-center w-full pt-2 bg-white bottom-3"
-        >
-            <Pagination
-                v-if="visible"
-                v-model:offset="offset"
-                :loading="isLoading || searchLoading"
-                :page-size="pagination.pageSize"
-                :total-pages="pagination.total"
-                @mutate="mutate"
+        <div class="h-full bg-primary-light">
+            <Header
+                class="mb-4"
+                :checked-i-ds="checkedIDs"
+                @close="() => (visible = false)"
+                @cancel="resetIDs"
+                @save="handleIssueLink"
+                @create="createModal = true"
             />
-        </footer>
-    </a-drawer>
 
-    <CreateModal
-        v-model:visible="createModal"
-        :asset="asset"
-        @success="handleIssueCreationSuccess"
-    />
+            <div
+                v-if="isLoading && !searchLoading"
+                class="flex items-center justify-center w-full h-full"
+            >
+                <AtlanLoader class="h-10" />
+            </div>
+            <div v-else-if="error" class="">
+                <ErrorView :error="error" />
+            </div>
+            <div
+                v-if="!issues?.length && !searchText && !searchLoading"
+                class="flex items-center justify-center w-full h-full"
+            >
+                <!-- // need empty placeholder -->
+                <div
+                    class="flex flex-col items-center justify-center w-full h-full px-10 text-center"
+                >
+                    <AtlanIcon
+                        icon="EmptyJira"
+                        class="mb-8"
+                        style="width: 272px; height: 212px"
+                    />
+                    <span class="mx-5 text-gray-600 mb-9">
+                        No issue exist, please create a issue to link
+                    </span>
+                </div>
+            </div>
+
+            <div v-else class="flex flex-col gap-y-4">
+                <main class="flex flex-col flex-grow overflow-y-hidden">
+                    <div class="flex items-center px-4 mb-2 h-14">
+                        <Search
+                            v-model:value="searchText"
+                            clearable
+                            class="bg-white rounded-lg"
+                            :placeholder="
+                                totalResults
+                                    ? `Search from ${totalResults} issues to link`
+                                    : ''
+                            "
+                            @change="searchLoading = true"
+                        />
+                    </div>
+
+                    <div
+                        v-if="searchLoading"
+                        class="flex items-center justify-center w-full h-full"
+                    >
+                        <AtlanLoader class="h-10" />
+                    </div>
+                    <div v-else-if="error" class="">
+                        <ErrorView :error="error" />
+                    </div>
+                    <div
+                        v-else-if="!issues?.length && searchText"
+                        class="flex items-center justify-center w-full h-full"
+                    >
+                        No issue found with for "{{ searchText }}"
+                    </div>
+
+                    <div
+                        v-else
+                        class="flex flex-col p-4 pt-1 overflow-y-auto gap-y-2"
+                        style="height: calc(100vh - 10rem)"
+                    >
+                        <IssueList
+                            v-model:checkedIDs="checkedIDs"
+                            :issues="issues"
+                            :checkbox="true"
+                            :footer="true"
+                            :error-i-ds="linkErrorIDs"
+                        />
+                    </div>
+                </main>
+            </div>
+            <footer
+                class="absolute bottom-0 flex justify-center w-full pt-2 pb-2 bg-white"
+            >
+                <Pagination
+                    v-if="visible"
+                    v-model:offset="offset"
+                    :loading="isLoading || searchLoading"
+                    :page-size="pagination.pageSize"
+                    :total-pages="pagination.total"
+                    @mutate="mutate"
+                />
+            </footer>
+        </div>
+    </a-drawer>
 </template>
 
 <script setup lang="ts">
@@ -112,13 +117,12 @@
         linkIssue,
     } from '~/composables/integrations/jira/useJiraTickets'
     import IssueList from '@/common/assets/preview/integrations/jira/issueList.vue'
-    import Search from '@/common/input/searchAdvanced.vue'
+    import Search from '@/common/input/searchAndFilter.vue'
     import Header from '@/common/assets/preview/integrations/jira/linkIssue/header.vue'
     import AtlanLoader from '~/components/common/loaders/atlanLoader.vue'
     import ErrorView from '@/common/error/index.vue'
     import Pagination from '@/common/list/pagination.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import CreateModal from '@/common/integrations/jira/createIssueModal.vue'
 
     const props = defineProps({
         visible: { type: Boolean, required: true },
@@ -130,8 +134,6 @@
     const { visible } = useVModels(props, emit)
 
     const { asset } = toRefs(props)
-
-    const createModal = ref(false)
 
     const assetID = computed(() => asset.value.guid)
 
@@ -218,11 +220,6 @@
         resetIDs()
         offset.value = 0
         mutate()
-    }
-
-    const handleIssueCreationSuccess = () => {
-        visible.value = false
-        emit('close')
     }
 
     watch(visible, (v) => {

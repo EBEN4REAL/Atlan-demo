@@ -1,43 +1,49 @@
 <template>
-    <div
-        class="flex justify-between px-5 py-2 border-b border-gray-200 gap-x-3 bg-gray-50"
+    <Shortcut
+        shortcut-key="esc"
+        action="close"
+        placement="left"
+        :delay="0"
+        :edit-permission="true"
     >
-        <div>
-            <span class="font-semibold text-gray-500"> Link Issues </span>
+        <div class="close-btn-sidebar" @click="$emit('close')">
+            <AtlanIcon icon="Add" class="text-white outline-none" />
         </div>
-        <div class="flex-grow"></div>
-        <template v-if="addMode">
-            <div
-                class="flex items-center text-gray-700 cursor-pointer hover:underline"
-                @click="$emit('cancel')"
-            >
-                Cancel
-            </div>
-            <AtlanButton
-                padding="compact"
-                size="sm"
-                class="flex items-center h-5 px-4 cursor-pointer"
-                @click="$emit('save')"
-            >
-                Link
-            </AtlanButton>
-        </template>
+    </Shortcut>
+    <div
+        class="flex items-center justify-between px-5 py-2 bg-white border-b border-gray-200 gap-x-3"
+    >
         <div
-            v-else
-            class="flex items-center cursor-pointer text-primary"
-            @click="$emit('create')"
+            class="flex items-center justify-center w-8 h-8 rounded-full bg-primary-light"
         >
-            <AtlanIcon icon="Add" class="mr-1 mb-0.5" /> Create Issue
+            <AtlanIcon icon="Jira" />
         </div>
+        <span class="flex-grow font-semibold text-gray-500"> Link Issues </span>
+        <div
+            v-if="checkedIDs.length"
+            class="my-1 text-xs font-bold text-right text-gray-600"
+        >
+            {{ checkedIDs.length }} issues selected
+        </div>
+        <AtlanButton
+            size="sm"
+            class="flex items-center cursor-pointer px-7"
+            :disabled="!checkedIDs.length"
+            @click="$emit('save')"
+        >
+            Add
+        </AtlanButton>
     </div>
 </template>
 
 <script setup lang="ts">
+    import Shortcut from '@/common/popover/shortcut.vue'
+
     const props = defineProps({
-        addMode: { type: Boolean, default: false },
+        checkedIDs: { type: Array, default: [] },
     })
 
-    const emit = defineEmits(['create', 'save', 'cancel'])
+    const emit = defineEmits(['create', 'save', 'cancel', 'close'])
 </script>
 
 <style scoped></style>

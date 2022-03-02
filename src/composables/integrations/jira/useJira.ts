@@ -106,12 +106,12 @@ const handlePopupClose = async (
     } else callback('failure')
 }
 
-export function openJiraOAuth({
+const openJiraOAuth = ({
     w = 600,
     h = 500,
     tenant = false,
     callback = (status) => ({}),
-}) {
+}) => {
     const store = integrationStore()
     const { userJiraStatus, tenantJiraStatus } = toRefs(store)
     const { width, height } = window.screen

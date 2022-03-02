@@ -1,4 +1,9 @@
 <template>
+    <CreateModal
+        v-model:visible="createModal"
+        :asset="asset"
+        @success="handleIssueCreationSuccess"
+    />
     <LinkIssueDrawer
         v-model:visible="linkIssueVisible"
         :asset="asset"
@@ -7,7 +12,8 @@
     <Header
         :remove-mode="!!checkedIDs.length"
         :asset-issue-count="issues?.length || 0"
-        @add="linkIssueVisible = true"
+        @link="linkIssueVisible = true"
+        @create="createModal = true"
         @cancel="resetIDs"
         @remove="handleIssueUnLink"
     />
@@ -29,7 +35,7 @@
 
     <div v-else ref="wrapper" class="w-full h-full">
         <div
-            class="flex flex-col p-4 overflow-y-auto gap-y-4"
+            class="flex flex-col p-4 overflow-y-auto gap-y-3"
             style="height: calc(100vh - 11.5rem)"
         >
             <IssueList
@@ -58,6 +64,7 @@
     import EmptyPlaceholder from '@/common/assets/preview/integrations/jira/misc/emptyPlaceholder.vue'
     import integrationStore from '~/store/integrations/index'
     import { until } from '@vueuse/core'
+    import CreateModal from '@/common/integrations/jira/createIssueModal.vue'
 
     const props = defineProps({
         selectedAsset: {
@@ -69,6 +76,10 @@
     const { selectedAsset: asset } = toRefs(props)
     const assetID = computed(() => asset.value.guid)
     const linkIssueVisible = ref(false)
+    const createModal = ref(false)
+
+    const handleIssueCreationSuccess = () => {}
+
     const store = integrationStore()
     const { userJiraStatus } = toRefs(store)
 

@@ -17,7 +17,6 @@
         connectJira,
     } from '~/composables/integrations/jira/useJira'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
-    import { fetchIntegrationConfig } from '~/composables/integrations/useIntegrations'
 
     const emit = defineEmits(['refresh'])
 

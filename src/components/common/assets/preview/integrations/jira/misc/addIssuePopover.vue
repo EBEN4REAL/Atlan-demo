@@ -33,11 +33,12 @@
                         :class="
                             !userJiraStatus.configured
                                 ? 'text-gray-400 cursor-not-allowed'
-                                : 'text-primary'
+                                : ''
                         "
                         class="mb-1 rounded menu-item"
                         @click="
                             () => {
+                                visible = false
                                 if (userJiraStatus.configured) {
                                     $emit('create')
                                 }
@@ -51,10 +52,11 @@
                         :class="
                             !userJiraStatus.configured
                                 ? 'text-gray-400 cursor-not-allowed'
-                                : 'text-primary'
+                                : ''
                         "
                         @click="
                             () => {
+                                visible = false
                                 if (userJiraStatus.configured) {
                                     $emit('link')
                                 }
@@ -79,18 +81,13 @@
         visible: { type: Boolean, required: true },
     })
 
-    const emit = defineEmits(['link', 'create', 'jiraConnect'])
+    const emit = defineEmits(['link', 'create'])
     const { visible } = useVModels(props, emit)
 
     const store = integrationStore()
     const { userJiraStatus } = toRefs(store)
 
-    const callback = (status) => {
-        emit('jiraConnect', status)
-    }
-
     const { isLoading: configLoading, connect: handleConnect } = connectJira({
-        callback,
         tenant: false,
     })
 </script>

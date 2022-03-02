@@ -29,7 +29,11 @@
                 class="flex items-center px-2 py-1 rounded cursor-pointer hover:bg-gray-200 text-primary"
                 @click="() => (addVisible = true)"
             >
-                <AddIssue v-model:visible="addVisible">
+                <AddIssue
+                    v-model:visible="addVisible"
+                    @link="emit('link')"
+                    @create="emit('create')"
+                >
                     <div class="">
                         <AtlanIcon icon="Add" class="mr-1 mb-0.5" /> Add Issue
                     </div>
@@ -43,7 +47,7 @@
     import { ref } from 'vue'
     import AddIssue from '@/common/assets/preview/integrations/jira/misc/addIssuePopover.vue'
 
-    const emit = defineEmits(['add', 'remove', 'cancel'])
+    const emit = defineEmits(['link', 'create', 'remove', 'cancel'])
 
     const props = defineProps({
         removeMode: { type: Boolean, default: false },

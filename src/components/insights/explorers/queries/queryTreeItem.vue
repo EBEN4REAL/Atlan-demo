@@ -327,7 +327,9 @@
                                             <a-menu-item
                                                 class="px-4 py-2 text-sm"
                                                 key="schedule"
-                                                @click="scheduleQuery"
+                                                @click="
+                                                    toggleScheduleQueryModal
+                                                "
                                                 >Schedule</a-menu-item
                                             >
                                             <a-menu-item
@@ -447,6 +449,20 @@
         </template>
     </a-popover> -->
 
+    <a-modal
+        :visible="scheduleQueryModal"
+        :footer="null"
+        :closable="false"
+        width="700px"
+        :destroyOnClose="true"
+    >
+        <ScheduleQuery
+            v-model:scheduleQueryModal="scheduleQueryModal"
+            style="min-height: 610px"
+            class="rounded-lg"
+        />
+    </a-modal>
+
     <a-popover :visible="showFolderPopover" placement="rightTop">
         <template #content>
             <div>
@@ -517,6 +533,7 @@
     import { QueryCollection } from '~/types/insights/savedQuery.interface'
     import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
     import Tooltip from '@common/ellipsis/index.vue'
+    import ScheduleQuery from '~/components/insights/explorers/queries/schedule/index.vue'
 
     const {
         inlineTabRemove,
@@ -540,6 +557,7 @@
             PopoverAsset,
             AtlanBtn,
             Tooltip,
+            ScheduleQuery,
         },
         props: {
             item: {
@@ -603,6 +621,7 @@
 
             const route = useRoute()
             const router = useRouter()
+            const scheduleQueryModal = ref(false)
 
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
@@ -1184,7 +1203,13 @@
                 })
             }
 
-            const scheduleQuery = () => {}
+            const toggleScheduleQueryModal = (
+                e: any,
+                cancel: boolean | undefined
+            ) => {
+                if (cancel) {
+                } else scheduleQueryModal.value = !scheduleQueryModal.value
+            }
 
             let isDeleteLoading = ref(false)
 
@@ -1508,7 +1533,8 @@
             }
 
             return {
-                scheduleQuery,
+                scheduleQueryModal,
+                toggleScheduleQueryModal,
                 evaluatePermisson,
                 permissions,
                 canUserDeleteFolder,

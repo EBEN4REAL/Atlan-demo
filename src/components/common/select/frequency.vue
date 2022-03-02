@@ -5,7 +5,15 @@
         class="w-full"
         @change="handleChange"
         :allowClear="true"
+        @dropdownVisibleChange="dropdownVisibleChange"
     >
+        <template #suffixIcon>
+            <AtlanIcon
+                :icon="!dropdownOpen ? 'ChevronDown' : 'ChevronUp'"
+                class="w-4 h-4 text-gray-500"
+                style="min-width: 16px"
+            />
+        </template>
         <a-select-option
             v-for="item in list"
             :value="item.value"
@@ -38,6 +46,7 @@
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
+            const dropdownOpen = ref(false)
             const localValue = ref(modelValue.value)
 
             const list = ref(frequency)
@@ -47,10 +56,16 @@
                 emit('change')
             }
 
+            const dropdownVisibleChange = (open: boolean) => {
+                dropdownOpen.value = open
+            }
+
             return {
                 list,
                 localValue,
                 handleChange,
+                dropdownVisibleChange,
+                dropdownOpen,
             }
         },
     })

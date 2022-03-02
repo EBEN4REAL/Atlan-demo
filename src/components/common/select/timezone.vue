@@ -4,7 +4,15 @@
         v-model:value="localValue"
         class="w-full"
         @change="handleChange"
+        @dropdownVisibleChange="dropdownVisibleChange"
     >
+        <template #suffixIcon>
+            <AtlanIcon
+                :icon="!dropdownOpen ? 'ChevronDown' : 'ChevronUp'"
+                class="w-4 h-4 text-gray-500"
+                style="min-width: 16px"
+            />
+        </template>
         <a-select-option
             v-for="item in list"
             :value="item.value"
@@ -38,6 +46,7 @@
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
+            const dropdownOpen = ref(false)
 
             const list = ref(timezones)
 
@@ -45,11 +54,16 @@
                 modelValue.value = localValue.value
                 emit('change')
             }
+            const dropdownVisibleChange = (open: boolean) => {
+                dropdownOpen.value = open
+            }
 
             return {
                 list,
                 localValue,
+                dropdownOpen,
                 handleChange,
+                dropdownVisibleChange,
             }
         },
     })

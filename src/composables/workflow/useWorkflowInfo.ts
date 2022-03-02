@@ -175,42 +175,41 @@ export default function useWorkflowInfo() {
     }
 
     const getRunClassByPhase = (tempStatus) => {
-        if (tempStatus === 'Succeeded') {
-            return 'bg-green-500 opacity-75'
-        } else if (
-            tempStatus === 'Failed' ||
-            tempStatus === 'Error' ||
-            tempStatus === 'Stopped' ||
-            tempStatus === 'Error'
-        ) {
-            return 'bg-red-500 opacity-75'
-        } else if (tempStatus === 'Running') {
-            return 'bg-primary opacity-75 animate-pulse'
+        switch (tempStatus) {
+            case 'Succeeded':
+                return 'bg-green-500 opacity-75'
+            case 'Running':
+                return 'bg-primary opacity-75 animate-pulse'
+            case 'Failed':
+            case 'Error':
+            case 'Stopped':
+                return 'bg-red-500 opacity-75'
+            default:
+                return 'bg-gray-200'
         }
-        return 'bg-gray-200'
     }
+
     const getRunTextClassByPhase = (tempStatus) => {
-        if (tempStatus === 'Succeeded') {
-            return 'text-green-500'
-        } else if (
-            tempStatus === 'Failed' ||
-            tempStatus === 'Error' ||
-            tempStatus === 'Stopped'
-        ) {
-            return 'text-red-500'
-        } else if (tempStatus === 'Running') {
-            return 'text-blue-500 animate-pulse'
+        switch (tempStatus) {
+            case 'Succeeded':
+                return 'text-green-500'
+            case 'Running':
+                return 'text-blue-500 animate-pulse'
+            case 'Failed':
+            case 'Error':
+            case 'Stopped':
+                return 'text-red-500'
+            default:
+                return 'bg-gray-500'
         }
-        return 'bg-gray-200'
     }
+
     const getRunBorderClassByPhase = (tempStatus) => {
-        if (tempStatus === 'Succeeded') {
-            return 'border-green-500 opacity-75'
-        } else if (tempStatus === 'Failed' || tempStatus === 'Error') {
+        if (tempStatus === 'Succeeded') return 'border-green-500 opacity-75'
+        if (tempStatus === 'Failed' || tempStatus === 'Error')
             return 'border-red-500 opacity-75'
-        } else if (tempStatus === 'Running') {
+        if (tempStatus === 'Running')
             return 'border-blue-500 opacity-75 animate-pulse'
-        }
         return 'border-gray-200'
     }
 

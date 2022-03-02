@@ -136,6 +136,7 @@
                 startedAt,
                 finishedAt,
                 duration,
+                runSelector,
                 selectedRun,
                 router,
                 isLoading,

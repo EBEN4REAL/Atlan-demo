@@ -18,9 +18,8 @@ export default function useComputeGraph(graph, graphLayout, workflowData) {
     const getNode = (nodeId) => sourceNodes.value?.[nodeId]
 
     // Setting Node Data
-    nodes.value = Object.values(sourceNodes.value).map((node) =>
-        createNode(node, rootName)
-    )
+    nodes.value = Object.values(sourceNodes.value)
+    .map((node) => createNode(node, rootName))
 
     // Setting Edge Data
     Object.values(sourceNodes.value).forEach((node) => {

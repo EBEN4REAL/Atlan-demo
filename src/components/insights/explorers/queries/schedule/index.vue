@@ -1,14 +1,14 @@
 <template>
     <div class="w-full h-full bg-white">
-        <Header />
+        <Header :item="item" />
         <keep-alive>
-            <Info v-if="activeTabIndex === 0" />
+            <Info v-if="activeTabIndex === 0" :item="item" />
         </keep-alive>
         <keep-alive>
-            <Variables v-if="activeTabIndex === 1" />
+            <Variables v-if="activeTabIndex === 1" :item="item" />
         </keep-alive>
         <keep-alive>
-            <Success v-if="activeTabIndex === 2" />
+            <Success v-if="activeTabIndex === 2" :item="item" />
         </keep-alive>
         <div
             class="flex items-center justify-between p-6 text-sm border-t border-gray-200 rounded-b-lg bg-primary-light"
@@ -58,7 +58,8 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref } from 'vue'
+    import { defineComponent, ref, PropType, toRefs } from 'vue'
+    import { assetInterface } from '~/types/assets/asset.interface'
     import Header from './header.vue'
     import Info from './info.vue'
     import Variables from './variables.vue'
@@ -72,6 +73,10 @@
         props: {
             scheduleQueryModal: {
                 type: Boolean,
+                required: true,
+            },
+            item: {
+                type: Object as PropType<assetInterface>,
                 required: true,
             },
         },

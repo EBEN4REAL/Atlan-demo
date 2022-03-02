@@ -78,7 +78,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref } from 'vue'
+    import { defineComponent, ref, onMounted, nextTick } from 'vue'
     import Frequency from '~/components/common/select/frequency.vue'
     import Timezone from '~/components/common/select/timezone.vue'
 
@@ -115,6 +115,11 @@
                 if (!infoTabeState.value.name) rules.value.name.show = true
                 else rules.value.name.show = false
             }
+
+            onMounted(async () => {
+                await nextTick()
+                nameRef.value?.focus()
+            })
             return {
                 infoTabeState,
                 onNameBlur,

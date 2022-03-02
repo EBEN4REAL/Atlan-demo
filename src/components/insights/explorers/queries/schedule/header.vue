@@ -10,18 +10,24 @@
             <div class="flex items-center text-gray-700">
                 <div class="flex items-center text-sm">
                     <img
-                        :src="getConnectorImage('snowflake')"
-                        class="w-4 h-4 mr-1 -mt-0.5"
+                        :src="
+                            getConnectorImage(item?.attributes?.connectionName)
+                        "
+                        class="w-4 h-4 mr-1"
                         style="min-width: 1rem"
                     />
 
-                    <span> atlan product</span>
+                    <span>
+                        {{
+                            connectionName(item) ? connectionName(item) : '-'
+                        }}</span
+                    >
                 </div>
                 <span class="mx-2 text-gray-400 opacity-50">/</span>
                 <div class="flex items-center text-sm">
                     <AtlanIcon icon="QueryVerified" class="w-4 h-4 mr-1" />
 
-                    <span class="text-sm">Aggregate beverage order</span>
+                    <span class="text-sm">{{ item?.attributes?.name }}</span>
                 </div>
             </div>
         </div>
@@ -35,19 +41,31 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, PropType, toRefs } from 'vue'
     import { useConnectionStore } from '~/store/connection'
+    import { assetInterface } from '~/types/assets/asset.interface'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         name: 'Schedule Query Header',
         components: {},
-        props: {},
+        props: {
+            item: {
+                type: Object as PropType<assetInterface>,
+                required: true,
+            },
+        },
         setup(props) {
+            const { item } = toRefs(props)
+            const { connectionName } = useAssetInfo()
             const store = useConnectionStore()
             const getConnectorImage = (sourceid) => {
                 return store.getConnectorImageMapping[sourceid?.toLowerCase()]
             }
+
             return {
+                item,
+                connectionName,
                 getConnectorImage,
             }
         },

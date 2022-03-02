@@ -457,6 +457,7 @@
         :destroyOnClose="true"
     >
         <ScheduleQuery
+            :item="item"
             v-model:scheduleQueryModal="scheduleQueryModal"
             style="min-height: 610px"
             class="rounded-lg"

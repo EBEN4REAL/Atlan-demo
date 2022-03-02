@@ -4,6 +4,18 @@ export interface CommandItem {
     title: string
     key: string
     helpText: string
+    searchKeys: string[]
+    icon?: string
+    level?: number
+    border?: boolean
+    disabled?: any
+    command?: any
+}
+
+export interface MenuItem {
+    title: string
+    key: string
+    helpText: string
     icon?: string
     level?: number
     border?: boolean
@@ -18,6 +30,7 @@ export const blockMenu: CommandItem[] = [
         level: 1,
         helpText: '',
         icon: 'HOne',
+        searchKeys: ['h1', 'heading', 'heading1', 'heading 1'],
         disabled: () => false,
         command: ({ editor, range }) =>
             range
@@ -35,6 +48,7 @@ export const blockMenu: CommandItem[] = [
         level: 2,
         helpText: '',
         icon: 'HTwo',
+        searchKeys: ['h2', 'heading', 'heading2', 'heading 2'],
         disabled: () => false,
         command: ({ editor, range }) =>
             range
@@ -51,6 +65,7 @@ export const blockMenu: CommandItem[] = [
         key: 'heading-3',
         level: 3,
         icon: 'HThree',
+        searchKeys: ['h3', 'heading', 'heading3', 'heading 3'],
         border: true,
         helpText: '',
         disabled: () => false,
@@ -70,6 +85,7 @@ export const blockMenu: CommandItem[] = [
         key: 'bulletList',
         helpText: '',
         icon: 'BulletList',
+        searchKeys: ['ul', 'bullet', 'list', 'bulleted list'],
         disabled: (editor: Editor) =>
             !editor.can().toggleList('bulletList', 'listItem'),
         command: ({ editor, range }) =>
@@ -88,6 +104,7 @@ export const blockMenu: CommandItem[] = [
         helpText: '',
         icon: 'NumberedList',
         border: true,
+        searchKeys: ['ol', 'number', 'list', 'numbered list'],
         disabled: (editor: Editor) =>
             !editor.can().toggleList('orderedList', 'listItem'),
         command: ({ editor, range }) =>
@@ -106,6 +123,7 @@ export const blockMenu: CommandItem[] = [
         key: 'taskList',
         helpText: '',
         icon: 'TaskList',
+        searchKeys: ['checklist', 'check', 'list', 'task list', 'tasklist'],
         disabled: (editor: Editor) => !editor.can().toggleTaskList(),
         command: ({ editor, range }) =>
             range
@@ -122,6 +140,7 @@ export const blockMenu: CommandItem[] = [
         key: 'blockquote',
         helpText: '',
         icon: 'Quotes',
+        searchKeys: ['quote', 'blockquote'],
         disabled: () => false,
         command: ({ editor, range }) =>
             range
@@ -139,6 +158,7 @@ export const blockMenu: CommandItem[] = [
         helpText: '',
         icon: 'Code',
         border: true,
+        searchKeys: ['code', 'codeblock'],
         disabled: () => false,
         command: ({ editor, range }) =>
             range
@@ -156,6 +176,7 @@ export const blockMenu: CommandItem[] = [
         helpText: '',
         icon: 'ReadmeImage',
         border: true,
+        searchKeys: ['image', 'images'],
         disabled: (editor: Editor) => !editor.can().toggleImageBlock(),
         command: ({ editor, range }) =>
             range
@@ -173,6 +194,7 @@ export const blockMenu: CommandItem[] = [
         helpText: 'Insert a table',
         icon: 'TableBlack',
         border: true,
+        searchKeys: ['table'],
         disabled: () => false,
         command: ({ editor, range }) =>
             range
@@ -189,11 +211,12 @@ export const blockMenu: CommandItem[] = [
                 : editor.chain().focus().insertTable().run(),
     },
     {
-        title: 'Google doc',
+        title: 'Google Doc',
         key: 'googleDoc',
         helpText: '',
         icon: 'Gdoc',
         border: true,
+        searchKeys: ['google', 'doc', 'embed', 'google doc'],
         disabled: () => false,
         command: ({ editor, range }) =>
             range
@@ -205,9 +228,27 @@ export const blockMenu: CommandItem[] = [
                       .run()
                 : editor.chain().focus().insertGoogleDoc().run(),
     },
+    // {
+    //     title: 'Google Sheet',
+    //     key: 'googleSheet',
+    //     helpText: '',
+    //     icon: 'Gdoc',
+    //     border: true,
+    //     searchKeys: ['google', 'sheet'],
+    //     disabled: () => false,
+    //     command: ({ editor, range }) =>
+    //         range
+    //             ? editor
+    //                   .chain()
+    //                   .focus()
+    //                   .deleteRange(range)
+    //                   .insertGoogleSheet()
+    //                   .run()
+    //             : editor.chain().focus().insertGoogleSheet().run(),
+    // },
 ]
 
-export const menuData: CommandItem[] = [
+export const menuData: MenuItem[] = [
     {
         title: 'Bold',
         key: 'bold',
@@ -291,7 +332,7 @@ export const menuData: CommandItem[] = [
     // table
 ]
 
-export const menuDataTable: CommandItem[] = [
+export const menuDataTable: MenuItem[] = [
     {
         title: 'Add Column',
         key: 'insert-column-after',

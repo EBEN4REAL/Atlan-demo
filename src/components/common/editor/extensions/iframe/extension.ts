@@ -21,6 +21,8 @@ declare module '@tiptap/core' {
              */
             setIframe: (options: {
                 src: string
+                embedtitle: string
+                embedicon: string
                 width?: string
                 height?: string
                 redirectTo?: string
@@ -47,7 +49,7 @@ export default Node.create<IframeOptions>({
             },
             showFooter: true,
             width: '100%',
-            height: '400',
+            height: '450',
         }
     },
 
@@ -77,10 +79,12 @@ export default Node.create<IframeOptions>({
             },
             redirectTo: {
                 default: '',
-                parseHTML: (element) => element.getAttribute('redirectTo'),
-                renderHTML: (attributes) => ({
-                    redirectTo: attributes.redirectTo,
-                }),
+            },
+            embedtitle: {
+                default: '',
+            },
+            embedicon: {
+                default: '',
             },
         }
     },
@@ -102,6 +106,8 @@ export default Node.create<IframeOptions>({
             setIframe:
                 (options: {
                     src: string
+                    embedtitle: string
+                    embedicon: string
                     width?: string
                     height?: string
                     redirectTo?: string

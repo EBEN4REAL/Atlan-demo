@@ -2,25 +2,53 @@ import { VueNodeViewRenderer } from '@tiptap/vue-3'
 import Component from './component.vue'
 import IFrame from '../iframe/extension'
 
+interface ValidateInputFunc {
+    (input: string): boolean
+}
+
+interface GetIframeLinkFunc {
+    (input: string): string
+}
+
+interface EmbedOptions {
+    title: string
+    icon: string
+    validateInput: ValidateInputFunc
+    getIframeLink: GetIframeLinkFunc
+}
+
 declare module '@tiptap/core' {
     interface Commands<ReturnType> {
-        googleDoc: {
+        embeds: {
             /**
              * Add a Google Doc
              */
-            insertGoogleDoc: (options: { src: string }) => ReturnType
+            insertEmbed: (options: { src: string }) => ReturnType
         }
     }
 }
 
-export default IFrame.extend({
-    name: 'googleDoc',
+export default IFrame.extend<EmbedOptions>({
+    name: 'embed',
+    addOptions() {
+        return {
+            ...this.parent?.(),
+            title: 'General Embed',
+            icon: 'Documentation',
+            validateInput(input: string) {
+                return input.length > 0
+            },
+            getIframeLink(input: string) {
+                return input
+            },
+        }
+    },
     addNodeView() {
         return VueNodeViewRenderer(Component)
     },
     addCommands() {
         return {
-            insertGoogleDoc:
+            insertEmbed:
                 (options: { src: string }) =>
                 ({ tr, dispatch }) => {
                     const { selection } = tr

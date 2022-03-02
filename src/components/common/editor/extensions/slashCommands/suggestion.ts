@@ -8,7 +8,9 @@ export default {
     items: ({ query }) =>
         query.length
             ? blockMenu?.filter((item) =>
-                  item?.title?.toLowerCase()?.startsWith(query?.toLowerCase())
+                  item.searchKeys.some((searchKey: string) =>
+                      searchKey.includes(query)
+                  )
               )
             : blockMenu,
     render: () => {

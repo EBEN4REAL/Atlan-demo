@@ -68,6 +68,7 @@
 
     import LinkPreview from './extensions/linkPreview/linkPreview'
     import { BLOCK_TIPPY_MENU } from '~/constant/readmeMenuItems'
+    import { EMBED_EXTENSIONS } from '@common/editor/extensions/embeds'
 
     export default defineComponent({
         name: 'TiptapEditor',
@@ -175,7 +176,7 @@
                     CustomImage,
                     ImageUpload,
                     IFrame,
-                    GoogleDoc,
+                    ...EMBED_EXTENSIONS,
                 ],
                 onUpdate({ editor: currEditor }) {
                     const content = currEditor.getHTML()

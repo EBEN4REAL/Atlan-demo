@@ -1,30 +1,31 @@
 <template>
-    <node-view-wrapper
-        class="rounded relative"
-        :class="{ 'outline-primary': selected }"
-    >
-        <iframe v-bind="attrs" />
-        <div
-            v-if="showFooter"
-            class="absolute bg-gray-200 bottom-0 w-full flex h-8 px-2 items-center content-center border-t border-gray-200"
-        >
-            <div class="flex items-center content-center">
-                <atlan-icon icon="Gdoc" />
-                <span class="font-bold text-gray-700 ml-1">Google Docs</span>
-            </div>
+    <node-view-wrapper>
+        <div class="rounded" :class="{ 'outline-2 outline-primary': selected }">
+            <iframe v-bind="attrs" class="rounded-t" />
             <div
-                v-if="redirectTo"
-                class="flex items-center content-center ml-auto"
+                v-if="showFooter"
+                class="bg-gray-200 rounded-b bottom-0 w-full flex h-8 px-2 items-center content-center border-t border-gray-200"
             >
-                <atlan-icon icon="OpenPreview" />
-                <a
-                    class="text-gray-700 ml-1"
-                    style="text-decoration: none"
-                    :href="redirectTo"
-                    target="_blank"
+                <div class="flex items-center content-center">
+                    <atlan-icon :icon="node.attrs.embedicon" />
+                    <span class="font-bold text-gray-700 ml-1">{{
+                        node.attrs.embedtitle
+                    }}</span>
+                </div>
+                <div
+                    v-if="redirectTo"
+                    class="flex items-center content-center ml-auto"
                 >
-                    Open
-                </a>
+                    <atlan-icon icon="OpenPreview" />
+                    <a
+                        class="text-gray-700 ml-1"
+                        style="text-decoration: none"
+                        :href="redirectTo"
+                        target="_blank"
+                    >
+                        Open
+                    </a>
+                </div>
             </div>
         </div>
     </node-view-wrapper>
@@ -44,14 +45,14 @@
         setup(props) {
             const { node, selected, extension } = toRefs(props)
 
+            const options = computed(() => extension.value?.options)
+
             const attrs = computed(() => ({
                 ...node.value?.attrs,
                 ...extension.value?.options.HTMLAttributes,
             }))
 
-            const showFooter = computed(
-                () => extension.value?.options.showFooter
-            )
+            const showFooter = computed(() => options.value.showFooter)
 
             const redirectTo = computed(() => node.value?.attrs.redirectTo)
 

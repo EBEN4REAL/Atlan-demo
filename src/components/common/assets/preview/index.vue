@@ -144,6 +144,7 @@
                         </template>
                     </template>
                     <KebabMenu
+                        :key="selectedAsset.guid"
                         :asset="selectedAsset"
                         :edit-permission="
                             selectedAssetUpdatePermission(

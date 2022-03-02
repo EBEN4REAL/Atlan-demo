@@ -23,33 +23,42 @@
                     </div>
                 </div>
 
-                <AtlanButton
-                    padding="compact"
-                    size="sm"
-                    color="minimal"
-                    :class="
-                        !userJiraStatus.configured
-                            ? 'text-gray-400'
-                            : 'text-primary'
-                    "
-                    :disabled="!userJiraStatus.configured"
-                    class="mb-1"
-                    @click="$emit('Create')"
-                    ><AtlanIcon icon="Add" /> Create Issue</AtlanButton
-                >
-                <AtlanButton
-                    padding="compact"
-                    size="sm"
-                    color="minimal"
-                    :class="
-                        !userJiraStatus.configured
-                            ? 'text-gray-400'
-                            : 'text-primary'
-                    "
-                    :disabled="!userJiraStatus.configured"
-                    @click="$emit('Link')"
-                    ><AtlanIcon icon="Link" /> Link Issue</AtlanButton
-                >
+                <a-menu click="border-0" :style="{ border: 'none' }">
+                    <div
+                        :class="
+                            !userJiraStatus.configured
+                                ? 'text-gray-400 cursor-not-allowed'
+                                : 'text-primary'
+                        "
+                        class="mb-1 rounded menu-item"
+                        @click="
+                            () => {
+                                if (userJiraStatus.configured) {
+                                    $emit('create')
+                                }
+                            }
+                        "
+                    >
+                        <AtlanIcon icon="Add" /> Create Issue
+                    </div>
+                    <div
+                        class="menu-item"
+                        :class="
+                            !userJiraStatus.configured
+                                ? 'text-gray-400 cursor-not-allowed'
+                                : 'text-primary'
+                        "
+                        @click="
+                            () => {
+                                if (userJiraStatus.configured) {
+                                    $emit('link')
+                                }
+                            }
+                        "
+                    >
+                        <AtlanIcon icon="Link" /> Link Issue
+                    </div>
+                </a-menu>
             </div>
         </template>
     </a-popover>
@@ -65,11 +74,18 @@
         visible: { type: Boolean, required: true },
     })
 
-    const emit = defineEmits([])
+    const emit = defineEmits(['link', 'create'])
     const { visible } = useVModels(props, emit)
 
     const store = integrationStore()
     const { userJiraStatus } = toRefs(store)
 </script>
 
-<style scoped></style>
+<style lang="less" scoped>
+    .menu-item {
+        @apply p-2 cursor-pointer;
+        &:hover {
+            @apply bg-gray-100;
+        }
+    }
+</style>

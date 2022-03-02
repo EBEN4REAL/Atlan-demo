@@ -6,6 +6,7 @@
         :options="options"
         :placeholder="placeholder"
         :loading="isLoading"
+        allow-clear
         dropdown-class-name="max-h-72 overflow-y-scroll"
     >
         <template #dropdownRender>

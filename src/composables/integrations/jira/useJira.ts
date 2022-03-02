@@ -41,7 +41,7 @@ const getOAuthBaseUrl = () => {
 
     const { tenantJiraStatus } = toRefs(store)
 
-    const { config: { clientId, oauthRedirectUrl, scopes } } = tenantJiraStatus.value
+    const { integrationConfig: { clientId, oauthRedirectUrl, scopes } } = tenantJiraStatus.value
 
 
     const url = new URL('https://auth.atlassian.com/authorize')

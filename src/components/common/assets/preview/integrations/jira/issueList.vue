@@ -5,7 +5,7 @@
             :show-checkbox="checkbox"
             :issue="issue"
             :error="errorIDs.includes(issue.id)"
-            class="cursor-pointer"
+            :class="checkbox ? 'cursor-pointer' : ''"
             @click="handleClick"
         />
     </template>
@@ -28,6 +28,7 @@
     const { checkedIDs } = useVModels(props, emit)
 
     const handleClick = (issue) => {
+        if (!props.checkbox) return
         if (checkedIDs.value.includes(issue.id)) {
             const index = checkedIDs.value.indexOf(issue.id)
             if (index !== -1) checkedIDs.value.splice(index, 1)

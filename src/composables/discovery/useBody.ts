@@ -34,7 +34,7 @@ export function useBody(
                     'description',
                     'userDescription',
                     '__meaningsText',
-                    'guid',
+                    '__guid',
                 ],
                 query: queryText,
             })

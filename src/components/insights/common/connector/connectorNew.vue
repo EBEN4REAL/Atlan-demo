@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full pb-3">
+    <div class="w-full pb-3 dropdown-schema-explorer">
         <a-dropdown
             :overlay-style="{
                 maxWidth: '10%',
@@ -890,7 +890,7 @@
     .ant-tree .ant-tree-node-content-wrapper .tree-select-nodes {
         border-radius: 0 !important;
     }
-    .ant-dropdown-trigger {
+    .dropdown-schema-explorer .ant-dropdown-trigger {
         min-height: 2.75rem;
     }
 </style>

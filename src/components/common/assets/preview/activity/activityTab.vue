@@ -277,16 +277,13 @@
             const termAndCategoriesList = ref()
             const { certificateStatus, title } = useAssetInfo()
 
-            if (
-                ['Table', 'View', 'AtlasGlossary'].includes(item.value.typeName)
-            ) {
+            if (['Table', 'View'].includes(item.value.typeName)) {
                 facets.value = {
                     entityQualifiedName: item.value.attributes.qualifiedName,
                 }
-            }
-            if (['AtlasGlossary'].includes(item.value.typeName)) {
+            } else if (['AtlasGlossary'].includes(item.value.typeName)) {
                 facets.value = {
-                    ...facets.value,
+                    entityQualifiedName: item.value.attributes.qualifiedName,
                     typeNames: [item.value.typeName],
                 }
             } else {
@@ -294,6 +291,7 @@
                     entityId: item.value.guid,
                 }
             }
+
             const fetchTermsAndCategories = () => {
                 const defaultAttributes = ref([...MinimalAttributes])
                 const offsetGTC = ref(0)

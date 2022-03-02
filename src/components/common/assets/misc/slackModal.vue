@@ -33,7 +33,11 @@
                 </AtlanButton>
                 <AtlanButton
                     type="primary"
-                    :disabled="!channel || loading"
+                    :disabled="
+                        (askQuestionModal ? !message : false) ||
+                        !channel ||
+                        loading
+                    "
                     size="sm"
                     @click="handleCtaClick"
                 >

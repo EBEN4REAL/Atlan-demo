@@ -89,7 +89,7 @@ export function useAuditBody(
                                 `${filterObject}/*`
                             )
                         }
-console.log(q)
+                        console.log(q)
                         q.orFilter('term', 'entityQualifiedName', filterObject)
                         return q
                     })

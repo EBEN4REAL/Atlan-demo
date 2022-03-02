@@ -141,6 +141,9 @@
                             </a-tooltip>
                         </template>
                     </template>
+                    <template v-if="!disableSlackAsk && linkEditPermission">
+                        <SlackAskButton :asset="selectedAsset" />
+                    </template>
                 </a-button-group>
             </div>
         </div>
@@ -229,10 +232,11 @@
         toRefs,
         computed,
         provide,
+        inject,
     } from 'vue'
 
     import { useRoute, useRouter } from 'vue-router'
-    import { debouncedWatch } from '@vueuse/core'
+    import { debouncedWatch, whenever } from '@vueuse/core'
     import Tooltip from '@common/ellipsis/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
@@ -246,6 +250,14 @@
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import useCollectionInfo from '~/components/insights/explorers/queries/composables/useCollectionInfo'
     import QueryDropdown from '@/common/query/queryDropdown.vue'
+    import SlackAskButton from '~/components/common/assets/misc/slackAskButton.vue'
+
+    import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
+
+    import {
+        resourceId,
+        disableSlackAsk,
+    } from '~/composables/integrations/slack/useAskAQuestion'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -286,6 +298,7 @@
             linkedAssets: defineAsyncComponent(
                 () => import('./linkedAssets/linkedAssetsWrapper.vue')
             ),
+            SlackAskButton,
         },
 
         props: {
@@ -362,6 +375,7 @@
                 assetTypeLabel,
                 getProfilePath,
                 isScrubbed,
+                assetPermission,
                 selectedAssetUpdatePermission,
             } = useAssetInfo()
 
@@ -504,7 +518,39 @@
 
             provide('isProfile', isProfile)
 
+            const updateList = inject('updateList', () => ({}))
+            const updateDrawerList = inject('updateDrawerList', () => ({}))
+
+            /** whenever resource ID is fetched, refresh the asset to load the generated resource, then switch tab */
+            watch(resourceId, () => {
+                const id = ref(selectedAsset.value.guid)
+                const { asset, isReady: isUpdateReady } = useCurrentUpdate({
+                    id,
+                })
+
+                whenever(isUpdateReady, () => {
+                    if (isDrawer.value) {
+                        updateDrawerList(asset.value)
+                    } else updateList(asset.value)
+
+                    if (resourceId.value)
+                        switchTab(selectedAsset.value, 'Resources')
+                })
+            })
+
+            const linkEditPermission = computed(
+                () =>
+                    selectedAssetUpdatePermission(
+                        selectedAsset.value,
+                        isDrawer.value,
+                        'RELATIONSHIP_ADD',
+                        'Link'
+                    ) && assetPermission('CREATE_LINK')
+            )
+
             return {
+                linkEditPermission,
+                disableSlackAsk,
                 tabChildRef,
                 activeKey,
                 handleTabChange,

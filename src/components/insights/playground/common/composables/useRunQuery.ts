@@ -393,9 +393,10 @@ export default function useRunQuery() {
                         if (message?.details?.status === 'error') {
                             const { setHekaErrorInActiveInlineTab } = useError()
                             setHekaErrorInActiveInlineTab(
-                                activeInlineTab,
+                                tabsArray,
                                 eventSource,
-                                message
+                                message,
+                                tabIndex
                             )
                             // tabsArray.value[tabIndex].playground.resultsPane.result.tabQueryState =
                             //     activeTabKey.value === tabsArray.value[tabIndex].key
@@ -419,7 +420,7 @@ export default function useRunQuery() {
                         .isQueryAborted
                 ) {
                     const { setStreamErrorInActiveInlineTab } = useError()
-                    setStreamErrorInActiveInlineTab(activeInlineTab, error)
+                    setStreamErrorInActiveInlineTab(tabsArray, error, tabIndex)
                     // tabsArray.value[tabIndex].playground.resultsPane.result.tabQueryState =
                     //     activeTabKey.value === tabsArray.value[tabIndex].key
                     //         ? false

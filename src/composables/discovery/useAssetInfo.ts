@@ -351,7 +351,7 @@ export default function useAssetInfo() {
         })
     }
 
-    const getProfilePath = (asset) => {
+    const getProfilePath = (asset, appendOverview = false) => {
         if (assetType(asset) === 'Column') {
             const tableGuid = asset?.attributes?.table?.guid
             if (tableGuid) {
@@ -370,6 +370,8 @@ export default function useAssetInfo() {
             return `/glossary/${asset?.guid}`
         } else if (assetType(asset) === 'Query') {
             return `/insights?id=${asset.guid}`
+        } else if (appendOverview) {
+            return `/assets/${asset.guid}/overview`
         }
         return `/assets/${asset?.guid}`
     }

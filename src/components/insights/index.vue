@@ -389,19 +389,18 @@
             /*-------------------------------------*/
 
             /* Watchers for syncing in localstorage */
-            watch(activeInlineTabKey, () => {
-                syncActiveInlineTabKeyInLocalStorage(activeInlineTabKey.value)
-                syncInlineTabsInLocalStorage(toRaw(tabsArray.value))
-                fetchSelectedCollectionData()
-                fetchActiveQueryAcessCollection()
-                selectFirstCollectionByDefault(
-                    queryCollections.value,
-                    activeInlineTab,
-                    tabsArray,
-                    false,
-                    undefined
-                )
-            })
+            watch(
+                activeInlineTabKey,
+                () => {
+                    syncActiveInlineTabKeyInLocalStorage(
+                        activeInlineTabKey.value
+                    )
+                    syncInlineTabsInLocalStorage(toRaw(tabsArray.value))
+                    fetchSelectedCollectionData()
+                    fetchActiveQueryAcessCollection()
+                },
+                { deep: true }
+            )
 
             /* Watcher for all the things changes in activeInline tab */
             watch(

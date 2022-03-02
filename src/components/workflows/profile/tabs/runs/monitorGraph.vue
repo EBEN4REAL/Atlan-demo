@@ -153,11 +153,12 @@
     import {
         defineComponent,
         ref,
-        onMounted,
         toRefs,
         watch,
         computed,
         Ref,
+        onMounted,
+        nextTick,
     } from 'vue'
     import { DagreLayout } from '@antv/layout'
     import { Graph } from '@antv/x6'
@@ -170,6 +171,7 @@
 
     import Drawer from './drawer/drawer.vue'
     import useEventGraph from './useEventGraph'
+
     export default defineComponent({
         name: 'MonitorGraph',
         components: {
@@ -181,7 +183,7 @@
                 required: true,
             },
         },
-        emits: ['select', 'refresh'],
+        emits: ['refresh'],
         setup(props, { emit }) {
             /** DATA */
             const { graphData } = toRefs(props)
@@ -191,17 +193,16 @@
             const graphContainer = ref(null)
             const minimapContainer = ref(null)
             const monitorContainer = ref(null)
-            const highlightLoadingCords = ref({})
             const graph: Ref<Graph> = ref(null)
             const graphLayout: Ref<DagreLayout> = ref(null)
+            const highlightLoadingCords = ref({})
             const highlightedNode = ref('')
-            const currZoom = ref('100%')
+            const currZoom = ref(1)
             const showMinimap = ref(false)
             const isFullscreen = ref(false)
             const isRunning = ref(true)
-            const isLoadingRefresh = ref(false)
 
-            const currentScroll = ref({})
+            const currentScroll = ref(null)
 
             const expandedNodes = ref([])
             const drawerVisible = ref(false)
@@ -236,22 +237,7 @@
                 fullscreen(monitorContainer)
             }
 
-            // initialize
-            const initialize = () => {
-                if (graph.value) {
-                    graph.value.dispose()
-                }
-
-                useCreateGraph(
-                    graph,
-                    graphContainer,
-                    minimapContainer,
-                    graphLayout
-                )
-
-                isLoadingRefresh.value = true
-                isGraphRendered.value = false
-
+            const setGraphData = () => {
                 const { nodes, edges } = useComputeGraph(
                     graph,
                     graphLayout,
@@ -261,20 +247,40 @@
                 ns.value = nodes.value
                 ed.value = edges.value
 
-                // // useHighlight
-                useHighlight(
+                return { nodes, edges }
+            }
+
+            // initialize
+            const initialize = () => {
+                if (graph.value) {
+                    currentScroll.value = graph.value.getScrollbarPosition()
+                    graph.value.dispose()
+                }
+
+                isGraphRendered.value = false
+
+                useCreateGraph(
                     graph,
-                    nodes,
-                    highlightLoadingCords,
-                    highlightedNode,
-                    emit,
-                    selectedPod.value
+                    graphContainer,
+                    minimapContainer,
+                    graphLayout
                 )
+
+                setGraphData()
+
+                // // useHighlight
+                // useHighlight(
+                //     graph,
+                //     nodes,
+                //     highlightLoadingCords,
+                //     highlightedNode,
+                //     emit,
+                //     selectedPod.value
+                // )
 
                 useEventGraph({
                     graph,
                     currZoom,
-                    isLoadingRefresh,
                     isGraphRendered,
                     drawerVisible,
                     selectedPod,
@@ -286,25 +292,32 @@
                     )?.data
                     if (podData) selectedPod.value = podData
                 }
+
+                // if (currentScroll.value)
+                //     graph.value.setScrollbarPosition(
+                //         currentScroll.value.left,
+                //         currentScroll.value.top
+                //     )
+                // graph.value.zoom(currZoom.value, { absolute: true })
                 // drawerVisible.value = false
             }
 
             watch(
                 graphData,
                 () => {
-                    console.log('change graph data')
-                    initialize(true, true)
-                    // this is causing API runs & archived get hit multiple times
-                    // and as a result, view logs toolbar always get override
+                    // initialize()
+                    setGraphData()
                 },
                 { deep: true }
             )
 
             /** LIFECYCLE */
-            // onMounted(() => {
-            //     if (graph.value) graph.value.dispose()
-            //     initialize()
-            // })
+            onMounted(async () => {
+                if (graph.value) graph.value.dispose()
+                await nextTick()
+                initialize()
+            })
+
             const handleRefresh = () => {
                 emit('refresh')
             }
@@ -322,7 +335,6 @@
                 onRetryRun,
                 onStopRun,
                 initialize,
-                isLoadingRefresh,
                 handleRefresh,
                 isGraphRendered,
                 handleRecenter,

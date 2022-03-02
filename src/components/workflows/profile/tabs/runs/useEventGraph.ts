@@ -1,33 +1,18 @@
-/** VUE */
-import { watch, ref, computed } from 'vue'
-import { watchOnce, whenever } from '@vueuse/core'
-
-/** PACKAGES */
-import { message } from 'ant-design-vue'
-
-/** COMPOSABLES */
-import useLineageStore from '~/store/lineage'
-import useLineageService from '~/services/meta/lineage/lineage_service'
-import useUpdateGraph from './useUpdateGraph'
-import useGetNodes from './useGetNodes'
-import useGraph from './useGraph'
-import fetchColumns from './fetchColumns'
 import { Cell, Model } from '@antv/x6'
 
 export default function useEventGraph({
     graph,
     currZoom,
-    isLoadingRefresh,
     isGraphRendered,
     selectedPod,
     drawerVisible,
 }) {
     // mousewheel events
     graph.value.on('blank:mousewheel', () => {
-        currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
+        currZoom.value = graph.value.zoom()
     })
     graph.value.on('cell:mousewheel', () => {
-        currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
+        currZoom.value = graph.value.zoom()
     })
 
     // The graph is rendered asynchronously, so any synchronous
@@ -69,6 +54,4 @@ export default function useEventGraph({
     //         // }
     //     }
     // )
-
-    isLoadingRefresh.value = false
 }

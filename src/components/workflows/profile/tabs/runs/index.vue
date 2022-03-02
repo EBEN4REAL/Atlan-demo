@@ -3,33 +3,30 @@
         <div class="relative flex-grow overflow-hidden bg-primary-light">
             <div class="absolute z-10 rounded left-10 top-10">
                 <div class="flex flex-col">
-                    <div class="flex items-center">
-                        <RunsSelect
-                            :key="runId"
-                            v-model="selectedRunName"
-                            :workflowName="workflowName"
-                            style="min-width: 150px"
-                            class="mb-3 shadow"
-                        ></RunsSelect>
-                        <a-spin
-                            size="small"
-                            v-if="isValidating"
-                            class="ml-2"
-                        ></a-spin>
-                    </div>
+                    <RunsSelect
+                        :key="runId"
+                        v-model="selectedRunName"
+                        :workflowName="workflowName"
+                        style="min-width: 150px"
+                        class="mb-3 shadow"
+                    />
+
                     <Sidebar
                         :key="runId"
                         :selectedRun="selectedRun"
                         :isLoading="firstLoad"
                         :error="error"
                         style="width: 300px"
-                    ></Sidebar>
+                    />
                 </div>
             </div>
+            <AtlanLoader
+                v-if="isValidating"
+                class="absolute z-50 h-8 left-10 bottom-10"
+            />
 
             <MonitorGraph
                 :key="runId"
-                ref="monitorGraphRef"
                 :graph-data="selectedRun"
                 @select="handleSelectPod"
                 @refresh="handleRefresh"
@@ -76,14 +73,6 @@
                 required: false,
                 default: '',
             },
-            // selectedPod: {
-            //     type: Object,
-            //     required: true,
-            // },
-            // activeKey: {
-            //     type: Number,
-            //     required: true,
-            // },
         },
         setup(props, { emit }) {
             const { workflowName, runId } = toRefs(props)
@@ -91,8 +80,6 @@
 
             const router = useRouter()
             const route = useRoute()
-
-            const monitorGraphRef = ref(null)
 
             const { phase, startedAt, finishedAt, duration } = useWorkflowInfo()
 
@@ -112,7 +99,6 @@
             } = useRunItem(path, false)
 
             const unWatchLoad = watch(isLoading, () => {
-                console.log('unWatchLoad', isLoading.value)
                 if (!isLoading.value) {
                     firstLoad.value = false
                     unWatchLoad()
@@ -120,7 +106,6 @@
             })
 
             watch(runId, () => {
-                console.log('changed run id', runId.value)
                 selectedRunName.value = runId.value
             })
 
@@ -142,7 +127,6 @@
 
                         isValidating.value = true
                         await mutate()
-                        monitorGraphRef.value?.initialize(false, selectedRun)
                         isValidating.value = false
                     }
                 },
@@ -152,9 +136,7 @@
             const { pause, resume } = useIntervalFn(
                 async () => {
                     if (phase(selectedRun.value) === 'Running') {
-                        await mutate()
-                        console.log(selectedRun.value)
-                        monitorGraphRef.value?.initialize(false, selectedRun)
+                        mutate()
                     } else {
                         pause()
                     }
@@ -173,24 +155,14 @@
                 }
             })
 
-            const selectedPod = ref({})
-            const handleSelectPod = (pod) => {
-                selectedPod.value = pod
-            }
-
-            const handleRefresh = async (pod) => {
+            const handleRefresh = async () => {
                 isValidating.value = true
                 await mutate()
-                monitorGraphRef.value?.initialize(false, selectedRun)
                 isValidating.value = false
             }
 
             return {
                 selectedRunName,
-                workflowName,
-
-                handleSelectPod,
-                selectedPod,
                 phase,
                 startedAt,
                 finishedAt,
@@ -206,7 +178,6 @@
                 dependentKey,
                 isValidating,
                 route,
-                monitorGraphRef,
                 handleRefresh,
             }
         },

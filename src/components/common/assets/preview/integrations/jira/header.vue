@@ -4,7 +4,8 @@
             class="flex justify-between px-5 py-2 border-b border-gray-200 gap-x-6 bg-gray-50"
         >
             <div>
-                <span class="font-semibold text-gray-500"> Linked Issues </span>
+                <AtlanIcon icon="Jira" class="mr-2" />
+                <span class="font-semibold text-gray-500">Jira</span>
             </div>
             <div class="flex-grow"></div>
             <template v-if="removeMode">
@@ -24,11 +25,11 @@
                 </AtlanButton>
             </template>
             <div
-                v-else
-                class="flex items-center cursor-pointer text-primary"
+                v-else-if="assetIssueCount"
+                class="flex items-center px-2 py-1 rounded cursor-pointer hover:bg-gray-200 text-primary"
                 @click="$emit('add')"
             >
-                <AtlanIcon icon="Add" class="mr-1 mb-0.5" /> Link
+                <AtlanIcon icon="Add" class="mr-1 mb-0.5" /> Add Issue
             </div>
         </div>
     </header>
@@ -39,6 +40,7 @@
 
     const props = defineProps({
         removeMode: { type: Boolean, default: false },
+        assetIssueCount: { type: Number, required: true },
     })
 </script>
 

@@ -4,6 +4,13 @@
         :asset="asset"
         @close="mutate"
     />
+    <Header
+        :remove-mode="!!checkedIDs.length"
+        :assetIssueCount="issues?.length || 0"
+        @add="linkIssueVisible = true"
+        @cancel="resetIDs"
+        @remove="handleIssueUnLink"
+    />
     <div
         v-if="isLoading"
         class="flex items-center justify-center w-full h-full"
@@ -15,23 +22,24 @@
     </div>
     <div
         v-if="!issues?.length"
-        class="flex flex-col items-center justify-center w-full h-full px-10 text-center gap-y-5"
+        class="flex flex-col items-center justify-center w-full h-full px-10 text-center"
     >
         <!-- // need empty placeholder -->
-        <AtlanIcon icon="EmptyDiscover" class="h-40" />
-        <span class="break-all">
-            No issues linked to <b>{{ asset.displayText }}</b>
+        <AtlanIcon
+            icon="EmptyJira"
+            class="mb-8"
+            style="width: 272px; height: 212px"
+        />
+        <span class="text-gray-600 mb-9">
+            Jira tickets linked to this assets will appear over here
         </span>
-        <AtlanButton @click="linkIssueVisible = true">Link Issues</AtlanButton>
+        <AtlanButton @click="linkIssueVisible = true" class="px-5" size="sm">
+            <AtlanIcon icon="Add" />
+            Add Issue</AtlanButton
+        >
     </div>
 
     <div ref="wrapper" class="w-full h-full">
-        <Header
-            :remove-mode="!!checkedIDs.length"
-            @add="linkIssueVisible = true"
-            @cancel="resetIDs"
-            @remove="handleIssueUnLink"
-        />
         <div
             class="flex flex-col p-4 overflow-y-auto gap-y-4"
             style="height: calc(100vh - 5.1rem)"

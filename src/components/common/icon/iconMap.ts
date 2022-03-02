@@ -179,6 +179,7 @@ import NoSavedQueriesAll from '~/assets/images/icons/saved-queries-all.svg'
 import EmptyQueriesTab from '~/assets/images/illustrations/empty_queries_tab.svg'
 import Slack from '~/assets/images/admin/integrations/slack.svg'
 import Jira from '~/assets/images/admin/integrations/jira.svg'
+import EmptyJira from '~/assets/images/admin/integrations/emptyJira.svg'
 import Teams from '~/assets/images/admin/integrations/teams.svg'
 import ExplorerTrigger from '~/assets/images/icons/explorer-trigger.svg'
 import ExplorerTriggerFilled from '~/assets/images/icons/explorer-trigger-filled.svg'
@@ -423,6 +424,7 @@ import NoProperty from '~/assets/images/admin/customMetadata/empty-property.svg'
 import TrashAlt from '~/assets/images/icons/Trash-alt.svg'
 
 export default {
+    EmptyJira,
     TrashAlt,
     NoProperty,
     ThreeDotsAlt,

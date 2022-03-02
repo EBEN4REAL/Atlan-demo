@@ -231,7 +231,7 @@
 <style lang="less">
     .glossarySelectPopover {
         .ant-popover-inner-content {
-            width: 250px !important;
+            width: 300px !important;
         }
     }
 </style>

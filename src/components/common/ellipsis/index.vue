@@ -5,6 +5,7 @@
         :overlay-style="{ maxWidth: width }"
         :color="tooltipColor"
         :overlay-class-name="tooltipColor === 'white' ? 'tooltip-black' : ''"
+        :mouseLeaveDelay="mouseLeaveDelay"
     >
         <template v-if="truncated" #title>
             <div v-linkified class="">
@@ -88,6 +89,11 @@
                 required: false,
                 default: '95%',
             },
+            mouseLeaveDelay:{
+                type: Number,
+                required: false,
+                default: 0.1,
+            }
         },
         setup(props) {
             const truncated = ref<boolean>(false)

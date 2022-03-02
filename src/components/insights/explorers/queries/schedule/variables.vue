@@ -5,39 +5,33 @@
     >
         <div class="flex items-center py-6 pb-2 mx-6 border-b border-gray-200">
             <AtlanIcon icon="Flash" class="w-4 h-4 mr-2" />
-            <p class="font-bold text-gray-700" style="font-size: 16px">
-                Variables
-            </p>
+            <div
+                class="flex items-center font-bold text-gray-700"
+                style="font-size: 16px"
+            >
+                <span class="mr-2"> Variables</span>
+                <div
+                    class="flex items-center justify-center w-4 h-5 text-xs font-bold rounded text-primary bg-primary-light"
+                >
+                    <span> {{ variablesData.length }}</span>
+                </div>
+            </div>
         </div>
-        <div class="p-6 overflow-auto" style="height: 240px">
-            <div class="flex items-center justify-between mb-6">
-                <div class="w-full" style="flex-0.5">
+
+        <div class="p-6 overflow-auto custom-grid" style="height: 240px">
+            <!-- {{ variablesData }} -->
+            <template v-for="item in variablesData" :key="item.key">
+                <div class="w-full item">
                     <p class="mb-1 font-bold text-gray-500 required">
-                        Customer name
+                        {{ item.name }}
                     </p>
-                    <a-input class="input" placeholder="Enter a value" />
+                    <a-input
+                        class="input"
+                        :value="item.value"
+                        :placeholder="`Enter a ${item.type} value`"
+                    />
                 </div>
-                <div class="w-full ml-10" style="flex-0.5">
-                    <p class="mb-1 font-bold text-gray-500 required">
-                        Order date
-                    </p>
-                    <a-input class="input" placeholder="Enter a value" />
-                </div>
-            </div>
-            <div class="flex items-center justify-between mb-6">
-                <div class="w-full" style="flex-0.5">
-                    <p class="mb-1 font-bold text-gray-500 required">
-                        Customer name
-                    </p>
-                    <a-input class="input" placeholder="Enter a value" />
-                </div>
-                <div class="w-full ml-10" style="flex-0.5">
-                    <p class="mb-1 font-bold text-gray-500 required">
-                        Order date
-                    </p>
-                    <a-input class="input" placeholder="Enter a value" />
-                </div>
-            </div>
+            </template>
         </div>
         <div class="p-3 mx-6 my-6 border border-gray-300 rounded light-shadow">
             <div class="flex items-center mb-2">
@@ -62,11 +56,30 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, PropType, toRefs, ref } from 'vue'
+    import { assetInterface } from '~/types/assets/asset.interface'
+
     export default defineComponent({
         components: {},
-        props: {},
-        setup(props) {},
+        props: {
+            item: {
+                type: Object as PropType<assetInterface>,
+                required: true,
+            },
+        },
+        setup(props) {
+            const { item } = toRefs(props)
+            const variablesData = ref(
+                JSON.parse(
+                    window.atob(
+                        item.value.attributes?.variablesSchemaBase64 ?? '[]'
+                    )
+                )
+            )
+            return {
+                variablesData,
+            }
+        },
     })
 </script>
 <style lang="less" scoped>
@@ -75,6 +88,18 @@
     }
     .light-shadow {
         box-shadow: 0px 1px 0px 0px #0000000d;
+    }
+    .custom-grid {
+        display: grid;
+        grid-template-columns: repeat(
+            auto-fill,
+            minmax(300px, 1fr)
+        ); /* see notes below */
+        grid-gap: 40px;
+        grid-row-gap: 20px;
+    }
+    .item {
+        height: fit-content;
     }
 </style>
 

@@ -32,6 +32,7 @@
                     color="light"
                     @click="closeModal"
                     class="h-8 px-5 py-0 mr-2 text-sm text-gray-700"
+                    v-if="activeTabIndex !== 2"
                 >
                     <div class="flex items-center">
                         <span class="ml-1 text-sm">Cancel</span>
@@ -81,7 +82,14 @@
             },
         },
         setup(props) {
-            const { scheduleQueryModal } = useVModels(props)
+            const { scheduleQueryModal, item } = useVModels(props)
+            const variablesData = ref(
+                JSON.parse(
+                    window.atob(
+                        item.value.attributes?.variablesSchemaBase64 ?? '[]'
+                    )
+                )
+            )
             const activeTabIndex = ref(0)
             const closeModal = () => {
                 scheduleQueryModal.value = false
@@ -94,15 +102,26 @@
                     return
                 }
                 if (type === 'next') {
-                    if (activeTabIndex.value < 2)
-                        activeTabIndex.value = activeTabIndex.value + 1
+                    if (activeTabIndex.value < 2) {
+                        if (variablesData.value.length === 0) {
+                            activeTabIndex.value = 2
+                        } else {
+                            activeTabIndex.value = activeTabIndex.value + 1
+                        }
+                    }
                 } else if (type === 'back') {
-                    if (activeTabIndex.value > 0)
-                        activeTabIndex.value = activeTabIndex.value - 1
+                    if (activeTabIndex.value > 0) {
+                        if (variablesData.value.length === 0) {
+                            activeTabIndex.value = 0
+                        } else {
+                            activeTabIndex.value = activeTabIndex.value - 1
+                        }
+                    }
                 }
             }
 
             return {
+                item,
                 shiftIndex,
                 activeTabIndex,
                 closeModal,

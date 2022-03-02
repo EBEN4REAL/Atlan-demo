@@ -67,27 +67,92 @@
                         editPermission:
                             'hover:bg-primary-light hover:border-primary',
                     }"
-                    @click="() => (isEdit = true)"
+                    @click="() => (isUserEdit = true)"
                 >
                     <span><AtlanIcon icon="Add" class="h-3.5"></AtlanIcon></span
                 ></a-button>
-                <p class="mt-0.5">Add users</p>
+                <a-popover
+                    v-model:visible="isUserEdit"
+                    :overlay-class-name="$style.ownerPopover"
+                    :trigger="['click']"
+                    placement="right"
+                    :destroy-tooltip-on-hide="true"
+                    @visibleChange="handleVisibleChange"
+                >
+                    <template #content>
+                        <div class="">
+                            <OwnerFacets
+                                ref="ownerInputRef"
+                                v-model="localValue"
+                                :show-none="false"
+                            ></OwnerFacets>
+                        </div>
+                    </template>
+                </a-popover>
+                <template
+                    v-for="username in localValue?.ownerUsers"
+                    :key="username"
+                >
+                    <PopOverUser :item="username">
+                        <UserPill
+                            :username="username"
+                            :allow-delete="true"
+                            :enable-hover="true"
+                            @delete="handleDeleteUser"
+                            @click="handleClickUser(username)"
+                        ></UserPill>
+                    </PopOverUser>
+                </template>
+
+                <template v-for="name in localValue?.ownerGroups" :key="name">
+                    <PopOverGroup :item="name">
+                        <GroupPill
+                            :name="name"
+                            :allow-delete="true"
+                            :enable-hover="true"
+                            @delete="handleDeleteGroup"
+                            @click="handleClickGroup(name)"
+                        ></GroupPill>
+                    </PopOverGroup>
+                </template>
+                <p class="mt-0.5" v-if="totalUsersCount === 0">Add users</p>
             </div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, onMounted, nextTick } from 'vue'
+    import { defineComponent, ref, onMounted, nextTick, computed } from 'vue'
     import Frequency from '~/components/common/select/frequency.vue'
     import Timezone from '~/components/common/select/timezone.vue'
+    import OwnerFacets from '@/common/facet/owners/index.vue'
+    import { useUserPreview } from '~/composables/user/showUserPreview'
+    import { useGroupPreview } from '~/composables/group/showGroupPreview'
+    import PopOverUser from '@/common/popover/user/user.vue'
+    import UserPill from '@/common/pills/user.vue'
+    import GroupPill from '@/common/pills/group.vue'
 
     export default defineComponent({
         name: 'Schedule Query Body',
-        components: { Frequency, Timezone },
+        components: {
+            Frequency,
+            Timezone,
+            OwnerFacets,
+            PopOverUser,
+            UserPill,
+            GroupPill,
+        },
         props: {},
         setup(props) {
             const nameRef = ref()
+            const isUserEdit = ref(false)
+            const localValue = ref({ ownerUsers: [], ownerGroups: [] })
+            const totalUsersCount = computed(
+                () =>
+                    localValue.value.ownerUsers?.length ??
+                    0 + localValue.value.ownerGroups?.length ??
+                    0
+            )
             const infoTabeState = ref({
                 name: '',
                 frequency: 'daily',
@@ -120,11 +185,49 @@
                 await nextTick()
                 nameRef.value?.focus()
             })
+
+            const handleVisibleChange = () => {}
+            const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
+            const { showGroupPreview, setGroupUniqueAttribute } =
+                useGroupPreview()
+
+            const handleClickUser = (username: string) => {
+                setUserUniqueAttribute(username, 'username')
+                showUserPreview({
+                    allowed: ['about', 'assets', 'groups', 'Integrations'],
+                })
+            }
+            const handleClickGroup = (groupAlias: string) => {
+                setGroupUniqueAttribute(groupAlias, 'groupAlias')
+                showGroupPreview({ allowed: ['about', 'assets', 'members'] })
+            }
+
+            const handleDeleteUser = (username) => {
+                localValue.value.ownerUsers =
+                    localValue.value?.ownerUsers.filter(
+                        (item) => item !== username
+                    )
+            }
+            const handleDeleteGroup = (name) => {
+                localValue.value.ownerGroups =
+                    localValue.value?.ownerGroups.filter(
+                        (item) => item !== name
+                    )
+            }
+
             return {
+                totalUsersCount,
+                isUserEdit,
                 infoTabeState,
                 onNameBlur,
                 nameRef,
                 rules,
+                handleVisibleChange,
+                handleClickGroup,
+                handleClickUser,
+                localValue,
+                handleDeleteUser,
+                handleDeleteGroup,
             }
         },
     })
@@ -145,6 +248,14 @@
     }
     .item-3 {
         flex: 0.4;
+    }
+</style>
+<style module lang="less">
+    .ownerPopover {
+        :global(.ant-popover-inner-content) {
+            @apply px-0 py-3 !important;
+            width: 250px !important;
+        }
     }
 </style>
 

@@ -115,7 +115,12 @@
                                             'glue' &&
                                         action.id === 'query' &&
                                         (assetType(selectedAsset) === 'Table' ||
-                                            assetType(selectedAsset) === 'View')
+                                            assetType(selectedAsset) ===
+                                                'View' ||
+                                            assetType(selectedAsset) ===
+                                                'TablePartition' ||
+                                            assetType(selectedAsset) ===
+                                                'MaterialisedView')
                                     "
                                     @handleClick="handleQueryAction"
                                 >

@@ -143,6 +143,9 @@
                             </a-tooltip>
                         </template>
                     </template>
+                    <template v-if="!disableSlackAsk && linkEditPermission">
+                        <SlackAskButton :asset="selectedAsset" />
+                    </template>
                     <KebabMenu
                         :key="selectedAsset.guid"
                         :asset="selectedAsset"
@@ -157,9 +160,6 @@
                             <AtlanIcon icon="KebabMenu" class="mb-0.5" />
                         </a-button>
                     </KebabMenu>
-                    <template v-if="!disableSlackAsk && linkEditPermission">
-                        <SlackAskButton :asset="selectedAsset" />
-                    </template>
                 </a-button-group>
             </div>
         </div>

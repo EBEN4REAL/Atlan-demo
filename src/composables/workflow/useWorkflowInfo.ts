@@ -200,7 +200,7 @@ export default function useWorkflowInfo() {
             case 'Stopped':
                 return 'text-red-500'
             default:
-                return 'bg-gray-500'
+                return 'text-gray-500'
         }
     }
 

@@ -1,6 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable arrow-body-style */
-import { computed } from 'vue'
+import { computed, toRefs } from 'vue'
 import { useTimeAgo } from '@vueuse/core'
 import { useConnectionStore } from '~/store/connection'
 import { assetInterface } from '~/types/assets/asset.interface'
@@ -9,7 +9,7 @@ import { getCountString, getSizeString } from '~/utils/number'
 import { SourceList } from '~/constant/source'
 import { assetTypeList } from '~/constant/assetType'
 import { dataTypeCategoryList } from '~/constant/dataType'
-import { previewTabs } from '~/constant/previewTabs'
+import { previewTabs, JiraPreviewTab } from '~/constant/previewTabs'
 import { profileTabs } from '~/constant/profileTabs'
 import { summaryVariants } from '~/constant/summaryVariants'
 import { formatDateTime } from '~/utils/date'
@@ -20,6 +20,7 @@ import { assetActions } from '~/constant/assetActions'
 import useGlossaryStore from '~/store/glossary'
 import useCustomMetadataFacet from '../custommetadata/useCustomMetadataFacet'
 import useConnectionData from '../connection/useConnectionData'
+import integrationStore from '~/store/integrations/index'
 
 // import { formatDateTime } from '~/utils/date'
 
@@ -100,7 +101,7 @@ export default function useAssetInfo() {
     const getConnectorImage = (asset: assetInterface) => {
         const found =
             connectionStore.getConnectorImageMapping[
-                attributes(asset)?.connectorName?.toLowerCase()
+            attributes(asset)?.connectorName?.toLowerCase()
             ]
         return found
     }
@@ -108,7 +109,7 @@ export default function useAssetInfo() {
     const getConnectorLabel = (asset: assetInterface) => {
         const found =
             connectionStore.getConnectorLabelMapping[
-                attributes(asset)?.connectorName?.toLowerCase()
+            attributes(asset)?.connectorName?.toLowerCase()
             ]
         return found
     }
@@ -272,6 +273,8 @@ export default function useAssetInfo() {
     const { getList: cmList } = useCustomMetadataFacet()
 
     const getPreviewTabs = (asset: assetInterface, inProfile: boolean) => {
+        const store = integrationStore()
+        const { tenantJiraStatus } = toRefs(store)
         let customTabList = []
         if (cmList(assetType(asset))?.length > 0) {
             customTabList = cmList(assetType(asset)).map((i) => {
@@ -289,8 +292,10 @@ export default function useAssetInfo() {
                 }
             })
         }
+        debugger
         const allTabs = [
             ...getTabs(previewTabs, assetType(asset)),
+            ...(tenantJiraStatus.value.configured ? getTabs([JiraPreviewTab], assetType(asset)) : []),
             ...getTabs(customTabList, assetType(asset)),
         ]
         if (inProfile) {
@@ -388,9 +393,8 @@ export default function useAssetInfo() {
 
     const getAssetQueryPath = (asset) => {
         let queryPath = '/insights'
-        const databaseQualifiedName = `${
-            attributes(asset).connectionQualifiedName
-        }/${attributes(asset).databaseName}`
+        const databaseQualifiedName = `${attributes(asset).connectionQualifiedName
+            }/${attributes(asset).databaseName}`
         const schema = attributes(asset).schemaName
 
         if (assetType(asset) === 'Column') {
@@ -439,12 +443,12 @@ export default function useAssetInfo() {
 
         const found = attributes(asset)?.integrationName
             ? SourceList.find(
-                  (src) => src.id === attributes(asset)?.integrationName
-              )
+                (src) => src.id === attributes(asset)?.integrationName
+            )
             : SourceList.find(
-                  (src) =>
-                      src.id === attributes(asset)?.qualifiedName?.split('/')[1]
-              )
+                (src) =>
+                    src.id === attributes(asset)?.qualifiedName?.split('/')[1]
+            )
 
         if (found) img = found.image
 
@@ -653,7 +657,7 @@ export default function useAssetInfo() {
     const readmeContent = (asset: assetInterface) =>
         attributes(asset)?.readme?.attributes?.description
 
-    const isEditAllowed = (asset: assetInterface) => {}
+    const isEditAllowed = (asset: assetInterface) => { }
 
     const isScrubbed = (asset: assetInterface) => {
         if (asset?.scrubbed) {
@@ -730,7 +734,7 @@ export default function useAssetInfo() {
         if (attributes(asset)?.certificateUpdatedAt) {
             return raw
                 ? formatDateTime(attributes(asset)?.certificateUpdatedAt) ||
-                      'N/A'
+                'N/A'
                 : useTimeAgo(attributes(asset)?.certificateUpdatedAt).value
         }
         return ''
@@ -759,7 +763,7 @@ export default function useAssetInfo() {
         if (attributes(asset)?.announcementUpdatedAt) {
             return raw
                 ? formatDateTime(attributes(asset)?.announcementUpdatedAt) ||
-                      'N/A'
+                'N/A'
                 : useTimeAgo(attributes(asset)?.announcementUpdatedAt).value
         }
         return ''
@@ -1010,17 +1014,17 @@ export default function useAssetInfo() {
             },
             attributes(asset).isPublished
                 ? {
-                      id: 'tableauPublishedDatasource',
-                      label: 'Published Datasource',
-                      value: attributes(asset).datasourceName,
-                      icon: 'TableauPublishedDatasource',
-                  }
+                    id: 'tableauPublishedDatasource',
+                    label: 'Published Datasource',
+                    value: attributes(asset).datasourceName,
+                    icon: 'TableauPublishedDatasource',
+                }
                 : {
-                      id: 'tableauEmbeddedDatasource',
-                      label: 'Embedded Datasource',
-                      value: attributes(asset).datasourceName,
-                      icon: 'TableauEmbeddedDatasource',
-                  },
+                    id: 'tableauEmbeddedDatasource',
+                    label: 'Embedded Datasource',
+                    value: attributes(asset).datasourceName,
+                    icon: 'TableauEmbeddedDatasource',
+                },
             {
                 id: 'tableauDatasourceField',
                 label: 'Tableau DatasourceField',

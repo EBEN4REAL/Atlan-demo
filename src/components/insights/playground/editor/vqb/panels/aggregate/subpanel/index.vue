@@ -14,7 +14,7 @@
                     @mouseout="hoverItem = null"
                 >
                     <ColumnSelector
-                        class="flex-1"
+                        class="item-1"
                         v-model:selectedColumn="subpanel.column"
                         :disabled="readOnly"
                         :tableQualifiedName="
@@ -53,32 +53,39 @@
                         </template>
                     </ColumnSelector>
 
-                    <span
-                        class="px-3 text-sm text-gray-500"
-                        :class="{ invisible: !subpanel?.column?.item?.guid }"
-                        >calculate the</span
+                    <div
+                        class="flex items-center justify-center item-2"
+                        v-if="subpanel?.column?.item?.guid"
                     >
+                        <span class="px-3 text-sm text-gray-500"
+                            >calculate the</span
+                        >
+                    </div>
+                    <div class="flex item-3">
+                        <AggregateSelector
+                            :class="{
+                                invisible: !subpanel?.column?.item?.guid,
+                            }"
+                            class=""
+                            v-if="subpanel?.column?.item?.guid"
+                            v-model:selectedItems="subpanel.aggregators"
+                            :columnName="subpanel?.column?.label"
+                            :columnType="subpanel?.column?.type"
+                            @checkChange="checkChange"
+                            :disabled="!subpanel?.column?.label || readOnly"
+                        />
 
-                    <AggregateSelector
-                        :class="{ invisible: !subpanel?.column?.item?.guid }"
-                        class="flex-1"
-                        v-model:selectedItems="subpanel.aggregators"
-                        :columnName="subpanel?.column?.label"
-                        :columnType="subpanel?.column?.type"
-                        @checkChange="checkChange"
-                        :disabled="!subpanel?.column?.label || readOnly"
-                    />
-
-                    <AtlanIcon
-                        v-if="isSubpanelClosable(subpanels) && !readOnly"
-                        @click.stop="() => handleDelete(index)"
-                        icon="Close"
-                        class="w-6 h-6 ml-3 text-gray-500 mt-0.5 cursor-pointer"
-                        :class="`opacity-${
-                            hoverItem === subpanel.id ? 100 : 0
-                        }`"
-                    />
-                    <div style="width: 32px" v-else></div>
+                        <AtlanIcon
+                            v-if="isSubpanelClosable(subpanels) && !readOnly"
+                            @click.stop="() => handleDelete(index)"
+                            icon="Close"
+                            class="w-6 h-6 ml-3 text-gray-500 mt-0.5 cursor-pointer"
+                            :class="`opacity-${
+                                hoverItem === subpanel.id ? 100 : 0
+                            }`"
+                        />
+                        <div style="width: 32px" v-else></div>
+                    </div>
                 </div>
             </template>
         </div>
@@ -292,5 +299,25 @@
     }
     .border-shift-minus {
         padding: 0px;
+    }
+    .item-1 {
+        flex: 0.4575;
+        flex-shrink: 0;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+    .item-2 {
+        flex: 0.085;
+        flex-shrink: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        min-width: 110px;
+    }
+    .item-3 {
+        flex: 0.4575;
+        flex-shrink: 0;
+        white-space: nowrap;
+        overflow-y: auto;
+        overflow-x: hidden;
     }
 </style>

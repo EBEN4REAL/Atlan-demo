@@ -16,15 +16,15 @@
                     v-if="redirectTo"
                     class="flex items-center content-center ml-auto"
                 >
-                    <atlan-icon icon="OpenPreview" />
                     <a
-                        class="text-gray-700 ml-1"
+                        class="text-gray-700 mr-1"
                         style="text-decoration: none"
                         :href="redirectTo"
                         target="_blank"
                     >
                         Open
                     </a>
+                    <atlan-icon icon="External" />
                 </div>
             </div>
         </div>

@@ -129,6 +129,7 @@ export function useSavedQuery(
             savedQueryParentFolderTitle: savedQuery?.parentTitle,
             collectionQualifiedName:
                 savedQuery?.attributes?.collectionQualifiedName,
+            classifications: savedQuery?.classifications,    
             explorer: {
                 schema: {
                     connectors: connectors,

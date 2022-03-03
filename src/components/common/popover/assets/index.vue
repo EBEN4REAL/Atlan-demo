@@ -48,7 +48,7 @@
                         </div>
                         <slot name="button">
                             <AtlanBtn
-                                v-if="!showPreviewLink"
+                                v-if="showPreviewCTA"
                                 class="self-start flex-none bg-white border border-gray-300"
                                 size="icn"
                                 color="minimal"
@@ -190,17 +190,26 @@
                                     class="h-4 mr-1 text-gray-500 mb-0.5"
                                 />
                                 <span>{{ item.attributes?.dataType }}</span>
-                                <span
+                                <div class="flex ml-1 gap-x-2">
+                                    <ColumnKeys
+                                        :is-primary="isPrimary(item)"
+                                        :is-foreign="isForeign(item)"
+                                        :is-partition="isPartition(item)"
+                                        :is-sort="isSort(item)"
+                                        :is-indexed="isIndexed(item)"
+                                    />
+                                </div>
+                                <!-- <span
                                     v-if="isPrimary(item)"
                                     class="pt-1.5 pb-1 pr-2 pl-1 ml-2 text-xs rounded"
-                                    style="background: rgba(235, 157, 7, 0.2)"
+                                    style="background-color: #fffbf5"
                                 >
                                     <AtlanIcon
                                         icon="primaryKey"
-                                        class="mr-1"
+                                        class="mr-0.5"
                                     ></AtlanIcon
-                                    >PRIMARY KEY
-                                </span>
+                                    ><span style="color: #eb9d07">Pkey</span>
+                                </span> -->
                             </div>
                         </div>
                     </div>
@@ -230,7 +239,7 @@
                             class="flex flex-wrap gap-1 mt-1"
                         >
                             <template
-                                v-for="classification in list"
+                                v-for="classification in list.slice(0, 3)"
                                 :key="classification.guid"
                             >
                                 <ClassificationPill
@@ -243,28 +252,68 @@
                                     :created-by="classification?.createdBy"
                                 ></ClassificationPill>
                             </template>
+                            <span
+                                v-if="list.slice(3, list.length).length"
+                                class="p-1 text-gray-500 bg-gray-100 border border-gray-300 rounded-full"
+                            >
+                                <AtlanIcon icon="Add" class="h-3"></AtlanIcon
+                                >{{ list.slice(3, list.length).length }}
+                            </span>
                         </div>
                         <div
                             v-if="item?.meanings?.length"
                             class="flex flex-wrap gap-1 mt-1"
                         >
                             <template
-                                v-for="term in item.meanings"
+                                v-for="term in item.meanings.slice(0, 3)"
                                 :key="term.termGuid"
                             >
                                 <TermPill :term="term" :allow-delete="false" />
                             </template>
+                            <span
+                                v-if="
+                                    item.meanings.slice(3, item.meanings.length)
+                                        .length
+                                "
+                                class="p-1 text-gray-500 bg-gray-100 border border-gray-300 rounded-full"
+                            >
+                                <AtlanIcon icon="Add" class="h-3"></AtlanIcon
+                                >{{
+                                    item.meanings.slice(3, item.meanings.length)
+                                        .length
+                                }}
+                            </span>
                         </div>
                         <div
                             v-else-if="item?.attributes?.meanings?.length"
                             class="flex flex-wrap gap-1 mt-1"
                         >
                             <template
-                                v-for="term in item?.attributes?.meanings"
+                                v-for="term in item?.attributes?.meanings.slice(
+                                    0,
+                                    3
+                                )"
                                 :key="term.termGuid"
                             >
                                 <TermPill :term="term" :allow-delete="false" />
                             </template>
+                            <span
+                                v-if="
+                                    item?.attributes?.meanings.slice(
+                                        3,
+                                        item?.attributes?.meanings.length
+                                    ).length
+                                "
+                                class="p-1 text-gray-500 bg-gray-100 border border-gray-300 rounded-full"
+                            >
+                                <AtlanIcon icon="Add" class="h-3"></AtlanIcon
+                                >{{
+                                    item?.attributes?.meanings.slice(
+                                        3,
+                                        item?.attributes?.meanings.length
+                                    ).length
+                                }}
+                            </span>
                         </div>
                     </div>
 
@@ -280,22 +329,14 @@
                                     ?.ownerUsers"
                                 :key="idx"
                             >
-                                <!-- <PopOverUser :item="user"> -->
                                 <UserPill
                                     :key="idx"
                                     :username="user"
                                     @click="handleUserPreview(user)"
                                 />
-                                <!-- </PopOverUser> -->
                             </div>
                         </div>
                     </div>
-
-                    <!-- <div class="flex justify-between">
-                            <div class="flex items-center mb-1 text-gray-500">
-                                <slot name="extraHeaders"> </slot>
-                            </div>
-                        </div> -->
 
                     <div class="flex">
                         <router-link
@@ -347,6 +388,7 @@
     import { QueryCollection } from '~/types/insights/savedQuery.interface'
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
     import { useUserPreview } from '~/composables/user/showUserPreview'
+    import ColumnKeys from '~/components/common/column/columnKeys.vue'
 
     export default {
         name: 'PopoverAsset',
@@ -358,6 +400,7 @@
             AtlanBtn,
             TermPill,
             AssetDrawer,
+            ColumnKeys,
         },
         props: {
             item: {
@@ -375,6 +418,10 @@
             showPreviewLink: {
                 type: Boolean,
                 default: false,
+            },
+            showPreviewCTA: {
+                type: Boolean,
+                default: true,
             },
         },
         emits: ['previewAsset'],
@@ -399,6 +446,10 @@
                 connectionName,
                 connectorName,
                 isPrimary,
+                isForeign,
+                isPartition,
+                isSort,
+                isIndexed,
             } = useAssetInfo()
 
             const { showUserPreview: openPreview, setUserUniqueAttribute } =
@@ -515,6 +566,10 @@
                 connectorName,
                 collectionName,
                 isPrimary,
+                isForeign,
+                isSort,
+                isIndexed,
+                isPartition,
                 assetPopoverVisible,
                 handleTableForColumnPreview,
                 handleCloseTablePreview,

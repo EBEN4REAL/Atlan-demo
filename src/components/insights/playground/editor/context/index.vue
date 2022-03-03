@@ -13,6 +13,7 @@
                 mouseEnterDelay="0.6"
                 placement="bottomLeft"
                 v-if="activeInlineTab?.queryId && activeInlineTab?.attributes"
+                :showPreviewCTA="false"
             >
                 <div
                     class="flex items-center transition rounded-sm hover:bg-gray-light"

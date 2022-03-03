@@ -299,7 +299,9 @@
 
                 if (queryText.value)
                     data = data.filter((item) =>
-                        item.label.includes(queryText.value.toUpperCase())
+                        item.label
+                            .toUpperCase()
+                            .includes(queryText.value.toUpperCase())
                     )
 
                 data.sort((x, y) => {

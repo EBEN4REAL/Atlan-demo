@@ -19,11 +19,4 @@ export const assetActions = [
             'MaterialisedView',
         ],
     },
-    {
-        id: 'share',
-        label: 'Share',
-        description: 'Share asset link',
-        icon: 'Share',
-        component: 'ShareMenu',
-    },
 ]

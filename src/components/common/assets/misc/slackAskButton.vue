@@ -1,5 +1,5 @@
 <template>
-    <a-button class="flex items-center justify-center p-0">
+    <a-button class="flex items-center justify-center p-2">
         <SlackModal
             :link="assetLink"
             :asset-i-d="asset?.guid"
@@ -7,9 +7,7 @@
             :ask-question-modal="true"
             @success="onSlackModalSuccess"
         >
-            <div class="px-4 py-1">
-                <AtlanIcon icon="Slack" class="mb-0.5" />
-            </div>
+            <AtlanIcon icon="Slack" />
         </SlackModal>
     </a-button>
 </template>

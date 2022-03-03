@@ -374,11 +374,13 @@
                         if (column?.key !== 0) {
                             const span = document.createElement('span')
                             span.setAttribute('id', 'icon')
-                            span.innerHTML = `<img data-tooltip=${
-                                column?.data_type
-                            }  class="cursor-pointer inline-flex w-4 h-4 mr-1 mb-0.5" text-gray-500 src="${
-                                imageMap[getDataType(column?.data_type)]
-                            }">`
+                            if (imageMap[getDataType(column?.data_type)]) {
+                                span.innerHTML = `<img data-tooltip=${
+                                    column?.data_type
+                                }  class="cursor-pointer inline-flex w-4 h-4 mr-1 mb-0.5" text-gray-500 src="${
+                                    imageMap[getDataType(column?.data_type)]
+                                }">`
+                            }
 
                             if (!th.querySelector('#icon > img')) {
                                 th.prepend(span)

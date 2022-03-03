@@ -42,6 +42,7 @@ export const dataTypeCategoryList = [
             'INT4',
             'INT2',
             'INT64',
+            'INT8',
         ],
         image: number,
         imageText: 'number',

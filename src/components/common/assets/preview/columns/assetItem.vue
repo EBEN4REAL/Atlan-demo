@@ -10,7 +10,10 @@
                 <div
                     class="flex flex-wrap items-center justify-between mb-0 overflow-hidden"
                 >
-                    <div class="flex items-center">
+                    <div
+                        class="flex items-center"
+                        :class="dataTypeCategoryImage(item) ? '' : 'w-full'"
+                    >
                         <component
                             :is="dataTypeCategoryImage(item)"
                             class="h-4 mr-1 text-gray-500 mb-0.5"
@@ -200,7 +203,12 @@
                 return matchingIdsResult
             })
 
-            watch(shouldDrawerUpdate, () => emit('update', asset.value))
+            watch(shouldDrawerUpdate, () => {
+                if (shouldDrawerUpdate.value) {
+                    emit('update', asset.value)
+                    shouldDrawerUpdate.value = false
+                }
+            })
 
             return {
                 title,

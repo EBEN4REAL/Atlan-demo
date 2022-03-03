@@ -65,7 +65,7 @@
                 </AddResource>
             </div>
         </template>
-        <div>
+        <section :class="{ 'overflow-y-auto': resources?.length }">
             <template v-if="!resources?.length">
                 <template v-if="$slots?.placeholder">
                     <slot name="placeholder" />
@@ -134,7 +134,7 @@
                     </template>
                 </div>
             </template>
-        </div>
+        </section>
     </div>
 </template>
 

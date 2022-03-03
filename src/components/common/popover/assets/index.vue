@@ -14,7 +14,7 @@
                         <div
                             class="flex items-center font-semibold break-words"
                         >
-                            <div class="flex">
+                            <div class="flex" style="margin-right: 14px">
                                 <div
                                     v-if="
                                         item.typeName?.toLowerCase() ===
@@ -28,22 +28,21 @@
                                         class="h-4 text-gray-500"
                                     />
                                 </div>
-                                <span
-                                    class="w-64 text-lg break-words line-clamp-3"
-                                >
+                                <span class="text-lg break-all line-clamp-2">
                                     {{
                                         item?.displayText ||
                                         item?.attributes?.name
                                     }}
-                                    <CertificateBadge
-                                        v-if="certificateStatus(item)"
-                                        :status="certificateStatus(item)"
-                                        :username="certificateUpdatedBy(item)"
-                                        :timestamp="certificateUpdatedAt(item)"
-                                        class="flex mb-1 ml-1"
-                                        style="min-width: 16px"
-                                    />
                                 </span>
+                                <CertificateBadge
+                                    v-if="certificateStatus(item)"
+                                    :status="certificateStatus(item)"
+                                    :username="certificateUpdatedBy(item)"
+                                    :timestamp="certificateUpdatedAt(item)"
+                                    class="flex mt-1.5 ml-1"
+                                    style="min-width: 16px"
+                                    :icon-class="'self-start'"
+                                />
                             </div>
                         </div>
                         <slot name="button">
@@ -109,7 +108,7 @@
                                 icon="DatabaseGray"
                                 class="mr-1 mb-0.5"
                             />
-                            <div class="truncate max-w-28">
+                            <div class="truncate max-w-100px">
                                 {{ db }}
                             </div>
                         </div>
@@ -124,7 +123,7 @@
                                 ><AtlanIcon icon="CaretRight"
                             /></span>
                             <AtlanIcon icon="SchemaGray" class="mr-1 mb-0.5" />
-                            <div class="truncate max-w-28">
+                            <div class="truncate max-w-100px">
                                 {{ schema }}
                             </div>
                         </div>
@@ -254,10 +253,9 @@
                             </template>
                             <span
                                 v-if="list.slice(3, list.length).length"
-                                class="p-1 text-gray-500 bg-gray-100 border border-gray-300 rounded-full"
+                                class="bg-gray-100 border border-gray-300 flex items-center px-1.5 py-1 rounded-full text-gray-500"
                             >
-                                <AtlanIcon icon="Add" class="h-3"></AtlanIcon
-                                >{{ list.slice(3, list.length).length }}
+                                +{{ list.slice(3, list.length).length }}
                             </span>
                         </div>
                         <div
@@ -275,10 +273,9 @@
                                     item.meanings.slice(3, item.meanings.length)
                                         .length
                                 "
-                                class="p-1 text-gray-500 bg-gray-100 border border-gray-300 rounded-full"
+                                class="bg-gray-100 border border-gray-300 flex items-center px-1.5 py-1 rounded-full text-gray-500"
                             >
-                                <AtlanIcon icon="Add" class="h-3"></AtlanIcon
-                                >{{
+                                +{{
                                     item.meanings.slice(3, item.meanings.length)
                                         .length
                                 }}
@@ -304,10 +301,9 @@
                                         item?.attributes?.meanings.length
                                     ).length
                                 "
-                                class="p-1 text-gray-500 bg-gray-100 border border-gray-300 rounded-full"
+                                class="bg-gray-100 border border-gray-300 flex items-center px-1.5 py-1 rounded-full text-gray-500"
                             >
-                                <AtlanIcon icon="Add" class="h-3"></AtlanIcon
-                                >{{
+                                +{{
                                     item?.attributes?.meanings.slice(
                                         3,
                                         item?.attributes?.meanings.length
@@ -583,7 +579,7 @@
     }
 </script>
 <style lang="less" scoped>
-    .max-w-28 {
-        max-width: 112px;
+    .max-w-100px {
+        max-width: 100px;
     }
 </style>

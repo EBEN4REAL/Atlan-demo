@@ -908,14 +908,8 @@
                                 <PopoverClassification
                                     :classification="classification"
                                     :entity-guid="item.guid"
-                                    :mouse-enter-delay="
-                                        classificationPopoverMouseEnterDelay
-                                    "
-                                    @mouse-entered="
-                                        () => {
-                                            classificationPopoverMouseEnterDelay = 0.2
-                                        }
-                                    "
+                                    :mouse-enter-delay="mouseEnterDelay"
+                                    @mouse-entered="enteredPill"
                                 >
                                     <ClassificationPill
                                         :name="classification.name"
@@ -1084,6 +1078,7 @@
     import useTermPopover from '@/common/popover/term/useTermPopover'
     import AtlanIcon from '@/common/icon/atlanIcon.vue'
     import useGlossaryData from '~/composables/glossary2/useGlossaryData'
+    import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
 
     export default defineComponent({
         name: 'AssetListItem',
@@ -1203,8 +1198,6 @@
             const { getEntityStatusIcon } = useGlossaryData()
             const showAssetSidebarDrawer = ref(false)
             const selectedAssetDrawerGuid = ref('')
-
-            const classificationPopoverMouseEnterDelay = ref(1)
 
             const {
                 title,
@@ -1353,6 +1346,8 @@
                 termError,
             } = useTermPopover()
 
+            const { mouseEnterDelay, enteredPill } = useMouseEnterDelay()
+
             return {
                 getFetchedTerm,
                 handleTermPopoverVisibility,
@@ -1425,9 +1420,10 @@
                 getEntityStatusIcon,
                 meanings,
                 isLoading,
-                classificationPopoverMouseEnterDelay,
                 icon,
                 announcementType,
+                mouseEnterDelay,
+                enteredPill,
             }
         },
     })

@@ -12,11 +12,14 @@ import { assetInterface } from '~/types/assets/asset.interface'
 export const MAX_CONNECTIONS = 200
 export const CONNECTION_ASSET_TYPE = 'Connection'
 export const CONNECTION_ATTRIBUTES = [
-    'allowQuery',
-    'allowQueryPreview',
-    'queryPreviewConfig',
-    'queryConfig',
-    'defaultCredentialGuid',
+    'connectorName',
+    'connectionName',
+    'connectionQualifiedName',
+    'defaultSchemaQualifiedName',
+    'defaultDatabaseQualifiedName',
+    'adminUsers',
+    'adminGroups',
+    ...InternalAttributes,
 ]
 
 const GROUP_AGGREATION = 'group_by_connection'

@@ -13,7 +13,7 @@
             </div>
             <!-- body -->
             <div>
-                <span class="text-gray-500">{{
+                <span class="text-gray-500 line-clamp-2">{{
                     purpose?.description || 'No description'
                 }}</span>
             </div>

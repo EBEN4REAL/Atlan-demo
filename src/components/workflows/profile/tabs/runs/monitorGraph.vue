@@ -171,6 +171,7 @@
 
     import Drawer from './drawer/drawer.vue'
     import useEventGraph from './useEventGraph'
+    import { until } from '@vueuse/core'
 
     export default defineComponent({
         name: 'MonitorGraph',
@@ -265,6 +266,7 @@
                     minimapContainer,
                     graphLayout
                 )
+                graph.value.zoom(currZoom.value, { absolute: true })
 
                 setGraphData()
 
@@ -285,8 +287,6 @@
                     drawerVisible,
                     selectedPod,
                 })
-
-                graph.value.zoom(currZoom.value, { absolute: true })
 
                 if (selectedPod.value?.id && drawerVisible.value) {
                     let podData = graph.value.getCellById(
@@ -318,6 +318,8 @@
                 if (graph.value) graph.value.dispose()
                 await nextTick()
                 initialize()
+                await until(isGraphRendered).toBe(true)
+                handleRecenter()
             })
 
             const handleRefresh = () => {

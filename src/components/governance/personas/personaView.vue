@@ -1,125 +1,161 @@
 <template>
-    <ExplorerLayout
-        title="Persona"
-        :sidebar-visibility="Boolean(selectedPersonaId)"
-    >
-        <template #action> </template>
-        <template #sidebar>
-            <div class="flex items-center px-4 mb-3">
-                <SearchAndFilter
-                    v-model:value="searchTerm"
-                    :placeholder="`Search ${
-                        filteredPersonas?.length ?? 0
-                    } personas`"
-                    class="mt-0 bg-white"
-                    :autofocus="true"
-                    size="minimal"
-                >
-                </SearchAndFilter>
-                <a-tooltip>
-                    <template #title>New Persona</template>
-                    <AtlanBtn
-                        :disabled="isEditing"
-                        class="flex-none px-2 ml-4"
-                        size="sm"
-                        color="secondary"
-                        padding="compact"
-                        data-test-id="add-persona"
-                        @click="() => (modalVisible = true)"
-                    >
-                        <AtlanIcon icon="Add" /> </AtlanBtn
-                ></a-tooltip>
-            </div>
-
-            <ExplorerList
-                v-model:selected="selectedPersonaId"
-                type="personas"
-                :disabled="isEditing"
-                :list="filteredPersonas"
-                data-key="id"
+    <div class="flex flex-col h-full px-6 py-7">
+        <a-drawer
+            :visible="drawerFilter"
+            :mask="false"
+            :placement="'left'"
+            style="width: 17%"
+            :closable="false"
+            :class="'drawer-filter-request'"
+        >
+            <div
+                class="relative h-full pb-10 overflow-scroll bg-gray-50"
+                :class="$style['request-filter-wrapper']"
             >
-                <template #default="{ item, isSelected }">
-                    <div class="flex items-center justify-between w-full">
-                        <div
-                            class="flex flex-col"
-                            :data-test-id="item.displayName"
-                        >
-                            <span
-                                class="text-sm capitalize truncate"
-                                :class="
-                                    isSelected
-                                        ? 'text-primary font-semibold'
-                                        : 'text-gray-700 hover:text-primary hover:font-semibold'
-                                "
-                                style="max-width: 190px"
-                            >
-                                {{ item.displayName }}
-                            </span>
-                            <div class="flex gap-x-1">
-                                <span
-                                    v-if="item.users?.length > 0"
-                                    class="text-sm text-gray-500"
-                                >
-                                    {{ item.users.length }} users
-                                </span>
-                                <span
-                                    v-if="item.groups?.length > 0"
-                                    class="text-sm text-gray-500"
-                                >
-                                    {{ item.groups.length }} groups
-                                </span>
-                                <span
-                                    v-if="
-                                        item.metadataPolicies?.length > 0 ||
-                                        item.dataPolicies?.length > 0
-                                    "
-                                    class="text-sm text-gray-500"
-                                >
-                                    {{
-                                        item.metadataPolicies?.length +
-                                        item.dataPolicies?.length
-                                    }}
-                                    policies</span
-                                >
-                            </div>
-
-                            <!-- <div class="w-1.5 h-1.5 rounded-full" :class="item.isActive ? 'active' : 'inActive'"/> -->
-                        </div>
-
-                        <a-tooltip
-                            v-if="item.description"
-                            tabindex="-1"
-                            :title="item.description"
-                            placement="right"
-                        >
-                            <span
-                                ><AtlanIcon icon="Info" class="ml-1"></AtlanIcon
-                            ></span>
-                        </a-tooltip>
-                    </div>
-                </template>
-            </ExplorerList>
-        </template>
-
+                <div
+                    v-if="drawerFilter"
+                    class="close-btn-sidebar button-close-drawer-request"
+                    @click="handleClickFilter"
+                >
+                    <AtlanIcon icon="Add" class="text-white" />
+                </div>
+                <div class="filter-container">
+                    <AssetFilters
+                        v-model="facets"
+                        :filter-list="personaFilter"
+                        :allow-custom-filters="false"
+                        :no-filter-title="'No filters applied'"
+                        :extra-count-filter="
+                            connectorsData.attributeValue ? 1 : 0
+                        "
+                        class="bg-gray-100 drawer-request"
+                        @change="handleFilterChange"
+                        @reset="handleResetEvent"
+                    >
+                    </AssetFilters>
+                </div>
+            </div>
+        </a-drawer>
         <AddPersona v-model:visible="modalVisible" />
-        <a-spin v-if="isPersonaLoading" class="mx-auto my-auto" size="large" />
-        <template v-else-if="selectedPersona">
-            <div class="bg-white">
+        <a-modal
+            v-model:visible="personaViewModalVisible"
+            :destroyOnClose="true"
+            :closable="false"
+            width="80%"
+            wrapClassName="persona-modal"
+            :centered="true"
+            :maskClosable="true"
+            @cancel="closePersonaViewModal"
+        >
+            <template #title>
                 <PersonaHeader
                     v-model:openEditModal="openEditModal"
                     :persona="selectedPersona"
+                    class=""
+                />
+            </template>
+            <template #footer>
+                <div style="display: none">
+                    <div class="flex items-center justify-between pb-1">
+                        <slot name="footerLeft"></slot>
+                        <div
+                            class="flex items-center justify-end w-full space-x-3"
+                        >
+                            <!-- Hi -->
+                        </div>
+                    </div>
+                </div>
+            </template>
+            <div class="h-full bg-primary-light">
+                <PersonaBody
+                    v-model:persona="selectedPersona"
+                    :whitelisted-connection-ids="whitelistedConnectionIds"
+                    @selectPolicy="handleSelectPolicy"
+                    @editDetails="openEditModal = true"
                 />
             </div>
-            <PersonaBody
-                v-model:persona="selectedPersona"
-                :whitelisted-connection-ids="whitelistedConnectionIds"
-                @selectPolicy="handleSelectPolicy"
-                @editDetails="openEditModal = true"
-            />
-        </template>
+        </a-modal>
+
+        <a-spin v-if="isPersonaLoading" class="mx-auto my-auto" size="large" />
+        <div v-else-if="personaList && personaList.length" class="h-full">
+            <span class="text-xl">Personas</span>
+            <!-- search & filter -->
+            <div class="flex justify-between">
+                <div class="w-1/3 mt-4">
+                    <SearchAndFilter
+                        v-model:value="searchTerm"
+                        :placeholder="`Search ${
+                            filteredPersonas?.length ?? 0
+                        } personas`"
+                        class="max-w-lg shadow-none filter-request"
+                        :autofocus="true"
+                        size="default"
+                    >
+                        <template #categoryFilterRight>
+                            <div class="relative flex items-center">
+                                <AtlanBtn
+                                    color="secondary"
+                                    class="px-2 border-l rounded-tl-none rounded-bl-none cursor-pointer filter-button"
+                                    :class="{
+                                        'text-primary border rounded py-1 border-primary':
+                                            drawerFilter,
+                                    }"
+                                    @click="handleClickFilter"
+                                >
+                                    <AtlanIcon
+                                        icon="FilterFunnel"
+                                        class="w-4 h-4"
+                                    />
+                                </AtlanBtn>
+                                <div
+                                    class="absolute border-r divide-gray-800 divider-filter"
+                                    :class="{
+                                        'text-primary border-r rounded border-primary top-0':
+                                            drawerFilter,
+                                    }"
+                                />
+                            </div>
+                        </template>
+                    </SearchAndFilter>
+                </div>
+                <a-button
+                    padding="compact"
+                    size="sm"
+                    type="primary"
+                    :disabled="isEditing"
+                    data-test-id="add-persona"
+                    @click="() => (modalVisible = true)"
+                >
+                    <AtlanIcon icon="Add" class="mr-1" />New Persona
+                </a-button>
+            </div>
+            <!-- persona cards -->
+            <div
+                v-if="filteredPersonas && filteredPersonas.length"
+                class="grid grid-cols-4 gap-4 gap-y-6 mt-7"
+            >
+                <PersonaCard
+                    v-for="persona in filteredPersonas"
+                    :key="persona.id"
+                    :persona="persona"
+                    @select="selectPersona"
+                ></PersonaCard>
+            </div>
+            <div
+                v-else
+                class="flex flex-col items-center justify-center h-full"
+            >
+                <component :is="NewPolicyIllustration"></component>
+                <span class="mt-3 text-lg">No personas found</span>
+                <!-- <a-button type="primary" class="mt-2" @click="handleResetEvent"
+                    >Clear filters</a-button
+                > -->
+            </div>
+        </div>
+
         <div
             v-else-if="
-                (filteredPersonas === null || filteredPersonas?.length == 0) &&
+                (personaList === null || personaList?.length == 0) &&
                 isPersonaError === undefined
             "
             class="flex flex-col items-center h-full"
@@ -132,19 +168,17 @@
                 >Persona management keeps your data assets safe by ensuring that
                 the right people have access to the right data.</span
             >
-            <AtlanBtn
+            <a-button
                 class="flex-none mx-auto mt-8"
-                color="primary"
+                type="primary"
                 data-test-id="add-new-persona"
-                padding="compact"
-                size="sm"
                 @click.prevent="() => (modalVisible = true)"
             >
                 <template #prefix>
                     <AtlanIcon icon="Add" />
                 </template>
                 Get started
-            </AtlanBtn>
+            </a-button>
             <div class="mt-5 cursor-pointer text-primary">
                 <a
                     href="https://ask.atlan.com/hc/en-us/articles/4413870860049-What-are-personas-"
@@ -171,20 +205,11 @@
                 </a-button>
             </div>
         </ErrorView>
-        <a-drawer
-            placement="right"
-            :closable="false"
-            :visible="modalDetailPolicyVisible"
-            :width="450"
-            @close="handleCloseModalDetailPolicy"
-        >
-            <DetailPolicy :selected-policy="selectedPolicy" />
-        </a-drawer>
-    </ExplorerLayout>
+    </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, onMounted } from 'vue'
+    import { defineComponent, ref, watch, onMounted, computed } from 'vue'
     import ErrorView from '@common/error/index.vue'
     import { storeToRefs } from 'pinia'
     import { useRoute, useRouter } from 'vue-router'
@@ -205,18 +230,23 @@
         isPersonaError,
         isPersonaListReady,
         personaList,
+        facets,
     } from './composables/usePersonaList'
     import { isEditing } from './composables/useEditPersona'
     import AddPersonaIllustration from '~/assets/images/empty_state_personaV2.svg'
     import DetailPolicy from './overview/detailPolicy.vue'
     import usePermissions from '~/composables/auth/usePermissions'
     import { useAuthStore } from '~/store/auth'
+    import PersonaCard from '@/governance/personas/discovery/personaCard.vue'
+    import AssetFilters from '@/common/assets/filters/index.vue'
+    import { personaFilter } from '~/constant/filters/logsFilter'
+    import NewPolicyIllustration from '~/assets/images/illustrations/new_policy.svg'
 
     export default defineComponent({
         name: 'PersonaView',
         components: {
+            // AtlanBtn,
             ErrorView,
-            AtlanBtn,
             SearchAndFilter,
             PersonaBody,
             PersonaHeader,
@@ -224,6 +254,8 @@
             ExplorerList,
             AddPersona,
             DetailPolicy,
+            PersonaCard,
+            AssetFilters,
         },
         setup() {
             const router = useRouter()
@@ -235,6 +267,12 @@
             const authStore = useAuthStore()
             const { decentralizedRoles } = storeToRefs(authStore)
             const openEditModal = ref(false)
+            const drawerFilter = ref(false)
+
+            const connectorsData = ref({
+                attributeName: undefined,
+                attributeValue: undefined,
+            })
             const handleCloseModalDetailPolicy = () => {
                 modalDetailPolicyVisible.value = false
             }
@@ -243,12 +281,40 @@
                 modalDetailPolicyVisible.value = true
             }
             const whitelistedConnectionIds = ref([])
+
+            const selectPersona = (persona) => {
+                console.log('selectPersona', persona)
+                selectedPersonaId.value = persona.id
+            }
+
+            const closePersonaViewModal = () => {
+                selectedPersonaId.value = ''
+            }
+
+            // eslint-disable-next-line arrow-body-style
+            const personaViewModalVisible = ref(false)
+            const handleClickFilter = () => {
+                drawerFilter.value = !drawerFilter.value
+            }
+
+            const handleFilterChange = () => {
+                console.log('facets.value', facets.value)
+            }
+            const handleResetEvent = () => {
+                facets.value = {}
+                searchTerm.value = ''
+            }
+
             onMounted(() => {
-                console.log('rohan', filteredPersonas?.value?.length)
-                if (!route.params.id && filteredPersonas?.value?.length) {
-                    const id = filteredPersonas.value[0].id!
-                    selectedPersonaId.value = id
-                    router.replace(`/governance/personas/${id}`)
+                if (personaList?.value?.length) {
+                    if (route.params.id) {
+                        const find = personaList.value.find(
+                            (el) => el.id === route.params.id
+                        )
+                        if (find) {
+                            selectedPersonaId.value = route.params.id
+                        }
+                    }
                 }
             })
 
@@ -262,27 +328,22 @@
                             )
                             if (find) {
                                 selectedPersonaId.value = route.params.id
-                            } else {
-                                if (filteredPersonas?.value?.length) {
-                                    selectedPersonaId.value =
-                                        filteredPersonas.value[0].id!
-                                }
-                            }
-                        } else {
-                            if (filteredPersonas?.value?.length) {
-                                selectedPersonaId.value =
-                                    filteredPersonas.value[0].id!
                             }
                         }
                     }
                 },
-                { immediate: true }
+                { immediate: false }
             )
 
             watch(selectedPersonaId, () => {
                 router.replace(
                     `/governance/personas/${selectedPersonaId.value}`
                 )
+                if (selectedPersonaId.value) {
+                    personaViewModalVisible.value = true
+                } else {
+                    personaViewModalVisible.value = false
+                }
             })
             watch(
                 decentralizedRoles,
@@ -324,11 +385,53 @@
                 selectedPolicy,
                 whitelistedConnectionIds,
                 openEditModal,
+                selectPersona,
+                closePersonaViewModal,
+                personaViewModalVisible,
+                handleClickFilter,
+                drawerFilter,
+                personaFilter,
+                facets,
+                connectorsData,
+                handleFilterChange,
+                handleResetEvent,
+                NewPolicyIllustration,
+                personaList,
             }
         },
     })
 </script>
+<style lang="less">
+    .persona-modal {
+        .ant-modal {
+            height: calc(100% - 100px);
+        }
+        .ant-modal-body {
+            height: calc(100% - 66px);
+            overflow-y: hidden;
+            border-radius: 4px;
+        }
+        .ant-modal-content {
+            height: calc(100%);
+        }
+        .ant-modal-header {
+            padding-bottom: 0px;
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+        .ant-modal-footer {
+            padding: 0px !important;
+        }
+    }
+</style>
 <style lang="less" scoped>
+    .button-close-drawer-request {
+        left: 18% !important;
+        top: 5px;
+    }
+    .filter-request {
+        height: 32px !important;
+    }
     .active {
         background: #00a680;
     }
@@ -339,5 +442,14 @@
         max-width: 540px;
         text-align: center;
         margin-top: 16px !important;
+    }
+</style>
+<style lang="less" module>
+    .request-filter-wrapper {
+        :global(.filter-head) {
+            background: inherit !important;
+            height: 52px;
+            @apply pt-4 !important;
+        }
     }
 </style>

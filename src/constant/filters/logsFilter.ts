@@ -1,5 +1,23 @@
 // import { confidenceScore } from '~/constant/confidenceScore'
 import { statusRequest, assetTypes } from '~/constant/statusRequest'
+import { statusPersona } from '~/constant/statusPersona'
+import { personaScopeList } from '~/components/governance/personas/composables/useScopeService'
+
+const getPermissions = (permissionScopeList) => {
+    const permissions = []
+    permissionScopeList.forEach((scope) => {
+        const { scopes } = scope
+        scopes.forEach((scope) => {
+            const newScope = { ...scope }
+            newScope.id = scope.value
+            if (scope.filterLabel) {
+                newScope.label = scope.filterLabel
+            }
+            permissions.push(newScope)
+        })
+    })
+    return permissions
+}
 
 export const queryLogsFilter = [
     {
@@ -151,7 +169,7 @@ export const requestFilter = [
         },
         class: 'bg-transparent',
     },
-     {
+    {
         id: '__traitNames',
         label: 'Classifications',
         component: 'classifications',
@@ -160,7 +178,7 @@ export const requestFilter = [
         isDeleted: false,
         isDisabled: false,
         exclude: false,
-        showNone: false
+        showNone: false,
     },
     {
         id: 'statusRequest',
@@ -172,7 +190,7 @@ export const requestFilter = [
         isDisabled: false,
         exclude: false,
         class: 'bg-transparent',
-        data: statusRequest
+        data: statusRequest,
     },
     // {
     //     id: 'terms',
@@ -196,4 +214,103 @@ export const requestFilter = [
     //     class: 'bg-transparent',
     //     data: confidenceScore
     // },
+]
+
+export const personaFilter = [
+    {
+        id: 'hierarchy',
+        label: 'Connection',
+        component: 'hierarchy',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+        analyticsKey: 'connection',
+    },
+    {
+        id: 'owners',
+        label: 'Users',
+        component: 'owners',
+        selectUserKey: 'id',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+        propsToComponent: {
+            showNone: false,
+            hideDisabledTabs: true,
+            enableTabs: ['users', 'groups'],
+            selectGroupKey: 'id',
+            selectUserKey: 'id',
+        },
+        class: 'bg-transparent',
+    },
+    // {
+    //     id: 'statusRequest',
+    //     label: 'STATUS',
+    //     component: 'CheckBoxOption',
+    //     overallCondition: 'OR',
+    //     attributes: [],
+    //     isDeleted: false,
+    //     isDisabled: false,
+    //     exclude: false,
+    //     class: 'bg-transparent',
+    //     data: statusPersona,
+    // },
+    {
+        id: 'permissions',
+        label: 'PERMISSION',
+        component: 'CheckBoxOption',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+        class: 'bg-transparent',
+        data: getPermissions(personaScopeList),
+    },
+    // {
+    //     id: 'confidenceScore',
+    //     label: 'Confidence score',
+    //     component: 'CheckBoxOption',
+    //     overallCondition: 'OR',
+    //     attributes: [],
+    //     isDeleted: false,
+    //     isDisabled: false,
+    //     exclude: false,
+    //     class: 'bg-transparent',
+    //     data: confidenceScore
+    // },
+]
+
+export const purposeFilter = [
+    {
+        id: 'classifications',
+        label: 'Classifications',
+        component: 'classifications',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+        showNone: false,
+    },
+    {
+        id: 'owners',
+        label: 'Users',
+        component: 'owners',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+        propsToComponent: {
+            showNone: false,
+            hideDisabledTabs: true,
+            enableTabs: ['users', 'groups'],
+        },
+        class: 'bg-transparent',
+    },
 ]

@@ -2,10 +2,10 @@
     <div class="flex flex-col flex-grow h-full overflow-hidden">
         <div class="relative flex-grow overflow-hidden bg-primary-light">
             <div class="absolute z-10 rounded left-10 top-10">
-                <div class="flex flex-col">
+                <div class="flex flex-col gap-y-3">
                     <RunsSelect
                         ref="runSelector"
-                        class="mb-3 shadow"
+                        class="shadow"
                         style="min-width: 150px"
                         :model-value="path.name"
                         :workflow-name="workflowName"
@@ -19,12 +19,18 @@
                         :error="error"
                         style="width: 300px"
                     />
+
+                    <div
+                        v-if="!firstLoad && isLoading"
+                        class="flex items-center p-2 bg-white border rounded gap-x-1"
+                    >
+                        <AtlanLoader class="h-5" />
+                        <span class="text-gray-500 test-sm"
+                            >Fetching latest data</span
+                        >
+                    </div>
                 </div>
             </div>
-            <AtlanLoader
-                v-if="isValidating"
-                class="absolute z-50 h-8 left-10 bottom-10"
-            />
 
             <MonitorGraph
                 :key="path.name"
@@ -97,12 +103,8 @@
 
             watch(
                 path,
-                async () => {
-                    if (path.value.name) {
-                        isValidating.value = true
-                        await mutate()
-                        isValidating.value = false
-                    }
+                () => {
+                    if (path.value.name) mutate()
                 },
                 { immediate: true }
             )
@@ -116,18 +118,22 @@
                 { immediate: false }
             )
 
-            whenever(selectedRun, () => {
-                if (phase(selectedRun.value) === 'Running') resume()
-                else {
-                    pause()
-                    runSelector.value?.quickChange()
+            watch(
+                () => phase(selectedRun.value),
+                () => {
+                    if (phase(selectedRun.value) === 'Running') resume()
+                    else {
+                        pause()
+                        runSelector.value?.quickChange()
+                    }
+                },
+                {
+                    flush: 'post',
                 }
-            })
+            )
 
-            const handleRefresh = async () => {
-                isValidating.value = true
-                await mutate()
-                isValidating.value = false
+            const handleRefresh = () => {
+                mutate()
             }
 
             return {

@@ -3,7 +3,7 @@
         :visible="drawerFilter"
         :mask="false"
         :placement="'left'"
-        :width="287"
+        :width="240"
         :closable="false"
         :class="'drawer-filter-request'"
     >

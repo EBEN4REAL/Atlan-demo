@@ -203,7 +203,6 @@
                         :value="getDaysJsWrappedValue(variable.value)"
                         @change="(e) => onChange(variable, e)"
                         :bordered="false"
-                        :disabled="readOnly"
                         style="padding-right: 0 !important"
                         class="truncate border-0 focus:border-0 focus:outline-none"
                         :allowClear="false"
@@ -214,10 +213,9 @@
                         class="w-full border-none outline-none outline-0 group focus:outline-0 focus:border-none focus:shadow-none"
                         :class="readOnly ? 'bg-white text-gray-100' : ''"
                         :style="`height: 32px; ${
-                            readOnly ? 'color: #00000040 !important' : ''
+                            readOnly ? 'color: #3E4359 !important' : ''
                         }`"
                         v-model:value="variable.value"
-                        :disabled="readOnly"
                         @change="onChange(variable)"
                         :placeholder="`Enter a ${variable.type}`"
                         :type="variable.type === 'number' ? 'number' : 'text'"
@@ -233,15 +231,8 @@
                             class="absolute right-0 z-10 p-1 px-1.5 rounded opacity-0 group-hover:opacity-100"
                         >
                             <span
-                                @click="
-                                    () => !readOnly && toggleDropdown(variable)
-                                "
-                                class="p-1 rounded group-hover:bg-gray-light"
-                                :class="
-                                    readOnly
-                                        ? 'cursor-not-allowed'
-                                        : 'cursor-pointer'
-                                "
+                                @click="() => toggleDropdown(variable)"
+                                class="p-1 rounded cursor-pointer group-hover:bg-gray-light"
                             >
                                 <AtlanIcon
                                     class="w-4 h-4 text-gray-500 mb-0.5"
@@ -289,11 +280,17 @@
                                                 <AtlanIcon
                                                     @click="
                                                         () =>
+                                                            !readOnly &&
                                                             onDeleteVariable(
                                                                 activeVariable
                                                             )
                                                     "
-                                                    class="w-4 h-4 text-gray-500 cursor-pointer"
+                                                    class="w-4 h-4 text-gray-500"
+                                                    :class="
+                                                        !readOnly
+                                                            ? 'curosr-pointer'
+                                                            : 'cursor-not-allowed'
+                                                    "
                                                     icon="Delete"
                                                 />
                                             </a-tooltip>
@@ -545,6 +542,7 @@
         toRaw,
         ComputedRef,
         computed,
+        onUnmounted,
     } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import AtlanBtn from '~/components/UI/button.vue'

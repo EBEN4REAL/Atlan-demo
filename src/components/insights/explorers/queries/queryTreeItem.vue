@@ -507,6 +507,18 @@
     import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
     import Tooltip from '@common/ellipsis/index.vue'
 
+    // vqb icons
+    import Vqb from '~/assets/images/icons/Vqb.svg?raw'
+    import VqbVerified from '~/assets/images/icons/VqbVerified.svg?raw'
+    import VqbDeprecated from '~/assets/images/icons/VqbDeprecated.svg?raw'
+    import VqbDraft from '~/assets/images/icons/VqbDraft.svg?raw'
+
+    // query
+    import Query from '~/assets/images/icons/query.svg?raw'
+    import QueryVerified from '~/assets/images/icons/query-verified.svg?raw'
+    import QueryDeprecated from '~/assets/images/icons/query-deprecated.svg?raw'
+    import QueryDraft from '~/assets/images/icons/query-draft.svg?raw'
+
     const {
         inlineTabRemove,
         modifyActiveInlineTabEditor,
@@ -872,9 +884,29 @@
                     : folderCloseSvg
                 let querySvg =
                     '<span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5" stroke="#5277D7"/><path d="M4 6L6 8L4 10" stroke="#5277D7" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 11H12" stroke="#5277D7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'
+                let iconName: string = getEntityStatusIcon(
+                    assetType(item.value),
+                    certificateStatus(item.value)
+                )
+                if (item.value?.attributes.isVisualQuery) {
+                    // for changing it to Vqb
+                    iconName = iconName.replace('Query', 'Vqb')
+                }
+                const svgCollection = {
+                    Query: `<span>${Query}</span>`,
+                    QueryVerified: `<span>${QueryVerified}</span>`,
+                    QueryDeprecated: `<span>${QueryDeprecated}</span>`,
+                    QueryDraft: `<span>${QueryDraft}</span>`,
+                    Vqb: `<span>${Vqb}</span>`,
+                    VqbVerified: `<span>${VqbVerified}</span>`,
+                    VqbDeprecated: `<span>${VqbDeprecated}</span>`,
+                    VqbDraft: `<span>${VqbDraft}</span>`,
+                }
 
                 const folderSvgEl = new DOMParser().parseFromString(
-                    item.value.typeName === 'Query' ? querySvg : folderSvg,
+                    item.value.typeName === 'Query'
+                        ? svgCollection[iconName] ?? querySvg
+                        : folderSvg,
                     'text/html'
                 ).body.firstElementChild
 

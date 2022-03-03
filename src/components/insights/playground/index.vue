@@ -184,6 +184,7 @@
             >
                 <pane
                     :max-size="100"
+                    class="overflow-x-hidden horizontal_splitpane"
                     :size="
                         100 -
                         (activeInlineTab.playground.resultsPane.outputPaneSize >
@@ -193,12 +194,12 @@
                             : 0)
                     "
                     min-size="30"
-                    class="overflow-x-hidden"
                 >
                     <Editor :refreshQueryTree="refreshQueryTree" />
                 </pane>
                 <pane
                     min-size="0"
+                    class="horizontal_splitpane"
                     :size="
                         activeInlineTab.playground.resultsPane.outputPaneSize >
                         0
@@ -252,7 +253,7 @@
     import { useUtils } from '~/components/insights/common/composables/useUtils'
     import ResultPaneFooter from '~/components/insights/playground/resultsPane/result/resultPaneFooter.vue'
     import { useRouter, useRoute } from 'vue-router'
-    import { generateUUID } from '~/utils/helper/generator'
+    import { useActiveTab } from '~/components/insights/common/composables/useActiveTab'
     import { useSpiltPanes } from '~/components/insights/common/composables/useSpiltPanes'
     import { useDebounceFn } from '@vueuse/core'
 
@@ -281,8 +282,6 @@
             const fullSreenState = inject('fullSreenState') as Ref<boolean>
             const router = useRouter()
             const isSaving = ref(false)
-            const isTabClosed = inject('isTabClosed') as Ref<string | undefined>
-            const isTabAdded = inject('isTabAdded') as Ref<string | undefined>
             const showSaveQueryModal = ref(false)
             const saveCloseTabKey = ref()
             const saveQueryLoading = ref(false)
@@ -294,7 +293,8 @@
             }>
 
             const { getFirstQueryConnection } = useUtils()
-            const { horizontalPaneResize } = useSpiltPanes()
+            const { horizontalPaneResize, horizontalPaneAnimation } =
+                useSpiltPanes()
             const { inlineTabRemove, inlineTabAdd, setActiveTabKey } =
                 useInlineTab()
 
@@ -336,136 +336,13 @@
 
             const handleAdd = (isVQB) => {
                 // const key = String(new Date().getTime())
-                const key = generateUUID()
-                isTabAdded.value = key
-                const inlineTabData: activeInlineTabInterface = {
+                const { generateNewActiveTab } = useActiveTab()
+                const inlineTabData = generateNewActiveTab({
+                    activeInlineTab,
                     label: `Untitled ${getLastUntitledNumber()}`,
-                    attributes: {},
-                    key,
-                    favico: 'https://atlan.com/favicon.ico',
-                    isSaved: false,
-                    queryId: undefined,
-                    status: 'is_null',
-                    connectionId: '',
-                    description: '',
-                    qualifiedName: '',
-                    parentGuid: '',
-                    parentQualifiedName: '',
-                    isSQLSnippet: false,
-                    savedQueryParentFolderTitle: undefined,
-                    collectionQualifiedName: '',
-                    explorer: {
-                        schema: {
-                            connectors: {
-                                attributeName:
-                                    activeInlineTab.value?.explorer?.schema
-                                        ?.connectors?.attributeName,
-                                attributeValue:
-                                    activeInlineTab.value?.explorer?.schema
-                                        ?.connectors?.attributeValue,
-                            },
-                        },
-                        queries: {
-                            connectors: {
-                                connector:
-                                    activeInlineTab.value?.explorer?.queries
-                                        .connectors.connector,
-                            },
-                            collection: {
-                                guid: activeInlineTab.value?.explorer?.queries
-                                    ?.collection?.guid,
-                                qualifiedName:
-                                    activeInlineTab.value?.explorer?.queries
-                                        ?.collection?.qualifiedName,
-                                parentQualifiedName:
-                                    activeInlineTab.value?.explorer?.queries
-                                        ?.collection?.guid,
-                            },
-                        },
-                    },
-
-                    playground: {
-                        isVQB: isVQB,
-                        vqb: {
-                            selectedTables: [],
-                            panels: [
-                                {
-                                    order: 1,
-                                    id: 'columns',
-                                    hide: true,
-                                    subpanels: [
-                                        {
-                                            id: '1',
-                                            tableQualifiedName: undefined,
-                                            columns: ['all'],
-                                            tableData: {
-                                                certificateStatus: undefined,
-                                                assetType: undefined,
-                                                item: {},
-                                            },
-                                            columnsData: [],
-                                        },
-                                    ],
-                                    expand: true,
-                                },
-                            ],
-                        },
-                        editor: {
-                            context: {
-                                attributeName:
-                                    activeInlineTab.value?.playground?.editor
-                                        ?.context?.attributeName,
-                                attributeValue:
-                                    activeInlineTab.value?.playground?.editor
-                                        ?.context?.attributeValue,
-                            },
-                            text: '',
-                            dataList: [],
-                            columnList: [],
-                            variables: [],
-                            savedVariables: [],
-                            limitRows: {
-                                checked: false,
-                                rowsCount: -1,
-                            },
-                        },
-                        resultsPane: {
-                            activeTab:
-                                activeInlineTab.value?.playground?.resultsPane
-                                    ?.activeTab ?? 0,
-                            outputPaneSize: 27.9,
-                            result: {
-                                title: `${key} Result`,
-                                runQueryId: undefined,
-                                abortQueryFn: undefined,
-                                isQueryRunning: '',
-                                queryErrorObj: {},
-                                totalRowsCount: -1,
-                                executionTime: -1,
-                                errorDecorations: [],
-                                eventSourceInstance: undefined,
-                                buttonDisable: false,
-                                isQueryAborted: false,
-                                tabQueryState: false,
-                            },
-                            metadata: {},
-                            queries: {},
-                            joins: {},
-                            filters: {},
-                            impersonation: {},
-                            downstream: {},
-                            sqlHelp: {},
-                        },
-                    },
-                    assetSidebar: {
-                        // for taking the previous state from active tab
-                        openingPos: undefined,
-                        isVisible: false,
-                        assetInfo: {},
-                        title: activeInlineTab.value?.assetSidebar.title ?? '',
-                        id: activeInlineTab.value?.assetSidebar.id ?? '',
-                    },
-                }
+                    editorText: '',
+                    isVQB,
+                })
 
                 inlineTabAdd(inlineTabData, tabs, activeInlineTabKey)
                 const queryParams = {}
@@ -527,7 +404,6 @@
                             unsavedPopover.value.key = targetKey as string
                             unsavedPopover.value.show = true
                         } else {
-                            isTabClosed.value = targetKey as string
                             /* Delete the tab if content is empty */
                             inlineTabRemove(
                                 targetKey as string,
@@ -537,7 +413,6 @@
                             )
                         }
                     } else {
-                        isTabClosed.value = targetKey as string
                         inlineTabRemove(
                             targetKey as string,
                             tabs,
@@ -551,7 +426,6 @@
                 showSaveQueryModal.value = true
             }
             const closeTabConfirm = (key: string) => {
-                isTabClosed.value = key
                 console.log(key, 'close')
                 inlineTabRemove(
                     key as string,
@@ -620,7 +494,6 @@
                 }
             }
             const saveTabConfirm = (key: string) => {
-                isTabClosed.value = key
                 /* Saving the key */
                 saveCloseTabKey.value = key
                 let tabData: activeInlineTabInterface | undefined
@@ -668,9 +541,14 @@
             const showContextMenu = () => {
                 contentMenu.value = true
             }
-            const onHorizontalResize = useDebounceFn((e) => {
+            const debouncdedHorizontalPane = useDebounceFn((e) => {
                 horizontalPaneResize(e, activeInlineTab, tabs)
             }, 500)
+
+            const onHorizontalResize = (e) => {
+                horizontalPaneAnimation()
+                debouncdedHorizontalPane(e)
+            }
 
             return {
                 onHorizontalResize,

@@ -173,7 +173,7 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
         }
 
         const len = activeInlineTab.value.playground.editor.variables.length
-        const key = String(new Date().getTime())
+        const key = generateUUID()
         const new_variable: CustomVaribaleInterface = {
             name: `variable${len}`,
             key,
@@ -515,7 +515,7 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
                     ]
                 )
             } else {
-                key = String(new Date().getTime())
+                key = generateUUID()
                 new_variable = {
                     name: variable.token.slice(2, -2),
                     key,

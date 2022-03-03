@@ -206,10 +206,11 @@
                             class="w-4 h-4 mr-1"
                             v-if="readOnly"
                         />
-                        <AtlanIcon
+                        <img
                             v-if="connectionName"
-                            :icon="connectorAsset?.image"
-                            class="w-4 h-4 mx-1 connector_icon"
+                            :src="getConnectorImage(connectorAsset?.id)"
+                            class="w-4 h-4 mr-1"
+                            style="min-width: 1rem"
                         />
                     </div>
                     <div
@@ -217,18 +218,6 @@
                         v-if="!activeInlineTab?.assetSidebar?.isVisible"
                     >
                         <div class="flex items-center">
-                            <!-- <AtlanIcon
-                            icon="Lock"
-                            class="w-4 h-4 mr-1"
-                            v-if="readOnly"
-                        />
-                        <img
-                            v-if="connectionName"
-                            :src="connectorAsset?.image"
-                            class="w-4 h-4 mx-1 connector_icon"
-                        /> -->
-                            <!-- <span v-if="connectionName">{{ connectionName }}</span> -->
-
                             <div v-if="connectionName">
                                 <div
                                     class="flex items-center"
@@ -531,6 +520,10 @@
             const connectorName = computed(() =>
                 getConnectorName(connectorsData.value.attributeValue)
             )
+            const getConnectorImage = (sourceid) => {
+                return store.getConnectorImageMapping[sourceid?.toLowerCase()]
+            }
+
             const connectionName = computed(() => {
                 // console.log('store list: ', store.getList)
                 let data = getConnectionQualifiedName(
@@ -609,6 +602,7 @@
                 return activeInlineTab?.value?.playground?.isVQB
             })
             return {
+                getConnectorImage,
                 showVQB,
                 popoverVisible,
                 onPopoverVisibleChange,

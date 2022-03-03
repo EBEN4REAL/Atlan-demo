@@ -6,7 +6,7 @@
         <AtlanLoader class="h-10" />
     </div>
     <div
-        v-else-if="treeData.length === 0 && !isLoading"
+        v-else-if="treeData.length === 0 && !isLoading && !checkable"
         class="flex items-center justify-center h-full"
     >
         <AddGtcModal
@@ -25,6 +25,12 @@
                 </div>
             </template>
         </AddGtcModal>
+    </div>
+    <div v-else-if="treeData.length === 0 && !isLoading && checkable">
+        <EmptyView
+            empty-screen="EmptyGlossary"
+            desc="No terms found"
+        ></EmptyView>
     </div>
     <a-tree
         :key="defaultGlossary"
@@ -201,6 +207,13 @@
             // }
 
             const addGTCNode = (asset, entity = {}) => {
+                console.log(asset?.typeName, asset?.attributes?.anchor?.guid, 'add')
+                glossaryStore.updateAssetCount(
+                    asset?.typeName,
+                    asset?.attributes?.anchor?.guid,
+                    'add'
+                )
+
                 console.log(asset, entity)
                 if (entity !== {}) {
                     console.log('add')

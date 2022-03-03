@@ -402,7 +402,7 @@
             },
         },
         setup(props) {
-            const { selectedAsset, data } = toRefs(props)
+            const { selectedAsset, data, isDrawer } = toRefs(props)
 
             const readOnly = ref(true)
             const loading = ref(false)
@@ -422,6 +422,7 @@
                 getHumanTypeName,
             } = useCustomMetadataHelpers()
 
+            // ? local attribute list , may consist of key - values required by this component only, (ex, boolean unsavedChanges )
             const applicableList = ref(
                 getApplicableAttributes(
                     data.value,
@@ -475,39 +476,27 @@
                 }
             }
 
-            // {"BM for facet 2":{"test for facet 2":"1","test for facet 2 date":1629294652575}}
             const payloadConstructor = () => {
-                const mappedPayload = { [data.value.id]: {} }
-                // ? handle current payload
-                Object.keys(selectedAsset.value.attributes).forEach((k) => {
-                    if (k.split('.').length > 1) {
-                        const b = k.split('.')[0]
-                        const a = k.split('.')[1]
-                        const value = selectedAsset.value.attributes[k]
-                        mappedPayload[b] = {
-                            ...(mappedPayload[b] || {}),
-                            [a]: value,
-                        }
-                    }
-                })
-
+                const payloadObj = { [data.value.id]: {} }
                 const checkIfDelete = (v, multiValue) => {
                     if (multiValue) return !v?.length
                     return v == null || v === ''
                 }
-                // ? handle new payload
+
                 applicableList.value.forEach((at) => {
-                    if (
-                        checkIfDelete(
-                            at.value,
-                            at.options.multiValueSelect === 'true'
+                    if (at.unsavedChanges) {
+                        if (
+                            checkIfDelete(
+                                at.value,
+                                at.options.multiValueSelect === 'true'
+                            )
                         )
-                    )
-                        delete mappedPayload[data.value.id][at.name]
-                    else mappedPayload[data.value.id][at.name] = at.value
+                            payloadObj[data.value.id][at.name] = null
+                        else payloadObj[data.value.id][at.name] = at.value
+                    }
                 })
 
-                return mappedPayload
+                return payloadObj
             }
 
             const {
@@ -522,7 +511,6 @@
 
             const handleUpdate = () => {
                 payload.value = payloadConstructor()
-
                 const { error, isReady, isLoading } =
                     Types.updateAssetBMChanges(
                         selectedAsset.value?.guid,
@@ -558,9 +546,9 @@
             }
 
             const cancel = () => {
-                applicableList.value.forEach((att) => {
-                    // eslint-disable-next-line no-param-reassign
-                    att.value = ''
+                applicableList.value.forEach((att, idx) => {
+                    applicableList.value[idx].value = ''
+                    applicableList.value[idx].unsavedChanges = false
                 })
                 setAttributesList()
                 readOnly.value = true
@@ -597,16 +585,23 @@
             const handleChange = (index, value) => {
                 if (!isEdit.value) isEdit.value = true
                 applicableList.value[index].value = value
+                applicableList.value[index].unsavedChanges = true
             }
 
-            const updateList = inject('updateList') as Function
+            const updateList = inject('updateList', () => ({})) as Function
+            const updateDrawerList = inject(
+                'updateDrawerList',
+                () => ({})
+            ) as Function
+
             whenever(isUpdateReady, () => {
                 if (
                     asset.value.typeName !== 'AtlasGlossary' &&
                     asset.value.typeName !== 'AtlasGlossaryCategory' &&
                     asset.value.typeName !== 'AtlasGlossaryTerm'
                 ) {
-                    updateList(asset.value)
+                    if (isDrawer.value) updateDrawerList(asset.value)
+                    else updateList(asset.value)
                 }
             })
 

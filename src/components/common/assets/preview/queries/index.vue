@@ -1,6 +1,20 @@
 <template>
     <div class="flex flex-col h-full" style="height: calc(100% - 84px)">
         <div
+            class="flex items-center justify-between px-5 py-2 border-b border-gray-200 bg-gray-50"
+        >
+            <span class="flex items-center">
+                <PreviewTabsIcon
+                    :icon="tab.icon"
+                    :image="tab.image"
+                    :emoji="tab.emoji"
+                    height="h-4"
+                    class="mb-0.5"
+                />
+                <span class="ml-1 font-semibold text-gray-500">Queries</span>
+            </span>
+        </div>
+        <div
             v-if="isLoading"
             class="flex items-center justify-center flex-grow"
         >
@@ -108,12 +122,13 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import Popover from '@/common/popover/assets/index.vue'
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
+    import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
 
     export default defineComponent({
         name: 'ColumnWidget',
         components: {
             SearchAdvanced,
-            AggregationTabs,
+            PreviewTabsIcon,
             AssetList,
             AssetItem,
             Sorting,
@@ -126,6 +141,10 @@
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: true,
+            },
+            tab: {
+                type: Object,
+                required: false,
             },
         },
         setup(props) {

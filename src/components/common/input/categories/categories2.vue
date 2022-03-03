@@ -18,6 +18,13 @@
                     :placeholder="`Search categories...`"
                     class="px-4 pb-2 mb-2"
                 ></SearchAdvanced>
+                <div v-if="!treeData?.length">
+                    <EmptyView
+                        empty-screen="EmptyDiscover"
+                        desc="No categories found"
+                        class="my-10"
+                    ></EmptyView>
+                </div>
                 <a-tree
                     v-if="!queryText"
                     :key="popoverVisible"
@@ -48,6 +55,7 @@
                             </div>
                             <Tooltip
                                 :tooltip-text="item.title"
+                                :mouseLeaveDelay="0"
                                 classes="cursor-pointer   "
                                 @click="(e) => e.stopPropagation()"
                             />
@@ -123,6 +131,7 @@
                     </div>
                     <Tooltip
                         :tooltip-text="category.label"
+                        :mouseLeaveDelay="0"
                         classes="cursor-pointer text-gray-700 hover:text-white ml-0.5 group-hover:text-white"
                         @click="(e) => e.stopPropagation()"
                     />
@@ -174,6 +183,7 @@
     } from '~/constant/projection'
 
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import EmptyView from '@common/empty/index.vue'
     import Tooltip from '@common/ellipsis/index.vue'
 
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
@@ -186,6 +196,7 @@
             SearchAdvanced,
             AssetList,
             GlossaryItem,
+            EmptyView,
         },
         props: {
             selectedAsset: {
@@ -263,7 +274,7 @@
                         (i) => i?.value !== node?.guid
                     )
                 } else {
-                    checkedNodeKeys.value.push(node.key??node?.guid)
+                    checkedNodeKeys.value.push(node.key ?? node?.guid)
                     checkedKeys.value.push({
                         label:
                             node?.title ??

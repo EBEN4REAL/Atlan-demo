@@ -269,14 +269,19 @@
             <a-button-group>
                 <a-tooltip
                     v-if="
-                        !isGTC(item) && !isBiAsset(item) && !isSaasAsset(item)
+                        !isGTC(item) &&
+                        !isBiAsset(item) &&
+                        !isSaasAsset(item) &&
+                        connectorName(item) !== 'glue'
                     "
                     title="Query"
                 >
                     <QueryDropdown
                         v-if="
                             assetType(item) === 'Table' ||
-                            assetType(item) === 'View'
+                            assetType(item) === 'View' ||
+                            assetType(item) === 'TablePartition' ||
+                            assetType(item) === 'MaterialisedView'
                         "
                         @handleClick="goToInsights"
                     >
@@ -316,6 +321,9 @@
                         <AtlanIcon icon="Share" class="mb-0.5" />
                     </a-button>
                 </ShareMenu>
+                <template v-if="!disableSlackAsk && linkEditPermission">
+                    <SlackAskButton :asset="item" />
+                </template>
                 <AssetMenu
                     @edit="handleEdit"
                     :asset="item"
@@ -381,10 +389,13 @@
     import Tooltip from '@/common/ellipsis/index.vue'
     import QueryDropdown from '@/common/query/queryDropdown.vue'
     import Name from '@/glossary/common/name.vue'
+    import SlackAskButton from '~/components/common/assets/misc/slackAskButton.vue'
+    import { disableSlackAsk } from '~/composables/integrations/slack/useAskAQuestion'
 
     export default defineComponent({
         name: 'AssetHeader',
         components: {
+            SlackAskButton,
             CertificateBadge,
             AtlanIcon,
             ShareMenu,
@@ -439,6 +450,7 @@
                 webURL,
                 sourceURL,
                 isCustom,
+                assetPermission,
             } = useAssetInfo()
 
             const entityTitle = ref(title(item.value))
@@ -510,7 +522,19 @@
                 console.log(val)
             }
 
+            const linkEditPermission = computed(
+                () =>
+                    selectedAssetUpdatePermission(
+                        item.value,
+                        false,
+                        'RELATIONSHIP_ADD',
+                        'Link'
+                    ) && assetPermission('CREATE_LINK')
+            )
+
             return {
+                linkEditPermission,
+                disableSlackAsk,
                 title,
                 getConnectorImage,
                 assetType,

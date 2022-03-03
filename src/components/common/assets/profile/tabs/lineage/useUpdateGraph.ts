@@ -41,6 +41,9 @@ export default function useUpdateGraph(graph) {
         graphEdges.forEach((x) => {
             const cell = graph.value.getCellById(x.id)
             const [source, target] = x.id.split('/')[1].split('@')
+
+            if (source.includes('vpNode') || target.includes('vpNode')) return
+
             const itExists =
                 nodesToHighlight.includes(source) &&
                 nodesToHighlight.includes(target)
@@ -63,6 +66,7 @@ export default function useUpdateGraph(graph) {
         const graphEdges = graph.value.getEdges()
         graph.value.freeze('toggleNodesEdges')
         graphEdges.forEach((x) => {
+            if (x.id.includes('vpNode')) return
             const cell = graph.value.getCellById(x.id)
             cell.attr('line/stroke', visible ? '#aaaaaa' : '#dce0e5')
             cell.toBack()

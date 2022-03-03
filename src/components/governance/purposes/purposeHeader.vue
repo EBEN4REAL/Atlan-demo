@@ -28,7 +28,7 @@
                 />
             </div>
         </CreationModal>
-        <div class="flex px-3 pt-6 mb-0 bg-white gap-x-2">
+        <div class="flex px-3 mb-0 bg-white gap-x-2">
             <div style="width: 90%">
                 <div class="flex items-center mb-0 text-sm text-gray-500">
                     <div class="mb-0 text-xl text-gray-700 truncate">

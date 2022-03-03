@@ -10,9 +10,8 @@ const useActiveQueryAccess = (
     activeInlineTab: ComputedRef<activeInlineTabInterface>
 ) => {
     const { username: currentUser, groups: userGroups } = whoami()
-
-    const selectedCollectionLoading = ref(false)
     const selectedCollectionData = ref()
+    const selectedCollectionLoading = ref(false)
     const selectedCollectionError = ref()
 
     const attributes = [
@@ -91,7 +90,7 @@ const useActiveQueryAccess = (
         )
     }
 
-    const fetchSelectedCollectionData = () => {
+    const fetchActiveQueryAcessCollection = () => {
         refreshBody()
         if (activeInlineTab?.value?.qualifiedName?.length) {
             const { data, error, isLoading } = getSelectedCollectionData()
@@ -227,20 +226,14 @@ const useActiveQueryAccess = (
     })
 
     const activeTabCollection = computed(() => {
-        return selectedCollectionData?.value
+        return selectedCollectionData?.value &&
+            selectedCollectionData?.value?.entities?.length > 0
             ? selectedCollectionData?.value?.entities[0]
             : {}
     })
 
-    watch(
-        () => activeInlineTab?.value?.qualifiedName,
-        () => {
-            fetchSelectedCollectionData()
-        },
-        { deep: true }
-    )
-
     return {
+        fetchActiveQueryAcessCollection,
         isQueryCreatedByCurrentUser,
         hasQueryReadPermission,
         hasQueryWritePermission,

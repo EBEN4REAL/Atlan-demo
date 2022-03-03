@@ -43,19 +43,41 @@
             <a-timeline class="mx-5" :key="item.guid">
                 <a-timeline-item v-for="(log, index) in auditList" :key="index">
                     <template #dot>
+                        <div v-if="log?.action === 'BUSINESS_ATTRIBUTE_UPDATE'">
+                            <PreviewTabsIcon
+                                :icon="
+                                    getAuditEventComponent(log)?.icon?.value
+                                        ?.options?.icon
+                                "
+                                :image="
+                                    getAuditEventComponent(log)?.icon?.value
+                                        ?.options?.image
+                                "
+                                :emoji="
+                                    getAuditEventComponent(log)?.icon?.value
+                                        ?.options?.emoji
+                                "
+                                height="h-4"
+                                class="mb-0.5"
+                            />
+                        </div>
+                        <atlan-icon
+                            v-else-if="getAuditEventComponent(log)?.icon"
+                            :icon="getAuditEventComponent(log)?.icon"
+                            class="mb-1"
+                        />
                         <div
-                            class="border ant-timeline-item-dot border-primary"
+                            v-else
+                            class="mb-1 border ant-timeline-item-dot border-primary"
                         ></div>
                     </template>
                     <div>
                         <ActivityType
+                            v-if="getAuditEventComponent(log)?.component"
                             :data="getAuditEventComponent(log)"
-                            v-if="getAuditEventComponent(log)"
                         />
                         <template v-else>
-                            <div class="">
-                                {{ log.action }}
-                            </div>
+                            <span class="font-bold">Metadata</span> updated
                         </template>
 
                         <!-- <template
@@ -81,7 +103,12 @@
                     <div
                         v-if="
                             log.entityId !== item.guid &&
-                            ['AtlasGlossary'].includes(item.typeName)
+                            ['AtlasGlossary'].includes(item.typeName) &&
+                            getTermsAndCategoriesDetail(
+                                log.detail.guid ??
+                                    log.detail?.entityGuid ??
+                                    log?.entityId
+                            )?.guid
                         "
                         class="flex items-center mt-1 text-gray-700"
                     >
@@ -250,16 +277,13 @@
             const termAndCategoriesList = ref()
             const { certificateStatus, title } = useAssetInfo()
 
-            if (
-                ['Table', 'View', 'AtlasGlossary'].includes(item.value.typeName)
-            ) {
+            if (['Table', 'View'].includes(item.value.typeName)) {
                 facets.value = {
                     entityQualifiedName: item.value.attributes.qualifiedName,
                 }
-            }
-            if (['AtlasGlossary'].includes(item.value.typeName)) {
+            } else if (['AtlasGlossary'].includes(item.value.typeName)) {
                 facets.value = {
-                    ...facets.value,
+                    entityQualifiedName: item.value.attributes.qualifiedName,
                     typeNames: [item.value.typeName],
                 }
             } else {
@@ -267,6 +291,7 @@
                     entityId: item.value.guid,
                 }
             }
+
             const fetchTermsAndCategories = () => {
                 const defaultAttributes = ref([...MinimalAttributes])
                 const offsetGTC = ref(0)

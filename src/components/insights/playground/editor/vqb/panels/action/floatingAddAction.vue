@@ -44,6 +44,7 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useSort } from '~/components/insights/playground/editor/vqb/composables/useSort'
     import { useUtils as useAddPanelsUtils } from './useUtils'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'FloatingAddAction',
@@ -142,6 +143,10 @@
                 collapseAllPanelsExceptCurrent(panelInfo.value, activeInlineTab)
                 emit('add', type, panel)
                 syncSortAggregateAndGroupPanel(activeInlineTab)
+                // useAddEvent('insights', 'query', 'panelAdd', {
+                //     panel_type: type,
+                //     panel_source: 'action menu',
+                // })
             }
             return {
                 isContextTableSelected,

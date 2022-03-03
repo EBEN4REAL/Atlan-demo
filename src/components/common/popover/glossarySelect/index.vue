@@ -52,6 +52,8 @@
                                     item.attributes.name
                                 }`"
                                 :classes="'w-full '"
+                                placement="right"
+                                :mouseLeaveDelay="0"
                             />
                         </div>
                     </div>
@@ -78,6 +80,7 @@
                 <Tooltip
                     ref="tooltipRef"
                     :tooltip-text="`${displayText}`"
+                    :mouseLeaveDelay="0"
                     :classes="`  hover:text-primary  align-text-bottom  ${
                         size === 'default'
                             ? 'text-base font-bold  mt-0.5'
@@ -171,8 +174,21 @@
 
             const filteredList = computed(() => {
                 const sortedList = glossaryList.value
-                return sortedList.sort((a, b) =>
-                    a?.displayText > b?.displayText ? 1 : -1
+                return sortedList.sort(
+                    (a, b) => {
+                        if (
+                            a?.displayText?.toLowerCase() <
+                            b?.displayText?.toLowerCase()
+                        )
+                            return -1
+                        if (
+                            a?.displayText?.toLowerCase() >
+                            b?.displayText?.toLowerCase()
+                        )
+                            return 1
+                        return 0
+                    }
+                    // a?.displayText > b?.displayText ? 1 : -1
                 )
             })
 
@@ -215,7 +231,7 @@
 <style lang="less">
     .glossarySelectPopover {
         .ant-popover-inner-content {
-            width: 250px !important;
+            width: 300px !important;
         }
     }
 </style>

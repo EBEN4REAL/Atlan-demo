@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex flex-col items-center justify-center h-full mt-4 text-center text-gray-700"
+        class="flex flex-col items-center justify-center h-full my-2 text-center text-gray-700"
     >
         <p class="mb-2 text-xl font-bold">Resources</p>
         <p class="text-sm">
@@ -13,7 +13,7 @@
             class="w-auto my-10 h-44"
         />
         <div
-            class="flex flex-col mb-5 text-xs font-bold tracking-wide text-gray-500 gap-y-4"
+            class="flex flex-col text-xs font-bold tracking-wide text-gray-500 gap-y-4"
         >
             <span>Paul's Slack discussion around data type</span>
             <span>The confluence doc that John wrote</span>

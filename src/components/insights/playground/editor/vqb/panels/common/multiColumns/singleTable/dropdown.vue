@@ -48,8 +48,9 @@
                             placement="left"
                             :mouseEnterDelay="1"
                             class="dropdown-container"
+                            @previewAsset="() => actionClick(null, item.item)"
                         >
-                            <template #button>
+                            <!-- <template #button>
                                 <AtlanBtn
                                     class="flex-none px-0"
                                     size="sm"
@@ -68,7 +69,7 @@
                                         class="text-primary"
                                     />
                                 </AtlanBtn>
-                            </template>
+                            </template> -->
 
                             <a-checkbox
                                 :checked="map[item?.value]"

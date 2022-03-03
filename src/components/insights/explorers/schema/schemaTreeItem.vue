@@ -14,6 +14,7 @@
                     :item="item"
                     placement="right"
                     :mouseEnterDelay="1"
+                    @previewAsset="() => actionClick('info', item)"
                 >
                     <div
                         class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700"
@@ -162,7 +163,7 @@
                                         isPartition(item)
                                     "
                                     :isPrimary="isPrimary(item)"
-                                    :isForeign="true"
+                                    :isForeign="isForeign(item)"
                                     :isPartition="isPartition(item)"
                                 />
                                 <span v-else>{{ dataType(item) ?? '-' }}</span>

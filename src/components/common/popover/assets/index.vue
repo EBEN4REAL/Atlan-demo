@@ -1,9 +1,10 @@
 <template>
     <a-popover
+        v-model:visible="assetPopoverVisible"
         title=""
         placement="left"
         :mouse-enter-delay="mouseEnterDelay"
-        class="w-96"
+        trigger="hover"
     >
         <template #content>
             <div class="rounded w-96">
@@ -52,7 +53,7 @@
                                 size="icn"
                                 color="minimal"
                                 padding="icon"
-                                @click="$emit('previewAsset')"
+                                @click="handleAssetPreview"
                             >
                                 <AtlanIcon icon="OpenPreview" />
                             </AtlanBtn>
@@ -89,7 +90,10 @@
                                 icon="TableGray"
                                 :class="`mr-1 mb-0.5 text-blueGray`"
                             />
-                            <div class="w-56 truncate">
+                            <div
+                                class="w-56 truncate cursor-pointer hover:underline"
+                                @click="handleTableForColumnPreview"
+                            >
                                 {{ table }}
                             </div>
                         </div>
@@ -105,7 +109,7 @@
                                 icon="DatabaseGray"
                                 class="mr-1 mb-0.5"
                             />
-                            <div class="truncate w-28">
+                            <div class="truncate max-w-28">
                                 {{ db }}
                             </div>
                         </div>
@@ -120,7 +124,7 @@
                                 ><AtlanIcon icon="CaretRight"
                             /></span>
                             <AtlanIcon icon="SchemaGray" class="mr-1 mb-0.5" />
-                            <div class="truncate w-28">
+                            <div class="truncate max-w-28">
                                 {{ schema }}
                             </div>
                         </div>
@@ -143,7 +147,7 @@
 
                 <!-- End Header-->
                 <div class="w-full px-4 mt-3">
-                    <!-- start row 1  -->
+                    <!-- Start Row 1  -->
                     <div class="mb-4">
                         <!-- #rows/cols/size for tables, views etc. -->
                         <div
@@ -183,15 +187,26 @@
                             <div class="flex items-center mt-1">
                                 <component
                                     :is="dataTypeCategoryImage(item)"
-                                    class="h-4 mr-1 text-gray-500"
+                                    class="h-4 mr-1 text-gray-500 mb-0.5"
                                 />
                                 <span>{{ item.attributes?.dataType }}</span>
+                                <span
+                                    v-if="isPrimary(item)"
+                                    class="pt-1.5 pb-1 pr-2 pl-1 ml-2 text-xs rounded"
+                                    style="background: rgba(235, 157, 7, 0.2)"
+                                >
+                                    <AtlanIcon
+                                        icon="primaryKey"
+                                        class="mr-1"
+                                    ></AtlanIcon
+                                    >PRIMARY KEY
+                                </span>
                             </div>
                         </div>
                     </div>
-                    <!-- end row 1  -->
+                    <!-- End Row 1  -->
 
-                    <!-- description -->
+                    <!-- Description -->
                     <div v-if="description(item)" class="mb-4">
                         <div class="text-gray-500">Description</div>
                         <div class="flex items-center mt-1">
@@ -199,16 +214,20 @@
                         </div>
                     </div>
 
-                    <!-- terms/clsfs  -->
+                    <!-- Terms/Clsfs  -->
                     <div
-                        v-if="list?.length || item?.meanings?.length"
+                        v-if="
+                            list?.length ||
+                            item?.meanings?.length ||
+                            item?.attributes?.meanings?.length
+                        "
                         class="mb-4"
                     >
                         <div class="text-gray-500">Terms & Classifications</div>
-                        <div class="mt-3"></div>
+
                         <div
-                            v-if="list?.length > 0"
-                            class="flex flex-wrap gap-1"
+                            v-if="list?.length"
+                            class="flex flex-wrap gap-1 mt-1"
                         >
                             <template
                                 v-for="classification in list"
@@ -227,7 +246,7 @@
                         </div>
                         <div
                             v-if="item?.meanings?.length"
-                            class="flex flex-wrap gap-1"
+                            class="flex flex-wrap gap-1 mt-1"
                         >
                             <template
                                 v-for="term in item.meanings"
@@ -236,9 +255,20 @@
                                 <TermPill :term="term" :allow-delete="false" />
                             </template>
                         </div>
+                        <div
+                            v-else-if="item?.attributes?.meanings?.length"
+                            class="flex flex-wrap gap-1 mt-1"
+                        >
+                            <template
+                                v-for="term in item?.attributes?.meanings"
+                                :key="term.termGuid"
+                            >
+                                <TermPill :term="term" :allow-delete="false" />
+                            </template>
+                        </div>
                     </div>
 
-                    <!-- owners -->
+                    <!-- Owners -->
                     <div
                         v-if="item?.attributes?.ownerUsers?.length > 0"
                         class="mb-4"
@@ -251,7 +281,11 @@
                                 :key="idx"
                             >
                                 <!-- <PopOverUser :item="user"> -->
-                                <UserPill :key="idx" :username="user" />
+                                <UserPill
+                                    :key="idx"
+                                    :username="user"
+                                    @click="handleUserPreview(user)"
+                                />
                                 <!-- </PopOverUser> -->
                             </div>
                         </div>
@@ -291,6 +325,12 @@
         </template>
         <slot></slot>
     </a-popover>
+    <AssetDrawer
+        key="asset-sidebar-asset-popover"
+        :guid="tableGuid"
+        :show-drawer="showTablePreview"
+        @closeDrawer="handleCloseTablePreview"
+    />
 </template>
 
 <script lang="ts">
@@ -305,6 +345,8 @@
     import TermPill from '@/common/pills/term.vue'
     import PopOverUser from '@/common/popover/user/user.vue'
     import { QueryCollection } from '~/types/insights/savedQuery.interface'
+    import AssetDrawer from '@/common/assets/preview/drawer.vue'
+    import { useUserPreview } from '~/composables/user/showUserPreview'
 
     export default {
         name: 'PopoverAsset',
@@ -315,6 +357,7 @@
             CertificateBadge,
             AtlanBtn,
             TermPill,
+            AssetDrawer,
         },
         props: {
             item: {
@@ -334,8 +377,8 @@
                 default: false,
             },
         },
-        emits: [],
-        setup(props, { slots }) {
+        emits: ['previewAsset'],
+        setup(props, { slots, emit }) {
             const { item } = toRefs(props)
 
             const {
@@ -355,9 +398,14 @@
                 sizeBytes,
                 connectionName,
                 connectorName,
+                isPrimary,
             } = useAssetInfo()
 
+            const { showUserPreview: openPreview, setUserUniqueAttribute } =
+                useUserPreview()
             const { classificationList } = useTypedefData()
+            const assetPopoverVisible = ref(false)
+            const showTablePreview = ref(false)
 
             const isPropagated = (classification) => {
                 if (!item?.value?.guid) {
@@ -393,6 +441,9 @@
             const title = computed(() => assetTypeLabel(item.value))
             const logoTitle = computed(() => getConnectorImage(item.value))
             const path = computed(() => `/assets/${item.value.guid}`)
+            const tableGuid = computed(
+                () => item?.value?.attributes?.table?.guid
+            )
             const collectionName = ref('')
 
             const queryCollections = inject('queryCollections') as ComputedRef<
@@ -415,6 +466,26 @@
                         collectionName.value = col?.displayText || ''
                     }
                 }
+            }
+
+            const closePopover = () => {
+                assetPopoverVisible.value = false
+            }
+            const handleTableForColumnPreview = () => {
+                closePopover()
+                showTablePreview.value = true
+            }
+            const handleCloseTablePreview = () => {
+                showTablePreview.value = false
+            }
+            const handleUserPreview = (username: string) => {
+                closePopover()
+                setUserUniqueAttribute(username, 'username')
+                openPreview()
+            }
+            const handleAssetPreview = () => {
+                closePopover()
+                emit('previewAsset')
             }
 
             onMounted(() => {
@@ -443,26 +514,21 @@
                 connectionName,
                 connectorName,
                 collectionName,
+                isPrimary,
+                assetPopoverVisible,
+                handleTableForColumnPreview,
+                handleCloseTablePreview,
+                tableGuid,
+                showTablePreview,
+                handleUserPreview,
+                closePopover,
+                handleAssetPreview,
             }
         },
     }
 </script>
-<style lang="less">
-    // .icon-blue-color {
-    //     path {
-    //         stroke: #5277d7;
-    //     }
-    // }
-</style>
 <style lang="less" scoped>
-    .relation-ship {
-        width: 350px;
-        padding: 16px;
-    }
-    .dot {
-        background: #c4c4c4;
-        height: 4px;
-        width: 4px;
-        border-radius: 50%;
+    .max-w-28 {
+        max-width: 112px;
     }
 </style>

@@ -14,6 +14,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         parentQualifiedName: '',
         isSQLSnippet: false,
         savedQueryParentFolderTitle: undefined,
+        classifications:[],
         explorer: {
             schema: {
                 connectors: {

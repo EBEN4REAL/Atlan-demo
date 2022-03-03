@@ -104,21 +104,6 @@
                     mouse-enter-delay="0.6"
                     @previewAsset="openSidebar"
                 >
-                    <!-- <template #button>
-                        <AtlanBtn
-                            class="flex-none px-0"
-                            size="sm"
-                            color="minimal"
-                            padding="compact"
-                            style="height: fit-content"
-                            @click="openSidebar"
-                        >
-                            <span class="text-primary whitespace-nowrap">
-                                Show Preview</span
-                            >
-                            <AtlanIcon icon="ArrowRight" class="text-primary" />
-                        </AtlanBtn>
-                    </template> -->
                     <div
                         :id="`${item.qualifiedName}`"
                         class="relative flex content-center w-full h-8 my-auto overflow-hidden text-sm leading-5 text-gray-700"

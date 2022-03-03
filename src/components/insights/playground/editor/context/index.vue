@@ -8,128 +8,12 @@
                 :item="{
                     typeName: 'Query',
                     attributes: activeInlineTab?.attributes,
+                    classifications: activeInlineTab?.classifications,
                 }"
                 mouseEnterDelay="0.6"
                 placement="bottomLeft"
                 v-if="activeInlineTab?.queryId && activeInlineTab?.attributes"
             >
-                <template #extraHeaders>
-                    <div
-                        class="flex w-full item-center"
-                        v-if="
-                            activeInlineTab?.attributes?.parent?.typeName ===
-                            'Collection'
-                        "
-                    >
-                        <div class="flex items-center w-full">
-                            <div
-                                class="w-1 h-1 mx-2 -mt-0.5 rounded-full"
-                                style="background-color: #c4c4c4"
-                            ></div>
-                            <div class="flex items-center w-full h-full">
-                                <div
-                                    class="relative w-4 h-4 mb-1 mr-1 overflow-hidden"
-                                >
-                                    <AtlanIcon
-                                        v-if="
-                                            activeInlineTab?.attributes?.parent
-                                                ?.typeName === 'Folder'
-                                        "
-                                        icon="FolderClosed"
-                                        class="w-4 h-4 mb-2"
-                                    />
-
-                                    <span
-                                        v-else
-                                        class="w-4 h-4 mr-1 -mt-1 text-sm"
-                                        >{{
-                                            activeInlineTab?.attributes?.parent
-                                                ?.attributes?.icon
-                                                ? activeInlineTab?.attributes
-                                                      ?.parent?.attributes?.icon
-                                                : '🗃'
-                                        }}</span
-                                    >
-                                </div>
-
-                                <!-- <span>{{
-                                    activeInlineTab?.attributes?.parent
-                                        ?.attributes?.name
-                                }}</span> -->
-
-                                <span class="w-11/12">
-                                    <Tooltip
-                                        clampPercentage="99%"
-                                        :tooltip-text="
-                                            activeInlineTab?.attributes?.parent
-                                                ?.attributes?.name
-                                        "
-                                        :rows="1"
-                                    />
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    <div
-                        class="flex w-full item-center"
-                        v-if="
-                            activeInlineTab?.attributes?.parent?.typeName ===
-                            'Folder'
-                        "
-                    >
-                        <div class="flex items-center w-full">
-                            <div
-                                class="w-1 h-1 mx-2 rounded-full -mt-0.5"
-                                style="background-color: #c4c4c4"
-                            ></div>
-                            <div class="flex items-center w-full h-full">
-                                <div
-                                    class="relative w-4 h-4 mb-0.5 mr-1 overflow-hidden"
-                                >
-                                    <AtlanIcon
-                                        icon="CollectionIconSmall"
-                                        class="h-4 mb-2"
-                                    />
-                                    {{ activeInlineTab?.attributes }}
-                                </div>
-
-                                <!-- <span>{{ collectionName }}</span> -->
-
-                                <span class="w-11/12">
-                                    <Tooltip
-                                        :tooltip-text="collectionName"
-                                        :rows="1"
-                                        clampPercentage="99%"
-                                    />
-                                </span>
-                            </div>
-                        </div>
-                        <!-- <div class="flex items-center">
-                            <div
-                                class="w-1 h-1 mx-2 rounded-full -mt-0.5"
-                                style="background-color: #c4c4c4"
-                            ></div>
-                            <div class="flex items-center h-full">
-                                <div
-                                    class="relative w-4 h-4 mb-0.5 mr-1 overflow-hidden"
-                                >
-                                    <AtlanIcon
-                                        icon="FolderClosed"
-                                        class="h-4 mb-2"
-                                    />
-                                </div>
-
-                                <span>{{
-                                    activeInlineTab?.attributes?.parent
-                                        ?.attributes?.name
-                                }}</span>
-                            </div>
-                        </div> -->
-                    </div>
-                </template>
-
-                <template #button> </template>
-
                 <div
                     class="flex items-center transition rounded-sm hover:bg-gray-light"
                     style="max-width: 16rem"
@@ -723,7 +607,6 @@
             const showVQB = computed(() => {
                 return activeInlineTab?.value?.playground?.isVQB
             })
-
             return {
                 showVQB,
                 popoverVisible,

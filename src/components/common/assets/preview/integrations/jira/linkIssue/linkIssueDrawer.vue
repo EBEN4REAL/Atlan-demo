@@ -14,7 +14,6 @@
                 @close="() => (visible = false)"
                 @cancel="resetIDs"
                 @save="handleIssueLink"
-                @create="createModal = true"
             />
 
             <div
@@ -39,13 +38,26 @@
                         class="mb-8"
                         style="width: 272px; height: 212px"
                     />
-                    <span class="mx-5 text-gray-600 mb-9">
-                        No issue exist, please create a issue to link
+                    <span class="mx-5 mb-6 text-gray-600">
+                        Oops! seems like you don't have any issues in Jira.
+                        Create one now
                     </span>
+                    <AtlanButton
+                        class="px-5"
+                        size="sm"
+                        @click="$emit('create')"
+                    >
+                        <AtlanIcon icon="Add" class="mr-1 mb-0.5" />
+                        Create Issue
+                    </AtlanButton>
                 </div>
             </div>
 
-            <div v-else class="flex flex-col gap-y-4">
+            <div
+                v-else
+                class="flex flex-col gap-y-4"
+                style="height: calc(100vh - 3.1rem)"
+            >
                 <main class="flex flex-col flex-grow overflow-y-hidden">
                     <div class="flex items-center px-4 mb-2 h-14">
                         <Search
@@ -72,9 +84,17 @@
                     </div>
                     <div
                         v-else-if="!issues?.length && searchText"
-                        class="flex items-center justify-center w-full h-full"
+                        class="flex flex-col items-center justify-center w-full h-full px-10 text-center"
                     >
-                        No issue found with for "{{ searchText }}"
+                        <AtlanIcon
+                            icon="EmptyResultJira"
+                            class="mb-8"
+                            style="width: 271px; height: 212px"
+                        />
+                        <span class="mx-5 mb-6 text-gray-600">
+                            Oops… we didn’t find any jira issues that matches
+                            this search
+                        </span>
                     </div>
 
                     <div
@@ -93,10 +113,10 @@
                 </main>
             </div>
             <footer
+                v-if="issues?.length"
                 class="absolute bottom-0 flex justify-center w-full pt-2 pb-2 bg-white"
             >
                 <Pagination
-                    v-if="visible"
                     v-model:offset="offset"
                     :loading="isLoading || searchLoading"
                     :page-size="pagination.pageSize"
@@ -129,7 +149,7 @@
         asset: { type: Object as PropType<assetInterface>, required: true },
     })
 
-    const emit = defineEmits(['add', 'close'])
+    const emit = defineEmits(['add', 'close', 'create'])
 
     const { visible } = useVModels(props, emit)
 

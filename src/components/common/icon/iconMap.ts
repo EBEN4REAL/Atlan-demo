@@ -180,6 +180,7 @@ import NoSavedQueriesAll from '~/assets/images/icons/saved-queries-all.svg'
 import EmptyQueriesTab from '~/assets/images/illustrations/empty_queries_tab.svg'
 import Slack from '~/assets/images/admin/integrations/slack.svg'
 import Jira from '~/assets/images/admin/integrations/jira.svg'
+import EmptyResultJira from '~/assets/images/admin/integrations/emptyResultJira.svg'
 import EmptyJira from '~/assets/images/admin/integrations/emptyJira.svg'
 import Teams from '~/assets/images/admin/integrations/teams.svg'
 import ExplorerTrigger from '~/assets/images/icons/explorer-trigger.svg'
@@ -539,6 +540,7 @@ export default {
     ChevronUp,
     AtlanIcon,
     CallIcon,
+    EmptyResultJira,
     FeedbackIcon,
     AdminCenterIcon,
     InsightsIcon,

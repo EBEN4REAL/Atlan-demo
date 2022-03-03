@@ -7,7 +7,8 @@
     <LinkIssueDrawer
         v-model:visible="linkIssueVisible"
         :asset="asset"
-        @close="mutate"
+        @close="fetchLinkedIssues"
+        @create="() => (createModal = true)"
     />
     <Header
         :remove-mode="!!checkedIDs.length"
@@ -93,6 +94,7 @@
 
     const handleIssueCreationSuccess = () => {
         fetchLinkedIssues()
+        if (linkIssueVisible.value) linkIssueVisible.value = false
     }
 
     const store = integrationStore()

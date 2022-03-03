@@ -18,7 +18,8 @@ export default function useEventGraph({
     selectedPod,
     drawerVisible,
 }: EventParams) {
-    const { highlightNode } = useUpdateGraph(graph)
+    const { highlightNode, highlightPath, resetHighlightPath } =
+        useUpdateGraph(graph)
 
     // mousewheel events
     graph.value.on('blank:mousewheel', () => {
@@ -31,6 +32,7 @@ export default function useEventGraph({
 
     graph.value.on('blank:click', () => {
         drawerVisible.value = false
+        resetHighlightPath()
     })
 
     // The graph is rendered asynchronously, so any synchronous
@@ -52,7 +54,10 @@ export default function useEventGraph({
                 drawerVisible.value = !drawerVisible.value
             }
 
-            highlightNode(args.node, drawerVisible.value, true)
+            // highlightNode(args.node, drawerVisible.value, true)
+
+            if (drawerVisible.value) highlightPath(args.node)
+            else resetHighlightPath()
         }
     )
 

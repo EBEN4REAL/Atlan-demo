@@ -125,6 +125,8 @@
                                 v-model:visible="showQueryPreview"
                                 :overlayStyle="{ padding: '0px !important' }"
                                 :destroyTooltipOnHide="true"
+                                zIndex="999"
+                                style="z-index: 999 !important"
                                 @visibleChange="
                                     (visible) => {
                                         if (!visible) {

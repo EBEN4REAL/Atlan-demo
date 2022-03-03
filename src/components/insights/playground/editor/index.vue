@@ -125,6 +125,8 @@
                                 v-model:visible="showQueryPreview"
                                 :overlayStyle="{ padding: '0px !important' }"
                                 :destroyTooltipOnHide="true"
+                                zIndex="999"
+                                style="z-index: 999 !important"
                                 @visibleChange="
                                     (visible) => {
                                         if (!visible) {
@@ -521,7 +523,9 @@
                 checked: boolean
                 rowsCount: number
             }>
-            const showcustomToolBar = ref(false)
+            const showcustomToolBar = inject(
+                'showcustomToolBar'
+            ) as Ref<boolean>
             const showQueryPreview = ref(false)
 
             const activeInlineTab = inject(

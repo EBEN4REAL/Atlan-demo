@@ -117,8 +117,15 @@
             typeof s === 'string' || s instanceof String ? s.trim() : s
         )
 
+    const removeDuplicate = () => {
+        localValue.value = [...new Set(localValue.value)]
+        modelValue.value = localValue.value
+    }
+
     const change = (v) => {
         let finalValue = trimArr(v)
+        localValue.value = finalValue
+
         if (delimiter.value) {
             finalValue = v.reduce((acc, cur) => {
                 acc.push(...cur.split(delimiter.value).filter((w) => !!w))
@@ -130,7 +137,7 @@
             handleNumber(finalValue)
         else if (['double', 'float'].includes(dataType.value.toLowerCase()))
             handleDecimal(finalValue)
-
+        removeDuplicate()
         emit('change', localValue.value)
     }
 </script>

@@ -53,7 +53,7 @@ const updateAssetBMChanges = (guid: any, payload: any, options?: useOptions) =>
         map.UPDATE_ASSET_BUSINESS_METADATA,
         'POST',
         {
-            params: { isOverwrite: true },
+            params: { isOverwrite: false },
             pathVariables: { guid },
             body: payload,
         },

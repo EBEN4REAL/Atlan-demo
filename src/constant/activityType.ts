@@ -20,6 +20,7 @@ export const activityTypeMap = [
             'detail.attributes.announcementMessage',
             'detail.attributes.announcementTitle',
         ],
+        excludes: ['Query'],
     },
 
     {
@@ -52,8 +53,6 @@ export const activityTypeMap = [
         isGroup: true,
         value: 'classification-group',
         label: 'Classification',
-        includes: [],
-        excludes: [],
         children: [
             {
                 value: 'classification-added',
@@ -205,9 +204,17 @@ export const activityTypeMap = [
         value: 'admins',
         label: 'Admins',
         action: 'ENTITY_UPDATE',
+        includes: ['Connection'],
         exists: [
             'detail.attributes.adminUsers.keyword',
             'detail.attributes.adminGroups.keyword',
         ],
+    },
+    {
+        value: 'query',
+        label: 'Query',
+        action: 'ENTITY_UPDATE',
+        includes: ['Query', 'Process', 'ColumnProcess'],
+        exists: ['detail.attributes.rawQuery', 'detail.attributes.sql'],
     },
 ]

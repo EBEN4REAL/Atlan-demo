@@ -161,7 +161,6 @@
         components: { AtlanIcon, QueryStatus },
         setup(props) {
             const { queryInfo, savedQueryMetaMap } = toRefs(props)
-            const isTabAdded = inject('isTabAdded') as Ref<string>
 
             const router = useRouter()
 
@@ -275,10 +274,7 @@
                                     query: queryParams,
                                 })
 
-                                openSavedQueryInNewTab(
-                                    savedQueryInfo.value,
-                                    isTabAdded
-                                )
+                                openSavedQueryInNewTab(savedQueryInfo.value)
                             } else {
                                 message.error({
                                     content: `Saved query not found`,

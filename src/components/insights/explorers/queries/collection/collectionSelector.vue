@@ -265,6 +265,9 @@
             const isCollectionCreatedByCurrentUser = inject(
                 'isCollectionCreatedByCurrentUser'
             ) as ComputedRef
+            const collectionSelectorChange = inject(
+                'collectionSelectorChange'
+            ) as Ref<boolean>
 
             function handleChange(collectionId: string) {
                 isVisible.value = false
@@ -276,11 +279,8 @@
                     qname: collection?.attributes.qualifiedName,
                     guid: collectionId,
                 }
-                // console.log(
-                //     'useQueryTree collection selected',
-                //     selectedValue.value
-                // )
                 emit('update:data', data)
+                collectionSelectorChange.value = !collectionSelectorChange.value
             }
 
             function selectDefaultValue() {

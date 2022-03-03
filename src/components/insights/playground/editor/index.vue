@@ -29,7 +29,6 @@
                 "
                 @onSaveQuery="saveQuery"
             />
-
             <!-- no query access case -->
             <NoAccess
                 v-if="

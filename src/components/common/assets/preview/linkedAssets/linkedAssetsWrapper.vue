@@ -18,14 +18,14 @@
             </span>
         </div>
 
-        <div class="h-full px-4">
-            <AssetList
-                class="flex-grow bg-white"
-                :filters="tabFilter"
-                :open-asset-profile-in-new-tab="true"
-                :searchBarSize="'default'"
-            />
-        </div>
+        <AssetList
+            class="bg-white"
+            :filters="tabFilter"
+            :open-asset-profile-in-new-tab="true"
+            aggregation-tab-class="px-5 mt-2 mb-1"
+            search-bar-class="px-5 pt-2"
+            asset-item-class="px-2"
+        />
     </div>
 </template>
 

@@ -16,17 +16,23 @@
         </template>
     </LinkPreview>
     <template v-else>
-        <div class="p-2 border rounded cursor-pointer hover:bg-gray-100">
+        <div
+            class="p-2 border rounded cursor-pointer hover:bg-gray-100"
+            :class="shouldHighlight ? 'animate-yellow' : ''"
+        >
             <div class="flex" @click="openLink(link.attributes.link)">
                 <template v-if="data">
-                    <div class="flex items-center w-10">
-                        <div class="relative">
+                    <div
+                        class="flex mt-1.5 items-start w-16"
+                        style="max-width: 40px"
+                    >
+                        <div class="relative w-10">
                             <img
                                 class="rounded-full"
                                 :src="data.user.image_32"
                                 alt=""
                             />
-                            <div class="absolute -right-1 -bottom-1">
+                            <div class="absolute right-1 -bottom-1">
                                 <AtlanIcon icon="Slack" class="" />
                             </div>
                         </div>
@@ -48,9 +54,10 @@
 
                         <!-- <ShowLess :text="stripSlackText(data.message.text ?? '')" /> -->
 
-                        <div class="" style="">
+                        <div class="text-xs" style="">
                             <Truncate
                                 placement="left"
+                                :rows="2"
                                 :tooltip-text="
                                     stripSlackText(data.message.text ?? '')
                                 "
@@ -59,7 +66,7 @@
                             />
                         </div>
 
-                        <div class="flex text-xs text-gray-500">
+                        <div class="flex mt-1 text-xs text-gray-500">
                             <span v-if="data.message.reply_count" class="">
                                 {{ data.message.reply_count }}
                                 replies
@@ -70,7 +77,33 @@
                             </span>
                             <span v-else> Private dm</span>
                         </div>
+
+                        <!-- <div
+                            v-if="
+                                link.attributes.__modifiedBy &&
+                                link.attributes.__modificationTimestamp
+                            "
+                            class="text-xs text-gray-500"
+                        >
+                            Edited by {{ link.attributes.__modifiedBy }}
+                            {{
+                                useTimeAgo(
+                                    new Date(
+                                        link.attributes.__modificationTimestamp
+                                    )
+                                ).value
+                            }}
+                        </div>
+                        <div v-else class="text-xs text-gray-500">
+                            Added by {{ link.attributes.__createdBy }}
+                            {{
+                                useTimeAgo(
+                                    new Date(link.attributes.__timestamp)
+                                ).value
+                            }}
+                        </div> -->
                     </div>
+
                     <div v-if="!readOnly">
                         <CardActions v-bind="props">
                             <div @click="(e) => e.stopPropagation()">
@@ -97,14 +130,15 @@
         getChannelAndMessageIdFromSlackLink,
         UnfurlSlackMessage,
         stripSlackText,
-    } from '~/composables/integrations/useSlack'
+    } from '~/composables/integrations/slack/useSlack'
     import DeleteResource from '@/common/widgets/resources/misc/deleteResource.vue'
     import EditResource from '@/common/widgets/resources/resourceInputModal.vue'
     import ShowLess from '@/UI/showLess.vue'
     import CardActions from '@/common/widgets/resources/misc/cardActionMenu.vue'
     import integrationStore from '~/store/integrations/index'
     import Truncate from '@/common/ellipsis/index.vue'
-
+    import { resourceId } from '~/composables/integrations/slack/useAskAQuestion'
+    import { whenever } from '@vueuse/core'
     const props = defineProps({
         link: {
             type: Object as PropType<Link>,
@@ -125,9 +159,22 @@
         }
     })
 
-    const { data, isLoading, error, mutate } = UnfurlSlackMessage(body, {
-        immediate: true,
-    })
+    const { data, isLoading, error, mutate, isReady } = UnfurlSlackMessage(
+        body,
+        {
+            immediate: true,
+        }
+    )
+
+    const shouldHighlight = computed(
+        () => resourceId.value === link.value.guid && isReady?.value
+    )
+
+    whenever(shouldHighlight, () =>
+        setTimeout(() => {
+            resourceId.value = ''
+        }, 3000)
+    )
 
     watch(
         () => link.value.attributes.link,
@@ -161,11 +208,22 @@
         bottom: -3px;
         right: -3px;
         border-radius: 100px;
-        /* box-shadow: -1px 1px 4px white; */
         background: white;
         padding: 0.9px;
     }
-    // .min-w-link-left-col {
-    //     min-width: 2rem;
-    // }
+
+    .animate-yellow {
+        animation: animateYellow 3s ease;
+    }
+    @keyframes animateYellow {
+        0% {
+            @apply bg-yellow-100;
+        }
+        20% {
+            @apply bg-yellow-100;
+        }
+        100% {
+            @apply bg-white;
+        }
+    }
 </style>

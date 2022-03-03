@@ -1,16 +1,16 @@
 <template>
     <div class="flex h-full overflow-y-hidden">
-        <Loader v-if="isLoading"></Loader>
+        <Loader v-if="isLoading" />
         <div
             v-else-if="!isLoading && error"
             class="flex items-center justify-center flex-grow"
         >
-            <ErrorView></ErrorView>
+            <ErrorView />
         </div>
 
         <div
-            class="flex-1 h-full overflow-y-hidden bg-white"
             v-else-if="configMap"
+            class="flex-1 h-full overflow-y-hidden bg-white"
         >
             <Setup
                 :workflowTemplate="packageObject"

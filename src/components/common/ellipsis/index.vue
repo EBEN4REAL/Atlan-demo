@@ -1,12 +1,18 @@
 <template>
     <a-tooltip
-        :title="truncated ? tooltipText : undefined"
         :placement="placement"
         :destroy-tooltip-on-hide="true"
         :overlay-style="{ maxWidth: width }"
         :color="tooltipColor"
-        :overlayClassName="tooltipColor === 'white' ? 'tooltip-black' : ''"
-        ><div
+        :overlay-class-name="tooltipColor === 'white' ? 'tooltip-black' : ''"
+        :mouseLeaveDelay="mouseLeaveDelay"
+    >
+        <template v-if="truncated" #title>
+            <div v-linkified class="">
+                {{ tooltipText }}
+            </div>
+        </template>
+        <div
             :class="classes"
             :style="{ maxWidth: clampPercentage }"
             class="break-words"
@@ -83,6 +89,11 @@
                 required: false,
                 default: '95%',
             },
+            mouseLeaveDelay:{
+                type: Number,
+                required: false,
+                default: 0.1,
+            }
         },
         setup(props) {
             const truncated = ref<boolean>(false)

@@ -102,8 +102,10 @@
                             :asset="selectedAsset"
                             :edit-permission="true"
                         >
-                            <a-button class="flex items-center justify-center">
-                                <AtlanIcon :icon="action.icon" class="mb-0.5" />
+                            <a-button
+                                class="flex items-center justify-center p-2"
+                            >
+                                <AtlanIcon :icon="action.icon" />
                             </a-button>
                         </component>
                         <template v-else>
@@ -126,11 +128,11 @@
                                 >
                                     <template #button>
                                         <a-button
-                                            class="flex items-center justify-center"
+                                            class="flex items-center justify-center p-2"
                                         >
                                             <AtlanIcon
                                                 :icon="action.icon"
-                                                class="mb-0.5 h-4 w-auto"
+                                                class="w-auto h-4"
                                             />
                                         </a-button>
                                     </template>
@@ -140,12 +142,12 @@
                                         showCTA(action.id) &&
                                         connectorName(selectedAsset) !== 'glue'
                                     "
-                                    class="flex items-center justify-center"
+                                    class="flex items-center justify-center p-2"
                                     @click="handleAction(action.id)"
                                 >
                                     <AtlanIcon
                                         :icon="action.icon"
-                                        class="mb-0.5 h-4 w-auto"
+                                        class="w-auto h-4"
                                     />
                                 </a-button>
                             </a-tooltip>
@@ -164,8 +166,8 @@
                             )
                         "
                     >
-                        <a-button class="flex items-center justify-center">
-                            <AtlanIcon icon="KebabMenu" class="mb-0.5" />
+                        <a-button class="flex items-center justify-center p-2">
+                            <AtlanIcon icon="KebabMenu" />
                         </a-button>
                     </KebabMenu>
                 </a-button-group>
@@ -322,6 +324,10 @@
             ),
             linkedAssets: defineAsyncComponent(
                 () => import('./linkedAssets/linkedAssetsWrapper.vue')
+            ),
+            Jira: defineAsyncComponent(
+                () =>
+                    import('@/common/assets/preview/integrations/jira/jira.vue')
             ),
             SlackAskButton,
         },

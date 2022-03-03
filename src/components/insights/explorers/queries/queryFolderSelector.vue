@@ -27,7 +27,9 @@
             <AtlanIcon icon="FolderClosed" v-else></AtlanIcon>
 
             <span class="flex pl-0.5 text-xs text-gray-500 truncate mt-0.5">
-                {{ selectedFolder ? selectedFolder : 'Collection' }}
+                <span class="max-w-xs truncate">{{
+                    selectedFolder ? selectedFolder : 'Collection'
+                }}</span>
             </span>
         </AtlanBtn>
 

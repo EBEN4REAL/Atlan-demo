@@ -100,6 +100,7 @@
     } from 'vue'
     import { useAssetListing } from '~/components/insights/common/composables/useAssetListing'
     import { isSelectFirstDefault } from '~/components/insights/common/composables/getDialectInfo'
+    import bodybuilder from 'bodybuilder'
 
     import { message } from 'ant-design-vue'
 
@@ -149,6 +150,18 @@
                 type: Boolean,
                 default: true,
             },
+            listFromAssetDropdown: {
+                type: Array,
+                required: true,
+            },
+            filterFromAssetDropdown: {
+                type: Array,
+                required: true,
+            },
+            assetFromAssetDropdown: {
+                type: Array,
+                required: true,
+            },
         },
         emits: ['update:modelValue', 'change', 'firstSelectByDefaultChange'],
         setup(props, { emit }) {
@@ -156,12 +169,61 @@
 
             const {
                 disabled,
-                filters,
+                // filters,
                 typeName,
                 modelValue,
                 connector,
                 index,
+                listFromAssetDropdown,
+                filterFromAssetDropdown,
+                assetFromAssetDropdown,
             } = toRefs(props)
+
+            const getFilter = (index) => {
+                if (index > 0) {
+                    const item = listFromAssetDropdown.value[index - 1]
+                    const typeName = listFromAssetDropdown.value[index].typeName
+                    if (assetFromAssetDropdown.value[item.attribute]) {
+                        return bodybuilder()
+                            .filter(
+                                'term',
+                                `${item.attribute}`,
+                                assetFromAssetDropdown.value[item.attribute]
+                            )
+                            .filter('term', '__state', 'ACTIVE')
+                            .filter('term', '__typeName.keyword', typeName)
+                            .size(100)
+                            .build()
+                    }
+                }
+                // For the first filter we need the connection name
+                else {
+                    let connectionName =
+                        filterFromAssetDropdown.value?.attributeValue
+                            ?.split('/')
+                            .slice(0, 3)
+                            ?.join('/')
+
+                    return bodybuilder()
+                        .filter('term', '__state', 'ACTIVE')
+                        .filter(
+                            'term',
+                            'connectionQualifiedName',
+                            connectionName
+                        )
+                        .filter(
+                            'term',
+                            '__typeName.keyword',
+                            listFromAssetDropdown.value[index].typeName
+                        )
+                        .size(100)
+                        .build()
+                }
+            }
+
+            // const filters = computed(() => getFilter(index.value))
+            const filters = ref(getFilter(index.value))
+
             const initialBody = {
                 dsl: filters.value,
                 attributes: ['name', 'displayName'],
@@ -187,6 +249,19 @@
 
                         replaceBody(initialBody)
                     }
+                },
+                { immediate: true }
+            )
+
+            watch(
+                [filterFromAssetDropdown],
+                () => {
+                    if (
+                        filterFromAssetDropdown.value.attributeName ===
+                            'connectionQualifiedName' &&
+                        index.value === 0
+                    )
+                        filters.value = getFilter(index.value)
                 },
                 { immediate: true }
             )
@@ -306,6 +381,7 @@
                 onSelectItem,
                 connector,
                 isSelectFirstDefault,
+                getFilter,
             }
         },
     })

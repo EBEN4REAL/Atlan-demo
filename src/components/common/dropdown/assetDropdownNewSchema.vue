@@ -18,10 +18,9 @@
                 ></AssetSelector> -->
                 <AssetSelectorNew
                     :_firsCalled="_firsCalled"
-                    :key="Database_undefined"
+                    :key="getKey(1)"
                     :modelValue="asset[list[1].attribute]"
                     :type-name="list[1].typeName"
-                    :filters="getFilter(1)"
                     :disabled="isDisabled(1)"
                     @change="
                         handleChange(list[1].attribute, $event, list[1].level)
@@ -32,6 +31,9 @@
                     :bgGrayForSelector="bgGrayForSelector"
                     :selectFirstByDefault="selectFirstByDefault"
                     :index="1"
+                    :listFromAssetDropdown="list"
+                    :filterFromAssetDropdown="filter"
+                    :assetFromAssetDropdown="asset"
                 ></AssetSelectorNew>
             </div>
         </template>
@@ -130,46 +132,46 @@
                 }
             }
 
-            const getFilter = (index) => {
-                if (index > 0) {
-                    const item = list.value[index - 1]
-                    const typeName = list.value[index].typeName
-                    if (asset.value[item.attribute]) {
-                        return bodybuilder()
-                            .filter(
-                                'term',
-                                `${item.attribute}`,
-                                asset.value[item.attribute]
-                            )
-                            .filter('term', '__state', 'ACTIVE')
-                            .filter('term', '__typeName.keyword', typeName)
-                            .size(100)
-                            .build()
-                    }
-                }
-                // For the first filter we need the connection name
-                else {
-                    let connectionName = filter.value?.attributeValue
-                        ?.split('/')
-                        .slice(0, 3)
-                        ?.join('/')
+            // const getFilter = (index) => {
+            //     if (index > 0) {
+            //         const item = list.value[index - 1]
+            //         const typeName = list.value[index].typeName
+            //         if (asset.value[item.attribute]) {
+            //             return bodybuilder()
+            //                 .filter(
+            //                     'term',
+            //                     `${item.attribute}`,
+            //                     asset.value[item.attribute]
+            //                 )
+            //                 .filter('term', '__state', 'ACTIVE')
+            //                 .filter('term', '__typeName.keyword', typeName)
+            //                 .size(100)
+            //                 .build()
+            //         }
+            //     }
+            //     // For the first filter we need the connection name
+            //     else {
+            //         let connectionName = filter.value?.attributeValue
+            //             ?.split('/')
+            //             .slice(0, 3)
+            //             ?.join('/')
 
-                    return bodybuilder()
-                        .filter('term', '__state', 'ACTIVE')
-                        .filter(
-                            'term',
-                            'connectionQualifiedName',
-                            connectionName
-                        )
-                        .filter(
-                            'term',
-                            '__typeName.keyword',
-                            list.value[index].typeName
-                        )
-                        .size(100)
-                        .build()
-                }
-            }
+            //         return bodybuilder()
+            //             .filter('term', '__state', 'ACTIVE')
+            //             .filter(
+            //                 'term',
+            //                 'connectionQualifiedName',
+            //                 connectionName
+            //             )
+            //             .filter(
+            //                 'term',
+            //                 '__typeName.keyword',
+            //                 list.value[index].typeName
+            //             )
+            //             .size(100)
+            //             .build()
+            //     }
+            // }
 
             const getKey = (index) => {
                 if (index > 0) {
@@ -278,12 +280,13 @@
                 _firsCalled,
                 list,
                 asset,
-                getFilter,
+                // getFilter,
                 handleChange,
                 isDisabled,
                 getKey,
                 handleClear,
                 firstSelectByDefaultChange,
+                filter,
             }
         },
     })

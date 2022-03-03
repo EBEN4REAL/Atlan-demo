@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 // import scopeAPI from '../apis/scopes'
 
-const purposeScopeList = [
+export const purposeScopeList = [
     {
         scopes: [
             {
@@ -104,28 +104,31 @@ const purposeScopeList = [
     //     type: 'Type',
     // },
 ]
-const personaScopeList = [
+export const personaScopeList = [
     {
         scopes: [
             {
-                value: 'entity-create',
-                label: 'create',
-                desc: 'Create entities within selected assets',
-            },
-            {
                 value: 'entity-read',
-                label: 'read',
+                label: 'Read',
+                filterLabel: 'Read asset',
                 desc: 'Read access to private attributes',
             },
             {
                 value: 'entity-update',
-                label: 'update',
+                label: 'Update',
+                filterLabel: 'Update asset',
                 desc: 'Access to update asset metadata',
             },
-
+            {
+                value: 'entity-create',
+                label: 'Create',
+                filterLabel: 'Create asset',
+                desc: 'Create entities within selected assets',
+            },
             {
                 value: 'entity-delete',
-                label: 'delete',
+                label: 'Delete',
+                filterLabel: 'Delete asset',
                 desc: 'Permission to delete selected assets',
             },
             {

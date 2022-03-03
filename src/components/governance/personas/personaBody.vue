@@ -1,6 +1,6 @@
 <template>
     <template v-if="selectedPersonaDirty">
-        <div class="px-3 bg-white">
+        <div class="sticky top-0 z-10 bg-white">
             <MinimalTab v-model:active="activeTabKey" :data="tabConfig">
                 <template #label="t">
                     <div class="flex items-center overflow-hidden">
@@ -52,14 +52,18 @@
             </MinimalTab>
         </div>
 
-        <div v-if="activeTabKey === 'details'" class="p-6 overflow-y-auto">
+        <div
+            v-if="activeTabKey === 'details'"
+            class="p-6 overflow-y-auto"
+            style="max-height: 91%"
+        >
             <PersonaMeta
                 class="pb-0"
                 :persona="persona"
                 @editDetails="$emit('editDetails')"
             />
             <Readme :persona="selectedPersonaDirty" />
-            <div class="mt-3 bg-white border border-gray-200 rounded">
+            <div class="pb-3 mt-3 bg-white border border-gray-200 rounded">
                 <ResourcesWidget
                     placeholder="Resources is the place to document all knowledge around the persona"
                     :entity-name="persona.name"
@@ -160,7 +164,7 @@
                         metaDataComputed.length > 0 ||
                         dataPolicyComputed.length > 0
                     "
-                    class="flex flex-col flex-grow overflow-y-auto container-card-policy"
+                    class="flex flex-col flex-grow overflow-y-auto rounded-md container-card-policy"
                 >
                     <template
                         v-for="(policy, idx) in metaDataComputed"
@@ -309,6 +313,7 @@
         computed,
         watch,
         toRefs,
+        onMounted,
     } from 'vue'
     import { message } from 'ant-design-vue'
     import ResourcesWidget from '@common/widgets/resources/resourcesWidget.vue'
@@ -575,8 +580,8 @@
             }
             const isEmpty = computed(
                 () =>
-                    !selectedPersonaDirty.value.metadataPolicies?.length &&
-                    !selectedPersonaDirty.value.dataPolicies?.length &&
+                    !selectedPersonaDirty.value?.metadataPolicies?.length &&
+                    !selectedPersonaDirty.value?.dataPolicies?.length &&
                     !searchPersona.value
             )
             const {
@@ -605,6 +610,11 @@
                 if (isEmpty.value) activeTabFilter.value = 'all Persona'
                 addpolicyVisible.value = false
             })
+
+            onMounted(() => {
+                activeTabKey.value = 'details'
+            })
+
             return {
                 addStatus,
                 updateStatus,
@@ -682,7 +692,7 @@
 </style>
 <style scoped lang="less">
     .container-card-policy {
-        max-height: 65vh;
+        max-height: 55vh;
     }
     .sub-title-empty {
         max-width: 250px;

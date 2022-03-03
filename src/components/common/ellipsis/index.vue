@@ -90,9 +90,9 @@
                 default: '95%',
             },
             mouseLeaveDelay:{
-                type: String,
+                type: Number,
                 required: false,
-                default: '0.1',
+                default: 0.1,
             }
         },
         setup(props) {

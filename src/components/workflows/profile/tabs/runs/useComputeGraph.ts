@@ -1,6 +1,9 @@
 import { computed, ref } from 'vue'
 import { timeDiffCalc } from '~/utils/date'
 
+/**
+ *  @deprecated Use `useComputeGraph2`
+ */
 export default function useComputeGraph(
     graph,
     graphLayout,

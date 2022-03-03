@@ -222,6 +222,7 @@ export const MinimalAttributes = [
     'tileCount',
     'pageCount',
     'categories',
+    'anchor',
     'parentCategory',
     'rowCount',
     'columnCount',

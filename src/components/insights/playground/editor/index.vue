@@ -523,7 +523,9 @@
                 checked: boolean
                 rowsCount: number
             }>
-            const showcustomToolBar = ref(false)
+            const showcustomToolBar = inject(
+                'showcustomToolBar'
+            ) as Ref<boolean>
             const showQueryPreview = ref(false)
 
             const activeInlineTab = inject(

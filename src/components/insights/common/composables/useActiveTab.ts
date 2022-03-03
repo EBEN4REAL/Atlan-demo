@@ -115,6 +115,9 @@ export function useActiveTab() {
                     ...inlineTabData.playground.editor,
                     context: contextData,
                     text: editorText ?? '',
+                    savedVariables:
+                        activeInlineTabCopy.playground.editor.savedVariables,
+                    variables: activeInlineTabCopy.playground.editor.variables,
                 },
             },
             assetSidebar: {

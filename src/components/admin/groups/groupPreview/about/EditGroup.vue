@@ -145,6 +145,7 @@
                     slackLink.length > 0 ? [`[{"slack": "${slackLink}"}]`] : []
                 requestPayload.value = {
                     name: formData.value.alias,
+                    path: selectedGroup?.value?.path,
                 }
                 if (Object.keys(attributes).length > 0) {
                     requestPayload.value = {

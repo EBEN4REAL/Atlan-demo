@@ -52,6 +52,7 @@ export function useActiveTab() {
                 },
             ],
         }
+
         if (vqb) {
             vqbData = vqb
         }
@@ -108,7 +109,7 @@ export function useActiveTab() {
             },
             playground: {
                 ...inlineTabData.playground,
-                isVQB: isVQB ? true : false,
+                isVQB: isVQB,
                 vqb: vqbData,
                 editor: {
                     ...inlineTabData.playground.editor,

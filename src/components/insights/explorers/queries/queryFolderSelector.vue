@@ -4,11 +4,15 @@
         placement="bottomLeft"
         :visible="dropdownVisible"
     >
-        <AtlanBtn
+        <!-- <AtlanBtn
             class="folderBtn"
             size="sm"
             color="secondary"
             padding="compact"
+            @click="toggleDropdown"
+        > -->
+        <div
+            class="flex items-center px-2 py-1 text-sm leading-5 border rounded cursor-pointer btn-shadow"
             @click="toggleDropdown"
         >
             <span
@@ -24,20 +28,21 @@
                 }}</span
             >
 
-            <AtlanIcon icon="FolderClosed" v-else></AtlanIcon>
+            <AtlanIcon v-else icon="FolderClosed"></AtlanIcon>
 
-            <span class="flex pl-0.5 text-xs text-gray-500 truncate mt-0.5">
+            <span class="flex ml-1 truncate">
                 <span class="max-w-xs truncate">{{
                     selectedFolder ? selectedFolder : 'Collection'
                 }}</span>
             </span>
-        </AtlanBtn>
+        </div>
+        <!-- </AtlanBtn> -->
 
         <template #overlay>
-            <div ref="clickOutside" class="overflow-y-scroll popover-container">
+            <div ref="clickOutside" class="overflow-y-hidden popover-container">
                 <div
-                    class="w-full h-full"
                     v-if="writeAccessCollections?.length"
+                    class="w-full h-full"
                 >
                     <div
                         class="absolute top-0 left-0 z-10 flex items-center justify-between w-full px-4 pt-3 pb-2 bg-white rounded-t"
@@ -57,7 +62,10 @@
                         </a-tooltip>
                     </div>
 
-                    <div class="mt-10 mb-32 overflow-x-hidden">
+                    <div
+                        class="mt-10 mb-32 overflow-x-hidden overflow-y-auto"
+                        style="max-height: 400px"
+                    >
                         <div
                             v-for="collection in finalCollectionList"
                             :key="collection?.guid"
@@ -72,8 +80,8 @@
                                 }`"
                             >
                                 <div
-                                    @click="onSelect(collection, 'root')"
                                     class="flex items-center w-11/12 cursor-pointer parent-ellipsis-container"
+                                    @click="onSelect(collection, 'root')"
                                 >
                                     <AtlanIcon
                                         :icon="
@@ -112,15 +120,16 @@
                                 />
                             </div>
                             <div
-                                class="w-full h-full ml-1 overflow-y-scroll bg-white"
                                 v-if="
                                     treeSelectedCollection?.guid ===
                                     collection?.guid
                                 "
+                                class="w-full h-full ml-1 overflow-y-auto bg-white"
                             >
                                 <query-tree-list
-                                    @createFolderInput="createFolderInput"
-                                    :savedQueryType="savedQueryType2"
+                                    v-if="newTreeData.length"
+                                    :id="`${collection?.attributes?.qualifiedName}-selector`"
+                                    :saved-query-type="savedQueryType2"
                                     :tree-data="newTreeData"
                                     :on-load-data="onLoadData"
                                     :select-node="onSelect"
@@ -129,14 +138,13 @@
                                     :loaded-keys="loadedKeys"
                                     :selected-keys="selectedKey"
                                     :expanded-keys="expandedKeys"
-                                    v-if="newTreeData.length"
-                                    :selectedNewFolder="selectedFolderContext"
-                                    :id="`${collection?.attributes?.qualifiedName}-selector`"
+                                    :selected-new-folder="selectedFolderContext"
+                                    @createFolderInput="createFolderInput"
                                 />
 
                                 <div
-                                    class="flex flex-col justify-center"
                                     :id="`${collection?.attributes?.qualifiedName}-selector`"
+                                    class="flex flex-col justify-center"
                                 >
                                     <a-spin
                                         v-if="isQueriesLoading"
@@ -146,8 +154,8 @@
                             </div>
                             <div
                                 v-else
-                                class="flex flex-col justify-center"
                                 :id="`${collection?.attributes?.qualifiedName}-selector`"
+                                class="flex flex-col justify-center"
                             ></div>
                         </div>
                     </div>
@@ -194,8 +202,8 @@
                     </div>
                 </div>
                 <div
-                    class="h-full pt-0 pb-4 mx-5 overflow-y-hidden w-9/11"
                     v-else
+                    class="h-full pt-0 pb-4 mx-5 overflow-y-hidden w-9/11"
                 >
                     <EmptyView
                         empty-screen="EmptyCollections"
@@ -232,14 +240,15 @@
         onMounted,
     } from 'vue'
 
+    import { useRouter, useRoute } from 'vue-router'
+    import EmptyView from '@common/empty/index.vue'
+    import { onClickOutside } from '@vueuse/core'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     import QueryTreeList from './queryTreeList.vue'
     import useQueryTree from './composables/useQueryTree'
-    import { useRouter, useRoute } from 'vue-router'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import AtlanBtn from '@/UI/button.vue'
-    import EmptyView from '@common/empty/index.vue'
     import CreateCollectionModal from '~/components/insights/explorers/queries/collection/createCollectionModal.vue'
     // import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
     import {
@@ -247,7 +256,6 @@
         QueryCollection,
     } from '~/types/insights/savedQuery.interface'
 
-    import { onClickOutside } from '@vueuse/core'
     // import { colSize } from 'ant-design-vue/lib/grid/Col'
 
     export default defineComponent({
@@ -309,8 +317,8 @@
 
             const selectedFolder = ref()
             const selectedKey = ref<string[]>([])
-            let dropdownVisible = ref(false)
-            let selectedFolderContext = ref({})
+            const dropdownVisible = ref(false)
+            const selectedFolderContext = ref({})
             const selectedCollection = computed(() => {
                 const collection = writeAccessCollections.value?.find(
                     (coll) =>
@@ -321,7 +329,7 @@
                 return collection
             })
 
-            let treeSelectedCollection = ref(selectedCollection.value)
+            const treeSelectedCollection = ref(selectedCollection.value)
 
             const finalCollectionList = computed(() => {
                 const collections = writeAccessCollections.value.filter(
@@ -330,7 +338,8 @@
 
                 if (selectedCollection.value) {
                     return [selectedCollection.value, ...collections]
-                } else return collections
+                }
+                return collections
             })
 
             const refreshQueryTree = inject<
@@ -340,12 +349,12 @@
             // console.log('already selected: ', props.selectedFolderQF)
             // console.log('already selected: ', parentFolder)
 
-            let previousContext = ref(selectedFolderContext.value)
+            const previousContext = ref(selectedFolderContext.value)
 
             watch(
                 parentFolder,
                 () => {
-                    let item = parentFolder.value
+                    const item = parentFolder.value
                     // console.log('parent folder 1: ', parentFolder.value)
 
                     if (item?.typeName === 'Folder') {
@@ -377,7 +386,7 @@
                 if (event === 'root') {
                     treeSelectedCollection.value = selected
 
-                    let rootData = selected
+                    const rootData = selected
 
                     const data = {
                         dataRef: {
@@ -437,7 +446,7 @@
                         if (previousContext.value?.typeName === 'Collection') {
                             onSelect(previousContext.value, 'root')
                         } else {
-                            let data = {
+                            const data = {
                                 node: {
                                     dataRef: {
                                         entity: previousContext.value,
@@ -495,22 +504,22 @@
 
             const newFolderName = ref('')
             const newFolderCreateable = ref(true)
-            let showEmptyState = ref(true)
+            const showEmptyState = ref(true)
 
             const {
-                treeData: treeData,
-                loadedKeys: loadedKeys,
-                isInitingTree: isInitingTree,
+                treeData,
+                loadedKeys,
+                isInitingTree,
                 // selectedKeys: selectedKeys,
-                expandedKeys: expandedKeys,
-                immediateParentFolderQF: immediateParentFolderQF,
+                expandedKeys,
+                immediateParentFolderQF,
                 onLoadFolderData: onLoadData,
-                expandNode: expandNode,
-                selectNode: selectNode,
-                refetchNode: refetchNode,
-                immediateParentGuid: immediateParentGuid,
-                nodeToParentKeyMap: nodeToParentKeyMap,
-                currentSelectedNode: currentSelectedNode,
+                expandNode,
+                selectNode,
+                refetchNode,
+                immediateParentGuid,
+                nodeToParentKeyMap,
+                currentSelectedNode,
                 isLoading: isQueriesLoading,
             } = useQueryTree({
                 emit,
@@ -526,7 +535,7 @@
             })
 
             const newTreeData = computed(() => {
-                let data = treeData?.value?.filter(
+                const data = treeData?.value?.filter(
                     (el) => el.typeName !== 'Query'
                 )
                 // console.log('new tree: ', data)
@@ -546,8 +555,8 @@
                 showCollectionModal.value = !showCollectionModal.value
             }
 
-            let saveFolderLoading = ref(false)
-            let folderCreated = ref(false)
+            const saveFolderLoading = ref(false)
+            const folderCreated = ref(false)
 
             const createFolderInput = () => {
                 if (selectedFolderContext?.value?.guid) {
@@ -556,8 +565,8 @@
                     const existingInputs =
                         document.getElementsByClassName(inputClassName)
 
-                    let parentGuid = ref(selectedFolderContext?.value?.guid)
-                    let parentQualifiedName = ref(
+                    const parentGuid = ref(selectedFolderContext?.value?.guid)
+                    const parentQualifiedName = ref(
                         selectedFolderContext?.value?.attributes?.qualifiedName
                     )
 
@@ -586,7 +595,7 @@
                                 )
                             }
 
-                            let ul = document.createElement('div')
+                            const ul = document.createElement('div')
                             const div = document.createElement('div')
 
                             showEmptyState.value = false
@@ -612,7 +621,7 @@
                             let spaceEl = null
 
                             if (childCount) {
-                                let space = `<span style="padding-left:${
+                                const space = `<span style="padding-left:${
                                     24 * childCount
                                 }px;" class="h-2"></span>`
                                 spaceEl = new DOMParser().parseFromString(
@@ -638,7 +647,7 @@
                                 'text/html'
                             ).body.firstElementChild
 
-                            let folderSvg =
+                            const folderSvg =
                                 '<span class="w-4 h-4 mr-1  mb-0.5"><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"  data-v-a0c5611e="" style="height: 1rem;"><path d="M5.5 2h-2a1 1 0 0 0-1 1v8.5a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-4a1 1 0 0 1-1-1 1 1 0 0 0-1-1Z" fill="#fff" stroke="#5277D7"></path><path d="M13.327 6H2.612a1 1 0 0 0-.995 1.106l.587 5.5a1 1 0 0 0 .994.894h9.249a1 1 0 0 0 .987-.842l.88-5.5A1 1 0 0 0 13.327 6Z" fill="#fff" stroke="#5277D7"></path></svg></span>'
 
                             const folderSvgEl = new DOMParser().parseFromString(
@@ -646,8 +655,8 @@
                                 'text/html'
                             ).body.firstElementChild
 
-                            let space1 = `<span style="padding-left:16px;" class="h-2"></span>`
-                            let space = new DOMParser().parseFromString(
+                            const space1 = `<span style="padding-left:16px;" class="h-2"></span>`
+                            const space = new DOMParser().parseFromString(
                                 space1,
                                 'text/html'
                             ).body.firstElementChild
@@ -683,7 +692,7 @@
                                             ul.removeChild(div)
                                         }, 1000)
 
-                                        //refetch tree
+                                        // refetch tree
                                         setTimeout(async () => {
                                             await refreshQueryTree(
                                                 parentGuid.value,
@@ -911,5 +920,8 @@
     }
     .parent-ellipsis-container-extension {
         flex-shrink: 0;
+    }
+    .btn-shadow {
+        box-shadow: 0px 1px 0px 0px rgba(0, 0, 0, 0.05);
     }
 </style>

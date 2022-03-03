@@ -1,10 +1,10 @@
 <template>
     <a-dropdown
-        trigger="hover"
+        trigger="click"
         placement="bottomLeft"
         :visible="dropdownVisible"
     >
-        <AtlanBtn
+        <!-- <AtlanBtn
             class="folderBtn"
             size="sm"
             color="secondary"
@@ -12,16 +12,38 @@
             @click="toggleDropdown"
         >
             <AtlanIcon icon="Term"></AtlanIcon>
-            <span class="flex pl-0.5 text-xs text-gray-500 truncate mt-0.5">
+            <span class="flex truncate">
                 Term
                 <span v-if="checkedTerms?.length" class="ml-0.5">
                     ({{ checkedTerms?.length }})</span
                 >
             </span>
-        </AtlanBtn>
+        </AtlanBtn> -->
+        <div class="flex btn-shadow" @click="toggleDropdown">
+            <AtlanIcon
+                :icon="
+                    checkedTerms?.length === 1
+                        ? getEntityStatusIcon(
+                              checkedTerms[0]?.dataRef.typeName,
+                              certificateStatus(checkedTerms[0]?.dataRef)
+                          )
+                        : 'Term'
+                "
+                class="mr-1"
+            ></AtlanIcon>
+            <span class="flex truncate">
+                <span v-if="checkedTerms?.length === 1">
+                    {{ title(checkedTerms[0]?.dataRef) }}
+                </span>
+                <span v-else-if="checkedTerms?.length > 1">
+                    {{ checkedTerms?.length }} Terms</span
+                >
+                <span v-else>Term</span>
+            </span>
+        </div>
 
         <template #overlay>
-            <div class="popover-container" @mouseleave="closeDropdown">
+            <div class="popover-container">
                 <div class="py-2">
                     <div>
                         <GlossaryTree
@@ -42,6 +64,8 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import AtlanBtn from '~/components/UI/button.vue'
     import GlossaryTree from '~/components/glossary/index.vue'
+    import useGlossaryData from '~/composables/glossary2/useGlossaryData'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         components: {
@@ -61,13 +85,14 @@
         emits: ['update:selectedAsset', 'saveTerms'],
         setup(props, { emit }) {
             const { selectedTerms } = toRefs(props)
-            let checkedTerms = ref(selectedTerms?.value)
-
+            const checkedTerms = ref(selectedTerms?.value)
+            const { title, certificateStatus } = useAssetInfo()
+            const { getEntityStatusIcon } = useGlossaryData()
             const checkedGuids = ref(
                 checkedTerms.value.map((term) => term.guid)
             )
 
-            let dropdownVisible = ref(false)
+            const dropdownVisible = ref(false)
             const toggleDropdown = () => {
                 dropdownVisible.value = !dropdownVisible.value
             }
@@ -120,6 +145,9 @@
                 dropdownVisible,
                 onCheck,
                 onSearchItemCheck,
+                title,
+                certificateStatus,
+                getEntityStatusIcon,
             }
         },
     })
@@ -156,25 +184,25 @@
 </style>
 <style lang="less" scoped>
     .folderBtn {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        padding: 4px 8px !important;
+        // display: flex;
+        // flex-direction: row;
+        // align-items: center;
+        // padding: 4px 8px !important;
 
-        min-width: 71px !important;
-        height: 22px !important;
+        // min-width: 71px !important;
+        // height: 22px !important;
 
-        box-sizing: border-box !important;
-        border-radius: 4px !important;
+        // box-sizing: border-box !important;
+        // border-radius: 4px !important;
     }
     .popover-container {
         width: 295px;
-        max-height: 312px;
+        // max-height: 312px;
         background: #ffffff;
 
         box-shadow: 0px 9px 32px rgba(0, 0, 0, 0.12);
         border-radius: 4px;
-        overflow-y: scroll;
+        // overflow-y: scroll;
         padding: 0px !important;
     }
     ._bg-primary-light {
@@ -192,5 +220,8 @@
     }
     .classification-name-width {
         max-width: 12rem;
+    }
+    .btn-shadow {
+        box-shadow: 0px 1px 0px 0px rgba(0, 0, 0, 0.05);
     }
 </style>

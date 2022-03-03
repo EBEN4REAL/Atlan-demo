@@ -1,6 +1,6 @@
 <template>
     <section
-        class="flex p-3 bg-white border shadow gap-x-4"
+        class="flex p-3 bg-white border shadow gap-x-4 group"
         style="border-radius: 8px"
         :class="checked ? ' border-primary' : 'border-gray-200'"
         @click="$emit('click', issue)"
@@ -9,7 +9,7 @@
             <a-checkbox :checked="checked" />
         </div>
         <aside class="flex-grow space-y-2">
-            <header class="flex items-center justify-between">
+            <header class="relative flex items-center justify-between">
                 <div class="flex items-center">
                     <img
                         :src="issuetype.iconUrl"
@@ -42,7 +42,25 @@
                     />
                     <div class="text-xs text-gray-600">{{ project.key }}</div>
                 </div>
+                <a-dropdown
+                    v-if="$slots?.action"
+                    :trigger="['click']"
+                    placement="bottomRight"
+                >
+                    <div
+                        class="absolute right-0 flex items-center justify-end w-24 h-5 opacity-0 bg-gradient-to-l from-white via-white group-hover:opacity-100"
+                    >
+                        <AtlanIcon
+                            icon="ThreeDotsAlt"
+                            class="z-50 h-1 cursor-pointer"
+                        />
+                    </div>
+                    <template #overlay>
+                        <slot name="action" />
+                    </template>
+                </a-dropdown>
             </header>
+
             <main class="flex flex-col space-y-1">
                 <div class="flex items-center flex-grow">
                     <Truncate

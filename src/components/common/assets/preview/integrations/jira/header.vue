@@ -8,26 +8,11 @@
                 <span class="font-semibold text-gray-500">Jira</span>
             </div>
             <div class="flex-grow"></div>
-            <template v-if="removeMode">
-                <div
-                    class="flex items-center text-gray-700 cursor-pointer hover:underline"
-                    @click="$emit('cancel')"
-                >
-                    Cancel
-                </div>
-                <AtlanButton
-                    padding="compact"
-                    size="sm"
-                    class="flex items-center h-5 px-4 text-xs cursor-pointer"
-                    @click="$emit('remove')"
-                >
-                    Unlink
-                </AtlanButton>
-            </template>
+
             <div
-                v-else-if="assetIssueCount"
+                v-if="assetIssueCount"
                 class="flex items-center px-2 py-1 rounded cursor-pointer hover:bg-gray-200 text-primary"
-                @click="() => (addVisible = true)"
+                @click="() => (addVisible = !addVisible)"
             >
                 <AddIssue
                     v-model:visible="addVisible"
@@ -50,7 +35,6 @@
     const emit = defineEmits(['link', 'create', 'remove', 'cancel'])
 
     const props = defineProps({
-        removeMode: { type: Boolean, default: false },
         assetIssueCount: { type: Number, required: true },
     })
 

@@ -16,7 +16,11 @@
             @create="$emit('create')"
             @link="$emit('link')"
         >
-            <AtlanButton class="px-5" size="sm" @click="addVisible = true">
+            <AtlanButton
+                class="px-5"
+                size="sm"
+                @click="addVisible = !addVisible"
+            >
                 <AtlanIcon icon="Add" class="mr-1 mb-0.5" /> Add Issue
             </AtlanButton>
         </AddIssue>

@@ -1,5 +1,10 @@
 <template>
-    <a-popover v-model:visible="visible" :trigger="'click'">
+    <a-popover
+        v-model:visible="visible"
+        align
+        :trigger="'click'"
+        :overlay-class-name="$style.popover"
+    >
         <template #content>
             <div class="p-2">
                 <!-- connect with jira banner -->
@@ -97,6 +102,21 @@
         @apply p-2 cursor-pointer;
         &:hover {
             @apply bg-gray-100;
+        }
+    }
+</style>
+
+<style lang="less" module>
+    .popover {
+        :global(.ant-popover-inner) {
+            @apply shadow-none;
+        }
+        :global(.ant-popover-content) {
+            box-shadow: 0px 9px 32px rgba(0, 0, 0, 0.12);
+            border-radius: 4px;
+        }
+        :global(.ant-dropdown-menu) {
+            @apply shadow-none !important;
         }
     }
 </style>

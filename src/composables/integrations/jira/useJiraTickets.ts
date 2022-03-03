@@ -132,7 +132,7 @@ export const linkIssue = (_body, id) => {
 export const unlinkIssue = (_body, id) => {
     const options = {
         asyncOptions: {
-            immediate: false,
+            immediate: true,
             onError: (e) => {
                 throw e
             },

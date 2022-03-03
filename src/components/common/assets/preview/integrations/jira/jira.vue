@@ -11,12 +11,9 @@
         @create="() => (createModal = true)"
     />
     <Header
-        :remove-mode="!!checkedIDs.length"
         :asset-issue-count="issues?.length || 0"
         @link="linkIssueVisible = true"
         @create="createModal = true"
-        @cancel="resetIDs"
-        @remove="handleIssueUnLink"
     />
     <div v-if="!userJiraStatus.configured" class="flex items-center h-full">
         <EmptyPlaceholder
@@ -45,12 +42,26 @@
             class="flex flex-col p-4 overflow-y-auto gap-y-3"
             style="height: calc(100vh - 11.5rem)"
         >
-            <IssueList
-                v-model:checkedIDs="checkedIDs"
-                :issues="issues"
-                :checkbox="false"
-                :error-i-ds="unlinkErrorIDs"
-            />
+            <template v-for="issue in issues" :key="issue.id">
+                <IssueCard :issue="issue">
+                    <template #action>
+                        <div
+                            class="px-3 py-2 bg-white"
+                            style="
+                                box-shadow: 0px 9px 32px rgba(0, 0, 0, 0.12);
+                                border-radius: 4px;
+                            "
+                        >
+                            <div
+                                class="text-red-500 cursor-pointer"
+                                @click="handleUnlick(issue)"
+                            >
+                                <AtlanIcon icon="Link" /> Unlink issue
+                            </div>
+                        </div>
+                    </template>
+                </IssueCard>
+            </template>
         </div>
     </div>
 </template>
@@ -100,16 +111,18 @@
     const store = integrationStore()
     const { userJiraStatus } = toRefs(store)
 
-    const checkedIDs = ref<string[]>([])
-    const unlinkErrorIDs = ref<string[]>([])
-
-    const allUnlinkPromises: any = []
-
-    const callUnlinkIssue = (id) => {
+    const handleUnlick = (issue) => {
         const {
+            id,
             key,
             fields: { summary },
-        } = issues.value.find((i) => i.id === id)
+        } = issue
+
+        message.loading({
+            content: `unlinking issues from "${asset.value.displayText}"`,
+            key,
+            duration: 2,
+        })
 
         const { href } = window.location
 
@@ -128,42 +141,20 @@
             error: unlinkError,
             mutate: unlink,
         } = unlinkIssue(body, id)
-        allUnlinkPromises.push(unlink())
         watch([unlinkData, unlinkError], (v) => {
             if (unlinkError.value) {
-                unlinkErrorIDs.value.push(id)
                 message.error({
                     content: `Failed to unlink "${key}: ${summary}"`,
-                    key: id,
+                    key,
                     duration: 3,
                 })
             } else {
-                const index = checkedIDs.value.indexOf(id)
-                if (index !== -1) checkedIDs.value.splice(index, 1)
                 message.success({
                     content: `"${key}: ${summary}" has been unlinked from "${asset.value.displayText}"`,
-                    key: id,
+                    key,
                     duration: 3,
                 })
             }
-        })
-    }
-
-    const resetIDs = () => {
-        checkedIDs.value = []
-        unlinkErrorIDs.value = []
-    }
-
-    const handleIssueUnLink = () => {
-        message.loading({
-            content: `unlinking issues to "${asset.value.displayText}"`,
-            key: 'link',
-            duration: 2,
-        })
-        checkedIDs.value.forEach((id) => callUnlinkIssue(id))
-
-        Promise.allSettled(allUnlinkPromises).then(() => {
-            fetchLinkedIssues()
         })
     }
 

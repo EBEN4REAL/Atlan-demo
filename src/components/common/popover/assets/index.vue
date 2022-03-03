@@ -14,7 +14,7 @@
                         <div
                             class="flex items-center font-semibold break-words"
                         >
-                            <div class="flex" style="margin-right: 14px">
+                            <div class="flex mr-3.5">
                                 <div
                                     v-if="
                                         item.typeName?.toLowerCase() ===

@@ -893,7 +893,8 @@
                     iconName = iconName.replace('Query', 'Vqb')
                 }
                 const svgCollection = {
-                    Query: `<span>${Query}</span>`,
+                    //FIXME: why Query imported svg not working
+                    Query: `<span>${querySvg}</span>`,
                     QueryVerified: `<span>${QueryVerified}</span>`,
                     QueryDeprecated: `<span>${QueryDeprecated}</span>`,
                     QueryDraft: `<span>${QueryDraft}</span>`,

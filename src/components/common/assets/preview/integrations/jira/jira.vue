@@ -149,6 +149,7 @@
                     duration: 3,
                 })
             } else {
+                fetchLinkedIssues()
                 message.success({
                     content: `"${key}: ${summary}" has been unlinked from "${asset.value.displayText}"`,
                     key,

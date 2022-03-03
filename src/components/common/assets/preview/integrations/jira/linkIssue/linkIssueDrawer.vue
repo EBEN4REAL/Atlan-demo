@@ -22,11 +22,11 @@
             >
                 <AtlanLoader class="h-10" />
             </div>
-            <div v-else-if="error" class="">
+            <div v-else-if="error && !searchText" class="h-full">
                 <ErrorView :error="error" />
             </div>
             <div
-                v-if="!issues?.length && !searchText && !searchLoading"
+                v-else-if="!issues?.length && !searchText && !searchLoading"
                 class="flex items-center justify-center w-full h-full"
             >
                 <!-- // need empty placeholder -->
@@ -73,15 +73,16 @@
                         />
                     </div>
 
+                    <div v-if="error" class="h-full">
+                        <ErrorView :error="error" />
+                    </div>
                     <div
-                        v-if="searchLoading"
+                        v-else-if="searchLoading"
                         class="flex items-center justify-center w-full h-full"
                     >
                         <AtlanLoader class="h-10" />
                     </div>
-                    <div v-else-if="error" class="">
-                        <ErrorView :error="error" />
-                    </div>
+
                     <div
                         v-else-if="!issues?.length && searchText"
                         class="flex flex-col items-center justify-center w-full h-full px-10 text-center"

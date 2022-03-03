@@ -763,6 +763,8 @@
                     activeInlineTab,
                     label: `Copy ${activeInlineTab.value.label}`,
                     editorText: activeInlineTab.value.playground.editor.text,
+                    isVQB: activeInlineTab.value.playground.isVQB,
+                    vqb: activeInlineTab.value.playground.vqb,
                 })
 
                 inlineTabAdd(inlineTabData, tabsArray, activeInlineTabKey)

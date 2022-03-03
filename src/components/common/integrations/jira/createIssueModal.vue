@@ -34,7 +34,7 @@
                             v-model="form.projectId"
                             class="w-full"
                             placeholder="Select a project"
-                            default-select-first
+                            default-select
                             @change="handleProjectSelect"
                         />
                     </a-form-item>
@@ -95,7 +95,7 @@
             </a-form>
         </div>
         <div
-            class="flex justify-end w-full p-4 space-x-4 rounded-b-lg bg-primary-light"
+            class="flex items-center justify-end w-full p-4 space-x-4 rounded-b-lg bg-primary-light"
         >
             <AtlanButton
                 color="minimal"
@@ -193,7 +193,7 @@
                 meta: type,
             })),
         ]
-        form.value.issueType = undefined
+        form.value.issueType = issueTypeOptions.value[0].value
     }
 
     const { data, isLoading, error, mutate, isReady } = createIssue(form)

@@ -32,15 +32,16 @@
 
 <script setup lang="ts">
     import { useVModels } from '@vueuse/core'
-    import { computed, onMounted, watch, h } from 'vue'
+    import { computed, onMounted, watch, h, toRefs } from 'vue'
     import { listProjects } from '~/composables/integrations/jira/useJira'
+    import integrationStore from '~/store/integrations/index'
 
     const { projects, isLoading, error } = listProjects()
 
     const props = defineProps({
         modelValue: { type: String, required: true },
         placeholder: { type: String, default: 'Select default project' },
-        defaultSelectFirst: { type: Boolean, default: false },
+        defaultSelect: { type: Boolean, default: false },
     })
     const emit = defineEmits(['change'])
 
@@ -62,11 +63,21 @@
         emit('change', value, option)
     }
 
+    const store = integrationStore()
+
+    const { tenantJiraStatus } = toRefs(store)
+
     onMounted(() => {
         watch(projects, (v) => {
-            if (v?.length && !modelValue.value && props.defaultSelectFirst) {
-                modelValue.value = options.value[0].value
-                handleChange(options.value[0].value, options.value[0])
+            if (v?.length && !modelValue.value && props.defaultSelect) {
+                const { defaultProject } = tenantJiraStatus.value.config
+                if (defaultProject) {
+                    const project = options.value.find(
+                        (p) => p.value === defaultProject.id
+                    )
+                    if (project) modelValue.value = project.value
+                    handleChange(project.value, project)
+                }
             }
         })
     })

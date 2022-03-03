@@ -22,7 +22,7 @@ export const stripSlackText = (text) => {
     const urlRegex =
         /<https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()|]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)>/g
 
-    transformedText.replace(urlRegex, (match) => {
+    transformedText = transformedText.replace(urlRegex, (match) => {
         const stripped = match.replace(/<|>/g, '')
         return stripped.includes('|') ? stripped.split('|')[1] : stripped
     })
@@ -80,6 +80,28 @@ export const shareOnSlack = ({
         channelAlias,
     })
     const { data, isLoading, error, isReady } = Integrations.ShareSlack(
+        body,
+        {}
+    )
+    return { data, isLoading, error, isReady }
+}
+
+export const askQuestionOnSlack = ({
+    assetID,
+    integrationId,
+    channelAlias,
+    message,
+    link,
+}) => {
+    const body = ref({
+        id: assetID,
+        integration: integrationId,
+        message,
+        link,
+        domain: window.origin,
+        channelAlias,
+    })
+    const { data, isLoading, error, isReady } = Integrations.AskQuestionSlack(
         body,
         {}
     )
@@ -208,7 +230,7 @@ export function openSlackOAuth({
 export const UnfurlSlackMessage = (body, asyncOptions) => {
     const { data, isLoading, error, isReady, mutate } =
         Integrations.UnfurlSlackMessage(body, { asyncOptions })
-    return { data, isLoading, error, mutate }
+    return { data, isLoading, error, mutate, isReady }
 }
 
 export const archiveSlack = (pV) => {
@@ -239,6 +261,10 @@ export const archiveSlack = (pV) => {
             })
         } else {
             intStore.removeIntegration(pV.value.id)
+            // also remove tge user level slack integration if exists
+            if (intStore.userSlackStatus.id)
+                intStore.removeIntegration(intStore.userSlackStatus.id)
+
             message.success({
                 content: 'Slack integration disconnected successfully',
                 key: 'disconnect',

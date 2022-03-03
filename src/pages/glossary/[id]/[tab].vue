@@ -127,7 +127,15 @@
             watch(list, () => {
                 if (list.value.length > 0) {
                     localSelected.value = list.value[0]
-                    handlePreview(list.value[0])
+                    if (list.value[0] && list.value[0]?.typeName === 'AtlasGlossary') {
+                        const found = glossaryStore.list?.find(
+                            (el) => el?.guid === list.value[0]?.guid
+                        )
+                        if (found) {
+                            localSelected.value = found
+                            handlePreview(found)
+                        }
+                    } else handlePreview(list.value[0])
                     setActiveGlossary(localSelected)
                 }
             })

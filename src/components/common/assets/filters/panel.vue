@@ -36,9 +36,9 @@
                             </span>
                             <span
                                 class="w-full text-xs text-gray hover:text-primary title"
-                                style="letter-spacing: 0.07em"
                                 :class="{
-                                    uppercase: item?.component !== 'properties',
+                                    'tracking uppercase':
+                                        item?.component !== 'properties',
                                 }"
                             >
                                 <Truncate
@@ -385,3 +385,9 @@
         },
     })
 </script>
+
+<style lang="less" scoped>
+    .tracking {
+        letter-spacing: 0.07em;
+    }
+</style>

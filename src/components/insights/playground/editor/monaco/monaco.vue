@@ -52,6 +52,11 @@
     import ViewDeprecated from '~/assets/images/insights/autocomplete/ViewDeprecated.png'
     import ViewDraft from '~/assets/images/insights/autocomplete/ViewDraft.png'
     import ViewVerified from '~/assets/images/insights/autocomplete/ViewVerified.png'
+    import {
+        editorStates,
+        updateEditorModelOnTabOpen,
+        updateEditorModel,
+    } from '~/components/insights/playground/editor/monaco/useModel'
 
     // @ts-ignore
     self.MonacoEnvironment = {
@@ -65,13 +70,10 @@
         props: {},
 
         setup(props, { emit }) {
-            const editorStates = new Map()
             const cancelTokenSource = ref()
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
-            const isTabClosed = inject('isTabClosed') as Ref<string | undefined>
-            const isTabAdded = inject('isTabAdded') as Ref<string | undefined>
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as ComputedRef<String>
@@ -82,29 +84,6 @@
                 'editorConfig'
             ) as Ref<editorConfigInterface>
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
-
-            const clearRemovedTabsModels = (key: string) => {
-                if (editorStates.has(key)) {
-                    editorStates.delete(key)
-                }
-            }
-
-            const addModelForNewTab = (key: string) => {
-                if (!editorStates.has(key)) {
-                    editorStates.set(key, {
-                        model: undefined,
-                        viewState: undefined,
-                    })
-                }
-            }
-
-            watch(isTabClosed, () => {
-                if (isTabClosed.value) clearRemovedTabsModels(isTabClosed.value)
-                console.log(editorStates, 'editorStates')
-            })
-            watch(isTabAdded, () => {
-                if (isTabAdded.value) addModelForNewTab(isTabAdded.value)
-            })
 
             const editorFocused = inject('editorFocused') as Ref<boolean>
             const editorContentSelectionState = inject(
@@ -329,6 +308,7 @@
                     folding: true,
                     lineDecorationsWidth: 8,
                     lineNumbersMinChars: 2,
+                    wordBasedSuggestions: false,
                     language: 'atlansql',
                     value: activeInlineTab.value.playground.editor.text,
                     theme: editorConfig.value.theme,
@@ -377,7 +357,7 @@
                     'atlansql'
                 )
                 editor.setModel(model)
-                editorStates.set(activeInlineTab.value.key, {
+                updateEditorModel(editorStates, activeInlineTab.value.key, {
                     model: model,
                     viewState: {},
                 })
@@ -629,7 +609,17 @@
             })
 
             watch(activeInlineTabKey, (newKey, prevKey) => {
-                addModelForNewTab(newKey)
+                // updateEditorModelOnTabOpen(editorStates, newKey as string)
+
+                // if (!editorStates.get(newKey).viewState) {
+                //     editor?.setSelection(new monaco.Selection(0, 0, 0, 0))
+                // } else if (
+                //     editorStates.get(newKey).viewState &&
+                //     !editorStates.get(newKey).viewState?.cursorState[0]
+                //         ?.inSelectionMode
+                // ) {
+                //     editor?.setSelection(new monaco.Selection(0, 0, 0, 0))
+                // }
 
                 if (tabs.value[newKey]?.playground?.isVQB) {
                     return
@@ -669,13 +659,17 @@
 
                     if (_index > -1) {
                         const prevViewState = editor?.saveViewState()
-                        editorStates.set(tabs.value[_index].key, {
-                            model: editorStates.get(tabs.value[_index].key)
-                                .model,
-                            viewState: prevViewState,
-                        })
-                    }
 
+                        updateEditorModel(
+                            editorStates,
+                            tabs.value[_index].key,
+                            {
+                                model: editorStates.get(tabs.value[_index].key)
+                                    .model,
+                                viewState: prevViewState,
+                            }
+                        )
+                    }
                     //new
                     const index = tabs.value.findIndex(
                         (tab) => tab.key === newKey
@@ -687,10 +681,12 @@
                             ),
                             'atlansql'
                         )
-                        editorStates.set(tabs.value[index].key, {
+
+                        updateEditorModel(editorStates, tabs.value[index].key, {
                             model: newModel,
                             viewState: {},
                         })
+
                         editor?.setModel(null)
                         editor?.setModel(newModel)
                         setEditorPos(editor?.getPosition(), editorPos)
@@ -702,7 +698,7 @@
                         const newViewState = editorStates.get(
                             tabs.value[index].key
                         ).viewState
-                        editor?.restoreViewState(newViewState)
+                        if (newViewState) editor?.restoreViewState(newViewState)
                         setEditorPos(editor?.getPosition(), editorPos)
                     }
 
@@ -753,10 +749,23 @@
 
             onMounted(() => {
                 tabs.value.forEach((tab) => {
-                    editorStates.set(tab.key, {
-                        model: undefined,
-                        viewState: undefined,
-                    })
+                    const newModel = monaco.editor.createModel(
+                        tab.playground.editor.text,
+                        'atlansql'
+                    )
+                    // current active already restted
+                    // first it runs monaco on mount then this onMounted lifeycle hook
+                    if (activeInlineTabKey.value !== tab.key) {
+                        updateEditorModel(
+                            editorStates,
+                            tab.key,
+                            {
+                                model: newModel,
+                                viewState: undefined,
+                            },
+                            tabs
+                        )
+                    }
                 })
             })
 
@@ -780,8 +789,29 @@
     .c {
         font-family: 'Courier New', Courier, monospace;
     }
+    .monaco-list-row.show-file-icons.string-label.focused {
+        // @apply bg-gray-light !important;
+        background: #f3f3f3 !important;
+
+        @apply text-gray-700 !important;
+        border-radius: 3px !important;
+    }
+    .monaco-list-row.focused {
+        // @apply bg-gray-light !important;
+        background: #f3f3f3 !important;
+
+        @apply text-gray-700 !important;
+        border-radius: 3px !important;
+    }
 </style>
 <style lang="less">
+    .monaco-list-row.show-file-icons.string-label.focused {
+        // @apply bg-gray-light !important;
+        background: '#F3F3F3' !important;
+
+        @apply text-gray-700 !important;
+        border-radius: 3px !important;
+    }
     .moustacheDecoration {
         // @apply font-semibold;
         color: #d77252 !important;
@@ -804,6 +834,29 @@
         @apply bg-gray-400;
         top: -10%;
         height: 120%;
+    }
+
+    .suggest-icon.codicon.codicon-symbol-keyword::before {
+        visibility: hidden !important;
+        width: 15px !important;
+        height: 15px !important;
+    }
+    .suggest-icon.codicon.codicon-symbol-field::before {
+        visibility: hidden !important;
+        width: 15px !important;
+        height: 15px !important;
+    }
+    .suggest-icon.codicon.codicon-symbol-text::before {
+        visibility: hidden !important;
+        width: 15px !important;
+        height: 15px !important;
+    }
+    .suggest-icon.codicon.codicon-symbol-text {
+        background-image: url('~/assets/images/insights/autocomplete/default.png') !important;
+        width: 15px !important;
+        height: 15px !important;
+        background-size: 15px 15px;
+        margin-top: 3px !important;
     }
 </style>
 
@@ -866,22 +919,6 @@
         margin-top: 3px !important;
     }
     :global(.suggest-icon.codicon.codicon-symbol-keyword) {
-        width: 15px !important;
-        height: 15px !important;
-        background-size: 15px 15px;
-        margin-top: 3px !important;
-    }
-    :global(.suggest-icon.codicon.codicon-symbol-keyword)::before {
-        visibility: hidden !important;
-    }
-    :global(.suggest-icon.codicon.codicon-symbol-field)::before {
-        visibility: hidden !important;
-    }
-    :global(.suggest-icon.codicon.codicon-symbol-text)::before {
-        visibility: hidden !important;
-    }
-    :global(.suggest-icon.codicon.codicon-symbol-text) {
-        background-image: url('~/assets/images/insights/autocomplete/default.png') !important;
         width: 15px !important;
         height: 15px !important;
         background-size: 15px 15px;

@@ -22,7 +22,7 @@ export default function useBody({
         },
     ])
     base.from(from || 0)
-    base.size(limit || 100)
+    base.size(limit || 25)
     base.filter('term', '__state', 'ACTIVE')
 
     if (searchText)

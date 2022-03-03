@@ -208,6 +208,8 @@ export default function useAssetInfo() {
         attributes(asset)?.isPartition
     const isDist = (asset: assetInterface) => attributes(asset)?.isDist
     const isForeign = (asset: assetInterface) => attributes(asset)?.isForeign
+    const isSort = (asset: assetInterface) => attributes(asset)?.isSort
+    const isIndexed = (asset: assetInterface) => attributes(asset)?.isIndexed
 
     const connectionRowLimit = (asset: assetInterface) =>
         attributes(asset)?.rowLimit
@@ -266,6 +268,7 @@ export default function useAssetInfo() {
                     flag = false
                 }
             }
+
             return flag
         })
     }
@@ -293,11 +296,16 @@ export default function useAssetInfo() {
             })
         }
 
-        const allTabs = [
+        let allTabs = [
             ...getTabs(previewTabs, assetType(asset)),
             ...(tenantJiraStatus.value.configured ? getTabs([JiraPreviewTab], assetType(asset)) : []),
             ...getTabs(customTabList, assetType(asset)),
         ]
+
+        if (connectorName(asset).toLowerCase() === 'glue') {
+            allTabs = allTabs.filter((tab) => tab.name !== 'Queries')
+        }
+
         if (inProfile) {
             return allTabs.filter((tab) => tab.requiredInProfile === inProfile)
         }
@@ -354,7 +362,7 @@ export default function useAssetInfo() {
         })
     }
 
-    const getProfilePath = (asset) => {
+    const getProfilePath = (asset, appendOverview = false) => {
         if (assetType(asset) === 'Column') {
             const tableGuid = asset?.attributes?.table?.guid
             if (tableGuid) {
@@ -373,6 +381,8 @@ export default function useAssetInfo() {
             return `/glossary/${asset?.guid}`
         } else if (assetType(asset) === 'Query') {
             return `/insights?id=${asset.guid}`
+        } else if (appendOverview) {
+            return `/assets/${asset.guid}/overview`
         }
         return `/assets/${asset?.guid}`
     }
@@ -1254,6 +1264,7 @@ export default function useAssetInfo() {
         selectedGlossary,
         fieldsLookerQuery,
         isForeign,
+        isSort,
         categories,
         seeAlso,
         parentCategory,
@@ -1318,5 +1329,6 @@ export default function useAssetInfo() {
         picklistValues,
         formula,
         getConnectorLabelByName,
+        isIndexed,
     }
 }

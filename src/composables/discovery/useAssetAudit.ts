@@ -1,8 +1,12 @@
-import { reactive, watch, ref } from 'vue'
+import { computed, reactive, watch, ref } from 'vue'
 import { toRefs } from '@vueuse/core'
 import { activityInterface } from '~/types/activitylogs/activitylog.interface'
 import { eventMap } from '~/constant/events'
 import { Entity } from '~/services/meta/entity'
+import { default as glossaryLabel } from '@/glossary/constants/assetTypeLabel'
+import { capitalizeFirstLetter } from '~/utils/string'
+import { certificateList } from '~/constant/certification'
+import useTypedefData from '~/composables/typedefs/useTypedefData'
 
 const useAssetAudit = (params: any, guid: string) => {
     const getEventByAction = (asset: any) =>
@@ -19,7 +23,7 @@ const useAssetAudit = (params: any, guid: string) => {
         parsedDetails?.name ?? ''
 
     const getEntityUpdateLogs = (logs: any) => {
-        const data = {
+        const data: activityInterface = {
             displayValue: 'Asset was updated',
             value: <any>[],
             component: '',
@@ -28,20 +32,17 @@ const useAssetAudit = (params: any, guid: string) => {
         if ('attributes' in logs) {
             const { attributes } = logs
 
-            // console.log(logs)
-            // console.log('ownerUsers' in attributes)
             if ('ownerUsers' in attributes || 'ownerGroups' in attributes) {
                 data.displayValue = 'owners'
                 data.value = {}
                 if (attributes.ownerUsers) {
                     data.value.ownerUsers = attributes.ownerUsers
+                    data.icon = 'User'
                 }
                 if (attributes.ownerGroups) {
-                    data.value.ownerGroups = attributes.ownerUsers
+                    data.value.ownerGroups = attributes.ownerGroups
+                    data.icon = 'Group'
                 }
-                // if (attributes.ownerGroups) {
-                //     data.value.push(...ownerGroups)
-                // }
 
                 data.component = 'Owners'
                 return data
@@ -49,6 +50,7 @@ const useAssetAudit = (params: any, guid: string) => {
 
             if ('userDescription' in attributes) {
                 data.value = attributes.userDescription
+                data.icon = 'Pencil'
 
                 data.displayValue = 'description'
                 data.component = 'Description'
@@ -62,12 +64,17 @@ const useAssetAudit = (params: any, guid: string) => {
                 data.value = logs
                 data.displayValue = 'certificate'
                 data.component = 'Certificate'
+                const icon = logs?.attributes?.certificateStatus?.toLowerCase()
+                if (icon?.length) data.icon = capitalizeFirstLetter(icon)
+                if (logs?.attributes?.certificateStatus === null)
+                    data.icon = 'Nostatus'
                 return data
             }
             if ('name' in attributes) {
                 data.value = attributes?.name
                 data.displayValue = 'name'
                 data.component = 'Name'
+                data.icon = 'Pencil'
                 return data
             }
             if (
@@ -78,12 +85,36 @@ const useAssetAudit = (params: any, guid: string) => {
                 data.value = logs
                 data.displayValue = 'announcement'
                 data.component = 'Announcement'
+                data.icon = 'Megaphone'
+                return data
+            }
+            if ('adminUsers' in attributes || 'adminGroups' in attributes) {
+                data.displayValue = 'admins'
+                data.value = {}
+                if (attributes.adminUsers) {
+                    data.value.adminUsers = attributes.adminUsers
+                    data.icon = 'User'
+                }
+                if (attributes.adminGroups) {
+                    data.value.adminGroups = attributes.adminGroups
+                    data.icon = 'Group'
+                }
+
+                data.component = 'Admins'
                 return data
             }
             if ('sql' in attributes) {
                 data.value = attributes?.sql
                 data.displayValue = 'query'
                 data.component = 'ProcessSQL'
+                data.icon = 'Query'
+                return data
+            }
+            if ('rawQuery' in attributes) {
+                data.value = attributes?.rawQuery
+                data.displayValue = 'query'
+                data.component = 'ProcessSQL'
+                data.icon = 'Query'
                 return data
             }
         }
@@ -93,16 +124,22 @@ const useAssetAudit = (params: any, guid: string) => {
                 data.value = []
                 data.displayValue = 'added'
                 data.component = 'Terms'
+                data.icon = 'Term'
             }
             if (relationshipAttributes.categories) {
                 data.value = []
                 data.displayValue = 'added'
                 data.component = 'Category'
+                data.icon = 'Category'
             }
-            if (relationshipAttributes.parentCategory || relationshipAttributes.hasOwnProperty('parentCategory')) {
+            if (
+                relationshipAttributes.parentCategory ||
+                relationshipAttributes.hasOwnProperty('parentCategory')
+            ) {
                 data.value = []
                 data.displayValue = 'added'
                 data.component = 'Category'
+                data.icon = 'Category'
             }
 
             // data.displayValue = 'owners'
@@ -220,29 +257,34 @@ const useAssetAudit = (params: any, guid: string) => {
                         data.value = eventDetail
                         data.displayValue = 'updated'
                         data.component = 'Classifications'
+                        data.icon = 'Shield'
 
                         return data
                     case 'CLASSIFICATION_ADD':
                         data.value = eventDetail
                         data.displayValue = 'added'
                         data.component = 'Classifications'
+                        data.icon = 'Shield'
 
                         return data
                     case 'CLASSIFICATION_DELETE':
                         data.value = eventDetail
                         data.displayValue = 'removed'
                         data.component = 'Classifications'
+                        data.icon = 'Shield'
 
                         return data
                     case 'PROPAGATED_CLASSIFICATION_ADD':
                         data.value = eventDetail
                         data.displayValue = 'added via propagation'
                         data.component = 'Classifications'
+                        data.icon = 'Shield'
                         return data
                     case 'PROPAGATED_CLASSIFICATION_DELETE':
                         data.value = eventDetail
                         data.displayValue = 'removed via propagation'
                         data.component = 'Classifications'
+                        data.icon = 'Shield'
                         return data
                     // case 'CLASSIFICATION_DELETE':
                     //     try {
@@ -312,6 +354,16 @@ const useAssetAudit = (params: any, guid: string) => {
                         try {
                             data.value = eventDetail
                             data.component = 'BusinessMetadata'
+                            const { customMetadataList } = useTypedefData()
+                            const found = computed(() => {
+                                return customMetadataList.value.find(
+                                    (item) => item.name === data?.value.typeName
+                                )
+                            })
+
+                            if (found.value) {
+                                data.icon = found
+                            }
 
                             return data
                         } catch (error) {
@@ -320,10 +372,36 @@ const useAssetAudit = (params: any, guid: string) => {
                     case 'ENTITY_CREATE':
                         data.value = eventDetail
                         data.component = 'Create'
+                        if (
+                            [
+                                'AtlasGlossary',
+                                'AtlasGlossaryTerm',
+                                'AtlasGlossaryCategory',
+                            ].includes(eventDetail?.typeName)
+                        ) {
+                            data.icon = capitalizeFirstLetter(
+                                glossaryLabel[eventDetail?.typeName]
+                            )
+                        } else {
+                            if (eventDetail?.typeName)
+                                data.icon = eventDetail?.typeName
+                        }
+
                         return data
                     case 'ENTITY_DELETE':
                         data.value = eventDetail
                         data.component = 'Delete'
+                        if (
+                            [
+                                'AtlasGlossary',
+                                'AtlasGlossaryTerm',
+                                'AtlasGlossaryCategory',
+                            ].includes(eventDetail?.typeName)
+                        ) {
+                            data.icon = capitalizeFirstLetter(
+                                glossaryLabel[eventDetail?.typeName]
+                            )
+                        }
                         return data
 
                     case 'ENTITY_UPDATE':
@@ -448,8 +526,7 @@ const useAssetAudit = (params: any, guid: string) => {
                         try {
                             parsedDetails = JSON.parse(eventDetail[1].trim())
                             data.value = parsedDetails
-                            data.component = 'BusinessMetadata'
-
+                            data.component = 'BusinessMetadata2'
                             return data
                         } catch (error) {
                             return null

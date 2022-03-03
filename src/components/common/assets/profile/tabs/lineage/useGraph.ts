@@ -1,4 +1,3 @@
-import { ref } from 'vue'
 import {
     getNodeSourceImage,
     getSource,
@@ -16,32 +15,25 @@ interface EdgeStyle {
     arrowSize?: number
 }
 
-const checkIfLeafNode = (relations, id) => {
+const checkNode = (relations, id, mode) => {
+    const prop = mode === 'leaf' ? 'fromEntityId' : 'toEntityId'
     let res = true
     relations.forEach((x) => {
-        if (x.fromEntityId === id) res = false
-    })
-    return res
-}
-
-const checkIfRootNode = (relations, id) => {
-    let res = true
-    relations.forEach((x) => {
-        if (x.toEntityId === id) res = false
+        if (x[prop] === id) res = false
     })
     return res
 }
 
 const hasCTA = (relations, childrenCounts, id) => {
     let res = false
-    const isRootNode = checkIfRootNode(relations, id)
-    const isLeafNode = checkIfLeafNode(relations, id)
+    const isRootNode = checkNode(relations, id, 'root')
+    const isLeafNode = checkNode(relations, id, 'leaf')
     if (isRootNode) res = !!childrenCounts?.[id]?.INPUT
     if (isLeafNode) res = !!childrenCounts?.[id]?.OUTPUT
     return res
 }
 
-export default function useGraph() {
+export default function useGraph(graph) {
     const createNodeData = (
         entity,
         relations,
@@ -59,8 +51,8 @@ export default function useGraph() {
         const schemaName = getSchema(entity)
         const img = getNodeSourceImage[source]
         const isBase = guid === baseEntityGuid
-        const isRootNode = checkIfRootNode(relations, guid)
-        const isLeafNode = checkIfLeafNode(relations, guid)
+        const isRootNode = checkNode(relations, guid, 'root')
+        const isLeafNode = checkNode(relations, guid, 'leaf')
         const isCtaNode = hasCTA(relations, childrenCounts, guid)
         const isVpNode = typeName === 'vpNode'
 
@@ -280,13 +272,7 @@ export default function useGraph() {
         return { nodeData }
     }
 
-    const addNode = async (
-        graph,
-        relations,
-        childrenCounts,
-        entity,
-        data = {}
-    ) => {
+    const addNode = async (relations, childrenCounts, entity, data = {}) => {
         const graphNodes = graph.value.getNodes()
         const baseEntityGuid = graphNodes.find((x) => x.store.data.isBase).id
         const { nodeData } = createNodeData(
@@ -297,38 +283,6 @@ export default function useGraph() {
             data
         )
         graph.value.addNode(nodeData)
-    }
-
-    const removeNode = (graph, type, removedNodes) => {
-        const removedNode = ref({})
-        const graphNodes = graph.value.getNodes()
-        const graphEdges = graph.value.getEdges()
-
-        graphNodes.forEach((x) => {
-            if (x.store.data[type]) {
-                if (!removedNodes.value[type]) removedNodes.value[type] = []
-
-                const edges = graphEdges
-                    .filter((y) => y.id.includes(x.id))
-                    .map((z) => z.id)
-
-                const { data } = x.store
-
-                removedNode.value = {
-                    data,
-                    edges,
-                }
-
-                removedNodes.value[type].push(removedNode.value)
-
-                const cell = graph.value.getCellById(x.id)
-                cell.remove()
-            }
-        })
-
-        return {
-            removedNode,
-        }
     }
 
     const createPortData = (item) => {
@@ -360,27 +314,14 @@ export default function useGraph() {
         return { portData }
     }
 
-    const createCustomPortData = (nodeId, text) => {
-        const portData = {
-            id: `${nodeId}-ctaPort`,
-            group: 'columnList',
-            attrs: {
-                portNameLabel: {
-                    text,
-                    x: '1.3em',
-                    fill: '#5277d7',
-                    fontSize: 18,
-                },
-            },
-        }
-        return { portData }
-    }
-
     const createEdgeData = (relation, data = {}, styles: EdgeStyle = {}) => {
         const isDup = data?.isDup
         const isCyclicEdge = data?.isCyclicEdge
 
-        const stroke = styles?.stroke
+        const stroke = relation.id.includes('vpNode')
+            ? '#ffffff00'
+            : styles?.stroke
+
         const edgeData = {
             isDup,
             zIndex: 0,
@@ -451,6 +392,7 @@ export default function useGraph() {
                     attrs: {
                         label: {
                             text:
+                                // eslint-disable-next-line no-nested-ternary
                                 relation?.type === 'related'
                                     ? 'related'
                                     : isDup
@@ -468,7 +410,7 @@ export default function useGraph() {
         }
     }
 
-    const addEdge = (graph, relation, styles: EdgeStyle = {}) => {
+    const addEdge = (relation, styles: EdgeStyle = {}) => {
         const graphEdges = graph.value.getEdges()
         const edge = graphEdges.find((x) => x.id === relation.id)
         if (edge) return edge
@@ -479,37 +421,11 @@ export default function useGraph() {
         return createdEdge
     }
 
-    const removeEdge = (graph, type) => {
-        const graphEdges = graph.value.getEdges()
-
-        graphEdges.forEach((x) => {
-            if (x.store.data?.[type] || x.store.data?.data?.[type]) {
-                const cell = graph.value.getCellById(x.id)
-                cell.remove()
-            }
-        })
-    }
-
-    const toggleNodesEdges = (graph, visible) => {
-        const graphEdges = graph.value.getEdges()
-        // graph.value.freeze('toggleNodesEdges')
-        graphEdges.forEach((x) => {
-            const cell = graph.value.getCellById(x.id)
-            cell.attr('line/stroke', visible ? '#aaaaaa' : '#dce0e5')
-            cell.toBack()
-        })
-        // graph.value.unfreeze('toggleNodesEdges')
-    }
-
     return {
         createNodeData,
         addNode,
-        removeNode,
         createPortData,
-        createCustomPortData,
         createEdgeData,
         addEdge,
-        removeEdge,
-        toggleNodesEdges,
     }
 }

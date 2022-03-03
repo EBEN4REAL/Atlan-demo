@@ -120,6 +120,17 @@
                 }
             })
 
+            watch(modelValue, () => {
+                const found = list.value.findIndex(
+                    (ls) => ls?.metadata?.name === modelValue.value
+                )
+
+                if (found === -1) {
+                    quickChange()
+                    selectedValue.value = modelValue.value
+                }
+            })
+
             const {
                 creationTimestamp,
                 isCronRun,
@@ -153,6 +164,7 @@
                 startedAt,
                 shortName,
                 creatorUsername,
+                quickChange,
             }
         },
     })

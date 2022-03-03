@@ -9,7 +9,7 @@
     />
     <div v-if="isEdit" class="flex flex-col w-2/3">
         <div class="flex flex-col px-3 py-2 border rounded gap-y-2">
-            <div class="flex flex-col" v-if="selectedConnection?.guid">
+            <div v-if="selectedConnection?.guid" class="flex flex-col flex-1">
                 <div class="flex items-center justify-between">
                     <div class="flex flex-col">
                         <div class="flex items-center font-semibold">
@@ -19,11 +19,10 @@
                                     class="w-auto h-4 mr-1"
                                 />
 
-                                <span class="ml-1 capitalize">{{
-                                    connector
-                                }}</span>
+                                <span class="ml-1 capitalize"
+                                    >{{ connector }} Connection</span
+                                >
                             </div>
-                            Connection
                         </div>
                         <div class="text-gray-500">
                             last updated
@@ -134,6 +133,10 @@
                     </div>
                 </div>
             </div>
+            <template v-else-if="isLoading">
+                <AtlanLoader class="self-center h-10" />
+                <span class="self-center">Loading Connection Details</span>
+            </template>
             <div
                 v-else
                 class="flex flex-col items-center justify-center p-6 py-4 text-xl text-center"
@@ -190,36 +193,26 @@
         defineComponent,
         toRefs,
         computed,
-        reactive,
         watch,
         defineAsyncComponent,
         ref,
         inject,
-        provide,
-        onMounted,
-        onBeforeMount,
     } from 'vue'
-    import { useVModels } from '@vueuse/core'
-    import { useTestCredential } from '~/composables/credential/useTestCredential'
-    import { useConfigMapList } from '~/composables/package/useConfigMapList'
-    import ErrorView from '@common/error/index.vue'
+    import bodybuilder from 'bodybuilder'
+
     import { useConnectionStore } from '~/store/connection'
-
-    import { shortUUID } from '~/utils/helper/generator'
     import useIndexSearch from '~/composables/discovery/useIndexSearch'
-
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
 
     // import DynamicForm from '@/common/dynamicForm2/index.vue'
 
     export default defineComponent({
-        name: 'CredentialInput',
+        name: 'ConnectionInput',
         components: {
             FormItem: defineAsyncComponent(() =>
                 import('@/common/dynamicForm2/formItem.vue')
             ),
-            ErrorView,
             AssetDrawer,
         },
         props: {
@@ -252,10 +245,6 @@
             const { name, createdBy, createdAt } = useAssetInfo()
             const { getImage, getList, setList } = useConnectionStore()
 
-            const testMessage = ref('')
-            const testIcon = ref('')
-            const testClass = ref('')
-
             const isDrawerVisible = ref(false)
 
             const connector = computed(
@@ -279,102 +268,75 @@
                     ]
             )
 
-            const selectedConnection = ref(
-                (() => {
-                    if (formState[property.value.id]) {
-                        try {
-                            const temp = JSON.parse(
-                                formState[property.value.id]
-                            )
-                            const found = getList.find(
-                                (i) =>
-                                    i.attributes.qualifiedName ===
-                                    temp?.attributes?.qualifiedName
-                            )
-                            return found
-                        } catch (e) {
-                            return {}
-                        }
+            const connectionQFName = computed(() => {
+                if (formState[property.value.id]) {
+                    try {
+                        const conn = JSON.parse(formState[property.value.id])
+                        return conn?.attributes?.qualifiedName || ''
+                    } catch (e) {
+                        return ''
                     }
-                    return {}
-                })()
-            )
-
-            const { data, approximateCount, aggregationMap, getMap } =
-                useIndexSearch({
-                    attributes: [
-                        'name',
-                        'description',
-                        '__guid',
-                        '__createdBy',
-                        'ownerUsers',
-                        'ownerGroups',
-                        'adminUsers',
-                        'adminGroups',
-                        'allowQuery',
-                        'allowPreview',
-                    ],
-                    dsl: {
-                        from: 0,
-                        size: 10,
-                        aggs: {
-                            group_by_connection: {
-                                terms: {
-                                    field: 'connectionQualifiedName',
-                                    size: 100,
-                                },
-                            },
-                        },
-                        query: {
-                            bool: {
-                                filter: {
-                                    bool: {
-                                        must: [
-                                            {
-                                                term: {
-                                                    connectorName:
-                                                        connector.value,
-                                                },
-                                            },
-                                            {
-                                                term: {
-                                                    __state: 'ACTIVE',
-                                                },
-                                            },
-                                        ],
-                                    },
-                                },
-                            },
-                        },
-
-                        post_filter: {
-                            bool: {
-                                filter: {
-                                    bool: {
-                                        must: [
-                                            {
-                                                term: {
-                                                    '__typeName.keyword':
-                                                        'Connection',
-                                                },
-                                            },
-                                        ],
-                                    },
-                                },
-                            },
-                        },
-                    },
-                })
-
-            const list = ref([])
-
-            watch(data, () => {
-                if (data.value.entities) {
-                    list.value = data.value.entities
                 }
+                return ''
             })
 
+            const {
+                data,
+                approximateCount,
+                aggregationMap,
+                getMap,
+                isLoading,
+            } = useIndexSearch({
+                attributes: [
+                    'name',
+                    'description',
+                    '__guid',
+                    '__createdBy',
+                    '__modifiedBy',
+                    '__modificationTimestamp',
+                    'rowLimit',
+                    'credentialStrategy',
+                    'ownerUsers',
+                    'ownerGroups',
+                    'adminUsers',
+                    'adminGroups',
+                    'allowQuery',
+                    'allowQueryPreview',
+                    'certificateStatus',
+                    'certificateUpdatedAt',
+                    'certificateUpdatedBy',
+                ],
+                dsl: bodybuilder()
+                    .aggregation(
+                        'terms',
+                        'connectionQualifiedName',
+                        'group_by_connection',
+                        { size: 100 }
+                    )
+                    .filter('term', 'connectorName', connector.value)
+                    // TODO: Need to remove this to show existing connections
+                    .filter('term', 'qualifiedName', connectionQFName.value)
+                    .filter('term', '__state', 'ACTIVE')
+                    .size(10)
+                    .rawOption(
+                        'post_filter',
+                        bodybuilder()
+                            .filter('term', '__typeName.keyword', 'Connection')
+                            .build().query
+                    )
+                    .build(),
+            })
+
+            const list = computed(() => data.value?.entities || [])
+
             const seconds = Math.round(new Date().getTime() / 1000)
+
+            const selectedConnection = ref({})
+
+            watch(list, () => {
+                if (list.value.length)
+                    selectedConnection.value = list.value?.[0]
+            })
 
             const {
                 title,
@@ -601,13 +563,12 @@
                 getMap,
                 selectedConnection,
                 handleDrawerUpdate,
-                isEdit,
                 isDrawerVisible,
                 getImage,
                 modifiedAt,
                 modifiedBy,
                 getList,
-
+                isLoading,
                 title,
                 connectionRowLimit,
                 allowQuery,

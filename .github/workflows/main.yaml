@@ -2,9 +2,8 @@ name: Atlan Product Workflow
 on:
   push:
     branches:
-      - beta
       - main
-      - staging
+
 jobs:
   #steps:
   deploy:
@@ -50,26 +49,28 @@ jobs:
 
       - name: Check out branch
         uses: actions/checkout@v2
-      #   with:
-      #     ref: ${{ github.ref }}
+        with:
+          token: ${{ secrets.my_pat }}
+          fetch-depth: 0
 
-      # - name: "cat package.json"
-      #   run: cat ./package.json
+      - name: "cat package.json"
+        run: cat ./package.json
 
-      # - name: "Setup Node.js"
-      #   uses: "actions/setup-node@v1"
-      #   with:
-      #     node-version: 12
+      - name: "Setup Node.js"
+        uses: "actions/setup-node@v1"
+        with:
+          node-version: 12
 
-      # - name: "Automated Version Bump"
-      #   uses: "phips28/gh-action-bump-version@master"
-      #   with:
-      #     tag-prefix: ""
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.my_pat }}
-
-      # - name: "cat package.json"
-      #   run: cat ./package.json
+      - name: "Automated Version Bump"
+        uses: "phips28/gh-action-bump-version@master"
+        env:
+          GITHUB_USER: atlan-ci
+          GITHUB_EMAIL: it@atlan.com
+          GITHUB_TOKEN: ${{ secrets.my_pat }}
+          GITHUB_ACTOR: atlan-ci
+        with:
+          tag-prefix: ""
+          skip-tag: "true"
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v2.0.1

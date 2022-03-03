@@ -49,6 +49,7 @@
             </a-popover>
             <slot name="tabSelector" />
         </div>
+        <slot name="categoryFilterRight" />
     </div>
 </template>
 

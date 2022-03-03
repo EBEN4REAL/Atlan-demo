@@ -5,6 +5,7 @@ export const integrations = {
         id: 'slack',
         description: "Share asset profile, terms, queries with your team 🚀",
         channel_description: "Users will able to share assets, terms and queries only to these channels",
+        workflow_description: "Users will able to see all Workflows related alerts in this channel",
     },
     jira: {
         component: 'Jira',
@@ -12,7 +13,6 @@ export const integrations = {
         id: 'jira',
         description: "Create and Link jira issues to assets and easily access them from asset profile ",
         project_description: "Select default project for linking new issues to Atlan assets",
-
     }
 }
 

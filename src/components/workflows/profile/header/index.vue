@@ -173,7 +173,12 @@
     import useWorkflowSubmit from '~/composables/package/useWorkflowSubmit'
     import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
     import { Modal, message } from 'ant-design-vue'
-    import { promiseTimeout, useTimeout, useTimeoutFn } from '@vueuse/core'
+    import {
+        promiseTimeout,
+        useTimeout,
+        useTimeoutFn,
+        watchOnce,
+    } from '@vueuse/core'
 
     import Schedule from '@/common/input/schedule.vue'
     import useWorkflowUpdate from '~/composables/package/useWorkflowUpdate'
@@ -260,16 +265,12 @@
                             key: messageKey.value,
                         })
 
-                        watch(data, () => {
-                            const {} = useTimeoutFn(() => {
-                                /* ... */
-                                emit('newrun', name(data.value))
-                                message.success({
-                                    content: 'Run started',
-                                    key: messageKey.value,
-                                    duration: 10,
-                                })
-                            }, 2000)
+                        watchOnce(data, () => {
+                            emit('newrun', name(data.value))
+                            message.success({
+                                content: 'Run started',
+                                key: messageKey.value,
+                            })
                         })
                     },
                     // eslint-disable-next-line @typescript-eslint/no-empty-function

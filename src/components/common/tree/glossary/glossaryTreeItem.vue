@@ -5,7 +5,7 @@
     >
         <div
             v-if="item?.typeName === 'cta'"
-            class="flex items-center"
+            class="flex items-center flex-wrap"
             :class="!hasCreateAccess ? '' : 'space-y-0'"
         >
             <span v-if="!checkable" class="pr-1"> Add a </span>
@@ -52,7 +52,7 @@
                                 icon="Category"
                                 class="m-0 mr-1 align-text-bottom"
                             />
-                            <p class="p-0 m-0">+ Category</p>
+                            <p class="p-0 m-0"> Category</p>
                         </div>
                     </div>
                 </template>
@@ -124,6 +124,8 @@
                     v-if="!isEditMode"
                     :tooltip-text="entityTitle"
                     :classes="'w-full '"
+                    placement="topRight"
+                    :mouseLeaveDelay="0"
                 />
             </div>
 
@@ -211,7 +213,7 @@
                 default: false,
             },
         },
-        emits: ['addSelectedKey'],
+        emits: ['addSelectedKey','changeEditMode'],
         setup(props, { emit }) {
             // data
             const { item } = toRefs(props)
@@ -278,7 +280,6 @@
                 }
             }
             const ctaToProfile = () => {
-                console.log(item.value)
                 if (item.value.categoryGuid)
                     router.push(`/glossary/${item.value.categoryGuid}`)
                 else router.push(`/glossary/${item.value.glossaryGuid}`)
@@ -304,8 +305,11 @@
             }
             const handleNameUpdate = (val) => {
                 entityTitle.value = val
-                console.log(val)
             }
+            watch(isEditMode,()=>{
+                console.log(isEditMode.value,"drag change");
+                emit('changeEditMode',isEditMode.value)
+            })
             return {
                 getEntityStatusIcon,
                 certificateStatus,

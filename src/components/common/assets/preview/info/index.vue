@@ -9,8 +9,9 @@
                     :image="tab.image"
                     :emoji="tab.emoji"
                     height="h-4"
+                    class="mb-0.5"
                 />
-                <span class="font-semibold text-gray-500 ml-1">Overview</span>
+                <span class="ml-1 font-semibold text-gray-500">Overview</span>
             </span>
             <span
                 v-if="isLoading || isLoadingClassification"
@@ -34,7 +35,8 @@
                 v-if="
                     isGTC(selectedAsset) ||
                     selectedAsset.typeName === 'Connection' ||
-                    selectedAsset.typeName === 'Process'
+                    selectedAsset.typeName === 'Process' ||
+                    selectedAsset.typeName === 'Query'
                 "
                 class="flex flex-col"
             >
@@ -124,13 +126,17 @@
                         rowCount(selectedAsset, true)
                     "
                     class="flex flex-col text-sm"
-                    :class="isProfile ? '' : 'cursor-pointer'"
+                    :class="
+                        isProfile || connectorName(selectedAsset) === 'glue'
+                            ? ''
+                            : 'cursor-pointer'
+                    "
                     @click="showSampleDataModal"
                 >
                     <span class="mb-1 text-sm text-gray-500">Rows</span>
                     <span
                         :class="
-                            isProfile
+                            isProfile || connectorName(selectedAsset) === 'glue'
                                 ? 'text-gray-700'
                                 : 'text-primary font-semibold'
                         "
@@ -174,40 +180,18 @@
                                 :is="dataTypeCategoryImage(selectedAsset)"
                                 class="h-4 mr-0.5 mb-0.5"
                             />
-                            <span class="text-sm uppercase">{{
+                            <span class="mr-1 text-sm uppercase">{{
                                 dataType(selectedAsset)
                             }}</span>
                         </div>
 
-                        <div
-                            v-if="
-                                isPrimary(selectedAsset) ||
-                                isDist(selectedAsset) ||
-                                isPartition(selectedAsset)
-                            "
-                            class="flex"
-                        >
-                            <AtlanIcon
-                                icon="PrimaryKey"
-                                class="mb-0.5 text-yellow-500"
-                            ></AtlanIcon>
-
-                            <span
-                                v-if="isPrimary(selectedAsset)"
-                                class="ml-1 text-sm text-gray-700"
-                                >Primary Key</span
-                            >
-                            <span
-                                v-if="isDist(selectedAsset)"
-                                class="ml-1 text-sm text-gray-700"
-                                >Dist Key</span
-                            >
-                            <span
-                                v-if="isPartition(selectedAsset)"
-                                class="ml-1 text-sm text-gray-700"
-                                >Partition Key</span
-                            >
-                        </div>
+                        <ColumnKeys
+                            :is-primary="isPrimary(selectedAsset)"
+                            :is-foreign="isForeign(selectedAsset)"
+                            :is-partition="isPartition(selectedAsset)"
+                            :is-sort="isSort(selectedAsset)"
+                            :is-indexed="isIndexed(selectedAsset)"
+                        />
                     </div>
                 </div>
                 <div v-if="tableName(selectedAsset)">
@@ -231,8 +215,17 @@
                         ></a-tooltip>
                     </div>
                     <div class="text-sm text-gray-700 break-all">
-                        <AtlanIcon icon="TableGray" class="w-auto h-4 mb-0.5" />
-                        {{ tableName(selectedAsset) }}
+                        <AtlanIcon
+                            icon="TableGray"
+                            class="w-auto h-4 mb-0.5 mr-1"
+                        />
+                        <router-link
+                            class="cursor-pointer text-primary hover:underline"
+                            :to="`/assets/${selectedAsset?.attributes?.table?.guid}`"
+                            target="_blank"
+                        >
+                            {{ tableName(selectedAsset) }}</router-link
+                        >
                     </div>
                 </div>
                 <div v-if="viewName(selectedAsset)">
@@ -256,9 +249,13 @@
                     <div class="text-sm text-gray-700">
                         <AtlanIcon
                             icon="ViewGray"
-                            class="w-auto h-4 mb-0.5 break-all"
+                            class="w-auto h-4 mb-0.5 break-all mr-1"
                         />
-                        {{ viewName(selectedAsset) }}
+                        <router-link
+                            :to="`/assets/${selectedAsset?.attributes?.view?.guid}`"
+                            target="_blank"
+                            >{{ viewName(selectedAsset) }}</router-link
+                        >
                     </div>
                 </div>
             </div>
@@ -561,12 +558,12 @@
                                 ? 'disabledButton'
                                 : ''
                         "
-                        @click="handleCollectionClick"
                         :disabled="
                             !collectionData?.hasCollectionReadPermission &&
                             !collectionData?.hasCollectionWritePermission &&
                             !collectionData?.isCollectionCreatedByCurrentUser
                         "
+                        @click="handleCollectionClick"
                     >
                         <div class="flex items-center">
                             <!-- <AtlanIcon
@@ -591,12 +588,12 @@
                             </span>
                         </div>
                         <AtlanIcon
-                            icon="Lock"
                             v-if="
                                 !collectionData?.hasCollectionReadPermission &&
                                 !collectionData?.hasCollectionWritePermission &&
                                 !collectionData?.isCollectionCreatedByCurrentUser
                             "
+                            icon="Lock"
                         />
                         <AtlanIcon v-else icon="External" />
                     </a-button>
@@ -618,28 +615,6 @@
                     {{ attributes(selectedAsset)?.parent?.attributes?.name }}
                 </div>
             </div>
-
-            <!-- <div
-            v-if="
-                selectedAsset?.guid &&
-                selectedAsset?.typeName === 'Query' &&
-                attributes(selectedAsset)?.parent?.typeName === 'Folder'
-            "
-            class="flex flex-col gap-y-4"
-        >
-            <div class="flex flex-col px-5 text-sm">
-                <div class="mb-1 text-sm text-gray-500">Collection</div>
-                <div class="text-sm text-gray-700">
-                    {{ selectedAsset?.collectionName }}
-                </div>
-            </div>
-            <div class="flex flex-col px-5 text-sm">
-                <div class="mb-1 text-sm text-gray-500">Folder</div>
-                <div class="text-sm text-gray-700">
-                    {{ attributes(selectedAsset)?.parent?.attributes?.name }}
-                </div>
-            </div>
-        </div> -->
 
             <div class="flex flex-col">
                 <div
@@ -685,7 +660,11 @@
             </div>
 
             <div
-                v-if="selectedAsset.guid && selectedAsset.typeName === 'Query'"
+                v-if="
+                    selectedAsset.guid &&
+                    selectedAsset.typeName === 'Query' &&
+                    readPermission
+                "
             >
                 <SavedQuery :selected-asset="selectedAsset" class="mx-4" />
             </div>
@@ -707,16 +686,16 @@
                     class="px-5"
                     :selected-asset="selectedAsset"
                     :edit-permission="editPermission"
-                    :showShortcut="true"
+                    :show-shortcut="true"
                     @change="handleOwnersChange"
                 />
             </div>
 
             <div
-                class="flex flex-col"
                 v-if="
                     selectedAsset.guid && selectedAsset.typeName == 'Connection'
                 "
+                class="flex flex-col"
             >
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
@@ -739,7 +718,6 @@
                         'AtlasGlossary',
                         'AtlasGlossaryCategory',
                         'Connection',
-                        'Query',
                     ].includes(selectedAsset.typeName)
                 "
                 class="flex flex-col"
@@ -758,7 +736,7 @@
                             'ENTITY_ADD_CLASSIFICATION'
                         )
                     "
-                    :allowDelete="
+                    :allow-delete="
                         selectedAssetUpdatePermission(
                             selectedAsset,
                             isDrawer,
@@ -766,7 +744,7 @@
                         )
                     "
                     class="px-5"
-                    :showShortcut="true"
+                    :show-shortcut="true"
                     @change="handleClassificationChange"
                 >
                 </Classification>
@@ -796,7 +774,7 @@
                             'AtlasGlossaryTerm'
                         ) && editPermission
                     "
-                    :allowDelete="
+                    :allow-delete="
                         selectedAssetUpdatePermission(
                             selectedAsset,
                             isDrawer,
@@ -830,14 +808,22 @@
                 >
                     Categories
                 </p>
-                <Categories
+                <!-- <Categories -->
+                <!--     v-model="localCategories" -->
+                <!--     :selected-asset="selectedAsset" -->
+                <!--     class="px-5" -->
+                <!--     :edit-permission="editPermission" -->
+                <!--     @change="handleCategoriesUpdate" -->
+                <!-- > -->
+                <!-- </Categories> -->
+                <Categories2
                     v-model="localCategories"
                     :selected-asset="selectedAsset"
                     class="px-5"
                     :edit-permission="editPermission"
                     @change="handleCategoriesUpdate"
                 >
-                </Categories>
+                </Categories2>
             </div>
 
             <div
@@ -889,6 +875,8 @@
         toRefs,
     } from 'vue'
     import SavedQuery from '@common/hovercards/savedQuery.vue'
+    import DetailsContainer from '@common/assets/misc/detailsOverflowContainer.vue'
+    import { message } from 'ant-design-vue'
     import AnnouncementWidget from '@/common/widgets/announcement/index.vue'
     import SQL from '@/common/popover/sql.vue'
     import SQLSnippet from '@/common/sql/snippet.vue'
@@ -902,6 +890,7 @@
     import Classification from '@/common/input/classification/index.vue'
     import TermsWidget from '@/common/input/terms/index.vue'
     import Categories from '@/common/input/categories/categories.vue'
+    import Categories2 from '@/common/input/categories/categories2.vue'
     import RelatedTerms from '@/common/input/relatedTerms/relatedTerms.vue'
     import Connection from './connection.vue'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
@@ -912,11 +901,10 @@
     import SubFolderCount from '@/common/widgets/summary/types/subFolderCount.vue'
     import ParentContext from '@/common/widgets/summary/types/parentContext.vue'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
-    import DetailsContainer from '@common/assets/misc/detailsOverflowContainer.vue'
     import { copyToClipboard } from '~/utils/clipboard'
-    import { message } from 'ant-design-vue'
-
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
+    import ColumnKeys from '~/components/common/column/columnKeys.vue'
+
     export default defineComponent({
         name: 'AssetDetails',
         components: {
@@ -931,8 +919,10 @@
             RowInfoHoverCard,
             SQL,
             SQLSnippet,
+            ColumnKeys,
             TermsWidget,
             Categories,
+            Categories2,
             RelatedTerms,
             SourceCreated,
             SourceUpdated,
@@ -987,12 +977,6 @@
 
             const sampleDataVisible = ref<boolean>(false)
 
-            const showSampleDataModal = () => {
-                if (!isProfile.value) {
-                    sampleDataVisible.value = true
-                }
-            }
-
             const {
                 getConnectorImage,
                 rowCount,
@@ -1003,6 +987,9 @@
                 isDist,
                 isPartition,
                 isPrimary,
+                isForeign,
+                isSort,
+                isIndexed,
                 sourceUpdatedAt,
                 sourceCreatedAt,
                 definition,
@@ -1022,6 +1009,7 @@
                 isBiAsset,
                 isSaasAsset,
                 getConnectorLabel,
+                connectorName,
                 fieldsLookerQuery,
                 sourceOwners,
                 apiName,
@@ -1073,6 +1061,12 @@
                 return false
             }
 
+            const showSampleDataModal = () => {
+                if (!isProfile.value) {
+                    sampleDataVisible.value = true
+                }
+            }
+
             const handlePreviewClick = () => {
                 if (webURL(selectedAsset.value)) {
                     window.open(webURL(selectedAsset.value), '_blank').focus()
@@ -1085,11 +1079,7 @@
 
             // route to go to insights and select the collection
             const handleCollectionClick = () => {
-                const URL =
-                    `http://` +
-                    window.location.host +
-                    `/insights?col_id=` +
-                    collectionData?.value?.collectionInfo?.guid
+                const URL = `http://${window.location.host}/insights?col_id=${collectionData?.value?.collectionInfo?.guid}`
 
                 window.open(URL, '_blank')?.focus()
             }
@@ -1117,6 +1107,9 @@
                 isDist,
                 isPartition,
                 isPrimary,
+                isForeign,
+                isSort,
+                isIndexed,
                 definition,
                 sourceUpdatedAt,
                 sourceCreatedAt,
@@ -1164,6 +1157,7 @@
                 isSaasAsset,
                 isProfile,
                 getConnectorLabel,
+                connectorName,
                 fieldsLookerQuery,
                 sourceOwners,
                 apiName,

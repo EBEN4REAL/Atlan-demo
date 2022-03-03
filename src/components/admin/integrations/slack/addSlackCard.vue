@@ -65,7 +65,7 @@
         tenantLevelOauthUrl,
         archiveSlack,
         openSlackOAuth,
-    } from '~/composables/integrations/useSlack'
+    } from '~/composables/integrations/slack/useSlack'
     import { integrations } from '~/constant/integrations/integrations'
     import { Modal } from 'ant-design-vue'
 

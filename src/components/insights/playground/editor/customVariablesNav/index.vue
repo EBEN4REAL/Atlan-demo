@@ -391,6 +391,7 @@
                                                         activeVariable.type ===
                                                         'date'
                                                     "
+                                                    :allowClear="false"
                                                     placeholder="Select Date"
                                                     :value="
                                                         getDaysJsWrappedValue(

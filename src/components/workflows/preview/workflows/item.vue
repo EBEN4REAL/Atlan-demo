@@ -1,10 +1,10 @@
 <template>
-    <div class="p-2 border rounded cursor-pointer">
-        <div
-            class="flex flex-col font-semibold cursor-pointer text-primary"
-            @click="handleClick"
-        >
-            {{ item.metadata.name }}
+    <div class="p-2 border rounded cursor-pointer" @click="handleClick">
+        <div class="flex items-center justify-between">
+            <span class="font-semibold truncate text-primary">{{
+                item.metadata.name
+            }}</span>
+            <Dropdown :options="dropdownOptions" @click.stop />
         </div>
         <!-- {{ runs(item.metadata.name) }} -->
 
@@ -31,19 +31,22 @@
     import { useRouter } from 'vue-router'
     import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
     import LastRun from './lastRun.vue'
+    import Dropdown from '@/UI/dropdown.vue'
 
     export default defineComponent({
-        components: { LastRun },
+        name: 'SidebarItem',
+        components: { LastRun, Dropdown },
         props: {
             item: {
                 type: Object,
-                required: false,
+                required: true,
             },
             packageObject: {
                 type: Object,
-                required: false,
+                required: true,
             },
         },
+        emits: ['archive'],
         setup(props, { emit }) {
             const { item, packageObject } = toRefs(props)
 
@@ -59,15 +62,23 @@
 
             const runs = (workflow) => runMap.value[workflow]
 
+            const dropdownOptions = [
+                {
+                    title: 'Delete',
+                    icon: 'Trash',
+                    class: 'text-red-700',
+                    handleClick: () =>
+                        emit('archive', item.value?.metadata?.name),
+                },
+            ]
             return {
-                item,
                 creationTimestamp,
                 cronString,
                 handleClick,
                 creatorUsername,
-                packageObject,
                 runs,
                 runMap,
+                dropdownOptions,
             }
         },
     })

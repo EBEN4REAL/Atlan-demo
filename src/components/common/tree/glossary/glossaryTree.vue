@@ -6,7 +6,7 @@
         <AtlanLoader class="h-10" />
     </div>
     <div
-        v-else-if="treeData.length === 0 && !isLoading"
+        v-else-if="treeData.length === 0 && !isLoading && !checkable"
         class="flex items-center justify-center h-full"
     >
         <AddGtcModal
@@ -26,11 +26,17 @@
             </template>
         </AddGtcModal>
     </div>
+    <div v-else-if="treeData.length === 0 && !isLoading && checkable">
+        <EmptyView
+            empty-screen="EmptyGlossary"
+            desc="No terms found"
+        ></EmptyView>
+    </div>
     <a-tree
         :key="defaultGlossary"
         class="glossary-tree"
         :tree-data="treeData"
-        :draggable="true"
+        :draggable="isDraggable"
         :block-node="true"
         :load-data="onLoadData"
         :treeDataSimpleMode="true"
@@ -59,6 +65,7 @@
                 :class="treeItemClass"
                 :is-animating="isTreeNodeAnimating"
                 @addSelectedKey="handleAddSelectedKey"
+                @changeEditMode="handleChangeEditMode"
             />
         </template>
     </a-tree>
@@ -141,6 +148,7 @@
             const { selectedGlossary } = useAssetInfo()
             const isTreeNodeAnimating = ref(false)
             const glossaryStore = useGlossaryStore()
+            const isDraggable = ref(true)
             const parentGlossary = computed(() =>
                 glossaryStore.getGlossaryByQualifiedName(defaultGlossary.value)
             )
@@ -199,6 +207,13 @@
             // }
 
             const addGTCNode = (asset, entity = {}) => {
+                console.log(asset?.typeName, asset?.attributes?.anchor?.guid, 'add')
+                glossaryStore.updateAssetCount(
+                    asset?.typeName,
+                    asset?.attributes?.anchor?.guid,
+                    'add'
+                )
+
                 console.log(asset, entity)
                 if (entity !== {}) {
                     console.log('add')
@@ -285,6 +300,10 @@
                     (localNode: any) => localNode.key
                 )
             })
+
+            const handleChangeEditMode = (val) => {
+                isDraggable.value = !val
+            }
             provide('addGTCNode', addGTCNode)
             provide('deleteGTCNode', deleteGTCNode)
             provide('treeData', treeData)
@@ -321,6 +340,8 @@
                 isTreeNodeAnimating,
                 checkDuplicateCategoryNames,
                 parentGlossary,
+                isDraggable,
+                handleChangeEditMode,
             }
         },
     })

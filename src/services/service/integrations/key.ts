@@ -14,6 +14,7 @@ export const SHARE_SLACK = 'SHARE_SLACK'
 export const UPDATE_SLACK_CONFIG = 'UPDATE_SLACK_CONFIG'
 export const UNFURL_SLACK_MESSAGE = 'UNFURL_SLACK_MESSAGE'
 export const CREATE_SLACK_APP = 'CREATE_SLACK_APP'
+export const ASK_QUESTION_SLACK = 'ASK_QUESTION_SLACK'
 
 // Jira
 export const JIRA_LIST_PROJECTS = 'JIRA_LIST_PROJECTS'
@@ -31,6 +32,7 @@ export const map = {
     [LIST_INTEGRATIONS]: () => getAPIPath('/service', '/integrations'),
     [LIST_INTEGRATIONS_CONFIG]: () => getAPIPath('/service', '/integrationtypes/configs'),
     [SHARE_SLACK]: () => getAPIPath('/service', `/slack/share`),
+    [ASK_QUESTION_SLACK]: () => getAPIPath('/service', `/slack/question`),
     [GET_INTEGRATION]: ({ id }: PathParams) =>
         getAPIPath('/service', `/integrations/${id}`),
     [ARCHIVE_INTEGRATION]: ({ id }: PathParams) =>

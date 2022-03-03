@@ -1,18 +1,26 @@
 <template>
-    <div class="relative add-policy-container">
+    <div v-if="showDrawer" class="close-btn-sidebar" @click="handleClose">
+        <AtlanIcon icon="Add" class="text-gray-700" />
+    </div>
+    <div class="bg-gray-100 add-policy-container">
         <div>
-            <div class="relative px-4 pt-5 pb-5">
-                <div
-                    v-if="showDrawer"
-                    class="close-btn-sidebar"
-                    @click="handleClose"
-                >
-                    <AtlanIcon icon="Add" class="text-white" />
-                </div>
+            <div
+                class="fixed top-0 z-10 w-full p-4 -mt-0.5 bg-white border-b border-gray-300"
+            >
                 <div class="flex items-center">
-                    <AtlanIcon v-if="type === 'meta'" icon="Policies" />
-                    <AtlanIcon v-if="type === 'data'" icon="QueryGrey" />
-                    <span class="ml-1 font-semibold"
+                    <div
+                        v-if="type === 'meta'"
+                        class="flex items-center justify-center w-8 h-8 mr-2 rounded-full bg-primary-light"
+                    >
+                        <AtlanIcon icon="Policies" class="icon-blue" />
+                    </div>
+                    <div
+                        v-if="type === 'data'"
+                        class="flex items-center justify-center w-8 h-8 mr-2 rounded-full bg-primary-light"
+                    >
+                        <AtlanIcon icon="QueryGrey" class="icon-blue-stroke" />
+                    </div>
+                    <span class="ml-1 text-base font-bold"
                         >{{
                             policyType === 'meta'
                                 ? 'Metadata Policy'
@@ -21,6 +29,26 @@
                     </span>
                     <!-- <div class="ml-1 font-semibold">
                         {{ isEdit ? selectedPolicy.name : 'New policy' }}
+                    </div> -->
+                    <!-- <div v-if="isEdit ? canEdit : true" class="flex ml-auto">
+                        <AtlanBtn
+                            size="md"
+                            padding="compact"
+                            class="px-6 py-0.5"
+                            :disabled="
+                                isLoading ||
+                                !connectorData.attributeValue ||
+                                !policy.name ||
+                                !policy?.assets?.length ||
+                                (policyType === 'meta' &&
+                                    !selectedPermission.length)
+                            "
+                            @click="handleSave"
+                        >
+                            {{
+                                isLoading ? 'Saving' : isEdit ? 'Update' : 'Add'
+                            }}
+                        </AtlanBtn>
                     </div> -->
                 </div>
                 <!-- <div class="flex items-center">
@@ -37,81 +65,98 @@
                     </span>
                 </div> -->
             </div>
-            <div class="px-4">
-                <div class="relative">
-                    <div class="relative mb-2 text-sm text-gray-500 required">
-                        Name<span class="text-red-500">*</span>
+            <div class="px-4 my-20 bg-gray-100">
+                <div class="relative mt-2 bg-white shadow-section">
+                    <div class="p-3 text-sm font-bold text-gray-700 border-b">
+                        Overview
                     </div>
-                    <div v-if="isEdit ? canEdit : true">
-                        <a-input
-                            :ref="
-                                (el) => {
-                                    policyNameRef = el
-                                }
-                            "
-                            v-model:value="policy.name"
-                            data-test-id="policy-edit-name"
-                            placeholder="Policy Name"
-                            @change="() => (rules.policyName.show = false)"
-                            @blur="
-                                () => {
-                                    if (!policy.name)
-                                        rules.policyName.show = true
-                                    else rules.policyName.show = false
-                                }
-                            "
-                        />
-                    </div>
-                    <div v-else>{{ policy.name }}</div>
-                    <div
-                        v-if="rules.policyName.show"
-                        class="absolute text-xs text-red-500 -bottom-5"
-                        data-test-id="policy-validation-name"
-                    >
-                        {{ rules.policyName.text }}
+                    <div class="p-3">
+                        <div class="relative">
+                            <div
+                                class="relative mb-2 text-sm text-gray-500 required"
+                            >
+                                Name<span class="text-red-500">*</span>
+                            </div>
+                            <div v-if="isEdit ? canEdit : true">
+                                <a-input
+                                    :ref="
+                                        (el) => {
+                                            policyNameRef = el
+                                        }
+                                    "
+                                    v-model:value="policy.name"
+                                    data-test-id="policy-edit-name"
+                                    placeholder="Policy Name"
+                                    @change="
+                                        () => (rules.policyName.show = false)
+                                    "
+                                    @blur="
+                                        () => {
+                                            if (!policy.name)
+                                                rules.policyName.show = true
+                                            else rules.policyName.show = false
+                                        }
+                                    "
+                                />
+                            </div>
+                            <div v-else>{{ policy.name }}</div>
+                            <div
+                                v-if="rules.policyName.show"
+                                class="absolute text-xs text-red-500 -bottom-5"
+                                data-test-id="policy-validation-name"
+                            >
+                                {{ rules.policyName.text }}
+                            </div>
+                        </div>
+                        <div class="relative mt-4">
+                            <div class="mb-2 text-sm text-gray-500 required">
+                                Select a connection
+                                <span class="text-red-500">*</span>
+                            </div>
+                            <Connector
+                                :ref="
+                                    (el) => {
+                                        connectorComponentRef = el
+                                    }
+                                "
+                                v-model:data="connectorData"
+                                :footer-node-content="'You can only view the connections in which you’re added as an admin.'"
+                                :whitelisted-connections="
+                                    isEdit ? null : whitelistedConnectionIds
+                                "
+                                :filter-source-ids="
+                                    policyType !== 'meta' ? BItypes : []
+                                "
+                                :show-empty-parents="isEdit ? true : false"
+                                class="mb-2"
+                                :class="isEdit ? 'edit-connector' : ''"
+                                :disabled="isEdit"
+                                @changeConnector="handleConnectorChange"
+                                @blur="
+                                    () => {
+                                        if (!connectorData.attributeValue)
+                                            rules.connection.show = true
+                                        else rules.connection.show = false
+                                    }
+                                "
+                            />
+                            <div
+                                v-if="rules.connection.show"
+                                class="absolute text-xs text-red-500 -bottom-5"
+                                data-test-id="policy-validation-connector"
+                            >
+                                {{ rules.connection.text }}
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="relative mt-5">
-                    <div class="mb-2 text-sm text-gray-500 required">
-                        Select a connection <span class="text-red-500">*</span>
-                    </div>
-                    <Connector
-                        :ref="
-                            (el) => {
-                                connectorComponentRef = el
-                            }
-                        "
-                        v-model:data="connectorData"
-                        :footer-node-content="'You can only view the connections in which you’re added as an admin.'"
-                        :whitelisted-connections="
-                            isEdit ? null : whitelistedConnectionIds
-                        "
-                        :filterSourceIds="policyType !== 'meta' ? BItypes : []"
-                        :show-empty-parents="isEdit ? true : false"
-                        class="mb-6"
-                        :class="isEdit ? 'edit-connector' : ''"
-                        :disabled="isEdit"
-                        @changeConnector="handleConnectorChange"
-                        @blur="
-                            () => {
-                                if (!connectorData.attributeValue)
-                                    rules.connection.show = true
-                                else rules.connection.show = false
-                            }
-                        "
-                    />
-                    <div
-                        v-if="rules.connection.show"
-                        class="absolute text-xs text-red-500 -bottom-5"
-                        data-test-id="policy-validation-connector"
-                    >
-                        {{ rules.connection.text }}
-                    </div>
-                </div>
-                <div v-if="connectorData.attributeValue" class="mt-5">
-                    <div class="flex items-center justify-between">
-                        <div class="text-gray-500">
-                            Select assets
+                <div
+                    v-if="connectorData.attributeValue"
+                    class="mt-4 bg-white shadow-section"
+                >
+                    <div class="flex items-center justify-between p-3 border-b">
+                        <div class="text-sm font-bold text-gray-700">
+                            Asset selector
 
                             <span v-if="policyType === 'data'" class=""
                                 >to allow <b>Query</b>
@@ -122,122 +167,173 @@
                             v-if="isEdit ? canEdit : true"
                             class="flex gap-x-1"
                         >
-                            <a-button
+                            <div
                                 v-if="!isAddAll"
-                                size="small"
                                 :disabled="!connectorData.attributeValue"
+                                class="cursor-pointer"
                                 @click="addConnectionAsset"
                             >
-                                <span class="text-primary">
-                                    Include all assets</span
-                                >
-                            </a-button>
-                            <a-button
+                                <span class="text-sm text-primary">
+                                    Include all
+                                </span>
+                                <AtlanIcon
+                                    icon="Add"
+                                    class="w-4 h-4 -mt-1 text-primary"
+                                />
+                            </div>
+                            <div
                                 v-if="!isAddAll && policy.assets.length > 0"
-                                size="small"
+                                class="cursor-pointer"
                                 @click="handleAddAsset"
                             >
-                                <span class="text-primary"> Add</span>
+                                <span
+                                    class="h-5 mx-3 border-l border-gray-300 border-1"
+                                />
+                                <span class="text-sm text-primary"> Add</span>
                                 <AtlanIcon
                                     icon="ArrowRight"
                                     class="ml-1 text-primary"
                                 />
-                            </a-button>
+                            </div>
                         </div>
                     </div>
-
-                    <div
-                        class="flex flex-wrap h-auto gap-1 p-2 mt-1 overflow-auto border border-dashed rounded border-bottom border-slate-300 max-h-32"
-                    >
+                    <div class="p-2">
                         <div
-                            v-for="asset in policy.assets"
-                            :key="asset"
-                            class="flex items-center justify-between px-2 py-1 border border-gray-200 rounded wrapper-asset"
-                            :class="
-                                disabledForm
-                                    ? ''
-                                    : 'hover:bg-primary-light cursor-pointer'
-                            "
+                            class="flex flex-wrap h-auto gap-1 p-2 overflow-auto max-h-32"
                         >
-                            <span class="asset-name">
-                                {{ splitName(asset) }}
-                            </span>
-
-                            <!-- <AtlanBtn
-                                v-if="isEdit ? canEdit : true"
-                                class="flex-none btn-delete-asset"
-                                size="sm"
-                                color="minimal"
-                                padding="compact"
-                               
-                            > -->
-                            <AtlanIcon
-                                v-if="!disabledForm"
-                                icon="Cross"
-                                class="h-3 ml-3 text-red-500 rotate-45"
-                                @click="handleDeleteAsset(asset)"
-                            />
-                        </div>
-                        <div
-                            v-if="
-                                isEdit
-                                    ? canEdit
-                                    : true && policy.assets.length === 0
-                            "
-                            class="flex gap-x-1"
-                        >
-                            <a-button
-                                v-if="!isAddAll && policy.assets.length === 0"
-                                size="small"
-                                @click="handleAddAsset"
+                            <!-- <div
+                                v-if="
+                                    isEdit && !isAddAll
+                                        ? canEdit
+                                        : !isAddAll
+                                        ? true
+                                        : false
+                                "
+                                class="flex gap-x-1"
                             >
-                                <span class="text-primary"> Add</span>
+                                <a-button
+                                    v-if="!disabledForm"
+                                    size="small"
+                                    class="w-8 h-8 border border-gray-200 rounded-full"
+                                    @click="handleAddAsset"
+                                >
+                                    <AtlanIcon icon="Add" />
+                                </a-button>
+                            </div> -->
+                            <div
+                                v-for="asset in policy.assets"
+                                :key="asset"
+                                class="flex items-center justify-between px-2 py-1 border border-gray-200 wrapper-asset"
+                                :class="
+                                    disabledForm
+                                        ? ''
+                                        : 'hover:bg-primary-light cursor-pointer'
+                                "
+                            >
+                                <span class="asset-name">
+                                    {{ splitName(asset) }}
+                                </span>
+
+                                <!-- <AtlanBtn
+                                    v-if="isEdit ? canEdit : true"
+                                    class="flex-none btn-delete-asset"
+                                    size="sm"
+                                    color="minimal"
+                                    padding="compact"
+                                
+                                > -->
                                 <AtlanIcon
-                                    icon="ArrowRight"
-                                    class="ml-1 text-primary"
+                                    v-if="!disabledForm"
+                                    icon="Cross"
+                                    class="h-3 ml-3 text-red-500 rotate-45"
+                                    @click="handleDeleteAsset(asset)"
                                 />
-                            </a-button>
+                            </div>
+                            <!-- <div
+                                v-if="
+                                    isEdit && isAddAll
+                                        ? canEdit
+                                        : isAddAll
+                                        ? true
+                                        : false
+                                "
+                                class="flex gap-x-1"
+                            >
+                                <a-button
+                                    v-if="!disabledForm"
+                                    size="small"
+                                    class="w-8 h-8 border border-gray-200 rounded-full"
+                                    @click="handleAddAsset"
+                                >
+                                    <AtlanIcon icon="Pencil" />
+                                </a-button>
+                            </div> -->
+
+                            <div
+                                v-if="
+                                    isEdit
+                                        ? canEdit
+                                        : true && policy.assets.length === 0
+                                "
+                                class="flex gap-x-1"
+                            >
+                                <div
+                                    v-if="
+                                        !isAddAll && policy.assets.length === 0
+                                    "
+                                    size="small"
+                                    class="cursor-pointer"
+                                    @click="handleAddAsset"
+                                >
+                                    <span class="text-primary"> Add</span>
+                                    <AtlanIcon
+                                        icon="ArrowRight"
+                                        class="ml-1 text-primary"
+                                    />
+                                    <!-- <AtlanIcon icon="Add" /> -->
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div
-                        v-if="rules.assets.show"
-                        class="mt-2 text-xs text-red-500"
-                        data-test-id="policy-validation-connector"
-                    >
-                        {{ rules.assets.text }}
+                        <div
+                            v-if="rules.assets.show"
+                            class="mt-2 text-xs text-red-500"
+                            data-test-id="policy-validation-connector"
+                        >
+                            {{ rules.assets.text }}
+                        </div>
                     </div>
                 </div>
                 <div
                     v-if="policyType === 'meta' && connectorData.attributeValue"
-                    class="mt-5"
+                    class="mt-4 bg-white shadow-section"
                 >
-                    <div class="flex justify-between">
-                        <div class="text-gray-500">
-                            Select permissions
-                            <span class="text-red-500">*</span>
+                    <div class="p-3 border-b">
+                        <div class="flex justify-between">
+                            <div class="text-sm font-bold text-gray-700">
+                                Configure permissions
+                                <span class="text-red-500">*</span>
+                            </div>
+                            <a-button
+                                v-if="
+                                    isEdit
+                                        ? canEdit
+                                        : true && selectedPermission.length > 0
+                                "
+                                size="small"
+                                class="border-none text-primary"
+                                :disabled="!connectorData.attributeValue"
+                                @click="handleToggleManage"
+                            >
+                                Edit
+                                <AtlanIcon
+                                    icon="ArrowRight"
+                                    class="ml-1 text-primary"
+                                />
+                            </a-button>
                         </div>
-                        <a-button
-                            v-if="
-                                isEdit
-                                    ? canEdit
-                                    : true && selectedPermission.length > 0
-                            "
-                            size="small"
-                            class="text-primary"
-                            :disabled="!connectorData.attributeValue"
-                            @click="handleToggleManage"
-                        >
-                            Edit
-                            <AtlanIcon
-                                icon="ArrowRight"
-                                class="ml-1 text-primary"
-                            />
-                        </a-button>
                     </div>
 
-                    <div
-                        class="flex items-center p-3 mt-1 border border-gray-200 border-dashed rounded border-bottom"
-                    >
+                    <div class="flex items-center p-3 border-bottom">
                         <span v-if="selectedPermission.length === 0">
                             <a-button
                                 v-if="isEdit ? canEdit : true"
@@ -254,14 +350,30 @@
                         </span>
                         <div v-else>
                             <div
-                                v-for="el in selectedPermission"
+                                v-for="(el, i) in selectedPermission"
                                 :key="el"
                                 class="flex flex-col h-auto mb-3 overflow-auto tag-permission max-h-32"
+                                :class="
+                                    i !== selectedPermission.length - 1 &&
+                                    'mb-6'
+                                "
                             >
-                                <div class="text-gray-500 title-tag">
+                                <div
+                                    class="mb-2 text-sm text-gray-500 title-tag"
+                                >
+                                    <AtlanIcon
+                                        :icon="
+                                            el.title.toLowerCase() === 'assets'
+                                                ? 'AssetsInactiveLight'
+                                                : 'GovernanceCenter'
+                                        "
+                                        class="h-4"
+                                    />
                                     {{ el.title }}
                                 </div>
-                                <div class="font-mono tracking-wide value-tag">
+                                <div
+                                    class="font-mono text-xs tracking-wide value-tag"
+                                >
                                     {{ el.value }}
                                 </div>
                             </div>
@@ -274,10 +386,75 @@
                     >
                         {{ rules.metadata.text }}
                     </div>
+                    <div class="p-3 pt-2 bg-gray-100 rounded-lg rounded-t-none">
+                        <div
+                            v-if="
+                                isEdit
+                                    ? canEdit
+                                    : true && connectorData.attributeValue
+                            "
+                        >
+                            <div class="flex mt-1">
+                                <div>
+                                    <span>Deny</span>
+                                    <a-tooltip placement="top" color="white">
+                                        <AtlanIcon
+                                            icon="Overview"
+                                            class="mx-2"
+                                        />
+                                        <template #title>
+                                            <p class="m-3 text-gray">
+                                                This will deny the permissions
+                                                you have selected above, for all
+                                                the users in the persona, even
+                                                if they had access to those
+                                                permissions via some other
+                                                persona or purpose.
+                                            </p>
+                                        </template>
+                                    </a-tooltip>
+                                </div>
+                                <a-switch
+                                    :class="policy.allow ? `` : 'bg-red-600'"
+                                    data-test-id="toggle-switch"
+                                    class="ml-2"
+                                    :checked="!policy.allow"
+                                    style="width: 40px !important"
+                                    @update:checked="policy.allow = !$event"
+                                />
+                            </div>
+                        </div>
+                        <div
+                            v-else-if="!policy.allow"
+                            class="flex items-center justify-between"
+                        >
+                            <div class="mt-4">
+                                <span class="text-error"
+                                    >Denied Permissions</span
+                                >
+                                <a-tooltip placement="top" color="white">
+                                    <AtlanIcon icon="Overview" class="mx-2" />
+                                    <template #title>
+                                        <p class="m-3 text-gray">
+                                            The above permissions have been
+                                            overidden for all the users in the
+                                            persona, even if they have access to
+                                            those permissions via some other
+                                            persona or purpose
+                                        </p>
+                                    </template>
+                                </a-tooltip>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div
                     v-if="policyType === 'data' && connectorData.attributeValue"
+                    class="mt-5 bg-white shadow-section"
                 >
+                    <div class="p-3 text-base font-bold text-gray-700 border-b">
+                        Configure permissions
+                    </div>
                     <!-- <div class="flex flex-col mt-7 gap-y-2">
                         <div class="flex gap-1">
                             <AtlanIcon class="text-gray-500" icon="Lock" />
@@ -296,67 +473,78 @@
                             >
                         </div>
                     </div> -->
-                    <div class="flex items-center mt-3 mb-2 gap-x-1">
-                        <span class="text-sm text-gray-500"
-                            >Masking(Optional)</span
-                        >
-                    </div>
-
-                    <DataMaskingSelector
-                        v-model:maskType="policy.type"
-                        class="mb-6 w-80"
-                    />
-                </div>
-
-                <div
-                    v-if="
-                        isEdit ? canEdit : true && connectorData.attributeValue
-                    "
-                    class=""
-                >
-                    <div class="flex justify-between mt-4">
-                        <div>
-                            <span>Deny Permissions</span>
-                            <a-tooltip placement="top" color="white">
-                                <AtlanIcon icon="Overview" class="mx-2" />
-                                <template #title>
-                                    <p class="m-3 text-gray">
-                                        This will deny the permissions you have
-                                        selected above, for all the users in the
-                                        persona, even if they had access to
-                                        those permissions via some other persona
-                                        or purpose.
-                                    </p>
-                                </template>
-                            </a-tooltip>
+                    <div class="p-3">
+                        <div class="flex items-center mb-2 gap-x-1">
+                            <span class="text-sm text-gray-500"
+                                >Masking(Optional)</span
+                            >
                         </div>
-                        <a-switch
-                            :class="policy.allow ? `` : 'bg-red-600'"
-                            data-test-id="toggle-switch"
-                            class="ml-3"
-                            :checked="!policy.allow"
-                            style="width: 40px !important"
-                            @update:checked="policy.allow = !$event"
+
+                        <DataMaskingSelector
+                            v-model:maskType="policy.type"
+                            class="w-80"
                         />
                     </div>
-                </div>
-                <div
-                    v-else-if="!policy.allow"
-                    class="flex items-center justify-between"
-                >
-                    <div class="mt-4">
-                        <span class="text-error">Denied Permissions</span>
-                        <a-tooltip placement="top" color="white">
-                            <AtlanIcon icon="Overview" class="mx-2" />
-                            <template #title>
-                                <p class="m-3 text-gray">
-                                    The above permissions have been overidden
-                                    for all the users in the persona, even if
-                                    they have access to those permissions via
-                                    some other persona or purpose
-                                </p>
-                            </template>
-                        </a-tooltip>
+                    <div class="p-3 bg-gray-100">
+                        <div
+                            v-if="
+                                isEdit
+                                    ? canEdit
+                                    : true && connectorData.attributeValue
+                            "
+                        >
+                            <div class="flex mt-4">
+                                <div>
+                                    <span>Deny Query</span>
+                                    <a-tooltip placement="top" color="white">
+                                        <AtlanIcon
+                                            icon="Overview"
+                                            class="mx-2"
+                                        />
+                                        <template #title>
+                                            <p class="m-3 text-gray">
+                                                This will deny the permissions
+                                                you have selected above, for all
+                                                the users in the persona, even
+                                                if they had access to those
+                                                permissions via some other
+                                                persona or purpose.
+                                            </p>
+                                        </template>
+                                    </a-tooltip>
+                                </div>
+                                <a-switch
+                                    :class="policy.allow ? `` : 'bg-red-600'"
+                                    data-test-id="toggle-switch"
+                                    class="ml-2"
+                                    :checked="!policy.allow"
+                                    style="width: 40px !important"
+                                    @update:checked="policy.allow = !$event"
+                                />
+                            </div>
+                        </div>
+                        <div
+                            v-else-if="!policy.allow"
+                            class="flex items-center justify-between"
+                        >
+                            <div class="mt-4">
+                                <span class="text-error"
+                                    >Denied Permissions</span
+                                >
+                                <a-tooltip placement="top" color="white">
+                                    <AtlanIcon icon="Overview" class="mx-2" />
+                                    <template #title>
+                                        <p class="m-3 text-gray">
+                                            The above permissions have been
+                                            overidden for all the users in the
+                                            persona, even if they have access to
+                                            those permissions via some other
+                                            persona or purpose
+                                        </p>
+                                    </template>
+                                </a-tooltip>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -389,12 +577,15 @@
                 </a-drawer>
             </div>
         </div>
-        <div v-if="isEdit ? canEdit : true" class="flex button-container">
+        <div
+            v-if="isEdit ? canEdit : true"
+            class="absolute bottom-0 flex items-center justify-end w-full p-3 bg-white border-t border-gray-300 gap-x-2"
+        >
             <AtlanBtn
                 size="sm"
                 padding="compact"
-                color="minimal"
-                class="btn-submit"
+                color="secondary"
+                class="px-6 min-w-20"
                 @click="handleClose"
             >
                 Cancel
@@ -409,14 +600,14 @@
                     !policy?.assets?.length ||
                     (policyType === 'meta' && !selectedPermission.length)
                 "
-                class="btn-submit"
+                class="px-6 min-w-20"
                 @click="handleSave"
             >
                 {{ isLoading ? 'Saving' : isEdit ? 'Update' : 'Save' }}
             </AtlanBtn>
         </div>
         <div v-else-if="isEdit && !canEdit">
-            <div class="flex p-3 m-4 rounded bg-primary-light text-primary">
+            <div class="flex p-3 rounded bg-primary-light text-primary">
                 <AtlanIcon icon="Overview" class="mt-1 mr-1"></AtlanIcon>
                 <div>
                     You can only edit policies for connections in which you're
@@ -536,9 +727,12 @@
                     const found = connectionStore.getList.find(
                         (conn) => conn.guid === policy.value.connectionId
                     )
+
                     return {
-                        attributeName: found ? 'connectionQualifiedName' : '',
+                        attributeName: found?.attributes?.name,
                         attributeValue: found?.attributes?.qualifiedName,
+                        isConnectionQueryable: found?.attributes?.allowQuery,
+                        connectionGuid: found?.guid,
                     }
                 },
                 set: (val) => {
@@ -749,6 +943,10 @@
                 return result
             })
             const handleChangeAssets = () => {
+                // remove default 'all asset'
+                // if (!isAddAll.value) {
+                //     handleDeleteAsset(connectorData.value.attributeValue)
+                // }
                 rules.value.assets.show = false
             }
             const splitName = (name) => {
@@ -811,6 +1009,10 @@
 </script>
 
 <style lang="less">
+    .shadow-section {
+        box-shadow: 0px 1px 4px 0px #0000001f;
+        border-radius: 8px !important;
+    }
     .drawerAddAsset {
         .container-schema-tree {
             max-height: max-content !important;
@@ -821,18 +1023,21 @@
         }
     }
     .add-policy-container {
+        .icon-blue {
+            path {
+                fill: #5277d7 !important;
+            }
+        }
+        .icon-blue-stroke {
+            path {
+                stroke: #5277d7 !important;
+            }
+        }
         height: 100vh;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-    }
-    .button-container {
-        justify-content: flex-end;
-        border-top: solid 1px #e6e6eb;
-        padding: 16px;
-        .btn-submit {
-            width: 100px;
-        }
+        overflow: scroll;
     }
     .wrapper-asset {
         .asset-name {

@@ -83,52 +83,44 @@
     import { useVModels } from '@vueuse/core'
 
     import { useMetadataCredential } from '~/composables/credential/useMetadataCredential'
-    import { useTestCredential } from '~/composables/credential/useTestCredential'
-    import { useQueryCredentialByID } from '~/composables/credential/useQueryCredentialByID'
+    import { useMetadataCredentialByID } from '~/composables/credential/useMetadataCredentialID'
 
     export default defineComponent({
+        name: 'APITreeSelect',
         props: {
             modelValue: {
                 required: false,
-            },
-            query: {
-                type: String,
-                required: false,
-                default: () => '',
             },
             credential: {
                 type: Object,
                 required: false,
             },
-            exclude: {
-                required: false,
-            },
-            include: {
-                required: false,
-            },
             credentialID: {
+                type: String,
                 required: false,
+                default: () => '',
+            },
+            templateConfig: {
+                type: Object,
+                required: false,
+                default: () => {},
             },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
-            const { credential, query, exclude, include, credentialID } =
-                toRefs(props)
+            const { credential, templateConfig, credentialID } = toRefs(props)
 
-            const path = computed(() => {
-                return {
-                    id: credentialID.value,
-                }
-            })
+            const path = computed(() => ({
+                id: credentialID.value,
+            }))
 
             const body = computed(() => ({
                 ...credential?.value,
-                query: query?.value,
-                schemaExcludePattern: exclude?.value,
-                schemaIncludePattern: include.value,
+                ...templateConfig.value,
             }))
+
             const { data, refresh, isLoading, error } =
                 useMetadataCredential(body)
 
@@ -137,7 +129,7 @@
                 refresh: refreshCredByID,
                 isLoading: isLoadingByID,
                 error: errorByID,
-            } = useQueryCredentialByID(path, { query: query?.value }, false)
+            } = useMetadataCredentialByID(path, body, false)
 
             onMounted(() => {
                 if (credentialID.value) {
@@ -160,13 +152,15 @@
                 emit('change')
             }
 
-            const handleClick = () => {
+            const fetchCreds = () => {
                 if (credentialID.value) {
                     refreshCredByID()
                 } else {
                     refresh()
                 }
             }
+
+            const handleClick = () => fetchCreds()
             const treeData = ref([])
 
             const recursionTransform = (root, rootId, queue) => {
@@ -189,8 +183,10 @@
                     const item = queue.pop()
                     treeData.value.push({
                         id: item.value,
-                        value: item.value,
-                        title: item.title,
+                        value: item.value.toString(), // The API expects strings, so we convert numbers into strings
+                        title:
+                            item.title ||
+                            item.value.toString()?.split(':').slice(-1)[0],
                         pId: item.rootId,
                     })
                     recursionTransform(item, item.value, queue)
@@ -206,14 +202,10 @@
             })
 
             const handleDropdownVisibleChange = (open) => {
-                if (treeData.value?.length === 0 && open) {
-                    if (credentialID.value) {
-                        refreshCredByID()
-                    } else {
-                        refresh()
-                    }
-                }
+                if (treeData.value?.length === 0 && open) fetchCreds()
             }
+
+            if (credentialID.value) refreshCredByID()
 
             // const treeData = computed(() => {
             //     const mappedConnection = list.map((i) => ({
@@ -257,19 +249,12 @@
 
             return {
                 treeData,
-
                 isLoading,
-                credential,
-                query,
-                exclude,
-                include,
                 error,
                 handleDropdownVisibleChange,
-                isLoading,
                 handleChange,
                 localValue,
                 handleClick,
-                credentialID,
                 path,
                 credByID,
                 refreshCredByID,

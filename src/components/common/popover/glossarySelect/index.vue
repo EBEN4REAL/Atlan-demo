@@ -17,7 +17,7 @@
                             icon="GlossaryGray"
                             class="self-center pr-1"
                         ></AtlanIcon>
-                        <div class="overflow-ellipsis group-hover:text-primary ">
+                        <div class="overflow-ellipsis group-hover:text-primary">
                             All Glossaries
                         </div>
                     </div>
@@ -52,6 +52,8 @@
                                     item.attributes.name
                                 }`"
                                 :classes="'w-full '"
+                                placement="right"
+                                :mouseLeaveDelay="0"
                             />
                         </div>
                     </div>
@@ -61,7 +63,7 @@
                 class="flex items-center cursor-pointer hover:text-primary"
                 style="max-width: 80%"
             >
-            <div class="w-4" :class="size==='default'?'mr-2':'mr-1'">
+                <div class="w-4" :class="size === 'default' ? 'mr-2' : 'mr-1'">
                     <AtlanIcon
                         :icon="
                             displayText === 'All Glossaries'
@@ -72,15 +74,24 @@
                                   )
                         "
                         class="self-center"
-                        :class="size==='default'?'h-5':'h-4'"
+                        :class="size === 'default' ? 'h-5' : 'h-4'"
                     ></AtlanIcon>
                 </div>
                 <Tooltip
+                    ref="tooltipRef"
                     :tooltip-text="`${displayText}`"
-                    :classes="`  hover:text-primary  align-text-bottom ${size==='default'?'text-base font-bold  mt-0.5':'text-sm'}`"
+                    :mouseLeaveDelay="0"
+                    :classes="`  hover:text-primary  align-text-bottom  ${
+                        size === 'default'
+                            ? 'text-base font-bold  mt-0.5'
+                            : 'text-sm'
+                    } ${tooltipRef?.truncated ? 'w-full' : ''}`"
                 />
 
-                <div class="w-4 mr-1 " :classes="{'mt-0.5':size==='default'}">
+                <div
+                    class="w-4 mr-1"
+                    :classes="{ 'mt-0.5': size === 'default' }"
+                >
                     <AtlanIcon
                         icon="ChevronDown"
                         class="h-3 ml-2 hover:text-primary"
@@ -125,11 +136,11 @@
                 required: false,
                 default: true,
             },
-            size:{
-                type:String,
-                required:false,
-                default:()=>"default"
-            }
+            size: {
+                type: String,
+                required: false,
+                default: () => 'default',
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
@@ -163,8 +174,21 @@
 
             const filteredList = computed(() => {
                 const sortedList = glossaryList.value
-                return sortedList.sort((a, b) =>
-                    a?.displayText > b?.displayText ? 1 : -1
+                return sortedList.sort(
+                    (a, b) => {
+                        if (
+                            a?.displayText?.toLowerCase() <
+                            b?.displayText?.toLowerCase()
+                        )
+                            return -1
+                        if (
+                            a?.displayText?.toLowerCase() >
+                            b?.displayText?.toLowerCase()
+                        )
+                            return 1
+                        return 0
+                    }
+                    // a?.displayText > b?.displayText ? 1 : -1
                 )
             })
 
@@ -184,9 +208,10 @@
                 }
             )
 
-            watch(selectedGlossary , () => {
+            watch(selectedGlossary, () => {
                 changeDisplayText()
             })
+            const tooltipRef = ref(null)
             return {
                 filteredList,
                 handleSelect,
@@ -197,6 +222,7 @@
                 getEntityStatusIcon,
                 certificateStatus,
                 selectedGlossary,
+                tooltipRef,
             }
         },
     })
@@ -205,7 +231,7 @@
 <style lang="less">
     .glossarySelectPopover {
         .ant-popover-inner-content {
-            width: 250px !important;
+            width: 300px !important;
         }
     }
 </style>

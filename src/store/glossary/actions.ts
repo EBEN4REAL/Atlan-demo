@@ -10,6 +10,11 @@ export interface Actions extends State {
     setActiveFacet(value: any): void
     setActivePostFacet(value: any): void
     addGlossary(value: any): void
+    updateAssetCount(
+        typeName: String,
+        glossaryGuid: String,
+        action: String
+    ): void
     updateGlossary(value: any): void
     setActiveGlossaryQualifiedName(value: any): void
 }
@@ -28,10 +33,45 @@ export const actions: Actions = {
     addGlossary(value) {
         this.list.unshift(value)
     },
+    updateAssetCount(typeName, glossaryGuid, action) {
+        console.log(typeName, glossaryGuid, action)
+        let foundIdx
+        this.list.forEach((el, idx) => {
+            if (el?.guid === glossaryGuid) {
+                foundIdx = idx
+            }
+        })
+        console.log(foundIdx)
+        if (action === 'add') {
+            console.log(this.list[foundIdx])
+            if (typeName === 'AtlasGlossaryTerm') {
+                this.list[foundIdx].termsCount =
+                    this.list[foundIdx].termsCount + 1
+            }
+            if (typeName === 'AtlasGlossaryCategory') {
+                this.list[foundIdx].categoryCount =
+                    this.list[foundIdx].categoryCount + 1
+            }
+        }
+        if (action === 'delete') {
+            console.log(this.list[foundIdx])
+            if (typeName === 'AtlasGlossaryTerm') {
+                this.list[foundIdx].termsCount =
+                    this.list[foundIdx].termsCount - 1
+            }
+            if (typeName === 'AtlasGlossaryCategory') {
+                this.list[foundIdx].categoryCount =
+                    this.list[foundIdx].categoryCount - 1
+            }
+        }
+    },
     updateGlossary(value) {
         this.list.forEach((el, idx) => {
             if (el?.guid === value?.guid) {
+                const temp=this.list[idx]
                 this.list[idx] = value
+                this.list[idx].termsCount=temp?.termsCount
+                this.list[idx].categoryCount=temp?.categoryCount
             }
         })
     },

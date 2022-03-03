@@ -29,7 +29,7 @@
                 />
             </a-tooltip>
 
-            <AtlanLoader v-if="extraLoading" class="mb-0.5 h-4" />
+            <AtlanLoader v-if="isLoading" class="mb-0.5 h-4" />
             <AtlanIcon
                 v-else
                 icon="Search"
@@ -38,8 +38,7 @@
         </template>
 
         <template #suffix>
-            <a-spin size="small" v-if="isLoading" class="mt-0.5 mx-1"></a-spin>
-            <template v-else-if="clearable && localValue">
+            <template v-if="clearable && localValue">
                 <div class="cursor-pointer" @click="clear">
                     <AtlanIcon icon="Cancel" class="text-gray-500" />
                 </div>
@@ -82,7 +81,6 @@
         PropType,
         watch,
     } from 'vue'
-    import useConnectionData from '~/composables/connection/useConnectionData'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { capitalizeFirstLetter } from '~/utils/string'
     import { allowTabShortcut } from '~/composables/shortcuts/useShortcuts'
@@ -114,8 +112,6 @@
                 toRefs(props)
 
             const { modelValue } = useVModels(props, emit)
-
-            const extraLoading = ref(false)
 
             const { getConnectorImageMap, getConnectorLabelByName } =
                 useAssetInfo()
@@ -183,20 +179,11 @@
                 localValue.value = ''
                 handleChange()
             }
-            watch(isLoading, () => {
-                if (isLoading.value) {
-                    extraLoading.value = isLoading.value
-                } else
-                    setTimeout(() => {
-                        extraLoading.value = isLoading.value
-                    }, 500)
-            })
 
             return {
                 clear,
                 localValue,
                 searchBar,
-                extraLoading,
                 clearInput,
                 handleChange,
                 forceFocus,

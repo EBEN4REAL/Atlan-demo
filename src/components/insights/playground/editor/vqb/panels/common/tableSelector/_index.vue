@@ -168,8 +168,18 @@
                     containerPosition.value.height = viewportOffset?.height
             }
 
-            // for initial call
-            replaceTableBody(getTableInitialBody())
+            const columnPanel =
+                activeInlineTab.value.playground.vqb.panels.find(
+                    (panel) => panel.id.toLowerCase() === 'columns'
+                )
+            if (columnPanel) {
+                if (columnPanel.subpanels.length > 0) {
+                    if (!columnPanel.subpanels[0]?.tableQualfiedName) {
+                        // for initial call if no table is selected
+                        replaceTableBody(getTableInitialBody())
+                    }
+                }
+            }
 
             const toggleFocus = () => {
                 setDropDownPosition()

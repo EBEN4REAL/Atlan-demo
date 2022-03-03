@@ -16,6 +16,7 @@ const ShareSlack = (body: Ref, options: useOptions) => useAPI(map.SHARE_SLACK, '
 const UnfurlSlackMessage = (body, options: useOptions) => useAPI(map.UNFURL_SLACK_MESSAGE, 'POST', { body }, options);
 const CreateSlackApp = (body: Ref, options) => useAPI(map.CREATE_SLACK_APP, 'POST', { body }, options);
 const UpdateSlackConfig = (pathVariables: Ref, body, options: useOptions) => useAPI(map.UPDATE_SLACK_CONFIG, 'POST', { pathVariables, body }, options);
+const AskQuestionSlack = (body: Ref, options: useOptions) => useAPI(map.ASK_QUESTION_SLACK, 'POST', { body }, options)
 
 // Jira
 const jiraListProjects = (options = {}) =>
@@ -52,5 +53,6 @@ export const Integrations = {
     jiraSearch,
     jiraLinkIssue,
     jiraUnlinkIssue,
-    jiraCreateIssue
+    jiraCreateIssue,
+    AskQuestionSlack
 }

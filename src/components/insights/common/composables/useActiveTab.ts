@@ -28,10 +28,6 @@ export function useActiveTab() {
         const activeInlineTabCopy: activeInlineTabInterface = JSON.parse(
             JSON.stringify(toRaw(activeInlineTab.value))
         )
-        let isTabVQB = activeInlineTabCopy.playground.isVQB
-        if (isVQB) {
-            isTabVQB = isVQB
-        }
 
         let vqbData = {
             panels: [
@@ -55,10 +51,6 @@ export function useActiveTab() {
                     expand: true,
                 },
             ],
-        }
-
-        if (isTabVQB) {
-            vqbData = activeInlineTabCopy.playground.vqb
         }
 
         if (vqb) {
@@ -117,7 +109,7 @@ export function useActiveTab() {
             },
             playground: {
                 ...inlineTabData.playground,
-                isVQB: isTabVQB,
+                isVQB: isVQB,
                 vqb: vqbData,
                 editor: {
                     ...inlineTabData.playground.editor,

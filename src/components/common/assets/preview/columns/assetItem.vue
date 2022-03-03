@@ -203,7 +203,12 @@
                 return matchingIdsResult
             })
 
-            watch(shouldDrawerUpdate, () => emit('update', asset.value))
+            watch(shouldDrawerUpdate, () => {
+                if (shouldDrawerUpdate.value) {
+                    emit('update', asset.value)
+                    shouldDrawerUpdate.value = false
+                }
+            })
 
             return {
                 title,

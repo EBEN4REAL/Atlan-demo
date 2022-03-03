@@ -6,42 +6,49 @@ import MentionList from './index.vue'
 import { useUsers } from '~/composables/user/useUsers'
 import useGroups from '~/composables/group/useGroups'
 
+const userListAPIParams = reactive({
+    limit: 5,
+    offset: 0,
+    sort: 'firstName',
+    filter: {},
+})
+const {
+    userList,
+    isLoading: isUserLoading,
+    getUserList,
+} = useUsers(userListAPIParams, true)
+
+const groupListAPIParams = reactive({
+    limit: 5,
+    offset: 0,
+    sort: 'name',
+    filter: {},
+})
+const {
+    groupList,
+    isLoading: isGroupLoading,
+    cancelRequest: cancelGroupRequest,
+    getGroupList,
+} = useGroups(groupListAPIParams, '', {})
+
 export default {
     items: async ({ query }) => {
-        const userListAPIParams = reactive({
-            limit: 5,
-            offset: 0,
-            sort: 'firstName',
-            filter: {
-                $or: [
-                    { firstName: { $ilike: `${query}%` } },
-                    { lastName: { $ilike: `${query}%` } },
-                    { username: { $ilike: `${query}%` } },
-                ],
-            },
-        })
-        const { userList, isLoading: isUserLoading } = useUsers(
-            userListAPIParams,
-            true
-        )
-
-        const groupListAPIParams = reactive({
-            limit: 5,
-            offset: 0,
-            sort: 'name',
-            filter: {
-                $or: [
-                    { alias: { $ilike: `${query}%` } },
-                    { name: { $ilike: `${query}%` } },
-                ],
-            },
-        })
-        const { groupList, isLoading: isGroupLoading } = useGroups(
-            groupListAPIParams,
-            '',
-            {}
-        )
-
+        userListAPIParams.filter = {
+            $or: [
+                { firstName: { $ilike: `${query}%` } },
+                { lastName: { $ilike: `${query}%` } },
+                { username: { $ilike: `${query}%` } },
+            ],
+        }
+        groupListAPIParams.filter = {
+            $or: [
+                { alias: { $ilike: `${query}%` } },
+                { name: { $ilike: `${query}%` } },
+            ],
+        }
+        getUserList()
+        cancelGroupRequest()
+        await getGroupList()
         return until(or(isUserLoading, isGroupLoading))
             .toBe(false)
             .then(() =>

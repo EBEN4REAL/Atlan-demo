@@ -92,6 +92,7 @@
                             list-item-class="h-8 my-0.5"
                             :showLoggedInUser="true"
                             v-model:selectedRecords="selectedRecords"
+                            :excludeMe="true"
                         ></Users>
 
                         <Groups

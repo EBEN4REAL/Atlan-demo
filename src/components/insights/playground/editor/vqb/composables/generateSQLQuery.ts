@@ -462,6 +462,7 @@ export function generateSQLQuery(
                     subpanel.filter?.value == undefined
                 )
                     return
+                // for value based filters
                 if (
                     index > 0 &&
                     Object.keys(filter?.subpanels[index - 1]?.column ?? {})
@@ -469,6 +470,16 @@ export function generateSQLQuery(
                     filter?.subpanels[index - 1]?.filter?.value
                 )
                     res += ` ${subpanel?.filter?.filterType?.toUpperCase()} `
+
+                // for non value based filters
+                if (
+                    index > 0 &&
+                    Object.keys(filter?.subpanels[index - 1]?.column ?? {})
+                        .length > 0 &&
+                    filter?.subpanels[index - 1]?.filter?.type === 'none'
+                )
+                    res += ` ${subpanel?.filter?.filterType?.toUpperCase()} `
+
                 const tableName = getTableNameWithQuotes(
                     subpanel.column.columnQualifiedName ??
                         subpanel.column?.qualifiedName ??

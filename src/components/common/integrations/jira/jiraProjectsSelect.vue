@@ -3,29 +3,27 @@
         v-model:value="modelValue"
         class=""
         :class="$style.selector"
-        :options="options"
         :placeholder="placeholder"
         :loading="isLoading"
         allow-clear
         dropdown-class-name="max-h-72 overflow-y-scroll"
     >
-        <template #dropdownRender>
-            <div
-                v-for="o in options"
-                :key="o.value"
-                class="p-2 mx-1 rounded cursor-pointer hover:bg-gray-100"
-                :class="o.value === modelValue ? 'bg-primary-light' : ''"
-                @click="handleChange(o.value, o)"
-            >
-                <span class="flex items-center gap-x-2">
-                    <img
-                        :src="o.meta.avatarUrls['24x24']"
-                        class="h-5 rounded-full"
-                    />
-                    {{ o.label }}
-                </span>
-            </div>
-        </template>
+        <a-select-option
+            v-for="o in options"
+            :key="o.value"
+            :label="o.label"
+            class="p-2 mx-1 rounded cursor-pointer hover:bg-gray-100"
+            :class="o.value === modelValue ? 'bg-primary-light' : ''"
+            @click="handleChange(o.value, o)"
+        >
+            <span class="flex items-center gap-x-2">
+                <img
+                    :src="o.meta.avatarUrls['24x24']"
+                    class="h-5 rounded-full"
+                />
+                {{ o.label }}
+            </span>
+        </a-select-option>
         <template #suffixIcon>
             <AtlanIcon icon="CaretDown" class="text-gray-500" />
         </template>
@@ -34,7 +32,7 @@
 
 <script setup lang="ts">
     import { useVModels } from '@vueuse/core'
-    import { computed, onMounted, watch } from 'vue'
+    import { computed, onMounted, watch, h } from 'vue'
     import { listProjects } from '~/composables/integrations/jira/useJira'
 
     const { projects, isLoading, error } = listProjects()

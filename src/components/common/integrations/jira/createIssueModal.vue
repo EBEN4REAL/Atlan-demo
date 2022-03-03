@@ -8,9 +8,12 @@
         :width="500"
         class="createModal"
     >
-        <header class="flex items-center pl-6 border-b" style="height: 68px">
+        <header
+            class="flex items-center pl-6 border-b rounded-t-lg bg-primary-light"
+            style="height: 68px"
+        >
             <AtlanIcon :icon="'Jira'" class="h-6 mr-2" />
-            <h1 class="text-xl font-bold">Create Jira issue</h1>
+            <h1 class="text-xl font-bold">Create issue</h1>
         </header>
         <div class="w-full p-4 rounded">
             <a-form
@@ -21,74 +24,79 @@
                 :model="form"
                 :validate-trigger="['click', 'submit']"
             >
-                <a-form-item :name="['summary']" class="mb-4" label="Title">
+                <div class="flex justify-between gap-x-4">
+                    <a-form-item
+                        :name="['projectId']"
+                        label="Project"
+                        class="w-full mb-6"
+                    >
+                        <ProjectSelector
+                            v-model="form.projectId"
+                            class="w-full"
+                            placeholder="Select a project"
+                            default-select-first
+                            @change="handleProjectSelect"
+                        />
+                    </a-form-item>
+
+                    <a-form-item
+                        :name="['issueType']"
+                        class="w-full mb-6"
+                        label="Issue type"
+                    >
+                        <CustomSelect
+                            v-model:value="form.issueType"
+                            :disabled="!form.projectId"
+                            dropdown-class-name="max-h-72 overflow-y-scroll"
+                            placeholder="Select issue type"
+                            :options="issueTypeOptions"
+                        />
+                    </a-form-item>
+                </div>
+                <a-form-item :name="['summary']" class="mb-6" label="Title">
                     <a-input
                         v-model:value="form.summary"
-                        placeholder="Add a title"
+                        placeholder="|Enter a name for this issue"
                     />
                 </a-form-item>
                 <a-form-item
                     :name="['description']"
-                    class="mb-4"
+                    class="mb-6"
                     label="Description"
                 >
-                    <a-textarea
-                        v-model:value="form.description"
-                        placeholder="Add a description"
-                    />
+                    <a-textarea v-model:value="form.description" />
                 </a-form-item>
-
-                <a-form-item :name="['projectId']" label="Project" class="mb-4">
-                    <ProjectSelector
-                        v-model="form.projectId"
-                        class="w-full"
-                        placeholder="Select a project"
-                        default-select-first
-                        @change="handleProjectSelect"
-                    />
-                </a-form-item>
-                <a-form-item
-                    :name="['issueType']"
-                    class="mb-4"
-                    label="Issue type"
-                >
-                    <a-select
-                        v-model:value="form.issueType"
-                        :disabled="!form.projectId"
-                        dropdown-class-name="max-h-72 overflow-y-scroll"
-                        placeholder="Select issue type"
-                        :options="issueTypeOptions"
-                        class="w-full"
+                <!-- <div class="flex justify-between gap-x-4">
+                    <a-form-item
+                        :name="['Priority']"
+                        class="w-full mb-6"
+                        label="Priority"
                     >
-                        <template #dropdownRender>
-                            <div
-                                v-for="o in issueTypeOptions"
-                                :key="o.value"
-                                class="p-2 mx-1 rounded cursor-pointer hover:bg-gray-100"
-                                :class="
-                                    o.value === form.issueType
-                                        ? 'bg-primary-light'
-                                        : ''
-                                "
-                                @click="form.issueType = o.value"
-                            >
-                                <span class="flex items-center gap-x-2">
-                                    <img
-                                        :src="o.meta.iconUrl"
-                                        class="h-5 rounded-full"
-                                    />
-                                    {{ o.label }}
-                                </span>
-                            </div>
-                        </template>
-                        <template #suffixIcon>
-                            <AtlanIcon icon="CaretDown" class="text-gray-500" />
-                        </template>
-                    </a-select>
-                </a-form-item>
+                        <CustomSelect
+                            v-model:value="form.priority"
+                            dropdown-class-name="max-h-72 overflow-y-scroll"
+                            placeholder="Select issue priority"
+                            :options="[]"
+                        />
+                    </a-form-item>
+                    <a-form-item
+                        :name="['Reporter']"
+                        class="w-full mb-6"
+                        label="Reporter"
+                    >
+                        <CustomSelect
+                            v-model:value="form.reporter"
+                            dropdown-class-name="max-h-72 overflow-y-scroll"
+                            placeholder="Select issue reporter"
+                            :options="[]"
+                        />
+                    </a-form-item>
+                </div> -->
             </a-form>
         </div>
-        <div class="flex justify-end w-full p-4 pt-0 space-x-4">
+        <div
+            class="flex justify-end w-full p-4 space-x-4 rounded-b-lg bg-primary-light"
+        >
             <AtlanButton
                 color="minimal"
                 padding="compact"
@@ -96,7 +104,13 @@
             >
                 Cancel
             </AtlanButton>
-            <AtlanButton :loading="isLoading" @click="handleCreate">
+            <AtlanButton
+                size="sm"
+                class="px-6"
+                :loading="isLoading"
+                :disabled="disableCreate"
+                @click="handleCreate"
+            >
                 Create
             </AtlanButton>
         </div>
@@ -115,6 +129,7 @@
     } from '~/composables/integrations/jira/useJiraTickets'
 
     import { CREATE_TICKET_FORM_RULES } from '~/constant/integrations/jira.constant'
+    import CustomSelect from '@/common/integrations/jira/customizedSelect.vue'
 
     const props = defineProps({
         visible: { type: Boolean, required: true },
@@ -135,7 +150,9 @@
         projectId: undefined,
         summary: undefined,
         labels: ['Atlan'],
-        description: undefined,
+        description: '',
+        priority: '',
+        reporter: '',
         guid: asset.value.guid,
         name: asset.value.displayText,
         qualifiedName: asset.value.attributes.qualifiedName,
@@ -143,6 +160,13 @@
         typeName: asset.value.typeName,
         assetUrl: `${origin}/assets/${asset.value.guid}/overview`,
     })
+
+    const disableCreate = computed(() =>
+        Object.entries(CREATE_TICKET_FORM_RULES).some(([k, p]) => {
+            if (p[0].required && !form.value[k]) return true
+            return false
+        })
+    )
 
     const reset = () => {
         form.value = {
@@ -155,19 +179,6 @@
             },
         }
     }
-
-    // const issueTypeOptions = computed(() => {
-    //     if (issueTypes.value?.length) {
-    //         return issueTypes.value
-    //             .filter((_t) => {
-    //                 const { scope } = _t
-    //                 const projectID = scope?.project?.id
-    //                 return projectID === form.value.projectId
-    //             })
-    //             .map((t) => ({ label: t.name, value: t.id }))
-    //     }
-    //     return []
-    // })
 
     const issueTypeOptions = ref<any[]>([])
 
@@ -234,7 +245,7 @@
 
         .ant-input,
         .ant-select-selector {
-            @apply border border-gray-300 !important;
+            @apply border border-gray-300 rounded-lg !important;
         }
 
         .ant-form-item-label > label {

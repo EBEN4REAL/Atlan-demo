@@ -18,7 +18,10 @@
         @remove="handleIssueUnLink"
     />
     <div v-if="!userJiraStatus.configured" class="flex items-center h-full">
-        <EmptyPlaceholder />
+        <EmptyPlaceholder
+            @create="createModal = true"
+            @link="linkIssueVisible = true"
+        />
     </div>
     <div
         v-else-if="isLoading"
@@ -30,7 +33,10 @@
         <ErrorView :error="error" />
     </div>
     <div v-else-if="!issues?.length" class="flex items-center h-full">
-        <EmptyPlaceholder />
+        <EmptyPlaceholder
+            @create="createModal = true"
+            @link="linkIssueVisible = true"
+        />
     </div>
 
     <div v-else ref="wrapper" class="w-full h-full">

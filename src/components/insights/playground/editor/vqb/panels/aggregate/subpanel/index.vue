@@ -53,15 +53,15 @@
                         </template>
                     </ColumnSelector>
 
-                    <div
-                        class="flex items-center justify-center item-2"
-                        v-if="subpanel?.column?.item?.guid"
-                    >
-                        <span class="px-3 text-sm text-gray-500"
-                            >calculate the</span
+                    <div class="flex items-center item-3">
+                        <div
+                            class="flex items-center justify-center px-4"
+                            v-if="subpanel?.column?.item?.guid"
                         >
-                    </div>
-                    <div class="flex item-3">
+                            <span class="px-3 text-sm text-gray-500"
+                                >calculate the</span
+                            >
+                        </div>
                         <AggregateSelector
                             :class="{
                                 invisible: !subpanel?.column?.item?.guid,
@@ -80,6 +80,7 @@
                             @click.stop="() => handleDelete(index)"
                             icon="Close"
                             class="w-6 h-6 ml-3 text-gray-500 mt-0.5 cursor-pointer"
+                            style="min-width: 24px"
                             :class="`opacity-${
                                 hoverItem === subpanel.id ? 100 : 0
                             }`"
@@ -306,15 +307,9 @@
         white-space: nowrap;
         overflow: hidden;
     }
-    .item-2 {
-        flex: 0.085;
-        flex-shrink: 0;
-        white-space: nowrap;
-        overflow: hidden;
-        min-width: 110px;
-    }
+
     .item-3 {
-        flex: 0.4575;
+        flex: 0.5425;
         flex-shrink: 0;
         white-space: nowrap;
         overflow-y: auto;

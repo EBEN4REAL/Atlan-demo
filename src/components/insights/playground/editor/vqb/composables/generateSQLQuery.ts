@@ -467,7 +467,8 @@ export function generateSQLQuery(
                     index > 0 &&
                     Object.keys(filter?.subpanels[index - 1]?.column ?? {})
                         .length > 0 &&
-                    filter?.subpanels[index - 1]?.filter?.value
+                    filter?.subpanels[index - 1]?.filter?.value &&
+                    filter?.subpanels[index - 1]?.filter?.type !== 'none'
                 )
                     res += ` ${subpanel?.filter?.filterType?.toUpperCase()} `
 

@@ -133,7 +133,7 @@
                                     )
                                 "
                                 icon="Category"
-                                class="h-4 mb-0.5 mr-1"
+                                class="h-4  mr-1"
                             ></AtlanIcon>
                             <AtlanIcon
                                 v-if="
@@ -142,13 +142,13 @@
                                     )
                                 "
                                 icon="Term"
-                                class="h-4 mb-0.5 mr-1"
+                                class="h-4  mr-1"
                             ></AtlanIcon>
 
                             <div
                                 class="text-sm tracking-wider text-gray-500 uppercase"
                             >
-                                {{ assetTypeLabel(item) || item.typeName }}
+                                {{ assetTypeLabel(item) || item.typeName }} 
                                 <span
                                     v-if="
                                         ['SalesforceObject'].includes(
@@ -173,7 +173,7 @@
                                         )
                                     "
                                     :key="parentCategory(item).guid"
-                                    class="flex"
+                                    class="flex ml-0.5"
                                 >
                                     <AtlanIcon
                                         icon="Category"

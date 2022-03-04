@@ -31,6 +31,7 @@
                     aggregation-tab-class="px-5 my-1"
                     search-bar-class="pl-5 my-1"
                     asset-item-class="px-2"
+                    :openAssetProfileInNewTab="true"
                 >
                     <template #searchAction>
                         <AtlanBtn

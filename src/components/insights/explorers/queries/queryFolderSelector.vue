@@ -27,7 +27,9 @@
             <AtlanIcon icon="FolderClosed" v-else></AtlanIcon>
 
             <span class="flex pl-0.5 text-xs text-gray-500 truncate mt-0.5">
-                {{ selectedFolder ? selectedFolder : 'Collection' }}
+                <span class="max-w-xs truncate">{{
+                    selectedFolder ? selectedFolder : 'Collection'
+                }}</span>
             </span>
         </AtlanBtn>
 
@@ -274,7 +276,6 @@
         emits: ['folderChange'],
         setup(props, { emit }) {
             const route = useRoute()
-            const isTabAdded = inject('isTabAdded') as Ref<string>
             const permissions = inject('permissions') as ComputedRef<any>
             const router = useRouter()
             const { connector, savedQueryType, parentFolder } = toRefs(props)
@@ -517,7 +518,6 @@
                 pushGuidToURL,
                 connector,
                 queryFolderNamespace,
-                isTabAdded,
                 permissions: {
                     readQueries: permissions.value.public.readQueries,
                     readFolders: permissions.value.public.readFolders,

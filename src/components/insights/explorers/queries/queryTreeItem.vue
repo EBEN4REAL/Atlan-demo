@@ -37,9 +37,9 @@
                                     @click.stop="() => {}"
                                     @visibleChange="addBackground"
                                 >
-                                    <div class="pl-2" v-if="hasWritePermission">
+                                    <div class="px-2" v-if="hasWritePermission">
                                         <AtlanIcon
-                                            icon="KebabMenu"
+                                            icon="KebabMenuHorizontal"
                                             class="w-4 h-4 my-auto"
                                         ></AtlanIcon>
                                     </div>
@@ -258,7 +258,7 @@
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
                                         : 'bg-gradient-to-l from-gray-light via-gray-light',
-                                    hasWritePermission ? 'right-6' : 'right-0',
+                                    hasWritePermission ? 'right-8' : 'right-0',
                                 ]"
                             >
                                 <div
@@ -305,7 +305,7 @@
                                 </div>
                             </div>
                             <div
-                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
+                                class="absolute top-0 flex items-center h-full text-gray-500 opacity-0 right-2 margin-align-top group-hover:opacity-100"
                                 :id="`${item.qualifiedName}-menu`"
                             >
                                 <a-dropdown
@@ -315,13 +315,14 @@
                                 >
                                     <div class="pl-2" v-if="hasWritePermission">
                                         <AtlanIcon
-                                            icon="KebabMenu"
+                                            icon="KebabMenuHorizontal"
                                             class="w-4 h-4 my-auto"
                                         ></AtlanIcon>
                                     </div>
                                     <template #overlay>
-                                        <a-menu>
+                                        <a-menu class="py-2">
                                             <a-menu-item
+                                                class="px-4 py-2 text-sm"
                                                 key="rename"
                                                 @click="renameFolder"
                                                 >Rename query</a-menu-item
@@ -329,6 +330,7 @@
 
                                             <a-menu-item
                                                 key="edit"
+                                                class="px-4 py-2 text-sm"
                                                 @click="
                                                     () => {
                                                         removeBackground()
@@ -343,6 +345,7 @@
 
                                             <a-menu-item
                                                 key="ChangeFolder"
+                                                class="px-4 py-2 text-sm"
                                                 @click="
                                                     () => {
                                                         removeBackground()
@@ -351,15 +354,29 @@
                                                 "
                                                 >Move query</a-menu-item
                                             >
-
+                                            <a-menu-item
+                                                key="duplicate"
+                                                class="px-4 py-2 text-sm"
+                                                @click="
+                                                    () => {
+                                                        removeBackground()
+                                                        actionClick(
+                                                            'duplicate',
+                                                            item
+                                                        )
+                                                    }
+                                                "
+                                                >Duplicate query</a-menu-item
+                                            >
                                             <a-menu-item
                                                 key="shareQuery"
+                                                class="px-4 py-2 text-sm"
                                                 @click="copyURL"
                                                 >Copy link</a-menu-item
                                             >
                                             <a-menu-item
                                                 key="deleteFolder"
-                                                class="text-red-600"
+                                                class="px-4 py-2 text-sm text-red-600"
                                                 @click="
                                                     () => {
                                                         removeBackground()
@@ -490,6 +507,18 @@
     import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
     import Tooltip from '@common/ellipsis/index.vue'
 
+    // vqb icons
+    import Vqb from '~/assets/images/icons/Vqb.svg?raw'
+    import VqbVerified from '~/assets/images/icons/VqbVerified.svg?raw'
+    import VqbDeprecated from '~/assets/images/icons/VqbDeprecated.svg?raw'
+    import VqbDraft from '~/assets/images/icons/VqbDraft.svg?raw'
+
+    // query
+    import Query from '~/assets/images/icons/query.svg?raw'
+    import QueryVerified from '~/assets/images/icons/query-verified.svg?raw'
+    import QueryDeprecated from '~/assets/images/icons/query-deprecated.svg?raw'
+    import QueryDraft from '~/assets/images/icons/query-draft.svg?raw'
+
     const {
         inlineTabRemove,
         modifyActiveInlineTabEditor,
@@ -579,7 +608,6 @@
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
-            const isTabAdded = inject('isTabAdded') as Ref<string>
             const editorInstanceRef = inject('editorInstance') as Ref<any>
             const activeInlineTab = inject(
                 'activeInlineTab'
@@ -642,11 +670,8 @@
             ) as Ref<string>
 
             //add comment
-            const { openSavedQueryInNewTabAndRun } = useSavedQuery(
-                inlineTabs,
-                activeInlineTab,
-                activeInlineTabKey
-            )
+            const { openSavedQueryInNewTabAndRun, duplicateSavedQuery } =
+                useSavedQuery(inlineTabs, activeInlineTab, activeInlineTabKey)
 
             const { isSameNodeOpenedInSidebar } = useSchema()
             const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
@@ -735,7 +760,6 @@
                     case 'play': {
                         openSavedQueryInNewTabAndRun(
                             item,
-                            isTabAdded,
                             getData,
                             limitRows,
                             editorInstance,
@@ -743,6 +767,10 @@
                             onRunCompletion,
                             onQueryIdGeneration
                         )
+                        break
+                    }
+                    case 'duplicate': {
+                        duplicateSavedQuery(item)
                         break
                     }
                     case 'bookmark': {
@@ -856,9 +884,30 @@
                     : folderCloseSvg
                 let querySvg =
                     '<span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5" stroke="#5277D7"/><path d="M4 6L6 8L4 10" stroke="#5277D7" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 11H12" stroke="#5277D7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'
+                let iconName: string = getEntityStatusIcon(
+                    assetType(item.value),
+                    certificateStatus(item.value)
+                )
+                if (item.value?.attributes.isVisualQuery) {
+                    // for changing it to Vqb
+                    iconName = iconName.replace('Query', 'Vqb')
+                }
+                const svgCollection = {
+                    //FIXME: why Query imported svg not working
+                    Query: `<span>${querySvg}</span>`,
+                    QueryVerified: `<span>${QueryVerified}</span>`,
+                    QueryDeprecated: `<span>${QueryDeprecated}</span>`,
+                    QueryDraft: `<span>${QueryDraft}</span>`,
+                    Vqb: `<span>${Vqb}</span>`,
+                    VqbVerified: `<span>${VqbVerified}</span>`,
+                    VqbDeprecated: `<span>${VqbDeprecated}</span>`,
+                    VqbDraft: `<span>${VqbDraft}</span>`,
+                }
 
                 const folderSvgEl = new DOMParser().parseFromString(
-                    item.value.typeName === 'Query' ? querySvg : folderSvg,
+                    item.value.typeName === 'Query'
+                        ? svgCollection[iconName] ?? querySvg
+                        : folderSvg,
                     'text/html'
                 ).body.firstElementChild
 

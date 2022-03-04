@@ -49,7 +49,7 @@
                         ref="descriptionRef"
                         v-model:value="localValue"
                         tabindex="0"
-                        :rows="4"
+                        :autosize="{ minRows: 4 }"
                         @blur="handleBlur"
                         @keyup.esc="handleCancel"
                     ></a-textarea>

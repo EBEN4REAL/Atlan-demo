@@ -349,7 +349,7 @@ export function generateSQLQuery(
 
     if (groupPanel?.hide) {
         groupPanel?.subpanels.forEach((subpanel, i) => {
-            subpanel.columnsData.forEach((columnData) => {
+            subpanel?.columnsData?.forEach((columnData) => {
                 const tableName = getTableNameWithQuotes(
                     columnData.qualifiedName ?? ''
                 )
@@ -385,7 +385,7 @@ export function generateSQLQuery(
                         subpanel.column?.columnQualifiedName ??
                         ''
                 )
-                if (subpanel.column.label) {
+                if (subpanel?.column?.label) {
                     const tableName = getTableNameWithQuotes(
                         subpanel.column?.qualifiedName ??
                             subpanel.column?.columnsQualifiedName ??
@@ -462,13 +462,25 @@ export function generateSQLQuery(
                     subpanel.filter?.value == undefined
                 )
                     return
+                // for value based filters
                 if (
                     index > 0 &&
                     Object.keys(filter?.subpanels[index - 1]?.column ?? {})
                         .length > 0 &&
-                    filter?.subpanels[index - 1]?.filter?.value
+                    filter?.subpanels[index - 1]?.filter?.value &&
+                    filter?.subpanels[index - 1]?.filter?.type !== 'none'
                 )
                     res += ` ${subpanel?.filter?.filterType?.toUpperCase()} `
+
+                // for non value based filters
+                if (
+                    index > 0 &&
+                    Object.keys(filter?.subpanels[index - 1]?.column ?? {})
+                        .length > 0 &&
+                    filter?.subpanels[index - 1]?.filter?.type === 'none'
+                )
+                    res += ` ${subpanel?.filter?.filterType?.toUpperCase()} `
+
                 const tableName = getTableNameWithQuotes(
                     subpanel.column.columnQualifiedName ??
                         subpanel.column?.qualifiedName ??

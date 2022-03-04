@@ -1,9 +1,9 @@
 /* eslint-disable no-nested-ternary */
-export default function useUpdateGraph() {
-    const highlightNodes = (graph, highlightedNode, nodesToHighlight) => {
+export default function useUpdateGraph(graph) {
+    const highlightNodes = (highlightedNode, nodesToHighlight) => {
         const graphNodes = graph.value.getNodes()
 
-        // graph.value.freeze('highlightNodes')
+        graph.value.freeze('highlightNodes')
         graphNodes.forEach((x) => {
             const itExists = nodesToHighlight.includes(x.id)
             const isHN = highlightedNode?.value === x.id
@@ -30,17 +30,20 @@ export default function useUpdateGraph() {
                 lineageNodeElement?.classList.add('isHighlightedNodePath')
             if (isGrayed) lineageNodeElement?.classList.add('isGrayed')
         })
-        // graph.value.unfreeze('highlightNodes')
+        graph.value.unfreeze('highlightNodes')
     }
 
-    const highlightEdges = (graph, nodesToHighlight, edgesHighlighted) => {
+    const highlightEdges = (nodesToHighlight, edgesHighlighted) => {
         edgesHighlighted.value = []
         const graphEdges = graph.value.getEdges()
         const gray = nodesToHighlight.length ? '#d9d9d9' : '#aaaaaa'
-        // graph.value.freeze('highlightEdges')
+        graph.value.freeze('highlightEdges')
         graphEdges.forEach((x) => {
             const cell = graph.value.getCellById(x.id)
             const [source, target] = x.id.split('/')[1].split('@')
+
+            if (source.includes('vpNode') || target.includes('vpNode')) return
+
             const itExists =
                 nodesToHighlight.includes(source) &&
                 nodesToHighlight.includes(target)
@@ -56,11 +59,24 @@ export default function useUpdateGraph() {
                 cell.attr('line/strokeWidth', 1.6)
             }
         })
-        // graph.value.unfreeze('highlightEdges')
+        graph.value.unfreeze('highlightEdges')
+    }
+
+    const toggleNodesEdges = (visible) => {
+        const graphEdges = graph.value.getEdges()
+        graph.value.freeze('toggleNodesEdges')
+        graphEdges.forEach((x) => {
+            if (x.id.includes('vpNode')) return
+            const cell = graph.value.getCellById(x.id)
+            cell.attr('line/stroke', visible ? '#aaaaaa' : '#dce0e5')
+            cell.toBack()
+        })
+        graph.value.unfreeze('toggleNodesEdges')
     }
 
     return {
         highlightNodes,
         highlightEdges,
+        toggleNodesEdges,
     }
 }

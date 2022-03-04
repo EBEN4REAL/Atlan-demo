@@ -124,6 +124,8 @@
                     v-if="!isEditMode"
                     :tooltip-text="entityTitle"
                     :classes="'w-full '"
+                    placement="topRight"
+                    :mouseLeaveDelay="0"
                 />
             </div>
 

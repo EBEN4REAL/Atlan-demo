@@ -33,16 +33,23 @@
                 ref="searchBar"
                 :allowClear="true"
                 @change="handleSearchChange"
-                placeholder="Search terms & categories..."
+                :placeholder="
+                    checkable
+                        ? 'Search terms...'
+                        : 'Search terms & categories...'
+                "
             >
-                <template  #filter>
-                    <a-tooltip v-if="!queryText" >
+                <template #filter>
+                    <a-tooltip v-if="!queryText">
                         <template #title>Collapse all </template>
                         <!-- <a-button :disabled="!showCollapseAll" class="p-0 m-0 border-0 outline-none "> -->
                         <atlan-icon
                             icon="TreeCollapseAll"
                             class="h-4 ml-0 outline-none cursor-pointer"
-                            :class="{'cursor-not-allowed opacity-80':!showCollapseAll}"
+                            :class="{
+                                'cursor-not-allowed opacity-80':
+                                    !showCollapseAll,
+                            }"
                             @click="handleCollapse"
                         >
                         </atlan-icon>
@@ -410,6 +417,16 @@
 
             const handleAddGTC = (asset, entity) => {
                 if (asset) {
+                    console.log(
+                        asset?.typeName,
+                        asset?.attributes?.anchor?.guid,
+                        'add'
+                    )
+                    glossaryStore.updateAssetCount(
+                        asset?.typeName,
+                        asset?.attributes?.anchor?.guid,
+                        'add'
+                    )
                     if (asset.typeName === 'AtlasGlossary') {
                         glossaryStore.addGlossary(asset)
                         handleSelectGlossary(asset?.attributes?.qualifiedName)
@@ -435,6 +452,13 @@
                 console.log('bruh log', glossaryTree.value)
             }
             const handleAddTerm = (asset) => {
+                console.log(asset?.typeName, asset?.attriutes?.anchor, 'add')
+                glossaryStore.updateAssetCount(
+                    asset?.typeName,
+                    asset?.attriutes?.anchor,
+                    'add'
+                )
+
                 handleSelectGlossary(getAnchorQualifiedName(asset))
                 if (glossaryTree.value) {
                     glossaryTree.value.addTerm(asset)
@@ -460,8 +484,14 @@
                     emit('searchItemCheck', checkedNode, checked)
                 }
             }
-            const checkDuplicateCategoryNames = (categoryGuid: string, name: string) => {
-                 return glossaryTree.value?.checkDuplicateCategoryNames(categoryGuid, name)
+            const checkDuplicateCategoryNames = (
+                categoryGuid: string,
+                name: string
+            ) => {
+                return glossaryTree.value?.checkDuplicateCategoryNames(
+                    categoryGuid,
+                    name
+                )
             }
             provide('selectedGlossaryQf', selectedGlossaryQf)
             provide('handleSelectGlossary', handleSelectGlossary)

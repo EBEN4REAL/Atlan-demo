@@ -23,6 +23,8 @@ import useRunQuery from '~/components/insights/playground/common/composables/use
 import useSetClassifications from '~/composables/discovery/useSetClassifications'
 import updateAsset from '~/composables/discovery/updateAsset'
 import { generateSQLQuery } from '~/components/insights/playground/editor/vqb/composables/generateSQLQuery'
+import { useActiveTab } from '~/components/insights/common/composables/useActiveTab'
+import { useRouter, useRoute } from 'vue-router'
 
 export function useSavedQuery(
     tabsArray: Ref<activeInlineTabInterface[]>,
@@ -30,6 +32,8 @@ export function useSavedQuery(
     activeInlineTabKey: Ref<string>,
     treeSelectedKeys?: Ref<string[]>
 ) {
+    const router = useRouter()
+    const route = useRoute()
     const { username } = whoami()
     const tenantStore = useTenantStore()
     const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
@@ -76,12 +80,8 @@ export function useSavedQuery(
 
         return false
     }
-
-    const openSavedQueryInNewTab = async (
-        savedQuery: SavedQuery,
-        isTabAdded: Ref<string>
-    ) => {
-        isTabAdded.value = savedQuery?.guid
+    const getNewTabFromSavedQuery = (savedQuery: SavedQuery) => {
+        const { generateNewActiveTab } = useActiveTab()
         let decodedVariables = decodeBase64Data(
             savedQuery?.attributes?.variablesSchemaBase64
         ) as CustomVaribaleInterface[]
@@ -99,20 +99,26 @@ export function useSavedQuery(
             defaultSchemaQualifiedName,
             defaultDatabaseQualifiedName
         )
-        console.log(connectors, 'connectors')
-        console.log('saved query: ', savedQuery)
-
         const visualBuilderSchemaBase64 =
             savedQuery?.attributes?.visualBuilderSchemaBase64
         const isVisualQuery = savedQuery?.attributes?.isVisualQuery
 
         let decodedVQB = decodeBase64Data(visualBuilderSchemaBase64)
 
-        const newTab: activeInlineTabInterface = {
-            attributes: savedQuery?.attributes,
+        let newTab = generateNewActiveTab({
+            activeInlineTab,
             label: savedQuery?.attributes?.name ?? '',
+            assetInfo: savedQuery,
+            editorText: savedQuery?.attributes?.rawQuery
+                ? savedQuery?.attributes?.rawQuery
+                : '',
+        })
+
+        newTab = {
+            ...newTab,
+            status: savedQuery?.attributes.certificateStatus,
+            attributes: savedQuery?.attributes,
             key: savedQuery?.guid,
-            favico: 'https://atlan.com/favicon.ico',
             isSaved: true,
             queryId: savedQuery?.guid,
             updateTime:
@@ -149,6 +155,7 @@ export function useSavedQuery(
                 },
             },
             playground: {
+                ...newTab.playground,
                 isVQB: isVisualQuery ? true : false,
                 vqb:
                     isVisualQuery && decodedVQB
@@ -196,43 +203,37 @@ export function useSavedQuery(
                         ...connectors,
                     },
                 },
-                resultsPane: {
-                    activeTab:
-                        activeInlineTab.value?.playground.resultsPane
-                            .activeTab ?? 0,
-                    outputPaneSize: 27.9,
-                    result: {
-                        title: savedQuery?.attributes?.name,
-                        isQueryRunning: '',
-                        isQueryAborted: false,
-                        queryErrorObj: {},
-                        errorDecorations: [],
-                        abortQueryFn: undefined,
-                        totalRowsCount: -1,
-                        executionTime: -1,
-                        runQueryId: undefined,
-                        buttonDisable: false,
-                        eventSourceInstance: undefined,
-                        tabQueryState: false,
-                    },
-                    metadata: {},
-                    queries: {},
-                    joins: {},
-                    filters: {},
-                    impersonation: {},
-                    downstream: {},
-                    sqlHelp: {},
-                },
-            },
-            assetSidebar: {
-                // for taking the previous state from active tab
-                isVisible: false,
-                assetInfo: savedQuery,
-                title: activeInlineTab.value?.assetSidebar.title ?? '',
-                id: activeInlineTab.value?.assetSidebar.id ?? '',
             },
         }
+        return newTab
+    }
+    const duplicateSavedQuery = (savedQuery) => {
+        // get new tab from saved query
+        const newTab = {
+            ...(getNewTabFromSavedQuery({ ...(savedQuery?.value ?? {}) }) ||
+                {}),
+        }
+        const label = `Copy ${newTab.label}`
+        // reset attributes
+        newTab.label = label
+        newTab.key = String(new Date().getTime())
+        newTab.isSaved = false
+        newTab.queryId = null
+        newTab.qualifiedName = ''
+        newTab.attributes = null
+        //open a new tab
+        inlineTabAdd(newTab, tabsArray, activeInlineTabKey)
+        activeInlineTabKey.value = newTab.key
+        /* ----------------------------- */
+        // syncying inline tabarray in localstorage
+        syncInlineTabsInLocalStorage(tabsArray.value)
+        const queryParams = {}
+        if (route?.query?.vqb) queryParams.vqb = true
+        router.push({ path: `insights`, query: queryParams })
+    }
 
+    const openSavedQueryInNewTab = async (savedQuery: SavedQuery) => {
+        const newTab = { ...(getNewTabFromSavedQuery(savedQuery) || {}) }
         const check = isInlineTabAlreadyOpened(newTab, tabsArray)
         if (!check) {
             // console.log('saved query tab not opened')
@@ -269,7 +270,6 @@ export function useSavedQuery(
 
     const openSavedQueryInNewTabAndRun = (
         savedQuery,
-        isTabAdded: Ref<string>,
         getData: (
             activeInlineTab,
             rows: any[],
@@ -282,15 +282,11 @@ export function useSavedQuery(
         onRunCompletion,
         onQueryIdGeneration
     ) => {
-        isTabAdded.value = savedQuery?.value?.guid
-        openSavedQueryInNewTab(
-            {
-                ...savedQuery?.value,
-                parentTitle:
-                    savedQuery?.value?.attributes?.parent?.attributes?.name,
-            },
-            isTabAdded
-        )
+        openSavedQueryInNewTab({
+            ...savedQuery?.value,
+            parentTitle:
+                savedQuery?.value?.attributes?.parent?.attributes?.name,
+        })
 
         const activeInlineTabKeyCopy = activeInlineTabKey.value
 
@@ -601,79 +597,64 @@ export function useSavedQuery(
                             name: name,
                         },
                         'Query'
-                    )
+                    ).then(() => {
+                        useAddEvent('insights', 'query', 'saved', {
+                            variables_count: getVariableCount(),
+                            visual_query: !!activeInlineTab.playground.isVQB,
+                        })
+                        showSaveQueryModal.value = false
+                        message.success({
+                            content: `${name} query saved!`,
+                        })
+                        saveModalRef.value?.clearData()
+                        const guid = data.value.mutatedEntities.CREATE[0].guid
+                        console.log(data.value, 'saved')
+                        /* Not present in response */
+                        activeInlineTabCopy.updateTime = Date.now()
+                        activeInlineTabCopy.updatedBy = username.value
+                        /* ----------------------------------------------- */
+                        activeInlineTabCopy.qualifiedName = qualifiedName
+                        activeInlineTabCopy.queryId = guid
 
-                    linkClassification(
-                        assetClassification,
-                        {
-                            guid: data?.value?.mutatedEntities?.CREATE[0]?.guid,
-                            collectionQualifiedName: collectionQualifiedName,
-                            parentFolderGuid: parentFolderGuid,
-                            parentFolderQF: parentFolderQF,
-                            qualifiedName:
-                                data?.value?.mutatedEntities?.CREATE[0]
-                                    ?.attributes?.qualifiedName,
-                            name: name,
-                        },
-                        'Query'
-                    )
+                        const {
+                            data: data2,
+                            error: error2,
+                            isLoading: isLoading2,
+                        } = Insights.GetSavedQuery(guid, {})
 
-                    useAddEvent('insights', 'query', 'saved', {
-                        variables_count: getVariableCount(),
-                        visual_query: !!activeInlineTab.playground.isVQB,
-                    })
-                    showSaveQueryModal.value = false
-                    message.success({
-                        content: `${name} query saved!`,
-                    })
-                    saveModalRef.value?.clearData()
-                    const guid = data.value.mutatedEntities.CREATE[0].guid
-                    console.log(data.value, 'saved')
-                    /* Not present in response */
-                    activeInlineTabCopy.updateTime = Date.now()
-                    activeInlineTabCopy.updatedBy = username.value
-                    /* ----------------------------------------------- */
-                    activeInlineTabCopy.qualifiedName = qualifiedName
-                    activeInlineTabCopy.queryId = guid
+                        watch([data2, error2, isLoading2], () => {
+                            if (isLoading2.value == false) {
+                                if (error2.value === undefined) {
+                                    // console.log('saved query entity: ', data2.value)
+                                    activeInlineTabCopy.assetSidebar.assetInfo =
+                                        data2.value?.entity
 
-                    const {
-                        data: data2,
-                        error: error2,
-                        isLoading: isLoading2,
-                    } = Insights.GetSavedQuery(guid, {})
+                                    activeInlineTabCopy.explorer.queries.collection.qualifiedName =
+                                        collectionQualifiedName
 
-                    watch([data2, error2, isLoading2], () => {
-                        if (isLoading2.value == false) {
-                            if (error2.value === undefined) {
-                                // console.log('saved query entity: ', data2.value)
-                                activeInlineTabCopy.assetSidebar.assetInfo =
-                                    data2.value?.entity
-
-                                activeInlineTabCopy.explorer.queries.collection.qualifiedName =
-                                    collectionQualifiedName
-
-                                activeInlineTabCopy.attributes =
-                                    data2?.value?.entity.attributes
-                                modifyActiveInlineTab(
-                                    activeInlineTabCopy,
-                                    tabsArray,
-                                    true
-                                )
-                                // activeInlineTabCopy.assetSidebar.assetInfo=data2.value?.entities
+                                    activeInlineTabCopy.attributes =
+                                        data2?.value?.entity.attributes
+                                    modifyActiveInlineTab(
+                                        activeInlineTabCopy,
+                                        tabsArray,
+                                        true
+                                    )
+                                    // activeInlineTabCopy.assetSidebar.assetInfo=data2.value?.entities
+                                }
+                            }
+                        })
+                        if (routeToGuid) {
+                            if (guid) {
+                                const queryParams = { id: guid }
+                                if (route?.query?.vqb) queryParams.vqb = true
+                                router.push({
+                                    path: `insights`,
+                                    query: queryParams,
+                                })
                             }
                         }
+                        if (Callback) Callback()
                     })
-                    if (routeToGuid) {
-                        if (guid) {
-                            const queryParams = { id: guid }
-                            if (route?.query?.vqb) queryParams.vqb = true
-                            router.push({
-                                path: `insights`,
-                                query: queryParams,
-                            })
-                        }
-                    }
-                    if (Callback) Callback()
                 } else {
                     if (
                         error?.value?.response?.data?.errorCode ===
@@ -694,7 +675,6 @@ export function useSavedQuery(
 
     const saveQueryToDatabaseAndOpenInNewTab = (
         saveQueryData: any,
-        isTabAdded: Ref<string>,
         editorInstance: Ref<any>,
         saveQueryLoading: Ref<boolean>,
         showSaveQueryModal: Ref<boolean>,
@@ -821,21 +801,6 @@ export function useSavedQuery(
                         'Query'
                     )
 
-                    linkClassification(
-                        assetClassification,
-                        {
-                            guid: data?.value?.mutatedEntities?.CREATE[0]?.guid,
-                            collectionQualifiedName: collectionQualifiedName,
-                            parentFolderGuid: parentFolderGuid,
-                            parentFolderQF: parentFolderQF,
-                            qualifiedName:
-                                data?.value?.mutatedEntities?.CREATE[0]
-                                    ?.attributes?.qualifiedName,
-                            name: name,
-                        },
-                        'Query'
-                    )
-
                     const savedQuery = data.value.mutatedEntities.CREATE[0]
 
                     const parentGuid = parentFolderGuid
@@ -857,13 +822,14 @@ export function useSavedQuery(
                     saveModalRef.value?.clearData()
                     // const guid = savedQuery.guid
                     console.log(data.value, 'saved')
+
                     if (savedQuery.guid) {
                         const queryParams = { id: savedQuery.guid }
                         if (route?.query?.vqb) queryParams.vqb = true
                         router.push({ path: `insights`, query: queryParams })
                     }
 
-                    openSavedQueryInNewTab(savedQuery, isTabAdded)
+                    openSavedQueryInNewTab(savedQuery)
                 } else {
                     if (
                         error?.value?.response?.data?.errorCode ===
@@ -1128,94 +1094,67 @@ export function useSavedQuery(
                             name: name,
                         },
                         'Query'
-                    )
+                    ).then(() => {
+                        useAddEvent('insights', 'query', 'saved', {
+                            variables_count: getVariableCount(),
+                            visual_query: !!activeInlineTab.playground.isVQB,
+                        })
+                        showSaveQueryModal.value = false
+                        message.success({
+                            content: `${name} query saved!`,
+                        })
+                        saveModalRef.value?.clearData()
 
-                    linkClassification(
-                        assetClassification,
-                        {
-                            guid: data?.value?.mutatedEntities?.CREATE[0]?.guid,
-                            collectionQualifiedName: collectionQualifiedName,
-                            parentFolderGuid: parentFolderGuid,
-                            parentFolderQF: parentFolderQF,
-                            qualifiedName:
-                                data?.value?.mutatedEntities?.CREATE[0]
-                                    ?.attributes?.qualifiedName,
-                            name: name,
-                        },
-                        'Query'
-                    )
+                        setTimeout(() => {
+                            const guid =
+                                data.value.mutatedEntities.CREATE[0].guid
 
-                    // handleCancel()
-                    // console.log('checked terms: ', assetTerms.value)
+                            const parentGuid = parentFolderGuid
+                            const parentQualifiedName =
+                                data.value.mutatedEntities.CREATE[0].attributes
+                                    .parentQualifiedName
+                            /* Not present in response */
+                            activeInlineTabCopy.updateTime = Date.now()
+                            activeInlineTabCopy.updatedBy = username.value
+                            /* ----------------------------------------------- */
+                            activeInlineTabCopy.qualifiedName = qualifiedName
+                            activeInlineTabCopy.queryId = guid
 
-                    useAddEvent('insights', 'query', 'saved', {
-                        variables_count: getVariableCount(),
-                        visual_query: !!activeInlineTab.playground.isVQB,
-                    })
-                    showSaveQueryModal.value = false
-                    message.success({
-                        content: `${name} query saved!`,
-                    })
-                    saveModalRef.value?.clearData()
-                    const guid = data.value.mutatedEntities.CREATE[0].guid
+                            activeInlineTabCopy.parentGuid = parentGuid
+                            activeInlineTabCopy.parentQualifiedName =
+                                parentQualifiedName
+                            activeInlineTabCopy.collectionQualifiedName =
+                                collectionQualifiedName
 
-                    const parentGuid = parentFolderGuid
-                    const parentQualifiedName =
-                        data.value.mutatedEntities.CREATE[0].attributes
-                            .parentQualifiedName
+                            const {
+                                data: data2,
+                                error: error2,
+                                isLoading: isLoading2,
+                            } = Insights.GetSavedQuery(guid, {})
 
-                    console.log(data.value, 'saved')
-                    /* Not present in response */
-                    activeInlineTabCopy.updateTime = Date.now()
-                    activeInlineTabCopy.updatedBy = username.value
-                    /* ----------------------------------------------- */
-                    activeInlineTabCopy.qualifiedName = qualifiedName
-                    activeInlineTabCopy.queryId = guid
+                            watch([data2, error2, isLoading2], () => {
+                                if (isLoading2.value == false) {
+                                    if (error2.value === undefined) {
+                                        // console.log('saved query entity: ', data2.value)
+                                        activeInlineTabCopy.assetSidebar.assetInfo =
+                                            data2.value?.entity
 
-                    activeInlineTabCopy.parentGuid = parentGuid
-                    activeInlineTabCopy.parentQualifiedName =
-                        parentQualifiedName
-                    activeInlineTabCopy.collectionQualifiedName =
-                        collectionQualifiedName
+                                        activeInlineTabCopy.explorer.queries.collection.qualifiedName =
+                                            collectionQualifiedName
 
-                    const {
-                        data: data2,
-                        error: error2,
-                        isLoading: isLoading2,
-                    } = Insights.GetSavedQuery(guid, {})
-
-                    watch([data2, error2, isLoading2], () => {
-                        if (isLoading2.value == false) {
-                            if (error2.value === undefined) {
-                                // console.log('saved query entity: ', data2.value)
-                                activeInlineTabCopy.assetSidebar.assetInfo =
-                                    data2.value?.entity
-
-                                activeInlineTabCopy.explorer.queries.collection.qualifiedName =
-                                    collectionQualifiedName
-
-                                activeInlineTabCopy.attributes =
-                                    data2?.value?.entity.attributes
-                                modifyActiveInlineTab(
-                                    activeInlineTabCopy,
-                                    tabsArray,
-                                    true
-                                )
-                                // activeInlineTabCopy.assetSidebar.assetInfo=data2.value?.entities
-                            }
-                        }
-                    })
-
-                    if (routeToGuid) {
-                        if (guid) {
-                            const queryParams = { id: guid }
-                            if (route?.query?.vqb) queryParams.vqb = true
-                            router.push({
-                                path: `insights`,
-                                query: queryParams,
+                                        activeInlineTabCopy.attributes =
+                                            data2?.value?.entity.attributes
+                                        modifyActiveInlineTab(
+                                            activeInlineTabCopy,
+                                            tabsArray,
+                                            true
+                                        )
+                                        // activeInlineTabCopy.assetSidebar.assetInfo=data2.value?.entities
+                                    }
+                                }
                             })
-                        }
-                    }
+                        }, 1000)
+                    })
                 } else {
                     // console.log('query error: ', error.value.response.data.errorCode)
                     if (
@@ -1244,7 +1183,7 @@ export function useSavedQuery(
         return variables.length
     }
 
-    const linkTerms = (assetTerms, assetData, type) => {
+    const linkTerms = (assetTerms, assetData, type): Promise<any> => {
         if (assetTerms?.length) {
             let data2 = assetTerms.map((el) => {
                 return {
@@ -1290,12 +1229,9 @@ export function useSavedQuery(
                 error: isTermError,
             } = updateAsset(body)
 
-            mutateAsset()
-
-            watch([isLoadingTerm, isTermError], () => {
-                // console.log('terms linked: ')
-            })
+            return mutateAsset()
         }
+        return Promise.resolve()
     }
 
     const linkClassification = (assetClassification, assetData, type) => {
@@ -1360,5 +1296,6 @@ export function useSavedQuery(
         openSavedQueryInNewTabAndRun,
         checkQueryOpenedInTab,
         checkPreviewOpenedInCurrentTab,
+        duplicateSavedQuery,
     }
 }

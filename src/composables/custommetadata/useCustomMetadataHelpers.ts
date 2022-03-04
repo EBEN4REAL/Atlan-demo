@@ -71,7 +71,7 @@ export default function useCustomMetadataHelpers() {
                 a.options.customApplicableEntityTypes &&
                 JSON.parse(a.options.customApplicableEntityTypes).includes(
                     typeName
-                )
+                ) && a.options?.isDeprecated !== 'true'
         )))
 
     const getEnumOptions = (enumName: string) => {

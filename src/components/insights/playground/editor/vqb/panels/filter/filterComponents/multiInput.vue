@@ -5,7 +5,7 @@
             :disabled="readOnly && !subpanel?.filter?.isVariable"
             mode="tags"
             :class="$style.multi_input"
-            class="w-full border-gray-300 rounded box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
+            class="w-full border-gray-200 rounded focus:border-primary-focus focus:border-2 focus:outline-none"
             style="height: 32px !important; z-index: 2"
             placeholder="Enter Multiple Values"
             @change="handleChange"

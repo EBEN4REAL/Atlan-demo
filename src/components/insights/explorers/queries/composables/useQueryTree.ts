@@ -11,6 +11,7 @@ import {
     BasicSearchResponse,
     RelationshipSearchResponse,
 } from '~/types/common/atlasSearch.interface'
+import { decodeQuery as decodeBase64Data } from '~/utils/helper/routerHelper'
 import { IndexSearchResponse } from '~/services/meta/search/index'
 
 import { Components } from '~/types/atlas/client'
@@ -53,7 +54,7 @@ interface useSavedQueriesTreeProps {
     queryFolderNamespace: Ref<Folder>
     permissions: { [index: string]: string | undefined }
     collection: ComputedRef<QueryCollection>
-    isTabAdded: Ref<string>
+    showcustomToolBar: Ref<Boolean>
 }
 
 const useQueryTree = ({
@@ -67,7 +68,7 @@ const useQueryTree = ({
     queryFolderNamespace,
     permissions,
     collection,
-    isTabAdded,
+    showcustomToolBar,
 }: useSavedQueriesTreeProps) => {
     // A map of node guids to the guid of their parent. Used for traversing the tree while doing local update
     const nodeToParentKeyMap: Record<string, string> = {}
@@ -376,7 +377,16 @@ const useQueryTree = ({
             immediateParentFolderQF.value = item.attributes.parentQualifiedName
             immediateParentGuid.value = nodeToParentKeyMap[item.guid]
 
-            openSavedQueryInNewTab({ ...item, parentTitle }, isTabAdded)
+            openSavedQueryInNewTab({ ...item, parentTitle })
+            let decodedVariables = decodeBase64Data(
+                item?.attributes?.variablesSchemaBase64
+            )
+            if (
+                decodedVariables?.length > 0 &&
+                !item?.attributes?.isVisualQuery
+            ) {
+                showcustomToolBar.value = true
+            }
 
             selectedKeys.value.push(item.guid)
             if (pushGuidToURL) {

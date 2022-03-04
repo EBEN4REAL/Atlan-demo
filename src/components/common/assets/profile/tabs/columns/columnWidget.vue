@@ -74,7 +74,11 @@
                         <div
                             :class="{
                                 'flex items-center justify-between':
-                                    record.is_primary,
+                                    record.is_primary ||
+                                    record.is_foreign ||
+                                    record.is_partition ||
+                                    record.is_sort ||
+                                    record.is_indexed,
                             }"
                         >
                             <div class="flex items-center">
@@ -108,8 +112,23 @@
                                     ></AtlanIcon
                                 ></a-tooltip>
                             </div>
-                            <div v-if="record.is_primary">
-                                <AtlanIcon icon="PrimaryKey" />
+                            <div
+                                v-if="
+                                    record.is_primary ||
+                                    record.is_foreign ||
+                                    record.is_partition ||
+                                    record.is_sort ||
+                                    record.is_indexed
+                                "
+                                class="relative flex items-center h-full"
+                            >
+                                <ColumnKeys
+                                    :is-primary="record.is_primary"
+                                    :is-foreign="record.is_foreign"
+                                    :is-partition="record.is_partition"
+                                    :is-sort="record.is_sort"
+                                    :is-indexed="record.is_indexed"
+                                />
                             </div>
                         </div>
                     </template>
@@ -201,13 +220,11 @@
     import Tooltip from '@/common/ellipsis/index.vue'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import AtlanBtn from '@/UI/button.vue'
+    import ColumnKeys from '~/components/common/column/columnKeys.vue'
 
     // Composables
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import {
-        MinimalAttributes,
-        DefaultRelationAttributes,
-    } from '~/constant/projection'
+    import { DefaultRelationAttributes } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
 
     // Interfaces
@@ -225,6 +242,7 @@
             CertificateBadge,
             AtlanBtn,
             Sorting,
+            ColumnKeys,
         },
         setup() {
             /** DATA */
@@ -266,13 +284,11 @@
                 'displayDescription',
                 'userDescription',
                 'certificateStatus',
+                'certificateUpdatedBy',
                 'meanings',
                 'category',
-
                 'dataType',
-
                 'isPrimary',
-
                 'isCustom',
                 'isPartition',
                 'isSort',
@@ -379,6 +395,10 @@
                     column_name: i.attributes.name,
                     data_type: i.attributes.dataType,
                     is_primary: i.attributes.isPrimary,
+                    is_foreign: i.attributes.isForeign,
+                    is_partition: i.attributes.isPartition,
+                    is_sort: i.attributes.isSort,
+                    is_indexed: i.attributes.isIndexed,
                     description:
                         i.attributes.userDescription ||
                         i.attributes.description ||

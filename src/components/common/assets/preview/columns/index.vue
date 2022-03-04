@@ -9,8 +9,9 @@
                     :image="tab.image"
                     :emoji="tab.emoji"
                     height="h-4"
+                    class="mb-0.5"
                 />
-                <span class="font-semibold text-gray-500 ml-1">Columns</span>
+                <span class="ml-1 font-semibold text-gray-500">Columns</span>
             </span>
         </div>
 
@@ -103,10 +104,7 @@
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import ColumnItem from './assetItem.vue'
 
-    import {
-        MinimalAttributes,
-        DefaultRelationAttributes,
-    } from '~/constant/projection'
+    import { DefaultRelationAttributes } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import useEvaluate from '~/composables/auth/useEvaluate'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -156,13 +154,11 @@
                 'displayDescription',
                 'userDescription',
                 'certificateStatus',
+                'certificateUpdatedBy',
                 'meanings',
                 'category',
-
                 'dataType',
-
                 'isPrimary',
-
                 'isCustom',
                 'isPartition',
                 'isSort',

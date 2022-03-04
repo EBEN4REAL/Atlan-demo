@@ -23,7 +23,7 @@ export default function useTypedefData() {
 
     const enumList = computed(() =>
         typedefStore.enumList
-            .filter((x) => x.serviceType !== 'atlas_core')
+            .filter((x) => x.serviceType !== 'atlas_core' && x?.options?.isDeprecated !== 'true')
             .sort((a, b) => {
                 if (a.name.toLowerCase() > b.name.toLowerCase()) {
                     return 1

@@ -387,7 +387,6 @@
         },
         setup(props, { emit }) {
             let { reset, resetParentGuid, resetType } = toRefs(props)
-            const isTabAdded = inject('isTabAdded') as Ref<string>
             const route =
                 useRoute() /* FIXME: Hardcoded error object error for collection request get's failed */
             const errorObjectForCollection = ref({
@@ -854,6 +853,10 @@
                 return count
             })
 
+            const showcustomToolBar = inject(
+                'showcustomToolBar'
+            ) as Ref<boolean>
+
             const {
                 treeData: treeData,
                 loadedKeys: loadedKeys,
@@ -889,8 +892,8 @@
                     readQueries: permissions.value.public.readQueries,
                     readFolders: permissions.value.public.readFolders,
                 },
-                isTabAdded,
                 collection: selectedCollection,
+                showcustomToolBar,
             })
 
             const { data1: searchResults, isLoading1: searchLoading } =
@@ -929,7 +932,6 @@
                         assetTerms,
                         assetClassification,
                     },
-                    isTabAdded,
                     editorInstance,
                     saveQueryLoading,
                     showSaveQueryModal,

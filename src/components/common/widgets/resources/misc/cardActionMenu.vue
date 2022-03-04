@@ -17,6 +17,15 @@
                         </a-menu-item>
                     </template>
                 </EditResource>
+                <a-menu-item key="copyLink" class="py-2" @click="handleCopy">
+                    <div class="flex items-center">
+                        <AtlanIcon
+                            icon="CopyOutlined"
+                            class="h-4 mb-0.5 mr-1"
+                        />
+                        <span class="text-sm">Copy link</span>
+                    </div>
+                </a-menu-item>
                 <DeleteResource :link="link">
                     <template #trigger>
                         <a-menu-item key="delete">
@@ -32,12 +41,6 @@
                         </a-menu-item>
                     </template>
                 </DeleteResource>
-                <a-menu-item key="copyLink" class="py-2" @click="handleCopy">
-                    <div class="flex items-center">
-                        <AtlanIcon icon="CopyOutlined" />
-                        <span class="pl-2 text-sm">Copy link</span>
-                    </div>
-                </a-menu-item>
             </a-menu>
         </template>
     </a-dropdown>

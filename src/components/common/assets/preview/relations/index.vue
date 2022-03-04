@@ -3,7 +3,19 @@
         <div
             class="flex items-center justify-between px-5 py-2 border-b border-gray-200 bg-gray-50"
         >
-            <span class="font-semibold text-gray-500">Related Assets</span>
+            <div class="flex items-center">
+                <PreviewTabsIcon
+                    :icon="tab.icon"
+                    :image="tab.image"
+                    :emoji="tab.emoji"
+                    class="mb-0.5"
+                    height="h-4"
+                    :display-mode="true"
+                />
+                <div class="ml-1 font-semibold text-gray-500">
+                    Related Assets
+                </div>
+            </div>
         </div>
 
         <div class="px-5 pt-3 pb-0">
@@ -104,6 +116,7 @@
     import AssetList from '@/common/assets/list/index.vue'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import AssetItem from '@/common/assets/list/assetItem.vue'
+    import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
 
     import {
         DefaultRelationAttributes,
@@ -125,12 +138,17 @@
             PreferenceSelector,
             EmptyView,
             ErrorView,
+            PreviewTabsIcon,
         },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: false,
                 default: () => {},
+            },
+            tab: {
+                type: Object,
+                required: false,
             },
         },
         setup(props) {

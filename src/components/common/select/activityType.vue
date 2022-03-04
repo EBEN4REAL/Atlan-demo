@@ -20,11 +20,11 @@
                 <span> {{ group.label }}</span>
             </template>
             <a-select-option
-                v-for="item in group.children"
+                v-for="item in getIncludedChildren(group)"
+                :key="`${item.value}${group.value}`"
                 :value="item.value"
-                :key="item.value"
             >
-                {{ item.label }}
+                <span> {{ item.label }}</span>
             </a-select-option>
         </a-select-opt-group>
     </a-select>
@@ -37,7 +37,7 @@
     import { activityTypeMap } from '~/constant/activityType'
 
     export default defineComponent({
-        name: 'Activity Select',
+        name: 'ActivitySelect',
         props: {
             queryText: {
                 type: String,
@@ -65,7 +65,6 @@
             const groupList = computed(() => {
                 return list.value.filter((i) => {
                     if (i.isGroup) {
-                        console.log('filter', typeName.value, i.includes)
                         if (typeName.value && i.includes?.length > 0) {
                             if (
                                 i.includes?.includes(typeName.value) &&
@@ -111,7 +110,15 @@
                     }
                 })
             })
-
+            const getIncludedChildren = (i) => {
+                const includedChildren = i.children.filter((el) => {
+                    if (el?.excludes?.length) {
+                        if (el.excludes.includes(typeName.value)) return false
+                    }
+                    return true
+                })
+                return includedChildren
+            }
             const handleChange = () => {
                 modelValue.value = localValue.value
                 emit('change')
@@ -123,6 +130,7 @@
                 handleChange,
                 groupList,
                 nonGroupList,
+                getIncludedChildren,
             }
         },
     })

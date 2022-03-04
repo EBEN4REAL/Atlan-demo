@@ -103,7 +103,7 @@
                             :edit-permission="true"
                         >
                             <a-button class="flex items-center justify-center">
-                                <AtlanIcon icon="Share" class="mb-0.5" />
+                                <AtlanIcon :icon="action.icon" class="mb-0.5" />
                             </a-button>
                         </component>
                         <template v-else>
@@ -111,9 +111,16 @@
                                 <QueryDropdown
                                     v-if="
                                         showCTA(action.id) &&
+                                        connectorName(selectedAsset) !==
+                                            'glue' &&
                                         action.id === 'query' &&
                                         (assetType(selectedAsset) === 'Table' ||
-                                            assetType(selectedAsset) === 'View')
+                                            assetType(selectedAsset) ===
+                                                'View' ||
+                                            assetType(selectedAsset) ===
+                                                'TablePartition' ||
+                                            assetType(selectedAsset) ===
+                                                'MaterialisedView')
                                     "
                                     @handleClick="handleQueryAction"
                                 >
@@ -129,7 +136,10 @@
                                     </template>
                                 </QueryDropdown>
                                 <a-button
-                                    v-else-if="showCTA(action.id)"
+                                    v-else-if="
+                                        showCTA(action.id) &&
+                                        connectorName(selectedAsset) !== 'glue'
+                                    "
                                     class="flex items-center justify-center"
                                     @click="handleAction(action.id)"
                                 >
@@ -141,6 +151,23 @@
                             </a-tooltip>
                         </template>
                     </template>
+                    <template v-if="!disableSlackAsk && linkEditPermission">
+                        <SlackAskButton :asset="selectedAsset" />
+                    </template>
+                    <KebabMenu
+                        :key="selectedAsset.guid"
+                        :asset="selectedAsset"
+                        :edit-permission="
+                            selectedAssetUpdatePermission(
+                                selectedAsset,
+                                isDrawer
+                            )
+                        "
+                    >
+                        <a-button class="flex items-center justify-center">
+                            <AtlanIcon icon="KebabMenu" class="mb-0.5" />
+                        </a-button>
+                    </KebabMenu>
                 </a-button-group>
             </div>
         </div>
@@ -193,7 +220,7 @@
                     "
                     :selected-asset="selectedAsset"
                     :is-drawer="isDrawer"
-                    :read-permission="isScrubbed(selectedAsset)"
+                    :read-permission="!isScrubbed(selectedAsset)"
                     :edit-permission="
                         selectedAssetUpdatePermission(selectedAsset, isDrawer)
                     "
@@ -229,10 +256,11 @@
         toRefs,
         computed,
         provide,
+        inject,
     } from 'vue'
 
     import { useRoute, useRouter } from 'vue-router'
-    import { debouncedWatch } from '@vueuse/core'
+    import { debouncedWatch, whenever } from '@vueuse/core'
     import Tooltip from '@common/ellipsis/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
@@ -242,10 +270,19 @@
     import useEvaluate from '~/composables/auth/useEvaluate'
     import useAssetEvaluate from '~/composables/discovery/useAssetEvaluation'
     import ShareMenu from '@/common/assets/misc/shareMenu.vue'
+    import KebabMenu from '@/common/assets/misc/kebabMenu.vue'
     import NoAccess from '@/common/assets/misc/noAccess.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import useCollectionInfo from '~/components/insights/explorers/queries/composables/useCollectionInfo'
     import QueryDropdown from '@/common/query/queryDropdown.vue'
+    import SlackAskButton from '~/components/common/assets/misc/slackAskButton.vue'
+
+    import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
+
+    import {
+        resourceId,
+        disableSlackAsk,
+    } from '~/composables/integrations/slack/useAskAQuestion'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -256,7 +293,7 @@
             NoAccess,
             Tooltip,
             QueryDropdown,
-
+            KebabMenu,
             info: defineAsyncComponent(() => import('./info/index.vue')),
             columns: defineAsyncComponent(() => import('./columns/index.vue')),
             actions: defineAsyncComponent(() => import('./actions/index.vue')),
@@ -286,6 +323,7 @@
             linkedAssets: defineAsyncComponent(
                 () => import('./linkedAssets/linkedAssetsWrapper.vue')
             ),
+            SlackAskButton,
         },
 
         props: {
@@ -362,6 +400,7 @@
                 assetTypeLabel,
                 getProfilePath,
                 isScrubbed,
+                assetPermission,
                 selectedAssetUpdatePermission,
             } = useAssetInfo()
 
@@ -504,7 +543,39 @@
 
             provide('isProfile', isProfile)
 
+            const updateList = inject('updateList', () => ({}))
+            const updateDrawerList = inject('updateDrawerList', () => ({}))
+
+            /** whenever resource ID is fetched, refresh the asset to load the generated resource, then switch tab */
+            watch(resourceId, () => {
+                const id = ref(selectedAsset.value.guid)
+                const { asset, isReady: isUpdateReady } = useCurrentUpdate({
+                    id,
+                })
+
+                whenever(isUpdateReady, () => {
+                    if (isDrawer.value) {
+                        updateDrawerList(asset.value)
+                    } else updateList(asset.value)
+
+                    if (resourceId.value)
+                        switchTab(selectedAsset.value, 'Resources')
+                })
+            })
+
+            const linkEditPermission = computed(
+                () =>
+                    selectedAssetUpdatePermission(
+                        selectedAsset.value,
+                        isDrawer.value,
+                        'RELATIONSHIP_ADD',
+                        'Link'
+                    ) && assetPermission('CREATE_LINK')
+            )
+
             return {
+                linkEditPermission,
+                disableSlackAsk,
                 tabChildRef,
                 activeKey,
                 handleTabChange,

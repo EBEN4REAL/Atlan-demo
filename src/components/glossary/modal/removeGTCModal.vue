@@ -148,6 +148,17 @@
                 } = deleteGTC(props.entity?.guid, props.redirect ?? false)
                 isLoading.value = loading.value
                 if (data && !deleteError.value) {
+                    console.log(
+                        props.entity?.typeName,
+                        props.entity?.attributes?.anchor?.guid,
+                        'delete'
+                    )
+                    glossaryStore.updateAssetCount(
+                        props?.entity?.typeName,
+                        props?.entity?.attributes?.anchor?.guid,
+                        'delete'
+                    )
+
                     if (props.entity?.typeName === 'AtlasGlossaryCategory') {
                         message.success(`${props.entity?.displayText} deleted`)
                         if (!selectedGlossaryQf?.value?.length) {

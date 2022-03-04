@@ -150,67 +150,67 @@ export function useError() {
     }
 
     const setStreamErrorInActiveInlineTab = (
-        activeInlineTab: Ref<activeInlineTabInterface>,
-        error: Ref<any>
+        tabs: Ref<activeInlineTabInterface[]>,
+        error: Ref<any>,
+        tabIndex: number
     ) => {
-        activeInlineTab.value.playground.resultsPane.result.runQueryId =
+        tabs.value[tabIndex].playground.resultsPane.result.runQueryId =
             undefined
-        activeInlineTab.value.playground.resultsPane.result.totalRowsCount = -1
-        activeInlineTab.value.playground.resultsPane.result.executionTime = -1
-        activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
+        tabs.value[tabIndex].playground.resultsPane.result.totalRowsCount = -1
+        tabs.value[tabIndex].playground.resultsPane.result.executionTime = -1
+        tabs.value[tabIndex].playground.resultsPane.result.isQueryRunning =
             'error'
         /* ------------------- */
         /* USE SSE ERROR */
         if (error.value?.statusText) {
-            activeInlineTab.value.playground.resultsPane.result.queryErrorObj =
-                {
-                    requestId: '',
-                    errorName: '',
-                    errorMessage:
-                        error.value?.statusText ?? 'Oops! Something went wrong',
-                    errorCode: error.value?.status,
-                    developerMessage: error.value?.statusText,
-                    errorDescription: 'Oops! Something went wrong',
-                }
+            tabs.value[tabIndex].playground.resultsPane.result.queryErrorObj = {
+                requestId: '',
+                errorName: '',
+                errorMessage:
+                    error.value?.statusText ?? 'Oops! Something went wrong',
+                errorCode: error.value?.status,
+                developerMessage: error.value?.statusText,
+                errorDescription: 'Oops! Something went wrong',
+            }
         } else if (error.value?.error) {
-            activeInlineTab.value.playground.resultsPane.result.queryErrorObj =
-                {
-                    requestId: '',
-                    errorName: '',
-                    errorMessage:
-                        error.value?.error?.message?.toUpperCase() ??
-                        'Oops! Something went wrong',
-                    errorCode: '000',
-                    developerMessage: error.value?.statusText,
-                    errorDescription: 'Oops! Something went wrong',
-                }
+            tabs.value[tabIndex].playground.resultsPane.result.queryErrorObj = {
+                requestId: '',
+                errorName: '',
+                errorMessage:
+                    error.value?.error?.message?.toUpperCase() ??
+                    'Oops! Something went wrong',
+                errorCode: '000',
+                developerMessage: error.value?.statusText,
+                errorDescription: 'Oops! Something went wrong',
+            }
         }
 
         /* Setting it undefined for new run */
 
-        activeInlineTab.value.playground.resultsPane.result.runQueryId =
+        tabs.value[tabIndex].playground.resultsPane.result.runQueryId =
             undefined
     }
 
     const setHekaErrorInActiveInlineTab = (
-        activeInlineTab: Ref<activeInlineTabInterface>,
+        tabs: Ref<activeInlineTabInterface[]>,
         eventSource: Ref<any>,
-        message: any
+        message: any,
+        tabIndex: number
     ) => {
         if (eventSource.value?.close) {
             eventSource.value.close()
         }
         /* Query related data */
-        activeInlineTab.value.playground.resultsPane.result.queryErrorObj =
+        tabs.value[tabIndex].playground.resultsPane.result.queryErrorObj =
             message
-        activeInlineTab.value.playground.resultsPane.result.totalRowsCount = -1
-        activeInlineTab.value.playground.resultsPane.result.executionTime = -1
-        activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
+        tabs.value[tabIndex].playground.resultsPane.result.totalRowsCount = -1
+        tabs.value[tabIndex].playground.resultsPane.result.executionTime = -1
+        tabs.value[tabIndex].playground.resultsPane.result.isQueryRunning =
             'error'
         /* ------------------- */
         /* Setting it undefined for new run */
 
-        activeInlineTab.value.playground.resultsPane.result.runQueryId =
+        tabs.value[tabIndex].playground.resultsPane.result.runQueryId =
             undefined
     }
 

@@ -169,7 +169,7 @@
                             link: [slackLink],
                         }),
                         class: ['successToast'],
-                        duration: 10,
+                        duration: 5,
                     } as any)
                 else
                     toast.success({

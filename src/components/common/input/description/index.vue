@@ -7,22 +7,6 @@
             :edit-permission="editPermission && !isEdit"
         >
             <div
-                v-if="!editPermission && role !== 'Guest' && isEdit"
-                class="bg-gray-100 px-3 py-2 mb-3"
-            >
-                You don’t have edit access to this asset, but you can suggest a
-                new description to the
-                <span class="text-primary cursor-pointer">
-                    <a-popover placement="bottomRight">
-                        <template #content>
-                            <AdminList></AdminList>
-                        </template>
-                        <span>Workspace admins</span>
-                    </a-popover>
-                </span>
-            </div>
-
-            <div
                 class="flex flex-col px-1 rounded"
                 :class="{
                     'bg-primary-light': isEdit,
@@ -53,8 +37,24 @@
                         @blur="handleBlur"
                         @keyup.esc="handleCancel"
                     ></a-textarea>
-                </div></div
-        ></Shortcut>
+                </div>
+            </div>
+            <div
+                v-if="!editPermission && role !== 'Guest' && isEdit"
+                class="bg-gray-100 px-3 py-2 mt-3"
+            >
+                You don’t have edit access to this asset, but you can suggest a
+                new description to the
+                <span class="text-primary cursor-pointer">
+                    <a-popover placement="bottomRight">
+                        <template #content>
+                            <AdminList></AdminList>
+                        </template>
+                        <span>Workspace admins</span>
+                    </a-popover>
+                </span>
+            </div>
+        </Shortcut>
         <p
             v-if="descriptionRef !== null"
             class="mt-1 text-xs text-right text-gray-500"

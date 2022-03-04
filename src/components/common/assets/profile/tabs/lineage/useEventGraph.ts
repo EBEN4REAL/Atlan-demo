@@ -52,11 +52,11 @@ export default function useEventGraph({
         createNodeData,
     } = useGraph(graph)
 
-    console.log('nodes.value:', nodes.value)
-    console.log('graphNodes:', graph.value.getNodes())
-    console.log('mergedLineageData:', mergedLineageData.value)
-    console.log('sameSourceCount:', sameSourceCount.value)
-    console.log('sameTargetCount:', sameTargetCount.value)
+    // console.log('nodes.value:', nodes.value)
+    // console.log('graphNodes:', graph.value.getNodes())
+    // console.log('mergedLineageData:', mergedLineageData.value)
+    // console.log('sameSourceCount:', sameSourceCount.value)
+    // console.log('sameTargetCount:', sameTargetCount.value)
 
     /** DATA */
     const selectedNodeEdgeId = ref('')
@@ -67,6 +67,7 @@ export default function useEventGraph({
     const expandedNodes = ref([])
     const portHighlightedBINodes = ref([])
     const activeNodesToggled = ref({})
+    const currPortLineage = ref({})
 
     /** METHODS */
     /** Utils */
@@ -144,6 +145,22 @@ export default function useEventGraph({
 
     // isExpandedNode
     const isExpandedNode = (nodeId) => expandedNodes.value.includes(nodeId)
+
+    // isNodePortInCurrPortLineage
+    const isNodePortInCurrPortLineage = (nodeId) => {
+        if (!currPortLineage.value?.guidEntityMap) return false
+
+        const portIds = Object.keys(currPortLineage.value.guidEntityMap)
+        const node = getX6Node(nodeId)
+
+        if (!node) return false
+
+        const res = portIds.some(
+            (portId) => node.hasPort(portId) && isPortRendered(portId)
+        )
+
+        return res
+    }
 
     // isNodeRendered
     const isNodeRendered = (nodeId) =>
@@ -417,6 +434,7 @@ export default function useEventGraph({
             const portLineage = lineageStore.getPortsLineage(portId)
             dimNodesEdges(true)
             addPortLineagePorts(portId, portLineage)
+            currPortLineage.value = portLineage
             hideLoader()
             return
         }
@@ -445,8 +463,10 @@ export default function useEventGraph({
 
             const portLineage = data.value
 
-            if (!lineageStore.hasPortLineage(portId))
+            if (!lineageStore.hasPortLineage(portId)) {
                 lineageStore.setPortLineage(portId, portLineage)
+                currPortLineage.value = portLineage
+            }
 
             dimNodesEdges(true)
             addPortLineagePorts(portId, data.value)
@@ -656,7 +676,11 @@ export default function useEventGraph({
         const nodeId = gEle.getAttribute('data-cell-id')
         const node = graph.value.getNodes().find((x) => x.id === nodeId)
 
-        if (selectedPortId.value && isExpandedNode(nodeId)) {
+        if (
+            selectedPortId.value &&
+            (isNodePortInCurrPortLineage(nodeId) ||
+                activeNodesToggled.value[nodeId])
+        ) {
             controlToggleOfActiveNode(node)
             hideLoader()
             return

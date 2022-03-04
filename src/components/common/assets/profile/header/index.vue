@@ -329,7 +329,7 @@
                         <AtlanIcon icon="Share" />
                     </a-button>
                 </ShareMenu>
-                <template v-if="!disableSlackAsk && linkEditPermission">
+                <template v-if="!disableSlackAsk">
                     <SlackAskButton :asset="item" />
                 </template>
                 <AssetMenu
@@ -530,18 +530,7 @@
                 console.log(val)
             }
 
-            const linkEditPermission = computed(
-                () =>
-                    selectedAssetUpdatePermission(
-                        item.value,
-                        false,
-                        'RELATIONSHIP_ADD',
-                        'Link'
-                    ) && assetPermission('CREATE_LINK')
-            )
-
             return {
-                linkEditPermission,
                 disableSlackAsk,
                 title,
                 getConnectorImage,

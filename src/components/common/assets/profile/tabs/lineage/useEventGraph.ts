@@ -122,18 +122,23 @@ export default function useEventGraph({
     /** Graph utils */
     // isEdgeClickable
     const isEdgeClickable = (edge) => {
+        if (edge.id.includes('vpNode')) return false
+
         const isPortEdge = !!edge.id.includes('port')
         if (!isPortEdge && (selectedPortId.value || selectedPortEdgeId.value))
             return false
+
         return true
     }
 
     // isEdgeHoverable
     const isEdgeHoverable = (edge) => {
+        if (edge.id.includes('vpNode')) return false
+
         const isPortEdge = !!edge.id.includes('port')
         if (!isPortEdge && (selectedPortId.value || selectedPortEdgeId.value))
             return false
-        // if (nodesEdgesHighlighted.value.includes(edge.id)) return false
+
         return true
     }
 
@@ -216,6 +221,9 @@ export default function useEventGraph({
         highlightNodes(null, nodesToHighlight)
         hideLoader()
     }
+
+    // selectVpNode
+    const selectVpNode = () => {}
 
     // getAllXPos
     const getAllXPos = () => {
@@ -669,6 +677,9 @@ export default function useEventGraph({
     // controlHoPaCTA
     const controlHoPaCTA = (e) => {
         e.stopPropagation()
+
+        resetState()
+
         showLoader(e)
 
         const gEle = getEventPath(e).find((x) => x.getAttribute('data-cell-id'))
@@ -949,6 +960,11 @@ export default function useEventGraph({
 
         resetState()
 
+        if (node.id.includes('vpNode')) {
+            selectVpNode(node.id)
+            return
+        }
+
         showLoader(e)
 
         selectNode(node.id)
@@ -1022,7 +1038,8 @@ export default function useEventGraph({
 
     // Blank - Click
     graph.value.on('blank:click', () => {
-        resetState()
+        if (selectedNodeId.value) resetSelectedNode()
+        if (selectedNodeEdgeId.value) resetSelectedNodeEdge()
     })
 
     // Blank - Mousewheel

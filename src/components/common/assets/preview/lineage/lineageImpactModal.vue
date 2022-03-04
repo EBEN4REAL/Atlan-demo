@@ -103,14 +103,8 @@
                                     )"
                                     :key="idx"
                                     :classification="classif"
-                                    :mouse-enter-delay="
-                                        classificationPopoverMouseEnterDelay
-                                    "
-                                    @mouse-entered="
-                                        () => {
-                                            classificationPopoverMouseEnterDelay = 0.2
-                                        }
-                                    "
+                                    :mouse-enter-delay="mouseEnterDelay"
+                                    @mouse-entered="enteredPill"
                                 >
                                     <ClassificationPill
                                         :name="classif.name"
@@ -223,6 +217,7 @@
     import Tooltip from '@/common/ellipsis/index.vue'
     import AtlanButton from '@/UI/button.vue'
     import { downloadFile } from '~/utils/library/download'
+    import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
 
     /** LINEAGE PARAMETERS */
     const depth = 21
@@ -397,6 +392,7 @@
 
             /** We only trigger the re-fetch when the modal is opened */
             whenever(visible, getImpactedAssets)
+            const { mouseEnterDelay, enteredPill } = useMouseEnterDelay()
 
             return {
                 error,

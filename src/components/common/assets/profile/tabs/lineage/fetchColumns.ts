@@ -6,7 +6,7 @@ import useIndexSearch from '~/composables/discovery/useIndexSearch'
 export default function fetchColumns(
     typeName,
     qualifiedName,
-    offset = 0,
+    offset,
     limit = 5
 ) {
     const attributes = [
@@ -59,8 +59,8 @@ export default function fetchColumns(
     base.size(limit)
     base.filterMinimumShouldMatch(1)
     facets.forEach((x) => {
-        const { key, value, type, prop } = x
-        const filterType = type === 'should' ? 'orFilter' : 'filter'
+        const { key, value, type: t, prop } = x
+        const filterType = t === 'should' ? 'orFilter' : 'filter'
         base[filterType](prop, key, value)
     })
 

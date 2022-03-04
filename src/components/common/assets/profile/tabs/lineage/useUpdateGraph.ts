@@ -1,6 +1,23 @@
 /* eslint-disable no-nested-ternary */
 export default function useUpdateGraph(graph) {
-    const highlightNodes = (selectedNode, nodesToHighlight) => {
+    const highlightNode = (nodeId, addHighlight = true) => {
+        const graphNodeElement = document.querySelectorAll(
+            `[data-cell-id="${nodeId}"]`
+        )[0]
+        const lineageNodeElement = Array.from(
+            graphNodeElement.querySelectorAll('*')
+        ).find((y) => y.classList.contains('lineage-node'))
+
+        lineageNodeElement?.classList.remove(
+            'isSelectedNode',
+            'isHighlightedNode',
+            'isGrayed'
+        )
+
+        if (addHighlight) lineageNodeElement?.classList.add('isHighlightedNode')
+    }
+
+    const highlightNodes = (selectedNodeId, nodesToHighlight) => {
         const graphNodes = graph.value.getNodes()
 
         graph.value.freeze('highlightNodes')
@@ -14,7 +31,7 @@ export default function useUpdateGraph(graph) {
 
             const itExists = nodesToHighlight.includes(x.id)
 
-            const isSelectedNode = selectedNode?.value === x.id ? x.id : null
+            const isSelectedNode = selectedNodeId?.value === x.id ? x.id : null
             const isHighlightedNode = itExists ? x.id : null
             const isGrayed = !itExists
 
@@ -23,6 +40,8 @@ export default function useUpdateGraph(graph) {
                 'isHighlightedNode',
                 'isGrayed'
             )
+
+            if (!selectedNodeId?.value && !nodesToHighlight.length) return
 
             if (isSelectedNode)
                 lineageNodeElement?.classList.add('isSelectedNode')
@@ -62,20 +81,21 @@ export default function useUpdateGraph(graph) {
         return edgesHighlighted
     }
 
-    const toggleNodesEdges = (visible) => {
-        graph.value.freeze('toggleNodesEdges')
+    const dimNodesEdges = (dim) => {
+        graph.value.freeze('dimNodesEdges')
         graph.value.getEdges().forEach((x) => {
             if (x.id.includes('vpNode')) return
             const cell = graph.value.getCellById(x.id)
-            cell.attr('line/stroke', visible ? '#aaaaaa' : '#dce0e5')
+            cell.attr('line/stroke', dim ? '#dce0e5' : '#aaaaaa')
             cell.toBack()
         })
-        graph.value.unfreeze('toggleNodesEdges')
+        graph.value.unfreeze('dimNodesEdges')
     }
 
     return {
+        highlightNode,
         highlightNodes,
         highlightEdges,
-        toggleNodesEdges,
+        dimNodesEdges,
     }
 }

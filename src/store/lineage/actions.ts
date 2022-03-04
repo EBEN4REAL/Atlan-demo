@@ -1,8 +1,8 @@
 export const actions = {
-    setNodesColumnList(nodeId, columns, total) {
-        this.nodesColumnList[nodeId] = { assets: columns, total }
+    setNodesColumnList(nodeId, columns, offset, total) {
+        this.nodesColumnList[nodeId] = { columns, offset, total }
     },
-    setColumnsLineage(nodeId, lineage) {
-        this.columnsLineage[nodeId] = lineage
+    setPortLineage(portId, lineage) {
+        this.portLineage[portId] = lineage
     },
 }

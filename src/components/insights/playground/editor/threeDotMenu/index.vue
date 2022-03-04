@@ -465,8 +465,8 @@
                                 </a-menu-item>
                                 <a-menu-item
                                     v-if="
-                                        tenantSlackStatus.configured &&
-                                        tenantSlackStatus.channels.length
+                                        tenantSlackStatus?.configured &&
+                                        tenantSlackStatus?.channels?.length
                                     "
                                     key="shareSlack"
                                     class="flex items-center px-4 py-2"
@@ -579,7 +579,7 @@
     import { copyToClipboard } from '~/utils/clipboard'
     import { message } from 'ant-design-vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
-    import SlackModal from '@/common/assets/misc/slackModal.vue'
+    import SlackModal from '~/components/common/assets/misc/slackModal.vue'
     import integrationStore from '~/store/integrations/index'
     import EditQuery from '../editQuery/index.vue'
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
@@ -763,6 +763,8 @@
                     activeInlineTab,
                     label: `Copy ${activeInlineTab.value.label}`,
                     editorText: activeInlineTab.value.playground.editor.text,
+                    isVQB: activeInlineTab.value.playground.isVQB,
+                    vqb: activeInlineTab.value.playground.vqb,
                 })
 
                 inlineTabAdd(inlineTabData, tabsArray, activeInlineTabKey)

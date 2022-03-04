@@ -419,6 +419,7 @@
                 filter: {},
                 sort: '-createdAt',
             })
+            console.log(groupListAPIParams)
             const {
                 groupList,
                 totalGroupsCount,
@@ -692,6 +693,7 @@
                             `${group.isDefault === 'true' ? 'false' : 'true'}`,
                         ],
                     },
+                    path: group?.path,
                 }
                 const { data, isReady, error, isLoading } = Groups.UpdateGroup(
                     group.id,

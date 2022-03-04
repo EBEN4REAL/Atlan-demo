@@ -185,6 +185,7 @@
         setup(props) {
             const observer = ref()
             const splitpaneRef = ref()
+            const showcustomToolBar = ref(false) // custom variables toolbar
 
             const savedQueryInfo = inject('savedQueryInfo') as Ref<
                 SavedQuery | undefined
@@ -356,6 +357,7 @@
             */
 
             const provideData: provideDataInterface = {
+                showcustomToolBar,
                 activeInlineTab,
                 queryCollections,
                 queryCollectionsLoading,
@@ -391,13 +393,21 @@
             /* Watchers for syncing in localstorage */
             watch(
                 activeInlineTabKey,
-                () => {
+                (newKey) => {
                     syncActiveInlineTabKeyInLocalStorage(
                         activeInlineTabKey.value
                     )
                     syncInlineTabsInLocalStorage(toRaw(tabsArray.value))
                     fetchSelectedCollectionData()
                     fetchActiveQueryAcessCollection()
+                    const index = tabsArray.value.findIndex(
+                        (tab) => tab.key === newKey
+                    )
+                    if (index > -1) {
+                        if (tabsArray.value[index].playground.isVQB) {
+                            showcustomToolBar.value = false
+                        }
+                    }
                 },
                 { deep: true }
             )
@@ -436,6 +446,14 @@
                     const tabIndex = tabsArray.value.findIndex(
                         (tab) => tab.key === activeInlineTabKeyCopy
                     )
+
+                    if (
+                        tabsArray.value[tabIndex].playground.editor?.variables
+                            ?.length > 0 &&
+                        !tabsArray.value[tabIndex].playground.isVQB
+                    ) {
+                        showcustomToolBar.value = true
+                    }
 
                     if (runQuery.value === 'true') {
                         queryRun(
@@ -525,6 +543,13 @@
                 const tabIndex = tabsArray.value.findIndex(
                     (tab) => tab.key === activeInlineTabKeyCopy
                 )
+                if (
+                    tabsArray.value[tabIndex].playground.editor?.variables
+                        ?.length > 0 &&
+                    !tabsArray.value[tabIndex].playground.isVQB
+                ) {
+                    showcustomToolBar.value = true
+                }
                 queryRun(
                     tabIndex,
                     getData,

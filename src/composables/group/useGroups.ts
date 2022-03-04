@@ -1,6 +1,6 @@
 // useGroups
 
-import { ref, watch, computed, ComputedRef, Ref } from 'vue'
+import { ref, watch, computed, ComputedRef, Ref, reactive } from 'vue'
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 
 import axios from 'axios'
@@ -84,7 +84,10 @@ export default function useGroups(
     cancelToken = null,
     asyncOptions = null
 ) {
-    const cancel = axios.CancelToken.source()
+    let cancel = axios.CancelToken.source()
+    const options = reactive({
+        cancelToken: cancelToken?.token || cancel.token,
+    })
     // API to get groups based on params groupListAPIParams
     const {
         data,
@@ -95,9 +98,7 @@ export default function useGroups(
     } = Groups.List(groupListAPIParams, {
         ...cacheOption,
         cacheKey: cacheKey ?? LIST_GROUPS,
-        options: {
-            cancelToken: cancelToken?.token || cancel.token,
-        },
+        options,
         asyncOptions,
     })
 
@@ -135,6 +136,13 @@ export default function useGroups(
     const groupListConcatenated: ComputedRef<any> = computed(
         () => localGroupsList.value || []
     )
+    const cancelRequest = () => {
+        if (cancel) {
+            cancel.cancel('operation cancelled')
+        }
+        cancel = axios.CancelToken.source()
+        options.cancelToken = cancel.token
+    }
     const totalGroupsCount = computed(() => data?.value?.totalRecord ?? 0)
     const filteredGroupsCount = computed(() => data?.value?.filterRecord ?? 0)
     return {
@@ -148,5 +156,6 @@ export default function useGroups(
         error,
         groupListConcatenated,
         isValidating,
+        cancelRequest,
     }
 }

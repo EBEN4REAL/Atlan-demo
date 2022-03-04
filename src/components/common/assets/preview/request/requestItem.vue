@@ -151,6 +151,8 @@
                         popover-trigger="hover"
                         read-only
                         :is-plain="true"
+                        :mouse-enter-delay="mouseEnterDelay"
+                        @mouse-entered="enteredPill"
                     >
                         <ClassificationPill
                             class="clasification-pill"
@@ -532,6 +534,7 @@
     import { Users } from '~/services/service/users/index'
     import AtlanButton from '@/UI/button.vue'
     import RequestDropdown from '~/components/common/dropdown/requestDropdown.vue'
+    import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
 
     export default defineComponent({
         name: 'RequestItem',
@@ -697,6 +700,7 @@
                 }
                 return ''
             })
+            const { mouseEnterDelay, enteredPill } = useMouseEnterDelay()
             return {
                 createdTime,
                 localClassification,

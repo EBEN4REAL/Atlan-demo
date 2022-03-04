@@ -10,7 +10,10 @@
                 <div
                     class="flex flex-wrap items-center justify-between mb-0 overflow-hidden"
                 >
-                    <div class="flex items-center">
+                    <div
+                        class="flex items-center"
+                        :class="dataTypeCategoryImage(item) ? '' : 'w-full'"
+                    >
                         <component
                             :is="dataTypeCategoryImage(item)"
                             class="h-4 mr-1 text-gray-500 mb-0.5"
@@ -63,6 +66,8 @@
                         <PopoverClassification
                             :classification="classification"
                             :entity-guid="item?.guid"
+                            :mouse-enter-delay="mouseEnterDelay"
+                            @mouse-entered="enteredPill"
                         >
                             <ClassificationPill
                                 :name="classification.name"
@@ -110,6 +115,7 @@
     import ClassificationPill from '@/common/pills/classification.vue'
     import PopoverClassification from '@/common/popover/classification/index.vue'
     import ColumnKeys from '~/components/common/column/columnKeys.vue'
+    import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
 
     export default defineComponent({
         name: 'ColumnListItem',
@@ -200,7 +206,13 @@
                 return matchingIdsResult
             })
 
-            watch(shouldDrawerUpdate, () => emit('update', asset.value))
+            watch(shouldDrawerUpdate, () => {
+                if (shouldDrawerUpdate.value) {
+                    emit('update', asset.value)
+                    shouldDrawerUpdate.value = false
+                }
+            })
+            const { mouseEnterDelay, enteredPill } = useMouseEnterDelay()
 
             return {
                 title,
@@ -232,6 +244,8 @@
                 isScrubbed,
                 list,
                 isIndexed,
+                mouseEnterDelay,
+                enteredPill,
             }
         },
     })

@@ -92,68 +92,48 @@
                     </div>
                 </div>
                 <a-button-group>
-                    <template
-                        v-for="action in getActions(selectedAsset)"
-                        :key="action.id"
-                    >
-                        <component
-                            :is="action.component"
-                            v-if="action.component"
-                            :asset="selectedAsset"
-                            :edit-permission="true"
+                    <a-tooltip title="Open">
+                        <a-button
+                            v-if="showCTA('open')"
+                            class="flex items-center justify-center p-2"
+                            @click="handleAction('open')"
                         >
-                            <a-button class="flex items-center justify-center">
-                                <AtlanIcon :icon="action.icon" class="mb-0.5" />
-                            </a-button>
-                        </component>
-                        <template v-else>
-                            <a-tooltip :title="action.label">
-                                <QueryDropdown
-                                    v-if="
-                                        showCTA(action.id) &&
-                                        connectorName(selectedAsset) !==
-                                            'glue' &&
-                                        action.id === 'query' &&
-                                        (assetType(selectedAsset) === 'Table' ||
-                                            assetType(selectedAsset) ===
-                                                'View' ||
-                                            assetType(selectedAsset) ===
-                                                'TablePartition' ||
-                                            assetType(selectedAsset) ===
-                                                'MaterialisedView')
-                                    "
-                                    @handleClick="handleQueryAction"
-                                >
-                                    <template #button>
-                                        <a-button
-                                            class="flex items-center justify-center"
-                                        >
-                                            <AtlanIcon
-                                                :icon="action.icon"
-                                                class="mb-0.5 h-4 w-auto"
-                                            />
-                                        </a-button>
-                                    </template>
-                                </QueryDropdown>
+                            <AtlanIcon icon="Enter" class="w-auto h-4" />
+                        </a-button>
+                    </a-tooltip>
+
+                    <a-tooltip title="Query">
+                        <QueryDropdown
+                            v-if="
+                                showCTA('query') &&
+                                connectorName(selectedAsset) !== 'glue' &&
+                                (assetType(selectedAsset) === 'Table' ||
+                                    assetType(selectedAsset) === 'View' ||
+                                    assetType(selectedAsset) ===
+                                        'TablePartition' ||
+                                    assetType(selectedAsset) ===
+                                        'MaterialisedView')
+                            "
+                            @handleClick="handleQueryAction"
+                        >
+                            <template #button>
                                 <a-button
-                                    v-else-if="
-                                        showCTA(action.id) &&
-                                        connectorName(selectedAsset) !== 'glue'
-                                    "
-                                    class="flex items-center justify-center"
-                                    @click="handleAction(action.id)"
+                                    class="flex items-center justify-center p-2"
                                 >
                                     <AtlanIcon
-                                        :icon="action.icon"
-                                        class="mb-0.5 h-4 w-auto"
+                                        icon="Query"
+                                        class="w-auto h-4"
                                     />
                                 </a-button>
-                            </a-tooltip>
-                        </template>
-                    </template>
-                    <template v-if="!disableSlackAsk && linkEditPermission">
-                        <SlackAskButton :asset="selectedAsset" />
-                    </template>
+                            </template>
+                        </QueryDropdown>
+                    </a-tooltip>
+
+                    <SlackAskButton
+                        v-if="!disableSlackAsk"
+                        :asset="selectedAsset"
+                    />
+
                     <KebabMenu
                         :key="selectedAsset.guid"
                         :asset="selectedAsset"
@@ -164,8 +144,8 @@
                             )
                         "
                     >
-                        <a-button class="flex items-center justify-center">
-                            <AtlanIcon icon="KebabMenu" class="mb-0.5" />
+                        <a-button class="flex items-center justify-center p-2">
+                            <AtlanIcon icon="KebabMenu" />
                         </a-button>
                     </KebabMenu>
                 </a-button-group>
@@ -269,7 +249,6 @@
     import { useAuthStore } from '~/store/auth'
     import useEvaluate from '~/composables/auth/useEvaluate'
     import useAssetEvaluate from '~/composables/discovery/useAssetEvaluation'
-    import ShareMenu from '@/common/assets/misc/shareMenu.vue'
     import KebabMenu from '@/common/assets/misc/kebabMenu.vue'
     import NoAccess from '@/common/assets/misc/noAccess.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
@@ -289,7 +268,6 @@
         components: {
             PreviewTabsIcon,
             CertificateBadge,
-            ShareMenu,
             NoAccess,
             Tooltip,
             QueryDropdown,
@@ -567,18 +545,7 @@
                 })
             })
 
-            const linkEditPermission = computed(
-                () =>
-                    selectedAssetUpdatePermission(
-                        selectedAsset.value,
-                        isDrawer.value,
-                        'RELATIONSHIP_ADD',
-                        'Link'
-                    ) && assetPermission('CREATE_LINK')
-            )
-
             return {
-                linkEditPermission,
                 disableSlackAsk,
                 tabChildRef,
                 activeKey,

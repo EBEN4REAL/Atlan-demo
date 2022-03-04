@@ -66,6 +66,8 @@
                         <PopoverClassification
                             :classification="classification"
                             :entity-guid="item?.guid"
+                            :mouse-enter-delay="mouseEnterDelay"
+                            @mouse-entered="enteredPill"
                         >
                             <ClassificationPill
                                 :name="classification.name"
@@ -113,6 +115,7 @@
     import ClassificationPill from '@/common/pills/classification.vue'
     import PopoverClassification from '@/common/popover/classification/index.vue'
     import ColumnKeys from '~/components/common/column/columnKeys.vue'
+    import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
 
     export default defineComponent({
         name: 'ColumnListItem',
@@ -209,6 +212,7 @@
                     shouldDrawerUpdate.value = false
                 }
             })
+            const { mouseEnterDelay, enteredPill } = useMouseEnterDelay()
 
             return {
                 title,
@@ -240,6 +244,8 @@
                 isScrubbed,
                 list,
                 isIndexed,
+                mouseEnterDelay,
+                enteredPill,
             }
         },
     })

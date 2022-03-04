@@ -1,8 +1,8 @@
 <template>
     <a-popover
         :mouse-enter-delay="0.4"
-        placement="left"
-        @visibleChange="handleVisibleChange"
+        :placement="placement"
+        @visible-change="handleVisibleChange"
     >
         <template #content>
             <div class="relative p-4 groups-popover">
@@ -159,6 +159,11 @@
                 type: String,
                 required: false,
                 default: '',
+            },
+            placement: {
+                type: String,
+                required: false,
+                default: 'left',
             },
         },
         emits: [],

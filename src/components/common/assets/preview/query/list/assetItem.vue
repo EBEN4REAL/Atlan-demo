@@ -335,14 +335,8 @@
                             <PopoverClassification
                                 :classification="classification"
                                 :entity-guid="item?.guid"
-                                :mouse-enter-delay="
-                                    classificationPopoverMouseEnterDelay
-                                "
-                                @mouse-entered="
-                                    () => {
-                                        classificationPopoverMouseEnterDelay = 0.2
-                                    }
-                                "
+                                :mouse-enter-delay="mouseEnterDelay"
+                                @mouse-entered="enteredPill"
                             >
                                 <ClassificationPill
                                     :name="classification.name"
@@ -371,6 +365,7 @@
     import { mergeArray } from '~/utils/array'
     import ClassificationPill from '@/common/pills/classification.vue'
     import PopoverClassification from '@/common/popover/classification/index.vue'
+    import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
 
     export default defineComponent({
         name: 'AssetListItem',
@@ -502,7 +497,7 @@
                 )
                 return matchingIdsResult
             })
-            const classificationPopoverMouseEnterDelay = ref(1)
+            const { mouseEnterDelay, enteredPill } = useMouseEnterDelay()
 
             return {
                 isChecked,

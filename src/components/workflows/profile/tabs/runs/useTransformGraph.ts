@@ -1,7 +1,7 @@
 export default function useTransformGraph(graph, currZoom, firstNodeId) {
     const zoom = (factor) => {
-        graph.value.zoom(factor)
-        currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
+        graph.value.zoom(factor, { minScale: 0.25, maxScale: 1.2 })
+        currZoom.value = graph.value.zoom()
     }
 
     const fullscreen = (targetEle) => {

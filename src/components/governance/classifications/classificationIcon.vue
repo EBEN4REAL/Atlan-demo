@@ -1,20 +1,33 @@
 <template>
     <AtlanIcon
-        v-if='hasMouseEntered'
+        v-if="hasMouseEntered"
         :icon="icon"
-        :style="`stroke: ${getClassificationColorHex(fill)} !important; color: ${getClassificationColorHex(stroke)} !important`"
+        :style="`stroke: ${getClassificationColorHex(
+            fill
+        )} !important; color: ${getClassificationColorHex(
+            color.toLowerCase()
+        )} !important`"
         :class="classNames"
     ></AtlanIcon>
     <AtlanIcon
         v-else
         :icon="icon"
-        :style="`stroke: ${getClassificationColorHex(stroke)} !important;`"
+        :style="`stroke: ${getClassificationColorHex(
+            color.toLowerCase()
+        )} !important;`"
         :class="classNames"
     ></AtlanIcon>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref, computed, watch } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        ref,
+        computed,
+        watch,
+        toRefs,
+    } from 'vue'
 
     import getClassificationColorHex from '@/governance/classifications/utils/getClassificationColor'
     import AtlanIcon from '@/common/icon/atlanIcon.vue'
@@ -22,16 +35,21 @@
     export default defineComponent({
         name: 'ClassificationIcon',
         components: {
-            AtlanIcon
+            AtlanIcon,
         },
         props: {
             color: {
-                type: String as PropType<'green' | 'red' | 'yellow' | 'white' | 'blue'>,
+                type: String as PropType<'green' | 'red' | 'yellow' | 'white'>,
                 required: true,
-                default: 'blue',
+                default: 'green',
             },
             icon: {
-                type: String as PropType<'ClassificationShield' | 'ClassificationPropagated' | 'ClassificationAtlan' | 'ClassificationAtlanHollow'>,
+                type: String as PropType<
+                    | 'ClassificationShield'
+                    | 'ClassificationPropagated'
+                    | 'ClassificationAtlan'
+                    | 'ClassificationAtlanHollow'
+                >,
                 required: false,
                 default: 'ClassificationShield',
             },
@@ -43,24 +61,17 @@
             mouseEnter: {
                 type: Boolean,
                 default: false,
-                required: false
+                required: false,
             },
         },
         setup(props, { emit }) {
-            // const { color, icon } = toRefs(props)
-            const stroke = ref(props.color.toLowerCase())
             const fill = ref('white')
-            const icon = computed(() => props.icon)
-            const originalColour = ref(props.color.toLowerCase())
             const hasMouseEntered = computed(() => props.mouseEnter)
 
             return {
                 getClassificationColorHex,
-                icon,
-                originalColour,
-                stroke,
                 fill,
-                hasMouseEntered
+                hasMouseEntered,
             }
         },
     })

@@ -3,6 +3,7 @@
         v-model:visible="visible"
         align
         :trigger="'click'"
+        :placement="placement"
         :overlay-class-name="$style.popover"
     >
         <template #content>
@@ -43,8 +44,8 @@
                         class="mb-1 rounded menu-item"
                         @click="
                             () => {
-                                visible = false
                                 if (userJiraStatus.configured) {
+                                    visible = false
                                     $emit('create')
                                 }
                             }
@@ -61,8 +62,8 @@
                         "
                         @click="
                             () => {
-                                visible = false
                                 if (userJiraStatus.configured) {
+                                    visible = false
                                     $emit('link')
                                 }
                             }
@@ -84,6 +85,7 @@
 
     const props = defineProps({
         visible: { type: Boolean, required: true },
+        placement: { type: String, default: '' },
     })
 
     const emit = defineEmits(['link', 'create'])

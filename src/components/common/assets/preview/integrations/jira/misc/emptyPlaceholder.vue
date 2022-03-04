@@ -15,6 +15,7 @@
             v-model:visible="addVisible"
             @create="$emit('create')"
             @link="$emit('link')"
+            placement="top"
         >
             <AtlanButton
                 class="px-5"

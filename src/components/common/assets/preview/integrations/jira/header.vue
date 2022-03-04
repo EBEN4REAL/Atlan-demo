@@ -16,6 +16,7 @@
             >
                 <AddIssue
                     v-model:visible="addVisible"
+                    placement="bottom"
                     @link="emit('link')"
                     @create="emit('create')"
                 >

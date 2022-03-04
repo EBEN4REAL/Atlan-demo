@@ -11,7 +11,12 @@
             <Header
                 class="mb-4"
                 :checked-i-ds="checkedIDs"
-                @close="() => (visible = false)"
+                @close="
+                    () => {
+                        visible = false
+                        $emit('close')
+                    }
+                "
                 @cancel="resetIDs"
                 @save="handleIssueLink"
             />

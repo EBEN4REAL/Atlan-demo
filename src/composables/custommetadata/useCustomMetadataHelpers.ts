@@ -46,6 +46,10 @@ export default function useCustomMetadataHelpers() {
                 return JSON.parse(value.toString().toLowerCase()) ? 'Yes' : 'No'
             }
             if (type === 'date') {
+                if (value.includes('-'))
+                    // if value is ISO '2022-02-22 12:31:23' call directly.
+                    return formatDate(value)
+                // else unix timestamp gets coverted into string, eg. "1646386649281"
                 return formatDate(
                     Number.isInteger(value) ? value : parseInt(value, 10)
                 )
@@ -56,8 +60,13 @@ export default function useCustomMetadataHelpers() {
                     typeof type !== 'object' &&
                     type.toLowerCase().includes('date')
                 )
-                    value = value.map((v) =>
-                        formatDate(Number.isInteger(v) ? v : parseInt(v, 10))
+                    value = value.map((v) => {
+                        if (value.includes('-'))
+                            // if value is ISO '2022-02-22 12:31:23' call directly.
+                            return formatDate(value)
+                        // else unix timestamp gets coverted into string, eg. "1646386649281"
+                        return formatDate(Number.isInteger(v) ? v : parseInt(v, 10))
+                    }
                     )
                 return value.join(', ')
             }

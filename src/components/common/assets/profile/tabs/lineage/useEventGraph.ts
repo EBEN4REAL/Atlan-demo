@@ -1067,8 +1067,6 @@ export default function useEventGraph({
             return
         }
 
-        resetState()
-
         showLoader(e)
 
         if (portId.includes('showMorePort')) {
@@ -1078,6 +1076,8 @@ export default function useEventGraph({
             fetchNodeColumns(node, newOffset)
             return
         }
+
+        resetState()
 
         selectPort(portId)
     })

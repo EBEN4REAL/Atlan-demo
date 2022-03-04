@@ -1012,7 +1012,7 @@ const useGlossaryTree = ({
         Modal.confirm({
             title: `${modalText}`,
             okText: 'Confirm',
-            okType: 'danger',
+            okType: 'primary',
             maskClosable: true,
             keyboard: true,
             cancelText: 'Cancel',

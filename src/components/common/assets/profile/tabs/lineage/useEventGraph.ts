@@ -701,7 +701,7 @@ export default function useEventGraph({
     const controlHoPaCTA = (e) => {
         e.stopPropagation()
 
-        resetState()
+        resetState(true)
 
         showLoader(e)
 
@@ -903,6 +903,9 @@ export default function useEventGraph({
 
         resetPortStyle(parentNode, selectedPortId.value)
         selectedPortId.value = ''
+        activeNodesToggled.value = {}
+        portHighlightedBINodes.value = []
+        currPortLineage.value = {}
 
         dimNodesEdges(false)
     }
@@ -925,12 +928,32 @@ export default function useEventGraph({
     }
 
     // resetState
-    const resetState = () => {
+    const resetState = (total = false) => {
         onCloseDrawer()
         if (selectedNodeId.value) resetSelectedNode()
         if (selectedNodeEdgeId.value) resetSelectedNodeEdge()
         if (selectedPortId.value) resetSelectedPort()
         if (selectedPortEdgeId.value) resetSelectedPortEdge()
+
+        if (!total) return
+        nodesTranslated.value = {}
+        activeNodesToggled.value = {}
+        const _expandedNodes = [...expandedNodes.value]
+        _expandedNodes.forEach((nodeId) => {
+            const x6Node = getX6Node(nodeId)
+            removePorts(x6Node, true)
+
+            const nodesToTranslateToDefault =
+                nodesTranslated.value[nodeId] || []
+
+            if (nodesToTranslateToDefault.length) {
+                nodesToTranslateToDefault.forEach((ntttd) => {
+                    translateNodesToDefault(ntttd)
+                })
+            }
+        })
+        lineageStore.setNodesColumnList(null)
+        lineageStore.setPortLineage(null)
     }
 
     //  resetTranslatedNodes

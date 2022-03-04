@@ -1,8 +1,16 @@
 export const actions = {
-    setNodesColumnList(nodeId, columns, offset, total) {
-        this.nodesColumnList[nodeId] = { columns, offset, total }
+    setNodesColumnList(nodeId, columns?, offset?, total?) {
+        if (nodeId) {
+            this.nodesColumnList[nodeId] = { columns, offset, total }
+        } else {
+            this.nodesColumnList = {}
+        }
     },
-    setPortLineage(portId, lineage) {
-        this.portLineage[portId] = lineage
+    setPortLineage(portId, lineage?) {
+        if (portId) {
+            this.portLineage[portId] = lineage
+        } else {
+            this.portLineage = {}
+        }
     },
 }

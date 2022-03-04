@@ -130,7 +130,7 @@
                     </a-tooltip>
 
                     <SlackAskButton
-                        v-if="!disableSlackAsk && linkEditPermission"
+                        v-if="!disableSlackAsk"
                         :asset="selectedAsset"
                     />
 
@@ -541,18 +541,7 @@
                 })
             })
 
-            const linkEditPermission = computed(
-                () =>
-                    selectedAssetUpdatePermission(
-                        selectedAsset.value,
-                        isDrawer.value,
-                        'RELATIONSHIP_ADD',
-                        'Link'
-                    ) && assetPermission('CREATE_LINK')
-            )
-
             return {
-                linkEditPermission,
                 disableSlackAsk,
                 tabChildRef,
                 activeKey,

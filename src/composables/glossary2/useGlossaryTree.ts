@@ -3,7 +3,7 @@ import { inject, watch, ref, Ref, onMounted, computed, provide } from 'vue'
 import { whenever } from '@vueuse/core'
 import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 import { useRouter, useRoute } from 'vue-router'
-import { message } from 'ant-design-vue'
+import { message, Modal } from 'ant-design-vue'
 import updateAsset from '~/composables/discovery/updateAsset'
 import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
@@ -147,6 +147,12 @@ const useGlossaryTree = ({
                                 ? checkable
                                 : false,
                         disabled: disabledGuids.includes(i.guid),
+                        parent: {
+                            displayText: treeNode?.attributes?.name,
+                            guid: treeNode?.guid,
+                            qualifiedName: treeNode?.qualifiedName,
+                            typeName: treeNode?.attributes?.typeName,
+                        },
                     }))
                     if (data.value && map) {
                         map?.forEach((el) => {
@@ -258,6 +264,11 @@ const useGlossaryTree = ({
                                     ? checkable
                                     : false,
                             disabled: disabledGuids.includes(i.guid),
+                            parent: {
+                                displayText: treeNode?.attributes?.name,
+                                guid: treeNode?.guid,
+                                qualifiedName: treeNode?.qualifiedName,
+                            },
                         }))
                         if (map) {
                             map?.forEach((el) => {
@@ -542,6 +553,11 @@ const useGlossaryTree = ({
                             id: `${node.attributes?.qualifiedName}_${asset.attributes?.qualifiedName}`,
                             key: `${node.attributes?.qualifiedName}_${asset.attributes?.qualifiedName}`,
                             isLeaf: asset.typeName === 'AtlasGlossaryTerm',
+                            parent: {
+                                displayText: node?.attributes?.name,
+                                guid: node?.guid,
+                                qualifiedName: node?.qualifiedName,
+                            },
                         })
                     if (loadMoreNode) {
                         updatedChildren.push(loadMoreNode)
@@ -846,7 +862,9 @@ const useGlossaryTree = ({
             }
         }
     }
-    const dragAndDropNode = ({ event, node, dragNode, dragNodesKeys }) => {
+
+    // handles confirm drag and drop
+    const confirmDragAndDrop = ({ event, node, dragNode, dragNodesKeys }) => {
         const assetToDrop = { ...dragNode.dataRef }
         const updateDragNodeAttributes = (newParent) => {
             const selectedAsset = ref(assetToDrop)
@@ -972,6 +990,46 @@ const useGlossaryTree = ({
                 updateDragNodeAttributes(node?.dataRef)
             }
         }
+    }
+
+    // handles drag and drop confirmation
+    const handleDragAndDropModal = ({
+        event,
+        node,
+        dragNode,
+        dragNodesKeys,
+    }) => {
+        let modalText = `Moving ${dragNode?.displayText} from ${node?.displayText}`
+        const assetToDrop = { ...dragNode.dataRef }
+        const assetToDropInto = { ...node.dataRef }
+        if (node?.typeName !== 'AtlasGlossaryTerm') {
+            modalText = `Moving ${dragNode?.displayText} into ${assetToDropInto?.displayText}`
+        } else if (assetToDropInto?.parent?.displayText) {
+            modalText = `Moving ${dragNode?.displayText} into ${assetToDropInto?.parent?.displayText}`
+        } else if (!assetToDropInto?.parent) {
+            modalText = `Moving ${dragNode?.displayText} into ${assetToDropInto?.attributes?.anchor?.attributes?.name}`
+        }
+        Modal.confirm({
+            title: `${modalText}`,
+            okText: 'Confirm',
+            okType: 'danger',
+            maskClosable: true,
+            keyboard: true,
+            cancelText: 'Cancel',
+            onOk() {
+                console.log('OK')
+                confirmDragAndDrop({ event, node, dragNode, dragNodesKeys })
+            },
+            onCancel() {
+                console.log('Cancel d&d')
+            },
+        })
+    }
+
+    const dragAndDropNode = ({ event, node, dragNode, dragNodesKeys }) => {
+        console.log(node, dragNode, event)
+        // show confirmation modal for d&d
+        handleDragAndDropModal({ event, node, dragNode, dragNodesKeys })
     }
     interface checkAndAddLoadMoreParams {
         response: IndexSearchResponse<Term | Category>

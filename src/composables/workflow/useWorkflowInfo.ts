@@ -194,7 +194,7 @@ export default function useWorkflowInfo() {
             case 'Succeeded':
                 return 'text-green-500'
             case 'Running':
-                return 'text-blue-500 animate-pulse'
+                return 'text-blue-500'
             case 'Failed':
             case 'Error':
             case 'Stopped':
@@ -205,12 +205,12 @@ export default function useWorkflowInfo() {
     }
 
     const getRunBorderClassByPhase = (tempStatus) => {
-        if (tempStatus === 'Succeeded') return 'border-green-500 opacity-75'
+        if (tempStatus === 'Succeeded')
+            return 'border-green-500 border-opacity-75'
         if (tempStatus === 'Failed' || tempStatus === 'Error')
-            return 'border-red-500 opacity-75'
-        if (tempStatus === 'Running')
-            return 'border-blue-500 opacity-75 animate-pulse'
-        return 'border-gray-200'
+            return 'border-red-500 border-opacity-75'
+        if (tempStatus === 'Running') return 'border-blue-500 border-opacity-75'
+        return 'border-gray-400'
     }
 
     const getRunClass = (item) => {

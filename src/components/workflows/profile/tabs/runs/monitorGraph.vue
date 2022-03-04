@@ -162,16 +162,17 @@
     } from 'vue'
     import { DagreLayout } from '@antv/layout'
     import { Graph } from '@antv/x6'
+    import { until } from '@vueuse/core'
+
     /** COMPOSABLES */
     import useCreateGraph from './useCreateGraph'
     import useComputeGraph from './useComputeGraph2'
-    import useHighlight from './useHighlight'
     import useTransformGraph from './useTransformGraph'
     import useControlGraph from './useControlGraph'
 
     import Drawer from './drawer/drawer.vue'
     import useEventGraph from './useEventGraph'
-    import { until } from '@vueuse/core'
+    import useUpdateGraph from './useUpdateGraph'
 
     export default defineComponent({
         name: 'MonitorGraph',
@@ -196,14 +197,10 @@
             const monitorContainer = ref(null)
             const graph: Ref<Graph> = ref(null)
             const graphLayout: Ref<DagreLayout> = ref(null)
-            const highlightLoadingCords = ref({})
-            const highlightedNode = ref('')
             const currZoom = ref(0.5)
             const showMinimap = ref(false)
             const isFullscreen = ref(false)
             const isRunning = ref(true)
-
-            const currentScroll = ref(null)
 
             const expandedNodes = ref([])
             const drawerVisible = ref(false)
@@ -233,12 +230,16 @@
                 baseNodeId
             )
 
+            const { highlightNode } = useUpdateGraph(graph)
+
             const onFullscreen = () => {
                 isFullscreen.value = !isFullscreen.value
                 fullscreen(monitorContainer)
             }
 
-            const setGraphData = () => {
+            const setGraphData = async () => {
+                isGraphRendered.value = false
+
                 const { nodes, edges } = useComputeGraph(
                     graph,
                     graphLayout,
@@ -247,16 +248,11 @@
                 // TODO: Remove debug variables ns and ed
                 ns.value = nodes.value
                 ed.value = edges.value
-
-                return { nodes, edges }
             }
 
             // initialize
-            const initialize = () => {
-                if (graph.value) {
-                    currentScroll.value = graph.value.getScrollbarPosition()
-                    graph.value.dispose()
-                }
+            const initialize = async () => {
+                if (graph.value) graph.value.dispose()
 
                 isGraphRendered.value = false
 
@@ -270,16 +266,6 @@
 
                 setGraphData()
 
-                // // useHighlight
-                // useHighlight(
-                //     graph,
-                //     nodes,
-                //     highlightLoadingCords,
-                //     highlightedNode,
-                //     emit,
-                //     selectedPod.value
-                // )
-
                 useEventGraph({
                     graph,
                     currZoom,
@@ -288,38 +274,38 @@
                     selectedPod,
                 })
 
-                if (selectedPod.value?.id && drawerVisible.value) {
-                    let podData = graph.value.getCellById(
-                        selectedPod.value?.id
-                    )?.data
-                    if (podData) selectedPod.value = podData
-                }
-
-                // if (currentScroll.value)
-                //     graph.value.setScrollbarPosition(
-                //         currentScroll.value.left,
-                //         currentScroll.value.top
-                //     )
-                // graph.value.zoom(currZoom.value, { absolute: true })
-                // drawerVisible.value = false
+                await until(isGraphRendered).toBe(true)
+                handleRecenter()
             }
 
             watch(
                 graphData,
-                () => {
+                async () => {
                     // initialize()
                     setGraphData()
+
+                    if (selectedPod.value?.id && drawerVisible.value) {
+                        const podNode = graph.value.getCellById(
+                            selectedPod.value?.id
+                        )
+
+                        if (podNode) selectedPod.value = podNode?.data
+
+                        await until(isGraphRendered).toBe(true)
+                        highlightNode(podNode, true)
+                    }
                 },
                 { deep: true }
             )
 
-            /** LIFECYCLE */
-            onMounted(async () => {
-                if (graph.value) graph.value.dispose()
-                await nextTick()
-                initialize()
+            watch(baseNodeId, async () => {
                 await until(isGraphRendered).toBe(true)
                 handleRecenter()
+            })
+
+            /** LIFECYCLE */
+            onMounted(async () => {
+                initialize()
             })
 
             const handleRefresh = () => {
@@ -346,7 +332,6 @@
 
                 expandedNodes,
                 graphLayout,
-                currentScroll,
                 drawerVisible,
                 selectedPod,
 
@@ -370,20 +355,25 @@
         background-color: #f9dcd2;
     }
 
-    .x6-node-selected {
-        border-color: #1890ff;
-        border-radius: 2px;
-        box-shadow: 0 0 0 4px #d4e8fe;
-        .Succeeded {
-            border-color: #52c41a;
-            border-radius: 2px;
-            box-shadow: 0 0 0 4px #ccecc0;
+    .node-selected {
+        &.Succeeded {
+            @apply ring ring-green-300;
         }
 
-        .Failed {
-            border-color: #ff4d4f;
-            border-radius: 2px;
-            box-shadow: 0 0 0 4px #fedcdc;
+        &.Failed,
+        &.Error {
+            @apply ring ring-red-200;
+        }
+
+        &.Running {
+            @apply ring ring-primary-focus;
+        }
+
+        &.Pending,
+        &.Omitted,
+        &.Skipped,
+        &.Queued {
+            @apply ring ring-gray-300;
         }
     }
     .x6-node-selected .node.success {

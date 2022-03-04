@@ -1219,7 +1219,7 @@ const useGlossaryTree = ({
                 if (node.children && node.children.length) {
                     const index =
                         node.children.findIndex((child) => {
-                            return child?.attributes?.name === name
+                            return child?.attributes?.name === name && child?.typeName==='AtlasGlossaryCategory'
                         }) ?? 0
                     nameExists = index > -1
                 }
@@ -1249,7 +1249,7 @@ const useGlossaryTree = ({
         } else {
             const index =
                 treeData.value.findIndex(
-                    (child) => child?.attributes.name === name
+                    (child) => child?.attributes.name === name && child?.typeName==='AtlasGlossaryCategory'
                 ) ?? 0
             nameExists = index > -1
         }

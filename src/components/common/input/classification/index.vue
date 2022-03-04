@@ -11,11 +11,11 @@
             <template #content>
                 <div
                     v-if="!editPermission && role !== 'Guest'"
-                    class="bg-gray-100 mx-4 px-3 py-2 mb-4"
+                    class="px-3 py-2 mx-4 mb-4 bg-gray-100"
                 >
                     You don't have edit access to this asset, but you can
                     suggest Classifications to the
-                    <span class="text-primary cursor-pointer">
+                    <span class="cursor-pointer text-primary">
                         <a-popover placement="bottomRight">
                             <template #content>
                                 <AdminList></AdminList>
@@ -35,7 +35,7 @@
                 </div>
                 <div
                     v-if="!editPermission && role !== 'Guest'"
-                    class="flex items-center justify-end mx-2 space-x-2 mt-5"
+                    class="flex items-center justify-end mx-2 mt-5 space-x-2"
                 >
                     <a-button @click="handleCancelRequest">Cancel</a-button>
                     <a-button
@@ -85,12 +85,8 @@
                 <Popover
                     :classification="classification"
                     :entity-guid="guid"
-                    :mouse-enter-delay="classificationPopoverMouseEnterDelay"
-                    @mouse-entered="
-                        () => {
-                            classificationPopoverMouseEnterDelay = 0.2
-                        }
-                    "
+                    :mouse-enter-delay="mouseEnterDelay"
+                    @mouse-entered="enteredPill"
                 >
                     <ClassificationPill
                         :name="classification.name"
@@ -108,7 +104,15 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, Ref, ref, toRefs, watch , defineAsyncComponent} from 'vue'
+    import {
+        computed,
+        defineComponent,
+        Ref,
+        ref,
+        toRefs,
+        watch,
+        defineAsyncComponent,
+    } from 'vue'
     import {
         and,
         useActiveElement,
@@ -128,6 +132,7 @@
     import { useCreateRequests } from '~/composables/requests/useCreateRequests'
     import { assetInterface } from '~/types/assets/asset.interface'
     import whoami from '~/composables/user/whoami.ts'
+    import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
 
     export default defineComponent({
         name: 'ClassificationWidget',
@@ -139,7 +144,6 @@
             AdminList: defineAsyncComponent(
                 () => import('@/common/info/adminList.vue')
             ),
- 
         },
         props: {
             guid: {
@@ -356,6 +360,7 @@
                 isEdit.value = true
                 requestLoading.value = false
             }
+            const { mouseEnterDelay, enteredPill } = useMouseEnterDelay()
 
             return {
                 localValue,
@@ -374,6 +379,8 @@
                 handleCancelRequest,
                 handleOpenPopover,
                 requestLoading,
+                mouseEnterDelay,
+                enteredPill,
             }
         },
     })

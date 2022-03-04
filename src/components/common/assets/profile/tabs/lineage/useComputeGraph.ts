@@ -47,17 +47,17 @@ export default async function useComputeGraph({
     const sameSourceCount = ref({})
     const sameTargetCount = ref({})
 
-    // const allTargetsHiddenIds = computed(() => {
-    //     const y = Object.values(sameSourceCount.value)
-    //     const z = y.map((x) => x.targetsHidden).flat()
-    //     return z.map((x) => x.guid)
-    // })
+    const allTargetsHiddenIds = computed(() => {
+        const y = Object.values(sameSourceCount.value)
+        const z = y.map((x) => x.targetsHidden).flat()
+        return z.map((x) => x.guid)
+    })
 
-    // const allSourcesHiddenIds = computed(() => {
-    //     const y = Object.values(sameTargetCount.value)
-    //     const z = y.map((x) => x.sourcesHidden).flat()
-    //     return z.map((x) => x.guid)
-    // })
+    const allSourcesHiddenIds = computed(() => {
+        const y = Object.values(sameTargetCount.value)
+        const z = y.map((x) => x.sourcesHidden).flat()
+        return z.map((x) => x.guid)
+    })
 
     const fromAndToIdSetForNodes = new Set()
 
@@ -90,87 +90,87 @@ export default async function useComputeGraph({
             if ([fromTypeName, toTypeName].includes('column')) return
 
             // same source
-            // if (sameSourceCount.value[from]) {
-            //     sameSourceCount.value[from].count += 1
+            if (sameSourceCount.value[from]) {
+                sameSourceCount.value[from].count += 1
 
-            //     if (sameSourceCount.value[from].count <= 4)
-            //         sameSourceCount.value[from].targetsVisible = [
-            //             ...sameSourceCount.value[from].targetsVisible,
-            //             getAsset(to),
-            //         ]
-            //     else {
-            //         sameSourceCount.value[from].targetsHidden = [
-            //             ...sameSourceCount.value[from].targetsHidden,
-            //             getAsset(to),
-            //         ]
-            //     }
-            // } else
-            //     sameSourceCount.value = {
-            //         ...sameSourceCount.value,
-            //         [from]: {
-            //             count: 1,
-            //             targetsVisible: [getAsset(to)],
-            //             targetsHidden: [],
-            //         },
-            //     }
+                if (sameSourceCount.value[from].count <= 4)
+                    sameSourceCount.value[from].targetsVisible = [
+                        ...sameSourceCount.value[from].targetsVisible,
+                        getAsset(to),
+                    ]
+                else {
+                    sameSourceCount.value[from].targetsHidden = [
+                        ...sameSourceCount.value[from].targetsHidden,
+                        getAsset(to),
+                    ]
+                }
+            } else
+                sameSourceCount.value = {
+                    ...sameSourceCount.value,
+                    [from]: {
+                        count: 1,
+                        targetsVisible: [getAsset(to)],
+                        targetsHidden: [],
+                    },
+                }
 
             // same target
-            // if (sameTargetCount.value[to]) {
-            //     sameTargetCount.value[to].count += 1
+            if (sameTargetCount.value[to]) {
+                sameTargetCount.value[to].count += 1
 
-            //     if (sameTargetCount.value[to].count <= 4)
-            //         sameTargetCount.value[to].sourcesVisible = [
-            //             ...sameTargetCount.value[to].sourcesVisible,
-            //             getAsset(from),
-            //         ]
-            //     else {
-            //         sameTargetCount.value[to].sourcesHidden = [
-            //             ...sameTargetCount.value[to].sourcesHidden,
-            //             getAsset(from),
-            //         ]
-            //     }
-            // } else
-            //     sameTargetCount.value = {
-            //         ...sameTargetCount.value,
-            //         [to]: {
-            //             count: 1,
-            //             sourcesVisible: [getAsset(from)],
-            //             sourcesHidden: [],
-            //         },
-            //     }
+                if (sameTargetCount.value[to].count <= 4)
+                    sameTargetCount.value[to].sourcesVisible = [
+                        ...sameTargetCount.value[to].sourcesVisible,
+                        getAsset(from),
+                    ]
+                else {
+                    sameTargetCount.value[to].sourcesHidden = [
+                        ...sameTargetCount.value[to].sourcesHidden,
+                        getAsset(from),
+                    ]
+                }
+            } else
+                sameTargetCount.value = {
+                    ...sameTargetCount.value,
+                    [to]: {
+                        count: 1,
+                        sourcesVisible: [getAsset(from)],
+                        sourcesHidden: [],
+                    },
+                }
         })
 
         // same source
-        // Object.entries(sameSourceCount.value).forEach(([k, v]) => {
-        //     if (v.count < 5) return
-        //     if (!v.targetsHidden.length) return
-        //     lineageData.guidEntityMap = {
-        //         ...lineageData.guidEntityMap,
-        //         [`vpNodeSS-${k}`]: {
-        //             typeName: 'vpNode',
-        //             guid: `vpNodeSS-${k}`,
-        //             attributes: {
-        //                 hiddenCount: v.targetsHidden.length,
-        //             },
-        //         },
-        //     }
-        // })
+        Object.entries(sameSourceCount.value).forEach(([k, v]) => {
+            if (v.count < 5) return
+            if (!v.targetsHidden.length) return
+            lineageData.guidEntityMap = {
+                ...lineageData.guidEntityMap,
+                [`vpNodeSS-${k}`]: {
+                    typeName: 'vpNode',
+                    guid: `vpNodeSS-${k}`,
+                    attributes: {
+                        hiddenCount: v.targetsHidden.length,
+                    },
+                },
+            }
+        })
 
         // same target
-        // Object.entries(sameTargetCount.value).forEach(([k, v]) => {
-        //     if (v.count < 5) return
-        //     if (!v.sourcesHidden.length) return
-        //     lineageData.guidEntityMap = {
-        //         ...lineageData.guidEntityMap,
-        //         [`vpNodeST-${k}`]: {
-        //             typeName: 'vpNode',
-        //             guid: `vpNodeST-${k}`,
-        //             attributes: {
-        //                 hiddenCount: v.sourcesHidden.length,
-        //             },
-        //         },
-        //     }
-        // })
+        Object.entries(sameTargetCount.value).forEach(([k, v]) => {
+            if (v.count < 5) return
+            if (!v.sourcesHidden.length) return
+            lineageData.guidEntityMap = {
+                ...lineageData.guidEntityMap,
+                [`vpNodeST-${k}`]: {
+                    typeName: 'vpNode',
+                    guid: `vpNodeST-${k}`,
+                    attributes: {
+                        hiddenCount: v.sourcesHidden.length,
+                    },
+                },
+            }
+        })
 
         const guidEntityMapValues = Object.values(lineageData.guidEntityMap)
 
@@ -179,8 +179,8 @@ export default async function useComputeGraph({
             const { attributes, typeName, guid } = ent
 
             if (isNodeExist(guid)?.id) return
-            // if (allTargetsHiddenIds.value.includes(entity.guid)) return
-            // if (allSourcesHiddenIds.value.includes(entity.guid)) return
+            if (allTargetsHiddenIds.value.includes(entity.guid)) return
+            if (allSourcesHiddenIds.value.includes(entity.guid)) return
 
             if (typeName === 'Column') {
                 const parentGuid =
@@ -223,28 +223,28 @@ export default async function useComputeGraph({
         const lineageData = { ...data }
 
         // same source
-        // Object.entries(sameSourceCount.value).forEach(([k, v]) => {
-        //     if (v.count < 5) return
-        //     if (!v.targetsHidden.length) return
+        Object.entries(sameSourceCount.value).forEach(([k, v]) => {
+            if (v.count < 5) return
+            if (!v.targetsHidden.length) return
 
-        //     lineageData.relations.push({
-        //         fromEntityId: k,
-        //         processId: 'vpNodeProcessId',
-        //         toEntityId: `vpNodeSS-${k}`,
-        //     })
-        // })
+            lineageData.relations.push({
+                fromEntityId: k,
+                processId: 'vpNodeProcessId',
+                toEntityId: `vpNodeSS-${k}`,
+            })
+        })
 
         // same target
-        // Object.entries(sameTargetCount.value).forEach(([k, v]) => {
-        //     if (v.count < 5) return
-        //     if (!v.sourcesHidden.length) return
+        Object.entries(sameTargetCount.value).forEach(([k, v]) => {
+            if (v.count < 5) return
+            if (!v.sourcesHidden.length) return
 
-        //     lineageData.relations.push({
-        //         fromEntityId: `vpNodeST-${k}`,
-        //         processId: 'vpNodeProcessId',
-        //         toEntityId: k,
-        //     })
-        // })
+            lineageData.relations.push({
+                fromEntityId: `vpNodeST-${k}`,
+                processId: 'vpNodeProcessId',
+                toEntityId: k,
+            })
+        })
 
         lineageData.relations.forEach((x) => {
             const { fromEntityId: from, toEntityId: to, processId } = x
@@ -253,11 +253,11 @@ export default async function useComputeGraph({
 
             if (columnEntityIds.find((y) => [from, to].includes(y))) return
 
-            // if (allTargetsHiddenIds.value.find((y) => [from, to].includes(y)))
-            //     return
+            if (allTargetsHiddenIds.value.find((y) => [from, to].includes(y)))
+                return
 
-            // if (allSourcesHiddenIds.value.find((y) => [from, to].includes(y)))
-            //     return
+            if (allSourcesHiddenIds.value.find((y) => [from, to].includes(y)))
+                return
 
             let edgeExtraData = {}
             const styles = {

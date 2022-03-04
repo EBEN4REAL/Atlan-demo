@@ -146,7 +146,6 @@
 
             // onCloseDrawer
             const onCloseDrawer = () => {
-                console.log('hmm 2')
                 isDrawerVisible.value = false
                 resetSelections.value = true
             }

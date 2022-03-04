@@ -437,7 +437,6 @@ export default function useGraph(graph) {
 
         const { edgeData } = createEdgeData(relation, {}, styles)
 
-        console.log('edgeData:', edgeData)
         const createdEdge = graph.value.addEdge(edgeData)
 
         return createdEdge

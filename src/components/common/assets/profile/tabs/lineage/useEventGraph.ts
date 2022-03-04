@@ -656,8 +656,7 @@ export default function useEventGraph({
         const nodeId = gEle.getAttribute('data-cell-id')
         const node = graph.value.getNodes().find((x) => x.id === nodeId)
 
-        if (selectedPortId.value) {
-            // message.info('Please deselect selected column')
+        if (selectedPortId.value && isExpandedNode(nodeId)) {
             controlToggleOfActiveNode(node)
             hideLoader()
             return

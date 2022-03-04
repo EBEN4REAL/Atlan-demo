@@ -107,6 +107,15 @@
             }
         }
 
+        &.link {
+            @apply bg-white border-none;
+            @apply text-primary;
+
+            &:hover:not(:disabled) {
+                color: #3c64cd;
+            }
+        }
+
         &:disabled {
             @apply opacity-75;
             @apply cursor-not-allowed;

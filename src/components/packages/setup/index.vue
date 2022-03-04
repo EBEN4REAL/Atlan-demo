@@ -30,44 +30,29 @@
                 class="flex justify-between px-6 py-3 bg-gray-100 border-t"
                 v-if="currentStep < steps.length"
             >
-                <AtlanButton
+                <AtlanButton2
                     v-if="currentStep !== 0"
-                    padding="compact"
+                    label="Back"
                     color="secondary"
-                    size="sm"
+                    prefixIcon="CaretLeft"
                     @click="handlePrevious"
-                >
-                    <template #prefix>
-                        <AtlanIcon icon="ChevronLeft" />
-                    </template>
-                    Back
-                </AtlanButton>
+                />
 
-                <AtlanButton
+                <AtlanButton2
                     v-else-if="currentStep === 0 && !isEdit"
-                    padding="compact"
+                    label="Back to Marketplace"
                     color="secondary"
-                    size="sm"
+                    prefixIcon="CaretLeft"
                     @click="handleExit"
-                >
-                    <template #prefix>
-                        <AtlanIcon icon="ChevronLeft" />
-                    </template>
-                    Back to Marketplace
-                </AtlanButton>
+                />
 
-                <AtlanButton
+                <AtlanButton2
                     v-if="currentStep < steps.length - 1"
-                    padding="compact"
-                    size="sm"
+                    label="Next"
                     class="ml-auto"
+                    suffixIcon="ChevronRight"
                     @click="handleNext"
-                >
-                    Next
-                    <template #suffix>
-                        <AtlanIcon icon="ChevronRight" />
-                    </template>
-                </AtlanButton>
+                />
 
                 <a-popconfirm
                     v-else-if="currentStep === steps.length - 1 && isEdit"
@@ -92,22 +77,18 @@
                             >Start a new run</a-checkbox
                         >
                     </template>
-                    <AtlanButton padding="compact" size="sm">
-                        Update
-                    </AtlanButton>
+                    <AtlanButton2 class="ml-auto" label="Update" />
                 </a-popconfirm>
 
                 <div
                     v-else-if="currentStep === steps.length - 1 && !isEdit"
                     class="flex gap-x-2"
                 >
-                    <AtlanButton
+                    <AtlanButton2
                         :color="allowSchedule ? 'secondary' : 'primary'"
-                        size="sm"
+                        label="Run"
                         @click="handleSubmit(false)"
-                    >
-                        Run
-                    </AtlanButton>
+                    />
 
                     <a-popconfirm
                         v-if="allowSchedule"
@@ -124,16 +105,11 @@
                             <Schedule class="mb-3" v-model="cron"></Schedule>
                         </template>
 
-                        <AtlanButton
+                        <AtlanButton2
                             v-if="allowSchedule"
-                            padding="compact"
-                            size="sm"
-                        >
-                            Schedule & Run
-                            <template #suffix>
-                                <AtlanIcon icon="ChevronRight" />
-                            </template>
-                        </AtlanButton>
+                            suffixIcon="ChevronRight"
+                            label="Schedule & Run"
+                        />
                     </a-popconfirm>
                 </div>
             </div>
@@ -158,11 +134,14 @@
                 </template>
                 <template #extra>
                     <div class="flex items-center justify-center">
-                        <a-button v-if="updateStatus.status === 'success'">
-                            <router-link to="/workflows">
-                                Back to Workflows</router-link
+                        <router-link to="/workflows">
+                            <AtlanButton2
+                                v-if="updateStatus.status === 'success'"
+                                color="secondary"
                             >
-                        </a-button>
+                                Back to Workflows
+                            </AtlanButton2>
+                        </router-link>
                     </div>
 
                     <div
@@ -170,13 +149,14 @@
                         class="flex flex-col items-center justify-center p-2 bg-gray-100 rounded gap-y-2"
                     >
                         <span>{{ isUpdateError }}</span>
-                        <a-button
+
+                        <AtlanButton2
                             v-if="updateStatus.status === 'error'"
+                            prefixIcon="ChevronLeft"
+                            color="secondary"
                             @click="handleBackToSetup"
-                        >
-                            <AtlanIcon icon="ChevronLeft"></AtlanIcon>
-                            Back to setup
-                        </a-button>
+                            label="Back to setup"
+                        />
                     </div>
                 </template>
             </a-result>
@@ -197,19 +177,16 @@
                         class="mb-3"
                     ></Run>
 
-                    <div calss="flex">
-                        <a-button v-if="status === 'success'">
-                            <router-link to="/assets">
-                                Back to Assets</router-link
-                            >
-                        </a-button>
-                        <a-button
+                    <div class="flex gap-x-3">
+                        <router-link v-if="status === 'success'" to="/assets">
+                            <AtlanButton2 label="Back to Assets" />
+                        </router-link>
+
+                        <AtlanButton2
                             v-if="run?.metadata"
-                            class="ml-3"
+                            label="Monitor Run"
                             @click="handleTrackLink"
-                        >
-                            Monitor Run
-                        </a-button>
+                        />
                     </div>
                 </div>
 
@@ -218,18 +195,13 @@
                     class="flex flex-col items-center justify-center p-2 bg-gray-100 rounded gap-y-2"
                 >
                     <span class="text-error">{{ errorMesssage }}</span>
-                    <AtlanButton
+                    <AtlanButton2
                         v-if="status === 'error'"
+                        label="Back to setup"
                         color="secondary"
-                        padding="compact"
-                        size="sm"
+                        prefixIcon="ChevronLeft"
                         @click="handleBackToSetup"
-                    >
-                        <template #prefix
-                            ><AtlanIcon icon="ChevronLeft"
-                        /></template>
-                        <span class="text-sm">Back to setup</span>
-                    </AtlanButton>
+                    />
                 </div>
             </template>
         </a-result>

@@ -5,8 +5,7 @@
     <div
         v-else
         ref="target"
-        style="height: calc(100vh - 2.6rem)"
-        class="flex flex-col w-full border gap-y-2"
+        class="flex flex-col w-full overflow-hidden gap-y-2"
     >
         <!-- header starts here -->
         <div

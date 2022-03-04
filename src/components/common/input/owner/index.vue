@@ -16,6 +16,7 @@
                         ref="ownerInputRef"
                         v-model="localValue"
                         :show-none="false"
+                        :enable-tabs="enableTabs"
                     ></OwnerFacets>
                 </div>
             </template>
@@ -74,6 +75,7 @@
                     ></UserPill>
                 </PopOverUser>
             </template>
+            <slot name="users"></slot>
 
             <template v-for="name in localValue?.ownerGroups" :key="name">
                 <PopOverGroup :item="name">
@@ -149,6 +151,10 @@
             Shortcut,
         },
         props: {
+            enableTabs: {
+                type: Array as PropType<Array<any>>,
+                default: () => ['users', 'groups'],
+            },
             editPermission: {
                 type: Boolean,
                 required: false,

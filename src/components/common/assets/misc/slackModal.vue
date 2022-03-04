@@ -1,7 +1,8 @@
 <template>
-    <div class="" @click="open">
+    <span @click="open">
         <slot />
-    </div>
+    </span>
+
     <a-modal v-model:visible="visible" :closable="false" @afterClose="clearAll">
         <div class="flex flex-col p-4 gap-y-4">
             <div class="flex items-center gap-x-3">

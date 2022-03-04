@@ -51,7 +51,6 @@
     import {
         tenantLevelOauthUrl,
         archiveJira,
-        openJiraOAuth,
         connectJira,
     } from '~/composables/integrations/jira/useJira'
     import { integrations } from '~/constant/integrations/integrations'

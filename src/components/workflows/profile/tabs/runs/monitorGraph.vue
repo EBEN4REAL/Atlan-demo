@@ -120,7 +120,7 @@
                     </a-tooltip>
                 </div>
                 <div class="w-8 text-sm text-gray-500 select-none">
-                    {{ currZoom * 100 }}%
+                    {{ (currZoom * 100).toFixed(0) }}%
                 </div>
             </div>
         </div>
@@ -161,7 +161,7 @@
         nextTick,
     } from 'vue'
     import { DagreLayout } from '@antv/layout'
-    import { Graph } from '@antv/x6'
+    import { Graph, Node } from '@antv/x6'
     import { until } from '@vueuse/core'
 
     /** COMPOSABLES */
@@ -230,7 +230,7 @@
                 baseNodeId
             )
 
-            const { highlightNode } = useUpdateGraph(graph)
+            const { highlightPath } = useUpdateGraph(graph)
 
             const onFullscreen = () => {
                 isFullscreen.value = !isFullscreen.value
@@ -287,12 +287,13 @@
                     if (selectedPod.value?.id && drawerVisible.value) {
                         const podNode = graph.value.getCellById(
                             selectedPod.value?.id
-                        )
+                        ) as Node
 
-                        if (podNode) selectedPod.value = podNode?.data
-
-                        await until(isGraphRendered).toBe(true)
-                        highlightNode(podNode, true)
+                        if (podNode) {
+                            selectedPod.value = podNode?.data
+                            await until(isGraphRendered).toBe(true)
+                            highlightPath(podNode)
+                        }
                     }
                 },
                 { deep: true }
@@ -373,7 +374,7 @@
         &.Omitted,
         &.Skipped,
         &.Queued {
-            @apply ring ring-gray-300;
+            @apply ring ring-gray-400 ring-opacity-70;
         }
     }
     .x6-node-selected .node.success {

@@ -56,7 +56,7 @@
                 <a-form-item :name="['summary']" class="mb-6" label="Title">
                     <a-input
                         v-model:value="form.summary"
-                        placeholder="|Enter a name for this issue"
+                        placeholder="Enter a name for this issue"
                     />
                 </a-form-item>
                 <a-form-item

@@ -6,6 +6,8 @@
         :placeholder="placeholder"
         :loading="isLoading"
         allow-clear
+        show-search
+        option-filter-prop="label"
         dropdown-class-name="max-h-72 overflow-y-scroll"
     >
         <a-select-option
@@ -17,9 +19,15 @@
             @click="handleChange(o.value, o)"
         >
             <span class="flex items-center gap-x-2">
+                <AtlanIcon
+                    v-if="errorAvatarOptions.includes(o.value)"
+                    icon="Jira"
+                />
                 <img
+                    v-else
                     :src="o.meta.avatarUrls['24x24']"
                     class="h-5 rounded-full"
+                    @error="() => errorAvatarOptions.push(o.value)"
                 />
                 {{ o.label }}
             </span>
@@ -32,7 +40,7 @@
 
 <script setup lang="ts">
     import { useVModels } from '@vueuse/core'
-    import { computed, onMounted, watch, h, toRefs } from 'vue'
+    import { computed, onMounted, watch, h, toRefs, ref } from 'vue'
     import { listProjects } from '~/composables/integrations/jira/useJira'
     import integrationStore from '~/store/integrations/index'
 
@@ -46,6 +54,7 @@
     const emit = defineEmits(['change'])
 
     const { modelValue } = useVModels(props, emit)
+    const errorAvatarOptions = ref([])
 
     const options = computed(() => {
         if (projects.value?.length) {
@@ -69,6 +78,7 @@
 
     onMounted(() => {
         watch(projects, (v) => {
+            errorAvatarOptions.value = []
             if (v?.length && !modelValue.value && props.defaultSelect) {
                 const { defaultProject } = tenantJiraStatus.value.config
                 if (defaultProject) {

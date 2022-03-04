@@ -2,7 +2,10 @@ import { useTimeAgo } from '@vueuse/core'
 import { pluralizeString } from '~//utils/string'
 
 export const getFormattedGroup = (group: any) => {
-    // deliberately switching alias and name so as to keep alias as a unique identifier for the group, for keycloak name is the unique identifier. For us, alias is the unique identifier and different groups with same name can exist.
+    // deliberately switching alias and name so as to keep alias as a unique
+    // identifier for the group, for keycloak name is the unique identifier.
+    // For us, alias is the unique identifier and different groups with
+    // same name can exist.
     const formattedGroup = {
         ...group,
         id: group.id,

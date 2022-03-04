@@ -419,6 +419,7 @@
                 filter: {},
                 sort: '-createdAt',
             })
+            console.log(groupListAPIParams)
             const {
                 groupList,
                 totalGroupsCount,

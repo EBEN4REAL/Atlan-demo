@@ -559,26 +559,46 @@ const useGlossaryTree = ({
                             updateChildrenOnDelete
                         ) {
                             if (element?.children?.length) {
-                                element?.children?.forEach((el) => {
-                                    if (el?.typeName !== 'cta') {
+                                const updatedChildren =
+                                    getUpdatedChildrenOnCategoryDelete(
+                                        element?.guid,
+                                        element?.children
+                                    )
+                                console.log(updatedChildren)
+                                if (parentGlossaryQualifiedName?.value !== '') {
+                                    treeData.value.push(...updatedChildren)
+                                } else {
+                                    treeData.value.forEach((i) => {
                                         if (
-                                            parentGlossaryQualifiedName?.value !==
-                                            ''
+                                            i.guid ===
+                                            element?.attributes?.anchor?.guid
                                         ) {
-                                            treeData.value.push(el)
-                                        } else {
-                                            treeData.value.forEach((i) => {
-                                                if (
-                                                    i.guid ===
-                                                    element?.attributes?.anchor
-                                                        ?.guid
-                                                ) {
-                                                    i.children?.push(el)
-                                                }
-                                            })
+                                            i.children?.push(...updatedChildren)
                                         }
-                                    }
-                                })
+                                    })
+                                }
+
+                                // element?.children?.forEach((el) => {
+                                //     if (el?.typeName !== 'cta') {
+                                //         if (
+                                //             parentGlossaryQualifiedName?.value !==
+                                //             ''
+                                //         ) {
+                                //             treeData.value.push(el)
+                                //         } else {
+                                //             treeData.value.forEach((i) => {
+                                //                 if (
+                                //                     i.guid ===
+                                //                     element?.attributes?.anchor
+                                //                         ?.guid
+                                //                 ) {
+                                //                     console.log(el)
+                                //                     i.children?.push(el)
+                                //                 }
+                                //             })
+                                //         }
+                                //     }
+                                // })
                             }
                         }
                         if (
@@ -641,6 +661,25 @@ const useGlossaryTree = ({
 
         treeData.value = updatedTreeData
     }
+
+    const getUpdatedChildrenOnCategoryDelete = (
+        categoryGuid: String,
+        children
+    ) => {
+        const updatedChildren: TreeDataItem[] = []
+        children.forEach((el) => {
+            if (el?.typeName === 'AtlasGlossaryCategory') {
+                if (el?.parentCategory) el.parentCategory = null
+                updatedChildren.push(el)
+            } else if (el?.typeName === 'AtlasGlossaryTerm') {
+                el.attributes.categories = el?.attributes?.categories?.filter(
+                    (i) => i?.guid !== categoryGuid
+                )
+                if (!el?.attributes?.categories?.length) updatedChildren.push(el)
+            }
+        })
+        return updatedChildren
+    }
     const deleteNode = (asset, guid, updateChildrenOnDelete = true) => {
         if (guid === 'root') {
             const updatedTreeData = []
@@ -651,8 +690,13 @@ const useGlossaryTree = ({
                         updateChildrenOnDelete &&
                         el?.children
                     ) {
-                        console.log(el)
-                        updatedTreeData.push(...el.children)
+                        const updatedChildren =
+                            getUpdatedChildrenOnCategoryDelete(
+                                el?.guid,
+                                el?.children
+                            )
+                        console.log(updatedChildren)
+                        updatedTreeData.push(...updatedChildren)
                     }
                 } else updatedTreeData.push(el)
             })

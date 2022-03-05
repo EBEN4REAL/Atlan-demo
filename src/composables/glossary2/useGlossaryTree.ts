@@ -427,15 +427,7 @@ const useGlossaryTree = ({
 
     const glossaryStore = useGlossaryStore()
 
-    const glossaryList = computed(() =>
-        glossaryStore.list.sort((a, b) =>
-            a.attributes.name > b.attributes.name
-                ? 1
-                : b.attributes.name > a.attributes.name
-                ? -1
-                : 0
-        )
-    )
+    const glossaryList = computed(() => glossaryStore.list)
 
     const initTreeData = async (defaultGlossaryQf) => {
         let glossaryFound = null
@@ -675,7 +667,8 @@ const useGlossaryTree = ({
                 el.attributes.categories = el?.attributes?.categories?.filter(
                     (i) => i?.guid !== categoryGuid
                 )
-                if (!el?.attributes?.categories?.length) updatedChildren.push(el)
+                if (!el?.attributes?.categories?.length)
+                    updatedChildren.push(el)
             }
         })
         return updatedChildren
@@ -724,7 +717,7 @@ const useGlossaryTree = ({
             const found = treeData.value?.find((el) => el?.guid === asset?.guid)
             if (!found) {
                 if (asset.typeName === 'AtlasGlossary') {
-                    treeData.value.unshift({
+                    treeData.value.push({
                         ...asset,
                         id: asset.attributes?.qualifiedName,
                         key: asset.attributes?.qualifiedName,
@@ -732,8 +725,11 @@ const useGlossaryTree = ({
                     })
                 }
 
-                if (asset.typeName === 'AtlasGlossaryTerm') {
-                    treeData.value.unshift({
+                if (
+                    asset.typeName === 'AtlasGlossaryTerm' ||
+                    asset.typeName === 'AtlasGlossaryCategory'
+                ) {
+                    treeData.value.push({
                         ...asset,
                         id: `${getAnchorQualifiedName(asset)}_${
                             asset.attributes?.qualifiedName
@@ -741,20 +737,7 @@ const useGlossaryTree = ({
                         key: `${getAnchorQualifiedName(asset)}_${
                             asset.attributes?.qualifiedName
                         }`,
-                        isLeaf: true,
-                    })
-                }
-
-                if (asset.typeName === 'AtlasGlossaryCategory') {
-                    treeData.value.unshift({
-                        ...asset,
-                        id: `${getAnchorQualifiedName(asset)}_${
-                            asset.attributes?.qualifiedName
-                        }`,
-                        key: `${getAnchorQualifiedName(asset)}_${
-                            asset.attributes?.qualifiedName
-                        }`,
-                        isLeaf: false,
+                        isLeaf: asset.typeName === 'AtlasGlossaryTerm',
                     })
                 }
             }

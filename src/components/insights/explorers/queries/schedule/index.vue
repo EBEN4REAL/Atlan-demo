@@ -2,13 +2,28 @@
     <div class="w-full h-full bg-white">
         <Header :item="item" />
         <keep-alive>
-            <Info v-if="activeTabIndex === 0" :item="item" />
+            <Info
+                v-if="activeTabIndex === 0"
+                :item="item"
+                :infoTabeState="infoTabeState"
+                :usersData="usersData"
+                :cronData="cronData"
+                :cronStringReadable="cronStringReadable"
+                :rules="rules"
+            />
         </keep-alive>
         <keep-alive>
             <Variables v-if="activeTabIndex === 1" :item="item" />
         </keep-alive>
         <keep-alive>
-            <Success v-if="activeTabIndex === 2" :item="item" />
+            <Success
+                v-if="activeTabIndex === 2"
+                :item="item"
+                :usersData="usersData"
+                :cronData="cronData"
+                :variablesData="variablesData"
+                :infoTabeState="infoTabeState"
+            />
         </keep-alive>
         <div
             class="flex items-center justify-between p-6 text-sm border-t border-gray-200 rounded-b-lg bg-primary-light"
@@ -42,6 +57,7 @@
                     color="primary"
                     @click="() => shiftIndex('next')"
                     class="h-8 px-5 py-0"
+                    :disabled="!isWorkflowTemplateFetched"
                 >
                     <div class="flex items-center">
                         <span class="mr-1 text-sm">{{
@@ -59,7 +75,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, PropType, toRefs } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        PropType,
+        toRefs,
+        watch,
+        reactive,
+        computed,
+    } from 'vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import Header from './header.vue'
     import Info from './info.vue'
@@ -67,6 +91,11 @@
     import Success from './success.vue'
     import AtlanButton from '@/UI/button.vue'
     import { useVModels } from '@vueuse/core'
+    import { usePackageDiscoverList } from '~/composables/package/usePackageDiscoverList'
+    import { invoke, until } from '@vueuse/core'
+    import { useSchedule } from './composables/useSchedule'
+    import { createWorkflow } from '~/composables/package/useWorkflow'
+    import { useUsers } from '~/composables/user/useUsers'
 
     export default defineComponent({
         name: 'Schedule Query',
@@ -83,6 +112,20 @@
         },
         setup(props) {
             const { scheduleQueryModal, item } = useVModels(props)
+            const { handleWorkflowSubmit } = useSchedule()
+
+            const rules = ref({
+                name: {
+                    text: 'Enter a name!',
+                    show: false,
+                },
+                connection: {
+                    text: 'Connection is required!',
+                    show: false,
+                },
+                users: { text: 'Select atleast 1 user!', show: false },
+            })
+
             const variablesData = ref(
                 JSON.parse(
                     window.atob(
@@ -91,9 +134,180 @@
                 )
             )
             const activeTabIndex = ref(0)
+            const isWorkflowTemplateFetched = ref(false)
+            const packageList = ref(['@atlan/query-scheduler'])
+            const facetPackage = ref({})
+            const packageLimit = ref(5)
+            const workflowTemplate = ref({})
+            const isEdit = ref(false)
+            const isCron = ref(true)
+            const status = ref('')
+            const errorMesssage = ref('')
+            const inputParameters = ref({
+                recipients: [],
+                'output-format': 'csv',
+                'query-variables': {},
+                'email-variables': {},
+                'saved-query-id': item.value.guid,
+            })
+            const usersData = ref({ ownerUsers: [], ownerGroups: [] })
+
+            const totalUsersCount = computed(() => {
+                const num =
+                    usersData.value.ownerUsers?.length ??
+                    0 + usersData.value.ownerGroups?.length ??
+                    0
+
+                if (num !== 0) {
+                    if (rules.value.users.show) rules.value.users.show = false
+                }
+                return num
+            })
+
+            const usersParams = reactive({
+                limit: totalUsersCount.value,
+                offset: 0,
+                filter: {
+                    $or: [],
+                },
+            })
+
+            // body
+            const body = ref({
+                metadata: {
+                    labels: {},
+                },
+                spec: {},
+                payload: [],
+            })
+
+            const { isLoading, execute, error, data, workflow } =
+                createWorkflow(body)
+
+            const {
+                usersListConcatenated: userList,
+                getUserList,
+                isLoading: isUserLoading,
+                error: userError,
+            } = useUsers(usersParams, false)
+
+            // info tab state
+            const infoTabeState = ref({
+                name: '',
+                frequency: 'daily',
+                time: '00:00',
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                dayOfWeek: 'Monday',
+                date: '',
+            })
+
+            const cronData = ref({
+                cron: '',
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            })
+            const cronStringReadable = ref('')
+
+            facetPackage.value = {
+                packageNames: packageList.value,
+            }
+
+            const {
+                isLoading: isLoadingPackage,
+                refresh,
+                error: errorPackage,
+                list,
+            } = usePackageDiscoverList({
+                facets: facetPackage,
+                limit: packageLimit,
+            })
+            refresh()
+
+            try {
+                invoke(async () => {
+                    await until(isLoadingPackage).toBe(true)
+                    if (errorPackage.value) {
+                        console.error(
+                            errorPackage.value,
+                            'Error in fetching schedule query template'
+                        )
+                    } else if (list.value) {
+                        watch(list, () => {
+                            if (list.value?.length > 0) {
+                                isWorkflowTemplateFetched.value = true
+                                workflowTemplate.value = list.value[0]
+                                console.log(list.value[0], 'template')
+                            }
+                        })
+                    }
+                })
+            } catch (e) {
+                console.error(e)
+            }
+
             const closeModal = () => {
                 scheduleQueryModal.value = false
                 activeTabIndex.value = 0
+            }
+
+            const validateFileds = () => {
+                // select atleast 1 user
+                if (totalUsersCount.value === 0) {
+                    rules.value.users.show = true
+                    return Promise.reject()
+                }
+                return Promise.resolve()
+            }
+
+            const scheduleWorkFlow = () => {
+                usersParams.filter.$or = usersData.value.ownerUsers.map(
+                    (name) => {
+                        return {
+                            username: name,
+                        }
+                    }
+                ) as any
+
+                getUserList()
+                try {
+                    invoke(async () => {
+                        await until(isUserLoading).toBe(true)
+                        if (userError.value) {
+                            console.error(
+                                userError.value,
+                                'Error in fetching users email'
+                            )
+                        } else if (userList.value) {
+                            watch(userList, () => {
+                                if (userList.value?.length > 0) {
+                                    let userEmails: string[] = []
+                                    userList.value.forEach((user) => {
+                                        userEmails.push(user.email)
+                                    })
+                                    // setting up emails of selected user
+                                    inputParameters.value.recipients =
+                                        userEmails as any
+
+                                    console.log('success')
+
+                                    // handleWorkflowSubmit({
+                                    //     body,
+                                    //     isEdit,
+                                    //     workflowTemplate,
+                                    //     savedQueryId: item.value?.guid,
+                                    //     isCron: isCron.value,
+                                    //     cron: cronData,
+                                    //     modelValue: inputParameters,
+                                    //     status,
+                                    //     errorMesssage: errorMesssage,
+                                    //     execute,
+                                    // })
+                                }
+                            })
+                        }
+                    })
+                } catch (e) {
+                    console.error(e, 'Error in fetching users email')
+                }
             }
 
             const shiftIndex = (type: 'next' | 'back') => {
@@ -104,9 +318,26 @@
                 if (type === 'next') {
                     if (activeTabIndex.value < 2) {
                         if (variablesData.value.length === 0) {
-                            activeTabIndex.value = 2
+                            validateFileds()
+                                .then(() => {
+                                    activeTabIndex.value = 2
+                                    scheduleWorkFlow()
+                                })
+                                .catch(() => {})
                         } else {
-                            activeTabIndex.value = activeTabIndex.value + 1
+                            if (activeTabIndex.value + 1 !== 2) {
+                                activeTabIndex.value = activeTabIndex.value + 1
+                            } else {
+                                validateFileds()
+                                    .then(() => {
+                                        activeTabIndex.value =
+                                            activeTabIndex.value + 1
+                                        if (activeTabIndex.value === 2) {
+                                            scheduleWorkFlow()
+                                        }
+                                    })
+                                    .catch(() => {})
+                            }
                         }
                     }
                 } else if (type === 'back') {
@@ -121,10 +352,16 @@
             }
 
             return {
+                rules,
                 item,
                 shiftIndex,
                 activeTabIndex,
                 closeModal,
+                infoTabeState,
+                usersData,
+                cronData,
+                cronStringReadable,
+                isWorkflowTemplateFetched,
             }
         },
     })

@@ -14,7 +14,7 @@
                 placeholder="Enter a name for your report"
             />
         </div>
-        <div class="flex mb-12">
+        <div class="flex flex-wrap mb-12">
             <div class="mr-4 item-1">
                 <p class="mb-1 font-bold text-gray-500 required">
                     Refresh frequency
@@ -25,7 +25,13 @@
                     @change="handleChangeFrequency"
                 ></Frequency>
             </div>
-            <div class="mr-4 item-2">
+            <div
+                class="mr-4 item-2"
+                v-if="
+                    !['hourly'].includes(infoTabeState.frequency) &&
+                    infoTabeState.frequency
+                "
+            >
                 <p class="mb-1 font-bold text-gray-500 required">Run Time</p>
                 <a-time-picker
                     class="w-full"
@@ -45,6 +51,29 @@
                     @change="buildCron"
                 ></Timezone>
             </div>
+            <div
+                class="mt-4 item-5"
+                v-if="['monthly'].includes(infoTabeState.frequency)"
+            >
+                <p class="mb-1 font-bold text-gray-500 required">Date</p>
+                <Date
+                    v-model="infoTabeState.date"
+                    placeholder=""
+                    @change="buildCron"
+                >
+                </Date>
+            </div>
+            <div
+                class="mt-4 item-5"
+                v-if="['weekly'].includes(infoTabeState.frequency)"
+            >
+                <p class="mb-1 font-bold text-gray-500 required">Day</p>
+                <Day
+                    v-model="infoTabeState.dayOfWeek"
+                    placeholder=""
+                    @change="buildCron"
+                ></Day>
+            </div>
         </div>
         <div class="flex items-center justify-between mb-5 text-sm">
             <div class="w-full">
@@ -58,7 +87,7 @@
             </div> -->
         </div>
         <div class="text-sm text-gray-700">
-            <div class="flex items-center">
+            <div class="flex flex-wrap items-center gap-y-2 gap-x-1">
                 <a-button
                     shape="circle"
                     size="small"
@@ -83,14 +112,16 @@
                         <div class="">
                             <OwnerFacets
                                 ref="ownerInputRef"
-                                v-model="localValue"
+                                v-model="usersData"
                                 :show-none="false"
+                                :enableTabs="'users'"
+                                :hideDisabledTabs="true"
                             ></OwnerFacets>
                         </div>
                     </template>
                 </a-popover>
                 <template
-                    v-for="username in localValue?.ownerUsers"
+                    v-for="username in usersData?.ownerUsers"
                     :key="username"
                 >
                     <PopOverUser :item="username">
@@ -103,34 +134,46 @@
                         ></UserPill>
                     </PopOverUser>
                 </template>
-
-                <template v-for="name in localValue?.ownerGroups" :key="name">
-                    <PopOverGroup :item="name">
-                        <GroupPill
-                            :name="name"
-                            :allow-delete="true"
-                            :enable-hover="true"
-                            @delete="handleDeleteGroup"
-                            @click="handleClickGroup(name)"
-                        ></GroupPill>
-                    </PopOverGroup>
-                </template>
-                <p class="mt-0.5" v-if="totalUsersCount === 0">Add users</p>
+                <p
+                    class="mt-0.5"
+                    v-if="totalUsersCount === 0 && !rules.users.show"
+                >
+                    Add users
+                </p>
+                <p
+                    class="mt-0.5 text-red-500"
+                    v-if="totalUsersCount === 0 && rules.users.show"
+                >
+                    {{ rules.users.text }}
+                </p>
             </div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, onMounted, nextTick, computed } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        onMounted,
+        nextTick,
+        computed,
+        PropType,
+    } from 'vue'
     import Frequency from '~/components/common/select/frequency.vue'
     import Timezone from '~/components/common/select/timezone.vue'
     import OwnerFacets from '@/common/facet/owners/index.vue'
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import { useGroupPreview } from '~/composables/group/showGroupPreview'
+    import { useVModels } from '@vueuse/core'
+
     import PopOverUser from '@/common/popover/user/user.vue'
     import UserPill from '@/common/pills/user.vue'
     import GroupPill from '@/common/pills/group.vue'
+    import Day from '~/components/common/select/day.vue'
+    import Date from '~/components/common/select/date.vue'
+    import parser from 'cron-parser'
+    import cronstrue from 'cronstrue'
 
     export default defineComponent({
         name: 'Schedule Query Body',
@@ -141,40 +184,63 @@
             PopOverUser,
             UserPill,
             GroupPill,
+            Day,
+            Date,
         },
-        props: {},
+        props: {
+            infoTabeState: {
+                type: Object as PropType<{
+                    name: string
+                    frequency: string
+                    time: string
+                    timezone: string
+                    dayOfWeek: string
+                    date: string
+                }>,
+                required: true,
+            },
+            usersData: {
+                type: Object as PropType<{
+                    ownerUsers: Array<string>
+                    ownerGroups: Array<string>
+                }>,
+                required: true,
+            },
+            cronData: {
+                type: Object as PropType<{
+                    cron: string
+                    timezone: string
+                }>,
+                required: true,
+            },
+            cronStringReadable: {
+                type: String,
+                required: true,
+            },
+            rules: {
+                type: Object as PropType<{
+                    [key: string]: { text: string; show: boolean }
+                }>,
+                required: true,
+            },
+        },
         setup(props) {
+            const {
+                infoTabeState,
+                usersData,
+                cronData,
+                cronStringReadable,
+                rules,
+            } = useVModels(props)
             const nameRef = ref()
             const isUserEdit = ref(false)
-            const localValue = ref({ ownerUsers: [], ownerGroups: [] })
+
             const totalUsersCount = computed(
                 () =>
-                    localValue.value.ownerUsers?.length ??
-                    0 + localValue.value.ownerGroups?.length ??
+                    usersData.value.ownerUsers?.length ??
+                    0 + usersData.value.ownerGroups?.length ??
                     0
             )
-            const infoTabeState = ref({
-                name: '',
-                frequency: 'daily',
-                time: '00:00',
-                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-            })
-
-            const rules = ref({
-                name: {
-                    text: 'Enter a name!',
-                    show: false,
-                },
-                connection: {
-                    text: 'Connection is required!',
-                    show: false,
-                },
-                assets: { text: 'Select atleast 1 asset!', show: false },
-                metadata: {
-                    text: 'Select atleast 1 permission!',
-                    show: false,
-                },
-            })
 
             const onNameBlur = () => {
                 if (!infoTabeState.value.name) rules.value.name.show = true
@@ -203,19 +269,126 @@
             }
 
             const handleDeleteUser = (username) => {
-                localValue.value.ownerUsers =
-                    localValue.value?.ownerUsers.filter(
-                        (item) => item !== username
-                    )
+                usersData.value.ownerUsers = usersData.value?.ownerUsers.filter(
+                    (item) => item !== username
+                )
             }
             const handleDeleteGroup = (name) => {
-                localValue.value.ownerGroups =
-                    localValue.value?.ownerGroups.filter(
-                        (item) => item !== name
-                    )
+                usersData.value.ownerGroups =
+                    usersData.value?.ownerGroups.filter((item) => item !== name)
             }
 
+            const buildCron = () => {
+                const interval = parser.parseExpression('* * * * *')
+                const fields = JSON.parse(JSON.stringify(interval.fields))
+
+                if (
+                    infoTabeState.value.time &&
+                    !['hourly'].includes(infoTabeState.value.frequency) &&
+                    infoTabeState.value.frequency
+                ) {
+                    fields.hour = [
+                        parseInt(infoTabeState.value.time.split(':')[0]),
+                    ]
+                    fields.minute = [
+                        parseInt(infoTabeState.value.time.split(':')[1]),
+                    ]
+                }
+
+                if (
+                    infoTabeState.value.dayOfWeek &&
+                    ['weekly'].includes(infoTabeState.value.frequency)
+                ) {
+                    fields.dayOfWeek = [parseInt(infoTabeState.value.dayOfWeek)]
+                }
+                if (
+                    infoTabeState.value.date &&
+                    ['monthly'].includes(infoTabeState.value.frequency)
+                ) {
+                    fields.dayOfMonth = [parseInt(infoTabeState.value.date)]
+                }
+
+                if (infoTabeState.value.frequency === 'weekdays') {
+                    fields.dayOfWeek = [1, 2, 3, 4, 5]
+                    if (fields.hour.length === 24) {
+                        fields.hour = [0]
+                    }
+                    if (fields.minute.length === 60) {
+                        fields.minute = [0]
+                    }
+                } else if (infoTabeState.value.frequency === 'weekends') {
+                    fields.dayOfWeek = [6, 7]
+
+                    if (fields.hour.length === 24) {
+                        fields.hour = [0]
+                    }
+                    if (fields.minute.length === 60) {
+                        fields.minute = [0]
+                    }
+                } else if (infoTabeState.value.frequency === 'hourly') {
+                    fields.hour = [
+                        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+                        16, 17, 18, 19, 20, 21, 22, 23,
+                    ]
+                    fields.minute = [0]
+                }
+
+                let modifiedInterval = parser.fieldsToExpression(fields)
+                cronData.value.cron = modifiedInterval.stringify()
+                cronStringReadable.value = cronstrue.toString(
+                    cronData.value.cron
+                )
+                console.log(cronData.value.cron, cronStringReadable.value)
+            }
+
+            const handleChangeFrequency = () => {
+                if (infoTabeState.value.frequency === 'hourly') {
+                    infoTabeState.value.time = ''
+
+                    infoTabeState.value.date = ''
+                    infoTabeState.value.dayOfWeek = ''
+                }
+                if (infoTabeState.value.frequency === 'daily') {
+                    if (!infoTabeState.value.time) {
+                        infoTabeState.value.time = '00:30'
+                    }
+                    infoTabeState.value.date = ''
+                    infoTabeState.value.dayOfWeek = ''
+                }
+                if (infoTabeState.value.frequency === 'weekdays') {
+                    if (!infoTabeState.value.time) {
+                        infoTabeState.value.time = '00:30'
+                    }
+                    infoTabeState.value.date = ''
+                    infoTabeState.value.dayOfWeek = ''
+                }
+                if (infoTabeState.value.frequency === 'weekends') {
+                    infoTabeState.value.time = '00:30'
+                    infoTabeState.value.date = ''
+                    infoTabeState.value.dayOfWeek = ''
+                }
+                if (infoTabeState.value.frequency === 'weekly') {
+                    infoTabeState.value.time = '00:30'
+                    infoTabeState.value.date = ''
+                    if (!infoTabeState.value.dayOfWeek) {
+                        infoTabeState.value.dayOfWeek = '1'
+                    }
+                }
+                if (infoTabeState.value.frequency === 'monthly') {
+                    infoTabeState.value.time = '00:30'
+                    if (!infoTabeState.value.date) {
+                        infoTabeState.value.date = '1'
+                    }
+                    infoTabeState.value.dayOfWeek = ''
+                }
+                buildCron()
+            }
+            buildCron()
+
             return {
+                rules,
+                buildCron,
+                handleChangeFrequency,
                 totalUsersCount,
                 isUserEdit,
                 infoTabeState,
@@ -225,7 +398,7 @@
                 handleVisibleChange,
                 handleClickGroup,
                 handleClickUser,
-                localValue,
+                usersData,
                 handleDeleteUser,
                 handleDeleteGroup,
             }
@@ -241,13 +414,19 @@
         @apply text-gray-400 !important;
     }
     .item-1 {
-        flex: 0.35;
+        min-width: 230px;
     }
     .item-2 {
-        flex: 0.25;
+        min-width: 158px;
     }
     .item-3 {
-        flex: 0.4;
+        min-width: 230px;
+    }
+    .item-4 {
+        min-width: 158px;
+    }
+    .item-5 {
+        min-width: 230px;
     }
 </style>
 <style module lang="less">

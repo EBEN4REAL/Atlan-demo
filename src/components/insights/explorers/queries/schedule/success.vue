@@ -25,7 +25,10 @@
                 <div class="w-2 h-2 mr-2.5 bg-green-400 rounded-full"></div>
                 <p class="text-sm text-gray-500">
                     Next run
-                    <span class="font-bold">Feb 28, Monday, 12:00 pm EST</span>
+                    <span class="font-bold"
+                        >{{ _date?.format(format) }}&nbsp;
+                        {{ getAbbreviation(timeZoneAbbreviation) }}</span
+                    >
                 </p>
             </div>
             <div class="flex items-center">
@@ -34,12 +37,22 @@
                     class="w-4 h-4 mr-2 -mt-0.5 text-gray-500"
                 />
                 <p class="text-sm text-gray-500">
-                    <span class="font-bold">20 users</span> will be notified
-                    over email at 12:00 pm EST daily
+                    <span class="font-bold"
+                        >{{ usersData?.ownerUsers?.length }} users</span
+                    >
+                    will be notified over email at
+                    {{ _date?.format('hh:MM A') }}
+                    {{ getAbbreviation(timeZoneAbbreviation) }}
+                    <span class="capitalize">{{
+                        infoTabeState.frequency
+                    }}</span>
                 </p>
             </div>
         </div>
-        <div class="p-3 border border-gray-300 rounded light-shadow">
+        <div
+            class="p-3 border border-gray-300 rounded light-shadow"
+            v-if="variablesData?.length > 0 && false"
+        >
             <div class="flex items-center mb-3">
                 <p class="font-bold text-gray-700" style="font-size: 16px">
                     Variables
@@ -64,11 +77,70 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, PropType, toRefs } from 'vue'
+    import parser from 'cron-parser'
+    import dayjs from 'dayjs'
+
     export default defineComponent({
         components: {},
-        props: {},
-        setup(props) {},
+        props: {
+            variablesData: {
+                type: Object as PropType<any[]>,
+                required: true,
+            },
+            usersData: {
+                type: Object as PropType<{
+                    ownerUsers: Array<string>
+                    ownerGroups: Array<string>
+                }>,
+                required: true,
+            },
+            cronData: {
+                type: Object as PropType<{
+                    cron: string
+                    timezone: string
+                }>,
+                required: true,
+            },
+            infoTabeState: {
+                type: Object as PropType<{
+                    name: string
+                    frequency: string
+                    time: string
+                    timezone: string
+                    dayOfWeek: string
+                    date: string
+                }>,
+                required: true,
+            },
+        },
+        setup(props) {
+            const { variablesData, usersData, cronData, infoTabeState } =
+                toRefs(props)
+            const interval = parser.parseExpression(cronData.value.cron)
+
+            const _date = dayjs(interval.next().toString())
+            const parsedDate = new Date(_date.toString())
+            const timeZoneAbbreviation = String(
+                String(parsedDate).split('(')[1]
+            ).split(')')[0]
+
+            function getAbbreviation(str: string = '') {
+                return str.match(/\b([A-Z])/g).join('')
+            }
+            console.log(interval.fields, 'fields')
+
+            const format = 'MMM DD, dddd, hh:MM A'
+            return {
+                format,
+                _date,
+                usersData,
+                variablesData,
+                timeZoneAbbreviation,
+                getAbbreviation,
+                infoTabeState,
+            }
+        },
     })
 </script>
 <style lang="less" scoped>

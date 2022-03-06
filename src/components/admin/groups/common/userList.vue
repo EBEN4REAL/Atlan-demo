@@ -17,17 +17,13 @@
                 />
             </div>
             <template v-if="showHeaderButtons">
-                <AtlanButton
+                <AtlanButton2
                     color="secondary"
-                    size="sm"
-                    padding="compact"
+                    label="Done"
                     :loading="addMemberLoading"
                     :disabled="addMemberLoading || !selectedIds.length"
-                    class="flex items-center text-sm"
                     @click="$emit('addMembersToGroup')"
-                >
-                    Done
-                </AtlanButton>
+                />
             </template>
         </div>
         <div
@@ -36,17 +32,12 @@
         >
             <ErrorView>
                 <div class="mt-3">
-                    <AtlanButton
+                    <AtlanButton2
                         color="secondary"
-                        @click="
-                            () => {
-                                getUserList()
-                            }
-                        "
-                    >
-                        <AtlanIcon icon="Retry" />
-                        Try again
-                    </AtlanButton>
+                        prefixIcon="Retry"
+                        label="Try again"
+                        @click="getUserList"
+                    />
                 </div>
             </ErrorView>
         </div>

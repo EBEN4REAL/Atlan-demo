@@ -3,7 +3,7 @@
         <template v-if="showGroupMembers">
             <div
                 v-auth="map.ADD_USER_GROUP"
-                class="flex items-center justify-between mb-3 px-4"
+                class="flex items-center justify-between px-4 mb-3"
             >
                 <div class="text-base font-bold text-gray-500">Members</div>
                 <MemberPopover
@@ -11,24 +11,16 @@
                     @members-added="addMembersToGroup"
                 >
                     <template #label>
-                        <AtlanButton
-                            size="sm"
-                            padding="compact"
-                            class="text-gray-700 bg-transparent border-gray-300 hover:bg-transparent hover:text-primary hover:border-primary"
-                        >
-                            <div class="flex items-center">
-                                <AtlanIcon
-                                    icon="Add"
-                                    class="h-3 mr-2"
-                                ></AtlanIcon>
-                                <div>Add Member</div>
-                            </div>
-                        </AtlanButton>
+                        <AtlanButton2
+                            color="secondary"
+                            prefixIcon="Add"
+                            label="Add Member"
+                        />
                     </template>
                 </MemberPopover>
             </div>
             <div
-                class="flex flex-row items-center justify-between gap-x-1 px-4"
+                class="flex flex-row items-center justify-between px-4 gap-x-1"
             >
                 <SearchAndFilter
                     v-if="totalMembersCount || isLoading"
@@ -41,7 +33,7 @@
             </div>
             <div
                 v-if="!totalMembersCount && !isLoading"
-                class="flex flex-col items-center justify-center empty-state-wrapper px-4"
+                class="flex flex-col items-center justify-center px-4 empty-state-wrapper"
             >
                 <div class="flex items-center justify-center w-full">
                     <EmptyState
@@ -52,7 +44,7 @@
             </div>
             <div
                 v-if="error"
-                class="flex flex-col items-center justify-center mt-3 bg-white empty-state-wrapper px-4"
+                class="flex flex-col items-center justify-center px-4 mt-3 bg-white empty-state-wrapper"
             >
                 <ErrorView>
                     <div class="mt-3">
@@ -76,7 +68,7 @@
             </div>
             <div
                 v-else-if="searchText && !filteredMembersCount && !isLoading"
-                class="empty-state-wrapper px-4"
+                class="px-4 empty-state-wrapper"
             >
                 <EmptyState
                     image-class="h-36"
@@ -108,7 +100,7 @@
                             />
 
                             <div
-                                class="absolute right-2 flex justify-between mr-2 cursor-pointer top-3"
+                                class="absolute flex justify-between mr-2 cursor-pointer right-2 top-3"
                             >
                                 <div class="font-bold">
                                     <div

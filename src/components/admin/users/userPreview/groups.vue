@@ -23,31 +23,20 @@
                             ></OwnerFacets>
                         </div>
                         <div class="flex justify-end mr-3">
-                            <AtlanButton
-                                :is-loading="addToGroupLoading"
-                                type="primary"
-                                size="sm"
-                                padding="compact"
+                            <AtlanButton2
+                                :loading="addToGroupLoading"
                                 :disabled="addToGroupLoading"
+                                :label="addToGroupLoading ? 'Saving' : 'Save'"
                                 @click="addUserToGroups"
-                            >
-                                <div class="flex items-center">
-                                    <div v-if="!addToGroupLoading">Save</div>
-                                    <div v-else>Saving</div>
-                                </div>
-                            </AtlanButton>
+                            />
                         </div>
                     </template>
-                    <AtlanButton
+                    <AtlanButton2
                         size="sm"
-                        padding="compact"
-                        class="text-gray-700 bg-transparent border-gray-300 hover:bg-transparent hover:text-primary hover:border-primary"
-                    >
-                        <div class="flex items-center">
-                            <AtlanIcon icon="Add" class="h-3 mr-2"></AtlanIcon>
-                            <div>Add to groups</div>
-                        </div></AtlanButton
-                    >
+                        color="secondary"
+                        label="Add to groups"
+                        prefixIcon="Add"
+                    />
                 </a-popover>
             </div>
             <div v-else>

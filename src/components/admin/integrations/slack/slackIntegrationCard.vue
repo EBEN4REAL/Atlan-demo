@@ -103,24 +103,21 @@
             />
         </section>
         <section class="flex items-center justify-between p-6 gap-x-3">
-            <AtlanButton
+            <AtlanButton2
                 v-auth="access.DELETE_INTEGRATION"
-                color="minimal"
-                class="px-0 text-red-500"
-                :is-loading="isLoading"
+                color="secondary"
+                class="text-red-500"
+                label="Disconnect"
+                :loading="isLoading"
                 @click="handleDisconnect"
-            >
-                Disconnect
-            </AtlanButton>
+            />
             <!-- v-auth="access.UPDATE_INTEGRATIONS" -->
-            <AtlanButton
-                :is-loading="updateLoading"
-                class="w-16"
+            <AtlanButton2
+                :loading="updateLoading"
                 :disabled="!isEdit"
+                label="Save"
                 @click="update"
-            >
-                Save
-            </AtlanButton>
+            />
         </section>
     </div>
 </template>

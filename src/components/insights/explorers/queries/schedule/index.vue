@@ -287,20 +287,18 @@
                                     inputParameters.value.recipients =
                                         userEmails as any
 
-                                    console.log('success')
-
-                                    // handleWorkflowSubmit({
-                                    //     body,
-                                    //     isEdit,
-                                    //     workflowTemplate,
-                                    //     savedQueryId: item.value?.guid,
-                                    //     isCron: isCron.value,
-                                    //     cron: cronData,
-                                    //     modelValue: inputParameters,
-                                    //     status,
-                                    //     errorMesssage: errorMesssage,
-                                    //     execute,
-                                    // })
+                                    handleWorkflowSubmit({
+                                        body,
+                                        isEdit,
+                                        workflowTemplate,
+                                        savedQueryId: item.value?.guid,
+                                        isCron: isCron.value,
+                                        cron: cronData,
+                                        modelValue: inputParameters,
+                                        status,
+                                        errorMesssage: errorMesssage,
+                                        execute,
+                                    })
                                 }
                             })
                         }

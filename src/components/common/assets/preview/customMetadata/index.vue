@@ -2,7 +2,7 @@
     <div v-if="loading" class="flex items-center justify-center w-full h-full">
         <AtlanLoader class="h-8" />
     </div>
-    <div v-else ref="target" class="flex flex-col w-full mb-3 gap-y-2">
+    <div v-else ref="target" class="flex flex-col w-full h-full mb-3 gap-y-2">
         <!-- header starts here -->
         <div
             class="flex items-center justify-between px-5 py-2 border-b border-gray-200 gap-x-4 group bg-gray-50"
@@ -100,14 +100,7 @@
             </div>
         </template>
 
-        <div
-            class="flex flex-col flex-grow pl-5 pr-5 overflow-auto scrollheight"
-            :style="
-                isProfile || $route?.params?.id
-                    ? 'max-height: calc(100vh - 7rem)'
-                    : 'max-height: calc(100vh - 13rem)'
-            "
-        >
+        <div class="flex flex-col pl-5 pr-5 overflow-auto">
             <!-- showing non empty starts here -->
             <template v-if="readOnly">
                 <template

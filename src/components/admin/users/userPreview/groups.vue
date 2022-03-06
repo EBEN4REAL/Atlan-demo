@@ -108,7 +108,7 @@
                                 }
                             "
                         >
-                            <AtlanIcon icon="Reload" class="mr-2" />Try again
+                            <AtlanIcon icon="Retry" class="mr-2" />Try again
                         </a-button>
                     </div>
                 </ErrorView>

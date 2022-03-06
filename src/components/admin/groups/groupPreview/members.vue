@@ -27,7 +27,9 @@
                     </template>
                 </MemberPopover>
             </div>
-            <div class="flex flex-row items-center justify-between gap-x-1 px-4">
+            <div
+                class="flex flex-row items-center justify-between gap-x-1 px-4"
+            >
                 <SearchAndFilter
                     v-if="totalMembersCount || isLoading"
                     v-model:value="searchText"
@@ -65,7 +67,7 @@
                             "
                         >
                             <AtlanIcon
-                                icon="Reload"
+                                icon="Retry"
                                 class="inline-block mb-1 mr-1"
                             />Try again
                         </a-button>
@@ -97,7 +99,7 @@
                         class="relative"
                     >
                         <div
-                            class="flex items-center justify-between  py-2  transition-all duration-300 rounded group hover:bg-primary-light"
+                            class="flex items-center justify-between py-2 transition-all duration-300 rounded group hover:bg-primary-light"
                         >
                             <UserCard
                                 :user="{ ...user, name: getUserName(user) }"
@@ -135,7 +137,10 @@
                     </div>
                 </div>
                 <div v-if="isLoading" class="flex justify-center mt-3">
-                    <AtlanIcon icon="CircleLoader" class="h-5 animate-spin text-primary" />
+                    <AtlanIcon
+                        icon="CircleLoader"
+                        class="h-5 animate-spin text-primary"
+                    />
                 </div>
                 <div v-else-if="showLoadMore" class="flex justify-center mt-3">
                     <a-button @click="handleLoadMore">load more</a-button>
@@ -160,14 +165,7 @@
 
 <script lang="ts">
     import { message, Modal } from 'ant-design-vue'
-    import {
-        ref,
-        defineComponent,
-        computed,
-        watch,
-        h,
-        toRefs,
-    } from 'vue'
+    import { ref, defineComponent, computed, watch, h, toRefs } from 'vue'
     import ErrorView from '@common/error/index.vue'
     import { useDebounceFn } from '@vueuse/core'
     import { Groups } from '~/services/service/groups'

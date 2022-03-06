@@ -44,7 +44,7 @@
                             }
                         "
                     >
-                        <AtlanIcon icon="Reload" />
+                        <AtlanIcon icon="Retry" />
                         Try again
                     </AtlanButton>
                 </div>

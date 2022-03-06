@@ -1,6 +1,6 @@
 <template>
     <button
-        :class="[color]"
+        :class="[color, size]"
         :disabled="disabled || loading"
         :data-test-id="dataTestId"
         class="atlan-btn"
@@ -39,6 +39,11 @@
                     'primary' | 'secondary' | 'light' | 'minimal' | 'danger'
                 >,
                 default: () => 'primary',
+                required: false,
+            },
+            size: {
+                type: String as PropType<'large'>,
+                default: () => '',
                 required: false,
             },
             disabled: {
@@ -82,6 +87,10 @@
         @apply px-4;
         @apply h-8;
         min-width: 32px;
+
+        &.large {
+            @apply h-9;
+        }
 
         &.primary {
             @apply bg-primary border-primary;

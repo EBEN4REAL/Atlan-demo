@@ -17,17 +17,15 @@
         >
             {{ desc }}
         </p>
-        <AtlanButton
+        <AtlanButton2
             v-if="buttonText"
+            size="large"
             :class="buttonClass"
-            size="lg"
             :color="buttonColor"
-            padding="compact"
+            :prefixIcon="buttonIcon"
+            :label="buttonText"
             @click="handleClick"
-        >
-            {{ buttonText }}
-            <AtlanIcon v-if="buttonIcon" :icon="buttonIcon" class="inline" />
-        </AtlanButton>
+        />
     </div>
 </template>
 

@@ -161,19 +161,11 @@
             <UserPersonalAvatar placement="topLeft" class="py-2">
             </UserPersonalAvatar>
         </div> -->
-        <div class="w-full px-3 my-3" v-if="!isCollapsed">
+        <div class="w-full my-3">
             <div class="flex mx-3">
-                <div class="flex items-center text-xs text-gray-500">
-                    <span>with 💙 by</span>
-                    <!-- FIXME: What is this URL??? -->
-                    <img
-                        src="https://atlan.com/assets/img/atlan-blue.6ed81a56.svg"
-                        class="w-auto h-3 ml-1 mb-0.5"
-                    />
-                </div>
-                <span class="flex items-center ml-auto text-xs text-gray-500">
-                    v{{ getVersion }}
-                </span>
+                <!-- <span class="flex items-center text-xs text-gray-500">
+                    ATL{{ getVersion }}
+                </span> -->
             </div>
         </div>
     </div>

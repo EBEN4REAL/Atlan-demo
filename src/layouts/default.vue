@@ -1,11 +1,10 @@
 <template>
     <a-layout class="min-h-full">
         <a-layout-sider
-            v-model:collapsed="collapsed"
-            collapsible
             theme="light"
             class="border border-r"
             :collapsedWidth="60"
+            :width="60"
         >
             <SidePanel
                 :page="activeKey"

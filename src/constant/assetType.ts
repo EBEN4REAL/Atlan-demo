@@ -197,6 +197,7 @@ export const assetTypeList: {
         count: 0,
         groupOrder: 1,
         priorityOrder: 7,
+        relationships: ['childrenQueries'],
     },
     {
         id: 'AtlasGlossary',

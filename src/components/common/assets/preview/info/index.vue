@@ -36,7 +36,8 @@
                     isGTC(selectedAsset) ||
                     selectedAsset.typeName === 'Connection' ||
                     selectedAsset.typeName === 'Process' ||
-                    selectedAsset.typeName === 'Query'
+                    selectedAsset.typeName === 'Query' ||
+                    selectedAsset.typeName === 'Collection'
                 "
                 class="flex flex-col"
             >

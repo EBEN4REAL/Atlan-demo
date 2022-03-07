@@ -162,18 +162,46 @@ export default function useEventGraph({
         graph.value.getNodes().find((x) => x.id === nodeId)
 
     // isNodeHidden
-    const isNodeHidden = (nodeId) => {
-        const allHiddenNodes = []
-        Object.values(sameSourceCount.value).forEach((v) => {
-            const targetsHidden = v?.targetsHidden
-            allHiddenNodes.push(...targetsHidden)
+    const isNodeHidden = (nodeId, returnBoolean) => {
+        let res = {
+            isHidden: false,
+            type: '',
+            node: null,
+        }
+
+        Object.entries(sameSourceCount.value).forEach(([k, v]) => {
+            if (res?.isHidden) return
+
+            const targetsHiddenGuids = v?.targetsHidden.map((x) => x.guid)
+            const isHidden = targetsHiddenGuids.includes(nodeId)
+            if (isHidden)
+                res = {
+                    isHidden,
+                    type: 'sameSourceCount',
+                    node: k,
+                }
         })
-        Object.values(sameTargetCount.value).forEach((v) => {
-            const sourcesHidden = v?.sourcesHidden
-            allHiddenNodes.push(...sourcesHidden)
+
+        if (res?.isHidden) {
+            if (returnBoolean) return !!res?.isHidden
+            return res
+        }
+
+        Object.entries(sameTargetCount.value).forEach(([k, v]) => {
+            if (res?.isHidden) return
+
+            const sourcesHiddenGuids = v?.sourcesHidden.map((x) => x.guid)
+            const isHidden = sourcesHiddenGuids.includes(nodeId)
+            if (isHidden)
+                res = {
+                    isHidden,
+                    type: 'sameTargetCount',
+                    node: k,
+                }
         })
-        const exist = allHiddenNodes.find((x) => x.guid === nodeId)
-        return !!exist
+
+        if (returnBoolean) return !!res?.isHidden
+        return res
     }
 
     // isPortRendered
@@ -433,7 +461,32 @@ export default function useEventGraph({
         })
 
         watchOnce(data, () => {
-            addSubGraph(data.value, registerAllListeners)
+            const { guidEntityMap: gem1 } = mergedLineageData.value
+            const { guidEntityMap: gem2 } = data.value
+            const keys1 = Object.keys(gem1)
+            const keys2 = Object.keys(gem2)
+
+            const guidOfHiddenNode = keys2.find(
+                (x) => x !== guid && keys1.includes(x)
+            )
+
+            const { isHidden, type, node } = isNodeHidden(
+                guidOfHiddenNode,
+                false
+            )
+
+            if (guidOfHiddenNode && isHidden) {
+                const prefix =
+                    type === 'sameSourceCount' ? 'vpNodeSS' : 'vpNodeST'
+                const vpNodeId = `${prefix}-${node}`
+                const x6Node = getX6Node(vpNodeId)
+                selectVpNode(x6Node, [guidOfHiddenNode])
+                resetState(true)
+                addSubGraph(data.value, registerAllListeners)
+            } else {
+                addSubGraph(data.value, registerAllListeners)
+            }
+
             const ucell = graph.value.getCellById(guid)
             graph.value.scrollToCell(ucell, { animation: { duration: 600 } })
 
@@ -763,7 +816,7 @@ export default function useEventGraph({
             targetPort = `${toEntityId}-invisiblePort`
 
             if (!isNodeRendered(targetCell)) return
-            if (isNodeHidden(targetCell)) return
+            if (isNodeHidden(targetCell, true)) return
 
             portHighlightedBINodes.value.push(targetCell)
             highlightNode(targetCell)

@@ -160,12 +160,7 @@
                                             : '',
                                     ]"
                                     style="width: 100%"
-                                    :dropdownStyle="{
-                                        maxHeight: '400px',
-                                        overflow: 'auto',
-                                    }"
                                     :tree-data="treeData"
-                                    :allowClear="false"
                                     :block-node="true"
                                     :auto-expand-parent="false"
                                     ref="treeRef"

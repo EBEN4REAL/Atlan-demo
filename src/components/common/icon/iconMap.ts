@@ -285,6 +285,7 @@ import Geography from '~/assets/images/dataType/geography.svg'
 
 import NoAvatar from '~/assets/images/icons/no-avatar.svg'
 import Enter from '~/assets/images/icons/enter.svg'
+import EnterProfile from '~/assets/images/icons/enter_profile.svg'
 import Times from '~/assets/images/icons/times.svg'
 import NoLinkedAssets from '~/assets/images/icons/no-linked-assets.svg'
 import NoRequestFound from '~/assets/images/icons/no-request-found.svg'
@@ -714,6 +715,7 @@ export default {
     Number,
     NoAvatar,
     Enter,
+    EnterProfile,
     NoRequestFound,
     NoLinkedAssets,
     FormatText,

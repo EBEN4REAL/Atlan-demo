@@ -1,14 +1,14 @@
 <template>
     <section
-        class="flex items-center h-32 p-6 border shadow rounded-xl gap-x-5"
-        :class="$style.addCard"
+        class="flex items-center h-20 p-6 border border-gray-300 rounded-lg gap-x-5 customShadow"
+        style=""
     >
         <div class="flex-grow">
             <div class="flex items-center gap-x-3">
                 <div
-                    class="flex items-center justify-center w-12 h-12 bg-gray-200 rounded"
+                    class="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-full"
                 >
-                    <AtlanIcon icon="Slack" class="h-8" />
+                    <AtlanIcon icon="Slack" class="h-7" />
                 </div>
                 <div class="">
                     <h2 class="text-lg font-bold">Slack</h2>
@@ -40,7 +40,11 @@
                 "
                 @click="() => openSlackOAuth({ tenant: true })"
             >
-                <AtlanButton v-auth="access.CREATE_INTEGRATION">
+                <AtlanButton
+                    size="sm"
+                    padding="compact"
+                    v-auth="access.CREATE_INTEGRATION"
+                >
                     Add to Slack <AtlanIcon icon="ArrowRight" />
                 </AtlanButton>
             </div>
@@ -48,6 +52,8 @@
                 v-else
                 v-auth="access.CREATE_INTEGRATION"
                 @click="$emit('openConfig')"
+                size="sm"
+                padding="compact"
             >
                 Connect
                 <AtlanIcon icon="ArrowRight" />
@@ -143,15 +149,15 @@
 </script>
 
 <style lang="less" module>
-    .addCard {
-        background: url('~/assets/images/admin/integrations/add-slack-bg.svg')
-            no-repeat;
-        background-size: contain;
-        background-position-x: right;
-    }
     .inviteModal {
         :global(.ant-modal-content) {
             @apply rounded-lg;
         }
+    }
+</style>
+
+<style scoped>
+    .customShadow:hover {
+        box-shadow: 0px 8px 24px rgba(25, 32, 56, 0.04);
     }
 </style>

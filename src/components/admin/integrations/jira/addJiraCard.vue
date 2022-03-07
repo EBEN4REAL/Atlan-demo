@@ -1,12 +1,11 @@
 <template>
     <section
-        class="flex items-center h-32 p-6 border shadow rounded-xl gap-x-5"
-        :class="$style.addCard"
+        class="flex items-center h-20 p-6 border border-gray-300 rounded-lg gap-x-5 customShadow"
     >
         <div class="flex-grow">
             <div class="flex items-center gap-x-3">
                 <div
-                    class="flex items-center justify-center w-12 h-12 bg-gray-200 rounded"
+                    class="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-full"
                 >
                     <AtlanIcon icon="Jira" class="h-8" />
                 </div>
@@ -34,6 +33,8 @@
                 v-auth="access.CREATE_INTEGRATION"
                 :loading="isLoading"
                 @click="handleConnect"
+                size="sm"
+                padding="compact"
             >
                 Connect
                 <AtlanIcon icon="ArrowRight" />
@@ -122,7 +123,6 @@
                 handleConnect,
                 isLoading,
                 description,
-                openJiraOAuth,
                 tenantJiraStatus,
                 tenantLevelOauthUrl,
                 store,
@@ -143,5 +143,11 @@
         :global(.ant-modal-content) {
             @apply rounded-lg;
         }
+    }
+</style>
+
+<style scoped>
+    .customShadow:hover {
+        box-shadow: 0px 8px 24px rgba(25, 32, 56, 0.04);
     }
 </style>

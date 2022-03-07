@@ -55,6 +55,7 @@ export const dataTypeCategoryList = [
             'FLOAT',
             'FLOAT4',
             'FLOAT8',
+            'FLOAT64',
             'DOUBLE',
             'DOUBLE PRECISION',
             'REAL',

@@ -4,9 +4,8 @@
             :visible="drawerFilter"
             :mask="false"
             :placement="'left'"
-            style="width: 17%"
+            :width="250"
             :closable="false"
-            :class="'drawer-filter-request'"
         >
             <div
                 class="relative h-full pb-10 overflow-scroll bg-gray-50"
@@ -43,12 +42,12 @@
         />
         <a-modal
             v-model:visible="purposeViewModalVisible"
-            :destroyOnClose="true"
+            :destroy-on-close="true"
             :closable="false"
             width="80%"
-            wrapClassName="persona-modal"
+            wrap-class-name="persona-modal"
             :centered="true"
-            :maskClosable="true"
+            :mask-closable="true"
             @cancel="closePurposeViewModal"
         >
             <template #title>

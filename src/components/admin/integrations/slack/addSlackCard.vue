@@ -1,12 +1,12 @@
 <template>
     <section
-        class="flex items-center h-20 p-6 border border-gray-300 rounded-lg gap-x-5 customShadow"
+        class="flex items-center h-20 p-6 bg-gray-100 border rounded-lg gap-x-5 customShadow"
         style=""
     >
         <div class="flex-grow">
             <div class="flex items-center gap-x-3">
                 <div
-                    class="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-full"
+                    class="flex items-center justify-center w-12 h-12 bg-gray-200 rounded-full"
                 >
                     <AtlanIcon icon="Slack" class="h-7" />
                 </div>

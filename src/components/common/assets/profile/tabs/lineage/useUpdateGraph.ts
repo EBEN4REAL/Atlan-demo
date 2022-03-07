@@ -60,7 +60,7 @@ export default function useUpdateGraph(graph) {
             const cell = graph.value.getCellById(x.id)
             const [source, target] = x.id.split('/')[1].split('@')
 
-            if (source.includes('vpNode') || target.includes('vpNode')) return
+            // if (source.includes('vpNode') || target.includes('vpNode')) return
 
             const itExists =
                 nodesToHighlight.includes(source) &&

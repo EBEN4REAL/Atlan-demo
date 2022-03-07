@@ -35,9 +35,9 @@
                                 {{ item?.options?.emoji }}
                             </span>
                             <span
-                                class="w-full text-xs text-gray hover:text-primary title"
+                                class="w-full text-xs tracking-widest text-gray hover:text-primary title"
                                 :class="{
-                                    'tracking uppercase':
+                                    'tracking-widest uppercase':
                                         item?.component !== 'properties',
                                 }"
                             >

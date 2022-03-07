@@ -5,6 +5,18 @@
             class="flex flex-col px-4 py-4 border-b border-gray-200"
         >
             <div class="flex items-center mb-1">
+                <a-tooltip v-if="connectorName(selectedAsset)" placement="left">
+                    <template #title>
+                        <span>{{ connectorName(selectedAsset) }} </span>
+                        <span v-if="connectionName(selectedAsset)">{{
+                            `/${connectionName(selectedAsset)}`
+                        }}</span>
+                    </template>
+                    <img
+                        :src="getConnectorImage(selectedAsset)"
+                        class="h-4 mr-1 mb-0.5"
+                    />
+                </a-tooltip>
                 <div
                     v-if="
                         ['column'].includes(
@@ -50,8 +62,35 @@
             </div>
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
+                    <AtlanIcon
+                        v-if="
+                            [
+                                'table',
+                                'view',
+                                'tablepartition',
+                                'materialisedview',
+                                'column',
+                                'schema',
+                                'query',
+                            ].includes(selectedAsset.typeName?.toLowerCase())
+                        "
+                        :icon="selectedAsset.typeName"
+                        class="self-center mr-1 text-gray-500 mb-0.5"
+                    ></AtlanIcon>
                     <a-tooltip
-                        v-if="connectorName(selectedAsset)"
+                        class="flex items-center"
+                        v-if="
+                            connectorName(selectedAsset) &&
+                            ![
+                                'table',
+                                'view',
+                                'tablepartition',
+                                'materialisedview',
+                                'column',
+                                'schema',
+                                'query',
+                            ].includes(selectedAsset.typeName?.toLowerCase())
+                        "
                         placement="left"
                     >
                         <template #title>
@@ -60,10 +99,15 @@
                                 `/${connectionName(selectedAsset)}`
                             }}</span>
                         </template>
-                        <img
-                            :src="getConnectorImage(selectedAsset)"
-                            class="h-4 mr-1 mb-0.5"
-                        />
+                        <span
+                            class="mr-1 text-sm tracking-wider text-gray-500 capitalize"
+                            >{{ connectorName(selectedAsset) }}
+                        </span>
+                        <!-- <img
+                                    :src="getConnectorImage(item)"
+                                    class="h-4 mb-0.5"
+                                /> -->
+                        <!-- <span class=""></span> -->
                     </a-tooltip>
                     <AtlanIcon
                         v-if="
@@ -84,7 +128,7 @@
                         class="h-4 mb-0.5 mr-1"
                     ></AtlanIcon>
 
-                    <div class="text-sm tracking-wider text-gray-500 uppercase">
+                    <div class="text-sm text-gray-500">
                         {{
                             assetTypeLabel(selectedAsset) ||
                             selectedAsset.typeName

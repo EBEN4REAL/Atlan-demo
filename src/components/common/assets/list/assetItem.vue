@@ -43,8 +43,23 @@
                 <div class="flex flex-col flex-1" :class="{ '': !isCompact }">
                     <div class="flex items-center justify-between">
                         <div
-                            class="flex items-center overflow-hidden flex-grow"
+                            class="flex items-center flex-grow overflow-hidden"
                         >
+                            <a-tooltip
+                                v-if="connectorName(item)"
+                                placement="left"
+                            >
+                                <template #title>
+                                    <span>{{ connectorName(item) }} </span>
+                                    <span v-if="connectionName(item)">{{
+                                        `/${connectionName(item)}`
+                                    }}</span>
+                                </template>
+                                <img
+                                    :src="getConnectorImage(item)"
+                                    class="h-4 mr-1 mb-0.5"
+                                />
+                            </a-tooltip>
                             <div
                                 v-if="
                                     ['column'].includes(
@@ -65,8 +80,8 @@
                                 :route-to="getProfilePath(item)"
                                 :classes="
                                     isScrubbed(item)
-                                        ? 'text-md mb-0  font-semibold cursor-pointer text-primary hover:underline opacity-80 '
-                                        : 'text-md font-bold mb-0 cursor-pointer text-primary hover:underline  '
+                                        ? 'text-md mb-0  font-semibold cursor-pointer text-primary hover:underline opacity-80 tracking-wide'
+                                        : 'text-md font-bold mb-0 cursor-pointer text-primary hover:underline tracking-wide '
                                 "
                                 :should-open-in-new-tab="
                                     openAssetProfileInNewTab
@@ -111,7 +126,19 @@
                     <div class="flex flex-wrap items-center mt-1.5">
                         <div class="flex items-center mr-2">
                             <a-tooltip
-                                v-if="connectorName(item)"
+                                class="flex items-center"
+                                v-if="
+                                    connectorName(item) &&
+                                    ![
+                                        'table',
+                                        'view',
+                                        'tablepartition',
+                                        'materialisedview',
+                                        'column',
+                                        'schema',
+                                        'query',
+                                    ].includes(item.typeName?.toLowerCase())
+                                "
                                 placement="left"
                             >
                                 <template #title>
@@ -120,10 +147,15 @@
                                         `/${connectionName(item)}`
                                     }}</span>
                                 </template>
-                                <img
+                                <span
+                                    class="mr-1 text-sm tracking-wider text-gray-500 capitalize"
+                                    >{{ connectorName(item) }}
+                                </span>
+                                <!-- <img
                                     :src="getConnectorImage(item)"
-                                    class="h-4 mr-1 mb-0.5"
-                                />
+                                    class="h-4 mb-0.5"
+                                /> -->
+                                <!-- <span class=""></span> -->
                             </a-tooltip>
 
                             <AtlanIcon
@@ -133,7 +165,7 @@
                                     )
                                 "
                                 icon="Category"
-                                class="h-4  mr-1"
+                                class="h-4 mr-1"
                             ></AtlanIcon>
                             <AtlanIcon
                                 v-if="
@@ -142,13 +174,26 @@
                                     )
                                 "
                                 icon="Term"
-                                class="h-4  mr-1"
+                                class="h-4 mr-1"
+                            ></AtlanIcon>
+                            <AtlanIcon
+                                v-if="
+                                    [
+                                        'table',
+                                        'view',
+                                        'tablepartition',
+                                        'materialisedview',
+                                        'column',
+                                        'schema',
+                                        'query',
+                                    ].includes(item.typeName?.toLowerCase())
+                                "
+                                :icon="item.typeName"
+                                class="self-center mr-1 text-primary mb-0.5"
                             ></AtlanIcon>
 
-                            <div
-                                class="text-sm tracking-wider text-gray-500 uppercase"
-                            >
-                                {{ assetTypeLabel(item) || item.typeName }} 
+                            <div class="text-sm text-gray-500">
+                                {{ assetTypeLabel(item) || item.typeName }}
                                 <span
                                     v-if="
                                         ['SalesforceObject'].includes(

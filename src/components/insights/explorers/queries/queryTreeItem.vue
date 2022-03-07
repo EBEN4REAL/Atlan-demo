@@ -52,6 +52,11 @@
                                                 >Rename folder</a-menu-item
                                             >
                                             <a-menu-item
+                                                key="newFolder"
+                                                @click="createFolderInput"
+                                                >New folder</a-menu-item
+                                            >
+                                            <a-menu-item
                                                 key="newQuery"
                                                 @click="newQuery"
                                                 >New query</a-menu-item
@@ -542,6 +547,8 @@
             AtlanBtn,
             Tooltip,
         },
+        emits: ['createFolderInput'],
+
         props: {
             item: {
                 type: Object as PropType<assetInterface>,
@@ -584,7 +591,7 @@
             //     default: () => {},
             // },
         },
-        setup(props) {
+        setup(props, { emit }) {
             const { canUserDeleteFolder } = useAccess()
             const {
                 expandedKeys,
@@ -1527,6 +1534,10 @@
                 useAddEvent('insights', 'query', 'link_copied', undefined)
             }
 
+            const createFolderInput = () => {
+                emit('createFolderInput')
+            }
+
             return {
                 evaluatePermisson,
                 permissions,
@@ -1565,6 +1576,7 @@
                 collectionName,
                 addBackground,
                 removeBackground,
+                createFolderInput,
                 // input,
                 // newFolderName,
             }

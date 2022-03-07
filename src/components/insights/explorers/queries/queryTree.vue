@@ -31,6 +31,7 @@ TR
                             :isNodeLoading="isNodeLoading"
                             :nodeError="nodeError"
                             :errorNode="errorNode"
+                            @createFolderInput="createFolderInput"
                         />
                         <!-- <div v-else-if="isNodeLoading === false && nodeError">
                             {{ nodeError }}

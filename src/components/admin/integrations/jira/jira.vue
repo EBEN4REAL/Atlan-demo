@@ -59,6 +59,12 @@
     })
 </script>
 
+<style scoped>
+    .customShadow:hover {
+        box-shadow: 0px 8px 24px rgba(25, 32, 56, 0.04);
+    }
+</style>
+
 <style lang="less" module>
     .menu {
         div {

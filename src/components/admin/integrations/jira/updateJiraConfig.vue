@@ -147,25 +147,3 @@
         },
     })
 </script>
-
-<style lang="less" module>
-    .menu {
-        div {
-            line-height: normal;
-        }
-        @apply border-none  !important;
-        :global(.ant-menu-submenu-title) {
-            @apply h-full p-0 m-0 !important;
-            :global(.ant-menu-title-content + svg) {
-                @apply hidden !important;
-            }
-        }
-
-        :global(.ant-menu) {
-        }
-
-        :global(.ant-menu-inline) {
-            @apply bg-white !important;
-        }
-    }
-</style>

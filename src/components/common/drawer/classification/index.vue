@@ -29,28 +29,28 @@
                 </div>
                 <div class="mt-3">
                     <AtlanButton color="secondary" @click="reload">
-                        <AtlanIcon icon="Reload" />
+                        <AtlanIcon icon="Retry" />
                         Try again
                     </AtlanButton>
                 </div>
             </ErrorView>
         </div>
         <template v-else-if="!isLoading && classification">
-            <div class='px-5 py-5'>
-                <h2 class='text-primary text-base font-bold'>
+            <div class="px-5 py-5">
+                <h2 class="text-primary text-base font-bold">
                     {{ classification.displayName }}
                 </h2>
-                <div class='flex content-center items-center h-4 mt-2.5'>
-                    <ClassificationIcon
-                        :classification='classification'
-                    />
-                    <span class='uppercase text-gray-500 ml-1'>Classification</span>
+                <div class="flex content-center items-center h-4 mt-2.5">
+                    <ClassificationIcon :classification="classification" />
+                    <span class="uppercase text-gray-500 ml-1"
+                        >Classification</span
+                    >
                     <a-button
                         v-auth="map.PAGE_GOVERNANCE"
                         class="px-2 py-1 ml-auto"
                         @click="handleRedirect(classification.name)"
                     >
-                        <AtlanIcon icon="Enter"/>
+                        <AtlanIcon icon="Enter" />
                     </a-button>
                 </div>
             </div>
@@ -89,7 +89,7 @@
         defineAsyncComponent,
         defineProps,
         toRefs,
-        ref
+        ref,
     } from 'vue'
     import SidePanelTabHeaders from '@common/tabs/sidePanelTabHeaders.vue'
     import Shortcut from '@/common/popover/shortcut.vue'
@@ -105,32 +105,28 @@
     export default defineComponent({
         name: 'ClassificationDrawer',
         components: {
-            Overview: defineAsyncComponent(
-                () => import('./overview.vue')
-            ),
+            Overview: defineAsyncComponent(() => import('./overview.vue')),
             LinkedAssets: defineAsyncComponent(
                 () => import('./linkedAssets.vue')
             ),
-            Purposes: defineAsyncComponent(
-                () => import('./purposes.vue')
-            ),
+            Purposes: defineAsyncComponent(() => import('./purposes.vue')),
             SidePanelTabHeaders,
             Shortcut,
             AtlanIcon,
             AtlanLoader,
             ErrorView,
             AtlanButton,
-            ClassificationIcon
-        }
+            ClassificationIcon,
+        },
     })
 </script>
 
-<script lang='ts' setup>
+<script lang="ts" setup>
     const props = defineProps({
         classificationProp: {
             type: Object,
-            required: true
-        }
+            required: true,
+        },
     })
 
     const router = useRouter()
@@ -146,9 +142,7 @@
     }
 
     const handleRedirect = (name) => {
-        router.push(
-            `/governance/classifications/${name}`
-        )
+        router.push(`/governance/classifications/${name}`)
     }
 </script>
 
@@ -157,32 +151,32 @@
         &:global(.ant-tabs-left) {
             :global(.ant-tabs-nav-container) {
                 width: 48px !important;
-            @apply ml-0 !important;
+                @apply ml-0 !important;
             }
             :global(.ant-tabs-tab) {
                 padding: 3px 8px !important;
-            @apply justify-center;
+                @apply justify-center;
             }
 
             :global(.ant-tabs-nav-wrap) {
-            @apply pt-3;
+                @apply pt-3;
             }
 
             :global(.ant-tabs-content) {
-            @apply px-0 h-full !important;
+                @apply px-0 h-full !important;
             }
             :global(.ant-tabs-ink-bar) {
-            @apply rounded-t-sm;
+                @apply rounded-t-sm;
                 margin-bottom: 1px;
             }
             :global(.ant-tabs-tabpane) {
-            @apply px-0 !important;
-            @apply pb-0 !important;
-            @apply h-full !important;
+                @apply px-0 !important;
+                @apply pb-0 !important;
+                @apply h-full !important;
             }
 
             :global(.ant-tabs-content-holder) {
-            @apply h-full !important;
+                @apply h-full !important;
             }
         }
     }

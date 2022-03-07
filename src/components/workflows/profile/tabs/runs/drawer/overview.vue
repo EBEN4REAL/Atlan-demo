@@ -28,11 +28,14 @@
                             {{ selectedPod?.phase }}
                         </p>
                     </div>
-                    <a-button
-                        @click="handleLogs"
+
+                    <AtlanButton2
                         v-if="selectedPod?.type === 'Pod'"
-                        >Logs</a-button
-                    >
+                        label="Logs"
+                        color="secondary"
+                        @click="handleLogs"
+                    />
+
                     <a-modal
                         :destroyOnClose="true"
                         v-model:visible="isLogVisible"

@@ -5,6 +5,7 @@
         class="w-full"
         @change="handleChange"
         @dropdownVisibleChange="dropdownVisibleChange"
+        :allowClear="allowClear"
     >
         <template #suffixIcon>
             <AtlanIcon
@@ -40,6 +41,11 @@
             modelValue: {
                 type: [Array, String],
                 required: false,
+            },
+            allowClear: {
+                type: Boolean,
+                required: false,
+                default: true,
             },
         },
         emits: ['change', 'update:modelValue'],

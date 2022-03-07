@@ -1,6 +1,6 @@
 <template>
     <div class="w-full h-full p-6 bg-white" style="min-height: 430px">
-        <div class="mb-12">
+        <div class="relative mb-12">
             <p class="mb-1 font-bold text-gray-500 required">Name</p>
             <a-input
                 @blur="onNameBlur"
@@ -13,6 +13,12 @@
                 class="input"
                 placeholder="Enter a name for your report"
             />
+            <p
+                class="mt-0.5 text-red-500 absolute -bottom-8"
+                v-if="rules.name.show"
+            >
+                {{ rules.name.text }}
+            </p>
         </div>
         <div class="flex flex-wrap mb-12">
             <div class="mr-4 item-1">
@@ -23,6 +29,7 @@
                     v-model="infoTabeState.frequency"
                     placeholder="None"
                     @change="handleChangeFrequency"
+                    :allowClear="false"
                 ></Frequency>
             </div>
             <div
@@ -39,6 +46,7 @@
                     :showNow="false"
                     placeholder=""
                     valueFormat="HH:mm"
+                    :allowClear="false"
                     :minuteStep="15"
                     v-model:value="infoTabeState.time"
                 />
@@ -49,6 +57,7 @@
                     v-model="infoTabeState.timezone"
                     placeholder=""
                     @change="buildCron"
+                    :allowClear="false"
                 ></Timezone>
             </div>
             <div
@@ -60,6 +69,7 @@
                     v-model="infoTabeState.date"
                     placeholder=""
                     @change="buildCron"
+                    :allowClear="false"
                 >
                 </Date>
             </div>
@@ -72,6 +82,7 @@
                     v-model="infoTabeState.dayOfWeek"
                     placeholder=""
                     @change="buildCron"
+                    :allowClear="false"
                 ></Day>
             </div>
         </div>
@@ -394,7 +405,6 @@
                 infoTabeState,
                 onNameBlur,
                 nameRef,
-                rules,
                 handleVisibleChange,
                 handleClickGroup,
                 handleClickUser,

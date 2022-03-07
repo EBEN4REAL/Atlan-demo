@@ -25,7 +25,20 @@
                 </div>
                 <span class="mx-2 text-gray-400 opacity-50">/</span>
                 <div class="flex items-center text-sm">
-                    <AtlanIcon icon="QueryVerified" class="w-4 h-4 mr-1" />
+                    <AtlanIcon
+                        :icon="
+                            item?.attributes?.isVisualQuery
+                                ? getEntityStatusIcon(
+                                      'vqb',
+                                      certificateStatus(item)
+                                  )
+                                : getEntityStatusIcon(
+                                      'query',
+                                      certificateStatus(item)
+                                  )
+                        "
+                        class="w-4 h-4 mr-1 -mt-0.5 text-primary"
+                    />
 
                     <span class="text-sm">{{ item?.attributes?.name }}</span>
                 </div>
@@ -45,6 +58,7 @@
     import { useConnectionStore } from '~/store/connection'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
 
     export default defineComponent({
         name: 'Schedule Query Header',
@@ -57,8 +71,9 @@
         },
         setup(props) {
             const { item } = toRefs(props)
-            const { connectionName } = useAssetInfo()
+            const { connectionName, certificateStatus } = useAssetInfo()
             const store = useConnectionStore()
+
             const getConnectorImage = (sourceid) => {
                 return store.getConnectorImageMapping[sourceid?.toLowerCase()]
             }
@@ -67,6 +82,8 @@
                 item,
                 connectionName,
                 getConnectorImage,
+                getEntityStatusIcon,
+                certificateStatus,
             }
         },
     })

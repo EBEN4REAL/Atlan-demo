@@ -4,7 +4,7 @@
         v-model:value="localValue"
         class="w-full"
         @change="handleChange"
-        :allowClear="true"
+        :allowClear="allowClear"
         @dropdownVisibleChange="dropdownVisibleChange"
     >
         <template #suffixIcon>
@@ -37,6 +37,11 @@
                 type: String,
                 required: false,
                 default: () => '',
+            },
+            allowClear: {
+                type: Boolean,
+                required: false,
+                default: true,
             },
             modelValue: {
                 type: [Array, String],

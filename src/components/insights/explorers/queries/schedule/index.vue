@@ -64,7 +64,8 @@
                     color="primary"
                     @click="() => shiftIndex('next')"
                     class="h-8 px-5 py-0"
-                    :disabled="!isWorkflowTemplateFetched"
+                    :loading="isLoading"
+                    :disabled="!isWorkflowTemplateFetched || isLoading"
                 >
                     <div class="flex items-center">
                         <span class="mr-1 text-sm">{{
@@ -103,6 +104,7 @@
     import { useSchedule } from './composables/useSchedule'
     import { createWorkflow } from '~/composables/package/useWorkflow'
     import { useUsers } from '~/composables/user/useUsers'
+    import { message } from 'ant-design-vue'
 
     export default defineComponent({
         name: 'Schedule Query',
@@ -123,7 +125,7 @@
 
             const rules = ref({
                 name: {
-                    text: 'Enter a name!',
+                    text: 'Enter a report name first!',
                     show: false,
                 },
                 connection: {
@@ -257,6 +259,10 @@
             }
 
             const validateFileds = () => {
+                if (infoTabeState.value.name === '') {
+                    rules.value.users.show = true
+                    return Promise.reject()
+                }
                 // select atleast 1 user
                 if (totalUsersCount.value === 0) {
                     rules.value.users.show = true
@@ -314,7 +320,6 @@
                                     // setting up report name
                                     inputParameters.value['report-name'] =
                                         infoTabeState.value.name
-                                    debugger
 
                                     handleWorkflowSubmit({
                                         body,
@@ -347,18 +352,40 @@
                         if (variablesData.value.length === 0) {
                             validateFileds()
                                 .then(() => {
-                                    activeTabIndex.value = 2
                                     scheduleWorkFlow()
+                                    ;(async () => {
+                                        debugger
+                                        await until(isLoading).toBe(true)
+                                        if (error.value) {
+                                            message.error(
+                                                'Failed to submit schedule query!'
+                                            )
+                                        }
+                                        if (data.value) {
+                                            activeTabIndex.value = 2
+                                        }
+                                    })()
                                 })
                                 .catch(() => {})
                         } else {
                             validateFileds()
                                 .then(() => {
-                                    activeTabIndex.value =
-                                        activeTabIndex.value + 1
-                                    if (activeTabIndex.value === 2) {
+                                    if (activeTabIndex.value + 1 === 2) {
                                         scheduleWorkFlow()
                                     }
+                                    ;(async () => {
+                                        debugger
+                                        await until(isLoading).toBe(true)
+                                        if (error.value) {
+                                            message.error(
+                                                'Failed to submit schedule query!'
+                                            )
+                                        }
+                                        if (data.value) {
+                                            activeTabIndex.value =
+                                                activeTabIndex.value + 1
+                                        }
+                                    })()
                                 })
                                 .catch(() => {})
                         }
@@ -374,6 +401,18 @@
                 }
             }
 
+            watch(
+                () => infoTabeState.value.name,
+                () => {
+                    if (
+                        rules.value.name.show &&
+                        infoTabeState.value.name !== ''
+                    ) {
+                        rules.value.name.show = false
+                    }
+                }
+            )
+
             return {
                 rules,
                 item,
@@ -387,6 +426,7 @@
                 isWorkflowTemplateFetched,
                 variablesData,
                 getValueByType,
+                isLoading,
             }
         },
     })

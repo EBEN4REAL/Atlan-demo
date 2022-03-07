@@ -6,7 +6,7 @@
             'border-primary  shadow border bg-primary-menu': isSelected,
             'cursor-pointer': enableSidebarDrawer,
             'opacity-80': isLoading,
-            'my-1 rounded-lg': page === 'assets',
+            'my-1.5 rounded-lg': page === 'assets',
         }"
         @click="handlePreview(item)"
     >

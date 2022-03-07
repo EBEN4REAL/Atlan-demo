@@ -75,7 +75,7 @@
                             ].includes(selectedAsset.typeName?.toLowerCase())
                         "
                         :icon="selectedAsset.typeName"
-                        class="self-center mr-1 text-gray-500 mb-0.5"
+                        class="self-center mr-1 text-primary mb-0.5"
                     ></AtlanIcon>
                     <a-tooltip
                         class="flex items-center"

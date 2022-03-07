@@ -16,7 +16,13 @@
                 class="flex flex-col justify-center h-full"
             >
                 <Loading v-if="isQueryRunning === 'loading'" />
-                <QueryTimer :timerId="`${activeInlineTab.key}_timer`" />
+                <QueryTimer
+                    :timerId="`${activeInlineTab.key}_timer`"
+                    v-if="
+                        !activeInlineTab.playground.resultsPane.result
+                            .buttonDisable
+                    "
+                />
                 <div
                     class="flex justify-center mt-2"
                     v-if="isQueryRunning === 'loading'"

@@ -58,12 +58,8 @@
                 <Popover
                     :classification="classification"
                     :entity-guid="guid"
-                    :mouse-enter-delay="classificationPopoverMouseEnterDelay"
-                    @mouse-entered="
-                        () => {
-                            classificationPopoverMouseEnterDelay = 0.2
-                        }
-                    "
+                    :mouse-enter-delay="mouseEnterDelay"
+                    @mouse-entered="enteredPill"
                 >
                     <ClassificationPill
                         :name="classification.name"
@@ -95,6 +91,7 @@
     import ClassificationPill from '@/common/pills/classification.vue'
     import Popover from '@/common/popover/classification/index.vue'
     import Shortcut from '@/common/popover/shortcut.vue'
+    import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
 
     export default defineComponent({
         name: 'ClassificationWidget',
@@ -251,7 +248,7 @@
                     isEdit.value = false
                 }
             })
-            const classificationPopoverMouseEnterDelay = ref(1)
+            const { mouseEnterDelay, enteredPill } = useMouseEnterDelay()
 
             return {
                 localValue,
@@ -264,7 +261,8 @@
                 classificationFacetRef,
                 isEdit,
                 handleDeleteClassification,
-                classificationPopoverMouseEnterDelay,
+                mouseEnterDelay,
+                enteredPill,
             }
         },
     })

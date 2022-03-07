@@ -4,7 +4,7 @@
             <div class="flex flex-col gap-y-3">
                 <div class="flex items-start">
                     <ClassificationIcon
-                        :color="selectedClassification?.options?.color"
+                        :color="classificationColor"
                         class="h-6 mr-2"
                     />
                     <div class="flex flex-col" style="margin-top: -3px">

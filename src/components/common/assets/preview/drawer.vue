@@ -69,7 +69,7 @@
             showDrawer: {
                 type: Boolean,
                 required: false,
-                default: true,
+                default: false,
             },
             showMask: {
                 type: Boolean,

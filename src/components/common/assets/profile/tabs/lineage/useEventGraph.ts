@@ -20,13 +20,9 @@ import { LineageAttributes } from '~/constant/projection'
 
 export default function useEventGraph({
     graph,
-    baseEntity,
-    selectedNodeId,
     loaderCords,
     currZoom,
     searchItems,
-    resetSelections,
-    drawerActiveKey,
     preferences,
     guidToSelectOnGraph,
     mergedLineageData,
@@ -54,6 +50,7 @@ export default function useEventGraph({
     } = useGraph(graph)
 
     /** DATA */
+    const selectedNodeId = ref('')
     const selectedNodeEdgeId = ref('')
     const selectedPortId = ref('')
     const selectedPortEdgeId = ref('')
@@ -1410,6 +1407,16 @@ export default function useEventGraph({
             guidToSelectOnGraph.value = ''
         }
     })
+    watch(
+        () => preferences.value.showArrow,
+        (val) => {
+            const size = val ? 12 : 0.1
+            graph.value.getEdges().forEach((edge) => {
+                edge.attr('line/targetMarker/height', size)
+                edge.attr('line/targetMarker/width', size)
+            })
+        }
+    )
 
     return {
         registerAllListeners,

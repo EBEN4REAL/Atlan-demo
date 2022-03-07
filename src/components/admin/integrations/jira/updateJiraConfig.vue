@@ -25,6 +25,7 @@
         <template v-if="activeTabKey === 'overview'">
             <JiraOverview
                 :avatar-u-r-l="avatarURL"
+                :issueCount="count"
                 :user="userList?.length && userList[0]"
                 :created-at="tenantJiraStatus.createdAt"
             />
@@ -57,6 +58,7 @@
     import JiraOverview from '@/admin/integrations/jira/overview.vue'
     import ProjectSelector from '@/common/integrations/jira/jiraProjectsSelect.vue'
     import Footer from '@/admin/integrations/jira/integrationCardFooter.vue'
+    import { linkedIssuesCount } from '~/composables/integrations/jira/useJiraTickets'
 
     export default defineComponent({
         name: 'JiraIntegrationCard',
@@ -114,6 +116,8 @@
                 { key: 'overview', label: 'Overview' },
             ]
 
+            const { count } = linkedIssuesCount()
+
             onMounted(() => {
                 activeTabKey.value = 'configuration'
 
@@ -128,6 +132,7 @@
             })
 
             return {
+                count,
                 activeTabKey,
                 tabConfig,
                 unsavedChanges,

@@ -56,6 +56,34 @@ const searchIssues = (jql, immediate = true) => {
     return { issues, isLoading, error, mutate, isReady, searchLoading, pagination, offset, totalResults }
 }
 
+export const linkedIssuesCount = () => {
+    const body = ref({
+        "jql": "issue.property[atlan].guid != null ORDER BY created DESC",
+        "maxResults": 1,
+        "startAt": 0
+    })
+
+    const options = {
+        asyncOptions: {
+            immediate: true,
+            onError: (e) => {
+                throw e
+            },
+        }
+    }
+
+    const { data, isLoading, error, mutate, isReady } = jiraSearch<{ issues: Issue[], total: number }>(body, options)
+
+    const count = ref()
+
+    watch(data, (v) => {
+        if (v)
+            count.value = v?.total
+    })
+
+    return { count, isLoading, error, mutate, isReady }
+}
+
 export const createIssue = (body) => {
 
     const options = {

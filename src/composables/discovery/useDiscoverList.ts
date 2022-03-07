@@ -77,7 +77,7 @@ export function useDiscoverList({
         approximateCount,
         cancelRequest,
         error,
-    } = useIndexSearch<assetInterface>(defaultBody, localKey, isCache, false, 1)
+    } = useIndexSearch<assetInterface>(defaultBody, localKey, false, false, 1)
 
     const list = ref<assetInterface[]>([])
 

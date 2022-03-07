@@ -4,7 +4,8 @@
             <div class="grid items-center grid-cols-9">
                 <span class="text-sm text-gray-500">Linked Issues</span>
                 <span class="">
-                    <AtlanIcon icon="Link" class="text-gray-700" /> 12
+                    <AtlanIcon icon="Link" class="text-gray-700" />
+                    {{ issueCount }}
                 </span>
             </div>
             <div class="grid items-center grid-cols-9">
@@ -32,6 +33,7 @@
 
     const props = defineProps({
         user: { type: Object, required: true },
+        issueCount: { type: Number, required: true },
         avatarURL: { type: String, required: true },
         createdAt: { type: String, required: true },
     })

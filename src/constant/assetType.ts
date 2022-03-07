@@ -192,6 +192,7 @@ export const assetTypeList: {
         children: ['Query'],
         isDiscoverable: false,
         categoryType: 'Insights',
+        image: 'CollectionIconSmallGray',
         orderWeight: 60,
         count: 0,
         groupOrder: 1,

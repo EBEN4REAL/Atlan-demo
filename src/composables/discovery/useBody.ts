@@ -733,6 +733,7 @@ export function useBody(
         ])
         base.orFilter('terms', '__typeName.keyword', [
             'Query',
+            'Collection',
             'AtlasGlossaryCategory',
             'AtlasGlossaryTerm',
             'Connection',

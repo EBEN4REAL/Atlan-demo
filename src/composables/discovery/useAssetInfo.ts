@@ -280,7 +280,7 @@ export default function useAssetInfo() {
             customTabList = cmList(assetType(asset)).map((i) => {
                 return {
                     component: 'customMetadata',
-                    excludes: ['Query', 'Folder'],
+                    excludes: ['Query', 'Folder', 'Collection'],
                     image: i.options?.imageId || i.options?.logoUrl,
                     emoji: i.options?.emoji,
                     name: i.label,

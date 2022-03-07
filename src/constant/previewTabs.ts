@@ -25,6 +25,7 @@ export const previewTabs = [
         excludes: [
             'Query',
             'Folder',
+            'Collection',
             'AtlasGlossary',
             'AtlasGlossaryTerm',
             'AtlasGlossaryCategory',

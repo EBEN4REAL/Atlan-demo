@@ -111,7 +111,7 @@ export async function addPolicy(type: String, dataPolicyProp: any) {
         dataPolicy.actions = ['select']
     }
     const payload = {
-        type: type === 'meta' ? 'metadataPolicy' : 'dataPolicy',
+        type: type === 'glossaryPolicy' ? 'glossaryPolicy' : type === 'meta' ? 'metadataPolicy' : 'dataPolicy',
         policy: dataPolicy,
     }
     return createPolicy(payload, selectedPersona.value.id)

@@ -435,7 +435,10 @@
                             v-if="
                                 isEdit
                                     ? canEdit
-                                    : true && connectorData.attributeValue
+                                    : true &&
+                                      (connectorData.attributeValue ||
+                                          policy?.glossaryQualifiedNames
+                                              ?.length)
                             "
                         >
                             <div class="flex mt-1">
@@ -639,9 +642,10 @@
                 padding="compact"
                 :disabled="
                     isLoading ||
-                    !connectorData.attributeValue ||
+                    (!connectorData.attributeValue &&
+                        type !== 'glossaryPolicy') ||
                     !policy.name ||
-                    !policy?.assets?.length ||
+                    (!policy?.assets?.length && type !== 'glossaryPolicy') ||
                     (policyType === 'meta' && !selectedPermission.length)
                 "
                 class="px-6 min-w-20"
@@ -832,6 +836,10 @@
 
             const initPolicy = () => {
                 rules.value = {
+                    glossaryQualifiedNames: {
+                        text: 'Select Glossary',
+                        show: false,
+                    },
                     policyName: {
                         text: 'Enter a policy name!',
                         show: false,
@@ -873,6 +881,26 @@
                             name: '',
                             description: '',
                             isNew: true,
+                        }
+                    }
+                    if (type.value === 'glossaryPolicy') {
+                        policy.value = {
+                            glossaryQualifiedNames: [],
+                            allow: true,
+                            name: '',
+                            description: '',
+                            isNew: true,
+                            actions: [
+                                'entity-read',
+                                'entity-update',
+                                'entity-create',
+                                'entity-delete',
+                                'link-assets',
+                                'entity-update-business-metadata',
+                                'entity-update-classification',
+                                'add-terms',
+                                'remove-terms',
+                            ],
                         }
                     }
                 }
@@ -947,14 +975,21 @@
                 if (!policy.value.name) {
                     policyNameRef.value?.focus()
                     rules.value.policyName.show = true
-                } else if (!connectorData.value.attributeValue) {
+                } else if (
+                    !connectorData.value?.attributeValue &&
+                    policyType.value !== 'glossaryPolicy'
+                ) {
                     connectorComponentRef.value?.treeSelectRef?.focus()
                     rules.value.connection.show = true
-                } else if (policy.value.assets.length < 1) {
+                } else if (
+                    policy.value.assets?.length < 1 &&
+                    policyType.value !== 'glossaryPolicy'
+                ) {
                     rules.value.assets.show = true
                 } else if (
-                    policy.value.actions.length === 0 &&
-                    policyType.value === 'meta'
+                    policy.value.actions?.length === 0 &&
+                    (policyType.value === 'meta' ||
+                        policyType.value === 'glossaryPolicy')
                 ) {
                     rules.value.metadata.show = true
                 } else {

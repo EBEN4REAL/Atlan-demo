@@ -1,8 +1,8 @@
 <template>
     <section class="flex flex-col p-4 gap-y-3">
         <div class="">
-            <h2 class="text-lg font-bold">Channels</h2>
-            <div class="text-gray-500">
+            <h2 class="mb-1 font-bold">Channels</h2>
+            <div class="text-sm text-gray-500">
                 {{ channel_description }}
             </div>
         </div>
@@ -91,12 +91,14 @@
     import access from '~/constant/accessControl/map'
     import Chip from '@/UI/chip.vue'
     import AddWorkflowChannel from '@/admin/integrations/slack/misc/addWorkflowChannel.vue'
+    import { integrations } from '~/constant/integrations/integrations'
 
     const props = defineProps({})
     const emit = defineEmits(['change', 'update'])
     const isEdit = ref(false)
     const store = integrationStore()
     const channels: Ref<[{ name: string; invalid?: boolean }]> = ref([])
+    const { channel_description } = integrations.slack
 
     const channelValue = ref([])
     const workflowChannel = ref({ name: '', invalid: false })

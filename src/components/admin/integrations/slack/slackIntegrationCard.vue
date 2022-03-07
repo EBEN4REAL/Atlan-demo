@@ -107,7 +107,7 @@
             const tabConfig = [
                 { key: 'configuration', label: 'Configurations' },
             ]
-            const { description, channel_description } = integrations.slack
+            const { description } = integrations.slack
             const userListAPIParams: any = reactive({
                 limit: 1,
                 offset: 0,
@@ -142,7 +142,6 @@
                 userList,
                 uLoading,
                 uError,
-                channel_description,
                 description,
                 tenantSlackStatus,
                 tenantName,

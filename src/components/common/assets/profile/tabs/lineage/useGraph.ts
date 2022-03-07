@@ -71,8 +71,8 @@ export default function useGraph(graph) {
 
         const computedData = {
             id: guid,
+            isSelectedNode: null,
             isHighlightedNode: null,
-            isHighlightedNodePath: null,
             isGrayed: false,
             hiddenCount: 0,
             ...dataObj,
@@ -100,8 +100,8 @@ export default function useGraph(graph) {
                     return `
                 <div class="flex items-center">
                     <div id="${guid}" class="lineage-node group ${isVpNode ? 'isVpNode' : ''} 
+                    ${data?.isSelectedNode === data?.id? 'isSelectedNode': ''}
                     ${data?.isHighlightedNode === data?.id? 'isHighlightedNode': ''}
-                    ${data?.isHighlightedNodePath === data?.id? 'isHighlightedNodePath': ''}
                     ${data?.isGrayed ? 'isGrayed' : ''} ${isBase ? 'isBase' : ''}">
                         <div class=" ${isBase ? 'inscr' : 'hidden'}">BASE</div>
                         ${
@@ -150,8 +150,8 @@ export default function useGraph(graph) {
 
                     </div>
                     ${(isRootNode || isLeafNode) && isCtaNode
-                        ?   `<div id="node-${guid}-loadCTA" style="position: absolute;z-index: 99;" class="${isRootNode ? 'l-m20px' : 'r-m20px'} 
-                                node-loadCTA h-6 w-6 bg-gray-400 text-white rounded-full flex justify-center items-center cursor-pointer">
+                        ?   `<div id="node-${guid}-hoPaCTA" style="position: absolute;z-index: 99;" class="${isRootNode ? 'l-m20px' : 'r-m20px'} 
+                                node-hoPaCTA h-6 w-6 bg-gray-400 text-white rounded-full flex justify-center items-center cursor-pointer">
                                 ${iconPlus}
                             </div>` : ''
                     } 
@@ -184,38 +184,38 @@ export default function useGraph(graph) {
                             },
                         },
                     },
-                    ctaPort: {
-                        markup: [
-                            {
-                                tagName: 'rect',
-                                selector: 'portBody',
-                            },
-                            {
-                                tagName: 'text',
-                                selector: 'portNameLabel',
-                            },
-                        ],
-                        attrs: {
-                            portBody: {
-                                width: 268,
-                                height: 40,
-                                strokeWidth: 1,
-                                stroke: '#e6e6eb',
-                                fill: '#ffffff',
-                                event: 'port:click',
-                                y: -11,
-                            },
-                            portNameLabel: {
-                                ref: 'portBody',
-                                refX: 36,
-                                refY: 12,
-                                fontSize: 16,
-                                fill: '#3e4359',
-                                event: 'port:click',
-                            },
-                        },
-                        position: 'erPortPosition',
-                    },
+                    // ctaPort: {
+                    //     markup: [
+                    //         {
+                    //             tagName: 'rect',
+                    //             selector: 'portBody',
+                    //         },
+                    //         {
+                    //             tagName: 'text',
+                    //             selector: 'portNameLabel',
+                    //         },
+                    //     ],
+                    //     attrs: {
+                    //         portBody: {
+                    //             width: 268,
+                    //             height: 40,
+                    //             strokeWidth: 1,
+                    //             stroke: '#e6e6eb',
+                    //             fill: '#ffffff',
+                    //             event: 'port:click',
+                    //             y: -11,
+                    //         },
+                    //         portNameLabel: {
+                    //             ref: 'portBody',
+                    //             refX: 36,
+                    //             refY: 12,
+                    //             fontSize: 16,
+                    //             fill: '#3e4359',
+                    //             event: 'port:click',
+                    //         },
+                    //     },
+                    //     position: 'erPortPosition',
+                    // },
                     columnList: {
                         markup: [
                             {
@@ -285,6 +285,26 @@ export default function useGraph(graph) {
         graph.value.addNode(nodeData)
     }
 
+    const createShowMorePortData = (node) => {
+        const portData = {
+            id: `${node.id}-showMorePort`,
+            group: 'columnList',
+            attrs: {
+                portBody: {
+                    // event: 'showMorePort:click',
+                    rx: 4,
+                },
+                portNameLabel: {
+                    text: 'Show more columns',
+                    // event: 'showMorePort:click',
+                    fill: '#5277d7',
+                },
+            },
+        }
+
+        return { portData }
+    }
+
     const createPortData = (item) => {
         let text =
             item.displayText.charAt(0).toUpperCase() +
@@ -318,9 +338,11 @@ export default function useGraph(graph) {
         const isDup = data?.isDup
         const isCyclicEdge = data?.isCyclicEdge
 
-        const stroke = relation.id.includes('vpNode')
-            ? '#ffffff00'
-            : styles?.stroke
+        // const stroke = relation.id.includes('vpNode')
+        //     ? '#ffffff00'
+        //     : styles?.stroke
+
+        const stroke = styles?.stroke
 
         const edgeData = {
             isDup,
@@ -416,6 +438,7 @@ export default function useGraph(graph) {
         if (edge) return edge
 
         const { edgeData } = createEdgeData(relation, {}, styles)
+
         const createdEdge = graph.value.addEdge(edgeData)
 
         return createdEdge
@@ -425,6 +448,7 @@ export default function useGraph(graph) {
         createNodeData,
         addNode,
         createPortData,
+        createShowMorePortData,
         createEdgeData,
         addEdge,
     }

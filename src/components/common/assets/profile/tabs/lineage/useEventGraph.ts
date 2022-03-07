@@ -28,6 +28,7 @@ export default function useEventGraph({
     resetSelections,
     drawerActiveKey,
     preferences,
+    guidToSelectOnGraph,
     mergedLineageData,
     sameSourceCount,
     sameTargetCount,
@@ -1399,6 +1400,15 @@ export default function useEventGraph({
     // Blank - Mousewheel
     graph.value.on('blank:mousewheel', () => {
         currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
+    })
+
+    /** WATCHERS */
+    watch(guidToSelectOnGraph, (newVal) => {
+        if (newVal) {
+            resetState()
+            selectNode(newVal)
+            guidToSelectOnGraph.value = ''
+        }
     })
 
     return {

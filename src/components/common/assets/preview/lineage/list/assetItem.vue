@@ -547,7 +547,7 @@
                 clsfList,
                 classifications,
                 getLineagePath,
-                classificationPopoverMouseEnterDelay,
+                // classificationPopoverMouseEnterDelay,
             }
         },
     })

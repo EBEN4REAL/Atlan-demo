@@ -330,6 +330,8 @@ export const LineageAttributes = [
     'certificateStatus',
     'link',
     'dataType',
+    'columnCount',
+    'rowCount',
     // BI Relationships
     'workspace',
     'report',

@@ -115,6 +115,7 @@
             const isDrawerVisible = ref(false)
             const isComputeDone = ref(false)
             const drawerActiveKey = ref('Overview')
+            const guidToSelectOnGraph = ref('')
             const selectedTypeInRelationDrawer = ref('__all')
             let removeListeners = () => {}
 
@@ -136,12 +137,13 @@
             // onSelectAsset
             const onSelectAsset = (
                 item,
-                highlight = false,
+                selectOnGraph = false,
                 openDrawer = true
             ) => {
                 if (openDrawer) isDrawerVisible.value = true
                 if (typeof control === 'function')
                     control('selectedAsset', item)
+                if (selectOnGraph) guidToSelectOnGraph.value = item.guid
             }
 
             // onCloseDrawer
@@ -198,6 +200,7 @@
                     resetSelections,
                     drawerActiveKey,
                     preferences,
+                    guidToSelectOnGraph,
                     mergedLineageData,
                     sameSourceCount,
                     sameTargetCount,

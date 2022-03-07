@@ -57,7 +57,23 @@
                         </template>
                     </MinimalTab>
                     <template v-if="activeTabKey === 'configuration'">
-                        <JiraUpdateConfiguration />
+                        <section
+                            class="grid items-center grid-cols-2 p-6 gap-y-3"
+                        >
+                            <div class="">
+                                <h2 class="mb-1 font-bold">Projects</h2>
+                                <span class="text-sm text-gray-500">
+                                    {{ project_description }}
+                                </span>
+                            </div>
+                            <div class="w-full">
+                                <ProjectSelector
+                                    v-model="defaultProject.id"
+                                    class="w-full"
+                                    @change="handleProjectChange"
+                                />
+                            </div>
+                        </section>
                     </template>
                     <template v-if="activeTabKey === 'overview'">
                         <JiraOverview
@@ -66,6 +82,11 @@
                             :created-at="tenantJiraStatus.createdAt"
                         />
                     </template>
+
+                    <Footer
+                        v-model:unsavedChanges="unsavedChanges"
+                        :default-project="defaultProject"
+                    />
                 </div>
             </a-sub-menu>
         </a-menu>
@@ -81,25 +102,27 @@
         ref,
         toRefs,
     } from 'vue'
-    import { message, Modal } from 'ant-design-vue'
     import { useTimeAgo } from '@vueuse/core'
     import AtlanButton from '@/UI/button.vue'
     import useTenantData from '~/composables/tenant/useTenantData'
+    import access from '~/constant/accessControl/map'
 
     import integrationStore from '~/store/integrations/index'
     import { integrations } from '~/constant/integrations/integrations'
     import { useUsers } from '~/composables/user/useUsers'
     import MinimalTab from '@/UI/minimalTab.vue'
-    import JiraUpdateConfiguration from '@/admin/integrations/jira/updateConfig.vue'
     import JiraOverview from '@/admin/integrations/jira/overview.vue'
+    import ProjectSelector from '@/common/integrations/jira/jiraProjectsSelect.vue'
+    import Footer from '@/admin/integrations/jira/integrationCardFooter.vue'
 
     export default defineComponent({
         name: 'JiraIntegrationCard',
         components: {
             AtlanButton,
             JiraOverview,
-            JiraUpdateConfiguration,
+            ProjectSelector,
             MinimalTab,
+            Footer,
         },
         setup() {
             const openKeys = ref(['jira'])
@@ -112,7 +135,7 @@
             const store = integrationStore()
             const { tenantJiraStatus } = toRefs(store)
 
-            const { description } = integrations.jira
+            const { description, project_description } = integrations.jira
 
             const userListAPIParams: any = reactive({
                 limit: 1,
@@ -141,11 +164,33 @@
                     `${window.location.origin}/api/service/avatars/${tenantJiraStatus.value.createdBy}`
             )
 
+            const unsavedChanges = ref(false)
+            const defaultProject = ref({ name: '', id: '' })
+
+            const handleProjectChange = (value, option) => {
+                defaultProject.value.id = value
+                defaultProject.value.name = option.label
+                unsavedChanges.value = true
+            }
+
             onMounted(() => {
                 activeTabKey.value = 'configuration'
+
+                const {
+                    config: { defaultProject: _defaultProject },
+                } = tenantJiraStatus.value
+
+                if (_defaultProject) {
+                    defaultProject.value.id = _defaultProject.id
+                    defaultProject.value.name = _defaultProject.name
+                }
             })
 
             return {
+                unsavedChanges,
+                project_description,
+                defaultProject,
+                handleProjectChange,
                 avatarURL,
                 activeTabKey,
                 tabConfig,

@@ -115,10 +115,6 @@
             //     })
             // }
 
-            const { isLoading, connect: handleConnect } = connectJira({
-                tenant: true,
-            })
-
             return {
                 handleConnect,
                 isLoading,

@@ -20,14 +20,11 @@ import { LineageAttributes } from '~/constant/projection'
 
 export default function useEventGraph({
     graph,
-    baseEntity,
-    selectedNodeId,
     loaderCords,
     currZoom,
     searchItems,
-    resetSelections,
-    drawerActiveKey,
     preferences,
+    guidToSelectOnGraph,
     mergedLineageData,
     sameSourceCount,
     sameTargetCount,
@@ -53,6 +50,7 @@ export default function useEventGraph({
     } = useGraph(graph)
 
     /** DATA */
+    const selectedNodeId = ref('')
     const selectedNodeEdgeId = ref('')
     const selectedPortId = ref('')
     const selectedPortEdgeId = ref('')
@@ -1400,6 +1398,25 @@ export default function useEventGraph({
     graph.value.on('blank:mousewheel', () => {
         currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
     })
+
+    /** WATCHERS */
+    watch(guidToSelectOnGraph, (newVal) => {
+        if (newVal) {
+            resetState()
+            selectNode(newVal)
+            guidToSelectOnGraph.value = ''
+        }
+    })
+    watch(
+        () => preferences.value.showArrow,
+        (val) => {
+            const size = val ? 12 : 0.1
+            graph.value.getEdges().forEach((edge) => {
+                edge.attr('line/targetMarker/height', size)
+                edge.attr('line/targetMarker/width', size)
+            })
+        }
+    )
 
     return {
         registerAllListeners,

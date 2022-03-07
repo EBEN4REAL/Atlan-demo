@@ -60,7 +60,7 @@ export default function useUpdateGraph(graph) {
             const cell = graph.value.getCellById(x.id)
             const [source, target] = x.id.split('/')[1].split('@')
 
-            if (source.includes('vpNode') || target.includes('vpNode')) return
+            // if (source.includes('vpNode') || target.includes('vpNode')) return
 
             const itExists =
                 nodesToHighlight.includes(source) &&
@@ -84,7 +84,7 @@ export default function useUpdateGraph(graph) {
     const dimNodesEdges = (dim) => {
         graph.value.freeze('dimNodesEdges')
         graph.value.getEdges().forEach((x) => {
-            if (x.id.includes('vpNode')) return
+            // if (x.id.includes('vpNode')) return
             const cell = graph.value.getCellById(x.id)
             cell.attr('line/stroke', dim ? '#dce0e5' : '#aaaaaa')
             cell.toBack()

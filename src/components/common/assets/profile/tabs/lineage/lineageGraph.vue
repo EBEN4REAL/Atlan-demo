@@ -50,8 +50,8 @@
 
         <!-- AssetDrawer -->
         <AssetDrawer
-            :guid="selectedAssetGuid"
-            :show-drawer="isDrawerVisible && selectedAssetGuid"
+            :guid="selectedAsset?.guid || ''"
+            :show-drawer="!!selectedAsset?.guid"
             :show-mask="false"
             :drawer-active-key="drawerActiveKey"
             :show-close-btn="false"
@@ -93,7 +93,6 @@
         setup(_, { emit }) {
             /** INJECTIONS */
             const lineage = inject('lineage')
-            const baseEntity = inject('baseEntity')
             const selectedAsset = inject('selectedAsset')
             const preferences = inject('preferences', ref({}))
             const control = inject('control')
@@ -109,17 +108,15 @@
             const graphLayout = ref({})
             const showMinimap = ref(false)
             const searchItems = ref([])
-            const selectedNodeId = ref('')
             const loaderCords = ref({})
             const currZoom = ref('...')
-            const isDrawerVisible = ref(false)
             const isComputeDone = ref(false)
             const drawerActiveKey = ref('Overview')
+            const guidToSelectOnGraph = ref('')
             const selectedTypeInRelationDrawer = ref('__all')
             let removeListeners = () => {}
 
             /** COMPUTED */
-            const selectedAssetGuid = computed(() => selectedAsset.value?.guid)
             const offsetLoaderCords = computed(() => {
                 const isFullScr = !!document.fullscreenElement
                 return {
@@ -134,19 +131,15 @@
 
             /** METHODS */
             // onSelectAsset
-            const onSelectAsset = (
-                item,
-                highlight = false,
-                openDrawer = true
-            ) => {
-                if (openDrawer) isDrawerVisible.value = true
+            const onSelectAsset = (item, selectOnGraph = false) => {
                 if (typeof control === 'function')
                     control('selectedAsset', item)
+                if (selectOnGraph) guidToSelectOnGraph.value = item?.guid
             }
 
             // onCloseDrawer
             const onCloseDrawer = () => {
-                isDrawerVisible.value = false
+                onSelectAsset(null)
                 resetSelections.value = true
             }
 
@@ -190,14 +183,11 @@
                 // useEventGraph
                 const { registerAllListeners } = useEventGraph({
                     graph,
-                    baseEntity,
-                    selectedNodeId,
                     loaderCords,
                     currZoom,
                     searchItems,
-                    resetSelections,
-                    drawerActiveKey,
                     preferences,
+                    guidToSelectOnGraph,
                     mergedLineageData,
                     sameSourceCount,
                     sameTargetCount,
@@ -228,8 +218,7 @@
             onUnmounted(() => {
                 isComputeDone.value = false
                 if (Object.keys(graph.value).length) {
-                    if (typeof removeListeners === 'function')
-                        removeListeners(true)
+                    if (typeof removeListeners === 'function') removeListeners()
                     graph.value.dispose()
                 }
             })
@@ -240,13 +229,11 @@
                 graphHeight,
                 graphWidth,
                 offsetLoaderCords,
-                selectedAssetGuid,
+                selectedAsset,
                 currZoom,
                 showMinimap,
-                selectedNodeId,
                 loaderCords,
                 drawerActiveKey,
-                isDrawerVisible,
                 isComputeDone,
                 lineageContainer,
                 graphContainer,

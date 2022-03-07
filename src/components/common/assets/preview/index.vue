@@ -175,6 +175,7 @@
                 :key="index"
                 :destroy-inactive-tab-pane="true"
                 :disabled="isScrubbed(selectedAsset) && tab.scrubbed"
+                :class="index === activeKey ? 'flex flex-col' : ''"
             >
                 <template #tab>
                     <PreviewTabsIcon

@@ -13,7 +13,14 @@
             />
         </keep-alive>
         <keep-alive>
-            <Variables v-if="activeTabIndex === 1" :item="item" />
+            <Variables
+                v-if="activeTabIndex === 1"
+                :item="item"
+                :usersData="usersData"
+                :cronData="cronData"
+                :variablesData="variablesData"
+                :infoTabeState="infoTabeState"
+            />
         </keep-alive>
         <keep-alive>
             <Success
@@ -323,19 +330,15 @@
                                 })
                                 .catch(() => {})
                         } else {
-                            if (activeTabIndex.value + 1 !== 2) {
-                                activeTabIndex.value = activeTabIndex.value + 1
-                            } else {
-                                validateFileds()
-                                    .then(() => {
-                                        activeTabIndex.value =
-                                            activeTabIndex.value + 1
-                                        if (activeTabIndex.value === 2) {
-                                            scheduleWorkFlow()
-                                        }
-                                    })
-                                    .catch(() => {})
-                            }
+                            validateFileds()
+                                .then(() => {
+                                    activeTabIndex.value =
+                                        activeTabIndex.value + 1
+                                    if (activeTabIndex.value === 2) {
+                                        scheduleWorkFlow()
+                                    }
+                                })
+                                .catch(() => {})
                         }
                     }
                 } else if (type === 'back') {

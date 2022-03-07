@@ -128,7 +128,6 @@
             function getAbbreviation(str: string = '') {
                 return str.match(/\b([A-Z])/g).join('')
             }
-            console.log(interval.fields, 'fields')
 
             const format = 'MMM DD, dddd, hh:MM A'
             return {

@@ -4,6 +4,7 @@
         empty-screen="CreateGroups"
         headline="Create a new group"
         button-text="Create Group"
+        button-icon="Add"
         @event="() => (isGroupDrawerVisible = true)"
     />
     <DefaultLayout title="Groups" :badge="totalGroupsCount">
@@ -26,7 +27,7 @@
                 <AtlanButton2
                     v-auth="map.CREATE_GROUP"
                     label="Create Group"
-                    prefixIcon="Add"
+                    prefix-icon="Add"
                     @click="isGroupDrawerVisible = true"
                 />
             </div>
@@ -60,7 +61,7 @@
                     <AtlanButton2
                         color="secondary"
                         label="Try again"
-                        prefixIcon="Retry"
+                        prefix-icon="Retry"
                         @click="getGroupList()"
                     />
                 </div>

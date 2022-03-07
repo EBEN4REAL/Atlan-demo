@@ -406,6 +406,11 @@
                     icon: 'QueryGrey',
                     handleClick: () => handleAddPolicy('data'),
                 },
+                {
+                    title: 'Glossary Policy',
+                    icon: 'GlossaryGray',
+                    handleClick: () => handleAddPolicy('glossaryPolicy'),
+                },
             ]
 
             async function savePolicyUI(

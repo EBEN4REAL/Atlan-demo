@@ -20,10 +20,18 @@
                     >
                         <AtlanIcon icon="QueryGrey" class="icon-blue-stroke" />
                     </div>
+                    <div
+                        v-if="type === 'glossaryPolicy'"
+                        class="flex items-center justify-center w-8 h-8 mr-2 rounded-full bg-primary-light"
+                    >
+                        <AtlanIcon icon="GlossaryGray" class="" />
+                    </div>
                     <span class="ml-1 text-base font-bold"
                         >{{
                             policyType === 'meta'
                                 ? 'Metadata Policy'
+                                : policyType === 'glossaryPolicy'
+                                ? 'Glossary Policy'
                                 : 'Data Policy'
                         }}
                     </span>
@@ -108,7 +116,10 @@
                                 {{ rules.policyName.text }}
                             </div>
                         </div>
-                        <div class="relative mt-4">
+                        <div
+                            v-if="type !== 'glossaryPolicy'"
+                            class="relative mt-4"
+                        >
                             <div class="mb-2 text-sm text-gray-500 required">
                                 Select a connection
                                 <span class="text-red-500">*</span>
@@ -146,6 +157,34 @@
                                 data-test-id="policy-validation-connector"
                             >
                                 {{ rules.connection.text }}
+                            </div>
+                        </div>
+                        <div v-else class="mt-4">
+                            <div class="mb-2 text-sm text-gray-500 required">
+                                Select glossary
+                                <span class="text-red-500">*</span>
+                            </div>
+                            <a-select
+                                v-model:value="policy.glossaryQualifiedNames"
+                                mode="multiple"
+                                :size="size"
+                                placeholder="Please select"
+                                class="w-full"
+                                @change="handleChangeGlossary"
+                            >
+                                <a-select-option
+                                    v-for="el in glossaryComputed"
+                                    :key="el.id"
+                                >
+                                    {{ el.displayText }}
+                                </a-select-option>
+                            </a-select>
+                            <div
+                                v-if="rules.glossaryQualifiedNames?.show"
+                                class="absolute text-xs text-red-500 -bottom-5"
+                                data-test-id="policy-validation-connector"
+                            >
+                                {{ rules.glossaryQualifiedNames?.text }}
                             </div>
                         </div>
                     </div>
@@ -304,7 +343,12 @@
                     </div>
                 </div>
                 <div
-                    v-if="policyType === 'meta' && connectorData.attributeValue"
+                    v-if="
+                        (policyType === 'meta' &&
+                            connectorData.attributeValue) ||
+                        (policyType === 'glossaryPolicy' &&
+                            policy?.glossaryQualifiedNames?.length)
+                    "
                     class="mt-4 bg-white shadow-section"
                 >
                     <div class="p-3 border-b">
@@ -639,6 +683,7 @@
     import { IPersona } from '~/types/accessPolicies/personas'
     import useScopeService from './composables/useScopeService'
     import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
+    import useGlossaryStore from '~/store/glossary'
 
     export default defineComponent({
         name: 'AddPolicy',
@@ -696,6 +741,8 @@
         },
         emits: ['close'],
         setup(props, { emit }) {
+            const glossaryStore = useGlossaryStore()
+            const glossaryComputed = computed(() => glossaryStore.list)
             const { scopeList } = useScopeService().listScopes('persona')
             const policyType = ref('')
             const assetSelectorVisible = ref(false)
@@ -708,6 +755,10 @@
             const BItypes = getBISourceTypes()
 
             const rules = ref({
+                glossaryQualifiedNames: {
+                    text: 'Select Glossary',
+                    show: false,
+                },
                 policyName: {
                     text: 'Enter a policy name to identify your policy',
                     show: false,
@@ -978,6 +1029,9 @@
             const disabledForm = computed(
                 () => !!(isEdit.value && !canEdit.value)
             )
+            const handleChangeGlossary = (glossaryIds) => {
+                policy.value.glossaryQualifiedNames = glossaryIds
+            }
             return {
                 selectedPersonaDirty,
                 rules,
@@ -1005,6 +1059,8 @@
                 canEdit,
                 disabledForm,
                 BItypes,
+                glossaryComputed,
+                handleChangeGlossary,
             }
         },
     })

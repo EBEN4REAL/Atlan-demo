@@ -1,24 +1,58 @@
 <template>
     <div class="flex flex-col flex-grow h-full">
         <!-- purpose  -->
+        <div v-if="logoUrl && !logoNotFound" class="px-2">
+            <a-tooltip title="Home" placement="right">
+                <router-link
+                    to="/"
+                    class="flex items-center w-full mx-0 mt-3 menu-item"
+                    :class="isCollapsed ? 'justify-center px-0 py-1' : ''"
+                >
+                    <img
+                        :src="logoUrl"
+                        class="w-auto cursor-pointer select-none"
+                        :alt="defaultLogo"
+                        @error="onLogoNotFound"
+                        :class="isCollapsed ? 'h-8 ' : 'h-4 mr-2'"
+                    />
+                    <span class="font-semibold" v-if="!isCollapsed">{{
+                        logoName
+                    }}</span>
+                </router-link>
+            </a-tooltip>
+        </div>
 
-        <div class="px-3">
-            <router-link
-                to="/"
-                class="w-full mx-0 mt-3 menu-item"
-                @click="closeNavDrawer"
-            >
-                <span class="flex items-center">
+        <div v-else class="px-2">
+            <a-tooltip title="Home" placement="right">
+                <router-link
+                    to="/"
+                    class="flex items-center w-full mx-0 mt-3 menu-item"
+                    :class="isCollapsed ? 'justify-center px-0 py-1' : ''"
+                >
                     <atlan-icon
                         icon="Home"
-                        class="h-4 mr-2"
-                        :class="{
-                            'text-primary': page === '/' || page === 'home',
-                        }"
+                        :class="isCollapsed ? 'h-6' : 'h-4 mr-2'"
                     />
-                    <span class="">Home</span>
-                </span>
-            </router-link>
+                    <span class="font-semibold" v-if="!isCollapsed">{{
+                        logoName
+                    }}</span>
+                </router-link>
+            </a-tooltip>
+        </div>
+
+        <div class="px-2">
+            <!-- <router-link
+                to="/"
+                class="flex items-center w-full mx-0 mt-3 mb-1 menu-item"
+                :class="isCollapsed ? 'p-1 justify-center' : ''"
+                @click="closeNavDrawer"
+            >
+                <atlan-icon
+                    icon="Home"
+                    :class="isCollapsed ? 'h-6' : 'h-4 mr-2'"
+                />
+                <span class="" v-if="!isCollapsed">Home</span>
+            </router-link> -->
 
             <!-- workspaces -->
             <!-- <div
@@ -29,46 +63,59 @@
             <!-- pages -->
 
             <template v-for="nav in workspaceList" :key="nav.label">
-                <router-link
-                    v-if="nav.isActive"
-                    v-auth="nav.auth"
-                    :to="nav.path"
-                    class="w-full mx-0 menu-item"
-                    :class="{ active: nav.path === page }"
-                    @click="closeNavDrawer"
-                >
-                    <span class="flex items-center">
-                        <atlan-icon :icon="nav?.icon" class="h-4 mr-2" />
+                <a-tooltip :title="nav.label" placement="right">
+                    <router-link
+                        v-if="nav.isActive"
+                        v-auth="nav.auth"
+                        :to="nav.path"
+                        class="flex items-center w-full mx-0 menu-item"
+                        :class="
+                            isCollapsed ? 'p-1 justify-center mt-2' : 'mt-1'
+                        "
+                        @click="closeNavDrawer"
+                    >
+                        <span class="flex items-center">
+                            <atlan-icon
+                                :icon="nav?.icon"
+                                :class="isCollapsed ? 'h-6' : 'h-4 mr-2'"
+                            />
 
-                        {{ nav.label }}
-                    </span>
-                </router-link>
+                            <span v-if="!isCollapsed"> {{ nav.label }}</span>
+                        </span>
+                    </router-link>
+                </a-tooltip>
             </template>
         </div>
         <div class="flex-grow"></div>
-        <div class="px-3">
+        <div class="px-2">
             <template v-for="nav in workspaceCentreList" :key="nav.label">
-                <router-link
-                    v-if="
-                        (nav.isActive &&
-                            nav.path === '/platform' &&
-                            role === 'Admin') ||
-                        (nav.isActive && nav.path !== '/platform')
-                    "
-                    v-auth.or="nav.auth"
-                    :to="nav.path"
-                    class="w-full mx-0 menu-item"
-                    :class="{ active: nav.path === page }"
-                    @click="closeNavDrawer"
-                >
-                    <span class="flex items-center">
-                        <atlan-icon :icon="nav?.icon" class="h-4 mr-2" />
-                        {{ nav.label }}
-                    </span>
-                </router-link>
+                <a-tooltip :title="nav.label" placement="right">
+                    <router-link
+                        v-if="
+                            (nav.isActive &&
+                                nav.path === '/platform' &&
+                                role === 'Admin') ||
+                            (nav.isActive && nav.path !== '/platform')
+                        "
+                        v-auth.or="nav.auth"
+                        :to="nav.path"
+                        class="flex items-center w-full mx-0 mt-2 menu-item"
+                        :class="isCollapsed ? 'p-1 justify-center' : ''"
+                        @click="closeNavDrawer"
+                    >
+                        <span class="flex items-center">
+                            <atlan-icon
+                                :icon="nav?.icon"
+                                :class="isCollapsed ? 'h-6' : 'h-4 mr-2'"
+                            />
+
+                            <span v-if="!isCollapsed"> {{ nav.label }}</span>
+                        </span>
+                    </router-link>
+                </a-tooltip>
             </template>
         </div>
-        <div class="px-3">
+        <!-- <div class="px-3">
             <template v-for="nav in helpCenterList" :key="nav.id">
                 <div
                     v-if="nav.isActive"
@@ -105,7 +152,7 @@
                     </span>
                 </div>
             </template>
-        </div>
+        </div> -->
 
         <!-- <div
             v-if="path === '/'"
@@ -114,7 +161,7 @@
             <UserPersonalAvatar placement="topLeft" class="py-2">
             </UserPersonalAvatar>
         </div> -->
-        <div class="w-full px-3 my-3">
+        <div class="w-full px-3 my-3" v-if="!isCollapsed">
             <div class="flex mx-3">
                 <div class="flex items-center text-xs text-gray-500">
                     <span>with 💙 by</span>
@@ -133,7 +180,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent } from 'vue'
+    import { computed, defineComponent, ref, toRefs } from 'vue'
     import { useRoute } from 'vue-router'
     import UserPersonalAvatar from '@/common/avatar/meLarge.vue'
     import useUserData from '~/composables/user/useUserData'
@@ -144,18 +191,30 @@
     import { helpCenterList } from '~/constant/navigation/helpCentre'
     import useHelpWidget from '~/composables/helpCenter/useHelpWidget'
     import whoami from '~/composables/user/whoami'
+    import { useTenantStore } from '~/store/tenant'
+    import defaultLogo from '~/assets/images/your_company.png'
 
     export default defineComponent({
         name: 'HomeSidePanel',
         components: { UserPersonalAvatar },
         props: {
             page: { type: String, required: true },
+            isCollapsed: { type: Boolean, required: false },
         },
         emits: ['change', 'closeNavbar'],
         setup(props, { emit }) {
             const { username, name } = useUserData()
             const { role } = whoami()
             const { toggleHelpWidget } = useHelpWidget()
+
+            const tenantStore = useTenantStore()
+            const logoNotFound = ref(false)
+            const { logoUrl } = toRefs(tenantStore)
+            const logoName = computed(() => tenantStore.displayName)
+
+            const onLogoNotFound = () => {
+                logoNotFound.value = true
+            }
 
             const getVersion = process.env.npm_package_version
             const route = useRoute()
@@ -177,6 +236,11 @@
                 map,
                 path,
                 toggleHelpWidget,
+                logoUrl,
+                logoNotFound,
+                logoName,
+                onLogoNotFound,
+                defaultLogo,
             }
         },
     })

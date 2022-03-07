@@ -831,7 +831,7 @@
         height: calc(100vh - 3rem);
     }
     .parent_splitpanes {
-        width: calc(100vw - 3.75rem);
+        width: calc(100vw - 3.75rem - 60px);
     }
     .explorer_splitpane {
         background-color: white;

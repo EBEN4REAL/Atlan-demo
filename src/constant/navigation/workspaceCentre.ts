@@ -4,7 +4,7 @@ import page from '~/constant/accessControl/page'
 export const workspaceCentreList = [
     {
         path: '/workflows',
-        icon: 'Admin',
+        icon: 'WorkflowsActive',
         label: 'Workflow Center',
         isActive: true,
         auth: page.PAGE_ADMIN,

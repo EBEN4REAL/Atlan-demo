@@ -1,3 +1,4 @@
+import Time from '~/assets/images/icons/time.svg'
 import BookmarkFilled from '~/assets/images/icons/bookmark-filled.svg'
 import Bookmark from '~/assets/images/icons/bookmark.svg'
 import BookmarkOutlined from '~/assets/images/icons/bookmark-outline.svg'
@@ -813,6 +814,7 @@ export default {
     Message,
     MessageSuccess,
     CrossCircle,
+    Time,
     MessageCross,
     AddColumn,
     QueryTime,
@@ -838,4 +840,5 @@ export default {
     MySQL,
     Mysql: MySQL,
     NoAllow,
+
 }

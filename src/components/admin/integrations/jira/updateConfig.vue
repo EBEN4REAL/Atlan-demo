@@ -10,12 +10,11 @@
             <ProjectSelector
                 v-model="defaultProject.id"
                 class="w-full"
-                size="large"
                 @change="handleProjectChange"
             />
         </div>
     </section>
-    <section class="flex items-center justify-between px-6 py-4 gap-x-3">
+    <section class="flex items-center justify-between px-6 py-4 pt-0 gap-x-3">
         <AtlanButton
             v-auth="access.DELETE_INTEGRATION"
             color="secondary"

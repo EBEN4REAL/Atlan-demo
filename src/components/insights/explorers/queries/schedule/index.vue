@@ -18,7 +18,7 @@
                 :item="item"
                 :usersData="usersData"
                 :cronData="cronData"
-                :variablesData="variablesData"
+                v-model:variablesData="variablesData"
                 :infoTabeState="infoTabeState"
             />
         </keep-alive>
@@ -135,9 +135,8 @@
 
             const variablesData = ref(
                 JSON.parse(
-                    window.atob(
-                        item.value.attributes?.variablesSchemaBase64 ?? '[]'
-                    )
+                    window.atob(item.value.attributes?.variablesSchemaBase64) ??
+                        '[]'
                 )
             )
             const activeTabIndex = ref(0)
@@ -156,6 +155,7 @@
                 'query-variables': {},
                 'email-variables': {},
                 'saved-query-id': item.value.guid,
+                'report-name': '',
             })
             const usersData = ref({ ownerUsers: [], ownerGroups: [] })
 
@@ -265,6 +265,11 @@
                 return Promise.resolve()
             }
 
+            const getValueByType = (value: any, type: string) => {
+                if (type === 'number') return Number(value)
+                return String(value)
+            }
+
             const scheduleWorkFlow = () => {
                 usersParams.filter.$or = usersData.value.ownerUsers.map(
                     (name) => {
@@ -293,6 +298,23 @@
                                     // setting up emails of selected user
                                     inputParameters.value.recipients =
                                         userEmails as any
+
+                                    // setting up the custom variables
+                                    variablesData.value.forEach((variable) => {
+                                        inputParameters.value[
+                                            'query-variables'
+                                        ][`{{${variable.name}}}`] =
+                                            typeof variable.value === 'object'
+                                                ? variable.value?.join(',')
+                                                : getValueByType(
+                                                      variable.value,
+                                                      variable.type
+                                                  )
+                                    })
+                                    // setting up report name
+                                    inputParameters.value['report-name'] =
+                                        infoTabeState.value.name
+                                    debugger
 
                                     handleWorkflowSubmit({
                                         body,
@@ -363,6 +385,8 @@
                 cronData,
                 cronStringReadable,
                 isWorkflowTemplateFetched,
+                variablesData,
+                getValueByType,
             }
         },
     })

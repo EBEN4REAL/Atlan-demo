@@ -13,7 +13,7 @@
                 <div
                     class="flex items-center justify-center w-4 h-5 text-xs font-bold rounded text-primary bg-primary-light"
                 >
-                    <span> {{ variablesData.length }}</span>
+                    <span> {{ variablesData?.length ?? 0 }}</span>
                 </div>
             </div>
         </div>
@@ -191,12 +191,17 @@
     import parser from 'cron-parser'
     import dayjs from 'dayjs'
     import Tooltip from '@common/ellipsis/index.vue'
+    import { useVModels } from '@vueuse/core'
 
     export default defineComponent({
         components: { Tooltip },
         props: {
             item: {
                 type: Object as PropType<assetInterface>,
+                required: true,
+            },
+            variablesData: {
+                type: Object as PropType<any[]>,
                 required: true,
             },
             usersData: {
@@ -227,13 +232,7 @@
         },
         setup(props) {
             const { item, usersData, cronData, infoTabeState } = toRefs(props)
-            const variablesData = ref(
-                JSON.parse(
-                    window.atob(
-                        item.value.attributes?.variablesSchemaBase64 ?? '[]'
-                    )
-                )
-            )
+            const { variablesData } = useVModels(props)
 
             const interval = parser.parseExpression(cronData.value.cron)
 

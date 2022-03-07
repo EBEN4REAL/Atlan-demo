@@ -35,7 +35,7 @@
                 default: '',
             },
         },
-        emits: ['update:isEditMode', 'update:modelValue','updateName'],
+        emits: ['update:isEditMode', 'update:modelValue', 'updateName'],
         setup(props, { emit }) {
             // data
             const { enter, escape } = useMagicKeys()
@@ -43,7 +43,7 @@
             const { selectedAsset } = toRefs(props)
             const nameRef = ref(null)
             const isCancelled = ref(false)
-            const { handleChangeName, localName } =
+            const { handleChangeName, localName, error } =
                 updateAssetAttributes(selectedAsset)
 
             const { title, getAnchorQualifiedName, getAnchorName } =
@@ -52,11 +52,16 @@
             const localValue = ref(title(props.selectedAsset))
             const handleNameChange = () => {
                 console.log('name chnage ', localValue.value)
-                localName.value = localValue.value
-                emit('updateName',localValue.value)
-                handleChangeName()
+                if (localName.value !== localValue.value) {
+                    localName.value = localValue.value
+                    emit('updateName', localValue.value)
+                    handleChangeName()
+                }
             }
-
+            const reset = () => {
+                localValue.value = title(props.selectedAsset)
+                emit('updateName', localValue.value)
+            }
             const handleBlur = () => {
                 console.log(escape.value)
                 if (enter.value || escape.value) {
@@ -100,7 +105,9 @@
                     handleEditCancel()
                 }
             })
-
+            whenever(error, () => {
+                reset()
+            })
             return {
                 title,
                 getAnchorQualifiedName,

@@ -36,14 +36,18 @@
             </MinimalTab>
         </div>
 
-        <div v-if="activeTabKey === 'details'" class="p-6 overflow-y-auto">
+        <div
+            v-if="activeTabKey === 'details'"
+            class="p-6 overflow-y-auto"
+            style="max-height: 91%"
+        >
             <PurposeMeta
                 class="flex flex-col"
                 :persona="persona"
                 @editDetails="$emit('editDetails')"
             />
             <PurposeReadme :purpose="selectedPersonaDirty" />
-            <div class="mt-3 bg-white border border-gray-200 rounded">
+            <div class="pb-3 mt-3 bg-white border border-gray-200 rounded">
                 <ResourcesWidget
                     placeholder="Resources is the place to document all knowledge around the purpose"
                     :entity-name="persona.name"
@@ -141,7 +145,7 @@
                         metaDataComputed.length > 0 ||
                         dataPolicyComputed.length > 0
                     "
-                    class="flex flex-col flex-grow overflow-y-auto container-card-policy"
+                    class="flex flex-col flex-grow overflow-y-auto rounded-md container-card-policy"
                 >
                     <template
                         v-for="(policy, idx) in metaDataComputed"
@@ -318,6 +322,7 @@
         computed,
         toRefs,
         watch,
+        onMounted,
     } from 'vue'
     import { message } from 'ant-design-vue'
     import ResourcesWidget from '@common/widgets/resources/resourcesWidget.vue'
@@ -605,11 +610,14 @@
             ])
             const isEmpty = computed(
                 () =>
-                    !selectedPersonaDirty.value.metadataPolicies?.length &&
-                    !selectedPersonaDirty.value.dataPolicies?.length
+                    !selectedPersonaDirty.value?.metadataPolicies?.length &&
+                    !selectedPersonaDirty.value?.dataPolicies?.length
             )
             watch(selectedPersonaDirty, () => {
                 if (isEmpty.value) activeTabFilter.value = 'all Persona'
+            })
+            onMounted(() => {
+                activeTabKey.value = 'details'
             })
             return {
                 addStatus,
@@ -678,7 +686,7 @@
 </style>
 <style scoped lang="less">
     .container-card-policy {
-        max-height: 65vh;
+        max-height: 55vh;
     }
     .content-wrapper {
         height: inherit;

@@ -2,36 +2,39 @@
     <div class="flex flex-col flex-grow h-full overflow-hidden">
         <div class="relative flex-grow overflow-hidden bg-primary-light">
             <div class="absolute z-10 rounded left-10 top-10">
-                <div class="flex flex-col">
-                    <div class="flex items-center">
-                        <RunsSelect
-                            :key="runId"
-                            v-model="selectedRunName"
-                            :workflowName="workflowName"
-                            style="min-width: 150px"
-                            class="mb-3 shadow"
-                        ></RunsSelect>
-                        <a-spin
-                            size="small"
-                            v-if="isValidating"
-                            class="ml-2"
-                        ></a-spin>
-                    </div>
+                <div class="flex flex-col gap-y-3">
+                    <RunsSelect
+                        ref="runSelector"
+                        class="shadow"
+                        style="min-width: 150px"
+                        :model-value="path.name"
+                        :workflow-name="workflowName"
+                        @update:model-value="handleRunSelect"
+                    />
+
                     <Sidebar
-                        :key="runId"
+                        :key="path.name"
                         :selectedRun="selectedRun"
                         :isLoading="firstLoad"
                         :error="error"
                         style="width: 300px"
-                    ></Sidebar>
+                    />
+
+                    <div
+                        v-if="!firstLoad && isLoading"
+                        class="flex items-center p-2 bg-white border rounded gap-x-1"
+                    >
+                        <AtlanLoader class="h-5" />
+                        <span class="text-gray-500 test-sm"
+                            >Fetching latest data</span
+                        >
+                    </div>
                 </div>
             </div>
 
             <MonitorGraph
-                :key="runId"
-                ref="monitorGraphRef"
+                :key="path.name"
                 :graph-data="selectedRun"
-                @select="handleSelectPod"
                 @refresh="handleRefresh"
             />
         </div>
@@ -40,70 +43,40 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, watch, ref, toRefs } from 'vue'
+    import { defineComponent, watch, ref, toRefs, computed } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
-    import { useIntervalFn } from '@vueuse/core'
-
-    // import { nodeViewProps } from '@tiptap/vue-3'
-
-    // import WorkflowMixin from '~/mixins/workflow'
-    import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
+    import { useIntervalFn, whenever } from '@vueuse/core'
 
     import RunsSelect from '@/common/select/runs.vue'
-
+    import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
     import useRunItem from '~/composables/package/useRunItem'
-    import Sidebar from './sidebar.vue'
 
+    import Sidebar from './sidebar.vue'
     import MonitorGraph from './monitorGraph.vue'
 
     export default defineComponent({
         name: 'WorkflowMonitorTab',
         components: { RunsSelect, MonitorGraph, Sidebar },
-        // mixins: [WorkflowMixin],
         props: {
             workflowName: {
                 type: String,
                 required: false,
                 default: '',
             },
-            workflowObject: {
-                type: Object,
-                required: false,
-                default: () => {},
-            },
-            runId: {
-                type: String,
-                required: false,
-                default: '',
-            },
-            // selectedPod: {
-            //     type: Object,
-            //     required: true,
-            // },
-            // activeKey: {
-            //     type: Number,
-            //     required: true,
-            // },
         },
-        setup(props, { emit }) {
-            const { workflowName, runId } = toRefs(props)
-            const selectedRunName = ref(runId.value)
-
+        setup(props) {
             const router = useRouter()
             const route = useRoute()
-
-            const monitorGraphRef = ref(null)
-
-            const { phase, startedAt, finishedAt, duration } = useWorkflowInfo()
-
             const dependentKey = ref()
-            const path = ref({
-                name: selectedRunName.value,
-            })
-
             const isValidating = ref(false)
             const firstLoad = ref(true)
+            const runSelector = ref(undefined)
 
+            const path = computed(() => ({
+                name: route.query.name,
+            }))
+
+            const { phase, startedAt, finishedAt, duration } = useWorkflowInfo()
             const {
                 data: selectedRun,
                 mutate,
@@ -112,89 +85,64 @@
             } = useRunItem(path, false)
 
             const unWatchLoad = watch(isLoading, () => {
-                console.log('unWatchLoad', isLoading.value)
                 if (!isLoading.value) {
                     firstLoad.value = false
                     unWatchLoad()
                 }
             })
 
-            watch(runId, () => {
-                console.log('changed run id', runId.value)
-                selectedRunName.value = runId.value
-            })
+            const handleRunSelect = (newRunId) => {
+                if (newRunId && route.query.name !== newRunId) {
+                    router.replace({
+                        query: {
+                            name: newRunId,
+                        },
+                    })
+                }
+            }
 
             watch(
-                selectedRunName,
-                async () => {
-                    if (selectedRunName.value) {
-                        path.value = {
-                            name: selectedRunName.value,
-                        }
-
-                        if (route.query.name !== selectedRunName.value) {
-                            router.replace({
-                                query: {
-                                    name: selectedRunName.value,
-                                },
-                            })
-                        }
-
-                        isValidating.value = true
-                        await mutate()
-                        monitorGraphRef.value?.initialize(false, selectedRun)
-                        isValidating.value = false
-                    }
+                path,
+                () => {
+                    if (path.value.name) mutate()
                 },
                 { immediate: true }
             )
 
             const { pause, resume } = useIntervalFn(
                 async () => {
-                    if (phase(selectedRun.value) === 'Running') {
-                        await mutate()
-                        console.log(selectedRun.value)
-                        monitorGraphRef.value?.initialize(false, selectedRun)
-                    } else {
-                        pause()
-                    }
+                    if (phase(selectedRun.value) === 'Running') mutate()
+                    else pause()
                 },
                 5000,
                 { immediate: false }
             )
 
-            watch(selectedRun, () => {
-                if (selectedRun.value) {
-                    if (phase(selectedRun.value) === 'Running') {
-                        resume()
-                    } else {
+            watch(
+                () => phase(selectedRun.value),
+                () => {
+                    if (phase(selectedRun.value) === 'Running') resume()
+                    else {
                         pause()
+                        runSelector.value?.quickChange()
                     }
+                },
+                {
+                    flush: 'post',
                 }
-            })
+            )
 
-            const selectedPod = ref({})
-            const handleSelectPod = (pod) => {
-                selectedPod.value = pod
-            }
-
-            const handleRefresh = async (pod) => {
-                isValidating.value = true
-                await mutate()
-                monitorGraphRef.value?.initialize(false, selectedRun)
-                isValidating.value = false
+            const handleRefresh = () => {
+                mutate()
             }
 
             return {
-                selectedRunName,
-                workflowName,
-
-                handleSelectPod,
-                selectedPod,
+                handleRunSelect,
                 phase,
                 startedAt,
                 finishedAt,
                 duration,
+                runSelector,
                 selectedRun,
                 router,
                 isLoading,
@@ -206,8 +154,8 @@
                 dependentKey,
                 isValidating,
                 route,
-                monitorGraphRef,
                 handleRefresh,
+                path,
             }
         },
     })

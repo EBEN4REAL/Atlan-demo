@@ -52,15 +52,93 @@ watch(
 )
 // Filtered Persona List
 export const searchTerm = ref('')
+export const facets = ref({})
 export const filteredPersonas = computed(() => {
-    let result = []
+    let result = personaList.value
+    const { hierarchy, owners, permissions } = facets.value
+    const hasFilters =
+        !!searchTerm.value ||
+        !!Object.keys(hierarchy || {}).length ||
+        !!(owners?.ownerUsers?.length || owners?.ownerGroups?.length) ||
+        !!permissions?.length
     if (searchTerm.value) {
-        result = personaList.value.filter((ps) =>
-            ps.displayName
+        result = personaList.value.filter((persona) => {
+            // search term
+            const match = persona.displayName
                 ?.toLowerCase()
                 .includes(searchTerm.value?.toLowerCase())
+            return match
+        })
+    }
+
+    if (hierarchy) {
+        console.log(
+            'usePersonaList hierarchy',
+            { ...hierarchy },
+            hierarchy?.connectorName
         )
-    } else {
+        result = result.filter((persona) => {
+            const metadataPolicies = persona?.metadataPolicies || []
+            const dataPolicies = persona?.dataPolicies || []
+            const policies = [...metadataPolicies, ...dataPolicies]
+            const assets = policies.map((policy) => policy.assets[0])
+            let found = false
+            if (hierarchy?.attributeValue) {
+                found =
+                    found ||
+                    assets.some((asset) =>
+                        asset.includes(hierarchy?.attributeValue)
+                    )
+            } else if (hierarchy?.connectionQualifiedName) {
+                found =
+                    found ||
+                    assets.some((asset) =>
+                        asset.includes(hierarchy?.connectionQualifiedName)
+                    )
+            } else if (hierarchy?.connectorName) {
+                found =
+                    found ||
+                    assets.some((asset) =>
+                        asset.includes(hierarchy?.connectorName)
+                    )
+            }
+            return found
+        })
+    }
+
+    if (owners?.ownerUsers?.length || owners?.ownerGroups?.length) {
+        const { ownerUsers, ownerGroups } = owners
+        result = result.filter((persona) => {
+            const users = persona?.users || []
+            const groups = persona?.groups || []
+            let found = false
+            if (ownerUsers && ownerUsers.length) {
+                found = found || users.some((user) => ownerUsers.includes(user))
+            }
+            if (ownerGroups && ownerGroups.length) {
+                found =
+                    found || groups.some((group) => ownerGroups.includes(group))
+            }
+            return found
+        })
+    }
+
+    if (permissions && permissions.length) {
+        result = result.filter((persona) => {
+            const metadataPolicies = persona?.metadataPolicies || []
+            let personaPerms = []
+            metadataPolicies.forEach((policy) => {
+                personaPerms = [...personaPerms, ...policy.actions]
+            })
+            console.log('personaPerms', personaPerms)
+            let found = personaPerms.some((permission) =>
+                permissions.includes(permission)
+            )
+            return found
+        })
+    }
+
+    if (!hasFilters) {
         result = personaList.value || []
     }
     return result.sort((a, b) => {

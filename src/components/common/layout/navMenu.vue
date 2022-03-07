@@ -115,11 +115,11 @@
                 >
                 <AtlanButton
                     size="sm"
-                    class="px-2 mx-2 text-gray-700 bg-transparent border-none"
+                    class="px-2 mx-1 text-gray-700 bg-transparent border-none"
                     padding="compact"
                 >
                     <div class="flex items-center">
-                        <AtlanIcon icon="QuestionRound" />
+                        <AtlanIcon icon="QuestionRound" class="h-6" />
                     </div>
                 </AtlanButton>
             </a-dropdown>

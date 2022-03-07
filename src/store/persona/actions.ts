@@ -12,11 +12,10 @@ export const actions: Actions = {
     },
     updatePersona(persona) {
         const index = this.list.findIndex((p) => p.id === persona.id)
-        if (index > -1)
-            this.list[index] = persona
+        if (index > -1) this.list[index] = persona
         else this.list.push(persona)
     },
     removePersona(_id) {
         this.list = this.list.filter((p) => p.id !== _id)
-    }
+    },
 }

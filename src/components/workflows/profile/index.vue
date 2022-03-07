@@ -23,7 +23,6 @@
                     :is="tab.component"
                     :key="`${tab.id}_${searchDirtyTimestamp}`"
                     :workflowObject="workflowObject"
-                    :runId="runId"
                     :packageObject="packageObject"
                     :workflowName="workflowObject?.metadata?.name"
                 ></component>
@@ -37,12 +36,8 @@
         defineComponent,
         ref,
         defineAsyncComponent,
-        onMounted,
-        PropType,
         watch,
-        toRefs,
         provide,
-        computed,
     } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 
@@ -71,14 +66,10 @@
                 default: () => {},
             },
         },
-        setup(props) {
-            const { workflowObject, packageObject } = toRefs(props)
-
+        setup() {
             const route = useRoute()
 
             const activeKey = ref()
-
-            const runId = computed(() => route?.query?.name)
 
             const searchDirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
 
@@ -117,7 +108,6 @@
                 runName,
                 route,
                 searchDirtyTimestamp,
-                runId,
             }
         },
     })

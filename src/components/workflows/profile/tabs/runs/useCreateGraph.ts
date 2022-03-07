@@ -1,12 +1,13 @@
-import { DagreLayout } from '@antv/layout';
-import { Graph } from '@antv/x6';
+import { DagreLayout } from '@antv/layout'
+import { Graph } from '@antv/x6'
+import { Ref } from 'vue'
 import { SimpleNodeView } from './view.js'
 
 export default function useCreateGraph(
-    graph,
+    graph: Ref<Graph>,
     graphContainer,
     minimapContainer,
-    graphLayout
+    graphLayout: Ref<DagreLayout>
 ) {
     /* Build Graph Canvas */
     //const { Graph } = window.X6
@@ -15,10 +16,13 @@ export default function useCreateGraph(
     graph.value = new Graph({
         async: true, // Saves resources and enhances performance.
         autoResize: true,
-        interacting: true,
+        interacting: false,
         container: graphContainer.value,
         selecting: {
             enabled: true,
+            multiple: false,
+            movable: false,
+            rubberband: false,
         },
         grid: {
             size: 40,
@@ -79,7 +83,7 @@ export default function useCreateGraph(
         type: 'dagre',
         ranksep: 40,
         nodesep: 60,
-        rankDir: 'TB',
+        rankdir: 'TB',
         controlPoints: true,
         workerEnabled: true,
     })

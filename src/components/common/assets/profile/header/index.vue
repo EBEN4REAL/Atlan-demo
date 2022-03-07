@@ -1,6 +1,9 @@
 <template>
     <div class="flex items-center w-full px-6 pt-3">
-        <a-button class="px-1" @click="back">
+        <a-button
+            class="flex items-center justify-center px-1.5 py-1"
+            @click="back"
+        >
             <atlan-icon
                 icon="ArrowRight"
                 class="w-auto h-4 text-gray-500 transform rotate-180"
@@ -269,20 +272,27 @@
             <a-button-group>
                 <a-tooltip
                     v-if="
-                        !isGTC(item) && !isBiAsset(item) && !isSaasAsset(item)
+                        !isGTC(item) &&
+                        !isBiAsset(item) &&
+                        !isSaasAsset(item) &&
+                        connectorName(item) !== 'glue'
                     "
                     title="Query"
                 >
                     <QueryDropdown
                         v-if="
                             assetType(item) === 'Table' ||
-                            assetType(item) === 'View'
+                            assetType(item) === 'View' ||
+                            assetType(item) === 'TablePartition' ||
+                            assetType(item) === 'MaterialisedView'
                         "
                         @handleClick="goToInsights"
                     >
                         <template #button>
-                            <a-button class="flex items-center justify-center">
-                                <AtlanIcon icon="Query" class="mr-1 mb-0.5" />
+                            <a-button
+                                class="flex items-center justify-center p-2"
+                            >
+                                <AtlanIcon icon="Query" />
                             </a-button>
                         </template>
                     </QueryDropdown>
@@ -290,10 +300,10 @@
                     <a-button
                         v-else
                         block
-                        class="flex items-center justify-center"
+                        class="flex items-center justify-center p-2"
                         @click="handleClick"
                     >
-                        <AtlanIcon icon="Query" class="mr-1 mb-0.5" />
+                        <AtlanIcon icon="Query" />
                     </a-button>
                 </a-tooltip>
 
@@ -312,11 +322,14 @@
                 </a-button>
 
                 <ShareMenu :asset="item" :edit-permission="true">
-                    <a-button block class="flex items-center justify-center">
-                        <AtlanIcon icon="Share" class="mb-0.5" />
+                    <a-button
+                        block
+                        class="flex items-center justify-center p-2"
+                    >
+                        <AtlanIcon icon="Share" />
                     </a-button>
                 </ShareMenu>
-                <template v-if="!disableSlackAsk && linkEditPermission">
+                <template v-if="!disableSlackAsk">
                     <SlackAskButton :asset="item" />
                 </template>
                 <AssetMenu
@@ -337,9 +350,9 @@
                             )
                         "
                         block
-                        class="flex items-center justify-center"
+                        class="flex items-center justify-center p-2"
                     >
-                        <AtlanIcon icon="KebabMenu" class="mr-1 mb-0.5" />
+                        <AtlanIcon icon="KebabMenu" />
                     </a-button>
                 </AssetMenu>
                 <AssetMenu
@@ -351,9 +364,9 @@
                             !isGTC(item) && selectedAssetUpdatePermission(item)
                         "
                         block
-                        class="flex items-center justify-center"
+                        class="flex items-center justify-center p-2"
                     >
-                        <AtlanIcon icon="KebabMenu" class="mr-1 mb-0.5" />
+                        <AtlanIcon icon="KebabMenu" />
                     </a-button>
                 </AssetMenu>
             </a-button-group>
@@ -517,18 +530,7 @@
                 console.log(val)
             }
 
-            const linkEditPermission = computed(
-                () =>
-                    selectedAssetUpdatePermission(
-                        item.value,
-                        false,
-                        'RELATIONSHIP_ADD',
-                        'Link'
-                    ) && assetPermission('CREATE_LINK')
-            )
-
             return {
-                linkEditPermission,
                 disableSlackAsk,
                 title,
                 getConnectorImage,

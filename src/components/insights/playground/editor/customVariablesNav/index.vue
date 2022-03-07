@@ -6,6 +6,7 @@
                     size="sm"
                     color="secondary"
                     padding="compact"
+                    :disabled="readOnly"
                     class="flex items-center justify-between px-0 mx-3 my-3 add-btn group"
                     @click="onAddVariable"
                     style="min-width: 30px; height: 30px"
@@ -56,7 +57,7 @@
                 </p>
 
                 <div
-                    class="relative flex items-center pr-1 bg-white rounded group border-container"
+                    class="relative flex items-center bg-white rounded group border-container"
                     style="width: 162px; height: 34px !important"
                 >
                     <div v-if="variable.type === 'dropdown'">
@@ -209,8 +210,11 @@
                     </a-date-picker>
                     <a-input
                         v-else
-                        class="border-none outline-none outline-0 group focus:outline-0 focus:border-none focus:shadow-none"
-                        style="width: 138px; height: 32px"
+                        class="w-full border-none outline-none outline-0 group focus:outline-0 focus:border-none focus:shadow-none"
+                        :class="readOnly ? 'bg-white text-gray-100' : ''"
+                        :style="`height: 32px; ${
+                            readOnly ? 'color: #3E4359 !important' : ''
+                        }`"
                         v-model:value="variable.value"
                         @change="onChange(variable)"
                         :placeholder="`Enter a ${variable.type}`"
@@ -276,11 +280,17 @@
                                                 <AtlanIcon
                                                     @click="
                                                         () =>
+                                                            !readOnly &&
                                                             onDeleteVariable(
                                                                 activeVariable
                                                             )
                                                     "
-                                                    class="w-4 h-4 text-gray-500 cursor-pointer"
+                                                    class="w-4 h-4 text-gray-500"
+                                                    :class="
+                                                        !readOnly
+                                                            ? 'curosr-pointer'
+                                                            : 'cursor-not-allowed'
+                                                    "
                                                     icon="Delete"
                                                 />
                                             </a-tooltip>
@@ -532,6 +542,7 @@
         toRaw,
         ComputedRef,
         computed,
+        onUnmounted,
     } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import AtlanBtn from '~/components/UI/button.vue'
@@ -805,7 +816,27 @@
                 activeVariable.value.value = val
             }
 
+            /* Accesss */
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
+
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
+
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser.value
+                    ? false
+                    : hasQueryWritePermission.value
+                    ? false
+                    : true
+            )
+
             return {
+                readOnly,
                 getDaysJsWrappedValue,
                 onChange,
                 onCopyVariable,

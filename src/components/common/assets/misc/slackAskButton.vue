@@ -1,15 +1,15 @@
 <template>
-    <a-button class="flex items-center justify-center">
-        <SlackModal
-            :link="assetLink"
-            :asset-i-d="asset?.guid"
-            :asset-type="asset?.typeName"
-            :ask-question-modal="true"
-            @success="onSlackModalSuccess"
-        >
-            <AtlanIcon icon="Slack" class="mb-0.5" />
-        </SlackModal>
-    </a-button>
+    <SlackModal
+        :link="assetLink"
+        :asset-i-d="asset?.guid"
+        :asset-type="asset?.typeName"
+        :ask-question-modal="true"
+        @success="onSlackModalSuccess"
+    >
+        <a-button class="flex items-center justify-center p-2">
+            <AtlanIcon icon="Slack" />
+        </a-button>
+    </SlackModal>
 </template>
 
 <script setup lang="ts">

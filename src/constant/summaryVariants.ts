@@ -26,7 +26,7 @@ export const summaryVariants = [
     {
         id: 'category',
         label: 'Category',
-        components: ['ParentGlossary', 'TermsCount'],
+        components: ['ParentGlossary'],
         includes: ['AtlasGlossaryCategory'],
     },
     {

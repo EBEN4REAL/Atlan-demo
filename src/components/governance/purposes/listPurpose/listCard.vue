@@ -20,12 +20,8 @@
             >
                 <Popover
                     :classification="classification"
-                    :mouse-enter-delay="classificationPopoverMouseEnterDelay"
-                    @mouse-entered="
-                        () => {
-                            classificationPopoverMouseEnterDelay = 0.2
-                        }
-                    "
+                    :mouse-enter-delay="mouseEnterDelay"
+                    @mouse-entered="enteredPill"
                 >
                     <ClassificationPill
                         :name="classification.name"
@@ -45,6 +41,7 @@
     import { ClassificationInterface as CF } from '~/types/classifications/classification.interface'
     import ClassificationPill from '@/common/pills/classification.vue'
     import Popover from '@/common/popover/classification/index.vue'
+    import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
 
     const props = defineProps({
         p: {
@@ -68,7 +65,7 @@
     })
     const { p, classificationList } = toRefs(props)
     const allClassifications: Ref<object[]> = ref([])
-    const classificationPopoverMouseEnterDelay = ref(1)
+    const { mouseEnterDelay, enteredPill } = useMouseEnterDelay()
 
     if (p.value?.tags?.length)
         p.value.tags.forEach((c) => {

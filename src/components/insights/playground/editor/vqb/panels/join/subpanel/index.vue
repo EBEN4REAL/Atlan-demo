@@ -405,6 +405,7 @@
                 )
                 selectedTables.value = t
                 subpanels.value.splice(index, 1)
+                updateVQB(activeInlineTab, inlineTabs)
             }
 
             const swapTables = (index) => {

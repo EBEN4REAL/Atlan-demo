@@ -38,7 +38,7 @@
         </div>
 
         <div class="p-6" style="height: calc(100vh - 9.5rem)">
-            <template v-if="localBm.attributeDefs.length">
+            <template v-if="finalAttributeList.length">
                 <div class="pt-4 space-y-4 bg-white rounded-lg">
                     <div
                         class="sticky top-0 z-10 flex items-center justify-between px-4"
@@ -50,7 +50,7 @@
                                 <a-input
                                     v-model:value="attrsearchText"
                                     class="h-8 px-2 pl-2 border border-gray-300 rounded-lg w-80"
-                                    :placeholder="'Search for property'"
+                                    :placeholder="`Search from ${finalAttributeList.length} properties`"
                                 >
                                     <template #prefix>
                                         <AtlanIcon
@@ -224,6 +224,9 @@
                     store.updateCustomMetadata(value)
                 },
             })
+            // ? attribute list that is not- deprecated,
+            const finalAttributeList = computed(() => (localBm.value.attributeDefs ?? []).filter(a => a.options.isDeprecated !== 'true'))
+
 
             const attrsearchText = ref('')
             const panelModel = ref(1)
@@ -258,14 +261,14 @@
 
             const searchedAttributes = computed(() => {
                 if (attrsearchText.value) {
-                    return localBm.value.attributeDefs.filter(
+                    return finalAttributeList.value.filter(
                         (attr: { name: string }) =>
                             attr.displayName
                                 .toUpperCase()
                                 .includes(attrsearchText.value.toUpperCase())
                     )
                 }
-                return localBm.value.attributeDefs
+                return finalAttributeList.value
             })
 
             // converts customApplicableEntityTypes from string to array so they can be set on the a-tree component
@@ -298,11 +301,12 @@
                 return tempBM
             })
 
+
             // computes is search has a text
             const searchedAttributeList = computed(() =>
-                attrsearchText.value
+                (attrsearchText.value
                     ? searchedAttributes.value
-                    : localBm.value.attributeDefs
+                    : finalAttributeList.value)
             )
 
             const handlePropertyUpdate = ($event) => {
@@ -369,6 +373,7 @@
                 handlePropertyUpdate,
                 map,
                 checkAccess,
+                finalAttributeList
             }
         },
         data() {

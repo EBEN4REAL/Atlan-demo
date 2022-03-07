@@ -284,6 +284,7 @@
                 'displayDescription',
                 'userDescription',
                 'certificateStatus',
+                'certificateUpdatedBy',
                 'meanings',
                 'category',
                 'dataType',

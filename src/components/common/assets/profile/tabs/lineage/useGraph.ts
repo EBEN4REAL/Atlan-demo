@@ -338,9 +338,11 @@ export default function useGraph(graph) {
         const isDup = data?.isDup
         const isCyclicEdge = data?.isCyclicEdge
 
-        const stroke = relation.id.includes('vpNode')
-            ? '#ffffff00'
-            : styles?.stroke
+        // const stroke = relation.id.includes('vpNode')
+        //     ? '#ffffff00'
+        //     : styles?.stroke
+
+        const stroke = styles?.stroke
 
         const edgeData = {
             isDup,

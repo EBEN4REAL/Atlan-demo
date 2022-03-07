@@ -374,7 +374,8 @@ export default function useEventGraph({
             targetPort: `${to}-invisiblePort`,
         }
 
-        const { edgeData } = createEdgeData(relation, {}, {})
+        const styles = { stroke: '#aaaaaa' }
+        const { edgeData } = createEdgeData(relation, {}, styles)
         edges.value.push(edgeData)
         addEdge(relation)
         renderLayout(registerAllListeners)

@@ -27,26 +27,22 @@
                         :placeholder="`Add Workspace Name`"
                         class="text-lg font-bold border-0 shadow-none outline-none"
                     />
-                    <div class="flex items-center justify-end">
-                        <AtlanBtn
-                            padding="compact"
-                            size="sm"
-                            class="px-5 mr-3 font-bold text-gray-500 bg-transparent border-none"
+                    <div class="flex items-center justify-end gap-x-3">
+                        <AtlanButton2
+                            color="secondary"
+                            label="Cancel"
                             @click="showEditTenantNameModal = false"
-                            >Cancel</AtlanBtn
-                        >
-                        <AtlanBtn
-                            padding="compact"
-                            size="sm"
-                            color="primary"
-                            class="px-5 font-bold"
+                        />
+                        <AtlanButton2
                             :disabled="updateStatus === 'loading'"
-                            :is-loading="updateStatus === 'loading'"
+                            :loading="updateStatus === 'loading'"
                             @click="updateTenantDisplayName"
-                            ><span v-if="updateStatus !== 'loading'"
-                                >Update</span
-                            ><span v-else>Updating</span></AtlanBtn
-                        >
+                            :label="
+                                updateStatus !== 'loading'
+                                    ? 'Update'
+                                    : 'Updating'
+                            "
+                        />
                     </div>
                 </div>
             </a-modal>
@@ -71,29 +67,20 @@
                         {{ name }}
                     </div>
                 </div>
-                <div class="flex items-center">
-                    <AtlanBtn
-                        padding="compact"
-                        size="sm"
-                        class="px-5 mr-3 text-gray-700 bg-transparent border border-gray-300"
+                <div class="flex items-center gap-x-3">
+                    <AtlanButton2
+                        size="large"
+                        color="secondary"
+                        label="Edit"
                         @click="showEditTenantNameModal = true"
-                        >Edit</AtlanBtn
-                    >
-                    <AtlanBtn
-                        padding="compact"
-                        size="sm"
-                        color="primary"
-                        class="px-5"
+                    />
+
+                    <AtlanButton2
+                        size="large"
+                        prefixIcon="Megaphone"
+                        label="New Announcement"
                         @click="announcementModalVisible = true"
-                    >
-                        <div class="flex items-center">
-                            <AtlanIcon
-                                icon="Megaphone"
-                                class="mr-1 text-white"
-                            ></AtlanIcon>
-                            <span>New Announcement</span>
-                        </div>
-                    </AtlanBtn>
+                    />
                 </div>
             </div>
             <CompanyAnnouncement
@@ -155,16 +142,15 @@
     import useOverviewCards from '~/components/admin/overview/composables/useOverviewCards'
     import AddCompanyAnnouncement from '~/components/admin/overview/addCompanyAnnouncement.vue'
     import CompanyAnnouncement from '~/components/common/widgets/announcement/companyAnnouncement.vue'
-    import AtlanBtn from '@/UI/button.vue'
+
     import useUserData from '~/composables/user/useUserData'
     import { useTenantStore } from '~/store/tenant'
 
     export default defineComponent({
-        name: 'Overview',
+        name: 'WSOverview',
         components: {
             DefaultLayout,
             OrgLogo,
-            AtlanBtn,
             AddCompanyAnnouncement,
             CompanyAnnouncement,
         },

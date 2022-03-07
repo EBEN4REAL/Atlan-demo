@@ -23,16 +23,12 @@
                     />
                 </div>
 
-                <AtlanButton
+                <AtlanButton2
                     v-auth="map.CREATE_GROUP"
-                    class="px-5"
-                    size="sm"
-                    type="primary"
+                    label="Create Group"
+                    prefixIcon="Add"
                     @click="isGroupDrawerVisible = true"
-                >
-                    <AtlanIcon class="mr-2" icon="Add" />
-                    Create Group
-                </AtlanButton>
+                />
             </div>
         </template>
         <a-drawer
@@ -61,17 +57,12 @@
         >
             <ErrorView>
                 <div class="mt-3">
-                    <AtlanButton
+                    <AtlanButton2
                         color="secondary"
-                        @click="
-                            () => {
-                                getGroupList()
-                            }
-                        "
-                    >
-                        <AtlanIcon icon="Reload" />
-                        Try again
-                    </AtlanButton>
+                        label="Try again"
+                        prefixIcon="Retry"
+                        @click="getGroupList()"
+                    />
                 </div>
             </ErrorView>
         </div>

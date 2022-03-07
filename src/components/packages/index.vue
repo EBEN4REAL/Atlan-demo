@@ -1,13 +1,8 @@
 <template>
     <div class="flex flex-col flex-1 h-full bg-primary-menu">
-        <div class="flex items-center px-6 py-3">
+        <div class="flex items-center px-6 py-3 gap-x-2">
             <a-tooltip title="Back to Workflow Center">
-                <a-button class="px-1 mr-2" @click="handleBack" size="large">
-                    <atlan-icon
-                        icon="ArrowRight"
-                        class="w-auto h-4 text-gray-500 transform rotate-180"
-                    />
-                </a-button>
+                <IconButton icon="ChevronLeft" @click="handleBack" />
             </a-tooltip>
             <div class="flex flex-col">
                 <span class="text-xl font-semibold text-gray-700">

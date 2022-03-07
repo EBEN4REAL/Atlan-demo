@@ -27,6 +27,8 @@
                 @update:data="setConnector"
             ></Connector>
 
+            <JitterCheck />
+
             <div class="flex flex-row mt-1 ml-2 mr-2 space-x-2">
                 <a-input
                     v-model:value="queryText"
@@ -126,9 +128,10 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
     import SchemaFilter from './schemaFilter.vue'
+    import JitterCheck from '~/components/insights/common/connector/JitterCheck.vue'
 
     export default defineComponent({
-        components: { Connector, SchemaTree, SchemaFilter },
+        components: { Connector, SchemaTree, SchemaFilter, JitterCheck },
         props: {},
         setup(props, { emit }) {
             const queryText = ref('')

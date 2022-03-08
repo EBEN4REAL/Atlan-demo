@@ -42,18 +42,20 @@
                         class="text-white bg-success border-success"
                         >Test
                     </a-button>
-                    <a-button @click="toggleEdit"
-                        ><span v-if="isEditVisible">Cancel</span
-                        ><span v-else>Edit</span></a-button
-                    >
-                    <a-button
-                        :loading="isLoadingTest || isLoadingUpdate"
+
+                    <AtlanButton2
+                        color="secondary"
+                        :label="isEditVisible ? 'Cancel' : 'Edit'"
+                        @click="toggleEdit"
+                    />
+
+                    <AtlanButton2
                         v-if="isEditVisible"
+                        label="Test & Update"
+                        :loading="isLoadingTest || isLoadingUpdate"
                         :disabled="!isDirty"
-                        type="primary"
                         @click="handleUpdate"
-                        >Test & Update</a-button
-                    >
+                    />
                 </div>
             </div>
             <div class="flex text-gray-500" v-if="isEditVisible">

@@ -153,7 +153,12 @@
                             </a-select>
                         </div>
 
-                        <a-button @click="handleLogs">Logs</a-button>
+                        <AtlanButton2
+                            label="Logs"
+                            color="secondary"
+                            @click="handleLogs"
+                        />
+
                         <a-modal
                             :destroyOnClose="true"
                             v-model:visible="isLogVisible"

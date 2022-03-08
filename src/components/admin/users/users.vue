@@ -36,41 +36,31 @@
                                 @change="updateFilters"
                             />
                         </template>
-                        <button
-                            :class="`flex items-center justify-center h-8 py-2 pl-2 pr-3 space-x-1 transition-colors border border-gray-300 rounded shadow-none hover:border-primary hover:text-primary ${
-                                visible
-                                    ? 'border-primary text-primary blue-icons'
-                                    : ''
-                            }`"
-                        >
-                            <AtlanIcon
-                                :icon="
-                                    filtersLength > 0 ? 'FilterDot' : 'Filter'
-                                "
-                                class="w-5 h-5"
-                            />
-                            <span class="text-sm"
-                                >Filters
-                                {{
+
+                        <AtlanButton2
+                            color="secondary"
+                            :prefixIcon="
+                                filtersLength > 0 ? 'FilterDot' : 'Filter'
+                            "
+                            :label="`Filters
+                                ${
                                     filtersLength > 0
                                         ? `(${filtersLength})`
                                         : ''
-                                }}</span
-                            >
-                        </button>
+                                }`"
+                            :class="
+                                visible ? 'border-primary text-primary' : ''
+                            "
+                        />
                     </a-popover>
                 </div>
                 <div v-auth="map.CREATE_USERS" class="flex">
-                    <AtlanButton
+                    <AtlanButton2
                         v-if="loginWithEmail"
-                        type="primary"
-                        class="rounded-md"
-                        size="sm"
+                        label="Invite Users"
+                        prefixIcon="AddUser"
                         @click="handleInviteUsers"
-                    >
-                        <AtlanIcon icon="AddUser" />
-                        Invite Users
-                    </AtlanButton>
+                    />
                 </div>
             </div>
         </template>
@@ -81,17 +71,12 @@
         >
             <ErrorView>
                 <div class="mt-3">
-                    <AtlanButton
+                    <AtlanButton2
                         color="secondary"
-                        @click="
-                            () => {
-                                getUserList()
-                            }
-                        "
-                    >
-                        <AtlanIcon icon="Reload" />
-                        Try again
-                    </AtlanButton>
+                        label="Try again"
+                        prefixIcon="Retry"
+                        @click="getUserList"
+                    />
                 </div>
             </ErrorView>
         </div>
@@ -175,7 +160,6 @@
 
     import UserFilter from './userFilter.vue'
     import useTenantData from '~/composables/tenant/useTenantData'
-    import AtlanButton from '~/components/UI/button.vue'
     import UserListTable from '@/admin/users/userListTable.vue'
     import { Users } from '~/services/service/users/index'
     import map from '~/constant/accessControl/map'
@@ -190,7 +174,6 @@
             Pagination,
             SearchAndFilter,
             UserListTable,
-            AtlanButton,
             InviteUsers,
             ErrorView,
             DefaultLayout,

@@ -80,13 +80,13 @@
 
             /** DATA */
             const lineage: any = ref({})
-            const baseEntity = ref({})
             const guid = ref(route.params?.id || '')
             const depth = ref(1)
             const direction = ref('BOTH')
             const loaderText = ref('Fetching Data...')
             const initialLoad = ref(true)
-            const selectedAsset = ref(assetStore.getSelectedAsset)
+            const baseEntityDataFromStore = ref(assetStore.getSelectedAsset)
+            const selectedAsset = ref(null)
             const preferences = ref({ showArrow: false })
             const config = computed(() => ({
                 depth: depth.value,
@@ -110,13 +110,9 @@
                 lineage.value = { ...data.value }
                 if (!data.value.relations.length) {
                     const { baseEntityGuid } = lineage.value
-                    baseEntity.value = selectedAsset.value
                     lineage.value.guidEntityMap = {
-                        [baseEntityGuid]: baseEntity.value,
+                        [baseEntityGuid]: baseEntityDataFromStore.value,
                     }
-                } else {
-                    const { guidEntityMap, baseEntityGuid } = lineage.value
-                    baseEntity.value = guidEntityMap[baseEntityGuid]
                 }
             })
 
@@ -133,7 +129,6 @@
 
             /** PROVIDERS */
             provide('lineage', lineage)
-            provide('baseEntity', baseEntity)
             provide('selectedAsset', selectedAsset)
             provide('preferences', preferences)
             provide('control', control)

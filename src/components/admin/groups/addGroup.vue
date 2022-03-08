@@ -74,16 +74,14 @@
                     </a-tooltip>
                 </a-checkbox>
             </div>
-            <AtlanButton
+            <AtlanButton2
                 class="mt-3"
-                size="sm"
                 html-type="submit"
+                label="Create Group"
                 :disabled="isSubmitDisabled"
-                :is-loading="createGroupLoading"
+                :loading="createGroupLoading"
                 @click="handleSubmit"
-            >
-                Create Group
-            </AtlanButton>
+            />
         </div>
     </div>
 </template>

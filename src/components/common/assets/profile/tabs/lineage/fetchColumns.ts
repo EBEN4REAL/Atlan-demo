@@ -3,12 +3,12 @@ import bodybuilder from 'bodybuilder'
 import { assetInterface } from '~/types/assets/asset.interface'
 import useIndexSearch from '~/composables/discovery/useIndexSearch'
 
-export default function fetchColumns({
-    viewQualifiedName,
-    tableQualifiedName,
-    offset = 0,
-    limit = 2000,
-}) {
+export default function fetchColumns(
+    typeName,
+    qualifiedName,
+    offset,
+    limit = 5
+) {
     const attributes = [
         'dataType',
         'qualifiedName',
@@ -40,26 +40,27 @@ export default function fetchColumns({
             prop: 'exists',
         },
         {
-            key: 'viewQualifiedName',
-            value: viewQualifiedName,
-            type: 'should',
-            prop: 'terms',
-        },
-        {
-            key: 'tableQualifiedName',
-            value: tableQualifiedName,
+            key: `${typeName}QualifiedName`,
+            value: qualifiedName,
             type: 'should',
             prop: 'terms',
         },
     ]
+
+    facets.push({
+        key: `${typeName === 'view' ? 'table' : 'view'}QualifiedName`,
+        value: ['def'],
+        type: 'should',
+        prop: 'terms',
+    })
 
     base.sort(name, type)
     base.from(offset)
     base.size(limit)
     base.filterMinimumShouldMatch(1)
     facets.forEach((x) => {
-        const { key, value, type, prop } = x
-        const filterType = type === 'should' ? 'orFilter' : 'filter'
+        const { key, value, type: t, prop } = x
+        const filterType = t === 'should' ? 'orFilter' : 'filter'
         base[filterType](prop, key, value)
     })
 

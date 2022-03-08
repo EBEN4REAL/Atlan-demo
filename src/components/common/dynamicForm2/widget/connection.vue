@@ -31,17 +31,13 @@
                         </div>
                     </div>
                     <div class="flex gap-x-2">
-                        <a-button
+                        <AtlanButton2
                             v-if="!isDrawerVisible"
+                            label="Edit"
+                            color="secondary"
+                            suffixIcon="SidebarSwitch"
                             @click="isDrawerVisible = true"
-                            ><span
-                                ><AtlanIcon
-                                    icon="SidebarSwitch"
-                                    class="mr-1"
-                                ></AtlanIcon
-                                >Edit</span
-                            ></a-button
-                        >
+                        />
                     </div>
                 </div>
                 <div class="flex flex-col gap-y-2">

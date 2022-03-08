@@ -17,19 +17,18 @@
             </div>
         </div>
         <div class="">
-            <AtlanButton
+            <AtlanButton2
                 v-if="
                     tenantSlackStatus.created && !tenantSlackStatus.configured
                 "
                 v-auth="access.DELETE_INTEGRATION"
-                color="minimal"
+                color="secondary"
                 class="text-red-500"
-                :is-loading="isLoading"
-                size="lg"
+                size="large"
+                label="Disconnect"
+                :loading="isLoading"
                 @click="handleDisconnect"
-            >
-                Disconnect
-            </AtlanButton>
+            />
         </div>
         <div class="">
             <div
@@ -40,18 +39,20 @@
                 "
                 @click="() => openSlackOAuth({ tenant: true })"
             >
-                <AtlanButton v-auth="access.CREATE_INTEGRATION">
-                    Add to Slack <AtlanIcon icon="ArrowRight" />
-                </AtlanButton>
+                <AtlanButton2
+                    v-auth="access.CREATE_INTEGRATION"
+                    label="Add to Slack"
+                    suffixIcon="ArrowRight"
+                />
             </div>
-            <AtlanButton
+            <AtlanButton2
                 v-else
                 v-auth="access.CREATE_INTEGRATION"
+                size="large"
+                label="Connect"
+                suffixIcon="ArrowRight"
                 @click="$emit('openConfig')"
-            >
-                Connect
-                <AtlanIcon icon="ArrowRight" />
-            </AtlanButton>
+            />
         </div>
     </section>
 </template>

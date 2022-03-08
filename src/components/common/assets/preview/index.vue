@@ -98,7 +98,7 @@
                             class="flex items-center justify-center p-2"
                             @click="handleAction('open')"
                         >
-                            <AtlanIcon icon="Enter" class="w-auto h-4" />
+                            <AtlanIcon icon="EnterProfile" class="w-auto h-4" />
                         </a-button>
                     </a-tooltip>
 

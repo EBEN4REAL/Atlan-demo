@@ -23,7 +23,7 @@
     import ErrorView from '@/common/error/index.vue'
     import { integrations } from '~/constant/integrations/integrations'
     import useIntegrations from '~/composables/integrations/useIntegrations'
-    import slack from '@/admin/integrations/slack/index.vue'
+    import slack from '@/admin/integrations/slack/slackIntegrationCard.vue'
     import Jira from '@/admin/integrations/jira/jira.vue'
 
     export default defineComponent({

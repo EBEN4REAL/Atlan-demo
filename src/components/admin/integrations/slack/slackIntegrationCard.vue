@@ -1,159 +1,70 @@
 <template>
+    <a-modal
+        :visible="showSlackConfigModal"
+        :destroy-on-close="true"
+        :footer="null"
+        :closable="false"
+        :width="692"
+        :class="$style.inviteModal"
+        @cancel="showSlackConfigModal = false"
+        @afterClose="showSlackConfigModal = false"
+    >
+        <SlackConfigModal @close="showSlackConfigModal = false" />
+    </a-modal>
+
     <div class="overflow-hidden border border-gray-300 rounded-lg customShadow">
         <a-menu v-model:openKeys="openKeys" mode="inline" :class="$style.menu">
             <a-sub-menu key="slack">
                 <template #expandIcon> <AtlanIcon icon="CaretDown" /></template>
                 <template #title>
-                    <section
-                        class="flex items-center h-20 p-6 bg-gray-100 rounded-t-lg gap-x-3"
-                    >
-                        <div class="flex-grow">
-                            <div class="flex items-center gap-x-3">
-                                <div
-                                    class="flex items-center justify-center w-12 h-12 bg-gray-200 rounded-full"
-                                >
-                                    <AtlanIcon icon="Slack" class="h-8" />
-                                </div>
-                                <div class="">
-                                    <h2 class="text-lg font-bold">Slack</h2>
-                                    <span class="text-gray-500">{{
-                                        description
-                                    }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div
-                            class="px-3 py-1.5 space-y-2 text-primary bg-primary-light rounded"
-                        >
-                            <div
-                                class="flex items-center justify-center text-sm rounded gap-x-1"
-                            >
-                                <AtlanIcon icon="Check" />
-                                {{ tenantSlackStatus.teamName }} workspace
-                                connected
-                            </div>
-                            <!-- <div
-                                class="flex items-center text-xs text-gray-500 gap-x-1.5 justify-center"
-                            >
-                                <template v-if="userList[0]">
-                                    Added by
-                                    <div class="flex justify-center text-xs">
-                                        <div class="self-center text-gray-700">
-                                            {{ userList[0]?.name }}
-                                        </div>
-                                    </div>
-                                </template>
-                                <span>{{
-                                    useTimeAgo(tenantSlackStatus.createdAt)
-                                        .value
-                                }}</span>
-                            </div> -->
-                        </div>
-                        <div class="">
-                            <AtlanIcon
-                                icon="CaretDown"
-                                class="transition duration-100"
-                                :style="
-                                    openKeys.includes('slack')
-                                        ? 'transform: rotate(180deg)'
-                                        : ''
-                                "
-                            />
-                        </div>
-                    </section>
+                    <SlackHeader
+                        :is-open="openKeys.includes('slack')"
+                        @openConfig="showSlackConfigModal = true"
+                    />
                 </template>
-                <div class="">
-                    <MinimalTab
-                        v-model:active="activeTabKey"
-                        :data="tabConfig"
-                        class=""
-                    >
-                        <template #label="t">
-                            {{ t?.data?.label }}
-                        </template>
-                    </MinimalTab>
-                    <template v-if="activeTabKey === 'configuration'">
-                        <SlackUpdateConfiguration />
-                    </template>
-                </div>
+                <UpdateSlackConfig v-if="tenantSlackStatus.configured" />
+                <template v-else>
+                    <OverviewBanner
+                        class="flex flex-col p-4 rounded-lg gap-y-3"
+                    />
+                </template>
             </a-sub-menu>
         </a-menu>
     </div>
 </template>
 
-<script lang="ts">
-    import { defineComponent, onMounted, reactive, ref, toRefs } from 'vue'
-    import { useTimeAgo } from '@vueuse/core'
-    import useTenantData from '~/composables/tenant/useTenantData'
+<script setup lang="ts">
+    import { ref, toRefs, watch } from 'vue'
     import integrationStore from '~/store/integrations/index'
-    import access from '~/constant/accessControl/map'
-    import { integrations } from '~/constant/integrations/integrations'
-    import { useUsers } from '~/composables/user/useUsers'
-    import MinimalTab from '@/UI/minimalTab.vue'
-    import SlackUpdateConfiguration from '@/admin/integrations/slack/updateConfig.vue'
+    import UpdateSlackConfig from './updateSlackConfig.vue'
+    import SlackConfigModal from './slackConfigModal.vue'
+    import SlackHeader from '@/admin/integrations/slack/slackHeader.vue'
+    import OverviewBanner from '@/admin/integrations/slack/misc/overviewBannerCard.vue'
 
-    export default defineComponent({
-        name: 'SlackIntegrationCard',
-        components: {
-            MinimalTab,
-            SlackUpdateConfiguration,
-        },
-        setup() {
-            const { name: tenantName } = useTenantData()
-            const store = integrationStore()
-            const { tenantSlackStatus } = toRefs(store)
-            const activeTabKey = ref()
-            const openKeys = ref([])
-            const tabConfig = [
-                { key: 'configuration', label: 'Configurations' },
-            ]
-            const { description } = integrations.slack
-            const userListAPIParams: any = reactive({
-                limit: 1,
-                offset: 0,
-                sort: 'firstName',
-                filter: {
-                    $and: [
-                        {
-                            emailVerified: true,
-                        },
-                        {
-                            username: tenantSlackStatus.value.createdBy,
-                        },
-                    ],
-                },
-            })
+    const openKeys = ref(['slack'])
 
-            const {
-                userList,
-                isLoading: uLoading,
-                error: uError,
-            } = useUsers(userListAPIParams, true)
+    const showSlackConfigModal = ref(false)
+    // store
+    const store = integrationStore()
 
-            onMounted(() => {
-                activeTabKey.value = 'configuration'
-            })
-
-            return {
-                openKeys,
-                tabConfig,
-                activeTabKey,
-                useTimeAgo,
-                userList,
-                uLoading,
-                uError,
-                description,
-                tenantSlackStatus,
-                tenantName,
-                access,
-            }
-        },
-    })
+    const { tenantSlackStatus } = toRefs(store)
+    watch(
+        () => tenantSlackStatus.value.configured,
+        (v) => {
+            if (
+                showSlackConfigModal.value &&
+                tenantSlackStatus.value.configured
+            )
+                showSlackConfigModal.value = false
+        }
+    )
 </script>
 
-<style scoped>
-    .customShadow:hover {
-        box-shadow: 0px 8px 24px rgba(25, 32, 56, 0.04);
+<style lang="less" module>
+    .inviteModal {
+        :global(.ant-modal-content) {
+            @apply rounded-lg;
+        }
     }
 </style>
 

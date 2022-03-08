@@ -1,6 +1,7 @@
 <template>
     <section
-        class="flex items-center h-20 p-6 bg-gray-100 rounded-t-lg gap-x-3"
+        class="flex items-center h-20 p-6 rounded-t-lg gap-x-3"
+        :class="isOpen ? 'bg-gray-100' : ''"
     >
         <div class="flex-grow">
             <div class="flex items-center gap-x-3">
@@ -41,7 +42,12 @@
             <div
                 class="flex items-center justify-center text-sm rounded gap-x-1"
             >
-                <AtlanIcon icon="Check" />
+                <img
+                    v-if="tenantJiraStatus.avatar"
+                    :src="tenantJiraStatus.avatar"
+                    class="w-4 h-4 rounded-full"
+                />
+                <AtlanIcon v-else icon="Check" />
                 {{ tenantJiraStatus.orgName }} workspace connected
             </div>
         </div>
@@ -67,7 +73,6 @@
         isOpen: { type: Boolean, required: true },
     })
 
-    const { name: tenantName } = useTenantData()
     const store = integrationStore()
     const { tenantJiraStatus } = toRefs(store)
 

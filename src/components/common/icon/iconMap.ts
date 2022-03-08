@@ -5,7 +5,7 @@ import CopyOutlined from '~/assets/images/icons/copy.svg'
 import ChevronDown from '~/assets/images/icons/chevron-down.svg'
 import ChevronLeft from '~/assets/images/icons/chevron-left.svg'
 import ChevronUp from '~/assets/images/icons/chevron-up.svg'
-import Reload from '~/assets/images/icons/reload.svg'
+import Retry from '~/assets/images/icons/retry.svg'
 import NoAccess from '~/assets/images/icons/no-access.svg'
 import ForeignKey from '~/assets/images/icons/foreign.svg'
 import partitionKey from '~/assets/images/icons/partitionKey.svg'
@@ -188,8 +188,6 @@ import Schedule from '~/assets/images/icons/schedule.svg'
 import Minimap from '~/assets/images/icons/minimap.svg'
 import FullScreenBoth from '~/assets/images/icons/fullscreen-both.svg'
 import Minus from '~/assets/images/icons/minus.svg'
-import Retry from '~/assets/images/icons/retry2.svg'
-import Retry2 from '~/assets/images/icons/retry.svg'
 import Recenter from '~/assets/images/icons/recenter.svg'
 import Refocus from '~/assets/images/icons/refocus.svg'
 import AssetsInactiveLight from '~/assets/images/icons/assets-inactive-light.svg'
@@ -287,6 +285,7 @@ import Geography from '~/assets/images/dataType/geography.svg'
 
 import NoAvatar from '~/assets/images/icons/no-avatar.svg'
 import Enter from '~/assets/images/icons/enter.svg'
+import EnterProfile from '~/assets/images/icons/enter_profile.svg'
 import Times from '~/assets/images/icons/times.svg'
 import NoLinkedAssets from '~/assets/images/icons/no-linked-assets.svg'
 import NoRequestFound from '~/assets/images/icons/no-request-found.svg'
@@ -328,6 +327,7 @@ import BigQuery from '~/assets/images/source/svg/Bigquery.svg'
 import Looker from '~/assets/images/source/svg/Looker.svg'
 import Salesforce from '~/assets/images/source/svg/Salesforce.svg'
 import MySQL from '~/assets/images/source/svg/MySQL.svg'
+import Glue from '~/assets/images/source/svg/glue.svg'
 
 import Schema2Active from '~/assets/images/icons/schema2Active.svg'
 import QueriesActive from '~/assets/images/icons/queriesActive.svg'
@@ -393,7 +393,6 @@ import OuterJoinInfo from '~/assets/images/illustrations/OuterJoinInfo.svg'
 
 import LockedFile from '~/assets/images/illustrations/lockedFile.svg'
 import Quotes2 from '~/assets/images/icons/Quotes.svg'
-import Reload2 from '~/assets/images/icons/Reload2.svg'
 import OpenPreview from '~/assets/images/icons/open-preview.svg'
 import Message from '~/assets/images/icons/message.svg'
 import MessageSuccess from '~/assets/images/icons/MessageSuccess.svg'
@@ -545,7 +544,7 @@ export default {
     NoAccess,
     Cancel,
     Filter,
-    Reload,
+    Retry,
     FilterDot,
     ArrowRight,
     ArrowUpDown,
@@ -650,8 +649,6 @@ export default {
     Minimap,
     FullScreenBoth,
     Minus,
-    Retry,
-    Retry2,
     Recenter,
     Refocus,
     AssetsInactiveLight,
@@ -718,6 +715,7 @@ export default {
     Number,
     NoAvatar,
     Enter,
+    EnterProfile,
     NoRequestFound,
     NoLinkedAssets,
     FormatText,
@@ -802,7 +800,6 @@ export default {
     LockedFile,
     Databricks,
     Quotes2,
-    Reload2,
     OpenPreview,
     Message,
     MessageSuccess,
@@ -832,4 +829,5 @@ export default {
     MySQL,
     Mysql: MySQL,
     NoAllow,
+    Glue
 }

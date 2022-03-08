@@ -3,9 +3,8 @@ export default function useGetNodes(graph, guid) {
     const successors = []
     const getCell = (id) => graph.value.getCellById(id)
     const baseCell = getCell(guid)
-    const graphNodes = graph.value.getNodes()
 
-    graphNodes.forEach((x) => {
+    graph.value.getNodes().forEach((x) => {
         const cell = getCell(x.id)
         if (cell && baseCell) {
             const isPredecessor = graph.value.isPredecessor(baseCell, cell)

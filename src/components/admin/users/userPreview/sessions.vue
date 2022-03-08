@@ -16,7 +16,7 @@
                             }
                         "
                     >
-                        <AtlanIcon icon="Reload" class="mr-2" />
+                        <AtlanIcon icon="Retry" class="mr-2" />
                         Try again
                     </a-button>
                 </div>

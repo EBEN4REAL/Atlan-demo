@@ -37,18 +37,14 @@
                     <span>{{ status }}</span>
                 </div>
             </div>
-            <a-button
+
+            <AtlanButton2
                 v-if="!isEmptyLogs"
-                :disabled="isLoading"
-                size="small"
-                type="link"
+                color="link"
+                suffixIcon="ArrowDown"
+                :label="isDownloading ? 'Downloading...' : 'Download logs'"
                 @click="downloadFile"
-                >{{ isDownloading ? 'Downloading...' : 'Download logs' }}
-                <AtlanIcon
-                    v-if="!isDownloading"
-                    icon="ArrowDown"
-                    class="inline ml-2"
-            /></a-button>
+            />
         </div>
         <div class="h-full px-4 clusterize">
             <!-- <div class="flex justify-between p-4 mb-4 border">

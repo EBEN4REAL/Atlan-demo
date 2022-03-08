@@ -15,7 +15,7 @@
             </span>
 
             <AtlanIcon
-                icon="Reload"
+                icon="Retry"
                 class="w-auto h-3 cursor-pointer text-primary"
                 @click="refreshAudits"
             />

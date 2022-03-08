@@ -1,135 +1,129 @@
 <template>
-    <div class="flex items-center w-full px-6 pt-3">
-        <a-button class="px-1 mr-2" @click="handleBack">
-            <atlan-icon
-                icon="ArrowRight"
-                class="w-auto h-4 text-gray-500 transform rotate-180"
-            />
-        </a-button>
+    <div class="flex items-center w-full px-6 pt-3 gap-x-3">
+        <IconButton
+            icon="CaretLeft"
+            class="text-gray-500"
+            @click="handleBack"
+        />
 
-        <div class="flex items-center justify-between w-full ml-1">
-            <div class="flex flex-col">
-                <div class="flex items-center" style="padding-bottom: 1px">
-                    <div class="flex items-center justify-between">
+        <div class="flex flex-col">
+            <div class="flex items-center" style="padding-bottom: 1px">
+                <div class="flex items-center justify-between">
+                    <div
+                        class="flex items-center flex-grow border-gray-200"
+                        v-if="packageObject?.metadata?.annotations"
+                    >
                         <div
-                            class="flex items-center flex-grow border-gray-200"
-                            v-if="packageObject?.metadata?.annotations"
+                            class="relative w-10 h-10 p-2 mr-2 bg-white border border-gray-200 rounded-full"
                         >
-                            <div
-                                class="relative w-10 h-10 p-2 mr-2 bg-white border border-gray-200 rounded-full"
+                            <img
+                                v-if="
+                                    packageObject?.metadata?.annotations[
+                                        'orchestration.atlan.com/icon'
+                                    ]
+                                "
+                                class="self-center w-6 h-6"
+                                :src="
+                                    packageObject?.metadata?.annotations[
+                                        'orchestration.atlan.com/icon'
+                                    ]
+                                "
+                            />
+                            <span
+                                v-else-if="
+                                    packageObject?.metadata?.annotations[
+                                        'orchestration.atlan.com/emoji'
+                                    ]
+                                "
+                                class="self-center w-6 h-6"
                             >
-                                <img
-                                    v-if="
-                                        packageObject?.metadata?.annotations[
-                                            'orchestration.atlan.com/icon'
-                                        ]
-                                    "
-                                    class="self-center w-6 h-6"
-                                    :src="
-                                        packageObject?.metadata?.annotations[
-                                            'orchestration.atlan.com/icon'
-                                        ]
-                                    "
-                                />
-                                <span
-                                    v-else-if="
-                                        packageObject?.metadata?.annotations[
-                                            'orchestration.atlan.com/emoji'
-                                        ]
-                                    "
-                                    class="self-center w-6 h-6"
-                                >
-                                    {{
-                                        packageObject?.metadata?.annotations[
-                                            'orchestration.atlan.com/emoji'
-                                        ]
-                                    }}</span
-                                >
-                                <span v-else class="self-center w-6 h-6">
-                                    {{ '\ud83d\udce6' }}</span
-                                >
+                                {{
+                                    packageObject?.metadata?.annotations[
+                                        'orchestration.atlan.com/emoji'
+                                    ]
+                                }}</span
+                            >
+                            <span v-else class="self-center w-6 h-6">
+                                {{ '\ud83d\udce6' }}</span
+                            >
 
-                                <div
-                                    v-if="
-                                        packageObject?.metadata?.labels[
-                                            'orchestration.atlan.com/certified'
-                                        ] === 'true'
-                                    "
-                                    class="absolute -right-1 -top-2"
-                                >
-                                    <a-tooltip
-                                        title="Certified"
-                                        placement="left"
-                                    >
-                                        <AtlanIcon
-                                            icon="Verified"
-                                            class="ml-1"
-                                        ></AtlanIcon>
-                                    </a-tooltip>
-                                </div>
+                            <div
+                                v-if="
+                                    packageObject?.metadata?.labels[
+                                        'orchestration.atlan.com/certified'
+                                    ] === 'true'
+                                "
+                                class="absolute -right-1 -top-2"
+                            >
+                                <a-tooltip title="Certified" placement="left">
+                                    <AtlanIcon
+                                        icon="Verified"
+                                        class="ml-1"
+                                    ></AtlanIcon>
+                                </a-tooltip>
                             </div>
-                            <div class="flex flex-col">
-                                <div
-                                    class="flex font-semibold leading-none truncate workflowObjects-center overflow-ellipsis"
-                                >
-                                    {{ name(workflowObject) }}
+                        </div>
+                        <div class="flex flex-col">
+                            <div
+                                class="flex font-semibold leading-none truncate workflowObjects-center overflow-ellipsis"
+                            >
+                                {{ name(workflowObject) }}
 
+                                <span
+                                    v-if="
+                                        displayName(
+                                            packageObject,
+                                            name(workflowObject)
+                                        )
+                                    "
+                                    class="text-gray-500"
+                                    >({{
+                                        displayName(
+                                            packageObject,
+                                            name(workflowObject)
+                                        )
+                                    }})</span
+                                >
+                            </div>
+
+                            <div class="flex mt-1 text-gray-500 gap-x-2">
+                                <div class="text-gray-500">
                                     <span
-                                        v-if="
-                                            displayName(
-                                                packageObject,
-                                                name(workflowObject)
+                                        >created
+                                        {{
+                                            creationTimestamp(
+                                                workflowObject,
+                                                true
                                             )
-                                        "
-                                        class="text-gray-500"
-                                        >({{
-                                            displayName(
-                                                packageObject,
-                                                name(workflowObject)
-                                            )
-                                        }})</span
+                                        }}
+                                        ago by
+                                        {{
+                                            creatorUsername(workflowObject)
+                                        }}</span
                                     >
                                 </div>
-
-                                <div class="flex mt-1 text-gray-500 gap-x-2">
-                                    <div class="text-gray-500">
-                                        <span
-                                            >created
-                                            {{
-                                                creationTimestamp(
-                                                    workflowObject,
-                                                    true
-                                                )
-                                            }}
-                                            ago by
-                                            {{
-                                                creatorUsername(workflowObject)
-                                            }}</span
-                                        >
-                                    </div>
-                                    <div
-                                        class="flex items-center text-gray-500"
-                                        v-if="cronString(workflowObject)"
+                                <div
+                                    class="flex items-center text-gray-500"
+                                    v-if="cronString(workflowObject)"
+                                >
+                                    <span>Scheduled</span>
+                                    <span
+                                        class="ml-1 text-gray-500 cursor-pointer"
+                                        style="
+                                            text-decoration: underline;
+                                            text-decoration-style: dashed;
+                                        "
+                                        @click="toggleSchedule"
                                     >
-                                        <span>Scheduled</span>
-                                        <span
-                                            class="ml-1 text-gray-500 cursor-pointer"
-                                            style="
-                                                text-decoration: underline;
-                                                text-decoration-style: dashed;
-                                            "
-                                            @click="toggleSchedule"
+                                        <a-tooltip
+                                            :title="nextRunsText"
+                                            placement="bottom"
                                         >
-                                            <a-tooltip
-                                                :title="nextRunsText"
-                                                placement="bottom"
-                                            >
-                                                {{
-                                                    cronString(workflowObject)
-                                                }}</a-tooltip
-                                            ></span
-                                        >
-                                    </div>
+                                            {{
+                                                cronString(workflowObject)
+                                            }}</a-tooltip
+                                        ></span
+                                    >
                                 </div>
                             </div>
                         </div>
@@ -138,17 +132,19 @@
             </div>
         </div>
 
-        <div class="flex gap-x-1">
-            <a-button class="text-primary" @click="handleRunNow"
-                >Run Now</a-button
-            >
+        <div class="flex ml-auto gap-x-1">
+            <AtlanButton2
+                label="Run Now"
+                color="secondary"
+                @click="handleRunNow"
+            />
 
-            <a-button
-                class="text-primary"
-                @click="toggleSchedule"
+            <AtlanButton2
                 v-if="allowSchedule(workflowObject)"
-                >{{ scheduleCTAMessage }}</a-button
-            >
+                :label="scheduleCTAMessage"
+                color="secondary"
+                @click="toggleSchedule"
+            />
 
             <a-modal
                 v-model:visible="scheduleVisible"
@@ -170,15 +166,10 @@
     import { computed, defineComponent, ref, toRefs, watch } from 'vue'
 
     import { useRouter } from 'vue-router'
+    import { Modal, message } from 'ant-design-vue'
+    import { watchOnce } from '@vueuse/core'
     import useWorkflowSubmit from '~/composables/package/useWorkflowSubmit'
     import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
-    import { Modal, message } from 'ant-design-vue'
-    import {
-        promiseTimeout,
-        useTimeout,
-        useTimeoutFn,
-        watchOnce,
-    } from '@vueuse/core'
 
     import Schedule from '@/common/input/schedule.vue'
     import useWorkflowUpdate from '~/composables/package/useWorkflowUpdate'
@@ -323,8 +314,6 @@
             }
 
             return {
-                packageObject,
-                workflowObject,
                 handleBack,
                 name,
                 creationTimestamp,

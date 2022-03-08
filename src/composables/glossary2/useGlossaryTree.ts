@@ -427,15 +427,7 @@ const useGlossaryTree = ({
 
     const glossaryStore = useGlossaryStore()
 
-    const glossaryList = computed(() =>
-        glossaryStore.list.sort((a, b) =>
-            a.attributes.name > b.attributes.name
-                ? 1
-                : b.attributes.name > a.attributes.name
-                ? -1
-                : 0
-        )
-    )
+    const glossaryList = computed(() => glossaryStore.list)
 
     const initTreeData = async (defaultGlossaryQf) => {
         let glossaryFound = null
@@ -559,26 +551,46 @@ const useGlossaryTree = ({
                             updateChildrenOnDelete
                         ) {
                             if (element?.children?.length) {
-                                element?.children?.forEach((el) => {
-                                    if (el?.typeName !== 'cta') {
+                                const updatedChildren =
+                                    getUpdatedChildrenOnCategoryDelete(
+                                        element?.guid,
+                                        element?.children
+                                    )
+                                console.log(updatedChildren)
+                                if (parentGlossaryQualifiedName?.value !== '') {
+                                    treeData.value.push(...updatedChildren)
+                                } else {
+                                    treeData.value.forEach((i) => {
                                         if (
-                                            parentGlossaryQualifiedName?.value !==
-                                            ''
+                                            i.guid ===
+                                            element?.attributes?.anchor?.guid
                                         ) {
-                                            treeData.value.push(el)
-                                        } else {
-                                            treeData.value.forEach((i) => {
-                                                if (
-                                                    i.guid ===
-                                                    element?.attributes?.anchor
-                                                        ?.guid
-                                                ) {
-                                                    i.children?.push(el)
-                                                }
-                                            })
+                                            i.children?.push(...updatedChildren)
                                         }
-                                    }
-                                })
+                                    })
+                                }
+
+                                // element?.children?.forEach((el) => {
+                                //     if (el?.typeName !== 'cta') {
+                                //         if (
+                                //             parentGlossaryQualifiedName?.value !==
+                                //             ''
+                                //         ) {
+                                //             treeData.value.push(el)
+                                //         } else {
+                                //             treeData.value.forEach((i) => {
+                                //                 if (
+                                //                     i.guid ===
+                                //                     element?.attributes?.anchor
+                                //                         ?.guid
+                                //                 ) {
+                                //                     console.log(el)
+                                //                     i.children?.push(el)
+                                //                 }
+                                //             })
+                                //         }
+                                //     }
+                                // })
                             }
                         }
                         if (
@@ -641,6 +653,26 @@ const useGlossaryTree = ({
 
         treeData.value = updatedTreeData
     }
+
+    const getUpdatedChildrenOnCategoryDelete = (
+        categoryGuid: String,
+        children
+    ) => {
+        const updatedChildren: TreeDataItem[] = []
+        children.forEach((el) => {
+            if (el?.typeName === 'AtlasGlossaryCategory') {
+                if (el?.parentCategory) el.parentCategory = null
+                updatedChildren.push(el)
+            } else if (el?.typeName === 'AtlasGlossaryTerm') {
+                el.attributes.categories = el?.attributes?.categories?.filter(
+                    (i) => i?.guid !== categoryGuid
+                )
+                if (!el?.attributes?.categories?.length)
+                    updatedChildren.push(el)
+            }
+        })
+        return updatedChildren
+    }
     const deleteNode = (asset, guid, updateChildrenOnDelete = true) => {
         if (guid === 'root') {
             const updatedTreeData = []
@@ -651,8 +683,13 @@ const useGlossaryTree = ({
                         updateChildrenOnDelete &&
                         el?.children
                     ) {
-                        console.log(el)
-                        updatedTreeData.push(...el.children)
+                        const updatedChildren =
+                            getUpdatedChildrenOnCategoryDelete(
+                                el?.guid,
+                                el?.children
+                            )
+                        console.log(updatedChildren)
+                        updatedTreeData.push(...updatedChildren)
                     }
                 } else updatedTreeData.push(el)
             })
@@ -680,7 +717,7 @@ const useGlossaryTree = ({
             const found = treeData.value?.find((el) => el?.guid === asset?.guid)
             if (!found) {
                 if (asset.typeName === 'AtlasGlossary') {
-                    treeData.value.unshift({
+                    treeData.value.push({
                         ...asset,
                         id: asset.attributes?.qualifiedName,
                         key: asset.attributes?.qualifiedName,
@@ -688,8 +725,11 @@ const useGlossaryTree = ({
                     })
                 }
 
-                if (asset.typeName === 'AtlasGlossaryTerm') {
-                    treeData.value.unshift({
+                if (
+                    asset.typeName === 'AtlasGlossaryTerm' ||
+                    asset.typeName === 'AtlasGlossaryCategory'
+                ) {
+                    treeData.value.push({
                         ...asset,
                         id: `${getAnchorQualifiedName(asset)}_${
                             asset.attributes?.qualifiedName
@@ -697,20 +737,7 @@ const useGlossaryTree = ({
                         key: `${getAnchorQualifiedName(asset)}_${
                             asset.attributes?.qualifiedName
                         }`,
-                        isLeaf: true,
-                    })
-                }
-
-                if (asset.typeName === 'AtlasGlossaryCategory') {
-                    treeData.value.unshift({
-                        ...asset,
-                        id: `${getAnchorQualifiedName(asset)}_${
-                            asset.attributes?.qualifiedName
-                        }`,
-                        key: `${getAnchorQualifiedName(asset)}_${
-                            asset.attributes?.qualifiedName
-                        }`,
-                        isLeaf: false,
+                        isLeaf: asset.typeName === 'AtlasGlossaryTerm',
                     })
                 }
             }
@@ -1219,7 +1246,7 @@ const useGlossaryTree = ({
                 if (node.children && node.children.length) {
                     const index =
                         node.children.findIndex((child) => {
-                            return child?.attributes?.name === name
+                            return child?.attributes?.name === name && child?.typeName==='AtlasGlossaryCategory'
                         }) ?? 0
                     nameExists = index > -1
                 }
@@ -1249,7 +1276,7 @@ const useGlossaryTree = ({
         } else {
             const index =
                 treeData.value.findIndex(
-                    (child) => child?.attributes.name === name
+                    (child) => child?.attributes.name === name && child?.typeName==='AtlasGlossaryCategory'
                 ) ?? 0
             nameExists = index > -1
         }

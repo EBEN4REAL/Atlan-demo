@@ -2,7 +2,11 @@
     <div v-if="loading" class="flex items-center justify-center w-full h-full">
         <AtlanLoader class="h-8" />
     </div>
-    <div v-else ref="target" class="flex flex-col w-full mb-3 gap-y-2">
+    <div
+        v-else
+        ref="target"
+        class="flex flex-col w-full overflow-hidden gap-y-2"
+    >
         <!-- header starts here -->
         <div
             class="flex items-center justify-between px-5 py-2 border-b border-gray-200 gap-x-4 group bg-gray-50"
@@ -14,8 +18,8 @@
                     :emoji="tab.emoji"
                     height="h-4"
                     class="mr-1"
-                    :displayMode="true"
-                    emojiSize="text-md"
+                    :display-mode="true"
+                    emoji-size="text-md"
                 />
                 <Truncate
                     :tooltip-text="data.label"
@@ -94,20 +98,13 @@
 
         <template v-if="data?.options?.isLocked === 'true'">
             <div
-                class="flex items-center p-2 mx-5 mt-2 text-xs rounded gap-x-2 bg-primary-light text-primary"
+                class="flex items-center p-2 mx-5 my-2 text-xs rounded gap-x-2 bg-primary-light text-primary"
             >
                 <InternalCMBanner />
             </div>
         </template>
 
-        <div
-            class="flex flex-col flex-grow pl-5 pr-5 overflow-auto scrollheight"
-            :style="
-                isProfile || $route?.params?.id
-                    ? 'max-height: calc(100vh - 7rem)'
-                    : 'max-height: calc(100vh - 13rem)'
-            "
-        >
+        <div class="flex flex-col flex-grow pl-5 pr-5 overflow-y-auto">
             <!-- showing non empty starts here -->
             <template v-if="readOnly">
                 <template

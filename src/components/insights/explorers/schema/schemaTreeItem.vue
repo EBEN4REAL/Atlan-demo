@@ -177,7 +177,7 @@
                                         isPartition(item)
                                     "
                                     :isPrimary="isPrimary(item)"
-                                    :isForeign="true"
+                                    :isForeign="isForeign(item)"
                                     :isPartition="isPartition(item)"
                                 />
                                 <span v-else>{{ dataType(item) ?? '-' }}</span>

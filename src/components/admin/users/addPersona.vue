@@ -14,30 +14,19 @@
                     :selected-personas="selectedPersonas"
                 />
             </div>
-            <div class="flex justify-end mr-3">
-                <a-button
-                    type="text"
-                    size="sm"
-                    padding="compact"
+            <div class="flex justify-end mr-3 gap-x-3">
+                <AtlanButton2
+                    label="Cancel"
+                    color="secondary"
                     :disabled="addPersonaLoading"
-                    :is-loading="addPersonaLoading"
                     @click="handleCancel"
-                >
-                    Cancel
-                </a-button>
-                <AtlanButton
-                    :is-loading="addPersonaLoading"
-                    type="primary"
-                    size="sm"
-                    padding="compact"
+                />
+                <AtlanButton2
+                    :loading="addPersonaLoading"
                     :disabled="addPersonaLoading"
+                    :label="addPersonaLoading ? 'Adding' : 'Add'"
                     @click="addPersonas"
-                >
-                    <div class="flex items-center">
-                        <div v-if="!addPersonaLoading">Add</div>
-                        <div v-else>Adding</div>
-                    </div>
-                </AtlanButton>
+                />
             </div>
         </template>
         <div

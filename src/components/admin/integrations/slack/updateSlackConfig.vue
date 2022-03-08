@@ -73,7 +73,7 @@
         </template>
         <Footer
             v-model:unsavedChanges="unsavedChanges"
-            :workflowChannel="workflowChannel"
+            :workflow-channel="workflowChannel"
             :channels="channels"
             @handleFailedChannels="handleFailed"
         />

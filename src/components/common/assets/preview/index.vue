@@ -98,6 +98,7 @@
                                 showCTA('open') &&
                                 !(
                                     isDrawer &&
+                                    route?.params?.id &&
                                     assetType(selectedAsset) === 'Column'
                                 )
                             "
@@ -587,7 +588,7 @@
                 selectedAssetUpdatePermission,
                 showCTA,
                 onClickTabIcon,
-
+                route,
                 // for collection access
                 collectionInfo,
                 hasCollectionReadPermission,

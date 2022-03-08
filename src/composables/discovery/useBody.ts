@@ -300,13 +300,13 @@ export function useBody(
                                 filterObject.ownerGroups
                             )
                         if (filterObject.empty === true) {
-                            q.orFilter('bool', (query) => {
-                                return query.filter('bool', (query2) => {
+                            q.orFilter('bool', (query) =>
+                                query.filter('bool', (query2) => {
                                     query2.notFilter('exists', 'ownerUsers')
                                     query2.notFilter('exists', 'ownerGroups')
                                     return query2
                                 })
-                            })
+                            )
                         }
                         return q
                     })

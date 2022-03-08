@@ -131,7 +131,7 @@
                     <a-tooltip v-if="type === 'glossaryPolicy'" placement="top">
                         <template #title>
                             <div>
-                                {{ policy.glossaryQualifiedNames.length }}
+                                {{ policy?.glossaryQualifiedNames.length }}
                                 {{
                                     policy.glossaryQualifiedNames.length > 1
                                         ? 'glossaries'
@@ -140,12 +140,9 @@
                             </div>
                         </template>
                         <div class="flex items-center w-10">
-                            <AtlanIcon
-                                icon="AssetsInactiveLight"
-                                class="-mt-1"
-                            />
+                            <AtlanIcon icon="GlossaryGray" class="-mt-1" />
                             <div class="ml-1 font-semibold text-gray-500">
-                                {{ policy.glossaryQualifiedNames.length }}
+                                {{ policy?.glossaryQualifiedNames.length }}
                             </div>
                         </div>
                     </a-tooltip>
@@ -247,11 +244,9 @@
                             v-if="!policy.allow"
                             class="text-sm text-red-500"
                             >{{
-                                type === 'glossaryPolicy'
-                                    ? 'Denied Glossary'
-                                    : type === 'meta'
-                                    ? 'Denied Permission'
-                                    : 'Denied Query'
+                                type === 'data'
+                                    ? 'Denied Query'
+                                    : 'Denied Permission'
                             }}</span
                         >
                     </div>
@@ -350,6 +345,7 @@
     import {
         DataPolicies,
         MetadataPolicies,
+        glossaryQualifiedNames,
     } from '~/types/accessPolicies/personas'
     import { useConnectionStore } from '~/store/connection'
     import { useUtils } from '../assets/useUtils'
@@ -365,11 +361,13 @@
         },
         props: {
             policy: {
-                type: Object as PropType<DataPolicies & MetadataPolicies>,
+                type: Object as PropType<
+                    DataPolicies & MetadataPolicies & glossaryQualifiedNames
+                >,
                 required: true,
             },
             type: {
-                type: String as PropType<'meta' | 'data'>,
+                type: String as PropType<'meta' | 'data' | 'glossaryPolicy'>,
                 required: true,
             },
             selectedPolicy: {

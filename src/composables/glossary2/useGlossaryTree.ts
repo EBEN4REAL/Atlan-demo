@@ -1,5 +1,5 @@
 // TODO: make helper function to give node attributes and add cta nodes - it's causing redundancy
-import { inject, watch, ref, Ref, onMounted, computed, provide } from 'vue'
+import { inject, watch, ref, Ref, onMounted, computed, provide, h } from 'vue'
 import { whenever } from '@vueuse/core'
 import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 import { useRouter, useRoute } from 'vue-router'
@@ -30,6 +30,9 @@ import {
 import { useBody } from '../discovery/useBody'
 import useIndexSearch from '../discovery/useIndexSearch'
 import { assetInterface } from '~/types/assets/asset.interface'
+
+//components
+import DnDConfirmationModalContent from '@/glossary/modal/dndConfirmationModalContent.vue'
 
 interface UseTreeParams {
     emit?: any
@@ -150,8 +153,8 @@ const useGlossaryTree = ({
                         parent: {
                             displayText: treeNode?.attributes?.name,
                             guid: treeNode?.guid,
-                            qualifiedName: treeNode?.qualifiedName,
-                            typeName: treeNode?.attributes?.typeName,
+                            qualifiedName: treeNode?.attributes?.qualifiedName,
+                            typeName: treeNode?.typeName,
                         },
                     }))
                     if (data.value && map) {
@@ -267,7 +270,9 @@ const useGlossaryTree = ({
                             parent: {
                                 displayText: treeNode?.attributes?.name,
                                 guid: treeNode?.guid,
-                                qualifiedName: treeNode?.qualifiedName,
+                                qualifiedName:
+                                    treeNode?.attributes?.qualifiedName,
+                                typeName: treeNode?.typeName,
                             },
                         }))
                         if (map) {
@@ -556,7 +561,8 @@ const useGlossaryTree = ({
                             parent: {
                                 displayText: node?.attributes?.name,
                                 guid: node?.guid,
-                                qualifiedName: node?.qualifiedName,
+                                qualifiedName: node?.attributes?.qualifiedName,
+                                typeName: node?.typeName,
                             },
                         })
                     if (loadMoreNode) {
@@ -1002,32 +1008,86 @@ const useGlossaryTree = ({
         let modalText = `Moving ${dragNode?.displayText} from ${node?.displayText}`
         const assetToDrop = { ...dragNode.dataRef }
         const assetToDropInto = { ...node.dataRef }
+        let dragNodeName, dragNodeType, parentType, parentName
+        dragNodeName = dragNode?.displayText
+        dragNodeType = dragNode?.typeName
         if (node?.typeName !== 'AtlasGlossaryTerm') {
             modalText = `Moving ${dragNode?.displayText} into ${assetToDropInto?.displayText}`
+            parentName = assetToDropInto?.displayText
+            parentType = assetToDropInto?.typeName
         } else if (assetToDropInto?.parent?.displayText) {
             modalText = `Moving ${dragNode?.displayText} into ${assetToDropInto?.parent?.displayText}`
+            parentName = assetToDropInto?.parent?.displayText
+            parentType = assetToDropInto?.parent?.typeName
         } else if (!assetToDropInto?.parent) {
             modalText = `Moving ${dragNode?.displayText} into ${assetToDropInto?.attributes?.anchor?.attributes?.name}`
+            parentName = assetToDropInto?.attributes?.anchor?.attributes?.name
+            parentType = 'AtlasGlossary'
         }
         Modal.confirm({
-            title: `${modalText}`,
+            title: `Confirm changes`,
             okText: 'Confirm',
             okType: 'primary',
+            cancelButtonProps: { type: 'default' },
             maskClosable: true,
             keyboard: true,
             cancelText: 'Cancel',
+            autoFocusButton: 'ok',
+            icon: null,
+            content: h(DnDConfirmationModalContent, {
+                dragNodeName,
+                dragNodeType,
+                parentName,
+                parentType,
+            }),
             onOk() {
                 console.log('OK')
                 confirmDragAndDrop({ event, node, dragNode, dragNodesKeys })
             },
             onCancel() {
                 console.log('Cancel d&d')
+                console.log(assetToDropInto)
             },
         })
     }
 
     const dragAndDropNode = ({ event, node, dragNode, dragNodesKeys }) => {
         console.log(node, dragNode, event)
+        let nodeParentGlossaryGuid
+        if (node?.typeName === 'AtlasGlossary')
+            nodeParentGlossaryGuid = node?.guid
+        else nodeParentGlossaryGuid = node?.attributes?.anchor?.guid
+        if (
+            nodeParentGlossaryGuid !==
+            dragNode?.dataRef?.attributes?.anchor?.guid
+        ) {
+            message.error(`Cannot change parent Glossary`)
+            return
+        }
+
+        if (dragNode?.typeName === 'AtlasGlossary') {
+            message.error(
+                `Cannot reorder a Glossary. Try reordering a term/category instead.`,
+                2
+            )
+            return
+        } else if (node?.typeName === 'AtlasGlossaryTerm') {
+            const assetToDropParentQf = dragNode?.key?.split('_')[0]
+            const nodeParentQf = node?.key?.split('_')[0]
+
+            if (assetToDropParentQf === nodeParentQf) {
+                message.error(
+                    `${
+                        dragNode?.typeName === 'AtlasGlossaryTerm'
+                            ? 'Term'
+                            : 'Category'
+                    } already a part of this category`,
+                    2
+                )
+                return
+            }
+        }
+
         // show confirmation modal for d&d
         handleDragAndDropModal({ event, node, dragNode, dragNodesKeys })
     }

@@ -1027,8 +1027,8 @@ const useGlossaryTree = ({
         Modal.confirm({
             title: `Confirm changes`,
             okText: 'Confirm',
-            okType: 'primary',
             cancelButtonProps: { type: 'default' },
+            okButtonProps: { type: 'primary', class:'bg-primary' },
             maskClosable: true,
             keyboard: true,
             cancelText: 'Cancel',

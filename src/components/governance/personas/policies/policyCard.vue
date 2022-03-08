@@ -456,11 +456,12 @@
             const handleClickPlicyCard = () => {
                 emit('clickCard', { ...policy.value }, type.value)
             }
-            const canDelete = computed(() =>
-                props.whitelistedConnectionIds.includes(
+            const canDelete = computed(() => {
+                if (type.value === 'glossaryPolicy') return true
+                return props.whitelistedConnectionIds.includes(
                     policy?.value?.connectionId
                 )
-            )
+            })
             const maskComputed = computed(
                 () =>
                     maskPersona.find((el) => el.value === policy.value.type)

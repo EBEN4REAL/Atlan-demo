@@ -191,7 +191,7 @@
             })
 
             const { isLoading, execute, error, data, workflow } =
-                createWorkflow(body)
+                createWorkflow(body, { submit: false })
 
             const {
                 usersListConcatenated: userList,
@@ -414,6 +414,15 @@
                     }
                 }
             )
+            // watch(activeTabIndex, (newActiveIndex) => {
+            //     if (newActiveIndex === 0) {
+            //         variablesData.value = JSON.parse(
+            //             window.atob(
+            //                 item.value.attributes?.variablesSchemaBase64
+            //             ) ?? '[]'
+            //         )
+            //     }
+            // })
 
             return {
                 rules,

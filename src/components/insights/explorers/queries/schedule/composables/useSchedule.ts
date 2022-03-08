@@ -118,7 +118,7 @@ export function useSchedule() {
         status.value = 'loading'
         errorMesssage.value = ''
         if (execute) {
-            execute(true)
+            execute(false)
         }
 
         // edit part will come here src/components/packages/setup/index.vue

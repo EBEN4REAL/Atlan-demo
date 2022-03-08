@@ -45,6 +45,7 @@
                 <Name
                     ref="nameRef"
                     v-model="localName"
+                    :selected-asset="selectedAsset"
                     class="mx-4"
                     :edit-permission="editPermission"
                     @change="handleChangeName"

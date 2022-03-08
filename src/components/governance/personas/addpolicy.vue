@@ -860,7 +860,7 @@
                         'entity-update',
                         'entity-create',
                         'entity-delete',
-                        'link-assets',
+                        // 'link-assets',
                         'entity-update-business-metadata',
                         'entity-update-classification',
                         'add-terms',

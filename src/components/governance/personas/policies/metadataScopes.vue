@@ -1,5 +1,5 @@
 <template>
-    <div class="mx-3 border rounded-lg meta-data-scope-container">
+    <div class="mx-6 border rounded-lg meta-data-scope-container">
         <div v-for="(scope, idx) in scopeList" :key="scope.type">
             <div>
                 <div class="flex px-4 py-3 bg-gray-100">
@@ -21,27 +21,40 @@
                         {{ scope.type }}
                     </a-checkbox>
                 </div>
-                <div class="p-3 bg-white">
+                <div class="p-2 bg-white">
                     <a-checkbox-group
                         :value="groupedActions[idx].scopes"
                         :name="scope.type"
                         :class="['capitalize', $style.checkbox_custom]"
-                        class="flex flex-wrap wrapper-checkbox"
+                        class="w-full"
                         @update:value="updateSelection(scope.type, $event)"
                     >
                         <div
                             v-for="(check, i) in scope.scopes"
                             :key="i"
-                            class="p-1 px-2 hover:bg-primary-light"
+                            class="w-full p-1 px-2 hover:bg-primary-light"
+                            :class="{ ' mt-4': i !== 0 }"
                         >
-                            <a-popover placement="bottom">
-                                <!-- <template #content>
-                                    <div class="p-2 content-popover-permission">
-                                        <span class="text-xs text-gray-600">
+                            <a-popover
+                                v-if="
+                                    check.value === 'link-assets' && !hasLink
+                                        ? false
+                                        : true
+                                "
+                                placement="left"
+                            >
+                                <template #content>
+                                    <div class="w-64 p-2 bg-gray-700 rounded">
+                                        <img
+                                            v-if="check.gif"
+                                            :src="check.gif"
+                                            class="mb-2 rounded"
+                                        />
+                                        <span class="text-sm text-white">
                                             {{ check.desc }}
                                         </span>
                                     </div>
-                                </template> -->
+                                </template>
                                 <a-checkbox
                                     :value="check.value"
                                     class="text-sm text-gray-700"
@@ -128,6 +141,9 @@
                     )
                 else updateSelection(scopeList[idx].type, [])
             }
+            const hasLink = computed(() =>
+                actions.value?.includes('link-assets')
+            )
 
             return {
                 collapseRef,
@@ -136,6 +152,7 @@
                 updateSelection,
                 toggleCheckAll,
                 defaultExpandedState,
+                hasLink,
             }
         },
     })

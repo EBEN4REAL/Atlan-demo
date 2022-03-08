@@ -153,7 +153,7 @@
                     >
                     <a-tooltip v-if="permissions.length" placement="top">
                         <template #title>
-                            <div v-if="permissions.length !== 9">
+                            <div v-if="permissions.length < 8">
                                 {{ permissions.length }}
                                 {{
                                     permissions.length > 1
@@ -161,9 +161,7 @@
                                         : 'permission'
                                 }}
                             </div>
-                            <div v-if="permissions.length === 9">
-                                All permissions
-                            </div>
+                            <div v-else>All permissions</div>
                         </template>
                         <div class="font-semibold text-gray-500">
                             <AtlanIcon
@@ -171,7 +169,7 @@
                                 class="-mt-1 icon-gray"
                             />
                             {{
-                                permissions.length === 9
+                                permissions.length >= 8
                                     ? 'All'
                                     : permissions.length
                             }}

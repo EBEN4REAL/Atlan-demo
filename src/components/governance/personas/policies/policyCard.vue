@@ -457,6 +457,7 @@
                 emit('clickCard', { ...policy.value }, type.value)
             }
             const canDelete = computed(() => {
+                // all admins can have edit n delete access to the glossary policy
                 if (type.value === 'glossaryPolicy') return true
                 return props.whitelistedConnectionIds.includes(
                     policy?.value?.connectionId

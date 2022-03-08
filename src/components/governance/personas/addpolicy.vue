@@ -1061,12 +1061,12 @@
                 return sliced.join('/')
             }
             const canEdit = computed(() => {
-                if(policyType.value === 'glossaryPolicy') return true
+                // all admins can have edit n delete access to the glossary policy
+                if (policyType.value === 'glossaryPolicy') return true
                 return props.whitelistedConnectionIds.includes(
                     policy?.value?.connectionId
                 )
-            }
-            )
+            })
             onMounted(() => {
                 window.addEventListener('keydown', (keyDown) => {
                     if (keyDown.keyCode === 27) {

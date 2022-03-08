@@ -9,12 +9,14 @@
     >
         <a-menu v-model:openKeys="openKeys" mode="inline" :class="$style.menu">
             <a-sub-menu key="jira">
+                <!--  a-menu  all of these is getting mounted twice ? find out why -->
+
                 <template #expandIcon> <AtlanIcon icon="CaretDown" /></template>
                 <template #title>
                     <JiraHeader :is-open="openKeys.includes('jira')" />
                 </template>
-                <UpdateJiraConfig v-if="tenantJiraStatus.configured" />
 
+                <UpdateJiraConfig v-if="tenantJiraStatus.configured" />
                 <template v-else>
                     <OverviewBanner
                         class="flex flex-col p-4 m-6 border rounded-lg gap-y-3"
@@ -26,14 +28,8 @@
 </template>
 
 <script lang="ts">
-    import {
-        computed,
-        defineComponent,
-        onMounted,
-        reactive,
-        ref,
-        toRefs,
-    } from 'vue'
+    import { defineComponent, onMounted, ref, toRefs, watch } from 'vue'
+    import v from 'event-source-polyfill'
     import { useTimeAgo } from '@vueuse/core'
     import OverviewBanner from '@/admin/integrations/jira/misc/overviewBannerCard.vue'
 
@@ -54,8 +50,6 @@
 
             const store = integrationStore()
             const { tenantJiraStatus } = toRefs(store)
-
-            onMounted(() => {})
 
             return {
                 openKeys,

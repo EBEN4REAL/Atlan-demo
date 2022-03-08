@@ -56,16 +56,16 @@ const searchIssues = (jql, immediate = true) => {
     return { issues, isLoading, error, mutate, isReady, searchLoading, pagination, offset, totalResults }
 }
 
-export const linkedIssuesCount = () => {
+export const issuesCount = (onlyLinked = true, immediate = true) => {
     const body = ref({
-        "jql": "issue.property[atlan].guid != null ORDER BY created DESC",
+        "jql": onlyLinked ? "issue.property[atlan].guid != null" : "",
         "maxResults": 1,
         "startAt": 0
     })
 
     const options = {
         asyncOptions: {
-            immediate: true,
+            immediate,
             onError: (e) => {
                 throw e
             },

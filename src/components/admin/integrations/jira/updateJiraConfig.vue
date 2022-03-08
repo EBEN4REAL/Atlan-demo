@@ -58,7 +58,7 @@
     import JiraOverview from '@/admin/integrations/jira/overview.vue'
     import ProjectSelector from '@/common/integrations/jira/jiraProjectsSelect.vue'
     import Footer from '@/admin/integrations/jira/integrationCardFooter.vue'
-    import { linkedIssuesCount } from '~/composables/integrations/jira/useJiraTickets'
+    import { issuesCount } from '~/composables/integrations/jira/useJiraTickets'
 
     export default defineComponent({
         name: 'JiraIntegrationCard',
@@ -116,7 +116,7 @@
                 { key: 'overview', label: 'Overview' },
             ]
 
-            const { count } = linkedIssuesCount()
+            const { count } = issuesCount(true, true)
 
             onMounted(() => {
                 activeTabKey.value = 'configuration'

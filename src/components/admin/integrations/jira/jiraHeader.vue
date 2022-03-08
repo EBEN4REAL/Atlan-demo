@@ -10,8 +10,28 @@
                 >
                     <AtlanIcon icon="Jira" class="h-8" />
                 </div>
-                <div class="">
-                    <h2 class="text-lg font-bold">Jira</h2>
+                <div>
+                    <div class="flex items-center mb-1 gap-x-2">
+                        <h2 class="text-lg font-bold">Jira</h2>
+                        <div
+                            v-if="
+                                tenantJiraStatus.configured &&
+                                countReady &&
+                                !count
+                            "
+                            class="flex items-center justify-center w-24 px-2 py-1 text-xs rounded gap-x-1 bg-primary-light text-primary"
+                        >
+                            <div class="">
+                                <AtlanIcon icon="External" />
+                            </div>
+                            <a
+                                class="hover:underline"
+                                href="https://marketplace.atlassian.com/apps/1225577/atlan?hosting=cloud&tab=overview"
+                                target="_blank"
+                                >Install now</a
+                            >
+                        </div>
+                    </div>
                     <span class="text-gray-500">{{ description }}</span>
                 </div>
             </div>
@@ -62,12 +82,13 @@
 </template>
 
 <script setup lang="ts">
-    import { toRefs } from 'vue'
+    import { toRefs, watch } from 'vue'
     import useTenantData from '~/composables/tenant/useTenantData'
     import { integrations } from '~/constant/integrations/integrations'
     import integrationStore from '~/store/integrations/index'
     import access from '~/constant/accessControl/map'
     import { connectJira } from '~/composables/integrations/jira/useJira'
+    import { issuesCount } from '~/composables/integrations/jira/useJiraTickets'
 
     const props = defineProps({
         isOpen: { type: Boolean, required: true },
@@ -81,6 +102,16 @@
     const { isLoading, connect: handleConnect } = connectJira({
         tenant: true,
     })
+
+    const { count, isReady: countReady, mutate } = issuesCount(false, false)
+
+    watch(
+        () => tenantJiraStatus.value.configured,
+        (v) => {
+            if (v) mutate()
+        },
+        { immediate: true }
+    )
 </script>
 
 <style scoped></style>

@@ -60,6 +60,7 @@
                     v-auth="access.CREATE_INTEGRATION"
                     size="sm"
                     padding="compact"
+                    class="px-5"
                     @click="
                         (e) => {
                             e.stopPropagation()

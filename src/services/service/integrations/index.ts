@@ -25,8 +25,8 @@ const jiraListIssueTypes = <T>(options = {}) =>
     useAPI<T>(map.JIRA_LIST_ISSUE_TYPES, 'GET', {}, options);
 const jiraGetIssueProperty = (params: Ref<{ issue: string, property: string }>, options = {}) =>
     useAPI(map.JIRA_GET_ISSUE_PROPERTY, 'GET', { params }, options);
-const jiraGetIssueConfigurations = (pathVariables: Ref<{ projectKey: string }>, options = {}) =>
-    useAPI(map.JIRA_GET_ISSUE_CONFIGURATIONS, 'GET', { pathVariables }, options);
+const jiraGetProjectConfigurations = (params: Ref<{ projectKey: string }>, options = {}) =>
+    useAPI(map.JIRA_GET_ISSUE_CONFIGURATIONS, 'GET', { params }, options);
 const jiraSearch = <T>(body: Ref, options = {}) =>
     useAPI<T>(map.JIRA_SEARCH, 'POST', { body }, options);
 const jiraLinkIssue = (body: Ref, pathVariables: Ref<{ id: string }>, options = {}) =>
@@ -49,7 +49,7 @@ export const Integrations = {
     jiraListProjects,
     jiraListIssueTypes,
     jiraGetIssueProperty,
-    jiraGetIssueConfigurations,
+    jiraGetProjectConfigurations,
     jiraSearch,
     jiraLinkIssue,
     jiraUnlinkIssue,

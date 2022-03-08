@@ -35,6 +35,7 @@
                             class="w-full"
                             placeholder="Select a project"
                             default-select
+                            :clearable="false"
                             @change="handleProjectSelect"
                         />
                     </a-form-item>
@@ -130,6 +131,7 @@
 
     import { CREATE_TICKET_FORM_RULES } from '~/constant/integrations/jira.constant'
     import CustomSelect from '@/common/integrations/jira/customizedSelect.vue'
+    import { getProjectConfig } from '~/composables/integrations/jira/useJira'
 
     const props = defineProps({
         visible: { type: Boolean, required: true },
@@ -181,11 +183,40 @@
     }
 
     const issueTypeOptions = ref<any[]>([])
+    const projectKey = ref()
+    const {
+        config,
+        error: configError,
+        isLoading: configLoading,
+        mutate: fetchConfig,
+    } = getProjectConfig(projectKey)
+
+    const requiredFields = computed(() => {
+        const finalFields = []
+        if (!config.value) return []
+        const { fields } = config.value.issuetypes.find(
+            (_type) => _type.id === form.value.issueType
+        )
+
+        if (fields && typeof fields === 'object') {
+            Object.entries(fields).forEach(([fieldName, data]) => {
+                if (data.required) {
+                    finalFields.push(data)
+                }
+            })
+        }
+
+        return finalFields
+    })
 
     const handleProjectSelect = (v, option) => {
         const {
-            meta: { issueTypes },
+            meta: { issueTypes, key },
         } = option
+
+        projectKey.value = key
+        fetchConfig()
+
         issueTypeOptions.value = [
             ...issueTypes.map((type) => ({
                 label: type.name,

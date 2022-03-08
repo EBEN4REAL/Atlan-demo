@@ -8,14 +8,13 @@ import useIntegrations, {
     refetchIntegration,
 } from '~/composables/integrations/useIntegrations'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
-
 import { Integrations } from '~/services/service/integrations/index'
-const { jiraListProjects, jiraSearch } = Integrations
+const { jiraListProjects, jiraGetProjectConfigurations } = Integrations
 
 
 const { origin } = window.location
 
-export const getJiraInstallUrlState = (isTenant: boolean) => {
+const getJiraInstallUrlState = (isTenant: boolean) => {
 
     const authStore = useAuthStore()
     const api = `${origin}/api/service/jira/auth`
@@ -59,14 +58,14 @@ const getOAuthBaseUrl = () => {
     return url
 }
 
-export const tenantLevelOauthUrl = computed(() => {
+const tenantLevelOauthUrl = computed(() => {
     const oauthBaseUrl: URL = getOAuthBaseUrl()
     const state = getJiraInstallUrlState(true)
     const jiraOauth = `${oauthBaseUrl.href}&state=${state}&prompt=consent`
     return jiraOauth
 })
 
-export const userLevelOauthUrl = computed(() => {
+const userLevelOauthUrl = computed(() => {
     const oauthBaseUrl: URL = getOAuthBaseUrl()
     const state = getJiraInstallUrlState(false)
     const jiraOauth = `${oauthBaseUrl}&state=${state}`
@@ -213,3 +212,23 @@ export const listProjects = () => {
     return { projects, isLoading, error }
 }
 
+export const getProjectConfig = (key) => {
+    const options = {
+        asyncOptions: {
+            immediate: false,
+            onError: (e) => {
+                throw e
+            },
+        }
+    }
+    const params = computed(() => ({ projectKey: key.value }))
+    const { data, isLoading, error, mutate } = jiraGetProjectConfigurations(params, options)
+    const config = ref()
+    watch(data, (v: any) => {
+        if (v.projects?.length) {
+            config.value = v.projects[0]
+        }
+    })
+
+    return { config, data, isLoading, error, mutate }
+}

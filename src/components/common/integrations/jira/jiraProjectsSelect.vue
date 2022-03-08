@@ -5,7 +5,7 @@
         :class="$style.selector"
         :placeholder="placeholder"
         :loading="isLoading"
-        allow-clear
+        :allow-clear="clearable"
         show-search
         option-filter-prop="label"
         dropdown-class-name="max-h-72 overflow-y-scroll"
@@ -50,6 +50,7 @@
         modelValue: { type: String, required: true },
         placeholder: { type: String, default: 'Select default project' },
         defaultSelect: { type: Boolean, default: false },
+        clearable: { type: Boolean, default: true },
     })
     const emit = defineEmits(['change'])
 

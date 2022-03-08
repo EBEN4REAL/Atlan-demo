@@ -66,17 +66,18 @@
                 <a-tooltip :title="nav.label" placement="right">
                     <router-link
                         v-if="nav.isActive"
+                        v-slot="{ isActive }"
                         v-auth="nav.auth"
                         :to="nav.path"
                         class="flex items-center w-full mx-0 menu-item"
                         :class="
-                            isCollapsed ? 'p-1 justify-center mt-2' : 'mt-1'
+                            isCollapsed ? 'p-2 justify-center mt-2' : 'mt-1'
                         "
                         @click="closeNavDrawer"
                     >
                         <span class="flex items-center">
                             <atlan-icon
-                                :icon="nav?.icon"
+                                :icon="isActive ? nav?.icon : nav?.inactiveIcon"
                                 :class="isCollapsed ? 'h-6' : 'h-4 mr-2'"
                             />
 
@@ -97,15 +98,20 @@
                                 role === 'Admin') ||
                             (nav.isActive && nav.path !== '/platform')
                         "
+                        v-slot="{ isActive }"
                         v-auth.or="nav.auth"
                         :to="nav.path"
                         class="flex items-center w-full mx-0 mt-2 menu-item"
-                        :class="isCollapsed ? 'p-1 justify-center' : ''"
+                        :class="isCollapsed ? 'p-2 justify-center' : ''"
                         @click="closeNavDrawer"
                     >
                         <span class="flex items-center">
                             <atlan-icon
-                                :icon="nav?.icon"
+                                :icon="
+                                    isActive
+                                        ? nav?.icon
+                                        : nav?.inactiveIcon || nav?.icon
+                                "
                                 :class="isCollapsed ? 'h-6' : 'h-4 mr-2'"
                             />
 

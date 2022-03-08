@@ -8,6 +8,7 @@ export const workspaceCentreList = [
         label: 'Workflow Center',
         isActive: true,
         auth: page.PAGE_ADMIN,
+        inactiveIcon: 'WorkflowsInactive',
     },
     {
         path: '/governance',

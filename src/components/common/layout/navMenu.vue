@@ -31,7 +31,7 @@
             </p> -->
 
             <div
-                class="flex items-center justify-center h-full pr-3 font-semibold leading-none tracking-wider"
+                class="flex items-center justify-center h-full pr-3 font-semibold leading-none"
             >
                 <AtlanIcon :icon="pageIcon" class="h-5 mb-0.5 mr-1"></AtlanIcon>
                 <span class="text-base">{{ pageName }}</span>

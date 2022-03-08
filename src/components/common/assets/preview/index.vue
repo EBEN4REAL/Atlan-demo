@@ -92,55 +92,62 @@
                     </div>
                 </div>
                 <a-button-group>
-                    <template
-                        v-for="action in getActions(selectedAsset)"
-                        :key="action.id"
-                    >
-                        <component
-                            :is="action.component"
-                            v-if="action.component"
-                            :asset="selectedAsset"
-                            :edit-permission="true"
+                    <a-tooltip title="Open">
+                        <a-button
+                            v-if="showCTA('open')"
+                            class="flex items-center justify-center p-2"
+                            @click="handleAction('open')"
                         >
-                            <a-button class="flex items-center justify-center">
-                                <AtlanIcon icon="Share" class="mb-0.5" />
-                            </a-button>
-                        </component>
-                        <template v-else>
-                            <a-tooltip :title="action.label">
-                                <QueryDropdown
-                                    v-if="
-                                        showCTA(action.id) &&
-                                        action.id === 'query' &&
-                                        (assetType(selectedAsset) === 'Table' ||
-                                            assetType(selectedAsset) === 'View')
-                                    "
-                                    @handleClick="handleQueryAction"
-                                >
-                                    <template #button>
-                                        <a-button
-                                            class="flex items-center justify-center"
-                                        >
-                                            <AtlanIcon
-                                                :icon="action.icon"
-                                                class="mb-0.5 h-4 w-auto"
-                                            />
-                                        </a-button>
-                                    </template>
-                                </QueryDropdown>
+                            <AtlanIcon icon="EnterProfile" class="w-auto h-4" />
+                        </a-button>
+                    </a-tooltip>
+
+                    <a-tooltip title="Query">
+                        <QueryDropdown
+                            v-if="
+                                showCTA('query') &&
+                                connectorName(selectedAsset) !== 'glue' &&
+                                (assetType(selectedAsset) === 'Table' ||
+                                    assetType(selectedAsset) === 'View' ||
+                                    assetType(selectedAsset) ===
+                                        'TablePartition' ||
+                                    assetType(selectedAsset) ===
+                                        'MaterialisedView')
+                            "
+                            @handleClick="handleQueryAction"
+                        >
+                            <template #button>
                                 <a-button
-                                    v-else-if="showCTA(action.id)"
-                                    class="flex items-center justify-center"
-                                    @click="handleAction(action.id)"
+                                    class="flex items-center justify-center p-2"
                                 >
                                     <AtlanIcon
-                                        :icon="action.icon"
-                                        class="mb-0.5 h-4 w-auto"
+                                        icon="Query"
+                                        class="w-auto h-4"
                                     />
                                 </a-button>
-                            </a-tooltip>
-                        </template>
-                    </template>
+                            </template>
+                        </QueryDropdown>
+                    </a-tooltip>
+
+                    <SlackAskButton
+                        v-if="!disableSlackAsk"
+                        :asset="selectedAsset"
+                    />
+
+                    <KebabMenu
+                        :key="selectedAsset.guid"
+                        :asset="selectedAsset"
+                        :edit-permission="
+                            selectedAssetUpdatePermission(
+                                selectedAsset,
+                                isDrawer
+                            )
+                        "
+                    >
+                        <a-button class="flex items-center justify-center p-2">
+                            <AtlanIcon icon="KebabMenu" />
+                        </a-button>
+                    </KebabMenu>
                 </a-button-group>
             </div>
         </div>
@@ -168,6 +175,7 @@
                 :key="index"
                 :destroy-inactive-tab-pane="true"
                 :disabled="isScrubbed(selectedAsset) && tab.scrubbed"
+                :class="index === activeKey ? 'flex flex-col' : ''"
             >
                 <template #tab>
                     <PreviewTabsIcon
@@ -229,10 +237,11 @@
         toRefs,
         computed,
         provide,
+        inject,
     } from 'vue'
 
     import { useRoute, useRouter } from 'vue-router'
-    import { debouncedWatch } from '@vueuse/core'
+    import { debouncedWatch, whenever } from '@vueuse/core'
     import Tooltip from '@common/ellipsis/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
@@ -241,22 +250,29 @@
     import { useAuthStore } from '~/store/auth'
     import useEvaluate from '~/composables/auth/useEvaluate'
     import useAssetEvaluate from '~/composables/discovery/useAssetEvaluation'
-    import ShareMenu from '@/common/assets/misc/shareMenu.vue'
+    import KebabMenu from '@/common/assets/misc/kebabMenu.vue'
     import NoAccess from '@/common/assets/misc/noAccess.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import useCollectionInfo from '~/components/insights/explorers/queries/composables/useCollectionInfo'
     import QueryDropdown from '@/common/query/queryDropdown.vue'
+    import SlackAskButton from '~/components/common/assets/misc/slackAskButton.vue'
+
+    import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
+
+    import {
+        resourceId,
+        disableSlackAsk,
+    } from '~/composables/integrations/slack/useAskAQuestion'
 
     export default defineComponent({
         name: 'AssetPreview',
         components: {
             PreviewTabsIcon,
             CertificateBadge,
-            ShareMenu,
             NoAccess,
             Tooltip,
             QueryDropdown,
-
+            KebabMenu,
             info: defineAsyncComponent(() => import('./info/index.vue')),
             columns: defineAsyncComponent(() => import('./columns/index.vue')),
             actions: defineAsyncComponent(() => import('./actions/index.vue')),
@@ -286,6 +302,7 @@
             linkedAssets: defineAsyncComponent(
                 () => import('./linkedAssets/linkedAssetsWrapper.vue')
             ),
+            SlackAskButton,
         },
 
         props: {
@@ -362,6 +379,7 @@
                 assetTypeLabel,
                 getProfilePath,
                 isScrubbed,
+                assetPermission,
                 selectedAssetUpdatePermission,
             } = useAssetInfo()
 
@@ -504,7 +522,28 @@
 
             provide('isProfile', isProfile)
 
+            const updateList = inject('updateList', () => ({}))
+            const updateDrawerList = inject('updateDrawerList', () => ({}))
+
+            /** whenever resource ID is fetched, refresh the asset to load the generated resource, then switch tab */
+            watch(resourceId, () => {
+                const id = ref(selectedAsset.value.guid)
+                const { asset, isReady: isUpdateReady } = useCurrentUpdate({
+                    id,
+                })
+
+                whenever(isUpdateReady, () => {
+                    if (isDrawer.value) {
+                        updateDrawerList(asset.value)
+                    } else updateList(asset.value)
+
+                    if (resourceId.value)
+                        switchTab(selectedAsset.value, 'Resources')
+                })
+            })
+
             return {
+                disableSlackAsk,
                 tabChildRef,
                 activeKey,
                 handleTabChange,

@@ -35,7 +35,8 @@
                 v-if="
                     isGTC(selectedAsset) ||
                     selectedAsset.typeName === 'Connection' ||
-                    selectedAsset.typeName === 'Process'
+                    selectedAsset.typeName === 'Process' ||
+                    selectedAsset.typeName === 'Query'
                 "
                 class="flex flex-col"
             >
@@ -125,13 +126,17 @@
                         rowCount(selectedAsset, true)
                     "
                     class="flex flex-col text-sm"
-                    :class="isProfile ? '' : 'cursor-pointer'"
+                    :class="
+                        isProfile || connectorName(selectedAsset) === 'glue'
+                            ? ''
+                            : 'cursor-pointer'
+                    "
                     @click="showSampleDataModal"
                 >
                     <span class="mb-1 text-sm text-gray-500">Rows</span>
                     <span
                         :class="
-                            isProfile
+                            isProfile || connectorName(selectedAsset) === 'glue'
                                 ? 'text-gray-700'
                                 : 'text-primary font-semibold'
                         "
@@ -713,7 +718,6 @@
                         'AtlasGlossary',
                         'AtlasGlossaryCategory',
                         'Connection',
-                        'Query',
                     ].includes(selectedAsset.typeName)
                 "
                 class="flex flex-col"
@@ -973,12 +977,6 @@
 
             const sampleDataVisible = ref<boolean>(false)
 
-            const showSampleDataModal = () => {
-                if (!isProfile.value) {
-                    sampleDataVisible.value = true
-                }
-            }
-
             const {
                 getConnectorImage,
                 rowCount,
@@ -1011,6 +1009,7 @@
                 isBiAsset,
                 isSaasAsset,
                 getConnectorLabel,
+                connectorName,
                 fieldsLookerQuery,
                 sourceOwners,
                 apiName,
@@ -1060,6 +1059,12 @@
                 }
 
                 return false
+            }
+
+            const showSampleDataModal = () => {
+                if (!isProfile.value) {
+                    sampleDataVisible.value = true
+                }
             }
 
             const handlePreviewClick = () => {
@@ -1152,6 +1157,7 @@
                 isSaasAsset,
                 isProfile,
                 getConnectorLabel,
+                connectorName,
                 fieldsLookerQuery,
                 sourceOwners,
                 apiName,

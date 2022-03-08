@@ -103,24 +103,21 @@
             />
         </section>
         <section class="flex items-center justify-between p-6 gap-x-3">
-            <AtlanButton
+            <AtlanButton2
                 v-auth="access.DELETE_INTEGRATION"
-                color="minimal"
-                class="px-0 text-red-500"
-                :is-loading="isLoading"
+                color="secondary"
+                class="text-red-500"
+                label="Disconnect"
+                :loading="isLoading"
                 @click="handleDisconnect"
-            >
-                Disconnect
-            </AtlanButton>
+            />
             <!-- v-auth="access.UPDATE_INTEGRATIONS" -->
-            <AtlanButton
-                :is-loading="updateLoading"
-                class="w-16"
+            <AtlanButton2
+                :loading="updateLoading"
                 :disabled="!isEdit"
+                label="Save"
                 @click="update"
-            >
-                Save
-            </AtlanButton>
+            />
         </section>
     </div>
 </template>
@@ -151,7 +148,7 @@
     import integrationStore from '~/store/integrations/index'
     import Chip from '@/UI/chip.vue'
     import access from '~/constant/accessControl/map'
-    import { archiveSlack } from '~/composables/integrations/useSlack'
+    import { archiveSlack } from '~/composables/integrations/slack/useSlack'
     import { integrations } from '~/constant/integrations'
     import { useUsers } from '~/composables/user/useUsers'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'

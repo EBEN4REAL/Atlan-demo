@@ -126,6 +126,20 @@
         cursor: ew-resize;
         cursor: col-resize;
     }
+
+    .mention {
+        color: rgba(18, 100, 163, 1);
+        background-color: rgba(18, 100, 163, 0.1);
+        padding: 0 2px 1px;
+    }
+
+    .mention[data-is-me='true'] {
+        @apply bg-warning-light;
+    }
+
+    code::before, code::after {
+        content: "" !important;
+    }
 }
 
 .resize-cursor {

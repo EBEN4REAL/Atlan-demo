@@ -133,7 +133,7 @@
                                     )
                                 "
                                 icon="Category"
-                                class="h-4 mb-0.5 mr-1"
+                                class="h-4  mr-1"
                             ></AtlanIcon>
                             <AtlanIcon
                                 v-if="
@@ -142,13 +142,13 @@
                                     )
                                 "
                                 icon="Term"
-                                class="h-4 mb-0.5 mr-1"
+                                class="h-4  mr-1"
                             ></AtlanIcon>
 
                             <div
                                 class="text-sm tracking-wider text-gray-500 uppercase"
                             >
-                                {{ assetTypeLabel(item) || item.typeName }}
+                                {{ assetTypeLabel(item) || item.typeName }} 
                                 <span
                                     v-if="
                                         ['SalesforceObject'].includes(
@@ -173,7 +173,7 @@
                                         )
                                     "
                                     :key="parentCategory(item).guid"
-                                    class="flex"
+                                    class="flex ml-0.5"
                                 >
                                     <AtlanIcon
                                         icon="Category"
@@ -908,14 +908,8 @@
                                 <PopoverClassification
                                     :classification="classification"
                                     :entity-guid="item.guid"
-                                    :mouse-enter-delay="
-                                        classificationPopoverMouseEnterDelay
-                                    "
-                                    @mouse-entered="
-                                        () => {
-                                            classificationPopoverMouseEnterDelay = 0.2
-                                        }
-                                    "
+                                    :mouse-enter-delay="mouseEnterDelay"
+                                    @mouse-entered="enteredPill"
                                 >
                                     <ClassificationPill
                                         :name="classification.name"
@@ -1084,6 +1078,7 @@
     import useTermPopover from '@/common/popover/term/useTermPopover'
     import AtlanIcon from '@/common/icon/atlanIcon.vue'
     import useGlossaryData from '~/composables/glossary2/useGlossaryData'
+    import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
 
     export default defineComponent({
         name: 'AssetListItem',
@@ -1203,8 +1198,6 @@
             const { getEntityStatusIcon } = useGlossaryData()
             const showAssetSidebarDrawer = ref(false)
             const selectedAssetDrawerGuid = ref('')
-
-            const classificationPopoverMouseEnterDelay = ref(1)
 
             const {
                 title,
@@ -1353,6 +1346,8 @@
                 termError,
             } = useTermPopover()
 
+            const { mouseEnterDelay, enteredPill } = useMouseEnterDelay()
+
             return {
                 getFetchedTerm,
                 handleTermPopoverVisibility,
@@ -1425,9 +1420,10 @@
                 getEntityStatusIcon,
                 meanings,
                 isLoading,
-                classificationPopoverMouseEnterDelay,
                 icon,
                 announcementType,
+                mouseEnterDelay,
+                enteredPill,
             }
         },
     })

@@ -4,6 +4,7 @@
         empty-screen="CreateGroups"
         headline="Create a new group"
         button-text="Create Group"
+        button-icon="Add"
         @event="() => (isGroupDrawerVisible = true)"
     />
     <DefaultLayout title="Groups" :badge="totalGroupsCount">
@@ -23,16 +24,12 @@
                     />
                 </div>
 
-                <AtlanButton
+                <AtlanButton2
                     v-auth="map.CREATE_GROUP"
-                    class="px-5"
-                    size="sm"
-                    type="primary"
+                    label="Create Group"
+                    prefix-icon="Add"
                     @click="isGroupDrawerVisible = true"
-                >
-                    <AtlanIcon class="mr-2" icon="Add" />
-                    Create Group
-                </AtlanButton>
+                />
             </div>
         </template>
         <a-drawer
@@ -61,17 +58,12 @@
         >
             <ErrorView>
                 <div class="mt-3">
-                    <AtlanButton
+                    <AtlanButton2
                         color="secondary"
-                        @click="
-                            () => {
-                                getGroupList()
-                            }
-                        "
-                    >
-                        <AtlanIcon icon="Reload" />
-                        Try again
-                    </AtlanButton>
+                        label="Try again"
+                        prefix-icon="Retry"
+                        @click="getGroupList()"
+                    />
                 </div>
             </ErrorView>
         </div>
@@ -419,6 +411,7 @@
                 filter: {},
                 sort: '-createdAt',
             })
+            console.log(groupListAPIParams)
             const {
                 groupList,
                 totalGroupsCount,
@@ -692,6 +685,7 @@
                             `${group.isDefault === 'true' ? 'false' : 'true'}`,
                         ],
                     },
+                    path: group?.path,
                 }
                 const { data, isReady, error, isLoading } = Groups.UpdateGroup(
                     group.id,

@@ -207,6 +207,13 @@
             // }
 
             const addGTCNode = (asset, entity = {}) => {
+                console.log(asset?.typeName, asset?.attributes?.anchor?.guid, 'add')
+                glossaryStore.updateAssetCount(
+                    asset?.typeName,
+                    asset?.attributes?.anchor?.guid,
+                    'add'
+                )
+
                 console.log(asset, entity)
                 if (entity !== {}) {
                     console.log('add')

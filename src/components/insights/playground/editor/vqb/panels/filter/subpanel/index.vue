@@ -356,6 +356,7 @@
             }
             const handleDelete = (index, subpanel) => {
                 subpanels.value.splice(index, 1)
+                updateVQB(activeInlineTab, inlineTabs)
             }
 
             const changeColumn = (column) => {

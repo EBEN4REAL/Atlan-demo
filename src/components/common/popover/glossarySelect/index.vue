@@ -52,6 +52,8 @@
                                     item.attributes.name
                                 }`"
                                 :classes="'w-full '"
+                                placement="right"
+                                :mouseLeaveDelay="0"
                             />
                         </div>
                     </div>
@@ -64,12 +66,12 @@
                 <div class="w-4" :class="size === 'default' ? 'mr-2' : 'mr-1'">
                     <AtlanIcon
                         :icon="
-                            displayText === 'All Glossaries'
-                                ? 'GlossaryGray'
-                                : getEntityStatusIcon(
+                            selectedGlossary?.guid?.length
+                                ? getEntityStatusIcon(
                                       'AtlasGlossary',
                                       certificateStatus(selectedGlossary)
                                   )
+                                : 'GlossaryGray'
                         "
                         class="self-center"
                         :class="size === 'default' ? 'h-5' : 'h-4'"
@@ -77,7 +79,13 @@
                 </div>
                 <Tooltip
                     ref="tooltipRef"
-                    :tooltip-text="`${displayText}`"
+                    :tooltip-text="`${
+                        selectedGlossary?.guid?.length
+                            ? selectedGlossary?.attributes?.name ??
+                              selectedGlossary?.displayText
+                            : 'All Glossaries'
+                    }`"
+                    :mouseLeaveDelay="0"
                     :classes="`  hover:text-primary  align-text-bottom  ${
                         size === 'default'
                             ? 'text-base font-bold  mt-0.5'
@@ -146,39 +154,31 @@
             const { glossaryList, getEntityStatusIcon } = useGlossaryData()
             const displayText = ref('')
             const isVisible = ref(false)
+            const sortedList = ref(glossaryList.value)
             const { certificateStatus } = useAssetInfo()
             const selectedGlossary = computed(() =>
                 filteredList.value.find(
                     (i) => i.attributes.qualifiedName === localValue.value
                 )
             )
-            const changeDisplayText = () => {
-                const item = filteredList.value.find(
-                    (i) => i.attributes.qualifiedName === localValue.value
-                )
-                console.log('change', item)
-                if (!item) {
-                    displayText.value = 'All Glossaries'
-                } else {
-                    displayText.value =
-                        item?.attributes.name || 'All Glossaries'
-                }
-            }
-
-            onMounted(() => {
-                changeDisplayText()
-            })
-
             const filteredList = computed(() => {
-                const sortedList = glossaryList.value
-                return sortedList.sort((a, b) =>
-                    a?.displayText > b?.displayText ? 1 : -1
-                )
+                return sortedList.value.sort((a, b) => {
+                    if (
+                        a?.displayText?.toLowerCase() <
+                        b?.displayText?.toLowerCase()
+                    )
+                        return -1
+                    if (
+                        a?.displayText?.toLowerCase() >
+                        b?.displayText?.toLowerCase()
+                    )
+                        return 1
+                    return 0
+                })
             })
 
             const handleSelect = (key) => {
                 localValue.value = key
-                changeDisplayText()
                 isVisible.value = false
                 emit('update:modelValue', localValue.value)
                 emit('change', localValue.value)
@@ -188,13 +188,9 @@
                 () => props.modelValue,
                 () => {
                     localValue.value = props.modelValue
-                    changeDisplayText()
                 }
             )
 
-            watch(selectedGlossary, () => {
-                changeDisplayText()
-            })
             const tooltipRef = ref(null)
             return {
                 filteredList,
@@ -202,7 +198,6 @@
                 displayText,
                 glossaryList,
                 isVisible,
-                changeDisplayText,
                 getEntityStatusIcon,
                 certificateStatus,
                 selectedGlossary,
@@ -215,7 +210,7 @@
 <style lang="less">
     .glossarySelectPopover {
         .ant-popover-inner-content {
-            width: 250px !important;
+            width: 300px !important;
         }
     }
 </style>

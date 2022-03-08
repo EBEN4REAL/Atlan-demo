@@ -13,6 +13,7 @@ export default function useFacetUsers(
         columns?: string[]
         immediate?: boolean
         groupId?: Ref<string>
+        excludeMe?: boolean
     } = { immediate: true }
 ) {
     const params = ref(new URLSearchParams())
@@ -104,19 +105,28 @@ export default function useFacetUsers(
     // final user list including myself
     const userList = computed(() => {
         if (queryText.value !== '') {
-            return [...list.value]
+            if (config?.excludeMe) {
+                let res = [...list.value]
+                res = res.filter((el) => el.username !== username)
+                return res
+            } else return [...list.value]
         }
         const tempList = list.value.filter((obj) => obj.username !== username)
         const myIndex = list.value.findIndex((obj) => obj.username === username)
-        return [
-            {
-                firstName,
-                id,
-                username,
-                lastName: `${lastName} (me)`,
-            },
-            ...tempList,
-        ]
+
+        if (config?.excludeMe) {
+            return [...tempList]
+        } else {
+            return [
+                {
+                    firstName,
+                    id,
+                    username,
+                    lastName: `${lastName} (me)`,
+                },
+                ...tempList,
+            ]
+        }
     })
 
     // const total: ComputedRef<number> = computed(() => data.value?.totalRecord)

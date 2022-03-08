@@ -8,7 +8,7 @@
             class="flex justify-between p-8 gap-x-10"
             style="min-height: 268px"
         >
-            <nav class="space-y-8">
+            <nav class="gap-y-8">
                 <div
                     style="width: 161px"
                     class="relative step_completed flex flex-col py-2 pl-3 border rounded-lg gap-y-0.5 h-14 step"
@@ -51,7 +51,7 @@
                     <span class="text-xs text-gray-500">Install Slack app</span>
                 </div>
             </nav>
-            <main class="flex-grow space-y-9">
+            <main class="flex-grow gap-y-9">
                 <template v-if="currentStep === 1">
                     <div class="flex justify-between">
                         <div class="flex flex-col gap-y-1">
@@ -205,13 +205,10 @@
                                 </div>
                                 <!-- learnMore component is failing import -->
                             </template>
-                            <AtlanButton
+                            <AtlanButton2
                                 color="secondary"
-                                size="sm"
-                                padding="compact"
-                            >
-                                Learn More
-                            </AtlanButton>
+                                label="Learn More"
+                            />
                         </a-popover>
                     </div>
                     <div class="">
@@ -250,24 +247,20 @@
                             placement="bottom"
                         >
                             <template #content>
-                                <div class="p-4 space-y-5">
+                                <div class="p-4 gap-y-5">
                                     <h1>
                                         Are you sure you want to start over?
                                     </h1>
-                                    <div class="flex justify-end space-x-2">
-                                        <AtlanButton
+                                    <div class="flex justify-end gap-x-2">
+                                        <AtlanButton2
+                                            label="Cancel"
+                                            color="secondary"
                                             @click="reconfigure = false"
-                                            padding="compact"
-                                            size="sm"
-                                            color="minimal"
-                                            >Cancel</AtlanButton
-                                        >
-                                        <AtlanButton
+                                        />
+                                        <AtlanButton2
+                                            label="Confirm"
                                             @click="handleReconfigure"
-                                            padding="compact"
-                                            size="sm"
-                                            >Confirm</AtlanButton
-                                        >
+                                        />
                                     </div>
                                 </div>
                             </template>
@@ -279,7 +272,7 @@
                             >
                         </a-popover>
                     </div>
-                    <div class="space-y-5">
+                    <div class="gap-y-5">
                         <h3 class="font-bold text-gray-700">
                             Install the Atlan app in your Slack workspace
                         </h3>
@@ -293,13 +286,14 @@
                             >
                                 Installed
                             </div>
-                            <AtlanButton
-                                v-auth="access.CREATE_INTEGRATION"
+                            <AtlanButton2
                                 v-else
+                                v-auth="access.CREATE_INTEGRATION"
                                 class="text-primary"
                                 color="secondary"
-                                size="lg"
-                                padding="compact"
+                                size="large"
+                                label="Install now"
+                                suffixIcon="ArrowRight"
                                 @click="
                                     () =>
                                         openSlackOAuth({
@@ -307,10 +301,7 @@
                                             emit: $emit,
                                         })
                                 "
-                            >
-                                Install now
-                                <AtlanIcon :icon="'ArrowRight'" />
-                            </AtlanButton>
+                            />
                         </div>
                     </div>
                 </template>
@@ -319,24 +310,27 @@
         <footer>
             <div class="flex justify-end px-6 py-6 border-t">
                 <div v-if="tenantSlackStatus.configured" class="">
-                    <AtlanButton color="secondary" @click="$emit('close')"
-                        >Close</AtlanButton
-                    >
+                    <AtlanButton2
+                        label="Close"
+                        color="secondary"
+                        @click="$emit('close')"
+                    />
                 </div>
-                <div v-else class="flex items-center">
-                    <a-button class="mr-3 border-0" @click="$emit('close')"
-                        >Cancel
-                    </a-button>
-                    <AtlanButton
+                <div v-else class="flex items-center gap-x-3">
+                    <AtlanButton2
+                        type="secondary"
+                        label="Cancel"
+                        @click="$emit('close')"
+                    />
+
+                    <AtlanButton2
                         v-auth="access.CREATE_INTEGRATION"
                         :disabled="buttonDisabled"
                         :loading="isLoading"
-                        type="primary"
                         html-type="submit"
+                        :label="buttonCopy"
                         @click="next"
-                    >
-                        {{ buttonCopy }}
-                    </AtlanButton>
+                    />
                 </div>
             </div>
         </footer>
@@ -349,7 +343,7 @@
         archiveSlack,
         createApp,
         openSlackOAuth,
-    } from '~/composables/integrations/useSlack'
+    } from '~/composables/integrations/slack/useSlack'
     import { useAuthStore } from '~/store/auth'
     import LearnMore from '@/admin/integrations/slack/misc/learnMore.vue'
 

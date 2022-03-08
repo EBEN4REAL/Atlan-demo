@@ -177,6 +177,11 @@
                 default: null,
                 required: false,
             },
+            excludeMe: {
+                type: Boolean,
+                default: false,
+                required: false,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
@@ -184,8 +189,13 @@
                 props,
                 emit
             )
-            const { selectUserKey, queryText, groupId, showLoggedInUser } =
-                toRefs(props)
+            const {
+                selectUserKey,
+                queryText,
+                groupId,
+                excludeMe,
+                showLoggedInUser,
+            } = toRefs(props)
             const localValue = ref(modelValue.value)
             const allUsers = ref({}) // map of all users (userId: userRecord)
 
@@ -207,6 +217,7 @@
                 isEnriching,
             } = useFacetUsers({
                 groupId,
+                excludeMe: excludeMe.value,
             })
 
             watch(

@@ -55,6 +55,7 @@
     import TableHeader from '@tiptap/extension-table-header'
     import TableCell from '@tiptap/extension-table-cell'
     import { CustomTable } from '@common/editor/extensions/table/extension'
+    import { CustomMention } from '@common/editor/extensions/mentions/extension'
 
     import { TrailingNode } from '@common/editor/extensions/trailingNode'
     import SelectionMenu from './selectionMenu.vue'
@@ -65,6 +66,7 @@
     import CustomImage from './extensions/image/extension'
     import IFrame from './extensions/iframe/extension'
     import GoogleDoc from './extensions/googleDoc/extension'
+    import mentionSuggestion from './extensions/mentions/suggestion'
 
     import LinkPreview from './extensions/linkPreview/linkPreview'
     import { BLOCK_TIPPY_MENU } from '~/constant/readmeMenuItems'
@@ -177,6 +179,12 @@
                     ImageUpload,
                     IFrame,
                     ...EMBED_EXTENSIONS,
+                    CustomMention.configure({
+                        HTMLAttributes: {
+                            class: 'mention',
+                        },
+                        suggestion: mentionSuggestion,
+                    }),
                 ],
                 onUpdate({ editor: currEditor }) {
                     const content = currEditor.getHTML()

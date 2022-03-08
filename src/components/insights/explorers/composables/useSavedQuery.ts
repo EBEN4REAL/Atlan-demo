@@ -116,6 +116,7 @@ export function useSavedQuery(
 
         newTab = {
             ...newTab,
+            status: savedQuery?.attributes.certificateStatus,
             attributes: savedQuery?.attributes,
             key: savedQuery?.guid,
             isSaved: true,

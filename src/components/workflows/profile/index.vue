@@ -13,23 +13,20 @@
             :destroy-inactive-tab-pane="true"
             @change="handleChangeTab"
         >
-            <template v-for="tab in workflowTabs" :key="tab.id">
-                <a-tab-pane
-                    v-if="checkVisibility(tab)"
-                    :key="tab.id"
-                    :tab="tab.label"
-                    class="h-auto"
-                >
-                    <component
-                        :is="tab.component"
-                        :key="`${tab.id}_${searchDirtyTimestamp}`"
-                        :workflowObject="workflowObject"
-                        :runId="runId"
-                        :packageObject="packageObject"
-                        :workflowName="workflowObject?.metadata?.name"
-                    ></component>
-                </a-tab-pane>
-            </template>
+            <a-tab-pane
+                v-for="tab in workflowTabs"
+                :key="tab.id"
+                :tab="tab.label"
+                class="h-auto"
+            >
+                <component
+                    :is="tab.component"
+                    :key="`${tab.id}_${searchDirtyTimestamp}`"
+                    :workflowObject="workflowObject"
+                    :packageObject="packageObject"
+                    :workflowName="workflowObject?.metadata?.name"
+                ></component>
+            </a-tab-pane>
         </a-tabs>
     </div>
 </template>
@@ -39,18 +36,13 @@
         defineComponent,
         ref,
         defineAsyncComponent,
-        onMounted,
-        PropType,
         watch,
-        toRefs,
         provide,
-        computed,
     } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 
     import WorkflowHeader from './header/index.vue'
     import { workflowTabs } from '~/constant/workflowTabs'
-    import ABInternal from '~/composables/utils/abInternal'
 
     export default defineComponent({
         name: 'WorkflowProfile',
@@ -74,14 +66,10 @@
                 default: () => {},
             },
         },
-        setup(props) {
-            const { workflowObject, packageObject } = toRefs(props)
-
+        setup() {
             const route = useRoute()
 
             const activeKey = ref()
-
-            const runId = computed(() => route?.query?.name)
 
             const searchDirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
 
@@ -104,26 +92,22 @@
                 searchDirtyTimestamp.value = `dirty_${Date.now().toString()}`
                 // runName.value = run
                 router.push({
+                    params: { tab: 'runs' },
                     query: {
                         name: run,
                     },
                 })
             }
-            const { checkVisibility } = ABInternal()
             provide('newrun', handleNewRun)
 
             return {
                 activeKey,
                 handleChangeTab,
-                workflowObject,
-                packageObject,
                 workflowTabs,
                 handleNewRun,
                 runName,
                 route,
                 searchDirtyTimestamp,
-                runId,
-                checkVisibility,
             }
         },
     })

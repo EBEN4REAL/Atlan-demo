@@ -222,6 +222,7 @@ export const MinimalAttributes = [
     'tileCount',
     'pageCount',
     'categories',
+    'anchor',
     'parentCategory',
     'rowCount',
     'columnCount',
@@ -329,6 +330,8 @@ export const LineageAttributes = [
     'certificateStatus',
     'link',
     'dataType',
+    'columnCount',
+    'rowCount',
     // BI Relationships
     'workspace',
     'report',

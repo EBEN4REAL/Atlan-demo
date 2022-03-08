@@ -30,44 +30,29 @@
                 class="flex justify-between px-6 py-3 bg-gray-100 border-t"
                 v-if="currentStep < steps.length"
             >
-                <AtlanButton
+                <AtlanButton2
                     v-if="currentStep !== 0"
-                    padding="compact"
+                    label="Back"
                     color="secondary"
-                    size="sm"
+                    prefixIcon="CaretLeft"
                     @click="handlePrevious"
-                >
-                    <template #prefix>
-                        <AtlanIcon icon="ChevronLeft" />
-                    </template>
-                    Back
-                </AtlanButton>
+                />
 
-                <AtlanButton
+                <AtlanButton2
                     v-else-if="currentStep === 0 && !isEdit"
-                    padding="compact"
+                    label="Back to Marketplace"
                     color="secondary"
-                    size="sm"
+                    prefixIcon="CaretLeft"
                     @click="handleExit"
-                >
-                    <template #prefix>
-                        <AtlanIcon icon="ChevronLeft" />
-                    </template>
-                    Back to Marketplace
-                </AtlanButton>
+                />
 
-                <AtlanButton
+                <AtlanButton2
                     v-if="currentStep < steps.length - 1"
-                    padding="compact"
-                    size="sm"
+                    label="Next"
                     class="ml-auto"
+                    suffixIcon="ChevronRight"
                     @click="handleNext"
-                >
-                    Next
-                    <template #suffix>
-                        <AtlanIcon icon="ChevronRight" />
-                    </template>
-                </AtlanButton>
+                />
 
                 <a-popconfirm
                     v-else-if="currentStep === steps.length - 1 && isEdit"
@@ -92,22 +77,18 @@
                             >Start a new run</a-checkbox
                         >
                     </template>
-                    <AtlanButton padding="compact" size="sm">
-                        Update
-                    </AtlanButton>
+                    <AtlanButton2 class="ml-auto" label="Update" />
                 </a-popconfirm>
 
                 <div
                     v-else-if="currentStep === steps.length - 1 && !isEdit"
                     class="flex gap-x-2"
                 >
-                    <AtlanButton
+                    <AtlanButton2
                         :color="allowSchedule ? 'secondary' : 'primary'"
-                        size="sm"
+                        label="Run"
                         @click="handleSubmit(false)"
-                    >
-                        Run
-                    </AtlanButton>
+                    />
 
                     <a-popconfirm
                         v-if="allowSchedule"
@@ -124,16 +105,11 @@
                             <Schedule class="mb-3" v-model="cron"></Schedule>
                         </template>
 
-                        <AtlanButton
+                        <AtlanButton2
                             v-if="allowSchedule"
-                            padding="compact"
-                            size="sm"
-                        >
-                            Schedule & Run
-                            <template #suffix>
-                                <AtlanIcon icon="ChevronRight" />
-                            </template>
-                        </AtlanButton>
+                            suffixIcon="ChevronRight"
+                            label="Schedule & Run"
+                        />
                     </a-popconfirm>
                 </div>
             </div>
@@ -146,7 +122,7 @@
             v-if="isLoading || (!run?.status && runLoading)"
             class="flex flex-col justify-center"
         >
-            <a-spin size="large" />
+            <AtlanLoader class="h-10 mb-2" />
             <div>Setting up your workflow</div>
         </div>
 
@@ -158,11 +134,14 @@
                 </template>
                 <template #extra>
                     <div class="flex items-center justify-center">
-                        <a-button v-if="updateStatus.status === 'success'">
-                            <router-link to="/workflows">
-                                Back to Workflows</router-link
+                        <router-link to="/workflows">
+                            <AtlanButton2
+                                v-if="updateStatus.status === 'success'"
+                                color="secondary"
                             >
-                        </a-button>
+                                Back to Workflows
+                            </AtlanButton2>
+                        </router-link>
                     </div>
 
                     <div
@@ -170,13 +149,14 @@
                         class="flex flex-col items-center justify-center p-2 bg-gray-100 rounded gap-y-2"
                     >
                         <span>{{ isUpdateError }}</span>
-                        <a-button
+
+                        <AtlanButton2
                             v-if="updateStatus.status === 'error'"
+                            prefixIcon="ChevronLeft"
+                            color="secondary"
                             @click="handleBackToSetup"
-                        >
-                            <AtlanIcon icon="ChevronLeft"></AtlanIcon>
-                            Back to setup
-                        </a-button>
+                            label="Back to setup"
+                        />
                     </div>
                 </template>
             </a-result>
@@ -191,25 +171,22 @@
             <template #extra>
                 <div>
                     <Run
-                        v-if="run"
+                        v-if="run && !errorMesssage"
                         :run="run"
                         :is-loading="runLoading || !run?.status?.progress"
                         class="mb-3"
                     ></Run>
 
-                    <div calss="flex">
-                        <a-button v-if="status === 'success'">
-                            <router-link to="/assets">
-                                Back to Assets</router-link
-                            >
-                        </a-button>
-                        <a-button
+                    <div class="flex gap-x-3">
+                        <router-link v-if="status === 'success'" to="/assets">
+                            <AtlanButton2 label="Back to Assets" />
+                        </router-link>
+
+                        <AtlanButton2
                             v-if="run?.metadata"
-                            class="ml-3"
+                            label="Monitor Run"
                             @click="handleTrackLink"
-                        >
-                            Monitor Run
-                        </a-button>
+                        />
                     </div>
                 </div>
 
@@ -217,14 +194,14 @@
                     v-if="errorMesssage"
                     class="flex flex-col items-center justify-center p-2 bg-gray-100 rounded gap-y-2"
                 >
-                    <span>{{ errorMesssage }}</span>
-                    <a-button
+                    <span class="text-error">{{ errorMesssage }}</span>
+                    <AtlanButton2
                         v-if="status === 'error'"
+                        label="Back to setup"
+                        color="secondary"
+                        prefixIcon="ChevronLeft"
                         @click="handleBackToSetup"
-                    >
-                        <AtlanIcon icon="ChevronLeft"></AtlanIcon>
-                        Back to setup
-                    </a-button>
+                    />
                 </div>
             </template>
         </a-result>
@@ -439,9 +416,20 @@
             watch(runList, () => {
                 if (runList.value?.length > 0) {
                     run.value = runList.value[0]
+
                     if (run.value.status?.phase !== 'Running') {
                         pause()
                     }
+
+                    if (run?.value.status?.phase === 'Succeeded')
+                        setRunState('success', 'Workflow completed 🎉')
+
+                    if (run?.value.status?.phase === 'Failed')
+                        setRunState(
+                            'error',
+                            'Worflow run has failed',
+                            'Go to Monitor Run > Failed Node > Logs for more details'
+                        )
                 }
             })
 
@@ -481,13 +469,21 @@
             )
             const errorMesssage = ref('')
 
+            const setRunState = (st: string, tl = '', sbtl = '', err = '') => {
+                status.value = st
+                title.value = tl
+                subTitle.value = sbtl
+                errorMesssage.value = err
+            }
+
             watch(data, () => {
-                title.value = 'Workflow is in progress'
-                subTitle.value =
+                setRunState(
+                    'success',
+                    'Workflow is in progress',
                     'You can also track the progress of workflows in the Workflow Center'
-                status.value = 'success'
+                )
                 facets.value = {
-                    workflowTemplate: data.value.metadata.name,
+                    workflowTemplate: data.value?.metadata.name,
                 }
                 fetchRun()
                 resume()
@@ -495,11 +491,12 @@
 
             watch(error, () => {
                 if (error.value) {
-                    status.value = 'error'
-                    title.value = 'Workflow setup has failed'
-                    subTitle.value =
-                        'Something went wrong during setup process. Reach out to support@atlan.com for any help.'
-                    errorMesssage.value = error.value?.response?.data?.message
+                    setRunState(
+                        'error',
+                        'Workflow setup has failed',
+                        'Something went wrong during setup process. Reach out to support@atlan.com for any help.',
+                        error.value?.response?.data?.message
+                    )
                 }
             })
 
@@ -664,10 +661,11 @@
                         )
 
                         watchOnce(nrd, () => {
-                            run.value = undefined
-                            title.value = 'Workflow is in progress'
-                            subTitle.value = ''
-                            status.value = 'success'
+                            setRunState(
+                                'success',
+                                'Workflow is in progress',
+                                'Workflow is running with the updated configuration'
+                            )
                             facets.value = {
                                 runName: nrd.value.metadata.name,
                             }
@@ -675,9 +673,12 @@
                         })
 
                         watchOnce(nre, () => {
-                            title.value = 'Workflow run has failed'
-                            subTitle.value = ''
-                            status.value = 'error'
+                            setRunState(
+                                'error',
+                                'Workflow run has failed',
+                                '',
+                                nre.value
+                            )
                         })
                     }
                 } else {

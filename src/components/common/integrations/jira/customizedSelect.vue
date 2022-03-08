@@ -5,6 +5,7 @@
         :dropdown-class-name="dropdownClassName"
         :placeholder="placeholder"
         class="w-full rounded-xl"
+        @change="$emit('change', value)"
     >
         <a-select-option
             v-for="o in options"
@@ -35,7 +36,7 @@
         options: { type: Array, default: [] },
     })
 
-    const emit = defineEmits([])
+    const emit = defineEmits(['change'])
 
     const { value } = useVModels(props, emit)
 </script>

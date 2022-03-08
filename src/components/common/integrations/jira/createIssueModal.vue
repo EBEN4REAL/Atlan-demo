@@ -20,7 +20,7 @@
                 ref="formRef"
                 layout="vertical"
                 :class="$style.formComponent"
-                :rules="CREATE_TICKET_FORM_RULES"
+                :rules="rules"
                 :model="form"
                 :validate-trigger="['click', 'submit']"
             >
@@ -51,6 +51,7 @@
                             dropdown-class-name="max-h-72 overflow-y-scroll"
                             placeholder="Select issue type"
                             :options="issueTypeOptions"
+                            @change="initRequiredFields"
                         />
                     </a-form-item>
                 </div>
@@ -67,32 +68,29 @@
                 >
                     <a-textarea v-model:value="form.description" />
                 </a-form-item>
-                <!-- <div class="flex justify-between gap-x-4">
+
+                <div v-if="configLoading" class="grid grid-cols-2 gap-x-4">
+                    <a-skeleton :loading="true" :paragraph="false" active />
+                    <a-skeleton :loading="true" :paragraph="false" active />
+                </div>
+
+                <div v-else class="grid grid-cols-2 gap-x-4">
                     <a-form-item
-                        :name="['Priority']"
+                        v-for="field in requiredFields"
+                        :key="field.value"
+                        :name="[field.value]"
                         class="w-full mb-6"
-                        label="Priority"
+                        :label="field.label"
                     >
-                        <CustomSelect
-                            v-model:value="form.priority"
+                        <a-input v-model:value="form[field.value]" />
+                        <!-- <CustomSelect
+                            v-model:value="form[field.value]"
                             dropdown-class-name="max-h-72 overflow-y-scroll"
                             placeholder="Select issue priority"
                             :options="[]"
-                        />
+                        /> -->
                     </a-form-item>
-                    <a-form-item
-                        :name="['Reporter']"
-                        class="w-full mb-6"
-                        label="Reporter"
-                    >
-                        <CustomSelect
-                            v-model:value="form.reporter"
-                            dropdown-class-name="max-h-72 overflow-y-scroll"
-                            placeholder="Select issue reporter"
-                            :options="[]"
-                        />
-                    </a-form-item>
-                </div> -->
+                </div>
             </a-form>
         </div>
         <div
@@ -120,7 +118,7 @@
 
 <script setup lang="ts">
     import { useVModels } from '@vueuse/core'
-    import { computed, onMounted, PropType, ref, toRefs } from 'vue'
+    import { computed, onMounted, PropType, ref, toRefs, watch } from 'vue'
     import { message } from 'ant-design-vue'
     import ProjectSelector from '@/common/integrations/jira/jiraProjectsSelect.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -153,8 +151,6 @@
         summary: undefined,
         labels: ['Atlan'],
         description: '',
-        priority: '',
-        reporter: '',
         guid: asset.value.guid,
         name: asset.value.displayText,
         qualifiedName: asset.value.attributes.qualifiedName,
@@ -163,8 +159,10 @@
         assetUrl: `${origin}/assets/${asset.value.guid}/overview`,
     })
 
+    const rules = ref(CREATE_TICKET_FORM_RULES)
+
     const disableCreate = computed(() =>
-        Object.entries(CREATE_TICKET_FORM_RULES).some(([k, p]) => {
+        Object.entries(rules.value).some(([k, p]) => {
             if (p[0].required && !form.value[k]) return true
             return false
         })
@@ -191,32 +189,66 @@
         mutate: fetchConfig,
     } = getProjectConfig(projectKey)
 
-    const requiredFields = computed(() => {
-        const finalFields = []
+    const requiredFields = ref([])
+    const initRequiredFields = () => {
+        const finalFields: any = []
         if (!config.value) return []
         const { fields } = config.value.issuetypes.find(
             (_type) => _type.id === form.value.issueType
         )
 
         if (fields && typeof fields === 'object') {
-            Object.entries(fields).forEach(([fieldName, data]) => {
+            Object.entries(fields).forEach(([_, data]) => {
                 if (data.required) {
-                    finalFields.push(data)
+                    finalFields.push({
+                        label: data.name,
+                        value: data.key,
+                        data,
+                    })
                 }
             })
         }
+        // remove fields that are added static
+        const ignoreFieldsKey = [
+            'description',
+            'issuetype',
+            'labels',
+            'project',
+            'summary',
+        ]
 
-        return finalFields
-    })
+        requiredFields.value = finalFields.filter(
+            (f) => !ignoreFieldsKey.includes(f.value)
+        )
+    }
 
-    const handleProjectSelect = (v, option) => {
+    // This is a watcher will set form rules to be required for the required fields
+    watch(
+        requiredFields,
+        (v) => {
+            rules.value = CREATE_TICKET_FORM_RULES
+            if (v?.length)
+                v.forEach((field) => {
+                    rules.value[field.value] = [
+                        {
+                            required: true,
+                            message: 'This field is required',
+                            trigger: ['submit', 'change'],
+                        },
+                    ]
+                })
+        },
+        { deep: true }
+    )
+
+    const handleProjectSelect = async (v, option) => {
+        requiredFields.value = []
+
         const {
             meta: { issueTypes, key },
         } = option
 
         projectKey.value = key
-        fetchConfig()
-
         issueTypeOptions.value = [
             ...issueTypes.map((type) => ({
                 label: type.name,
@@ -225,6 +257,8 @@
             })),
         ]
         form.value.issueType = issueTypeOptions.value[0].value
+        await fetchConfig()
+        initRequiredFields()
     }
 
     const { data, isLoading, error, mutate, isReady } = createIssue(form)
@@ -289,6 +323,9 @@
     .formComponent {
         :global(.ant-form-item-label) {
             @apply font-bold;
+        }
+        :global(.ant-skeleton-title) {
+            @apply h-7 m-0;
         }
     }
 </style>

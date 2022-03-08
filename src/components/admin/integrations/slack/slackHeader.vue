@@ -40,7 +40,12 @@
                         !tenantSlackStatus.configured &&
                         tenantLevelOauthUrl
                     "
-                    @click="() => openSlackOAuth({ tenant: true })"
+                    @click="
+                        (e) => {
+                            e.stopPropagation()
+                            openSlackOAuth({ tenant: true })
+                        }
+                    "
                 >
                     <AtlanButton
                         v-auth="access.CREATE_INTEGRATION"
@@ -55,7 +60,12 @@
                     v-auth="access.CREATE_INTEGRATION"
                     size="sm"
                     padding="compact"
-                    @click="$emit('openConfig')"
+                    @click="
+                        (e) => {
+                            e.stopPropagation()
+                            $emit('openConfig')
+                        }
+                    "
                 >
                     Connect
                     <AtlanIcon icon="ArrowRight" />
@@ -105,6 +115,8 @@
         isOpen: { type: Boolean, required: true },
     })
 
+    const emit = defineEmits(['openConfig'])
+
     const store = integrationStore()
     const { tenantSlackStatus } = toRefs(store)
 
@@ -113,7 +125,8 @@
 
     const { data, isLoading, error, disconnect } = archiveSlack(pV)
 
-    const handleDisconnect = () => {
+    const handleDisconnect = (e) => {
+        e.stopPropagation()
         Modal.confirm({
             class: '',
             icon: null,

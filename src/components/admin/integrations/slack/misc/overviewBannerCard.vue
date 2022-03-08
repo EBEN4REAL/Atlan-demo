@@ -6,34 +6,28 @@
                 <span
                     class="flex items-center justify-center p-1 rounded bg-green-50 w-7 h-7"
                 >
-                    <AtlanIcon icon="Add" class="text-green-600" />
+                    <AtlanIcon icon="Chat" class="text-green-600" />
                 </span>
-                Create Jira issues from Atlan
+                Receive chat notifications directly into Slack
             </div>
             <div class="flex items-center gap-x-2">
                 <span
                     class="flex items-center justify-center p-1 rounded bg-primary-light w-7 h-7"
                 >
-                    <AtlanIcon icon="Link" class="text-primary" />
+                    <AtlanIcon icon="Share" class="text-primary" />
                 </span>
-                Link Jira issues with Atlan
+                Share asset profile, terms, queries with your team
             </div>
             <div class="flex items-center gap-x-2">
                 <span
                     class="flex items-center justify-center p-1 rounded bg-yellow-50 w-7 h-7"
                 >
-                    <AtlanIcon icon="Time" class="text-yellow-600" />
+                    <AtlanIcon
+                        icon="NotificationNoDot"
+                        class="text-yellow-600"
+                    />
                 </span>
-                See history of all Jira issues for any asset
-            </div>
-            <div class="flex items-center gap-x-2">
-                <span
-                    class="flex items-center justify-center p-1 rounded w-7 h-7"
-                    style="background: #efeffb"
-                >
-                    <AtlanIcon icon="Request" style="color: #5c5cd6" />
-                </span>
-                Request asset access by jira issue
+                Get updates whenever there are changes in a Term or Asset
             </div>
         </section>
     </div>

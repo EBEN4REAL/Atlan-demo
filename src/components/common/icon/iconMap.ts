@@ -429,6 +429,9 @@ import ThreeDotsAlt from '~/assets/images/icons/3-dots-alt.svg'
 import NoProperty from '~/assets/images/admin/customMetadata/empty-property.svg'
 import TrashAlt from '~/assets/images/icons/Trash-alt.svg'
 
+import Chat from '~/assets/images/icons/chat.svg'
+import NotificationNoDot from '~/assets/images/icons/notification-no-dot.svg'
+
 export default {
     EmptyJira,
     TrashAlt,
@@ -437,6 +440,8 @@ export default {
     Resources2,
     RunningQuery,
     FailedQuery,
+    Chat,
+    NotificationNoDot,
     SuccessQuery,
     IntegrationsActive,
     Integrations,

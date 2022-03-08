@@ -12,7 +12,10 @@
             @remove="remove"
         />
     </div>
-    <div v-else class="flex items-center h-12 p-1 border rounded">
+    <div
+        v-else
+        class="flex items-center h-10 col-span-2 p-1 border border-gray-300 rounded"
+    >
         <div class="flex-grow inline-block mx-3">
             <input
                 :value="workflowChannel"

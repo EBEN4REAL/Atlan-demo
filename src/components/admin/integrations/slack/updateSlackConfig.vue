@@ -6,7 +6,7 @@
             </template>
         </MinimalTab>
         <template v-if="activeTabKey === 'configuration'">
-            <section class="flex flex-col p-6 gap-y-3">
+            <section class="grid grid-cols-3 gap-10 p-6">
                 <div class="">
                     <h2 class="mb-1 font-bold">Channels</h2>
                     <div class="text-sm text-gray-500">
@@ -14,7 +14,7 @@
                     </div>
                 </div>
                 <div
-                    class="flex flex-wrap items-center h-12 gap-2 p-1 mb-5 border rounded"
+                    class="flex flex-wrap items-center col-span-2 gap-2 p-1 mb-5 border border-gray-300 rounded min-h-10"
                 >
                     <Chip
                         v-for="(channel, x) in channels"
@@ -55,13 +55,11 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2">
-                    <AddWorkflowChannel
-                        v-model:workflowChannel="workflowChannel.name"
-                        :invalid="workflowChannel.invalid"
-                        @change="handleWorkflowChannelChange"
-                    />
-                </div>
+                <AddWorkflowChannel
+                    v-model:workflowChannel="workflowChannel.name"
+                    :invalid="workflowChannel.invalid"
+                    @change="handleWorkflowChannelChange"
+                />
             </section>
         </template>
         <template v-if="activeTabKey === 'overview'">

@@ -12,7 +12,14 @@
         <SlackConfigModal @close="showSlackConfigModal = false" />
     </a-modal>
 
-    <div class="overflow-hidden border border-gray-300 rounded-lg customShadow">
+    <div
+        class="overflow-hidden border rounded-lg customShadow"
+        :class="
+            openKeys.includes('slack')
+                ? ' border-primary-focus'
+                : 'border-gray-300'
+        "
+    >
         <a-menu v-model:openKeys="openKeys" mode="inline" :class="$style.menu">
             <a-sub-menu key="slack">
                 <template #expandIcon> <AtlanIcon icon="CaretDown" /></template>
@@ -25,7 +32,7 @@
                 <UpdateSlackConfig v-if="tenantSlackStatus.configured" />
                 <template v-else>
                     <OverviewBanner
-                        class="flex flex-col p-4 rounded-lg gap-y-3"
+                        class="flex flex-col p-4 m-6 border rounded-lg gap-y-3"
                     />
                 </template>
             </a-sub-menu>

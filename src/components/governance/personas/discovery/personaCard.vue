@@ -54,6 +54,10 @@
                 </div> -->
             </div>
             <div class="flex gap-x-1">
+                <AtlanIcon
+                    v-if="persona.glossaryPolicies?.length || 0"
+                    icon="Glossary"
+                />
                 <img
                     v-for="imgPath in getUniqueTypeIcons().connectors"
                     :key="imgPath"

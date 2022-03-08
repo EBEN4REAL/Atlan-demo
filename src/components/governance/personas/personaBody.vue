@@ -473,7 +473,7 @@
                         type,
                         masking: dataPolicy.maskType ? dataPolicy.maskType : '',
                         denied: !dataPolicy.allow,
-                        asset_count: dataPolicy.assets.length,
+                        asset_count: dataPolicy?.assets?.length || 0,
                     }
                     useAddEvent(
                         'governance',

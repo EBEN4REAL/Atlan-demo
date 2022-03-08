@@ -176,6 +176,15 @@
                                     v-for="el in glossaryComputed"
                                     :key="el.id"
                                 >
+                                    <AtlanIcon
+                                        :icon="
+                                            getEntityStatusIcon(
+                                                el.typeName,
+                                                certificateStatus(el)
+                                            )
+                                        "
+                                        class="mr-1"
+                                    />
                                     {{ el.displayText }}
                                 </a-select-option>
                             </a-select>
@@ -688,6 +697,8 @@
     import useScopeService from './composables/useScopeService'
     import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
     import useGlossaryStore from '~/store/glossary'
+    import useGlossaryData from '~/composables/glossary2/useGlossaryData'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         name: 'AddPolicy',
@@ -1049,10 +1060,12 @@
                 const sliced = splited.slice(3, splited.length)
                 return sliced.join('/')
             }
-            const canEdit = computed(() =>
-                props.whitelistedConnectionIds.includes(
+            const canEdit = computed(() => {
+                if(policyType.value === 'glossaryPolicy') return true
+                return props.whitelistedConnectionIds.includes(
                     policy?.value?.connectionId
                 )
+            }
             )
             onMounted(() => {
                 window.addEventListener('keydown', (keyDown) => {
@@ -1067,7 +1080,11 @@
             const handleChangeGlossary = (glossaryIds) => {
                 policy.value.glossaryQualifiedNames = glossaryIds
             }
+            const { getEntityStatusIcon } = useGlossaryData()
+            const { certificateStatus } = useAssetInfo()
             return {
+                certificateStatus,
+                getEntityStatusIcon,
                 selectedPersonaDirty,
                 rules,
                 policy,

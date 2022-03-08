@@ -164,9 +164,9 @@
                                     :block-node="true"
                                     :auto-expand-parent="false"
                                     ref="treeRef"
-                                    @change="onChange"
                                     :data-test-id="'conector'"
                                     class="tree-select-nodes"
+                                    @change="onChange"
                                     @select="selectNodeTree"
                                     @click="selectNodeTree"
                                 >
@@ -501,11 +501,12 @@
                 }
             }
 
-            const onChange = (value) => {
-                if (!value) {
-                    selectNode(undefined, undefined)
-                }
-            }
+            // const onChange = (value) => {
+            //     debugger
+            //     if (!value) {
+            //         selectNodeTree(undefined, undefined)
+            //     }
+            // }
 
             const filteredConnector = computed(() =>
                 store.getSourceList?.find((item) => item.id === connector.value)
@@ -600,7 +601,9 @@
                 //         expandedKeys.value
                 //     )
                 // }
-                else {
+
+                // Checking for selection of same node again to avoid deselection of a connector
+                else if (value) {
                     selectedKeys.value.splice(0, selectedKeys.value.length)
                     selectedKeys.value.push(value)
 
@@ -625,6 +628,11 @@
                     emit('update:data', payload)
                     emit('change')
                     emit('changeConnector')
+                }
+                // Runs on reselecting the same node as was selected before
+                else {
+                    selectedKeys.value = []
+                    selectedKeys.value.push(node?.key)
                 }
             }
 
@@ -811,7 +819,7 @@
             return {
                 treeSelectRef,
                 filterSourceIds,
-                onChange,
+                // onChange,
                 expandedKeys,
                 selectNode,
                 handleChange,

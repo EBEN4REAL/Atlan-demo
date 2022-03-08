@@ -729,7 +729,7 @@
 </style>
 <style lang="less">
     .container-tabs {
-        width: 200px
+        width: 250px
         // .ant-radio-button-wrapper {
         //     &::before {
         //         display: none !important;

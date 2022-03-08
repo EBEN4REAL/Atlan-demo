@@ -159,7 +159,7 @@
         assetUrl: `${origin}/assets/${asset.value.guid}/overview`,
     })
 
-    const rules = ref(CREATE_TICKET_FORM_RULES)
+    const rules = ref(JSON.parse(JSON.stringify(CREATE_TICKET_FORM_RULES)))
 
     const disableCreate = computed(() =>
         Object.entries(rules.value).some(([k, p]) => {
@@ -226,7 +226,7 @@
     watch(
         requiredFields,
         (v) => {
-            rules.value = CREATE_TICKET_FORM_RULES
+            rules.value = JSON.parse(JSON.stringify(CREATE_TICKET_FORM_RULES))
             if (v?.length)
                 v.forEach((field) => {
                     rules.value[field.value] = [

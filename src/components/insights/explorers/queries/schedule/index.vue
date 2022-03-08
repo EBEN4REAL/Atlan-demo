@@ -372,20 +372,22 @@
                                 .then(() => {
                                     if (activeTabIndex.value + 1 === 2) {
                                         scheduleWorkFlow()
+                                        ;(async () => {
+                                            await until(isLoading).toBe(true)
+                                            if (error.value) {
+                                                message.error(
+                                                    'Failed to submit schedule query!'
+                                                )
+                                            }
+                                            if (data.value) {
+                                                activeTabIndex.value =
+                                                    activeTabIndex.value + 1
+                                            }
+                                        })()
+                                    } else {
+                                        activeTabIndex.value =
+                                            activeTabIndex.value + 1
                                     }
-                                    ;(async () => {
-                                        debugger
-                                        await until(isLoading).toBe(true)
-                                        if (error.value) {
-                                            message.error(
-                                                'Failed to submit schedule query!'
-                                            )
-                                        }
-                                        if (data.value) {
-                                            activeTabIndex.value =
-                                                activeTabIndex.value + 1
-                                        }
-                                    })()
                                 })
                                 .catch(() => {})
                         }

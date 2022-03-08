@@ -51,26 +51,40 @@
         </div>
         <div
             class="p-3 border border-gray-300 rounded light-shadow"
-            v-if="variablesData?.length > 0 && false"
+            v-if="variablesData?.length > 0"
         >
             <div class="flex items-center mb-3">
                 <p class="font-bold text-gray-700" style="font-size: 16px">
                     Variables
                 </p>
             </div>
-            <div class="flex items-center mb-2 text-gray-500">
-                <AtlanIcon icon="String" class="h-4 mr-2 w-4 -mt-0.5" />
-                <span>Customer name - </span>
-                <p class="text-sm text-gray-500">
-                    <span class="font-bold">&nbsp; Xyz Inc, Acme Inc</span>
-                </p>
-            </div>
-            <div class="flex items-center text-gray-500">
-                <AtlanIcon icon="DateTime" class="h-4 mr-2 w-4 -mt-0.5" />
-                <span>Date - </span>
-                <p class="text-sm text-gray-500">
-                    <span class="font-bold">&nbsp; 2019/20/11</span>
-                </p>
+            <div
+                class="flex flex-wrap items-center mb-2 overflow-y-auto text-gray-500 gap-y-2"
+                style="height: 52px"
+            >
+                <template v-for="item in variablesData" :key="item.key">
+                    <div
+                        style="flex: 0.5; min-width: 280px"
+                        class="flex items-center"
+                    >
+                        <AtlanIcon
+                            :icon="getVariableIcon(item.type)"
+                            class="h-4 mr-2 w-4 -mt-0.5"
+                        />
+                        <span>{{ item.name }} -</span>
+                        <p class="text-sm text-gray-500">
+                            <span
+                                class="font-bold"
+                                v-if="typeof item.value === 'object'"
+                                >&nbsp; {{ item.value.join(',') }}
+                            </span>
+                            <span class="font-bold" v-else
+                                >&nbsp;
+                                {{ getVariableValue(item.value, item.type) }}
+                            </span>
+                        </p>
+                    </div>
+                </template>
             </div>
         </div>
     </div>
@@ -129,6 +143,33 @@
                 return str.match(/\b([A-Z])/g).join('')
             }
 
+            const getVariableIcon = (type: string) => {
+                switch (type) {
+                    case 'number': {
+                        return 'Number'
+                    }
+                    case 'date': {
+                        return 'DateTime'
+                    }
+                    default: {
+                        return 'String'
+                    }
+                }
+            }
+            const getVariableValue = (value: any, type: string) => {
+                switch (type) {
+                    case 'number': {
+                        return value
+                    }
+                    case 'date': {
+                        return dayjs(value).format('YYYY/DD/MM')
+                    }
+                    default: {
+                        return value
+                    }
+                }
+            }
+
             const format = 'MMM DD, dddd, hh:MM A'
             return {
                 format,
@@ -138,6 +179,8 @@
                 timeZoneAbbreviation,
                 getAbbreviation,
                 infoTabeState,
+                getVariableIcon,
+                getVariableValue,
             }
         },
     })

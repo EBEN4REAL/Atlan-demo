@@ -112,7 +112,7 @@
             :visible="queryLogsFilterDrawerVisible"
             :mask="false"
             :placement="'left'"
-            :width="286"
+            :width="235"
             :closable="false"
         >
             <div class="relative">
@@ -131,7 +131,8 @@
                         class="px-2 py-3"
                         @change="handleFilterChange"
                 /></AssetFilters>
-                <AtlanBtn
+
+                <!-- <AtlanBtn
                     v-if="queryLogsFilterDrawerVisible"
                     class="fixed z-10 px-0 border-l-0 rounded-none rounded-r top-1/4 left-72"
                     color="secondary"
@@ -139,13 +140,24 @@
                         () => {
                             queryLogsFilterDrawerVisible = false
                         }
-                    "
+                    " 
                 >
                     <AtlanIcon
                         icon="ChevronDown"
                         class="h-4 px-1 transition-transform transform rotate-90"
                     />
-                </AtlanBtn>
+                </AtlanBtn> -->
+                <div
+                    v-if="queryLogsFilterDrawerVisible"
+                    class="close-btn-sidebar-left"
+                    @click="
+                        () => {
+                            queryLogsFilterDrawerVisible = false
+                        }
+                    "
+                >
+                    <AtlanIcon icon="Add" class="text-white" />
+                </div>
             </div>
         </a-drawer>
     </div>

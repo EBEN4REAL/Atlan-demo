@@ -45,8 +45,19 @@
                 </div>
                 <div v-else class="flex flex-row items-center w-full">
                     <span class="flex-shrink-0 mr-2" style="font-size: 28px">
-                        <img :src="getContextName(`icon`)" class="w-6 h-6"
-                    /></span>
+                        <a-tooltip placement="bottomLeft" arrow-point-at-center>
+                            <template #title>{{
+                                getContextName(`connection`)
+                            }}</template>
+
+                            <img
+                                :src="getContextName(`icon`)"
+                                class="w-6 h-6"
+                            />
+                        </a-tooltip>
+                        <!-- <img :src="getContextName(`icon`)" class="w-6 h-6"
+                    /> -->
+                    </span>
                     <div class="flex flex-col w-full bg">
                         <!-- <div
                             class="flex items-center w-full text-sm cursor-pointer max-full place-content-between"
@@ -1088,6 +1099,20 @@
             const getContextName = (item) => {
                 const chunks = data.value?.attributeValue?.split('/')
                 const connectorKey = `${chunks[0]}/${chunks[1]}/${chunks[2]}`
+                console.log('chunks:', chunks)
+
+                if (item === 'connection') {
+                    if (chunks?.length > 2) {
+                        const obj = treeData.value.find(
+                            ({ connector }) => connector === chunks[1]
+                        )
+                        const child = obj.children.find(
+                            ({ key }) => key === connectorKey
+                        )
+                        return `${nodeStringFilter(chunks[1])}: ${child.title}`
+                    }
+                    return ''
+                }
 
                 if (item === 'connector') {
                     if (chunks?.length > 2) {

@@ -194,7 +194,12 @@
                     >
                     <a-tooltip v-if="permissions.length" placement="top">
                         <template #title>
-                            <div v-if="permissions.length < 8">
+                            <div
+                                v-if="
+                                    permissions.length <
+                                    (type !== 'glossaryPolicy' ? 9 : 5)
+                                "
+                            >
                                 {{ permissions.length }}
                                 {{
                                     permissions.length > 1
@@ -210,7 +215,8 @@
                                 class="-mt-1 icon-gray"
                             />
                             {{
-                                permissions.length >= 8
+                                permissions.length >=
+                                (type !== 'glossaryPolicy' ? 9 : 5)
                                     ? 'All'
                                     : permissions.length
                             }}

@@ -907,15 +907,11 @@
                             description: '',
                             isNew: true,
                             actions: [
-                                'entity-read',
-                                'entity-update',
                                 'entity-create',
+                                'entity-update',
                                 'entity-delete',
-                                'link-assets',
                                 'entity-update-business-metadata',
                                 'entity-update-classification',
-                                'add-terms',
-                                'remove-terms',
                             ],
                         }
                     }

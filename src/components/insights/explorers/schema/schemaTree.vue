@@ -63,7 +63,7 @@
                 >
                     <AtlanIcon icon="NoSchema" class="no-schema-icon h-28" />
                     <p class="mt-6 mb-0 text-base text-gray-700">
-                        No tables available
+                        No tables or views available
                     </p>
                 </div>
                 <div

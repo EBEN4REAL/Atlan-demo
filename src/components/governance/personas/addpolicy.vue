@@ -630,6 +630,7 @@
                 >
                     <ManagePermission
                         v-model:actions="policy.actions"
+                        :type="type"
                         :visible-drawer="isShow"
                         @close="() => (isShow = false)"
                         @save="handleSavePermission"

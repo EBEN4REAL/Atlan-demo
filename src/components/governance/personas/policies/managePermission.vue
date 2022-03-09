@@ -30,7 +30,7 @@
             <MetadataScopes
                 v-model:actions="actionsLocal"
                 class="mb-6"
-                type="persona"
+                :type="type === 'glossaryPolicy' ? 'glossaryPolicy' : 'persona'"
             />
         </div>
         <div
@@ -80,6 +80,10 @@
             },
             visibleDrawer: {
                 type: Boolean,
+                required: true,
+            },
+            type: {
+                type: String,
                 required: true,
             },
         },

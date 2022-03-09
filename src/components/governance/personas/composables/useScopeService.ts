@@ -228,6 +228,70 @@ export const personaScopeList = [
     },
 ]
 
+export const glossaryPolicyScopeList = [
+    {
+        scopes: [
+       
+            {
+                value: 'entity-create',
+                label: 'Create',
+                filterLabel: 'Create asset',
+                desc: 'Permission to create term & categories inside the glossary',
+            },
+            {
+                value: 'entity-update',
+                label: 'Update',
+                filterLabel: 'Update asset',
+                desc: 'Permission to update metadata, resources, readme for terms & category and to link those terms with all assets',
+            },
+     
+            {
+                value: 'entity-delete',
+                label: 'Delete',
+                filterLabel: 'Delete asset',
+                desc: 'Permission to delete terms and categories inside the glossary',
+            },
+        ],
+        type: 'Assets',
+        label: 'Assets',
+    },
+    {
+        scopes: [
+            {
+                value: 'entity-update-business-metadata',
+                label: 'Update Custom Metadata',
+                desc: 'Update values for BM attributes',
+            },
+            // {
+            //     value: 'entity-add-classification',
+            //     label: 'add: Classifications',
+            // },
+            // {
+            //     value: 'entity-remove-classification',
+            //     label: 'remove: Classifications',
+            // },
+            {
+                value: 'entity-update-classification',
+                label: 'Update Classifications',
+                desc: 'Update classifications',
+            },
+
+            {
+                value: 'add-terms',
+                label: 'Add Terms',
+                desc: 'Link terms',
+            },
+            {
+                value: 'remove-terms',
+                label: 'Remove Terms',
+                desc: 'Unlink terms',
+            },
+        ],
+        type: 'Governance',
+        label: 'Governance',
+    },
+]
+
 export default function scopeService() {
     // purposes | persona
     function listScopes(type: string) {
@@ -245,6 +309,10 @@ export default function scopeService() {
         if (type === 'purpose')
             return {
                 scopeList: purposeScopeList,
+            }
+              if (type === 'glossaryPolicy')
+            return {
+                scopeList: glossaryPolicyScopeList,
             }
     }
     function findActions(actions: string[], type: string) {

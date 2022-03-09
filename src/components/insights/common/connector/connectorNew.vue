@@ -97,6 +97,8 @@
                     <a-popover
                         placement="rightTop"
                         class="hover:bg-gray-100 selector-popover"
+                        mouseEnterDelay="0"
+                        mouseLeaveDelay="0.1"
                     >
                         <template #content>
                             <div
@@ -202,7 +204,12 @@
                         </div>
                     </a-popover>
 
-                    <a-popover placement="rightTop" class="selector-popover">
+                    <a-popover
+                        placement="rightTop"
+                        class="selector-popover"
+                        mouseEnterDelay="0"
+                        mouseLeaveDelay="0.1"
+                    >
                         <template #content>
                             <div
                                 class="overflow-x-hidden overflow-y-hidden w-60"
@@ -238,6 +245,10 @@
                                 class="self-center ml-auto mr-4 text-gray-500 clear-btn"
                             >
                                 <button
+                                    v-if="
+                                        getContextName(`database`) !==
+                                        'Select database context'
+                                    "
                                     @click="clearStateDBHandle"
                                     class="hover:text-primary"
                                     :class="[
@@ -261,6 +272,8 @@
                         <a-popover
                             placement="rightTop"
                             class="selector-popover"
+                            mouseEnterDelay="0"
+                            mouseLeaveDelay="0.05"
                         >
                             <template #content>
                                 <div
@@ -307,6 +320,11 @@
                                     class="self-center ml-auto mr-4 text-gray-500 clear-btn"
                                 >
                                     <button
+                                        v-if="
+                                            getContextName(`schema`) !==
+                                                'Select schema context' &&
+                                            getContextName(`schema`) !== ''
+                                        "
                                         :class="[
                                             getContextName(`schema`) ===
                                             'Select schema context'

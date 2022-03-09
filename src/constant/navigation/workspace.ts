@@ -5,6 +5,7 @@ export const workspaceList = [
         icon: 'AssetsActive',
         isActive: true,
         inactiveIcon: 'AssetsInactive',
+        description: 'Discover & enrich all data assets in your organization',
     },
     {
         path: '/glossary',
@@ -12,6 +13,8 @@ export const workspaceList = [
         icon: 'Glossary',
         isActive: true,
         inactiveIcon: 'GlossaryInactive',
+        description: `Govern all your business terms and metrics`,
+        activeBackground: '#FFECF1',
     },
     {
         path: '/insights',
@@ -19,6 +22,8 @@ export const workspaceList = [
         icon: 'InsightsActive',
         isActive: true,
         inactiveIcon: 'InsightsInactive',
+        description: `Query datasets and derive business insights`,
+        activeBackground: '#FFF5C6',
     },
     // {
     //     path: '/workflows',

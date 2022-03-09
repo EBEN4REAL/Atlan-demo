@@ -9,6 +9,8 @@ export const workspaceCentreList = [
         isActive: true,
         auth: page.PAGE_ADMIN,
         inactiveIcon: 'WorkflowsInactive',
+        description: 'Setup, run & monitor workflow runs',
+        activeBackground: '#D7FCDF',
     },
     {
         path: '/governance',
@@ -21,6 +23,8 @@ export const workspaceCentreList = [
         path: '/admin',
         icon: 'Admin',
         label: 'Admin Center',
+        description:
+            'Manage users & groups, API keys, integrating tools, and more.',
         isActive: true,
         auth: page.PAGE_ADMIN,
     },

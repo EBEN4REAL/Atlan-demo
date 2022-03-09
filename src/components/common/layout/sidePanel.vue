@@ -5,7 +5,7 @@
             <a-tooltip title="Home" placement="right">
                 <router-link
                     to="/"
-                    class="flex items-center w-full mx-0 mt-3 menu-item"
+                    class="flex items-center w-full mx-0 mb-1"
                     :class="isCollapsed ? 'justify-center px-0 py-1' : ''"
                 >
                     <img
@@ -26,7 +26,7 @@
             <a-tooltip title="Home" placement="right">
                 <router-link
                     to="/"
-                    class="flex items-center w-full mx-0 mt-3 menu-item"
+                    class="flex items-center w-full mx-0 mb-1 menu-item"
                     :class="isCollapsed ? 'justify-center px-0 py-1' : ''"
                 >
                     <atlan-icon
@@ -63,7 +63,15 @@
             <!-- pages -->
 
             <template v-for="nav in workspaceList" :key="nav.label">
-                <a-tooltip :title="nav.label" placement="right">
+                <a-tooltip placement="right" color="#2A2F45">
+                    <template #title
+                        ><div class="text-sm font-semibold">
+                            {{ nav.label }}
+                        </div>
+                        <div v-if="nav?.description" class="text-xs">
+                            {{ nav?.description }}
+                        </div></template
+                    >
                     <router-link
                         v-if="nav.isActive"
                         v-slot="{ isActive }"
@@ -71,7 +79,7 @@
                         :to="nav.path"
                         class="flex items-center w-full mx-0 menu-item"
                         :class="
-                            isCollapsed ? 'p-2 justify-center mt-2' : 'mt-1'
+                            isCollapsed ? 'p-2 justify-center my-1' : 'mt-1'
                         "
                         @click="closeNavDrawer"
                     >
@@ -87,10 +95,18 @@
                 </a-tooltip>
             </template>
         </div>
-        <div class="flex-grow"></div>
+        <div class="p-2"><hr /></div>
         <div class="px-2">
             <template v-for="nav in workspaceCentreList" :key="nav.label">
-                <a-tooltip :title="nav.label" placement="right">
+                <a-tooltip placement="right" color="#2A2F45">
+                    <template #title
+                        ><div class="text-sm font-semibold">
+                            {{ nav.label }}
+                        </div>
+                        <div v-if="nav?.description" class="text-xs">
+                            {{ nav?.description }}
+                        </div></template
+                    >
                     <router-link
                         v-if="
                             (nav.isActive &&
@@ -101,7 +117,7 @@
                         v-slot="{ isActive }"
                         v-auth.or="nav.auth"
                         :to="nav.path"
-                        class="flex items-center w-full mx-0 mt-2 menu-item"
+                        class="flex items-center w-full mx-0 my-1 menu-item"
                         :class="isCollapsed ? 'p-2 justify-center' : ''"
                         @click="closeNavDrawer"
                     >
@@ -121,44 +137,51 @@
                 </a-tooltip>
             </template>
         </div>
-        <!-- <div class="px-3">
+
+        <div class="flex-grow"></div>
+        <div class="px-2">
             <template v-for="nav in helpCenterList" :key="nav.id">
-                <div
-                    v-if="nav.isActive"
-                    class="w-full mx-0 cursor-pointer menu-item group"
-                    @click="
-                        () => {
-                            nav.id === 'support' ? toggleHelpWidget() : null
-                        }
-                    "
-                >
-                    <a
-                        v-if="nav.link"
-                        :target="nav.openInANewTab ? '_blank' : 'self'"
-                        :href="nav.link"
-                        class="flex items-center"
+                <a-tooltip placement="right" color="#2A2F45">
+                    <template #title
+                        ><div class="text-sm font-semibold">
+                            {{ nav.label }}
+                        </div>
+                    </template>
+                    <div
+                        v-if="nav.isActive"
+                        class="flex items-center w-full mx-0 my-1 menu-item"
+                        :class="isCollapsed ? 'p-2 justify-center' : ''"
+                        @click="
+                            () => {
+                                nav.id === 'support' ? toggleHelpWidget() : null
+                            }
+                        "
                     >
-                        <atlan-icon
-                            :icon="nav?.icon"
-                            class="h-4 mr-2 text-gray-500"
-                        />
-                        <span class="hover:text-primary"> {{ nav.label }}</span>
-                        <AtlanIcon
-                            v-if="nav.openInANewTab"
-                            icon="External"
-                            class="ml-2 text-gray-500 opacity-0 group-hover:opacity-100 hover:text-gray-500"
-                        />
-                    </a>
-                    <span v-else class="flex items-center">
-                        <atlan-icon
-                            :icon="nav?.icon"
-                            class="h-4 mr-2 text-gray-500"
-                        />
-                        <span class="hover:text-primary"> {{ nav.label }}</span>
-                    </span>
-                </div>
+                        <a
+                            v-if="nav.link"
+                            :target="nav.openInANewTab ? '_blank' : 'self'"
+                            :href="nav.link"
+                            class="flex items-center"
+                        >
+                            <atlan-icon
+                                :icon="nav?.icon"
+                                class="text-gray-500"
+                                :class="isCollapsed ? 'h-6' : 'h-4 mr-2'"
+                            />
+                            <span v-if="!isCollapsed"> {{ nav.label }}</span>
+                        </a>
+                        <span v-else class="flex items-center">
+                            <atlan-icon
+                                :icon="nav?.icon"
+                                class="text-gray-500"
+                                :class="isCollapsed ? 'h-6' : 'h-4 mr-2'"
+                            />
+                            <span v-if="!isCollapsed"> {{ nav.label }}</span>
+                        </span>
+                    </div></a-tooltip
+                >
             </template>
-        </div> -->
+        </div>
 
         <!-- <div
             v-if="path === '/'"
@@ -167,13 +190,13 @@
             <UserPersonalAvatar placement="topLeft" class="py-2">
             </UserPersonalAvatar>
         </div> -->
-        <div class="w-full my-3">
+        <!--  <div class="w-full my-3">
             <div class="flex mx-3">
-                <!-- <span class="flex items-center text-xs text-gray-500">
+                <span class="flex items-center text-xs text-gray-500">
                     ATL{{ getVersion }}
-                </span> -->
+                </span>
             </div>
-        </div>
+        </div> -->
     </div>
 </template>
 

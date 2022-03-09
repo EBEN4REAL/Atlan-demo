@@ -82,6 +82,19 @@ export function useBody(
     base.size(limit || 0)
 
     if (typeName === 'Column') {
+        debugger
+        if (sortOrderColumn && sortOrderColumn.length) {
+            if (queryText?.length) {
+            } else {
+                let sortData = sortOrderColumn.split('-')
+                base.sort(`${sortData[0]}`, { order: sortData[1] })
+            }
+        } else {
+            if (queryText?.length) {
+            } else {
+                base.sort('name.keyword', { order: sort })
+            }
+        }
     } else {
         if (
             (typeName === 'Table' || Array.isArray(typeName)) &&

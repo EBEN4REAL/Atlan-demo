@@ -374,7 +374,11 @@
                                 "
                                 size="small"
                                 class="border-none text-primary"
-                                :disabled="!connectorData.attributeValue"
+                                :disabled="
+                                    type === 'glossaryPolicy'
+                                        ? false
+                                        : !connectorData.attributeValue
+                                "
                                 @click="handleToggleManage"
                             >
                                 Edit

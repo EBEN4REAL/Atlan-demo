@@ -486,9 +486,6 @@ export default function useEventGraph({
                 addSubGraph(data.value, registerAllListeners)
             }
 
-            const ucell = graph.value.getCellById(guid)
-            graph.value.scrollToCell(ucell, { animation: { duration: 600 } })
-
             if (Object.keys(actions.value).length) {
                 Object.entries(actions.value).forEach(([k, v]) => {
                     if (k === 'selectNode') selectNode(v)

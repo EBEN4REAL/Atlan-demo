@@ -94,7 +94,14 @@
                 <a-button-group>
                     <a-tooltip title="Open">
                         <a-button
-                            v-if="showCTA('open')"
+                            v-if="
+                                showCTA('open') &&
+                                !(
+                                    isDrawer &&
+                                    route?.params?.id &&
+                                    assetType(selectedAsset) === 'Column'
+                                )
+                            "
                             class="flex items-center justify-center p-2"
                             @click="handleAction('open')"
                         >
@@ -581,7 +588,7 @@
                 selectedAssetUpdatePermission,
                 showCTA,
                 onClickTabIcon,
-
+                route,
                 // for collection access
                 collectionInfo,
                 hasCollectionReadPermission,

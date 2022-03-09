@@ -278,7 +278,7 @@
         emits: ['change', 'openLog', 'handleSetLogo'],
         setup(props, { emit }) {
             // const graphRef = inject('graphRef')
-
+            const router = useRouter()
             const stepForm = ref()
             const currentStep = ref(0)
             const runOnUpdate = ref(false)
@@ -414,12 +414,16 @@
             const run = ref({})
 
             watch(runList, () => {
-                if (runList.value?.length > 0) {
+                if (runList.value?.length) {
                     run.value = runList.value[0]
 
-                    if (run.value.status?.phase !== 'Running') {
-                        pause()
-                    }
+                    if (
+                        !run.value.status?.startedAt ||
+                        !run.value.status?.phase
+                    )
+                        fetchRun()
+
+                    if (run.value.status?.phase !== 'Running') pause()
 
                     if (run?.value.status?.phase === 'Succeeded')
                         setRunState('success', 'Workflow completed 🎉')
@@ -430,7 +434,7 @@
                             'Worflow run has failed',
                             'Go to Monitor Run > Failed Node > Logs for more details'
                         )
-                }
+                } else fetchRun()
             })
 
             const handleTrackLink = () => {
@@ -689,8 +693,8 @@
             const handleBackToSetup = () => {
                 status.value = undefined
             }
-            const router = useRouter()
-            const handleExit = (key) => {
+
+            const handleExit = () => {
                 router.replace(`/workflows/setup`)
             }
 

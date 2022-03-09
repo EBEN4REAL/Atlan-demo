@@ -38,7 +38,7 @@
 </template>
 
 <script lang="ts">
-    import { useVModels } from '@vueuse/core'
+    import { until, useVModels } from '@vueuse/core'
     import { computed, defineComponent, ref, toRefs, watch } from 'vue'
     import { useRunDiscoverList } from '~/composables/package/useRunDiscoverList'
     import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
@@ -71,6 +71,8 @@
 
             const limit = ref(20)
             const offset = ref(0)
+            const retryCount = ref(2)
+
             const queryText = ref('')
             const facets = ref({
                 workflowTemplate: workflowName.value,
@@ -81,7 +83,7 @@
             })
 
             const dependentKey = ref('default_runs_select')
-            const { list, quickChange } = useRunDiscoverList({
+            const { list, quickChange, isLoading } = useRunDiscoverList({
                 isCache: false,
                 dependentKey,
                 facets,
@@ -111,6 +113,22 @@
                 return ''
             }
 
+            const retryFetchList = async () => {
+                const found = list.value.findIndex(
+                    (ls) => ls?.metadata?.name === modelValue.value
+                )
+
+                if (found === -1 && retryCount.value) {
+                    quickChange()
+                    await until(isLoading).toBe(false)
+                    selectedValue.value = modelValue.value
+                    retryCount.value -= 1
+                    retryFetchList()
+                } else {
+                    retryCount.value = 2
+                }
+            }
+
             watch(list, () => {
                 if (!selectedValue.value) {
                     if (list.value?.length > 0) {
@@ -121,14 +139,7 @@
             })
 
             watch(modelValue, () => {
-                const found = list.value.findIndex(
-                    (ls) => ls?.metadata?.name === modelValue.value
-                )
-
-                if (found === -1) {
-                    quickChange()
-                    selectedValue.value = modelValue.value
-                }
+                retryFetchList()
             })
 
             const {

@@ -99,6 +99,7 @@
                         : 'Readme hasn\'t been added for this asset.'
                 "
                 @change="$emit('editing')"
+                @transitionend.stop="() => {}"
             />
         </div>
     </div>

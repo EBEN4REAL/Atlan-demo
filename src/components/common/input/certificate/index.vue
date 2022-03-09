@@ -13,7 +13,7 @@
                     v-if="!editPermission && role !== 'Guest'"
                     class="px-3 py-2 mx-4 mb-3 bg-gray-100"
                 >
-                    You don't have edit access, suggest a new Certificate.<br />
+                    You don't have edit access. Suggest a new Certificate and
                     <span class="text-primary cursor-pointer">
                         <a-popover placement="rightBottom">
                             <template #content>
@@ -22,7 +22,7 @@
                             <span>Admins</span>
                         </a-popover>
                     </span>
-                    can review the requests.
+                    can review your request.
                 </div>
 
                 <CertificateFacet

@@ -8,10 +8,15 @@ export default function useCustomMetadataHelpers() {
     const { enumList } = useTypedefData()
 
     const getDatatypeOfAttribute = (a: CMA) => {
-        const parsedType = a.options.primitiveType || (a.typeName.includes('array') ? a.typeName.split('<')[1]?.split('>')[0] : a.typeName)
+        const parsedType =
+            a.options.primitiveType ||
+            (a.typeName.includes('array')
+                ? a.typeName.split('<')[1]?.split('>')[0]
+                : a.typeName)
         if (parsedType && typeof parsedType !== 'undefined') {
             if (numberTypes.includes(parsedType)) return 'number'
-            if (a?.options?.isEnum === 'true' || a?.options?.isEnum === true) return 'enum'
+            if (a?.options?.isEnum === 'true' || a?.options?.isEnum === true)
+                return 'enum'
 
             if (parsedType?.includes('string')) {
                 if (a?.options?.customType?.includes('users')) return 'users'
@@ -65,9 +70,10 @@ export default function useCustomMetadataHelpers() {
                             // if value is ISO '2022-02-22 12:31:23' call directly.
                             return formatDate(value)
                         // else unix timestamp gets coverted into string, eg. "1646386649281"
-                        return formatDate(Number.isInteger(v) ? v : parseInt(v, 10))
-                    }
-                    )
+                        return formatDate(
+                            Number.isInteger(v) ? v : parseInt(v, 10)
+                        )
+                    })
                 return value.join(', ')
             }
         }
@@ -75,13 +81,18 @@ export default function useCustomMetadataHelpers() {
     }
 
     const getApplicableAttributes = (BM, typeName) =>
-        JSON.parse(JSON.stringify(BM?.attributes.filter(
-            (a) =>
-                a.options.customApplicableEntityTypes &&
-                JSON.parse(a.options.customApplicableEntityTypes).includes(
-                    typeName
-                ) && a.options?.isDeprecated !== 'true'
-        )))
+        JSON.parse(
+            JSON.stringify(
+                BM?.attributes.filter(
+                    (a) =>
+                        a.options.customApplicableEntityTypes &&
+                        JSON.parse(
+                            a.options.customApplicableEntityTypes
+                        ).includes(typeName) &&
+                        a.options?.isDeprecated !== 'true'
+                )
+            )
+        )
 
     const getEnumOptions = (enumName: string) => {
         if (enumList.value.length) {
@@ -100,14 +111,10 @@ export default function useCustomMetadataHelpers() {
     const getHumanTypeName = (tName) => {
         const t = tName.toLowerCase()
         if (t === 'url') return 'URL'
-        if (['number', 'int', 'long'].includes(t))
-            return 'Number'
-        if (['float'].includes(t))
-            return 'Decimal'
-        if (['text', 'string'].includes(t))
-            return 'Text'
-        if (['enum'].includes(t))
-            return 'Options'
+        if (['number', 'int', 'long'].includes(t)) return 'Number'
+        if (['float'].includes(t)) return 'Decimal'
+        if (['text', 'string'].includes(t)) return 'Text'
+        if (['enum'].includes(t)) return 'Options'
         return tName
     }
 

@@ -8,7 +8,7 @@
             class="flex justify-between p-8 gap-x-10"
             style="min-height: 268px"
         >
-            <nav class="gap-y-8">
+            <nav class="space-y-8">
                 <div
                     style="width: 161px"
                     class="relative step_completed flex flex-col py-2 pl-3 border rounded-lg gap-y-0.5 h-14 step"
@@ -51,7 +51,7 @@
                     <span class="text-xs text-gray-500">Install Slack app</span>
                 </div>
             </nav>
-            <main class="flex-grow gap-y-9">
+            <main class="flex-grow space-y-9">
                 <template v-if="currentStep === 1">
                     <div class="flex justify-between">
                         <div class="flex flex-col gap-y-1">
@@ -247,11 +247,11 @@
                             placement="bottom"
                         >
                             <template #content>
-                                <div class="p-4 gap-y-5">
+                                <div class="p-4 space-y-5">
                                     <h1>
                                         Are you sure you want to start over?
                                     </h1>
-                                    <div class="flex justify-end gap-x-2">
+                                    <div class="flex justify-end space-x-2">
                                         <AtlanButton2
                                             label="Cancel"
                                             color="secondary"
@@ -272,7 +272,7 @@
                             >
                         </a-popover>
                     </div>
-                    <div class="gap-y-5">
+                    <div class="space-y-5">
                         <h3 class="font-bold text-gray-700">
                             Install the Atlan app in your Slack workspace
                         </h3>
@@ -318,7 +318,7 @@
                 </div>
                 <div v-else class="flex items-center gap-x-3">
                     <AtlanButton2
-                        type="secondary"
+                        color="secondary"
                         label="Cancel"
                         @click="$emit('close')"
                     />

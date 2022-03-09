@@ -82,7 +82,6 @@ export function useBody(
     base.size(limit || 0)
 
     if (typeName === 'Column') {
-        debugger
         if (sortOrderColumn && sortOrderColumn.length) {
             if (queryText?.length) {
             } else {

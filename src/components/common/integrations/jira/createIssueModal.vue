@@ -80,6 +80,7 @@
                         :key="field.value"
                         :name="[field.value]"
                         class="w-full mb-6"
+                        :class="$style.hideErrorMessage"
                         :label="field.label"
                     >
                         <a-input v-model:value="form[field.value]" />
@@ -232,7 +233,7 @@
                     rules.value[field.value] = [
                         {
                             required: true,
-                            message: 'This field is required',
+                            message: 'a',
                             trigger: ['submit', 'change'],
                         },
                     ]
@@ -326,6 +327,11 @@
         }
         :global(.ant-skeleton-title) {
             @apply h-7 m-0;
+        }
+    }
+    .hideErrorMessage {
+        :global(.ant-form-item-explain-error) {
+            @apply hidden !important;
         }
     }
 </style>

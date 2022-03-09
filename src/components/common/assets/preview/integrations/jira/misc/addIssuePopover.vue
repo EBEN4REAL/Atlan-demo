@@ -13,10 +13,10 @@
                     v-if="!userJiraStatus.configured"
                     class="flex flex-col px-4 py-3 mb-2 bg-primary-light"
                 >
-                    <h1 class="mb-1 text-gray-700 text-bold">
+                    <h1 class="mb-1 font-bold text-gray-700">
                         Connect with Jira
                     </h1>
-                    <span class="mb-3 text-xs text-gray-600 w-52">
+                    <span class="mb-3 text-xs text-gray-500 w-52">
                         To create and link issues to assets connect your Jira
                         account with Atlan
                     </span>

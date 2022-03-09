@@ -1,7 +1,7 @@
 <template>
     <header>
         <div
-            class="flex justify-between px-5 py-2 border-b border-gray-200 gap-x-6 bg-gray-50"
+            class="flex items-center justify-between px-5 py-2 border-b border-gray-200 gap-x-6 bg-gray-50"
         >
             <div>
                 <AtlanIcon icon="Jira" class="mr-2" />

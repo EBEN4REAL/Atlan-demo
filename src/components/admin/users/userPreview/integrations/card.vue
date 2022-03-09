@@ -54,7 +54,7 @@
                     placement="bottom"
                 >
                     <template #content>
-                        <div class="p-4 gap-y-5">
+                        <div class="p-4 space-y-5">
                             <h1>
                                 Are you sure you want to disconnect from
                                 <b>{{ integration.name }}</b

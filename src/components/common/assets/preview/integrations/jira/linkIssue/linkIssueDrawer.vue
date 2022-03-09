@@ -119,7 +119,7 @@
                 </main>
             </div>
             <footer
-                v-if="issues?.length"
+                :class="issues?.length ? '' : 'opacity-0'"
                 class="absolute bottom-0 flex justify-center w-full pt-2 pb-2 bg-white"
             >
                 <Pagination

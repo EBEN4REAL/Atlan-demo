@@ -358,7 +358,7 @@
     import { Types } from '~/services/meta/types/index'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
+    import { useCustomMetadataUpdate } from '~/composables/discovery/useCurrentUpdate'
     import Confirm from '@/common/modal/confirm.vue'
     import EmptyView from '@/common/empty/index.vue'
     import Truncate from '@/common/ellipsis/index.vue'
@@ -512,8 +512,9 @@
                 asset,
                 mutate: mutateUpdate,
                 isReady: isUpdateReady,
-            } = useCurrentUpdate({
+            } = useCustomMetadataUpdate({
                 id: guid,
+                attributes: customMetadataListProjections,
             })
 
             const isEdit = ref(false)

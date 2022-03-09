@@ -81,3 +81,52 @@ export function useCurrentUpdate({ id }: DiscoverListParams) {
         isReady,
     }
 }
+
+export function useCustomMetadataUpdate({
+    id,
+    attributes,
+}: DiscoverListParams) {
+    const defaultBody = ref({})
+
+    const generateBody = () => {
+        const dsl = useBody('', 0, 1, { guid: id }, {}, [], {})
+        defaultBody.value = {
+            dsl,
+            attributes: attributes?.value,
+        }
+    }
+
+    const localKey = ref(id.value)
+
+    generateBody()
+    const {
+        data,
+        isLoading,
+        isValidating,
+        aggregationMap,
+        mutate,
+        cancelRequest,
+        error,
+        isReady,
+    } = useIndexSearch<assetInterface>(defaultBody, localKey, false, false, 1)
+
+    const asset = ref<assetInterface[]>([])
+    watch(data, () => {
+        if (data.value?.entities?.length > 0) {
+            asset.value = data?.value?.entities[0]
+        }
+    })
+
+    return {
+        aggregationMap,
+        isValidating,
+        isLoading,
+        data,
+        fetch,
+        cancelRequest,
+        mutate,
+        error,
+        asset,
+        isReady,
+    }
+}

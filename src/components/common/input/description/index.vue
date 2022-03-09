@@ -43,16 +43,16 @@
                 v-if="!editPermission && role !== 'Guest' && isEdit"
                 class="bg-gray-100 px-3 py-2 mt-3"
             >
-                You don’t have edit access to this asset, but you can suggest a
-                new description to the
+                You don't have edit access, suggest owners.<br />
                 <span class="text-primary cursor-pointer">
-                    <a-popover placement="bottomRight">
+                    <a-popover placement="rightBottom">
                         <template #content>
                             <AdminList></AdminList>
                         </template>
-                        <span>Workspace admins</span>
+                        <span>Admins</span>
                     </a-popover>
                 </span>
+                can review the requests.
             </div>
         </Shortcut>
         <p

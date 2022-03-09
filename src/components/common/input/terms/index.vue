@@ -10,18 +10,18 @@
             <template #content>
                 <div
                     v-if="!editPermission && role !== 'Guest'"
-                    class="bg-gray-100 mx-4 px-3 py-2 mb-3"
+                    class="px-3 py-2 mx-4 mb-3 bg-gray-100"
                 >
-                    You don't have edit access to this asset, but you can
-                    suggest terms to the
+                    You don't have edit access, suggest Terms.<br />
                     <span class="text-primary cursor-pointer">
-                        <a-popover placement="bottomRight">
+                        <a-popover placement="rightBottom">
                             <template #content>
                                 <AdminList></AdminList>
                             </template>
-                            <span>Workspace admins</span>
+                            <span>Admins</span>
                         </a-popover>
                     </span>
+                    can review the requests.
                 </div>
                 <GlossaryTree
                     v-model:checkedGuids="checkedGuids"

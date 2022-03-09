@@ -288,7 +288,7 @@
                         >
                             <template #content>
                                 <div
-                                    class="w-56 overflow-x-hidden overflow-y-hidden"
+                                    class="overflow-x-hidden overflow-y-hidden w-60"
                                 >
                                     <AssetDropdownNewSchema
                                         v-if="connection"
@@ -655,7 +655,7 @@
                         ></template>
                         <template #expandIcon></template>
 
-                        <div class="w-56 overflow-x-hidden overflow-y-hidden">
+                        <div class="overflow-x-hidden overflow-y-hidden w-60">
                             <AssetDropdownNewSchema
                                 v-if="connection"
                                 v-model:clearStateSchema="clearStateSchema"
@@ -1099,7 +1099,6 @@
             const getContextName = (item) => {
                 const chunks = data.value?.attributeValue?.split('/')
                 const connectorKey = `${chunks[0]}/${chunks[1]}/${chunks[2]}`
-                console.log('chunks:', chunks)
 
                 if (item === 'connection') {
                     if (chunks?.length > 2) {

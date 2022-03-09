@@ -74,8 +74,11 @@
                                 'query',
                             ].includes(selectedAsset.typeName?.toLowerCase())
                         "
-                        :icon="selectedAsset.typeName"
-                        class="self-center mr-1 text-primary mb-0.5"
+                        :icon="
+                            assetTypeImage(selectedAsset) ||
+                            selectedAsset?.typeName
+                        "
+                        class="self-center mr-1 text-gray-500 mb-0.5"
                     ></AtlanIcon>
                     <a-tooltip
                         class="flex items-center"
@@ -423,7 +426,7 @@
                 assetTypeLabel,
                 getProfilePath,
                 isScrubbed,
-                assetPermission,
+                assetTypeImage,
                 selectedAssetUpdatePermission,
             } = useAssetInfo()
 
@@ -625,6 +628,7 @@
                 selectedAssetUpdatePermission,
                 showCTA,
                 onClickTabIcon,
+                assetTypeImage,
 
                 // for collection access
                 collectionInfo,

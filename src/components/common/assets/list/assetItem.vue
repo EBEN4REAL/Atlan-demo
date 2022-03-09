@@ -188,8 +188,8 @@
                                         'query',
                                     ].includes(item.typeName?.toLowerCase())
                                 "
-                                :icon="item.typeName"
-                                class="self-center mr-1 text-primary mb-0.5"
+                                :icon="assetTypeImage(item) || item?.typeName"
+                                class="self-center mr-1 text-gray-500 mb-0.5"
                             ></AtlanIcon>
 
                             <div class="text-sm text-gray-500">
@@ -1300,6 +1300,7 @@
                 fieldCount,
                 isCustom,
                 announcementType,
+                assetTypeImage,
             } = useAssetInfo()
 
             const icon = computed(() => {
@@ -1464,7 +1465,7 @@
                 isCustom,
                 getEntityStatusIcon,
                 meanings,
-                isLoading,
+                assetTypeImage,
                 icon,
                 announcementType,
                 mouseEnterDelay,

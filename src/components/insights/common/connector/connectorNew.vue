@@ -2,7 +2,10 @@
     <div
         class="w-full pt-2 pb-2 pl-2 pr-2 rounded dropdown-schema-explorer hover:bg-gray-200"
     >
+        <!-- New Design using Popovers instead of menu items -->
+
         <a-dropdown
+            v-model:visible="dropdownIsVisible"
             :overlay-style="{
                 maxWidth: '10%',
             }"
@@ -87,6 +90,332 @@
                     </div>
                 </div>
             </div>
+
+            <template #overlay>
+                <div
+                    class="flex flex-col w-full py-2 bg-white rounded-lg dropdown-overlay-new"
+                >
+                    <a-popover
+                        placement="rightTop"
+                        class="hover:bg-gray-100 selector-popover"
+                    >
+                        <template #content>
+                            <div
+                                class="pt-1 w-60"
+                                :class="$style.schemaExplorerTreeStyles"
+                            >
+                                <!-- <div
+                                class="flex flex-row space-x-2"
+                                :class="$style.schemaExplorerTreeStyles"
+                            >
+                                <a-input
+                                    class="h-8 mt-1 text-base border-t-0 border-l-0 border-r-0 rounded-none"
+                                    placeholder="Search 12 connections"
+                                    bordered="false"
+                                    :class="$style.inputSearch"
+                                    v-model:value="searchValue"
+                                    style="margin-bottom: 8px"
+                                >
+                                    <template #prefix>
+                                        <AtlanIcon
+                                            icon="Search"
+                                            color="#6F7590"
+                                        />
+                                    </template>
+                                </a-input>
+                            </div> -->
+                                <div
+                                    class="w-full overflow-x-hidden tree-container"
+                                >
+                                    <a-tree
+                                        v-model:expandedKeys="expandedKeys"
+                                        v-model:selectedKeys="selectedKeys"
+                                        :class="[
+                                            $style.tree_selecttor,
+                                            bgGrayForSelector
+                                                ? `${$style.selector_bg}`
+                                                : '',
+                                        ]"
+                                        style="width: 100%"
+                                        :tree-data="treeData"
+                                        :block-node="true"
+                                        :auto-expand-parent="false"
+                                        ref="treeRef"
+                                        :data-test-id="'conector'"
+                                        class="tree-select-nodes"
+                                        @change="onChange"
+                                        @select="selectNodeTree"
+                                        @click="selectNodeTree"
+                                    >
+                                        <template #switcherIcon>
+                                            <AtlanIcon icon="CaretRight" />
+                                        </template>
+                                        <template #title="node">
+                                            <div
+                                                class="flex items-center rounded parent-ellipsis-container-base"
+                                                style="max-width: 14rem"
+                                            >
+                                                <img
+                                                    :src="iconName(node)"
+                                                    class="flex-shrink-0 h-4 mr-2"
+                                                />
+                                                <span
+                                                    class="parent-ellipsis-container-base"
+                                                    >{{
+                                                        node
+                                                            ? nodeStringFilter(
+                                                                  node.title
+                                                              )
+                                                            : null
+                                                    }}
+                                                </span>
+                                            </div>
+                                        </template>
+                                        <template #suffixIcon>
+                                            <AtlanIcon
+                                                icon="ChevronDown"
+                                                class="h-4 -mt-0.5 -ml-1"
+                                                color="#6F7590"
+                                            />
+                                        </template>
+                                    </a-tree>
+                                </div>
+                            </div>
+                        </template>
+                        <div
+                            class="flex items-center justify-center px-4 py-2 submenu-title-content"
+                        >
+                            <img
+                                :src="getContextName(`icon`)"
+                                class="flex-shrink-0 w-6 h-6 mr-1 text-gray-500"
+                            />
+                            <span class="parent-ellipsis-container-base">
+                                <span class="text-gray-500">Connection </span>
+                                <br />
+                                <span class="text-base">{{
+                                    getContextName(`connector`)
+                                }}</span>
+                            </span>
+                            <AtlanIcon
+                                icon="CaretRight"
+                                class="self-center flex-shrink-0 w-4 h-4 ml-auto text-gray-500"
+                            ></AtlanIcon>
+                        </div>
+                    </a-popover>
+
+                    <a-popover placement="rightTop" class="selector-popover">
+                        <template #content>
+                            <div
+                                class="overflow-x-hidden overflow-y-hidden w-60 max-h-96"
+                            >
+                                <AssetDropdownNewDatabase
+                                    v-if="connection"
+                                    v-model:clearStateDB="clearStateDB"
+                                    :connector="filteredConnector"
+                                    :filter="data"
+                                    @change="handleChange"
+                                    :bgGrayForSelector="bgGrayForSelector"
+                                    @label-change="
+                                        setPlaceholder($event, 'asset')
+                                    "
+                                ></AssetDropdownNewDatabase>
+                            </div>
+                            <!-- <p>Content2</p>
+                            <p>Content2</p> -->
+                        </template>
+                        <div
+                            class="flex items-center justify-center px-4 py-2 submenu-title-content"
+                        >
+                            <AtlanIcon
+                                icon="DatabaseGray"
+                                class="flex-shrink-0 w-6 h-6 mr-1 text-gray-500"
+                            ></AtlanIcon>
+                            <span class="parent-ellipsis-container-base">
+                                <span class="text-gray-500">Database</span>
+                                <br />
+                                <span class="text-base">{{
+                                    getContextName(`database`)
+                                }}</span>
+                            </span>
+                            <span
+                                class="self-center ml-auto mr-4 text-gray-500 clear-btn"
+                            >
+                                <button
+                                    @click="clearStateDBHandle"
+                                    class="hover:text-primary"
+                                    :class="[
+                                        getContextName(`database`) ===
+                                        'Select database context'
+                                            ? `${$style.clear_btn_invisible}`
+                                            : `${$style.clear_btn_visible}`,
+                                    ]"
+                                >
+                                    clear
+                                </button>
+                            </span>
+                            <AtlanIcon
+                                icon="CaretRight"
+                                class="self-center flex-shrink-0 w-4 h-4 text-gray-500"
+                            ></AtlanIcon>
+                        </div>
+                    </a-popover>
+
+                    <div class="schema-selector-container">
+                        <a-popover
+                            placement="rightTop"
+                            class="selector-popover"
+                        >
+                            <template #content>
+                                <div
+                                    class="w-56 overflow-x-hidden overflow-y-hidden"
+                                >
+                                    <AssetDropdownNewSchema
+                                        v-if="connection"
+                                        v-model:clearStateSchema="
+                                            clearStateSchema
+                                        "
+                                        :connector="filteredConnector"
+                                        :filter="data"
+                                        @change="handleChange"
+                                        :bgGrayForSelector="bgGrayForSelector"
+                                        @label-change="
+                                            setPlaceholder($event, 'asset')
+                                        "
+                                    ></AssetDropdownNewSchema>
+                                </div>
+                                <!-- <p>Content3</p>
+                            <p>Content3</p>
+                            <p>Content3</p>
+                            <p>Content3</p>
+                            <p>Content3</p>
+                            <p>Content3</p>
+                            <p>Content3</p>
+                            <p>Content3</p> -->
+                            </template>
+
+                            <div
+                                class="flex items-center justify-center px-4 py-2 submenu-title-content"
+                                :class="
+                                    getContextName(`schema`) === ''
+                                        ? `disabled-popover`
+                                        : `enabled-popover`
+                                "
+                            >
+                                <AtlanIcon
+                                    icon="SchemaGray"
+                                    class="flex-shrink-0 w-6 h-6 mr-1 text-gray-500"
+                                ></AtlanIcon>
+                                <span class="parent-ellipsis-container-base">
+                                    <span class="text-gray-500">Schema</span>
+                                    <br />
+                                    <span class="text-base">{{
+                                        getContextName(`schema`) === ''
+                                            ? 'Select schema context'
+                                            : getContextName(`schema`)
+                                    }}</span>
+                                </span>
+                                <span
+                                    class="self-center ml-auto mr-4 text-gray-500 clear-btn"
+                                >
+                                    <button
+                                        :class="[
+                                            getContextName(`schema`) ===
+                                            'Select schema context'
+                                                ? `${$style.clear_btn_invisible}`
+                                                : `${$style.clear_btn_visible}`,
+                                        ]"
+                                        class="hover:text-primary"
+                                        @click="clearStateSchemaHandle"
+                                    >
+                                        clear
+                                    </button>
+                                </span>
+                                <AtlanIcon
+                                    icon="CaretRight"
+                                    class="self-center flex-shrink-0 w-4 h-4 text-gray-500"
+                                ></AtlanIcon>
+                            </div>
+                        </a-popover>
+                    </div>
+                </div>
+            </template>
+        </a-dropdown>
+
+        <!-- Old Design using menu items -->
+        <!-- <a-dropdown
+            :overlay-style="{
+                maxWidth: '10%',
+            }"
+            overlayClassName="dropdown-overlay"
+            :trigger="['click']"
+        >
+            <div class="flex items-center w-full cursor-pointer">
+                <div
+                    v-if="
+                        getContextName(`database`) === 'Select database context'
+                    "
+                    class="flex flex-row items-center w-full"
+                >
+                    <div class="flex flex-col w-full bg">
+                        <div class="flex flex-shrink-0 mr-2">
+                            <img
+                                :src="getContextName(`icon`)"
+                                class="w-4 h-4 mr-1 mt-0.5"
+                            />
+                            <Tooltip
+                                :tooltip-text="getContextName(`connector`)"
+                                classes="cursor-pointer text-base text-gray-700 w-full"
+                                :class="[$style.filled_db_state]"
+                            >
+                            </Tooltip>
+                        </div>
+
+                        <span class="mr-1 text-sm text-gray-500 truncate"
+                            >Select database context</span
+                        >
+                    </div>
+                    <div class="w-4">
+                        <AtlanIcon
+                            icon="ChevronDown"
+                            class="w-4 h-4 text-gray-500"
+                        ></AtlanIcon>
+                    </div>
+                </div>
+                <div v-else class="flex flex-row items-center w-full">
+                    <span class="flex-shrink-0 mr-2" style="font-size: 28px">
+                        <img :src="getContextName(`icon`)" class="w-6 h-6"
+                    /></span>
+                    <div class="flex flex-col w-full bg">
+                        <Tooltip
+                            :tooltip-text="getContextName(`database`)"
+                            classes="cursor-pointer text-base  text-gray-700 w-full"
+                            :class="[
+                                getContextName(`database`) ===
+                                'Select database context'
+                                    ? `${$style.empty_db_state}`
+                                    : `${$style.filled_db_state}`,
+                            ]"
+                        >
+                        </Tooltip>
+                        <span
+                            :class="[
+                                getContextName(`schema`) ===
+                                'Select schema context'
+                                    ? `text-gray-500`
+                                    : ``,
+                            ]"
+                            class="mr-1 text-sm truncate"
+                            >{{ getContextName(`schema`) }}</span
+                        >
+                    </div>
+                    <div class="w-4">
+                        <AtlanIcon
+                            icon="ChevronDown"
+                            class="w-4 h-4 text-gray-500"
+                        ></AtlanIcon>
+                    </div>
+                </div>
+            </div>
             <template #overlay>
                 <a-menu
                     v-model:openKeys="openKeys"
@@ -127,7 +456,7 @@
                             class="pt-1 w-60"
                             :class="$style.schemaExplorerTreeStyles"
                         >
-                            <!-- <div
+                            <div
                                 class="flex flex-row space-x-2"
                                 :class="$style.schemaExplorerTreeStyles"
                             >
@@ -146,7 +475,7 @@
                                         />
                                     </template>
                                 </a-input>
-                            </div> -->
+                            </div>
                             <div
                                 class="w-full overflow-x-hidden tree-container"
                             >
@@ -322,7 +651,7 @@
                     </a-sub-menu>
                 </a-menu>
             </template>
-        </a-dropdown>
+        </a-dropdown> -->
     </div>
 </template>
 
@@ -378,6 +707,7 @@
             const searchValue = ref('')
             const clearStateDB = ref(false)
             const clearStateSchema = ref(false)
+            const dropdownIsVisible = ref(false)
 
             const connector = computed(() => {
                 if (data.value?.attributeName === 'connectorName')
@@ -851,6 +1181,7 @@
                 getConnectorImage,
                 iconName,
                 selectedKeys,
+                dropdownIsVisible,
             }
         },
     })
@@ -907,11 +1238,11 @@
         overflow: scroll;
     }
 
-    .submenu .clear-btn {
+    .selector-popover .clear-btn {
         visibility: hidden;
     }
 
-    .submenu:hover .clear-btn {
+    .selector-popover:hover .clear-btn {
         visibility: visible;
     }
 
@@ -919,15 +1250,33 @@
         visibility: hidden !important;
     }
 
-    .dropdown-overlay {
-        // max-width: 200px !important;
-        // @apply max-w-full;
-    }
     .ant-tree .ant-tree-node-content-wrapper .tree-select-nodes {
         border-radius: 0 !important;
     }
     .dropdown-schema-explorer .ant-dropdown-trigger {
         min-height: 2.75rem;
+    }
+
+    .selector-popover {
+        @apply hover:bg-gray-100;
+        cursor: pointer;
+    }
+    .selector-popover.ant-popover-open {
+        @apply bg-gray-100;
+    }
+    .schema-selector-container {
+        cursor: not-allowed;
+        @apply hover:bg-gray-100;
+    }
+    .disabled-popover {
+        // @apply bg-red-400;
+        pointer-events: none;
+    }
+    .enabled-popover {
+        // @apply bg-blue-400;
+    }
+    .dropdown-overlay-new {
+        box-shadow: 0 2px 8px #00000026;
     }
 </style>
 <style lang="less" module>

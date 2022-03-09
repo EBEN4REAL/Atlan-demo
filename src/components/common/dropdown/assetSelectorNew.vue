@@ -39,25 +39,32 @@
                     "
                 >
                     <div
-                        class="flex items-center justify-between w-full truncate parent-ellipsis-container"
+                        class="flex items-center justify-between w-full parent-ellipsis-container-base"
                     >
                         <div
-                            class="flex items-center truncate parent-ellipsis-container"
+                            class="flex items-center parent-ellipsis-container-base"
                         >
                             <AtlanIcon
                                 :icon="typeName + `Gray`"
                                 class="flex-shrink-0 w-auto h-4 mr-2"
                             />
-                            <span class="parent-ellipsis-container-base"
+                            <!-- <span class="parent-ellipsis-container-base"
                                 >{{ item?.label }}
-                            </span>
+                            </span> -->
+                            <Tooltip
+                                :tooltip-text="item?.label"
+                                classes="parent-ellipsis-container-base"
+                                placement="rightTop"
+                                clampPercentage="98%"
+                            >
+                            </Tooltip>
                         </div>
                     </div>
-                    <span class="w-6">
+                    <span v-if="modelValue === item.value" class="w-6">
                         <AtlanIcon
-                            icon="Check"
-                            class="ml-2 text-primary parent-ellipsis-container-base"
                             v-if="modelValue === item.value"
+                            icon="Check"
+                            class="ml-1 text-primary parent-ellipsis-container-base"
                         />
                     </span>
                 </div>
@@ -103,11 +110,13 @@
     import bodybuilder from 'bodybuilder'
 
     import { message } from 'ant-design-vue'
+    import Tooltip from '@/common/ellipsis/index.vue'
 
     export default defineComponent({
         name: 'AssetSelectorNew',
         components: {
             VNodes: (_, { attrs }) => attrs.vnodes,
+            Tooltip,
         },
         props: {
             connector: {
@@ -413,6 +422,10 @@
     .inputSearch:focus {
         outline: none;
     }
+    // .ant-tooltip-placement-rightTop {
+    //     margin-left: 50px !important;
+    //     padding-left: 50px !important;
+    // }
 </style>
 <style lang="less" scoped>
     .parent-ellipsis-container-base {

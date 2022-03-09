@@ -555,6 +555,6 @@
     }
 
     .max-profile-width {
-        max-width: calc(100vw - 516px);
+        max-width: calc(100vw - 576px);
     }
 </style>

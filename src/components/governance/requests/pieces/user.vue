@@ -9,8 +9,15 @@
             </template>
         </Pill>
         <span v-else class="text-gray-700">{{
-            user?.username || defaultName
+            user?.username
+                ? user.username.startsWith('service-account-apikey-')
+                    ? 'from API Key'
+                    : user.username
+                : defaultName
         }}</span>
+        <!-- <span v-else class="text-gray-700">
+            <Truncate :tooltip-text="user?.username || defaultName" />
+        </span> -->
     </a-popover>
 </template>
 
@@ -19,9 +26,10 @@
 
     import UserInfo from '~/components/common/hovercards/ownerInfo.vue'
     import Pill from '~/components/UI/pill/pill.vue'
+    import Truncate from '@/common/ellipsis/index.vue'
 
     export default defineComponent({
-        components: { UserInfo, Pill },
+        components: { UserInfo, Pill, Truncate },
         props: {
             user: {
                 type: Object,

@@ -9,7 +9,7 @@
             </template>
         </Pill>
         <span
-            v-if="user.username.startsWith('service-account-apikey-')"
+            v-if="user?.username?.startsWith('service-account-apikey-')"
             class="text-gray-700"
         >
             <AtlanIcon icon="Key" class="h-3" /> API Key

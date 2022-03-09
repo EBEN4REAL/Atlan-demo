@@ -187,7 +187,7 @@
                 } else {
                     modelValue.value = localValue.value
                 }
-                emit('change')
+                emit('change', modelValue.value)
             }
 
             // const disabledDate = (current: Dayjs) =>

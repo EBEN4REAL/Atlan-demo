@@ -26,12 +26,12 @@
             >
                 <div class="flex justify-between gap-x-4">
                     <a-form-item
-                        :name="['projectId']"
+                        :name="['project']"
                         label="Project"
                         class="w-full mb-6"
                     >
                         <ProjectSelector
-                            v-model="form.projectId"
+                            v-model="form.project"
                             class="w-full"
                             placeholder="Select a project"
                             default-select
@@ -41,13 +41,13 @@
                     </a-form-item>
 
                     <a-form-item
-                        :name="['issueType']"
+                        :name="['issuetype']"
                         class="w-full mb-6"
                         label="Issue type"
                     >
                         <CustomSelect
-                            v-model:value="form.issueType"
-                            :disabled="!form.projectId"
+                            v-model:value="form.issuetype"
+                            :disabled="!form.project"
                             dropdown-class-name="max-h-72 overflow-y-scroll"
                             placeholder="Select issue type"
                             :options="issueTypeOptions"
@@ -76,20 +76,20 @@
 
                 <div v-else class="grid grid-cols-2 gap-x-4">
                     <a-form-item
-                        v-for="field in requiredFields"
-                        :key="field.value"
-                        :name="[field.value]"
+                        v-for="(field, idx) in requiredFields"
+                        :key="field.key"
+                        :name="[field.key]"
                         class="w-full mb-6"
                         :class="$style.hideErrorMessage"
                         :label="field.label"
                     >
-                        <a-input v-model:value="form[field.value]" />
-                        <!-- <CustomSelect
+                        <JiraDynamicField
                             v-model:value="form[field.value]"
-                            dropdown-class-name="max-h-72 overflow-y-scroll"
-                            placeholder="Select issue priority"
-                            :options="[]"
-                        /> -->
+                            :field="field"
+                            @change="
+                                (v) => (requiredFields[idx].selectedValue = v)
+                            "
+                        />
                     </a-form-item>
                 </div>
             </a-form>
@@ -119,7 +119,7 @@
 
 <script setup lang="ts">
     import { useVModels } from '@vueuse/core'
-    import { computed, onMounted, PropType, ref, toRefs, watch } from 'vue'
+    import { computed, onMounted, PropType, Ref, ref, toRefs, watch } from 'vue'
     import { message } from 'ant-design-vue'
     import ProjectSelector from '@/common/integrations/jira/jiraProjectsSelect.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -131,6 +131,8 @@
     import { CREATE_TICKET_FORM_RULES } from '~/constant/integrations/jira.constant'
     import CustomSelect from '@/common/integrations/jira/customizedSelect.vue'
     import { getProjectConfig } from '~/composables/integrations/jira/useJira'
+    import { truncate } from '@antv/x6/lib/util/string/string'
+    import JiraDynamicField from '@/common/integrations/jira/jiraDynamicField.vue'
 
     const props = defineProps({
         visible: { type: Boolean, required: true },
@@ -147,17 +149,11 @@
     const { origin } = window.location
 
     const form = ref({
-        issueType: undefined,
-        projectId: undefined,
+        issuetype: undefined,
+        project: undefined,
         summary: undefined,
         labels: ['Atlan'],
-        description: '',
-        guid: asset.value.guid,
-        name: asset.value.displayText,
-        qualifiedName: asset.value.attributes.qualifiedName,
-        integrationType: asset.value.attributes.connectorName,
-        typeName: asset.value.typeName,
-        assetUrl: `${origin}/assets/${asset.value.guid}/overview`,
+        description: undefined,
     })
 
     const rules = ref(JSON.parse(JSON.stringify(CREATE_TICKET_FORM_RULES)))
@@ -173,8 +169,8 @@
         form.value = {
             ...form.value,
             ...{
-                issueType: undefined,
-                projectId: undefined,
+                issuetype: undefined,
+                project: undefined,
                 summary: undefined,
                 description: undefined,
             },
@@ -190,12 +186,15 @@
         mutate: fetchConfig,
     } = getProjectConfig(projectKey)
 
-    const requiredFields = ref([])
+    const requiredFields: Ref<
+        { label: string; key: string; data: any; selectedValue: any }[]
+    > = ref([])
+
     const initRequiredFields = () => {
         const finalFields: any = []
         if (!config.value) return []
         const { fields } = config.value.issuetypes.find(
-            (_type) => _type.id === form.value.issueType
+            (_type) => _type.id === form.value.issuetype
         )
 
         if (fields && typeof fields === 'object') {
@@ -203,7 +202,7 @@
                 if (data.required) {
                     finalFields.push({
                         label: data.name,
-                        value: data.key,
+                        key: data.key,
                         data,
                     })
                 }
@@ -219,7 +218,7 @@
         ]
 
         requiredFields.value = finalFields.filter(
-            (f) => !ignoreFieldsKey.includes(f.value)
+            (f) => !ignoreFieldsKey.includes(f.key)
         )
     }
 
@@ -244,7 +243,6 @@
 
     const handleProjectSelect = async (v, option) => {
         requiredFields.value = []
-
         const {
             meta: { issueTypes, key },
         } = option
@@ -257,12 +255,33 @@
                 meta: type,
             })),
         ]
-        form.value.issueType = issueTypeOptions.value[0].value
+        form.value.issuetype = issueTypeOptions.value[0].value
         await fetchConfig()
         initRequiredFields()
     }
 
-    const { data, isLoading, error, mutate, isReady } = createIssue(form)
+    const body = computed(() => ({
+        guid: asset.value.guid,
+        name: asset.value.displayText,
+        qualifiedName: asset.value.attributes.qualifiedName,
+        integrationType: asset.value.attributes.connectorName,
+        typeName: asset.value.typeName,
+        assetUrl: `${origin}/assets/${asset.value.guid}/overview`,
+        fields: {
+            summary: form.value.summary,
+            description: form.value.description,
+            issuetype: { id: form.value.issuetype },
+            project: { id: form.value.project },
+            ...Object.assign(
+                {},
+                ...requiredFields.value.map((f) => ({
+                    [f.key]: f.selectedValue,
+                }))
+            ),
+        },
+    }))
+
+    const { data, isLoading, error, mutate, isReady } = createIssue(body)
 
     const handleCancel = () => {
         reset()

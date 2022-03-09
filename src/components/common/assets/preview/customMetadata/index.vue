@@ -344,6 +344,7 @@
         h,
         resolveComponent,
         inject,
+        computed,
     } from 'vue'
     import {
         whenever,
@@ -367,6 +368,7 @@
     import PropertyPopover from '@/common/assets/preview/customMetadata/misc/propertyPopover.vue'
     import InternalCMBanner from '@/common/customMetadata/internalCMBanner.vue'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
+    import { useTypedefStore } from '~/store/typedef'
 
     export default defineComponent({
         name: 'CustomMetadata',
@@ -408,6 +410,16 @@
             const guid = ref()
             const { checkAccess } = useAuth()
             const isEvaluating = inject('isEvaluating')
+
+            const typedefStore = useTypedefStore()
+
+            const customMetadataListProjections = computed(() =>
+                typedefStore.getCustomMetadataListProjectionsByName(
+                    data.value?.id
+                )
+            )
+
+            console.log('hello', customMetadataListProjections.value)
 
             const { title, selectedAssetUpdatePermission } = useAssetInfo()
             const {

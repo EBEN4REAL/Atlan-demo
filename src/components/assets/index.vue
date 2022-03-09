@@ -226,7 +226,6 @@
     import AssetFilters from '@/common/assets/filters/index.vue'
     import AssetList from '@/common/assets/list/index.vue'
     import AssetItem from '@/common/assets/list/assetItem.vue'
-    import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     import {
         AssetAttributes,
@@ -371,13 +370,11 @@
             })
             const dependentKey = ref(cacheKey.value || 'DEFAULT_ASSET_LIST')
 
-            const { customMetadataProjections } = useTypedefData()
             const defaultAttributes = ref([
                 ...InternalAttributes,
                 ...AssetAttributes,
                 ...SQLAttributes,
                 ...GlossaryAttributes,
-                ...customMetadataProjections,
             ])
 
             const relationAttributes = ref([...AssetRelationAttributes])

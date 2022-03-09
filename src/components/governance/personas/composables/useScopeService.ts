@@ -231,7 +231,6 @@ export const personaScopeList = [
 export const glossaryPolicyScopeList = [
     {
         scopes: [
-       
             {
                 value: 'entity-create',
                 label: 'Create',
@@ -244,7 +243,7 @@ export const glossaryPolicyScopeList = [
                 filterLabel: 'Update asset',
                 desc: 'Permission to update metadata, resources, readme for terms & category and to link those terms with all assets',
             },
-     
+
             {
                 value: 'entity-delete',
                 label: 'Delete',
@@ -276,16 +275,16 @@ export const glossaryPolicyScopeList = [
                 desc: 'Update classifications',
             },
 
-            {
-                value: 'add-terms',
-                label: 'Add Terms',
-                desc: 'Link terms',
-            },
-            {
-                value: 'remove-terms',
-                label: 'Remove Terms',
-                desc: 'Unlink terms',
-            },
+            // {
+            //     value: 'add-terms',
+            //     label: 'Add Terms',
+            //     desc: 'Link terms',
+            // },
+            // {
+            //     value: 'remove-terms',
+            //     label: 'Remove Terms',
+            //     desc: 'Unlink terms',
+            // },
         ],
         type: 'Governance',
         label: 'Governance',
@@ -310,7 +309,7 @@ export default function scopeService() {
             return {
                 scopeList: purposeScopeList,
             }
-              if (type === 'glossaryPolicy')
+        if (type === 'glossaryPolicy')
             return {
                 scopeList: glossaryPolicyScopeList,
             }

@@ -75,7 +75,7 @@
             class="flex items-center justify-between w-full px-4 rounded"
             style="min-height: 0"
         >
-            No Data Found
+            No {{ searchPlaceholder.toLowerCase() }}s available
         </div>
     </div>
 

@@ -137,9 +137,9 @@
                     LinkPreview,
                     Highlight.configure({ multicolor: true }),
                     Placeholder.configure({
-                        placeholder: ({ node }) => {
+                        placeholder: ({ node, editor: currEditor }) => {
                             if (!isEditMode.value) {
-                                return emptyText.value
+                                return currEditor.isEmpty ? emptyText.value : ''
                             }
                             switch (node.type.name) {
                                 case 'heading':

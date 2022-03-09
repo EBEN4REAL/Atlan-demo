@@ -2,7 +2,7 @@
     <div class="flex flex-col">
         <div class="flex items-center">
             <div class="control-item" @click="showSearch = !showSearch">
-                <a-tooltip placement="top" mouse-enter-delay="0.4">
+                <a-tooltip placement="top" :mouse-enter-delay="0.4">
                     <template #title>
                         <span>search graph</span>
                     </template>

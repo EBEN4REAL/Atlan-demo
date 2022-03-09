@@ -350,6 +350,12 @@ export default async function useComputeGraph({
 
         renderLayout(registerAllListeners)
 
+        const assetGuidToFit = Object.keys(newData.guidEntityMap).find(
+            (x) => x !== newData.baseEntityGuid
+        )
+        const cell = graph.value.getCellById(assetGuidToFit)
+        graph.value.scrollToCell(cell, { animation: { duration: 600 } })
+
         if (!Object.keys(mergedLineageData.value).length)
             mergedLineageData.value = lineage.value
 

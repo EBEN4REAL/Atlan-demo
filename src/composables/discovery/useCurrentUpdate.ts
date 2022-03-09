@@ -5,7 +5,6 @@ import { assetInterface } from '~/types/assets/asset.interface'
 import useIndexSearch from './useIndexSearch'
 
 import { useBody } from './useBody'
-import useTypedefData from '~/composables/typedefs/useTypedefData'
 
 import {
     AssetAttributes,
@@ -23,8 +22,6 @@ interface DiscoverListParams {
 }
 
 export function useCurrentUpdate({ id }: DiscoverListParams) {
-    const { customMetadataProjections } = useTypedefData()
-
     const defaultBody = ref({})
 
     const defaultAttributes = ref([
@@ -32,7 +29,6 @@ export function useCurrentUpdate({ id }: DiscoverListParams) {
         ...AssetAttributes,
         ...SQLAttributes,
         ...GlossaryAttributes,
-        ...customMetadataProjections,
         ...SavedQueryAttributes,
     ])
     const relationAttributes = ref([...AssetRelationAttributes])
@@ -82,10 +78,7 @@ export function useCurrentUpdate({ id }: DiscoverListParams) {
     }
 }
 
-export function useCustomMetadataUpdate({
-    id,
-    attributes,
-}: DiscoverListParams) {
+export function useAssetAttributes({ id, attributes }: DiscoverListParams) {
     const defaultBody = ref({})
 
     const generateBody = () => {

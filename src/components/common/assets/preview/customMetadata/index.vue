@@ -358,7 +358,7 @@
     import { Types } from '~/services/meta/types/index'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { useCustomMetadataUpdate } from '~/composables/discovery/useCurrentUpdate'
+    import { useAssetAttributes } from '~/composables/discovery/useCurrentUpdate'
     import Confirm from '@/common/modal/confirm.vue'
     import EmptyView from '@/common/empty/index.vue'
     import Truncate from '@/common/ellipsis/index.vue'
@@ -419,7 +419,15 @@
                 )
             )
 
-            console.log('hello', customMetadataListProjections.value)
+            const {
+                asset,
+                mutate: mutateCM,
+                isReady: isCmReady,
+                isLoading: isCmLoading,
+            } = useAssetAttributes({
+                id: guid,
+                attributes: customMetadataListProjections,
+            })
 
             const { title, selectedAssetUpdatePermission } = useAssetInfo()
             const {
@@ -454,9 +462,9 @@
              */
             const setAttributesList = () => {
                 initializeAttributesList()
-                if (selectedAsset.value?.attributes) {
+                if (asset.value?.attributes) {
                     const bmAttributes = Object.keys(
-                        selectedAsset.value.attributes
+                        asset.value.attributes
                     ).filter((attr) => attr.split('.').length > 1)
 
                     if (bmAttributes.length)
@@ -464,7 +472,7 @@
                             if (data.value.id === ab.split('.')[0]) {
                                 const attribute = ab.split('.')[1]
 
-                                const value = selectedAsset.value.attributes[ab]
+                                const value = asset.value.attributes[ab]
                                 const attrIndex =
                                     applicableList.value.findIndex(
                                         (a) => a.name === attribute
@@ -508,15 +516,6 @@
                 return payloadObj
             }
 
-            const {
-                asset,
-                mutate: mutateUpdate,
-                isReady: isUpdateReady,
-            } = useCustomMetadataUpdate({
-                id: guid,
-                attributes: customMetadataListProjections,
-            })
-
             const isEdit = ref(false)
 
             const handleUpdate = () => {
@@ -545,9 +544,6 @@
                                 selectedAsset.value
                             )} updated`
                         )
-                        guid.value = selectedAsset.value.guid
-
-                        mutateUpdate()
                     }
                     isEdit.value = false
                 })
@@ -598,13 +594,13 @@
                 applicableList.value[index].unsavedChanges = true
             }
 
-            const updateList = inject('updateList', () => ({})) as Function
+            /*  const updateList = inject('updateList', () => ({})) as Function
             const updateDrawerList = inject(
                 'updateDrawerList',
                 () => ({})
             ) as Function
 
-            whenever(isUpdateReady, () => {
+              whenever(isCmReady, () => {
                 if (
                     asset.value.typeName !== 'AtlasGlossary' &&
                     asset.value.typeName !== 'AtlasGlossaryCategory' &&
@@ -613,19 +609,25 @@
                     if (isDrawer.value) updateDrawerList(asset.value)
                     else updateList(asset.value)
                 }
+            }) */
+
+            whenever(isCmReady, () => setAttributesList())
+
+            watch(isCmLoading, () => {
+                loading.value = isCmLoading.value
             })
 
             watch(
                 () => selectedAsset.value.guid,
                 () => {
+                    guid.value = selectedAsset.value?.guid
+                    mutateCM()
                     initializeAttributesList()
                 },
                 {
                     immediate: true,
                 }
             )
-
-            setAttributesList()
 
             const hasValue = (a) => {
                 const isMultivalued =

@@ -3,7 +3,6 @@
         class="w-full pt-2 pb-2 pl-2 pr-2 rounded dropdown-schema-explorer hover:bg-gray-200"
     >
         <!-- New Design using Popovers instead of menu items -->
-
         <a-dropdown
             v-model:visible="dropdownIsVisible"
             :overlay-style="{
@@ -220,8 +219,6 @@
                                     "
                                 ></AssetDropdownNewDatabase>
                             </div>
-                            <!-- <p>Content2</p>
-                            <p>Content2</p> -->
                         </template>
                         <div
                             class="flex items-center justify-center px-4 py-2 submenu-title-content"
@@ -283,14 +280,6 @@
                                         "
                                     ></AssetDropdownNewSchema>
                                 </div>
-                                <!-- <p>Content3</p>
-                            <p>Content3</p>
-                            <p>Content3</p>
-                            <p>Content3</p>
-                            <p>Content3</p>
-                            <p>Content3</p>
-                            <p>Content3</p>
-                            <p>Content3</p> -->
                             </template>
 
                             <div
@@ -1271,6 +1260,7 @@
     .disabled-popover {
         // @apply bg-red-400;
         pointer-events: none;
+        opacity: 0.7;
     }
     .enabled-popover {
         // @apply bg-blue-400;

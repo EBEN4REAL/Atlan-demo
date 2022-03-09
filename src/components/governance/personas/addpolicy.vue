@@ -911,7 +911,8 @@
                                 'entity-update',
                                 'entity-delete',
                                 'entity-update-business-metadata',
-                                'entity-update-classification',
+                                'entity-add-classification',
+                                'entity-remove-classification',
                             ],
                         }
                     }

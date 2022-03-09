@@ -269,10 +269,20 @@ export const glossaryPolicyScopeList = [
             //     value: 'entity-remove-classification',
             //     label: 'remove: Classifications',
             // },
-            {
-                value: 'entity-update-classification',
-                label: 'Update Classifications',
-                desc: 'Update classifications',
+            // {
+            //     value: 'entity-update-classification',
+            //     label: 'Update Classifications',
+            //     desc: 'Update classifications',
+            // },
+               {
+                value: 'entity-add-classification',
+                label: 'Add Classifications',
+                desc: 'Add classifications',
+            },
+               {
+                value: 'entity-remove-classification',
+                label: 'Remove Classifications',
+                desc: 'Remove classifications',
             },
 
             // {

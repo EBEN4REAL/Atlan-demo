@@ -112,7 +112,7 @@
             :visible="queryLogsFilterDrawerVisible"
             :mask="false"
             :placement="'left'"
-            :width="200"
+            :width="235"
             :closable="false"
         >
             <div class="relative">

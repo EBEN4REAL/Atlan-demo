@@ -37,11 +37,12 @@
         />
     </div>
 
-    <div v-else ref="wrapper" class="w-full h-full">
-        <div
-            class="flex flex-col p-4 overflow-y-auto gap-y-3"
-            style="height: calc(100vh - 11.5rem)"
-        >
+    <div
+        v-else
+        ref="wrapper"
+        class="flex flex-col flex-grow w-full overflow-hidden"
+    >
+        <div class="flex flex-col flex-grow p-4 overflow-y-auto gap-y-3">
             <template v-for="issue in issues" :key="issue.id">
                 <IssueCard :issue="issue">
                     <template #action>

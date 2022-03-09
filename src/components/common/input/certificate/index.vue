@@ -205,14 +205,16 @@
             } = useAssetInfo()
 
             const handleChange = () => {
-                modelValue.value = localValue.value
-                emit('change')
+                if (props.editPermission) {
+                    modelValue.value = localValue.value
+                    emit('change')
+                }
             }
 
             const { username, role } = whoami()
 
             const handleVisibleChange = (visible) => {
-                if (!visible) {
+                if (!visible && props.editPermission) {
                     localValue.value.certificateUpdatedBy = username.value
                     handleChange()
                 }

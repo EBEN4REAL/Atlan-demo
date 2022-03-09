@@ -185,7 +185,6 @@
                 if (!visible && hasBeenEdited.value) {
                     modelValue.value = localValue.value
                     if (props.editPermission) emit('change', localValue.value)
-                    else handleRequest()
                     hasBeenEdited.value = false
                 }
             }

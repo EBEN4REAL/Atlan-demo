@@ -230,9 +230,10 @@
             })
 
             const handleChange = () => {
-                modelValue.value = localValue.value
-
-                emit('change', localValue.value)
+                if (props.editPermission) {
+                    modelValue.value = localValue.value
+                    emit('change', localValue.value)
+                }
             }
 
             const handleDeleteClassification = (name) => {
@@ -274,7 +275,7 @@
                         classificationFacetRef.value?.forceFocus()
                     }
                 }
-                if (!visible) {
+                if (!visible && props.editPermission) {
                     handleChange()
                 }
             }

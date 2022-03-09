@@ -327,7 +327,7 @@
 
             whenever(and(Escape), () => {
                 if (isEdit.value) {
-                    handleChange()
+                    if (props.editPermission) handleChange()
                     isEdit.value = false
                 }
             })
@@ -340,7 +340,7 @@
                         ownerFacetRef.value?.forceFocus()
                     }
                 }
-                if (!visible) {
+                if (!visible && props.editPermission) {
                     handleChange()
                 }
             }

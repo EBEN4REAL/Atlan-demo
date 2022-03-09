@@ -1,0 +1,8 @@
+<svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+        d="M7.5 4.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM3 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Zm7 5.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM13 6a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Zm-1.45-1.894-2.6-.712m-2.562.612L3.873 6.254m.152 2.383 4.763 3.476m1.712-.525 2-5.675"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    />
+</svg>

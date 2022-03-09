@@ -54,26 +54,22 @@
                     placement="bottom"
                 >
                     <template #content>
-                        <div class="p-4 space-y-5">
+                        <div class="p-4 gap-y-5">
                             <h1>
                                 Are you sure you want to disconnect from
                                 <b>{{ integration.name }}</b
                                 >?
                             </h1>
-                            <div class="flex justify-end space-x-2">
-                                <AtlanButton
-                                    padding="compact"
-                                    size="sm"
-                                    color="minimal"
+                            <div class="flex justify-end space-x-3">
+                                <AtlanButton2
+                                    label="Cancel"
+                                    color="secondary"
                                     @click="popover = false"
-                                    >Cancel</AtlanButton
-                                >
-                                <AtlanButton
-                                    padding="compact"
-                                    size="sm"
+                                />
+                                <AtlanButton2
+                                    label="Confirm"
                                     @click="disconnect"
-                                    >Confirm</AtlanButton
-                                >
+                                />
                             </div>
                         </div>
                     </template>

@@ -133,7 +133,23 @@ export default function useGlossary(immediate = true) {
     )
     const glossaryStore = useGlossaryStore()
     watch(data, () => {
-        glossaryStore.setList(data?.value.entities || [])
+        const list=data?.value?.entities?.sort(
+            (a, b) => {
+                if (
+                    a?.displayText?.toLowerCase() <
+                    b?.displayText?.toLowerCase()
+                )
+                    return -1
+                if (
+                    a?.displayText?.toLowerCase() >
+                    b?.displayText?.toLowerCase()
+                )
+                    return 1
+                return 0
+            }
+        )
+        console.log(list);
+        glossaryStore.setList(list || [])
         glossaryStore.setTermsCount(
             aggregationMap(GROUP_TERM_AGGREATION, true) || []
         )

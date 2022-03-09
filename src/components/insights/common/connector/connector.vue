@@ -75,13 +75,14 @@
         ref,
         Ref,
         toRefs,
-        watch,
+        onMounted,
     } from 'vue'
     import { capitalizeFirstLetter } from '~/utils/string'
     import { List } from '~/constant/status'
     import { useConnectionStore } from '~/store/connection'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import AssetDropdown from '~/components/common/dropdown/assetDropdown.vue'
+    import { useConnection } from '~/composables/connection/useConnection'
 
     export default defineComponent({
         components: {
@@ -309,6 +310,10 @@
             const getConnectorImage = (sourceid) => {
                 return store.getConnectorImageMapping[sourceid?.toLowerCase()]
             }
+
+            onMounted(() => {
+                useConnection()
+            })
 
             return {
                 treeSelectRef,

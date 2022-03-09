@@ -61,7 +61,7 @@
                     <div class="flex items-center">
                         <a-button
                             variant="sm"
-                            class="mr-3 rounded-md ant-btn test-config-button"
+                            class="mr-3 rounded-md ant-btn test-config-button h-9"
                             :loading="testing"
                             @click="test"
                         >
@@ -115,7 +115,7 @@
                         >
                             <AtlanIcon
                                 icon="Check"
-                                class="mr-2 text-green-600"
+                                class="flex-none mr-2 text-green-600"
                             />
                             Config Saved
                         </div>
@@ -134,15 +134,12 @@
                             </a-tooltip>
                             <span>Something went wrong</span>
                         </div>
-                        <a-button
-                            style="width: 150px"
-                            class="rounded-md ant-btn ant-btn-primary"
+                        <AtlanButton2
+                            size="large"
                             :loading="isLoading"
+                            :label="isLoading ? 'Saving...' : 'Save'"
                             @click.prevent="saveSmtpConfig"
-                        >
-                            <span v-if="isLoading">Saving...</span>
-                            <span v-else>Save</span>
-                        </a-button>
+                        />
                     </div>
                 </div>
             </a-form>

@@ -11,9 +11,12 @@
                             Manage and monitor all your metadata workflows
                         </div>
                     </div>
-                    <a-button type="primary" @click="handleNewWorkflow"
-                        >New Workflow</a-button
-                    >
+
+                    <AtlanButton2
+                        label="New Workflow"
+                        prefixIcon="Add"
+                        @click="handleNewWorkflow"
+                    />
                 </div>
 
                 <div class="flex items-center justify-between px-6 mb-2">

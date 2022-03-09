@@ -81,17 +81,14 @@
                     </div>
                 </div>
             </div>
-            <div v-if="mode === 'package'">
-                <a-button
-                    type="primary"
-                    class="mt-2"
+            <template v-if="mode === 'package'">
+                <AtlanButton2
                     v-if="!route.params.id"
+                    class="mt-2"
+                    label="Setup Workflow"
                     @click="handleSetupWorkflow"
-                    block
-                >
-                    <span> Setup Workflow</span>
-                </a-button>
-            </div>
+                />
+            </template>
         </div>
 
         <Property

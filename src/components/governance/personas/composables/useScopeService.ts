@@ -12,22 +12,28 @@ export const purposeScopeList = [
             {
                 value: 'entity-read',
                 label: 'read',
-                desc: 'Read access to private attributes',
+                // desc: 'Read access to private attributes',
+                desc: 'Gives permission to view Activity, Lineage, Custom metadata and sensitive info like SQL queries for processes in lineage or view defintions',
+                gif: viewAssetGif
             },
             {
                 value: 'entity-update',
                 label: 'update',
-                desc: 'Access to update asset metadata',
+                // desc: 'Access to update asset metadata',
+                desc: "Update asset metatada including description, certification, owners, readme & resources",
+                gif: updateAssetGif
             },
             {
                 value: 'entity-create',
                 label: 'create',
-                desc: 'Create entities within selected assets',
+                // desc: 'Create entities within selected assets',
+                desc: "Gives ability to create new assets within the selected connection or specified database/schema"
             },
             {
                 value: 'entity-delete',
                 label: 'delete',
-                desc: 'Permission to delete selected assets',
+                // desc: 'Permission to delete selected assets',
+                desc: "Gives ability to delete assets within the selected connection or specified database/schema"
             },
         ],
         type: 'Assets',
@@ -39,6 +45,7 @@ export const purposeScopeList = [
                 value: 'entity-update-business-metadata',
                 label: 'Update Custom Metadata',
                 desc: 'Update classifications for selected assets',
+                gif: updateBusinessMetaGif
             },
             // {
             //     value: 'entity-add-classification',
@@ -59,11 +66,13 @@ export const purposeScopeList = [
                 value: 'entity-add-classification',
                 label: 'Add Classifications',
                 desc: 'Update values for BM attributes for selected assets',
+                gif: updateClassificationGif
             },
                {
                 value: 'entity-remove-classification',
                 label: 'Remove Classifications',
                 desc: 'Update values for BM attributes for selected assets',
+                gif: updateClassificationGif
             },
 
             // {

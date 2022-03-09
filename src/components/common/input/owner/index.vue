@@ -262,7 +262,7 @@
             const { role } = whoami()
             const existingOwnerUsers = ref(ownerUsers(selectedAsset.value))
             const existingOwnerGroups = ref(ownerGroups(selectedAsset.value))
-            const newOwners = ref(modelValue.value)
+            const newOwners = ref()
             const isEdit = ref(false)
 
             const { showUserPreview, setUserUniqueAttribute } = useUserPreview()

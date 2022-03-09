@@ -143,7 +143,7 @@
             )
             const activeTabIndex = ref(0)
             const isWorkflowTemplateFetched = ref(false)
-            const packageList = ref(['@atlan/query-scheduler'])
+            const packageList = ref(['@atlan/schedule-query'])
             const facetPackage = ref({})
             const packageLimit = ref(5)
             const workflowTemplate = ref({})
@@ -309,7 +309,7 @@
                                     variablesData.value.forEach((variable) => {
                                         inputParameters.value[
                                             'query-variables'
-                                        ][`{{${variable.name}}}`] =
+                                        ][variable.name] =
                                             typeof variable.value === 'object'
                                                 ? variable.value?.join(',')
                                                 : getValueByType(

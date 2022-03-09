@@ -228,13 +228,49 @@ export const blockMenu: CommandItem[] = [
                       .run()
                 : editor.chain().focus().insertGoogleDoc().run(),
     },
+    {
+        title: 'Google Sheet',
+        key: 'googleSheet',
+        helpText: '',
+        icon: 'GoogleSheet',
+        border: true,
+        searchKeys: ['google', 'sheet', 'excel'],
+        disabled: () => false,
+        command: ({ editor, range }) =>
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .insertGoogleSheet()
+                      .run()
+                : editor.chain().focus().insertGoogleSheet().run(),
+    },
+    {
+        title: 'Google Slides',
+        key: 'googleSlide',
+        helpText: '',
+        icon: 'GoogleSlide',
+        border: true,
+        searchKeys: ['google', 'slide', 'presentation'],
+        disabled: () => false,
+        command: ({ editor, range }) =>
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .insertGoogleSlide()
+                      .run()
+                : editor.chain().focus().insertGoogleSlide().run(),
+    },
     // {
-    //     title: 'Google Sheet',
-    //     key: 'googleSheet',
+    //     title: 'Google Drive',
+    //     key: 'googleDrive',
     //     helpText: '',
-    //     icon: 'Gdoc',
+    //     icon: 'GoogleDrive',
     //     border: true,
-    //     searchKeys: ['google', 'sheet'],
+    //     searchKeys: ['google', 'drive'],
     //     disabled: () => false,
     //     command: ({ editor, range }) =>
     //         range
@@ -242,9 +278,9 @@ export const blockMenu: CommandItem[] = [
     //                   .chain()
     //                   .focus()
     //                   .deleteRange(range)
-    //                   .insertGoogleSheet()
+    //                   .insertGoogleDrive()
     //                   .run()
-    //             : editor.chain().focus().insertGoogleSheet().run(),
+    //             : editor.chain().focus().insertGoogleDrive().run(),
     // },
 ]
 

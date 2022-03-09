@@ -65,7 +65,6 @@
     import ImageUpload from './extensions/imageUpload/extension'
     import CustomImage from './extensions/image/extension'
     import IFrame from './extensions/iframe/extension'
-    import GoogleDoc from './extensions/googleDoc/extension'
     import mentionSuggestion from './extensions/mentions/suggestion'
 
     import LinkPreview from './extensions/linkPreview/linkPreview'

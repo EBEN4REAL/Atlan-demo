@@ -206,7 +206,7 @@
                     <a-popover placement="rightTop" class="selector-popover">
                         <template #content>
                             <div
-                                class="overflow-x-hidden overflow-y-hidden w-60 max-h-96"
+                                class="overflow-x-hidden overflow-y-hidden w-60"
                             >
                                 <AssetDropdownNewDatabase
                                     v-if="connection"

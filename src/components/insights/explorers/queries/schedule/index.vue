@@ -30,6 +30,9 @@
                 :cronData="cronData"
                 :variablesData="variablesData"
                 :infoTabeState="infoTabeState"
+                :isScheduleWorkFlowLoading="isLoading"
+                :isWorkflowTemplateFetched="isWorkflowTemplateFetched"
+                @runWorkFlow="runWorkFlow"
             />
         </keep-alive>
         <div
@@ -105,6 +108,9 @@
     import { createWorkflow } from '~/composables/package/useWorkflow'
     import { useUsers } from '~/composables/user/useUsers'
     import { message } from 'ant-design-vue'
+    import useWorkflowSubmit from '~/composables/package/useWorkflowSubmit'
+    import { useTimeoutFn } from '@vueuse/core'
+    import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
 
     export default defineComponent({
         name: 'Schedule Query',
@@ -142,6 +148,7 @@
                 )
             )
             const activeTabIndex = ref(0)
+            const messageKey = ref('run-workflow-insights')
             const isWorkflowTemplateFetched = ref(false)
             const packageList = ref(['@atlan/schedule-query'])
             const facetPackage = ref({})
@@ -414,6 +421,51 @@
                     }
                 }
             )
+
+            const runWorkFlow = () => {
+                const { name } = useWorkflowInfo()
+
+                const bodyArg = {
+                    namespace: 'default',
+                    resourceKind: 'WorkflowTemplate',
+                    resourceName: name(body.value),
+                }
+                const {
+                    data: workflowSubmitData,
+                    error: workflowSubmitError,
+                    mutate,
+                    isLoading: workflowSubmitLoading,
+                } = useWorkflowSubmit(bodyArg, true)
+
+                message.loading({
+                    content: 'Starting a new run',
+                    key: messageKey.value,
+                })
+
+                try {
+                    invoke(async () => {
+                        await until(workflowSubmitLoading).toBe(true)
+                        if (workflowSubmitData.value) {
+                            const {} = useTimeoutFn(() => {
+                                message.success({
+                                    content: 'Run started',
+                                    key: messageKey.value,
+                                    duration: 4,
+                                })
+                            }, 2000)
+                        }
+                        if (workflowSubmitError.value) {
+                            message.error({
+                                content: 'Failed to run!',
+                                key: messageKey.value,
+                                duration: 4,
+                            })
+                        }
+                    })
+                } catch (e) {
+                    console.error(e)
+                }
+            }
             // watch(activeTabIndex, (newActiveIndex) => {
             //     if (newActiveIndex === 0) {
             //         variablesData.value = JSON.parse(
@@ -438,6 +490,7 @@
                 variablesData,
                 getValueByType,
                 isLoading,
+                runWorkFlow,
             }
         },
     })

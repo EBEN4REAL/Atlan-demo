@@ -16,10 +16,20 @@
                 <p class="font-bold text-gray-700" style="font-size: 16px">
                     Schedule
                 </p>
-                <div class="text-primary">
-                    <AtlanIcon icon="Play" class="w-4 h-4 mr-1.5" />
-                    <span class="text-sm">Run Now</span>
-                </div>
+
+                <AtlanButton
+                    color="light"
+                    @click="runWorkFlow"
+                    class="h-8 px-5 py-0 bg-white border-none text-primary"
+                    :disabled="
+                        !isWorkflowTemplateFetched || isScheduleWorkFlowLoading
+                    "
+                >
+                    <div class="text-primary">
+                        <AtlanIcon icon="Play" class="w-4 h-4 mr-1.5 -mt-0.5" />
+                        <span class="text-sm">Run Now</span>
+                    </div>
+                </AtlanButton>
             </div>
             <div class="flex items-center mb-2">
                 <div class="w-2 h-2 mr-2.5 bg-green-400 rounded-full"></div>
@@ -116,6 +126,14 @@
                 }>,
                 required: true,
             },
+            isWorkflowTemplateFetched: {
+                type: Boolean,
+                required: true,
+            },
+            isScheduleWorkFlowLoading: {
+                type: Boolean,
+                required: true,
+            },
             infoTabeState: {
                 type: Object as PropType<{
                     name: string
@@ -128,9 +146,16 @@
                 required: true,
             },
         },
-        setup(props) {
-            const { variablesData, usersData, cronData, infoTabeState } =
-                toRefs(props)
+        emits: ['runWorkFlow'],
+        setup(props, { emit }) {
+            const {
+                variablesData,
+                usersData,
+                cronData,
+                infoTabeState,
+                isScheduleWorkFlowLoading,
+                isWorkflowTemplateFetched,
+            } = toRefs(props)
             const interval = parser.parseExpression(cronData.value.cron)
 
             const _date = dayjs(interval.next().toString())
@@ -170,6 +195,10 @@
                 }
             }
 
+            const runWorkFlow = () => {
+                emit('runWorkFlow')
+            }
+
             const format = 'MMM DD, dddd, hh:MM A'
             return {
                 format,
@@ -181,6 +210,9 @@
                 infoTabeState,
                 getVariableIcon,
                 getVariableValue,
+                isScheduleWorkFlowLoading,
+                isWorkflowTemplateFetched,
+                runWorkFlow,
             }
         },
     })

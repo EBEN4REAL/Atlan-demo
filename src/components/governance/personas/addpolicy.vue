@@ -862,7 +862,9 @@
                         'entity-delete',
                         // 'link-assets',
                         'entity-update-business-metadata',
-                        'entity-update-classification',
+                        // 'entity-update-classification',
+                        'entity-add-classification',
+                        'entity-remove-classification',
                         'add-terms',
                         'remove-terms',
                     ]

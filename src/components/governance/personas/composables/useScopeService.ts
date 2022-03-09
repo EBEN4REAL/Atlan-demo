@@ -50,9 +50,19 @@ export const purposeScopeList = [
             //     label: 'remove: Classifications',
             //     desc: 'Remove classifications for selected assets'
             // },
-            {
-                value: 'entity-update-classification',
-                label: 'Update Classifications',
+            // {
+            //     value: 'entity-update-classification',
+            //     label: 'Update Classifications',
+            //     desc: 'Update values for BM attributes for selected assets',
+            // },
+               {
+                value: 'entity-add-classification',
+                label: 'Add Classifications',
+                desc: 'Update values for BM attributes for selected assets',
+            },
+               {
+                value: 'entity-remove-classification',
+                label: 'Remove Classifications',
                 desc: 'Update values for BM attributes for selected assets',
             },
 
@@ -167,11 +177,25 @@ export const personaScopeList = [
             //     value: 'entity-remove-classification',
             //     label: 'remove: Classifications',
             // },
-            {
-                value: 'entity-update-classification',
-                label: 'Update Classifications',
+            // {
+            //     value: 'entity-update-classification',
+            //     label: 'Update Classifications',
+            //     // desc: 'Update classifications',
+            //     desc: "Permission to add or remove classifications from assets",
+            //     gif: updateClassificationGif
+            // },
+                {
+                value: 'entity-add-classification',
+                label: 'Add Classifications',
                 // desc: 'Update classifications',
-                desc: "Permission to add or remove classifications from assets",
+                desc: "Permission to add classifications from assets",
+                gif: updateClassificationGif
+            },
+                {
+                value: 'entity-remove-classification',
+                label: 'Remove Classifications',
+                // desc: 'Update classifications',
+                desc: "Permission to remove classifications from assets",
                 gif: updateClassificationGif
             },
 

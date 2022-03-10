@@ -186,6 +186,9 @@
             const observer = ref()
             const splitpaneRef = ref()
             const showcustomToolBar = ref(false) // custom variables toolbar
+            const refetchQueryNode = ref({
+                guid: '',
+            }) // for triggering the refetch node function in query explorer from playground
 
             const savedQueryInfo = inject('savedQueryInfo') as Ref<
                 SavedQuery | undefined
@@ -386,6 +389,7 @@
                 limitRows: limitRows,
                 updateAssetCheck,
                 collectionSelectorChange,
+                refetchQueryNode,
             }
             useProvide(provideData)
             /*-------------------------------------*/

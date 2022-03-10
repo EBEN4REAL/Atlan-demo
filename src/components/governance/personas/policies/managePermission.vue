@@ -1,5 +1,5 @@
 <template>
-    <div class="relative h-full bg-gray-100">
+    <div class="relative h-full bg-white">
         <div class="flex items-center p-4 bg-white border-b border-gray-300">
             <AtlanBtn
                 class="border-none btn-back"
@@ -26,7 +26,7 @@
             </AtlanBtn> -->
         </div>
 
-        <div class="pt-0 mt-5 bg-gray-100 container-content">
+        <div class="pt-0 mt-6 container-content">
             <MetadataScopes
                 v-model:actions="actionsLocal"
                 class="mb-6"

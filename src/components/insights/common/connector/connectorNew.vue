@@ -110,10 +110,11 @@
                         class="hover:bg-gray-100 selector-popover"
                         mouseEnterDelay="0"
                         mouseLeaveDelay="0.1"
+                        overlayClassName="overlay-class"
                     >
                         <template #content>
                             <div
-                                class="pt-1 w-60"
+                                class="rounded-lg w-60"
                                 :class="$style.schemaExplorerTreeStyles"
                             >
                                 <!-- <div
@@ -137,7 +138,7 @@
                                 </a-input>
                             </div> -->
                                 <div
-                                    class="w-full overflow-x-hidden tree-container"
+                                    class="w-full py-1 overflow-x-hidden rounded-lg tree-container"
                                 >
                                     <a-tree
                                         v-model:expandedKeys="expandedKeys"
@@ -220,10 +221,11 @@
                         class="selector-popover"
                         mouseEnterDelay="0"
                         mouseLeaveDelay="0.1"
+                        overlayClassName="overlay-class"
                     >
                         <template #content>
                             <div
-                                class="overflow-x-hidden overflow-y-hidden w-60"
+                                class="overflow-x-hidden overflow-y-hidden w-60 py-0.5"
                             >
                                 <AssetDropdownNewDatabase
                                     v-if="connection"
@@ -285,10 +287,11 @@
                             class="selector-popover"
                             mouseEnterDelay="0"
                             mouseLeaveDelay="0.05"
+                            overlayClassName="overlay-class"
                         >
                             <template #content>
                                 <div
-                                    class="overflow-x-hidden overflow-y-hidden w-60"
+                                    class="overflow-x-hidden overflow-y-hidden w-60 py-0.5"
                                 >
                                     <AssetDropdownNewSchema
                                         v-if="connection"
@@ -1309,6 +1312,15 @@
     }
     .dropdown-overlay-new {
         box-shadow: 0 2px 8px #00000026;
+    }
+    .overlay-class {
+        padding-left: 4px;
+    }
+    .overlay-class .ant-popover-inner {
+        border-radius: 8px;
+    }
+    .overlay-class .ant-popover-content {
+        border-radius: 8px;
     }
 </style>
 <style lang="less" module>

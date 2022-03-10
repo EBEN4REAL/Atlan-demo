@@ -133,10 +133,11 @@
                 extraCountFilter,
             } = toRefs(props)
             const localValue = ref(modelValue.value)
+            const localActiveKeyValue = ref(activeKey.value)
             watch(modelValue, (newModelValue) => {
                 localValue.value = newModelValue
+                localActiveKeyValue.value = activeKey.value
             })
-            const localActiveKeyValue = ref(activeKey.value)
 
             const componentState = ref(0)
             const forceRender = () => {

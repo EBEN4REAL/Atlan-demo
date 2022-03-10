@@ -63,7 +63,7 @@
             <AssetFilters
                 :key="dirtyTimestamp"
                 v-model="facets"
-                v-model:activeKey="activeKey"
+                v-model:activeKey="activeInlineTab.explorer.schema.activeKey"
                 :filter-list="insightsFilters"
                 :type-name="typeName"
                 @change="handleFilterChange"
@@ -154,7 +154,6 @@
             }
 
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
-            const activeKey: Ref<string[]> = ref([])
             const handleActiveKeyChange = () => {}
 
             const handleResetEvent = () => {
@@ -207,7 +206,6 @@
                 handleTypeChange,
                 handleSortOrderChange,
                 dirtyTimestamp,
-                activeKey,
                 handleFilterChange,
                 handleActiveKeyChange,
                 insightsFilters,

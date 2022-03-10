@@ -76,6 +76,9 @@ export function useLocalStorageSync() {
                 if (!t.explorer.schema?.sortOrderColumn) {
                     t.explorer.schema.sortOrderColumn = 'order-asc'
                 }
+                if (!t.explorer.schema?.activeKey) {
+                    t.explorer.schema.activeKey = []
+                }
                 return t
             })
 

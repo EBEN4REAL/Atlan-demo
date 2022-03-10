@@ -23,6 +23,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
                 facetsFilters: {},
                 sortOrderTable: 'name.keyword-asc',
                 sortOrderColumn: 'order-asc',
+                activeKey: [],
             },
             queries: {
                 connectors: {

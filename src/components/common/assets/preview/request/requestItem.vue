@@ -144,24 +144,6 @@
                 </div>
             </div>
 
-            <div
-                v-else-if="item.destinationAttribute === 'userDescription'"
-                class="mt-2 text-sm text-gray-500 truncate"
-            >
-                {{ item.destinationValue }}
-            </div>
-            <div v-else-if="item.destinationAttribute === 'certificateStatus'">
-                <CertificatePill
-                    class="px-2 py-1 text-sm rounded-full classification-pill"
-                    :status="item.destinationValue"
-                />
-            </div>
-            <div v-else-if="item.destinationAttribute === 'ownerUsers'">
-                <UserPill
-                    class="mt-2 classification-pill"
-                    :username="item.destinationValue"
-                />
-            </div>
             <div v-else class="flex items-center justify-between mt-2">
                 <div
                     v-if="item.requestType === 'attach_classification'"
@@ -200,6 +182,27 @@
                         />
                     </Popover>
                 </div>
+
+                <div
+                    v-else-if="
+                        item.destinationAttribute === 'certificateStatus'
+                    "
+                >
+                    <CertificatePill
+                        class="px-2 py-1 text-sm rounded-full classification-pill"
+                        :status="item.destinationValue"
+                    />
+                </div>
+                <!-- <div
+                    v-else-if="item.destinationAttribute === 'ownerUsers'"
+                    class="mt-2"
+                > -->
+                <!-- <UserPill
+                    class="mt-2 classification-pill"
+                    :username="item.destinationValue"
+                /> -->
+                <!-- {{ item.destinationValue }}
+                </div> -->
                 <div v-else-if="item.requestType === 'term_link'">
                     <TermPopover
                         :loading="termLoading"
@@ -219,6 +222,9 @@
                             </template>
                         </Pill>
                     </TermPopover>
+                </div>
+                <div v-else class="ml-1 text-sm text-gray-500 truncate">
+                    {{ item.destinationValue }}
                 </div>
                 <div class="flex items-center">
                     <a-popover

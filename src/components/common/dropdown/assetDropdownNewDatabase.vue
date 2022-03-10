@@ -252,7 +252,7 @@
             ) => {
                 if (!_firsCalled.value) {
                     handleChange(key, value, level)
-                    _firsCalled.value = true
+                    // _firsCalled.value = true
                 }
             }
             watch(connector, () => {

@@ -1,5 +1,5 @@
 <template>
-    <div class="max-profile-width">
+    <div>
         <!-- Search and Filter -->
         <div class="w-1/2 mb-3">
             <SearchAdvanced
@@ -552,9 +552,5 @@
 
     .selected-row {
         @apply border-r-2 border-primary !important;
-    }
-
-    .max-profile-width {
-        max-width: calc(100vw - 576px);
     }
 </style>

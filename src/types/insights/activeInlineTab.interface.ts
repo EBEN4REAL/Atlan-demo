@@ -24,6 +24,9 @@ export interface activeInlineTabInterface {
     explorer: {
         schema: {
             connectors: connectorsWidgetInterface
+            facetsFilters: Record<string, Array<any>>
+            sortOrderTable: string
+            sortOrderColumn: string
         }
         queries: {
             connectors: {

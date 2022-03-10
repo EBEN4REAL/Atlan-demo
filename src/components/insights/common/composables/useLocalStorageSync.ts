@@ -67,6 +67,15 @@ export function useLocalStorageSync() {
                     t.playground.resultsPane.outputPaneSize =
                         outputPaneSize.value
                 }
+                if (!t.explorer.schema?.facetsFilters) {
+                    t.explorer.schema.facetsFilters = {}
+                }
+                if (!t.explorer.schema?.sortOrderTable) {
+                    t.explorer.schema.sortOrderTable = 'name.keyword-asc'
+                }
+                if (!t.explorer.schema?.sortOrderColumn) {
+                    t.explorer.schema.sortOrderColumn = 'order-asc'
+                }
                 return t
             })
 

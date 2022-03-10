@@ -38,35 +38,31 @@
                             : 'bg-white hover:bg-gray-200'
                     "
                 >
-                    <div
-                        class="flex items-center justify-between w-full parent-ellipsis-container-base"
-                    >
-                        <div
-                            class="flex items-center parent-ellipsis-container-base"
-                        >
-                            <AtlanIcon
-                                :icon="typeName + `Gray`"
-                                class="flex-shrink-0 w-auto h-4 mr-2"
-                            />
-                            <!-- <span class="parent-ellipsis-container-base"
+                    <div class="flex items-center justify-between w-full">
+                        <!-- <div class="flex items-center"> -->
+                        <AtlanIcon
+                            :icon="typeName + `Gray`"
+                            class="flex-shrink-0 w-auto h-4 mr-2"
+                        />
+                        <!-- <span class="parent-ellipsis-container-base"
                                 >{{ item?.label }}
                             </span> -->
-                            <Tooltip
-                                :tooltip-text="item?.label"
-                                classes="parent-ellipsis-container-base"
-                                placement="rightTop"
-                                clampPercentage="98%"
-                            >
-                            </Tooltip>
-                        </div>
+                        <Tooltip
+                            :tooltip-text="item?.label"
+                            classes=" w-full"
+                            placement="rightTop"
+                            clampPercentage="82%"
+                        >
+                        </Tooltip>
+                        <span class="flex-shrink-0 w-4 mr-0">
+                            <AtlanIcon
+                                v-if="modelValue === item.value"
+                                icon="Check"
+                                class="ml-1 text-primary"
+                            />
+                        </span>
+                        <!-- </div> -->
                     </div>
-                    <span v-if="modelValue === item.value" class="w-6">
-                        <AtlanIcon
-                            v-if="modelValue === item.value"
-                            icon="Check"
-                            class="ml-1 text-primary parent-ellipsis-container-base"
-                        />
-                    </span>
                 </div>
             </template>
         </div>
@@ -104,6 +100,7 @@
         computed,
         PropType,
         ref,
+        onMounted,
     } from 'vue'
     import { useAssetListing } from '~/components/insights/common/composables/useAssetListing'
     import { isSelectFirstDefault } from '~/components/insights/common/composables/getDialectInfo'
@@ -171,6 +168,12 @@
                 type: Array,
                 required: true,
             },
+            DBPopoverVisible: {
+                type: Boolean,
+            },
+            SchemaPopoverVisible: {
+                type: Boolean,
+            },
         },
         emits: ['update:modelValue', 'change', 'firstSelectByDefaultChange'],
         setup(props, { emit }) {
@@ -186,6 +189,8 @@
                 listFromAssetDropdown,
                 filterFromAssetDropdown,
                 assetFromAssetDropdown,
+                DBPopoverVisible,
+                SchemaPopoverVisible,
             } = toRefs(props)
 
             const getFilter = (index) => {
@@ -378,6 +383,26 @@
                 // emit('update:modelValue', itemValue)
                 emit('change', itemValue)
             }
+
+            onMounted(() => {
+                queryText.value = ''
+            })
+
+            watch(DBPopoverVisible, () => {
+                // console.log(
+                //     'DBPopoverVisible changed in child',
+                //     DBPopoverVisible.value
+                // )
+                queryText.value = ''
+            })
+
+            watch(SchemaPopoverVisible, () => {
+                // console.log(
+                //     'SchemaPopoverVisible changed in child',
+                //     SchemaPopoverVisible.value
+                // )
+                queryText.value = ''
+            })
 
             return {
                 index,

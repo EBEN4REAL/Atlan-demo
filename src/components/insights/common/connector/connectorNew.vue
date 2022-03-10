@@ -111,6 +111,9 @@
                         mouseEnterDelay="0"
                         mouseLeaveDelay="0.1"
                         overlayClassName="overlay-class"
+                        @visibleChange="
+                            onConnectionPopoverVisibleChange($event)
+                        "
                     >
                         <template #content>
                             <div
@@ -234,6 +237,7 @@
                         mouseEnterDelay="0"
                         mouseLeaveDelay="0.1"
                         overlayClassName="overlay-class"
+                        @visibleChange="onDBPopoverVisibleChange($event)"
                     >
                         <template #content>
                             <div
@@ -249,6 +253,7 @@
                                     @label-change="
                                         setPlaceholder($event, 'asset')
                                     "
+                                    :DBPopoverVisible="DBPopoverVisible"
                                 ></AssetDropdownNewDatabase>
                             </div>
                         </template>
@@ -300,6 +305,9 @@
                             mouseEnterDelay="0"
                             mouseLeaveDelay="0.05"
                             overlayClassName="overlay-class"
+                            @visibleChange="
+                                onSchemaPopoverVisibleChange($event)
+                            "
                         >
                             <template #content>
                                 <div
@@ -316,6 +324,9 @@
                                         :bgGrayForSelector="bgGrayForSelector"
                                         @label-change="
                                             setPlaceholder($event, 'asset')
+                                        "
+                                        :SchemaPopoverVisible="
+                                            SchemaPopoverVisible
                                         "
                                     ></AssetDropdownNewSchema>
                                 </div>
@@ -742,6 +753,10 @@
             const clearStateSchema = ref(false)
             const dropdownIsVisible = ref(false)
 
+            const ConnectionPopoverVisible = ref(false)
+            const DBPopoverVisible = ref(false)
+            const SchemaPopoverVisible = ref(false)
+
             const connector = computed(() => {
                 if (data.value?.attributeName === 'connectorName')
                     return data.value?.attributeValue
@@ -772,7 +787,7 @@
             const store = useConnectionStore()
             // console.log(store.get(), 'sourceMap')
             /* Checking if filterSourceIds passed -> whitelist the sourcelist
-            else fetch all the sourcelist from store */
+                else fetch all the sourcelist from store */
             const filteredList = computed(() =>
                 filterSourceIds.value.length > 0
                     ? filterSourceList(filterSourceIds.value)
@@ -1192,6 +1207,21 @@
                 // )
             }
 
+            const onConnectionPopoverVisibleChange = (e) => {
+                // console.log('onPopoverVisibleChange called in DB', e)
+                ConnectionPopoverVisible.value = e
+                // expandedKeys.value = []
+            }
+
+            const onDBPopoverVisibleChange = (e) => {
+                // console.log('onPopoverVisibleChange called in DB', e)
+                DBPopoverVisible.value = e
+            }
+            const onSchemaPopoverVisibleChange = (e) => {
+                // console.log('onPopoverVisibleChange called in Schema', e)
+                SchemaPopoverVisible.value = e
+            }
+
             return {
                 treeSelectRef,
                 filterSourceIds,
@@ -1228,6 +1258,13 @@
                 iconName,
                 selectedKeys,
                 dropdownIsVisible,
+
+                ConnectionPopoverVisible,
+                onConnectionPopoverVisibleChange,
+                DBPopoverVisible,
+                SchemaPopoverVisible,
+                onDBPopoverVisibleChange,
+                onSchemaPopoverVisibleChange,
             }
         },
     })

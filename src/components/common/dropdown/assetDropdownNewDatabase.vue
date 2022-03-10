@@ -4,6 +4,7 @@
         <template v-if="list.length > 0">
             <div>
                 <AssetSelectorNew
+                    :DBPopoverVisible="DBPopoverVisible"
                     :_firsCalled="_firsCalled"
                     :connector="connector"
                     :key="getKey(0)"
@@ -89,11 +90,19 @@
             clearStateDB: {
                 type: Boolean,
             },
+            DBPopoverVisible: {
+                type: Boolean,
+            },
         },
         emits: ['labelChange', 'change', 'update:clearStateDB'],
         setup(props, { emit }) {
-            const { connector, filter, connection, clearStateDB } =
-                toRefs(props)
+            const {
+                connector,
+                filter,
+                connection,
+                clearStateDB,
+                DBPopoverVisible,
+            } = toRefs(props)
             const _firsCalled = ref(false)
             // console.log('connection filters: ', filter.value)
             // console.log('connector preview: ', connector.value)

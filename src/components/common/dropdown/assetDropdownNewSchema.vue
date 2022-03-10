@@ -17,6 +17,7 @@
                     :bgGrayForSelector="bgGrayForSelector"
                 ></AssetSelector> -->
                 <AssetSelectorNew
+                    :SchemaPopoverVisible="SchemaPopoverVisible"
                     :_firsCalled="_firsCalled"
                     :key="getKey(1)"
                     :modelValue="asset[list[1].attribute]"
@@ -84,11 +85,19 @@
             clearStateSchema: {
                 type: Boolean,
             },
+            SchemaPopoverVisible: {
+                type: Boolean,
+            },
         },
         emits: ['labelChange', 'change'],
         setup(props, { emit }) {
-            const { connector, filter, connection, clearStateSchema } =
-                toRefs(props)
+            const {
+                connector,
+                filter,
+                connection,
+                clearStateSchema,
+                SchemaPopoverVisible,
+            } = toRefs(props)
             const _firsCalled = ref(false)
             console.log('connection filters: ', filter.value)
             console.log('connector preview: ', connector.value)

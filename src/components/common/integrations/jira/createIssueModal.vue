@@ -6,7 +6,7 @@
         :footer="null"
         :mask-closable="false"
         :width="500"
-        class="createModal"
+        :class="$style.createModal"
     >
         <header
             class="flex items-center pl-6 border-b rounded-t-lg bg-primary-light"
@@ -82,6 +82,7 @@
                         class="w-full mb-6"
                         :classx="$style.hideErrorMessage"
                         :label="field.label"
+                        :class="field.hideError ? $style.hideErrorMessage : ''"
                     >
                         <JiraDynamicField
                             :key="field.key"
@@ -200,7 +201,13 @@
     } = getProjectConfig(projectKey)
 
     const requiredFields: Ref<
-        { label: string; key: string; data: any; selectedValue: any }[]
+        {
+            label: string
+            key: string
+            data: any
+            selectedValue: any
+            hideError: boolean
+        }[]
     > = ref([])
 
     const initRequiredFields = () => {
@@ -212,24 +219,50 @@
 
         // ? any types  that we dont want can be blacklisted here
         const blackListTypes = [] // lets not add any now and render all as text // issueLink
-        const supportedTypes = ['number', 'string', 'array', 'priority'] // lets not add any now and render all as text // issueLink
+        const supportedTypes = [
+            'number',
+            'string',
+            'array',
+            'priority',
+            'option',
+        ] // lets not add any now and render all as text // issueLink
+
+        const getModelValue = (values) => {
+            if (Array.isArray(values)) {
+                return values.map((value) => {
+                    if (typeof value === 'object') {
+                        return value.value || value.id
+                    }
+                    return value
+                })
+            }
+            if (typeof values === 'object') {
+                return values.value || values.id
+            }
+            return values
+        }
 
         if (fields && typeof fields === 'object') {
-            Object.entries(fields).forEach(([_, data]) => {
+            Object.entries(fields).forEach(([_, data]: any) => {
                 if (data.required) {
+                    const isURL =
+                        data.schema?.custom &&
+                        data.schema?.custom.split(':').slice(-1)[0] === 'url'
+
                     const typeName = data.schema.type
                     if (!supportedTypes.includes(typeName)) return
                     finalFields.push({
                         label: data.name,
                         key: data.key,
                         data,
+                        hideError: !isURL,
                         selectedValue: data.hasDefaultValue
                             ? data.defaultValue
                             : null,
                     })
-                    // also add default value to form model
+                    // also add default value to form model, strip other details
                     if (data.hasDefaultValue)
-                        form.value[data.key] = data.defaultValue
+                        form.value[data.key] = getModelValue(data.defaultValue)
                 }
             })
         }
@@ -256,10 +289,18 @@
                 v.forEach((field) => {
                     const typeName = field.data.schema.type
                     // some issue with rules removing them for now
+
+                    const isURL =
+                        field.data.schema?.custom &&
+                        field.data.schema?.custom.split(':').slice(-1)[0] ===
+                            'url'
+
                     rules.value[field.key] = [
                         {
                             required: true,
                             trigger: ['submit', 'change'],
+                            message: isURL ? 'Must be a valid URL' : '',
+                            type: isURL ? 'url' : typeName,
                         },
                     ]
                 })
@@ -348,17 +389,19 @@
     }
 </script>
 
-<style lang="less">
+<style lang="less"></style>
+
+<style module lang="less">
     .createModal {
-        .ant-form-undo-flex-direction.ant-form-item {
+        :global(.ant-form-undo-flex-direction.ant-form-item) {
             flex-direction: unset !important;
         }
-        .ant-row {
+        :global(.ant-row) {
             display: block;
         }
 
-        .ant-input,
-        .ant-select-selector {
+        :global(.ant-input),
+        :global(.ant-select-selector) {
             @apply border border-gray-300 rounded-lg !important;
         }
 
@@ -366,9 +409,7 @@
             @apply text-gray-500;
         }
     }
-</style>
 
-<style module lang="less">
     .formComponent {
         :global(.ant-form-item-label) {
             @apply font-bold;
@@ -378,7 +419,7 @@
         }
     }
     .hideErrorMessage {
-        :global(.ant-form-item-explain-error) {
+        :global(.ant-form-item-explain) {
             @apply hidden !important;
         }
     }

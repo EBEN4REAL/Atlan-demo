@@ -40,6 +40,11 @@
     const typeName = computed(() => {
         const originalType =
             field.value?.data.schema?.items || field.value?.data.schema.type
+
+        const isURL =
+            field.value.data.schema?.custom &&
+            field.value.data.schema?.custom.split(':').slice(-1)[0] === 'url'
+        if (isURL) return 'url'
         if (originalType === 'option') return 'select'
         if (originalType === 'priority') return 'select'
         if (originalType === 'user') return 'string'
@@ -53,7 +58,7 @@
         if (allowedValues) {
             return allowedValues.map((v) => ({
                 label: v.value ?? v.name,
-                value: v.id,
+                value: v.value ?? v.id,
                 meta: v,
             }))
         }

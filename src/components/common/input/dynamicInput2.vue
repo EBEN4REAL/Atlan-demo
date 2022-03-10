@@ -40,6 +40,7 @@
         v-model:value="localValue"
         :maxlength="max || 50"
         placeholder="Enter a URL..."
+        type="url"
         @change="handleInputChange"
     ></a-input>
     <a-input

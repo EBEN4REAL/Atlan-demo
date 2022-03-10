@@ -40,7 +40,7 @@
         multiple: { type: Boolean, default: false },
         dropdownClassName: { type: String, default: '' },
         placeholder: { type: String, default: '' },
-        options: { type: Array, default: [] },
+        options: { type: Array, default: () => [] },
     })
 
     const emit = defineEmits(['change', 'update:value'])

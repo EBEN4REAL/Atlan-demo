@@ -172,7 +172,19 @@
                                                     :src="iconName(node)"
                                                     class="flex-shrink-0 h-4 mr-2"
                                                 />
-                                                <span
+                                                <Tooltip
+                                                    :tooltip-text="
+                                                        node
+                                                            ? nodeStringFilter(
+                                                                  node.title
+                                                              )
+                                                            : null
+                                                    "
+                                                    classes="parent-ellipsis-container-base"
+                                                    placement="rightTop"
+                                                >
+                                                </Tooltip>
+                                                <!-- <span
                                                     class="parent-ellipsis-container-base"
                                                     >{{
                                                         node
@@ -181,7 +193,7 @@
                                                               )
                                                             : null
                                                     }}
-                                                </span>
+                                                </span> -->
                                             </div>
                                         </template>
                                         <template #suffixIcon>

@@ -44,7 +44,14 @@
                                 placement="left"
                             >
                                 <template #content>
-                                    <div class="w-64 p-2 bg-gray-700 rounded">
+                                    <div
+                                        class="w-64 p-2 bg-gray-700 rounded"
+                                        :class="
+                                            check.gif
+                                                ? 'container-gif-permission'
+                                                : ''
+                                        "
+                                    >
                                         <img
                                             v-if="check.gif"
                                             :src="check.gif"
@@ -198,5 +205,8 @@
     }
     .wrapper-checkbox {
         gap: 15px !important;
+    }
+    .container-gif-permission {
+        min-height: 150px;
     }
 </style>

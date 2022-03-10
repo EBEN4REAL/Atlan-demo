@@ -12,7 +12,10 @@
                     {{ totalFilteredCount > 1 ? 'filters' : 'filter' }}</span
                 >
                 <div class="flex font-medium text-gray-500">
-                    <span class="text-red-500 clear-filter-asset" @click="handleResetAll">
+                    <span
+                        class="text-red-500 clear-filter-asset"
+                        @click="handleResetAll"
+                    >
                         <span class="text-sm cursor-pointer">Clear All</span>
                     </span>
                 </div>
@@ -131,6 +134,10 @@
             } = toRefs(props)
             const localValue = ref(modelValue.value)
             const localActiveKeyValue = ref(activeKey.value)
+            watch(modelValue, (newModelValue) => {
+                localValue.value = newModelValue
+                localActiveKeyValue.value = activeKey.value
+            })
 
             const componentState = ref(0)
             const forceRender = () => {

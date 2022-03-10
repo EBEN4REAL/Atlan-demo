@@ -28,7 +28,7 @@ const useLoadTreeData = (
     })
     let typeName = ref<string | string[]>()
     const from = ref(0)
-    const size = ref(100)
+    const size = ref(50)
     const sort = ref<String>('asc')
     const refreshBody = () => {
         const appliedFilters: Array<any> = []

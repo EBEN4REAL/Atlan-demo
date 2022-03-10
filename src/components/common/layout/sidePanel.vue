@@ -2,7 +2,11 @@
     <div class="flex flex-col flex-grow h-full">
         <!-- purpose  -->
         <div v-if="logoUrl && !logoNotFound" class="px-2">
-            <a-tooltip placement="right" color="#2A2F45">
+            <a-tooltip
+                placement="right"
+                color="#2A2F45"
+                :mouse-enter-delay="0.5"
+            >
                 <template #title
                     ><div class="text-sm font-semibold">Home</div></template
                 >
@@ -11,22 +15,28 @@
                     class="flex items-center w-full mx-0 mb-1"
                     :class="isCollapsed ? 'justify-center px-0 py-1' : ''"
                 >
-                    <img
-                        :src="logoUrl"
-                        class="w-auto cursor-pointer select-none"
-                        :alt="defaultLogo"
-                        :class="isCollapsed ? 'h-8 ' : 'h-4 mr-2'"
-                        @error="onLogoNotFound"
-                    />
-                    <span v-if="!isCollapsed" class="font-semibold">{{
-                        logoName
-                    }}</span>
+                    <div>
+                        <img
+                            :src="logoUrl"
+                            class="w-auto cursor-pointer select-none"
+                            :alt="defaultLogo"
+                            :class="isCollapsed ? 'h-8 ' : 'h-4 mr-2'"
+                            @error="onLogoNotFound"
+                        />
+                        <span v-if="!isCollapsed" class="font-semibold">{{
+                            logoName
+                        }}</span>
+                    </div>
                 </router-link>
             </a-tooltip>
         </div>
 
         <div v-else class="px-2">
-            <a-tooltip placement="right" color="#2A2F45">
+            <a-tooltip
+                placement="right"
+                color="#2A2F45"
+                :mouse-enter-delay="0.5"
+            >
                 <template #title
                     ><div class="text-sm font-semibold">Home</div>
                 </template>
@@ -48,7 +58,11 @@
 
         <div class="px-2">
             <template v-for="nav in workspaceList" :key="nav.label">
-                <a-tooltip placement="right" color="#2A2F45">
+                <a-tooltip
+                    placement="right"
+                    color="#2A2F45"
+                    :mouse-enter-delay="0.5"
+                >
                     <template #title
                         ><div class="text-sm font-semibold">
                             {{ nav.label }}
@@ -62,23 +76,35 @@
                         v-slot="{ isActive }"
                         v-auth="nav.auth"
                         :to="nav.path"
-                        class="flex items-center w-full mx-0 menu-item"
-                        :class="
-                            isCollapsed ? 'p-2 justify-center my-1' : 'mt-1'
-                        "
                         @click="closeNavDrawer"
                     >
-                        <span class="flex items-center">
-                            <atlan-icon
-                                :icon="isActive ? nav?.icon : nav?.inactiveIcon"
-                                :class="[
-                                    isCollapsed ? 'h-6' : 'h-4 mr-2',
-                                    isActive ? 'text-primary' : 'text-gray-500',
-                                ]"
-                            />
+                        <div
+                            class="flex items-center w-full mx-0 menu-item"
+                            :class="[
+                                isCollapsed
+                                    ? 'p-2 justify-center my-1'
+                                    : 'mt-1',
+                                isActive ? 'bg-primary-menu' : 'text-gray-500',
+                            ]"
+                        >
+                            <span class="flex items-center">
+                                <atlan-icon
+                                    :icon="
+                                        isActive ? nav?.icon : nav?.inactiveIcon
+                                    "
+                                    :class="[
+                                        isCollapsed ? 'h-6' : 'h-4 mr-2',
+                                        isActive
+                                            ? 'text-primary'
+                                            : 'text-gray-500',
+                                    ]"
+                                />
 
-                            <span v-if="!isCollapsed"> {{ nav.label }}</span>
-                        </span>
+                                <span v-if="!isCollapsed">
+                                    {{ nav.label }}</span
+                                >
+                            </span>
+                        </div>
                     </router-link>
                 </a-tooltip>
             </template>
@@ -86,7 +112,11 @@
         <div class="p-2"><hr /></div>
         <div class="px-2">
             <template v-for="nav in workspaceCentreList" :key="nav.label">
-                <a-tooltip placement="right" color="#2A2F45">
+                <a-tooltip
+                    placement="right"
+                    color="#2A2F45"
+                    :mouse-enter-delay="0.5"
+                >
                     <template #title
                         ><div class="text-sm font-semibold">
                             {{ nav.label }}
@@ -132,7 +162,11 @@
         <div class="flex-grow"></div>
         <div class="px-2">
             <template v-for="nav in helpCenterList" :key="nav.id">
-                <a-tooltip placement="right" color="#2A2F45">
+                <a-tooltip
+                    placement="right"
+                    color="#2A2F45"
+                    :mouse-enter-delay="0.5"
+                >
                     <template #title
                         ><div class="text-sm font-semibold">
                             {{ nav.label }}
@@ -236,6 +270,23 @@
             function closeNavDrawer() {
                 emit('closeNavbar')
             }
+
+            const bgClass = (routePath: String) => {
+                switch (routePath) {
+                    case '/glossary':
+                        return 'glossary-bg'
+
+                    case '/insights':
+                        return 'insights-bg'
+
+                    case '/workflows':
+                        return 'workflows-bg'
+
+                    default:
+                        return 'bg-primary-light'
+                }
+            }
+
             return {
                 role,
                 closeNavDrawer,
@@ -278,14 +329,19 @@
             @apply text-primary;
             @apply bg-primary-menu;
         }
-
-        :global(.router-link-active) {
-            @apply text-primary !important;
-            @apply bg-primary-menu !important;
-            @apply font-semibold;
-        }
     }
     :global(.ant-tooltip-inner) {
         @apply px-3 py-2 !important;
+    }
+
+    .glossary-bg {
+        background-color: #ffecf1;
+    }
+    .insights-bg {
+        background-color: #fff5c6;
+    }
+
+    .workflows-bg {
+        background-color: #d7fcdf;
     }
 </style>

@@ -417,6 +417,7 @@ export function useBody(
     base.filterMinimumShouldMatch(1)
 
     const tempQuery = base.build()
+    if (typeName !== 'Column') return tempQuery
 
     const query = {
         ...tempQuery,

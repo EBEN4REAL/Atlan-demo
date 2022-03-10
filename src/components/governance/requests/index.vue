@@ -637,7 +637,7 @@
         }
     }
     .button-close-drawer-request {
-        left: 18% !important;
+        left: 260px !important;
         top: 12px;
     }
     .governance-request {

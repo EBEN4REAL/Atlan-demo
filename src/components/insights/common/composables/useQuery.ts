@@ -77,16 +77,15 @@ export function useQuery() {
                   }
 
         let editorText = ''
-        if (!(openVQB === 'true')) {
-            if (columnNameFromURL) {
-                // editorText = `\/* ${tableNameFromURL} preview *\/\nSELECT ${columnNameFromURL} FROM \"${tableNameFromURL}\" LIMIT 50;\n`
-                editorText = `-- ${assetQuoteType}${tableNameFromURL}${assetQuoteType} preview \nSELECT ${assetQuoteType}${columnNameFromURL}${assetQuoteType} FROM ${assetQuoteType}${tableNameFromURL}${assetQuoteType} LIMIT 50;\n`
-            } else {
-                // editorText = `\/* ${tableNameFromURL} preview *\/\nSELECT * FROM \"${tableNameFromURL}\" LIMIT 50;\n`
-                editorText = `-- ${assetQuoteType}${tableNameFromURL}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableNameFromURL}${assetQuoteType} LIMIT 50;\n`
-            }
-            // const newText = `${editorText}${prevText}`
+
+        if (columnNameFromURL) {
+            // editorText = `\/* ${tableNameFromURL} preview *\/\nSELECT ${columnNameFromURL} FROM \"${tableNameFromURL}\" LIMIT 50;\n`
+            editorText = `-- ${assetQuoteType}${tableNameFromURL}${assetQuoteType} preview \nSELECT ${assetQuoteType}${columnNameFromURL}${assetQuoteType} FROM ${assetQuoteType}${tableNameFromURL}${assetQuoteType} LIMIT 50;\n`
+        } else {
+            // editorText = `\/* ${tableNameFromURL} preview *\/\nSELECT * FROM \"${tableNameFromURL}\" LIMIT 50;\n`
+            editorText = `-- ${assetQuoteType}${tableNameFromURL}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableNameFromURL}${assetQuoteType} LIMIT 50;\n`
         }
+        // const newText = `${editorText}${prevText}`
 
         const attributeName = 'schemaQualifiedName'
         const attributeValue = `${databaseQualifiedNameFromURL}/${schemaNameFromURL}`

@@ -13,8 +13,10 @@
                         :image-url="item.createdBy ? '' : atlanLogo"
                     />
                     <span class="ml-2 text-gray-700">{{ item.createdBy }}</span>
-                    <span class="ml-1 text-gray-400">has requested to</span>
-                    <span class="ml-1 font-bold text-gray-700"
+                    <span class="ml-1 text-gray-400 truncate"
+                        >has requested to</span
+                    >
+                    <span class="ml-1 font-bold text-gray-700 truncate"
                         >{{
                             item?.requestType === 'attribute'
                                 ? `${typeCopyMapping[item?.requestType]} ${
@@ -140,6 +142,19 @@
                 <div class="ml-auto text-sm text-right text-gray-500">
                     {{ createdTime(item.createdAt) }}
                 </div>
+            </div>
+
+            <div
+                v-else-if="item.destinationAttribute === 'userDescription'"
+                class="mt-2 text-sm text-gray-500 truncate"
+            >
+                {{ item.destinationValue }}
+            </div>
+            <div v-else-if="item.destinationAttribute === 'certificateStatus'">
+                <CertificatePill
+                    class="px-2 py-1 text-sm rounded-full classification-pill"
+                    :status="item.destinationValue"
+                />
             </div>
             <div v-else-if="item.destinationAttribute === 'ownerUsers'">
                 <UserPill
@@ -527,6 +542,7 @@
     import { message } from 'ant-design-vue'
     import CertificateBadge from '@common/badge/certificate/index.vue'
     import UserPill from '@common/pills/user.vue'
+    import CertificatePill from '@common/pills/certificate.vue'
     import dayjs from 'dayjs'
     import atlanLogo from '~/assets/images/atlan-logo.png'
     import Pill from '~/components/UI/pill/pill.vue'
@@ -561,6 +577,7 @@
             AtlanButton,
             RequestDropdown,
             UserPill,
+            CertificatePill,
         },
         props: {
             selectedAsset: {

@@ -1,12 +1,13 @@
 <template>
-    <div class="mx-6 border rounded-lg meta-data-scope-container">
+    <div class="mx-6 meta-data-scope-container">
         <div v-for="(scope, idx) in scopeList" :key="scope.type">
-            <div>
+            <div class="mb-4 border rounded-lg">
                 <div class="flex px-4 py-3 bg-gray-100">
                     <a-checkbox
                         :indeterminate="
                             groupedActions[idx].scopes.length ===
-                            scopeList[idx].scopes.length
+                            scopeList[idx].scopes.filter(handleFilterScope)
+                                .length
                                 ? false
                                 : Boolean(groupedActions[idx].scopes.length)
                         "
@@ -14,7 +15,8 @@
                         data-test-id="checkbox"
                         :checked="
                             groupedActions[idx].scopes.length ===
-                            scopeList[idx].scopes.length
+                            scopeList[idx].scopes.filter(handleFilterScope)
+                                .length
                         "
                         @click.stop="toggleCheckAll(idx)"
                     >
@@ -136,21 +138,32 @@
                 emit('update:actions', allScopes)
                 emit('change')
             }
-
+            const hasLink = ref(actions.value?.includes('link-assets'))
+            const handleFilter = (el) => {
+                if (hasLink.value) {
+                    return true
+                }
+                return el !== 'link-assets'
+            }
+            const handleFilterScope = (el) => {
+                if (hasLink.value) {
+                    return true
+                }
+                return el.value !== 'link-assets'
+            }
             function toggleCheckAll(idx: number) {
                 if (
                     groupedActions.value[idx].scopes.length <
-                    scopeList[idx].scopes.length
+                    scopeList[idx].scopes.filter(handleFilterScope).length
                 )
                     updateSelection(
                         scopeList[idx].type,
-                        scopeList[idx].scopes.map((e) => e.value)
+                        scopeList[idx].scopes
+                            .map((e) => e.value)
+                            .filter(handleFilter)
                     )
                 else updateSelection(scopeList[idx].type, [])
             }
-            const hasLink = computed(() =>
-                actions.value?.includes('link-assets')
-            )
 
             return {
                 collapseRef,
@@ -160,6 +173,8 @@
                 toggleCheckAll,
                 defaultExpandedState,
                 hasLink,
+                handleFilter,
+                handleFilterScope,
             }
         },
     })

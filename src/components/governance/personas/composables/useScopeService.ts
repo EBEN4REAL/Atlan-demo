@@ -236,12 +236,14 @@ export const glossaryPolicyScopeList = [
                 label: 'Create',
                 filterLabel: 'Create asset',
                 desc: 'Permission to create term & categories inside the glossary',
+                gif: '',
             },
             {
                 value: 'entity-update',
                 label: 'Update',
                 filterLabel: 'Update asset',
                 desc: 'Permission to update metadata, resources, readme for terms & category and to link those terms with all assets',
+                gif: '',
             },
 
             {
@@ -249,6 +251,7 @@ export const glossaryPolicyScopeList = [
                 label: 'Delete',
                 filterLabel: 'Delete asset',
                 desc: 'Permission to delete terms and categories inside the glossary',
+                gif: '',
             },
         ],
         type: 'Assets',
@@ -256,11 +259,6 @@ export const glossaryPolicyScopeList = [
     },
     {
         scopes: [
-            {
-                value: 'entity-update-business-metadata',
-                label: 'Update Custom Metadata',
-                desc: 'Permission to update custom metadata attributes',
-            },
             // {
             //     value: 'entity-add-classification',
             //     label: 'add: Classifications',
@@ -278,11 +276,19 @@ export const glossaryPolicyScopeList = [
                 value: 'entity-add-classification',
                 label: 'Add Classifications',
                 desc: 'Permission to add classifications from terms',
+                gif: '',
             },
             {
                 value: 'entity-remove-classification',
                 label: 'Remove Classifications',
                 desc: 'Permission to remove classifications from terms',
+                gif: '',
+            },
+            {
+                value: 'entity-update-business-metadata',
+                label: 'Update Custom Metadata',
+                desc: 'Permission to update custom metadata attributes',
+                gif: '',
             },
 
             // {

@@ -1,6 +1,7 @@
 <template>
     <div class="flex flex-row mb-2 space-x-2">
         <a-input
+            ref="searchInput"
             v-model:value="queryText"
             class="h-8 text-base border-t-0 border-l-0 border-r-0 rounded-none"
             :placeholder="
@@ -101,6 +102,8 @@
         PropType,
         ref,
         onMounted,
+        Ref,
+        nextTick,
     } from 'vue'
     import { useAssetListing } from '~/components/insights/common/composables/useAssetListing'
     import { isSelectFirstDefault } from '~/components/insights/common/composables/getDialectInfo'
@@ -178,6 +181,7 @@
         emits: ['update:modelValue', 'change', 'firstSelectByDefaultChange'],
         setup(props, { emit }) {
             const queryText = ref<String>('')
+            const searchInput: Ref<null | HTMLInputElement> = ref(null)
 
             const {
                 disabled,
@@ -384,25 +388,52 @@
                 emit('change', itemValue)
             }
 
-            onMounted(() => {
-                queryText.value = ''
-            })
+            // onMounted(async () => {
+            //     console.log(
+            //         'DBPopoverVisible changed in child',
+            //         DBPopoverVisible.value
+            //     )
+            //     console.log(
+            //         'SchemaPopoverVisible changed in child',
+            //         SchemaPopoverVisible.value
+            //     )
+            //     queryText.value = ''
+            //     await nextTick()
+            //     searchInput.value?.focus()
+            // })
 
-            watch(DBPopoverVisible, () => {
-                // console.log(
-                //     'DBPopoverVisible changed in child',
-                //     DBPopoverVisible.value
-                // )
+            const searchFieldFocus = () => {
                 queryText.value = ''
-            })
+                setTimeout(async () => {
+                    await nextTick()
+                    searchInput.value?.focus()
+                    // console.log('setTimeout running')
+                }, 500)
+            }
 
-            watch(SchemaPopoverVisible, () => {
-                // console.log(
-                //     'SchemaPopoverVisible changed in child',
-                //     SchemaPopoverVisible.value
-                // )
-                queryText.value = ''
-            })
+            watch(
+                DBPopoverVisible,
+                () => {
+                    // console.log(
+                    //     'DBPopoverVisible changed in child',
+                    //     DBPopoverVisible.value
+                    // )
+                    searchFieldFocus()
+                },
+                { immediate: true }
+            )
+
+            watch(
+                SchemaPopoverVisible,
+                () => {
+                    // console.log(
+                    //     'SchemaPopoverVisible changed in child',
+                    //     SchemaPopoverVisible.value
+                    // )
+                    searchFieldFocus()
+                },
+                { immediate: true }
+            )
 
             return {
                 index,
@@ -418,6 +449,7 @@
                 connector,
                 isSelectFirstDefault,
                 getFilter,
+                searchInput,
             }
         },
     })

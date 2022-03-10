@@ -86,8 +86,10 @@
                     const project = options.value.find(
                         (p) => p.value === defaultProject.id
                     )
-                    if (project) modelValue.value = project.value
-                    handleChange(project.value, project)
+                    if (project) {
+                        modelValue.value = project.value
+                        handleChange(project.value, project)
+                    }
                 }
             }
         })

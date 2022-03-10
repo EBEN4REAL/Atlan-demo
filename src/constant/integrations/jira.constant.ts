@@ -1,12 +1,12 @@
 export const CREATE_TICKET_FORM_RULES = {
-    projectId: [
+    project: [
         {
             required: true,
             message: 'Project is required',
             trigger: ['submit', 'change'],
         },
     ],
-    issueType: [
+    issuetype: [
         {
             required: true,
             message: 'Issue type is required',

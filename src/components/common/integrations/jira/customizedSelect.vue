@@ -6,6 +6,7 @@
         :placeholder="placeholder"
         :mode="multiple ? 'multiple' : ''"
         class="w-full rounded-xl"
+        @change="handleChange"
         show-arrow
     >
         <a-select-option
@@ -42,9 +43,14 @@
         options: { type: Array, default: [] },
     })
 
-    const emit = defineEmits(['change'])
+    const emit = defineEmits(['change', 'update:value'])
 
     const { value } = useVModels(props, emit)
+
+    const handleChange = (a) => {
+        console.log('handleChange', a)
+        emit('change', a)
+    }
 
     const handleClick = (v) => {
         if (props.multiple) {
@@ -54,8 +60,6 @@
                 else value.value.push(v)
             } else value.value = [v]
         }
-        // ?! when using useVmodels, value is of the v-model will not reflect immediately for us to send in the change emit
-        emit('change')
     }
 </script>
 

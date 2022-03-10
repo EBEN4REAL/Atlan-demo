@@ -80,11 +80,12 @@
                         :key="field.key"
                         :name="[field.key]"
                         class="w-full mb-6"
-                        :class="$style.hideErrorMessage"
+                        :classx="$style.hideErrorMessage"
                         :label="field.label"
                     >
                         <JiraDynamicField
-                            v-model:value="form[field.value]"
+                            :key="field.key"
+                            v-model:value="form[field.key]"
                             :field="field"
                             @change="
                                 (v) => (requiredFields[idx].selectedValue = v)
@@ -152,15 +153,27 @@
         issuetype: undefined,
         project: undefined,
         summary: undefined,
-        labels: ['Atlan'],
         description: undefined,
     })
+
+    const resetForm = () => {
+        form.value = {
+            issuetype: undefined,
+            project: undefined,
+            summary: undefined,
+            description: undefined,
+        }
+    }
 
     const rules = ref(JSON.parse(JSON.stringify(CREATE_TICKET_FORM_RULES)))
 
     const disableCreate = computed(() =>
         Object.entries(rules.value).some(([k, p]) => {
-            if (p[0].required && !form.value[k]) return true
+            if (p[0].required) {
+                return Array.isArray(form.value[k])
+                    ? !form.value[k].length
+                    : !form.value[k]
+            }
             return false
         })
     )
@@ -197,9 +210,15 @@
             (_type) => _type.id === form.value.issuetype
         )
 
+        // ? any types  that we dont want can be blacklisted here
+        const blackListTypes = [] // lets not add any now and render all as text // issueLink
+        const supportedTypes = ['number', 'string', 'array', 'priority'] // lets not add any now and render all as text // issueLink
+
         if (fields && typeof fields === 'object') {
             Object.entries(fields).forEach(([_, data]) => {
                 if (data.required) {
+                    const typeName = data.schema.type
+                    if (!supportedTypes.includes(typeName)) return
                     finalFields.push({
                         label: data.name,
                         key: data.key,
@@ -229,10 +248,11 @@
             rules.value = JSON.parse(JSON.stringify(CREATE_TICKET_FORM_RULES))
             if (v?.length)
                 v.forEach((field) => {
-                    rules.value[field.value] = [
+                    const typeName = field.data.schema.type
+                    // some issue with rules removing them for now
+                    rules.value[field.key] = [
                         {
                             required: true,
-                            message: 'a',
                             trigger: ['submit', 'change'],
                         },
                     ]
@@ -243,6 +263,7 @@
 
     const handleProjectSelect = async (v, option) => {
         requiredFields.value = []
+        resetForm()
         const {
             meta: { issueTypes, key },
         } = option
@@ -255,6 +276,7 @@
                 meta: type,
             })),
         ]
+
         form.value.issuetype = issueTypeOptions.value[0].value
         await fetchConfig()
         initRequiredFields()
@@ -268,6 +290,7 @@
         typeName: asset.value.typeName,
         assetUrl: `${origin}/assets/${asset.value.guid}/overview`,
         fields: {
+            labels: ['Atlan'],
             summary: form.value.summary,
             description: form.value.description,
             issuetype: { id: form.value.issuetype },
@@ -305,6 +328,7 @@
             })
             emit('success', data.value)
             visible.value = false
+            resetForm()
         } catch (_error) {
             const errMsg = _error?.response?.data?.errorMessage || ''
             const generalError = `Failed to create issue: "${form.value.summary}"`

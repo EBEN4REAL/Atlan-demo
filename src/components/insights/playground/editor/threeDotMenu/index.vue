@@ -839,7 +839,7 @@
             const deleteQuery = () => {
                 let item = {
                     attributes: activeInlineTab.value.attributes,
-                    guid: activeInlineTab.value.attributes.__guid,
+                    guid: activeInlineTab.value.queryId,
                 }
                 let key = item.guid
                 let parentGuid = item?.attributes?.parent?.guid

@@ -32,7 +32,7 @@
     const { field } = toRefs(props)
     const { value } = useVModels(props, emit)
 
-    const localValue = ref()
+    const localValue = ref(value.value)
 
     const multiple = computed(() => field.value?.data.schema.type === 'array')
 

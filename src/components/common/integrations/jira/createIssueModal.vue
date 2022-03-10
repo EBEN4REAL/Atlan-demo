@@ -223,7 +223,13 @@
                         label: data.name,
                         key: data.key,
                         data,
+                        selectedValue: data.hasDefaultValue
+                            ? data.defaultValue
+                            : null,
                     })
+                    // also add default value to form model
+                    if (data.hasDefaultValue)
+                        form.value[data.key] = data.defaultValue
                 }
             })
         }
@@ -263,7 +269,6 @@
 
     const handleProjectSelect = async (v, option) => {
         requiredFields.value = []
-        resetForm()
         const {
             meta: { issueTypes, key },
         } = option

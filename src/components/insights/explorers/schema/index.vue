@@ -251,7 +251,7 @@
             // }
 
             const facets = ref(
-                activeInlineTab.value.explorer.schema.facetsFilters
+                activeInlineTab.value.explorer.schema.facetsFilters ?? {}
             )
 
             watch(activeInlineTabKey, (newActiveInlineTabKey) => {

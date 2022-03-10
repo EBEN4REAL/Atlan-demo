@@ -169,6 +169,8 @@
                 // offset.value = 0
                 // quickChange()
                 emit('change', 'facets', facets.value)
+                activeInlineTab.value.explorer.schema.facetsFilters =
+                    facets.value
                 // console.log('filters: ', facets.value)
             }
 

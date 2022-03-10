@@ -95,6 +95,7 @@
 <script lang="ts">
     import { useVModels } from '@vueuse/core'
     import {
+        watch,
         computed,
         defineAsyncComponent,
         defineComponent,
@@ -186,6 +187,9 @@
             )
 
             const facetMap = ref(modelValue.value)
+            watch(modelValue, (newModelValue) => {
+                facetMap.value = { ...newModelValue }
+            })
             const isFiltered = computed(() => {
                 const id = item.value?.id
                 if (facetMap?.value) {

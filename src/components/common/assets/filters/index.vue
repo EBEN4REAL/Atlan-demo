@@ -134,7 +134,7 @@
             } = toRefs(props)
             const localValue = ref(modelValue.value)
             watch(modelValue, (newModelValue) => {
-                localValue.value = { ...newModelValue }
+                localValue.value = newModelValue
             })
             const localActiveKeyValue = ref(activeKey.value)
 

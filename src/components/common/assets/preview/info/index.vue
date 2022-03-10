@@ -773,7 +773,7 @@
                             isDrawer,
                             'RELATIONSHIP_ADD',
                             'AtlasGlossaryTerm'
-                        ) && editPermission
+                        ) || editPermission
                     "
                     :allow-delete="
                         selectedAssetUpdatePermission(
@@ -781,7 +781,7 @@
                             isDrawer,
                             'RELATIONSHIP_REMOVE',
                             'AtlasGlossaryTerm'
-                        ) && editPermission
+                        ) || editPermission
                     "
                     @change="handleMeaningsUpdate"
                 >

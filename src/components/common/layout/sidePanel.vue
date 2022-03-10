@@ -84,8 +84,12 @@
                                 isCollapsed
                                     ? 'p-2 justify-center my-1'
                                     : 'mt-1',
-                                isActive ? 'bg-primary-menu' : 'text-gray-500',
+                                isActive || isHovering === nav.path
+                                    ? bgClass(nav.path)
+                                    : '',
                             ]"
+                            @mouseover="isHovering = nav.path"
+                            @mouseout="isHovering = ''"
                         >
                             <span class="flex items-center">
                                 <atlan-icon
@@ -135,25 +139,40 @@
                         v-slot="{ isActive }"
                         v-auth.or="nav.auth"
                         :to="nav.path"
-                        class="flex items-center w-full mx-0 my-1 menu-item"
-                        :class="isCollapsed ? 'p-2 justify-center' : ''"
                         @click="closeNavDrawer"
-                    >
-                        <span class="flex items-center">
-                            <atlan-icon
-                                :icon="
-                                    isActive
-                                        ? nav?.icon
-                                        : nav?.inactiveIcon || nav?.icon
-                                "
-                                :class="[
-                                    isCollapsed ? 'h-6' : 'h-4 mr-2',
-                                    isActive ? 'text-primary' : 'text-gray-500',
-                                ]"
-                            />
+                        ><div
+                            class="flex items-center w-full mx-0 menu-item"
+                            :class="[
+                                isCollapsed
+                                    ? 'p-2 justify-center my-1'
+                                    : 'mt-1',
+                                isActive || isHovering === nav.path
+                                    ? bgClass(nav.path)
+                                    : '',
+                            ]"
+                            @mouseover="isHovering = nav.path"
+                            @mouseout="isHovering = ''"
+                        >
+                            <span class="flex items-center">
+                                <atlan-icon
+                                    :icon="
+                                        isActive
+                                            ? nav?.icon
+                                            : nav?.inactiveIcon || nav?.icon
+                                    "
+                                    :class="[
+                                        isCollapsed ? 'h-6' : 'h-4 mr-2',
+                                        isActive
+                                            ? 'text-primary'
+                                            : 'text-gray-500',
+                                    ]"
+                                />
 
-                            <span v-if="!isCollapsed"> {{ nav.label }}</span>
-                        </span>
+                                <span v-if="!isCollapsed">
+                                    {{ nav.label }}</span
+                                >
+                            </span>
+                        </div>
                     </router-link>
                 </a-tooltip>
             </template>
@@ -174,7 +193,7 @@
                     </template>
                     <div
                         v-if="nav.isActive"
-                        class="flex items-center w-full mx-0 my-1 menu-item"
+                        class="flex items-center w-full mx-0 my-1 cursor-pointer menu-item hover:bg-primary-menu"
                         :class="isCollapsed ? 'p-2 justify-center' : ''"
                         @click="
                             () => {
@@ -255,6 +274,7 @@
 
             const tenantStore = useTenantStore()
             const logoNotFound = ref(false)
+            const isHovering = ref('')
             const { logoUrl } = toRefs(tenantStore)
             const logoName = computed(() => tenantStore.displayName)
 
@@ -283,7 +303,7 @@
                         return 'workflows-bg'
 
                     default:
-                        return 'bg-primary-light'
+                        return 'bg-primary-menu'
                 }
             }
 
@@ -304,6 +324,8 @@
                 logoName,
                 onLogoNotFound,
                 defaultLogo,
+                bgClass,
+                isHovering,
             }
         },
     })
@@ -318,10 +340,6 @@
         @apply outline-none;
         @apply border border-transparent;
 
-        &:hover {
-            @apply text-primary !important;
-            @apply bg-primary-menu !important;
-        }
         &:focus-visible {
             @apply border-primary-focus !important;
         }

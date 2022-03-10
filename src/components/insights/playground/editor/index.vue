@@ -543,6 +543,9 @@
                 'editorConfig'
             ) as Ref<editorConfigInterface>
             const fullSreenState = inject('fullSreenState') as Ref<boolean>
+            const refetchQueryNode = inject('refetchQueryNode') as Ref<{
+                guid: string
+            }>
             const queryExecutionTime = inject(
                 'queryExecutionTime'
             ) as Ref<number>
@@ -764,7 +767,7 @@
                 setEditorInstanceFxn(editorInstanceParam, monacoInstanceParam)
             }
             const updateQuery = () => {
-                updateSavedQuery(
+                return updateSavedQuery(
                     editorInstance,
                     isUpdating,
                     activeInlineTab.value,
@@ -830,10 +833,13 @@
                     openAssetSidebar(activeInlineTabCopy, 'editor')
                 }
             }
-            const saveOrUpdate = () => {
+            const saveOrUpdate = async () => {
                 const queryId = activeInlineTab.value?.queryId
                 if (queryId) {
-                    updateQuery()
+                    await updateQuery()
+                    refetchQueryNode.value = {
+                        guid: queryId,
+                    }
                 } else {
                     openSaveQueryModal()
                 }

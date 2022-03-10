@@ -271,10 +271,11 @@
         :global(.ant-tree li .ant-tree-node-content-wrapper) {
             border-radius: 0px !important;
             padding: 0 !important;
+            overflow: hidden !important;
         }
         :global(.ant-tree .ant-tree-node-content-wrapper) {
             padding: 0 !important;
-            overflow: hidden;
+            overflow: hidden !important;
         }
         :global(.ant-tree
                 .ant-tree-node-content-wrapper.ant-tree-node-selected) {

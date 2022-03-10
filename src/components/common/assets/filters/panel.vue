@@ -188,7 +188,7 @@
 
             const facetMap = ref(modelValue.value)
             watch(modelValue, (newModelValue) => {
-                facetMap.value = { ...newModelValue }
+                facetMap.value = newModelValue
             })
             const isFiltered = computed(() => {
                 const id = item.value?.id

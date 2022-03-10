@@ -16,6 +16,7 @@ export const workspaceCentreList = [
         path: '/governance',
         icon: 'GovernanceCenter',
         label: 'Governance Center',
+        description: 'Setup and manage access to data and metadata',
         isActive: true,
         auth: page.PAGE_GOVERNANCE,
     },
@@ -24,7 +25,7 @@ export const workspaceCentreList = [
         icon: 'Admin',
         label: 'Admin Center',
         description:
-            'Manage users & groups, API keys, integrating tools, and more.',
+            'Manage users & groups, API keys, integrating tools, and more',
         isActive: true,
         auth: page.PAGE_ADMIN,
     },

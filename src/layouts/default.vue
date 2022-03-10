@@ -2,7 +2,7 @@
     <a-layout class="min-h-full">
         <a-layout-sider
             theme="light"
-            class="border border-r"
+            class="border border-r border-gray-300"
             :collapsedWidth="60"
             :width="60"
         >

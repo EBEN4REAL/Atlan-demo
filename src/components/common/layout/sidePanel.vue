@@ -2,7 +2,10 @@
     <div class="flex flex-col flex-grow h-full">
         <!-- purpose  -->
         <div v-if="logoUrl && !logoNotFound" class="px-2">
-            <a-tooltip title="Home" placement="right">
+            <a-tooltip placement="right" color="#2A2F45">
+                <template #title
+                    ><div class="text-sm font-semibold">Home</div></template
+                >
                 <router-link
                     to="/"
                     class="flex items-center w-full mx-0 mb-1"
@@ -12,10 +15,10 @@
                         :src="logoUrl"
                         class="w-auto cursor-pointer select-none"
                         :alt="defaultLogo"
-                        @error="onLogoNotFound"
                         :class="isCollapsed ? 'h-8 ' : 'h-4 mr-2'"
+                        @error="onLogoNotFound"
                     />
-                    <span class="font-semibold" v-if="!isCollapsed">{{
+                    <span v-if="!isCollapsed" class="font-semibold">{{
                         logoName
                     }}</span>
                 </router-link>
@@ -23,7 +26,10 @@
         </div>
 
         <div v-else class="px-2">
-            <a-tooltip title="Home" placement="right">
+            <a-tooltip placement="right" color="#2A2F45">
+                <template #title
+                    ><div class="text-sm font-semibold">Home</div>
+                </template>
                 <router-link
                     to="/"
                     class="flex items-center w-full mx-0 mb-1 menu-item"
@@ -33,7 +39,7 @@
                         icon="Home"
                         :class="isCollapsed ? 'h-6' : 'h-4 mr-2'"
                     />
-                    <span class="font-semibold" v-if="!isCollapsed">{{
+                    <span v-if="!isCollapsed" class="font-semibold">{{
                         logoName
                     }}</span>
                 </router-link>
@@ -41,34 +47,13 @@
         </div>
 
         <div class="px-2">
-            <!-- <router-link
-                to="/"
-                class="flex items-center w-full mx-0 mt-3 mb-1 menu-item"
-                :class="isCollapsed ? 'p-1 justify-center' : ''"
-                @click="closeNavDrawer"
-            >
-                <atlan-icon
-                    icon="Home"
-                    :class="isCollapsed ? 'h-6' : 'h-4 mr-2'"
-                />
-                <span class="" v-if="!isCollapsed">Home</span>
-            </router-link> -->
-
-            <!-- workspaces -->
-            <!-- <div
-                class="px-3 mt-4 mb-1 text-xs font-bold text-gray-500 uppercase"
-            >
-                Workspace
-            </div> -->
-            <!-- pages -->
-
             <template v-for="nav in workspaceList" :key="nav.label">
                 <a-tooltip placement="right" color="#2A2F45">
                     <template #title
                         ><div class="text-sm font-semibold">
                             {{ nav.label }}
                         </div>
-                        <div v-if="nav?.description" class="text-xs">
+                        <div v-if="nav?.description" class="text-xs mt-0.5">
                             {{ nav?.description }}
                         </div></template
                     >
@@ -86,7 +71,10 @@
                         <span class="flex items-center">
                             <atlan-icon
                                 :icon="isActive ? nav?.icon : nav?.inactiveIcon"
-                                :class="isCollapsed ? 'h-6' : 'h-4 mr-2'"
+                                :class="[
+                                    isCollapsed ? 'h-6' : 'h-4 mr-2',
+                                    isActive ? 'text-primary' : 'text-gray-500',
+                                ]"
                             />
 
                             <span v-if="!isCollapsed"> {{ nav.label }}</span>
@@ -103,7 +91,7 @@
                         ><div class="text-sm font-semibold">
                             {{ nav.label }}
                         </div>
-                        <div v-if="nav?.description" class="text-xs">
+                        <div v-if="nav?.description" class="text-xs mt-0.5">
                             {{ nav?.description }}
                         </div></template
                     >
@@ -128,7 +116,10 @@
                                         ? nav?.icon
                                         : nav?.inactiveIcon || nav?.icon
                                 "
-                                :class="isCollapsed ? 'h-6' : 'h-4 mr-2'"
+                                :class="[
+                                    isCollapsed ? 'h-6' : 'h-4 mr-2',
+                                    isActive ? 'text-primary' : 'text-gray-500',
+                                ]"
                             />
 
                             <span v-if="!isCollapsed"> {{ nav.label }}</span>
@@ -293,5 +284,8 @@
             @apply bg-primary-menu !important;
             @apply font-semibold;
         }
+    }
+    :global(.ant-tooltip-inner) {
+        @apply px-3 py-2 !important;
     }
 </style>

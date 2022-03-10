@@ -141,6 +141,12 @@
                     {{ createdTime(item.createdAt) }}
                 </div>
             </div>
+            <div v-else-if="item.destinationAttribute === 'ownerUsers'">
+                <UserPill
+                    class="mt-2 classification-pill"
+                    :username="item.destinationValue"
+                />
+            </div>
             <div v-else class="flex items-center justify-between mt-2">
                 <div
                     v-if="item.requestType === 'attach_classification'"
@@ -520,6 +526,7 @@
     import { useTimeAgo, useTimeAgo } from '@vueuse/core'
     import { message } from 'ant-design-vue'
     import CertificateBadge from '@common/badge/certificate/index.vue'
+    import UserPill from '@common/pills/user.vue'
     import dayjs from 'dayjs'
     import atlanLogo from '~/assets/images/atlan-logo.png'
     import Pill from '~/components/UI/pill/pill.vue'
@@ -553,6 +560,7 @@
             TermPopover,
             AtlanButton,
             RequestDropdown,
+            UserPill,
         },
         props: {
             selectedAsset: {

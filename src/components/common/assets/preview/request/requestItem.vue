@@ -15,7 +15,15 @@
                     <span class="ml-2 text-gray-700">{{ item.createdBy }}</span>
                     <span class="ml-1 text-gray-400">has requested to</span>
                     <span class="ml-1 font-bold text-gray-700"
-                        >{{ typeCopyMapping[item?.requestType] }}
+                        >{{
+                            item?.requestType === 'attribute'
+                                ? `${typeCopyMapping[item?.requestType]} ${
+                                      typeCopyMapping[
+                                          item?.destinationAttribute
+                                      ]
+                                  }`
+                                : typeCopyMapping[item?.requestType]
+                        }}
                     </span>
                     <span
                         v-if="selectedAsset.typeName === 'AtlasGlossaryTerm'"

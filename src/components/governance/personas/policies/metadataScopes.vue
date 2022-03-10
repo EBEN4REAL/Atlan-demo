@@ -207,6 +207,6 @@
         gap: 15px !important;
     }
     .container-gif-permission {
-        min-height: 150px;
+        min-height: 200px;
     }
 </style>

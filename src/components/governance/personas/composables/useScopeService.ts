@@ -4,6 +4,8 @@ import updateBusinessMetaGif from '~/assets/gifts/Permissions_Popover_Gifs/Updat
 import updateClassificationGif from '~/assets/gifts/Permissions_Popover_Gifs/Update_Classification.gif'
 import updateTermsGif from '~/assets/gifts/Permissions_Popover_Gifs/Update_Terms.gif'
 import viewAssetGif from '~/assets/gifts/Permissions_Popover_Gifs/View_Assets.gif'
+import addTermsGif from '~/assets/gifts/Permissions_Popover_Gifs/Add_Terms_Metadata.gif'
+import deleteTermsGif from '~/assets/gifts/Permissions_Popover_Gifs/Delete_Terms_Metadata.gif'
 // import scopeAPI from '../apis/scopes'
 
 export const purposeScopeList = [
@@ -212,11 +214,13 @@ export const personaScopeList = [
                 value: 'add-terms',
                 label: 'Add Terms',
                 desc: 'Gives permission to add terms to asset',
+                gif: addTermsGif,
             },
             {
                 value: 'remove-terms',
                 label: 'Remove Terms',
                 desc: 'Gives permission to remove terms to asset',
+                gif: deleteTermsGif,
             },
         ],
         type: 'Governance',

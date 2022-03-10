@@ -473,14 +473,19 @@
                     // typeName,
                 }
                 delete filterMerge.destinationQualifiedName
-                if (facetsValue.hierarchy?.connectorName) {
+                if (facetsValue?.hierarchy?.connectorName) {
                     filterMerge.destinationQualifiedName =
                         facetsValue.hierarchy?.connectorName
                 }
-                if (facetsValue.hierarchy?.connectionQualifiedName) {
+                if (facetsValue?.hierarchy?.connectionQualifiedName) {
                     filterMerge.destinationQualifiedName =
                         facetsValue.hierarchy?.connectionQualifiedName
                 }
+                if (facetsValue?.hierarchy?.attributeValue) {
+                    filterMerge.destinationQualifiedName =
+                        facetsValue.hierarchy?.attributeValue
+                }
+
                 if (facetsValue.__traitNames) {
                     const filterClasification = []
                     facetsValue.__traitNames?.classifications?.forEach((el) => {

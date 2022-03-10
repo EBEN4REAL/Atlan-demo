@@ -15,11 +15,7 @@
                     <span class="ml-2 text-gray-700">{{ item.createdBy }}</span>
                     <span class="ml-1 text-gray-400">has requested to</span>
                     <span class="ml-1 font-bold text-gray-700"
-                        >{{
-                            item?.requestType === 'attach_classification'
-                                ? 'Link Classification'
-                                : 'Link Term'
-                        }}
+                        >{{ typeCopyMapping[item?.requestType] }}
                     </span>
                     <span
                         v-if="selectedAsset.typeName === 'AtlasGlossaryTerm'"
@@ -522,6 +518,7 @@
     import ClassificationPill from '@/common/pills/classification.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import { typeCopyMapping } from '~/components/governance/requests/requestType'
     import {
         approveRequest,
         declineRequest,
@@ -721,6 +718,7 @@
                 nameUpdater,
                 loadingApproval,
                 dayjs,
+                typeCopyMapping,
             }
         },
     })

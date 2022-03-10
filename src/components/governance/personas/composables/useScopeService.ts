@@ -259,7 +259,7 @@ export const glossaryPolicyScopeList = [
             {
                 value: 'entity-update-business-metadata',
                 label: 'Update Custom Metadata',
-                desc: 'Update values for BM attributes',
+                desc: 'Permission to update custom metadata attributes',
             },
             // {
             //     value: 'entity-add-classification',
@@ -274,15 +274,15 @@ export const glossaryPolicyScopeList = [
             //     label: 'Update Classifications',
             //     desc: 'Update classifications',
             // },
-               {
+            {
                 value: 'entity-add-classification',
                 label: 'Add Classifications',
-                desc: 'Add classifications',
+                desc: 'Permission to add classifications from terms',
             },
-               {
+            {
                 value: 'entity-remove-classification',
                 label: 'Remove Classifications',
-                desc: 'Remove classifications',
+                desc: 'Permission to remove classifications from terms',
             },
 
             // {

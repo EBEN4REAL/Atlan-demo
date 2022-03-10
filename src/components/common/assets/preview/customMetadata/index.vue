@@ -2,7 +2,11 @@
     <div v-if="loading" class="flex items-center justify-center w-full h-full">
         <AtlanLoader class="h-8" />
     </div>
-    <div v-else ref="target" class="flex flex-col w-full mb-3 gap-y-2">
+    <div
+        v-else
+        ref="target"
+        class="flex flex-col w-full overflow-hidden gap-y-2"
+    >
         <!-- header starts here -->
         <div
             class="flex items-center justify-between px-5 py-2 border-b border-gray-200 gap-x-4 group bg-gray-50"
@@ -14,8 +18,8 @@
                     :emoji="tab.emoji"
                     height="h-4"
                     class="mr-1"
-                    :displayMode="true"
-                    emojiSize="text-md"
+                    :display-mode="true"
+                    emoji-size="text-md"
                 />
                 <Truncate
                     :tooltip-text="data.label"
@@ -94,20 +98,13 @@
 
         <template v-if="data?.options?.isLocked === 'true'">
             <div
-                class="flex items-center p-2 mx-5 mt-2 text-xs rounded gap-x-2 bg-primary-light text-primary"
+                class="flex items-center p-2 mx-5 my-2 text-xs rounded gap-x-2 bg-primary-light text-primary"
             >
                 <InternalCMBanner />
             </div>
         </template>
 
-        <div
-            class="flex flex-col flex-grow pl-5 pr-5 overflow-auto scrollheight"
-            :style="
-                isProfile || $route?.params?.id
-                    ? 'max-height: calc(100vh - 7rem)'
-                    : 'max-height: calc(100vh - 13rem)'
-            "
-        >
+        <div class="flex flex-col flex-grow pl-5 pr-5 overflow-y-auto">
             <!-- showing non empty starts here -->
             <template v-if="readOnly">
                 <template
@@ -347,6 +344,7 @@
         h,
         resolveComponent,
         inject,
+        computed,
     } from 'vue'
     import {
         whenever,
@@ -360,7 +358,7 @@
     import { Types } from '~/services/meta/types/index'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
+    import { useAssetAttributes } from '~/composables/discovery/useCurrentUpdate'
     import Confirm from '@/common/modal/confirm.vue'
     import EmptyView from '@/common/empty/index.vue'
     import Truncate from '@/common/ellipsis/index.vue'
@@ -370,6 +368,7 @@
     import PropertyPopover from '@/common/assets/preview/customMetadata/misc/propertyPopover.vue'
     import InternalCMBanner from '@/common/customMetadata/internalCMBanner.vue'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
+    import { useTypedefStore } from '~/store/typedef'
 
     export default defineComponent({
         name: 'CustomMetadata',
@@ -412,6 +411,24 @@
             const { checkAccess } = useAuth()
             const isEvaluating = inject('isEvaluating')
 
+            const typedefStore = useTypedefStore()
+
+            const customMetadataListProjections = computed(() =>
+                typedefStore.getCustomMetadataListProjectionsByName(
+                    data.value?.id
+                )
+            )
+
+            const {
+                asset,
+                mutate: mutateCM,
+                isReady: isCmReady,
+                isLoading: isCmLoading,
+            } = useAssetAttributes({
+                id: guid,
+                attributes: customMetadataListProjections,
+            })
+
             const { title, selectedAssetUpdatePermission } = useAssetInfo()
             const {
                 getDatatypeOfAttribute,
@@ -445,9 +462,9 @@
              */
             const setAttributesList = () => {
                 initializeAttributesList()
-                if (selectedAsset.value?.attributes) {
+                if (asset.value?.attributes) {
                     const bmAttributes = Object.keys(
-                        selectedAsset.value.attributes
+                        asset.value.attributes
                     ).filter((attr) => attr.split('.').length > 1)
 
                     if (bmAttributes.length)
@@ -455,7 +472,7 @@
                             if (data.value.id === ab.split('.')[0]) {
                                 const attribute = ab.split('.')[1]
 
-                                const value = selectedAsset.value.attributes[ab]
+                                const value = asset.value.attributes[ab]
                                 const attrIndex =
                                     applicableList.value.findIndex(
                                         (a) => a.name === attribute
@@ -499,14 +516,6 @@
                 return payloadObj
             }
 
-            const {
-                asset,
-                mutate: mutateUpdate,
-                isReady: isUpdateReady,
-            } = useCurrentUpdate({
-                id: guid,
-            })
-
             const isEdit = ref(false)
 
             const handleUpdate = () => {
@@ -535,9 +544,6 @@
                                 selectedAsset.value
                             )} updated`
                         )
-                        guid.value = selectedAsset.value.guid
-
-                        mutateUpdate()
                     }
                     isEdit.value = false
                 })
@@ -588,13 +594,13 @@
                 applicableList.value[index].unsavedChanges = true
             }
 
-            const updateList = inject('updateList', () => ({})) as Function
+            /*  const updateList = inject('updateList', () => ({})) as Function
             const updateDrawerList = inject(
                 'updateDrawerList',
                 () => ({})
             ) as Function
 
-            whenever(isUpdateReady, () => {
+              whenever(isCmReady, () => {
                 if (
                     asset.value.typeName !== 'AtlasGlossary' &&
                     asset.value.typeName !== 'AtlasGlossaryCategory' &&
@@ -603,19 +609,25 @@
                     if (isDrawer.value) updateDrawerList(asset.value)
                     else updateList(asset.value)
                 }
+            }) */
+
+            whenever(isCmReady, () => setAttributesList())
+
+            watch(isCmLoading, () => {
+                loading.value = isCmLoading.value
             })
 
             watch(
                 () => selectedAsset.value.guid,
                 () => {
+                    guid.value = selectedAsset.value?.guid
+                    mutateCM()
                     initializeAttributesList()
                 },
                 {
                     immediate: true,
                 }
             )
-
-            setAttributesList()
 
             const hasValue = (a) => {
                 const isMultivalued =

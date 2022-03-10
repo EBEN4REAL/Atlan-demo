@@ -1,0 +1,14 @@
+<svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+        d="M5.5 2.5C1.5 2.5 5 8 2 8c3 0-.5 5.5 3.5 5.5m5-11c4 0 .5 5.5 3.5 5.5-3 0 .5 5.5-3.5 5.5"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    />
+    <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="m5.532 7.736 1.643.56L6.162 9.68l.825.627 1.015-1.435 1.05 1.435.81-.629-1.034-1.384 1.64-.558-.315-.962-1.653.559V5.6h-1v1.733l-1.653-.559-.315.962Z"
+        fill="currentColor"
+    />
+</svg>

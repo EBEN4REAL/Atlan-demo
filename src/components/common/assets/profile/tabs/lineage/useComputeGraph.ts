@@ -73,15 +73,17 @@ export default async function useComputeGraph({
         relations.forEach((x) => {
             const { fromEntityId: from, toEntityId: to } = x
 
+            const { typeName: fromTypeName, guid: fromGuid } = getAsset(from)
+            const { typeName: toTypeName, guid: toGuid } = getAsset(to)
+
+            if (fromTypeName === 'Column' || toTypeName === 'Column') return
+
             if (from === to) return
 
             const fromAndToId = `${from}@${to}`
             if (!fromAndToIdSetForNodes.has(fromAndToId))
                 fromAndToIdSetForNodes.add(fromAndToId)
             else return
-
-            const { typeName: fromTypeName, guid: fromGuid } = getAsset(from)
-            const { typeName: toTypeName, guid: toGuid } = getAsset(to)
 
             if (isNodeExist(fromGuid) && isNodeExist(toGuid)) return
 
@@ -181,7 +183,8 @@ export default async function useComputeGraph({
             if (allSourcesHiddenIds.value.includes(entity.guid)) return
 
             if (typeName === 'Column') {
-                const parentGuid = attributes.table.guid
+                const parentGuid =
+                    attributes?.table?.guid || attributes?.view?.guid
                 if (!columnEntity[parentGuid])
                     columnEntity = {
                         ...columnEntity,
@@ -190,6 +193,7 @@ export default async function useComputeGraph({
                 else columnEntity[parentGuid].push(ent)
 
                 columnEntityIds.push(guid)
+
                 return
             }
 
@@ -206,17 +210,15 @@ export default async function useComputeGraph({
             nodes.value.push(nodeData)
         })
 
-        if (Object.keys(columnEntity).length)
-            Object.entries(columnEntity).forEach(([parentGuid, columns]) => {
-                lineageStore.setNodesColumnList(parentGuid, columns)
-            })
+        // if (Object.keys(columnEntity).length)
+        //     Object.entries(columnEntity).forEach(([parentGuid, columns]) => {
+        //         // lineageStore.setNodesColumnList(parentGuid, columns)
+        //     })
     }
 
     createNodesFromEntityMap(lineage.value)
 
     /* Edges */
-    const fromAndToIdSetForEdges = new Set()
-
     const createNodeEdges = (data) => {
         const lineageData = { ...data }
 
@@ -263,15 +265,17 @@ export default async function useComputeGraph({
             }
 
             const fromAndToId = `${from}@${to}`
-            if (!fromAndToIdSetForEdges.has(fromAndToId)) {
-                fromAndToIdSetForEdges.add(fromAndToId)
-                edgeExtraData = { isDup: true }
-            } else return
 
-            edges.value.forEach((y) => {
+            edges.value.forEach((y, index) => {
                 const fromTo = y.id.split('/')[1]
-                const [fromTwo, toTwo] = fromTo.split('@')
 
+                if (fromTo === fromAndToId) {
+                    edgeExtraData = { isDup: true }
+                    edges.value.splice(index, 1)
+                    return
+                }
+
+                const [fromTwo, toTwo] = fromTo.split('@')
                 if (toTwo === from && fromTwo === to)
                     edgeExtraData = { ...edgeExtraData, isCyclicEdge: true }
             })
@@ -283,10 +287,6 @@ export default async function useComputeGraph({
                 targetCell: to,
                 targetPort: `${to}-invisiblePort`,
             }
-
-            const exists = edges.value.find((x) => x.id === relation.id)
-
-            if (exists) return
 
             if (x.type) relation.type = x.type
 
@@ -324,7 +324,7 @@ export default async function useComputeGraph({
         })
 
         graph.value.getNodes().forEach((n) => {
-            const ctaEle = document.getElementById(`node-${n.id}-loadCTA`)
+            const ctaEle = document.getElementById(`node-${n.id}-hoPaCTA`)
             const cell = graph.value.getCellById(n.id)
             const isRootNode = graph.value.isRootNode(cell)
             const isLeafNode = graph.value.isLeafNode(cell)
@@ -349,6 +349,12 @@ export default async function useComputeGraph({
         createNodeEdges(newData)
 
         renderLayout(registerAllListeners)
+
+        const assetGuidToFit = Object.keys(newData.guidEntityMap).find(
+            (x) => x !== newData.baseEntityGuid
+        )
+        const cell = graph.value.getCellById(assetGuidToFit)
+        graph.value.scrollToCell(cell, { animation: { duration: 600 } })
 
         if (!Object.keys(mergedLineageData.value).length)
             mergedLineageData.value = lineage.value

@@ -174,7 +174,6 @@
         InternalAttributes,
         GlossaryAttributes,
     } from '~/constant/projection'
-    import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
 
@@ -267,13 +266,11 @@
                 glossary: '__all',
             })
             const dependentKey = ref('DEFAULT_GLOSSARY_ITEMS_LIST')
-            const { customMetadataProjections } = useTypedefData()
 
             const defaultAttributes = ref([
                 ...InternalAttributes,
                 ...AssetAttributes,
                 ...GlossaryAttributes,
-                ...customMetadataProjections,
             ])
             const relationAttributes = ref([...AssetRelationAttributes])
             const activeKey: Ref<string[]> = ref([])

@@ -24,9 +24,8 @@
                             :src="getConnectorImage(item)"
                             class="h-4 mr-1 mb-0.5"
                             style="min-width: 1rem"
-                        /><span class="truncate">{{
-                            item.attributes.name
-                        }}</span>
+                        />
+                        <Tooltip :tooltip-text="item.attributes.name" />
                     </div>
                     <span v-if="showCount" class="text-xs text-gray-500"
                         >{{ item.assetCount }} assets</span
@@ -48,6 +47,7 @@
         watch,
     } from 'vue'
 
+    import Tooltip from '@common/ellipsis/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import whoami from '~/composables/user/whoami'
     import { usePersonaStore } from '~/store/persona'
@@ -55,6 +55,7 @@
     import useConnectionData from '~/composables/connection/useConnectionData'
 
     export default defineComponent({
+        components: { Tooltip },
         props: {
             modelValue: {
                 type: String,

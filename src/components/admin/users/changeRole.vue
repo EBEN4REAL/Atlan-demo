@@ -29,23 +29,19 @@
                     </a-radio>
                 </a-radio-group>
 
-                <div class="flex items-center justify-between mt-3 gap-x-3">
-                    <div class="flex-grow"></div>
-                    <AtlanButton
-                        color="minimal"
-                        size="sm"
-                        padding="compact"
+                <div class="flex items-center justify-end mt-3 gap-x-3">
+                    <AtlanButton2
+                        color="secondary"
+                        label="Cancel"
                         @click="handleClickCancel"
-                        >Cancel
-                    </AtlanButton>
-                    <a-button
-                        type="primary"
+                    />
+
+                    <AtlanButton2
+                        label="Change"
                         :loading="updateLoading"
                         :disabled="!selectedRole"
                         @click="handleRoleChange"
-                    >
-                        Change
-                    </a-button>
+                    />
                 </div>
             </div>
         </template>

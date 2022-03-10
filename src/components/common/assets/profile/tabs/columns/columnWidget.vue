@@ -71,16 +71,7 @@
                         </div>
                     </template>
                     <template v-else-if="column.key === 'column_name'">
-                        <div
-                            :class="{
-                                'flex items-center justify-between':
-                                    record.is_primary ||
-                                    record.is_foreign ||
-                                    record.is_partition ||
-                                    record.is_sort ||
-                                    record.is_indexed,
-                            }"
-                        >
+                        <div class="flex items-center justify-between">
                             <div class="flex items-center">
                                 <component
                                     :is="dataTypeCategoryImage(record.item)"
@@ -90,6 +81,12 @@
                                 <Tooltip
                                     :tooltip-text="text"
                                     classes="hover:text-primary"
+                                    :clamp-percentage="
+                                        isScrubbed(record.item) ||
+                                        certificateStatus(record.item)
+                                            ? '88%'
+                                            : '93%'
+                                    "
                                 />
 
                                 <CertificateBadge
@@ -103,10 +100,11 @@
                                     "
                                     class="mb-0.5 ml-1"
                                 ></CertificateBadge>
-                                <a-tooltip placement="right"
+                                <a-tooltip
+                                    v-if="isScrubbed(record.item)"
+                                    placement="right"
                                     ><template #title>Limited Access</template>
                                     <AtlanIcon
-                                        v-if="isScrubbed(record.item)"
                                         icon="Lock"
                                         class="h-3.5 mb-0.5 ml-1"
                                     ></AtlanIcon
@@ -120,7 +118,7 @@
                                     record.is_sort ||
                                     record.is_indexed
                                 "
-                                class="relative flex items-center h-full"
+                                class="flex items-center"
                             >
                                 <ColumnKeys
                                     :is-primary="record.is_primary"

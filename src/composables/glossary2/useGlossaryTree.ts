@@ -1,9 +1,9 @@
 // TODO: make helper function to give node attributes and add cta nodes - it's causing redundancy
-import { inject, watch, ref, Ref, onMounted, computed, provide } from 'vue'
+import { inject, watch, ref, Ref, onMounted, computed, provide, h } from 'vue'
 import { whenever } from '@vueuse/core'
 import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
 import { useRouter, useRoute } from 'vue-router'
-import { message } from 'ant-design-vue'
+import { message, Modal } from 'ant-design-vue'
 import updateAsset from '~/composables/discovery/updateAsset'
 import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
@@ -30,6 +30,9 @@ import {
 import { useBody } from '../discovery/useBody'
 import useIndexSearch from '../discovery/useIndexSearch'
 import { assetInterface } from '~/types/assets/asset.interface'
+
+//components
+import DnDConfirmationModalContent from '@/glossary/modal/dndConfirmationModalContent.vue'
 
 interface UseTreeParams {
     emit?: any
@@ -147,6 +150,12 @@ const useGlossaryTree = ({
                                 ? checkable
                                 : false,
                         disabled: disabledGuids.includes(i.guid),
+                        parent: {
+                            displayText: treeNode?.attributes?.name,
+                            guid: treeNode?.guid,
+                            qualifiedName: treeNode?.attributes?.qualifiedName,
+                            typeName: treeNode?.typeName,
+                        },
                     }))
                     if (data.value && map) {
                         map?.forEach((el) => {
@@ -258,6 +267,13 @@ const useGlossaryTree = ({
                                     ? checkable
                                     : false,
                             disabled: disabledGuids.includes(i.guid),
+                            parent: {
+                                displayText: treeNode?.attributes?.name,
+                                guid: treeNode?.guid,
+                                qualifiedName:
+                                    treeNode?.attributes?.qualifiedName,
+                                typeName: treeNode?.typeName,
+                            },
                         }))
                         if (map) {
                             map?.forEach((el) => {
@@ -427,15 +443,7 @@ const useGlossaryTree = ({
 
     const glossaryStore = useGlossaryStore()
 
-    const glossaryList = computed(() =>
-        glossaryStore.list.sort((a, b) =>
-            a.attributes.name > b.attributes.name
-                ? 1
-                : b.attributes.name > a.attributes.name
-                ? -1
-                : 0
-        )
-    )
+    const glossaryList = computed(() => glossaryStore.list)
 
     const initTreeData = async (defaultGlossaryQf) => {
         let glossaryFound = null
@@ -542,6 +550,12 @@ const useGlossaryTree = ({
                             id: `${node.attributes?.qualifiedName}_${asset.attributes?.qualifiedName}`,
                             key: `${node.attributes?.qualifiedName}_${asset.attributes?.qualifiedName}`,
                             isLeaf: asset.typeName === 'AtlasGlossaryTerm',
+                            parent: {
+                                displayText: node?.attributes?.name,
+                                guid: node?.guid,
+                                qualifiedName: node?.attributes?.qualifiedName,
+                                typeName: node?.typeName,
+                            },
                         })
                     if (loadMoreNode) {
                         updatedChildren.push(loadMoreNode)
@@ -559,26 +573,46 @@ const useGlossaryTree = ({
                             updateChildrenOnDelete
                         ) {
                             if (element?.children?.length) {
-                                element?.children?.forEach((el) => {
-                                    if (el?.typeName !== 'cta') {
+                                const updatedChildren =
+                                    getUpdatedChildrenOnCategoryDelete(
+                                        element?.guid,
+                                        element?.children
+                                    )
+                                console.log(updatedChildren)
+                                if (parentGlossaryQualifiedName?.value !== '') {
+                                    treeData.value.push(...updatedChildren)
+                                } else {
+                                    treeData.value.forEach((i) => {
                                         if (
-                                            parentGlossaryQualifiedName?.value !==
-                                            ''
+                                            i.guid ===
+                                            element?.attributes?.anchor?.guid
                                         ) {
-                                            treeData.value.push(el)
-                                        } else {
-                                            treeData.value.forEach((i) => {
-                                                if (
-                                                    i.guid ===
-                                                    element?.attributes?.anchor
-                                                        ?.guid
-                                                ) {
-                                                    i.children?.push(el)
-                                                }
-                                            })
+                                            i.children?.push(...updatedChildren)
                                         }
-                                    }
-                                })
+                                    })
+                                }
+
+                                // element?.children?.forEach((el) => {
+                                //     if (el?.typeName !== 'cta') {
+                                //         if (
+                                //             parentGlossaryQualifiedName?.value !==
+                                //             ''
+                                //         ) {
+                                //             treeData.value.push(el)
+                                //         } else {
+                                //             treeData.value.forEach((i) => {
+                                //                 if (
+                                //                     i.guid ===
+                                //                     element?.attributes?.anchor
+                                //                         ?.guid
+                                //                 ) {
+                                //                     console.log(el)
+                                //                     i.children?.push(el)
+                                //                 }
+                                //             })
+                                //         }
+                                //     }
+                                // })
                             }
                         }
                         if (
@@ -641,6 +675,26 @@ const useGlossaryTree = ({
 
         treeData.value = updatedTreeData
     }
+
+    const getUpdatedChildrenOnCategoryDelete = (
+        categoryGuid: String,
+        children
+    ) => {
+        const updatedChildren: TreeDataItem[] = []
+        children.forEach((el) => {
+            if (el?.typeName === 'AtlasGlossaryCategory') {
+                if (el?.parentCategory) el.parentCategory = null
+                updatedChildren.push(el)
+            } else if (el?.typeName === 'AtlasGlossaryTerm') {
+                el.attributes.categories = el?.attributes?.categories?.filter(
+                    (i) => i?.guid !== categoryGuid
+                )
+                if (!el?.attributes?.categories?.length)
+                    updatedChildren.push(el)
+            }
+        })
+        return updatedChildren
+    }
     const deleteNode = (asset, guid, updateChildrenOnDelete = true) => {
         if (guid === 'root') {
             const updatedTreeData = []
@@ -651,8 +705,13 @@ const useGlossaryTree = ({
                         updateChildrenOnDelete &&
                         el?.children
                     ) {
-                        console.log(el)
-                        updatedTreeData.push(...el.children)
+                        const updatedChildren =
+                            getUpdatedChildrenOnCategoryDelete(
+                                el?.guid,
+                                el?.children
+                            )
+                        console.log(updatedChildren)
+                        updatedTreeData.push(...updatedChildren)
                     }
                 } else updatedTreeData.push(el)
             })
@@ -680,7 +739,7 @@ const useGlossaryTree = ({
             const found = treeData.value?.find((el) => el?.guid === asset?.guid)
             if (!found) {
                 if (asset.typeName === 'AtlasGlossary') {
-                    treeData.value.unshift({
+                    treeData.value.push({
                         ...asset,
                         id: asset.attributes?.qualifiedName,
                         key: asset.attributes?.qualifiedName,
@@ -688,8 +747,11 @@ const useGlossaryTree = ({
                     })
                 }
 
-                if (asset.typeName === 'AtlasGlossaryTerm') {
-                    treeData.value.unshift({
+                if (
+                    asset.typeName === 'AtlasGlossaryTerm' ||
+                    asset.typeName === 'AtlasGlossaryCategory'
+                ) {
+                    treeData.value.push({
                         ...asset,
                         id: `${getAnchorQualifiedName(asset)}_${
                             asset.attributes?.qualifiedName
@@ -697,20 +759,7 @@ const useGlossaryTree = ({
                         key: `${getAnchorQualifiedName(asset)}_${
                             asset.attributes?.qualifiedName
                         }`,
-                        isLeaf: true,
-                    })
-                }
-
-                if (asset.typeName === 'AtlasGlossaryCategory') {
-                    treeData.value.unshift({
-                        ...asset,
-                        id: `${getAnchorQualifiedName(asset)}_${
-                            asset.attributes?.qualifiedName
-                        }`,
-                        key: `${getAnchorQualifiedName(asset)}_${
-                            asset.attributes?.qualifiedName
-                        }`,
-                        isLeaf: false,
+                        isLeaf: asset.typeName === 'AtlasGlossaryTerm',
                     })
                 }
             }
@@ -846,7 +895,9 @@ const useGlossaryTree = ({
             }
         }
     }
-    const dragAndDropNode = ({ event, node, dragNode, dragNodesKeys }) => {
+
+    // handles confirm drag and drop
+    const confirmDragAndDrop = ({ event, node, dragNode, dragNodesKeys }) => {
         const assetToDrop = { ...dragNode.dataRef }
         const updateDragNodeAttributes = (newParent) => {
             const selectedAsset = ref(assetToDrop)
@@ -972,6 +1023,100 @@ const useGlossaryTree = ({
                 updateDragNodeAttributes(node?.dataRef)
             }
         }
+    }
+
+    // handles drag and drop confirmation
+    const handleDragAndDropModal = ({
+        event,
+        node,
+        dragNode,
+        dragNodesKeys,
+    }) => {
+        let modalText = `Moving ${dragNode?.displayText} from ${node?.displayText}`
+        const assetToDrop = { ...dragNode.dataRef }
+        const assetToDropInto = { ...node.dataRef }
+        let dragNodeName, dragNodeType, parentType, parentName
+        dragNodeName = dragNode?.displayText
+        dragNodeType = dragNode?.typeName
+        if (node?.typeName !== 'AtlasGlossaryTerm') {
+            modalText = `Moving ${dragNode?.displayText} into ${assetToDropInto?.displayText}`
+            parentName = assetToDropInto?.displayText
+            parentType = assetToDropInto?.typeName
+        } else if (assetToDropInto?.parent?.displayText) {
+            modalText = `Moving ${dragNode?.displayText} into ${assetToDropInto?.parent?.displayText}`
+            parentName = assetToDropInto?.parent?.displayText
+            parentType = assetToDropInto?.parent?.typeName
+        } else if (!assetToDropInto?.parent) {
+            modalText = `Moving ${dragNode?.displayText} into ${assetToDropInto?.attributes?.anchor?.attributes?.name}`
+            parentName = assetToDropInto?.attributes?.anchor?.attributes?.name
+            parentType = 'AtlasGlossary'
+        }
+        Modal.confirm({
+            title: `Confirm changes`,
+            okText: 'Confirm',
+            cancelButtonProps: { type: 'default' },
+            okButtonProps: { type: 'primary', class:'bg-primary' },
+            maskClosable: true,
+            keyboard: true,
+            cancelText: 'Cancel',
+            autoFocusButton: 'ok',
+            icon: null,
+            content: h(DnDConfirmationModalContent, {
+                dragNodeName,
+                dragNodeType,
+                parentName,
+                parentType,
+            }),
+            onOk() {
+                console.log('OK')
+                confirmDragAndDrop({ event, node, dragNode, dragNodesKeys })
+            },
+            onCancel() {
+                console.log('Cancel d&d')
+                console.log(assetToDropInto)
+            },
+        })
+    }
+
+    const dragAndDropNode = ({ event, node, dragNode, dragNodesKeys }) => {
+        console.log(node, dragNode, event)
+        let nodeParentGlossaryGuid
+        if (node?.typeName === 'AtlasGlossary')
+            nodeParentGlossaryGuid = node?.guid
+        else nodeParentGlossaryGuid = node?.attributes?.anchor?.guid
+        if (
+            nodeParentGlossaryGuid !==
+            dragNode?.dataRef?.attributes?.anchor?.guid
+        ) {
+            message.error(`Cannot change parent Glossary`)
+            return
+        }
+
+        if (dragNode?.typeName === 'AtlasGlossary') {
+            message.error(
+                `Cannot reorder a Glossary. Try reordering a term/category instead.`,
+                2
+            )
+            return
+        } else if (node?.typeName === 'AtlasGlossaryTerm') {
+            const assetToDropParentQf = dragNode?.key?.split('_')[0]
+            const nodeParentQf = node?.key?.split('_')[0]
+
+            if (assetToDropParentQf === nodeParentQf) {
+                message.error(
+                    `${
+                        dragNode?.typeName === 'AtlasGlossaryTerm'
+                            ? 'Term'
+                            : 'Category'
+                    } already a part of this category`,
+                    2
+                )
+                return
+            }
+        }
+
+        // show confirmation modal for d&d
+        handleDragAndDropModal({ event, node, dragNode, dragNodesKeys })
     }
     interface checkAndAddLoadMoreParams {
         response: IndexSearchResponse<Term | Category>
@@ -1219,7 +1364,7 @@ const useGlossaryTree = ({
                 if (node.children && node.children.length) {
                     const index =
                         node.children.findIndex((child) => {
-                            return child?.attributes?.name === name
+                            return child?.attributes?.name === name && child?.typeName==='AtlasGlossaryCategory'
                         }) ?? 0
                     nameExists = index > -1
                 }
@@ -1249,7 +1394,7 @@ const useGlossaryTree = ({
         } else {
             const index =
                 treeData.value.findIndex(
-                    (child) => child?.attributes.name === name
+                    (child) => child?.attributes.name === name && child?.typeName==='AtlasGlossaryCategory'
                 ) ?? 0
             nameExists = index > -1
         }

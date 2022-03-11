@@ -4,15 +4,19 @@ import page from '~/constant/accessControl/page'
 export const workspaceCentreList = [
     {
         path: '/workflows',
-        icon: 'Admin',
+        icon: 'WorkflowsActive',
         label: 'Workflow Center',
         isActive: true,
         auth: page.PAGE_ADMIN,
+        inactiveIcon: 'WorkflowsInactive',
+        description: ' Set up, run, and monitor your workflows',
+        activeBackground: '#D7FCDF',
     },
     {
         path: '/governance',
         icon: 'GovernanceCenter',
         label: 'Governance Center',
+        description: 'Set up and manage access for all data and metadata',
         isActive: true,
         auth: page.PAGE_GOVERNANCE,
     },
@@ -20,6 +24,8 @@ export const workspaceCentreList = [
         path: '/admin',
         icon: 'Admin',
         label: 'Admin Center',
+        description:
+            'Manage users and groups, API keys, integrations, and more',
         isActive: true,
         auth: page.PAGE_ADMIN,
     },

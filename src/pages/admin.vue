@@ -3,10 +3,10 @@
         <div
             class="flex flex-col w-1/6 h-full overflow-hidden bg-white border-r"
         >
-            <div class="flex items-center px-6 mt-6 font-semibold">
+            <!-- <div class="flex items-center px-6 mt-6 font-semibold">
                 <AtlanIcon icon="Admin" class="mr-2 -mt-0.5" />
                 <span class="text-base">Admin Center</span>
-            </div>
+            </div> -->
             <div class="flex flex-grow w-full px-6 mt-3 mb-2 overflow-y-auto">
                 <a-menu
                     v-model:selectedKeys="current"

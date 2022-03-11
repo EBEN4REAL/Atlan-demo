@@ -15,7 +15,7 @@
         @link="linkIssueVisible = true"
         @create="createModal = true"
     />
-    <div v-if="!userJiraStatus.configured" class="flex items-center h-full">
+    <div v-if="!tenantJiraStatus.configured" class="flex items-center h-full">
         <EmptyPlaceholder
             @create="createModal = true"
             @link="linkIssueVisible = true"
@@ -110,7 +110,7 @@
     }
 
     const store = integrationStore()
-    const { userJiraStatus } = toRefs(store)
+    const { userJiraStatus, tenantJiraStatus } = toRefs(store)
 
     const handleUnlick = (issue) => {
         const {
@@ -161,11 +161,11 @@
     }
 
     onMounted(() => {
-        if (userJiraStatus.value.configured) fetchLinkedIssues()
+        if (tenantJiraStatus.value.configured) fetchLinkedIssues()
     })
 
     watch(
-        () => userJiraStatus.value.configured,
+        () => tenantJiraStatus.value.configured,
         (v) => {
             if (v) {
                 fetchLinkedIssues()

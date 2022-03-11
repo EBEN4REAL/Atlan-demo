@@ -126,9 +126,7 @@
                 // databaseQualifiedName,
                 // schemaQualifiedName,
             })
-            watch(queryText, () => {
-                console.log('queryText Changed', queryText.value)
-            })
+
             return {
                 initialExapndedKeys,
                 assets,

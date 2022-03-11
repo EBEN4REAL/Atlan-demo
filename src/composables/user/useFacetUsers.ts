@@ -95,10 +95,18 @@ export default function useFacetUsers(
     }
 
     watch(data, () => {
-        if (data?.value?.records) {
-            if (offset.value > 0) list.value.push(...data.value.records)
-            else list.value = [...data.value.records]
-        } else list.value = []
+        if (offset.value > 0) {
+            if (data.value.records && data.value.records?.length > 0) {
+                list.value.push(...data.value.records)
+            }
+        } else {
+            if (data.value.records && data.value.records?.length > 0) {
+                list.value = [...data.value.records]
+            } else {
+                list.value = []
+            }
+        }
+
         enrichRecords()
     })
 

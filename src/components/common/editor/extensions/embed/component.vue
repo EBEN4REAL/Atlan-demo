@@ -44,8 +44,8 @@
 <script lang="ts">
     import { ref, toRefs, defineComponent, computed } from 'vue'
     import { NodeViewWrapper, nodeViewProps } from '@tiptap/vue-3'
-    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
-    import AtlanButton from '~/components/UI/button.vue'
+    import AtlanIcon from '@common/icon/atlanIcon.vue'
+    import AtlanButton from '@/UI/button.vue'
 
     export default defineComponent({
         components: {

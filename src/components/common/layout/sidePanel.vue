@@ -1,7 +1,10 @@
 <template>
     <div class="flex flex-col flex-grow h-full">
         <!-- purpose  -->
-        <div v-if="logoUrl && !logoNotFound" class="px-2">
+        <div
+            v-if="logoUrl && !logoNotFound"
+            class="flex items-center h-10 px-2 mb-1"
+        >
             <a-tooltip
                 placement="right"
                 color="#2A2F45"
@@ -12,26 +15,24 @@
                 >
                 <router-link
                     to="/"
-                    class="flex items-center w-full mx-0 mb-1"
+                    class="flex items-center w-full mx-0"
                     :class="isCollapsed ? 'justify-center px-0 py-1' : ''"
                 >
-                    <div>
-                        <img
-                            :src="logoUrl"
-                            class="w-auto cursor-pointer select-none"
-                            :alt="defaultLogo"
-                            :class="isCollapsed ? 'h-8 ' : 'h-4 mr-2'"
-                            @error="onLogoNotFound"
-                        />
-                        <span v-if="!isCollapsed" class="font-semibold">{{
-                            logoName
-                        }}</span>
-                    </div>
+                    <img
+                        :src="logoUrl"
+                        class="rounded-sm cursor-pointer select-none"
+                        :alt="defaultLogo"
+                        :class="isCollapsed ? 'w-8' : 'h-4 mr-2'"
+                        @error="onLogoNotFound"
+                    />
+                    <span v-if="!isCollapsed" class="font-semibold">{{
+                        logoName
+                    }}</span>
                 </router-link>
             </a-tooltip>
         </div>
 
-        <div v-else class="px-2">
+        <div v-else class="flex items-center h-10 px-2 mb-1">
             <a-tooltip
                 placement="right"
                 color="#2A2F45"
@@ -42,12 +43,13 @@
                 </template>
                 <router-link
                     to="/"
-                    class="flex items-center w-full mx-0 mb-1 menu-item"
+                    class="flex items-center w-full mx-0"
                     :class="isCollapsed ? 'justify-center px-0 py-1' : ''"
                 >
                     <atlan-icon
                         icon="Home"
                         :class="isCollapsed ? 'h-6' : 'h-4 mr-2'"
+                        class="text-gray-500"
                     />
                     <span v-if="!isCollapsed" class="font-semibold">{{
                         logoName

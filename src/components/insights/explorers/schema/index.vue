@@ -276,7 +276,7 @@
 
             const totalFilteredCount = computed(() => {
                 let count = 0
-                Object.keys(facets.value).forEach((key) => {
+                Object.keys(facets.value ?? {}).forEach((key) => {
                     if (Array.isArray(facets.value[key])) {
                         if (facets.value[key].length > 0) {
                             count += 1

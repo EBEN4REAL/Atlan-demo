@@ -1,5 +1,5 @@
 <template>
-    <div class="max-profile-width">
+    <div>
         <!-- Search and Filter -->
         <div class="w-1/2 mb-3">
             <SearchAdvanced
@@ -71,7 +71,16 @@
                         </div>
                     </template>
                     <template v-else-if="column.key === 'column_name'">
-                        <div class="flex items-center justify-between">
+                        <div
+                            :class="{
+                                'flex items-center justify-between':
+                                    record.is_primary ||
+                                    record.is_foreign ||
+                                    record.is_partition ||
+                                    record.is_sort ||
+                                    record.is_indexed,
+                            }"
+                        >
                             <div class="flex items-center">
                                 <component
                                     :is="dataTypeCategoryImage(record.item)"
@@ -612,9 +621,5 @@
 
     .selected-row {
         @apply border-r-2 border-primary !important;
-    }
-
-    .max-profile-width {
-        max-width: calc(100vw - 516px);
     }
 </style>

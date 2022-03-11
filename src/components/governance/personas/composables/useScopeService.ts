@@ -7,6 +7,12 @@ import viewAssetGif from '~/assets/gifs/Permissions_Popover_Gifs/View_Assets_Met
 import addTermsGif from '~/assets/gifs/Permissions_Popover_Gifs/Add_Term_Metadata.gif'
 import deleteTermsGif from '~/assets/gifs/Permissions_Popover_Gifs/Delete_Term_Metadata.gif'
 // import scopeAPI from '../apis/scopes'
+import addClassificationGlossary from '~/assets/gifs/Permissions_Popover_Gifs/Add_Classification_Glossary.gif'
+import removeClassificationGlossary from '~/assets/gifs/Permissions_Popover_Gifs/Remove_Classification_Glossary.gif'
+import updateCustomMetadataGlossary from '~/assets/gifs/Permissions_Popover_Gifs/Update_CM_Glossary.gif'
+import createGlossary from '~/assets/gifs/Permissions_Popover_Gifs/Create_Glossary.gif'
+import deleteGlossary from '~/assets/gifs/Permissions_Popover_Gifs/Delete_Glossary.gif'
+import updateGlossary from '~/assets/gifs/Permissions_Popover_Gifs/Update+link_Glossary.gif'
 
 export const purposeScopeList = [
     {
@@ -236,14 +242,14 @@ export const glossaryPolicyScopeList = [
                 label: 'Create',
                 filterLabel: 'Create asset',
                 desc: 'Permission to create term & categories inside the glossary',
-                gif: '',
+                gif: createGlossary,
             },
             {
                 value: 'entity-update',
                 label: 'Update',
                 filterLabel: 'Update asset',
                 desc: 'Permission to update metadata, resources, readme for terms & category and to link those terms with all assets',
-                gif: updateAssetGif,
+                gif: updateGlossary,
             },
 
             {
@@ -251,7 +257,7 @@ export const glossaryPolicyScopeList = [
                 label: 'Delete',
                 filterLabel: 'Delete asset',
                 desc: 'Permission to delete terms and categories inside the glossary',
-                gif: '',
+                gif: deleteGlossary,
             },
         ],
         type: 'Assets',
@@ -276,19 +282,19 @@ export const glossaryPolicyScopeList = [
                 value: 'entity-add-classification',
                 label: 'Add Classifications',
                 desc: 'Permission to add classifications from terms',
-                gif: updateClassificationGif,
+                gif: addClassificationGlossary,
             },
             {
                 value: 'entity-remove-classification',
                 label: 'Remove Classifications',
                 desc: 'Permission to remove classifications from terms',
-                gif: updateClassificationGif,
+                gif: removeClassificationGlossary,
             },
             {
                 value: 'entity-update-business-metadata',
                 label: 'Update Custom Metadata',
                 desc: 'Permission to update custom metadata attributes',
-                gif: updateBusinessMetaGif,
+                gif: updateCustomMetadataGlossary,
             },
 
             // {

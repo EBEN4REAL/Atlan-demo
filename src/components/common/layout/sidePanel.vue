@@ -1,109 +1,231 @@
 <template>
     <div class="flex flex-col flex-grow h-full">
         <!-- purpose  -->
-
-        <div class="px-3">
-            <router-link
-                to="/"
-                class="w-full mx-0 mt-3 menu-item"
-                @click="closeNavDrawer"
+        <div
+            v-if="logoUrl && !logoNotFound"
+            class="flex items-center h-10 px-2 mb-1"
+        >
+            <a-tooltip
+                placement="right"
+                color="#2A2F45"
+                :mouse-enter-delay="0.5"
             >
-                <span class="flex items-center">
+                <template #title
+                    ><div class="text-sm font-semibold">Home</div></template
+                >
+                <router-link
+                    to="/"
+                    class="flex items-center w-full mx-0"
+                    :class="isCollapsed ? 'justify-center px-0 py-1' : ''"
+                >
+                    <img
+                        :src="logoUrl"
+                        class="rounded-sm cursor-pointer select-none"
+                        :alt="defaultLogo"
+                        :class="isCollapsed ? 'w-8' : 'h-4 mr-2'"
+                        @error="onLogoNotFound"
+                    />
+                    <span v-if="!isCollapsed" class="font-semibold">{{
+                        logoName
+                    }}</span>
+                </router-link>
+            </a-tooltip>
+        </div>
+
+        <div v-else class="flex items-center h-10 px-2 mb-1">
+            <a-tooltip
+                placement="right"
+                color="#2A2F45"
+                :mouse-enter-delay="0.5"
+            >
+                <template #title
+                    ><div class="text-sm font-semibold">Home</div>
+                </template>
+                <router-link
+                    to="/"
+                    class="flex items-center w-full mx-0"
+                    :class="isCollapsed ? 'justify-center px-0 py-1' : ''"
+                >
                     <atlan-icon
                         icon="Home"
-                        class="h-4 mr-2"
-                        :class="{
-                            'text-primary': page === '/' || page === 'home',
-                        }"
+                        :class="isCollapsed ? 'h-6' : 'h-4 mr-2'"
+                        class="text-gray-500"
                     />
-                    <span class="">Home</span>
-                </span>
-            </router-link>
+                    <span v-if="!isCollapsed" class="font-semibold">{{
+                        logoName
+                    }}</span>
+                </router-link>
+            </a-tooltip>
+        </div>
 
-            <!-- workspaces -->
-            <!-- <div
-                class="px-3 mt-4 mb-1 text-xs font-bold text-gray-500 uppercase"
-            >
-                Workspace
-            </div> -->
-            <!-- pages -->
-
+        <div class="px-2">
             <template v-for="nav in workspaceList" :key="nav.label">
-                <router-link
-                    v-if="nav.isActive"
-                    v-auth="nav.auth"
-                    :to="nav.path"
-                    class="w-full mx-0 menu-item"
-                    :class="{ active: nav.path === page }"
-                    @click="closeNavDrawer"
+                <a-tooltip
+                    placement="right"
+                    color="#2A2F45"
+                    :mouse-enter-delay="0.5"
                 >
-                    <span class="flex items-center">
-                        <atlan-icon :icon="nav?.icon" class="h-4 mr-2" />
-
-                        {{ nav.label }}
-                    </span>
-                </router-link>
-            </template>
-        </div>
-        <div class="flex-grow"></div>
-        <div class="px-3">
-            <template v-for="nav in workspaceCentreList" :key="nav.label">
-                <router-link
-                    v-if="
-                        (nav.isActive &&
-                            nav.path === '/platform' &&
-                            role === 'Admin') ||
-                        (nav.isActive && nav.path !== '/platform')
-                    "
-                    v-auth.or="nav.auth"
-                    :to="nav.path"
-                    class="w-full mx-0 menu-item"
-                    :class="{ active: nav.path === page }"
-                    @click="closeNavDrawer"
-                >
-                    <span class="flex items-center">
-                        <atlan-icon :icon="nav?.icon" class="h-4 mr-2" />
-                        {{ nav.label }}
-                    </span>
-                </router-link>
-            </template>
-        </div>
-        <div class="px-3">
-            <template v-for="nav in helpCenterList" :key="nav.id">
-                <div
-                    v-if="nav.isActive"
-                    class="w-full mx-0 cursor-pointer menu-item group"
-                    @click="
-                        () => {
-                            nav.id === 'support' ? toggleHelpWidget() : null
-                        }
-                    "
-                >
-                    <a
-                        v-if="nav.link"
-                        :target="nav.openInANewTab ? '_blank' : 'self'"
-                        :href="nav.link"
-                        class="flex items-center"
+                    <template #title
+                        ><div class="text-sm font-semibold">
+                            {{ nav.label }}
+                        </div>
+                        <div v-if="nav?.description" class="text-xs mt-0.5">
+                            {{ nav?.description }}
+                        </div></template
                     >
-                        <atlan-icon
-                            :icon="nav?.icon"
-                            class="h-4 mr-2 text-gray-500"
-                        />
-                        <span class="hover:text-primary"> {{ nav.label }}</span>
-                        <AtlanIcon
-                            v-if="nav.openInANewTab"
-                            icon="External"
-                            class="ml-2 text-gray-500 opacity-0 group-hover:opacity-100 hover:text-gray-500"
-                        />
-                    </a>
-                    <span v-else class="flex items-center">
-                        <atlan-icon
-                            :icon="nav?.icon"
-                            class="h-4 mr-2 text-gray-500"
-                        />
-                        <span class="hover:text-primary"> {{ nav.label }}</span>
-                    </span>
-                </div>
+                    <router-link
+                        v-if="nav.isActive"
+                        v-slot="{ isActive }"
+                        v-auth="nav.auth"
+                        :to="nav.path"
+                        @click="closeNavDrawer"
+                    >
+                        <div
+                            class="flex items-center w-full mx-0 menu-item"
+                            :class="[
+                                isCollapsed
+                                    ? 'p-2 justify-center my-1'
+                                    : 'mt-1',
+                                isActive || isHovering === nav.path
+                                    ? bgClass(nav.path)
+                                    : '',
+                            ]"
+                            @mouseover="isHovering = nav.path"
+                            @mouseout="isHovering = ''"
+                        >
+                            <span class="flex items-center">
+                                <atlan-icon
+                                    :icon="
+                                        isActive ? nav?.icon : nav?.inactiveIcon
+                                    "
+                                    :class="[
+                                        isCollapsed ? 'h-6' : 'h-4 mr-2',
+                                        isActive
+                                            ? 'text-primary'
+                                            : 'text-gray-500',
+                                    ]"
+                                />
+
+                                <span v-if="!isCollapsed">
+                                    {{ nav.label }}</span
+                                >
+                            </span>
+                        </div>
+                    </router-link>
+                </a-tooltip>
+            </template>
+        </div>
+        <div class="p-2"><hr /></div>
+        <div class="px-2">
+            <template v-for="nav in workspaceCentreList" :key="nav.label">
+                <a-tooltip
+                    placement="right"
+                    color="#2A2F45"
+                    :mouse-enter-delay="0.5"
+                >
+                    <template #title
+                        ><div class="text-sm font-semibold">
+                            {{ nav.label }}
+                        </div>
+                        <div v-if="nav?.description" class="text-xs mt-0.5">
+                            {{ nav?.description }}
+                        </div></template
+                    >
+                    <router-link
+                        v-if="
+                            (nav.isActive &&
+                                nav.path === '/platform' &&
+                                role === 'Admin') ||
+                            (nav.isActive && nav.path !== '/platform')
+                        "
+                        v-slot="{ isActive }"
+                        v-auth.or="nav.auth"
+                        :to="nav.path"
+                        @click="closeNavDrawer"
+                        ><div
+                            class="flex items-center w-full mx-0 menu-item"
+                            :class="[
+                                isCollapsed
+                                    ? 'p-2 justify-center my-1'
+                                    : 'mt-1',
+                                isActive || isHovering === nav.path
+                                    ? bgClass(nav.path)
+                                    : '',
+                            ]"
+                            @mouseover="isHovering = nav.path"
+                            @mouseout="isHovering = ''"
+                        >
+                            <span class="flex items-center">
+                                <atlan-icon
+                                    :icon="
+                                        isActive
+                                            ? nav?.icon
+                                            : nav?.inactiveIcon || nav?.icon
+                                    "
+                                    :class="[
+                                        isCollapsed ? 'h-6' : 'h-4 mr-2',
+                                        isActive
+                                            ? 'text-primary'
+                                            : 'text-gray-500',
+                                    ]"
+                                />
+
+                                <span v-if="!isCollapsed">
+                                    {{ nav.label }}</span
+                                >
+                            </span>
+                        </div>
+                    </router-link>
+                </a-tooltip>
+            </template>
+        </div>
+
+        <div class="flex-grow"></div>
+        <div class="px-2">
+            <template v-for="nav in helpCenterList" :key="nav.id">
+                <a-tooltip
+                    placement="right"
+                    color="#2A2F45"
+                    :mouse-enter-delay="0.5"
+                >
+                    <template #title
+                        ><div class="text-sm font-semibold">
+                            {{ nav.label }}
+                        </div>
+                    </template>
+                    <div
+                        v-if="nav.isActive"
+                        class="flex items-center w-full mx-0 my-1 cursor-pointer menu-item hover:bg-primary-menu"
+                        :class="isCollapsed ? 'p-2 justify-center' : ''"
+                        @click="
+                            () => {
+                                nav.id === 'support' ? toggleHelpWidget() : null
+                            }
+                        "
+                    >
+                        <a
+                            v-if="nav.link"
+                            :target="nav.openInANewTab ? '_blank' : 'self'"
+                            :href="nav.link"
+                            class="flex items-center"
+                        >
+                            <atlan-icon
+                                :icon="nav?.icon"
+                                class="text-gray-500"
+                                :class="isCollapsed ? 'h-6' : 'h-4 mr-2'"
+                            />
+                            <span v-if="!isCollapsed"> {{ nav.label }}</span>
+                        </a>
+                        <span v-else class="flex items-center">
+                            <atlan-icon
+                                :icon="nav?.icon"
+                                class="text-gray-500"
+                                :class="isCollapsed ? 'h-6' : 'h-4 mr-2'"
+                            />
+                            <span v-if="!isCollapsed"> {{ nav.label }}</span>
+                        </span>
+                    </div></a-tooltip
+                >
             </template>
         </div>
 
@@ -114,26 +236,18 @@
             <UserPersonalAvatar placement="topLeft" class="py-2">
             </UserPersonalAvatar>
         </div> -->
-        <div class="w-full px-3 my-3">
+        <!--  <div class="w-full my-3">
             <div class="flex mx-3">
-                <div class="flex items-center text-xs text-gray-500">
-                    <span>with 💙 by</span>
-                    <!-- FIXME: What is this URL??? -->
-                    <img
-                        src="https://atlan.com/assets/img/atlan-blue.6ed81a56.svg"
-                        class="w-auto h-3 ml-1 mb-0.5"
-                    />
-                </div>
-                <span class="flex items-center ml-auto text-xs text-gray-500">
-                    v{{ getVersion }}
+                <span class="flex items-center text-xs text-gray-500">
+                    ATL{{ getVersion }}
                 </span>
             </div>
-        </div>
+        </div> -->
     </div>
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent } from 'vue'
+    import { computed, defineComponent, ref, toRefs } from 'vue'
     import { useRoute } from 'vue-router'
     import UserPersonalAvatar from '@/common/avatar/meLarge.vue'
     import useUserData from '~/composables/user/useUserData'
@@ -144,18 +258,31 @@
     import { helpCenterList } from '~/constant/navigation/helpCentre'
     import useHelpWidget from '~/composables/helpCenter/useHelpWidget'
     import whoami from '~/composables/user/whoami'
+    import { useTenantStore } from '~/store/tenant'
+    import defaultLogo from '~/assets/images/your_company.png'
 
     export default defineComponent({
         name: 'HomeSidePanel',
         components: { UserPersonalAvatar },
         props: {
             page: { type: String, required: true },
+            isCollapsed: { type: Boolean, required: false },
         },
         emits: ['change', 'closeNavbar'],
         setup(props, { emit }) {
             const { username, name } = useUserData()
             const { role } = whoami()
             const { toggleHelpWidget } = useHelpWidget()
+
+            const tenantStore = useTenantStore()
+            const logoNotFound = ref(false)
+            const isHovering = ref('')
+            const { logoUrl } = toRefs(tenantStore)
+            const logoName = computed(() => tenantStore.displayName)
+
+            const onLogoNotFound = () => {
+                logoNotFound.value = true
+            }
 
             const getVersion = process.env.npm_package_version
             const route = useRoute()
@@ -165,6 +292,23 @@
             function closeNavDrawer() {
                 emit('closeNavbar')
             }
+
+            const bgClass = (routePath: String) => {
+                switch (routePath) {
+                    case '/glossary':
+                        return 'glossary-bg'
+
+                    case '/insights':
+                        return 'insights-bg'
+
+                    case '/workflows':
+                        return 'workflows-bg'
+
+                    default:
+                        return 'bg-primary-menu'
+                }
+            }
+
             return {
                 role,
                 closeNavDrawer,
@@ -177,6 +321,13 @@
                 map,
                 path,
                 toggleHelpWidget,
+                logoUrl,
+                logoNotFound,
+                logoName,
+                onLogoNotFound,
+                defaultLogo,
+                bgClass,
+                isHovering,
             }
         },
     })
@@ -191,10 +342,6 @@
         @apply outline-none;
         @apply border border-transparent;
 
-        &:hover {
-            @apply text-primary !important;
-            @apply bg-primary-menu !important;
-        }
         &:focus-visible {
             @apply border-primary-focus !important;
         }
@@ -202,11 +349,19 @@
             @apply text-primary;
             @apply bg-primary-menu;
         }
+    }
+    :global(.ant-tooltip-inner) {
+        @apply px-3 py-2 !important;
+    }
 
-        :global(.router-link-active) {
-            @apply text-primary !important;
-            @apply bg-primary-menu !important;
-            @apply font-semibold;
-        }
+    .glossary-bg {
+        background-color: #ffecf1;
+    }
+    .insights-bg {
+        background-color: #fff5c6;
+    }
+
+    .workflows-bg {
+        background-color: #d7fcdf;
     }
 </style>

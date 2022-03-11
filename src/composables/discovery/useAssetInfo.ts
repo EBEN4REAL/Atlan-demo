@@ -170,6 +170,10 @@ export default function useAssetInfo() {
         const found = assetTypeList.find((d) => d.id === assetType(asset))
         return found?.label
     }
+    const assetTypeImage = (asset: assetInterface) => {
+        const found = assetTypeList.find((d) => d.id === assetType(asset))
+        return found?.image
+    }
 
     const assetTypeRelations = (asset: assetInterface) => {
         const found = assetTypeList.find((d) => d.id === assetType(asset))
@@ -1256,6 +1260,7 @@ export default function useAssetInfo() {
         dataTypeImage,
         dataTypeImageForColumn,
         assetTypeLabel,
+        assetTypeImage,
         getActions,
         getAssetQueryPath,
         link,

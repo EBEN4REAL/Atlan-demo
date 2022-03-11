@@ -21,20 +21,25 @@
         "
     >
         <a-menu v-model:openKeys="openKeys" mode="inline" :class="$style.menu">
-            <a-sub-menu key="slack">
-                <template #expandIcon> <AtlanIcon icon="CaretDown" /></template>
+            <a-sub-menu key="slack" mode="inline">
                 <template #title>
                     <SlackHeader
                         :is-open="openKeys.includes('slack')"
                         @openConfig="showSlackConfigModal = true"
                     />
                 </template>
-                <UpdateSlackConfig v-if="tenantSlackStatus.configured" />
-                <template v-else>
-                    <OverviewBanner
-                        class="flex flex-col p-4 m-6 border rounded-lg gap-y-3"
-                    />
-                </template>
+                <a-menu-item>
+                    <div class="">
+                        <UpdateSlackConfig
+                            v-if="tenantSlackStatus.configured"
+                        />
+                        <template v-else>
+                            <OverviewBanner
+                                class="flex flex-col p-4 m-6 border rounded-lg gap-y-3"
+                            />
+                        </template>
+                    </div>
+                </a-menu-item>
             </a-sub-menu>
         </a-menu>
     </div>
@@ -79,20 +84,36 @@
     .menu {
         div {
             line-height: normal;
+            @apply whitespace-normal;
         }
         @apply border-none  !important;
         :global(.ant-menu-submenu-title) {
             @apply h-full p-0 m-0 !important;
-            :global(.ant-menu-title-content + svg) {
+            :global(.ant-menu-submenu-arrow) {
                 @apply hidden !important;
             }
         }
 
-        :global(.ant-menu) {
+        :global(.ant-menu-item) {
+            @apply h-full  bg-white px-0 !important;
+        }
+
+        :global(.ant-menu-submenu-title:active) {
+            @apply bg-transparent;
         }
 
         :global(.ant-menu-inline) {
             @apply bg-white !important;
         }
+
+        :global(.ant-menu-item-selected) {
+            @apply text-gray-700;
+        }
+        :global(.ant-menu-item:hover) {
+            @apply text-gray-700;
+        }
+    }
+    :global(.ant-menu-item::after) {
+        @apply border-r-0 !important;
     }
 </style>

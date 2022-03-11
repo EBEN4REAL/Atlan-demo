@@ -7,49 +7,63 @@
                 : 'border-gray-300'
         "
     >
-        <a-menu v-model:openKeys="openKeys" mode="inline" :class="$style.menu">
-            <a-sub-menu key="jira">
-                <!--  a-menu  all of these is getting mounted twice ? find out why -->
-
-                <template #expandIcon> <AtlanIcon icon="CaretDown" /></template>
+        <a-menu
+            v-model:openKeys="openKeys"
+            :force-sub-menu-render="false"
+            mode="inline"
+            :class="$style.menu"
+            trigger-sub-menu-action="click"
+        >
+            <a-sub-menu key="jira" mode="inline">
                 <template #title>
                     <JiraHeader :is-open="openKeys.includes('jira')" />
                 </template>
-
-                <UpdateJiraConfig v-if="tenantJiraStatus.configured" />
-                <template v-else>
-                    <OverviewBanner
-                        class="flex flex-col p-4 m-6 border rounded-lg gap-y-3"
-                    />
-                </template>
+                <a-menu-item>
+                    <UpdateJiraConfig v-if="tenantJiraStatus.configured" />
+                    <template v-else>
+                        <OverviewBanner
+                            class="flex flex-col p-4 m-6 border rounded-lg gap-y-3"
+                        />
+                    </template>
+                </a-menu-item>
             </a-sub-menu>
         </a-menu>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, onMounted, ref, toRefs, watch } from 'vue'
-    import v from 'event-source-polyfill'
+    import {
+        defineComponent,
+        onMounted,
+        ref,
+        toRefs,
+        defineAsyncComponent,
+    } from 'vue'
     import { useTimeAgo } from '@vueuse/core'
     import OverviewBanner from '@/admin/integrations/jira/misc/overviewBannerCard.vue'
 
     import integrationStore from '~/store/integrations/index'
     import { useUsers } from '~/composables/user/useUsers'
     import JiraHeader from '@/admin/integrations/jira/jiraHeader.vue'
-    import UpdateJiraConfig from '@/admin/integrations/jira/updateJiraConfig.vue'
 
     export default defineComponent({
         name: 'JiraIntegrationCard',
         components: {
             JiraHeader,
-            UpdateJiraConfig,
+            UpdateJiraConfig: defineAsyncComponent(
+                () => import('@/admin/integrations/jira/updateJiraConfig.vue')
+            ),
             OverviewBanner,
         },
         setup() {
-            const openKeys = ref(['jira'])
+            const openKeys = ref<String[]>(['jira'])
 
             const store = integrationStore()
             const { tenantJiraStatus } = toRefs(store)
+
+            onMounted(() => {
+                // openKeys.value.push('jira')
+            })
 
             return {
                 openKeys,
@@ -74,16 +88,31 @@
         @apply border-none  !important;
         :global(.ant-menu-submenu-title) {
             @apply h-full p-0 m-0 !important;
-            :global(.ant-menu-title-content + svg) {
+            :global(.ant-menu-submenu-arrow) {
                 @apply hidden !important;
             }
         }
 
-        :global(.ant-menu) {
+        :global(.ant-menu-item) {
+            @apply h-full  bg-white px-0 !important;
+        }
+
+        :global(.ant-menu-submenu-title:active) {
+            @apply bg-transparent;
         }
 
         :global(.ant-menu-inline) {
             @apply bg-white !important;
         }
+
+        :global(.ant-menu-item-selected) {
+            @apply text-gray-700;
+        }
+        :global(.ant-menu-item:hover) {
+            @apply text-gray-700;
+        }
+    }
+    :global(.ant-menu-item::after) {
+        @apply border-r-0 !important;
     }
 </style>

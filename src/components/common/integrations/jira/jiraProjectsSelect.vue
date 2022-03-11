@@ -34,7 +34,7 @@
             </span>
         </a-select-option>
 
-        <a-select-option
+        <!-- <a-select-option
             v-if="!lastPage"
             class="flex items-end bg-white cursor-default"
             :disabled="true"
@@ -47,7 +47,7 @@
                     >Load More</span
                 >
             </div>
-        </a-select-option>
+        </a-select-option> -->
         <template #suffixIcon>
             <AtlanLoader v-if="isLoading" icon="Loader" class="" />
             <AtlanIcon icon="CaretDown" class="text-gray-500" />

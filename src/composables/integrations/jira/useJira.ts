@@ -198,18 +198,20 @@ export const archiveJira = (pV) => {
 export const listProjects = () => {
 
     const searchText = ref()
-    const maxResults = ref(50)
+    // const maxResults = ref(100)
     const startAt = ref(0)
     const totalResults = ref()
 
 
 
     const params = computed(() => ({
-        maxResults: maxResults.value,
+        maxResults: 2,
         startAt: startAt.value,
         query: searchText.value
     }))
 
+
+    const projects: any = ref([])
 
     const {
         data,
@@ -218,18 +220,22 @@ export const listProjects = () => {
         mutate,
     } = jiraListProjects(params)
 
-    const projects: any = ref([])
+    const loadMore = () => {
+        startAt.value += projects.value?.length || 0
+        mutate()
+    }
+
 
     watch([data, error], () => {
         if (data.value) {
             const { values, total, isLast } = data.value
-            lastPage.value = isLast
-
             if (startAt.value > 0) {
                 projects.value = [...projects.value, ...(values || [])]
             } else
                 projects.value = values
             totalResults.value = total
+            if (isLast === false)
+                loadMore()
         }
 
     }, { deep: true })
@@ -242,10 +248,7 @@ export const listProjects = () => {
     }
 
 
-    const loadMore = () => {
-        startAt.value += maxResults.value
-        mutate()
-    }
+
 
     debouncedWatch(searchText, async () => {
         searchLoading.value = true

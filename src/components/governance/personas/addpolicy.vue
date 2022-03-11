@@ -443,7 +443,10 @@
                     >
                         {{ rules.metadata.text }}
                     </div>
-                    <div class="p-3 pt-2 bg-gray-100 rounded-lg rounded-t-none">
+                    <div
+                        v-if="type !== 'glossaryPolicy'"
+                        class="p-3 pt-2 bg-gray-100 rounded-lg rounded-t-none"
+                    >
                         <div
                             v-if="
                                 isEdit

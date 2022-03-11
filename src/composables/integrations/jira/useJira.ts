@@ -10,6 +10,7 @@ import useIntegrations, {
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
 import { Integrations } from '~/services/service/integrations/index'
 import { debouncedWatch } from '@vueuse/core'
+import { issuesCount } from './useJiraTickets'
 const { jiraListProjects, jiraGetProjectConfigurations } = Integrations
 
 

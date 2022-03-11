@@ -177,51 +177,66 @@
             tab-position="right"
             :destroy-inactive-tab-pane="true"
         >
-            <a-tab-pane
+            <template
                 v-for="(tab, index) in getPreviewTabs(selectedAsset, isProfile)"
-                :key="index"
-                :destroy-inactive-tab-pane="true"
-                :disabled="isScrubbed(selectedAsset) && tab.scrubbed"
-                :class="index === activeKey ? 'flex flex-col' : ''"
             >
-                <template #tab>
-                    <PreviewTabsIcon
-                        :title="tab.tooltip"
-                        :icon="tab.icon"
-                        :image="tab.image"
-                        :emoji="tab.emoji"
-                        :active-icon="tab.activeIcon"
-                        :is-active="activeKey === index"
-                        :is-scrubbed="isScrubbed(selectedAsset) && tab.scrubbed"
-                        @click="onClickTabIcon(tab)"
+                <a-tab-pane
+                    v-if="
+                        tab.component === 'Jira' && !jiraAppInstalled
+                            ? false
+                            : true
+                    "
+                    :key="index"
+                    :destroy-inactive-tab-pane="true"
+                    :disabled="isScrubbed(selectedAsset) && tab.scrubbed"
+                    :class="index === activeKey ? 'flex flex-col' : ''"
+                >
+                    <template #tab>
+                        <PreviewTabsIcon
+                            :title="tab.tooltip"
+                            :icon="tab.icon"
+                            :image="tab.image"
+                            :emoji="tab.emoji"
+                            :active-icon="tab.activeIcon"
+                            :is-active="activeKey === index"
+                            :is-scrubbed="
+                                isScrubbed(selectedAsset) && tab.scrubbed
+                            "
+                            @click="onClickTabIcon(tab)"
+                        />
+                    </template>
+                    <NoAccess
+                        v-if="isScrubbed(selectedAsset) && tab.scrubbed"
                     />
-                </template>
-                <NoAccess v-if="isScrubbed(selectedAsset) && tab.scrubbed" />
-                <component
-                    :is="tab.component"
-                    v-else-if="tab.component"
-                    :key="selectedAsset.guid"
-                    :ref="
-                        (el) => {
-                            if (el) tabChildRef[index] = el
-                        }
-                    "
-                    :selected-asset="selectedAsset"
-                    :is-drawer="isDrawer"
-                    :read-permission="!isScrubbed(selectedAsset)"
-                    :edit-permission="
-                        selectedAssetUpdatePermission(selectedAsset, isDrawer)
-                    "
-                    :tab="tab"
-                    :data="tab.data"
-                    :collection-data="{
-                        collectionInfo,
-                        hasCollectionReadPermission,
-                        hasCollectionWritePermission,
-                        isCollectionCreatedByCurrentUser,
-                    }"
-                ></component>
-            </a-tab-pane>
+                    <component
+                        :is="tab.component"
+                        v-else-if="tab.component"
+                        :key="selectedAsset.guid"
+                        :ref="
+                            (el) => {
+                                if (el) tabChildRef[index] = el
+                            }
+                        "
+                        :selected-asset="selectedAsset"
+                        :is-drawer="isDrawer"
+                        :read-permission="!isScrubbed(selectedAsset)"
+                        :edit-permission="
+                            selectedAssetUpdatePermission(
+                                selectedAsset,
+                                isDrawer
+                            )
+                        "
+                        :tab="tab"
+                        :data="tab.data"
+                        :collection-data="{
+                            collectionInfo,
+                            hasCollectionReadPermission,
+                            hasCollectionWritePermission,
+                            isCollectionCreatedByCurrentUser,
+                        }"
+                    ></component>
+                </a-tab-pane>
+            </template>
             <template #moreIcon>
                 <div class="flex">
                     <AtlanIcon
@@ -270,6 +285,8 @@
         resourceId,
         disableSlackAsk,
     } from '~/composables/integrations/slack/useAskAQuestion'
+    import { issuesCount } from '~/composables/integrations/jira/useJiraTickets'
+    import integrationStore from '~/store/integrations/index'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -553,7 +570,29 @@
                 })
             })
 
+            const {
+                count,
+                isReady: countReady,
+                mutate,
+            } = issuesCount(false, false)
+
+            const store = integrationStore()
+
+            const { tenantJiraStatus } = toRefs(store)
+            watch(
+                () => tenantJiraStatus.value.configured,
+                (v) => {
+                    if (v) mutate()
+                },
+                { immediate: true }
+            )
+
+            const jiraAppInstalled = computed(
+                () => countReady?.value && !!count.value
+            )
+
             return {
+                jiraAppInstalled,
                 disableSlackAsk,
                 tabChildRef,
                 activeKey,

@@ -28,6 +28,7 @@
                     :checkable="true"
                     @check="onCheck"
                     @searchItemCheck="onSearchItemCheck"
+                    v-model:disabledGuids="disabledGuids"
                 />
                 <div
                     v-if="!editPermission && role !== 'Guest'"
@@ -167,6 +168,9 @@
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
             const checkedGuids = ref(modelValue.value.map((term) => term.guid))
+            const disabledGuids = computed(() =>
+                props.editPermission ? [] : checkedGuids.value
+            )
             const hasBeenEdited = ref(false)
             const isEdit = ref(false)
             const isTermDrawerVisible = ref(false)
@@ -367,6 +371,7 @@
                 handleOpenPopover,
                 handleCancelRequest,
                 role,
+                disabledGuids,
             }
         },
     })

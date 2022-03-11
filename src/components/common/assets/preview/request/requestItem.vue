@@ -35,6 +35,7 @@
                 </div>
                 <div
                     v-if="item.status === 'active'"
+                    v-auth="[map.APPROVE_REQUEST]"
                     class="flex -mr-1.5 hover-action linear-gradient"
                 >
                     <RequestDropdown
@@ -569,6 +570,7 @@
     import AtlanButton from '@/UI/button.vue'
     import RequestDropdown from '~/components/common/dropdown/requestDropdown.vue'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'RequestItem',
@@ -758,6 +760,7 @@
                 loadingApproval,
                 dayjs,
                 typeCopyMapping,
+                map
             }
         },
     })

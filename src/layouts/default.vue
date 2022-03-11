@@ -13,7 +13,7 @@
             />
         </a-layout-sider>
 
-        <a-layout class="w-full h-full">
+        <a-layout class="h-full">
             <a-layout-header class="z-30 h-10 p-0 m-0">
                 <div class="h-full px-4 bg-white border-b border-gray-300">
                     <NavMenu
@@ -60,7 +60,7 @@
                         @closeNavbar="closeNavbar"
                     />
                 </div> -->
-
+                <div id="overAssetSidebar" class="bg-white"></div>
                 <div class="w-full overflow-y-auto">
                     <a-modal
                         v-model:visible="isCmndKVisible"
@@ -84,7 +84,7 @@
         </a-layout>
     </a-layout>
     <PreviewDrawer />
-    <div id="overAssetSidebar" class="bg-white"></div>
+
     <!-- <div class="mx-auto mt-5" @click="themeToggle">[Default Layout]</div> -->
 </template>
 

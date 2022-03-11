@@ -85,6 +85,10 @@
             const localValue = ref(modelValue.value)
             const { item } = toRefs(props)
 
+            watch(modelValue, (newModelValue) => {
+                localValue.value = newModelValue
+            })
+
             const filteredAttributeList = computed(() =>
                 item?.value.attributes.filter((i) =>
                     i.displayName

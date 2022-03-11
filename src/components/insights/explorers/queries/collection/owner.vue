@@ -260,7 +260,7 @@
                     return `Search ${count} groups`
                 }
                 const count = usersRef?.value?.filterTotal
-                    ? usersRef.value.filterTotal
+                    ? usersRef.value.filterTotal - 1 // for excluding myself
                     : ''
                 return `Search ${count} users`
             })

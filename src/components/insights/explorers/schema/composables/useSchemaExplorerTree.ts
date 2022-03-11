@@ -7,6 +7,7 @@ import { message } from 'ant-design-vue'
 
 // composables
 import useLoadTreeData from './useLoadTreeData'
+import { debounceFilter, watchWithFilter } from '@vueuse/core'
 
 type CustomTreeDataItem =
     | (Omit<TreeDataItem, 'children'> &
@@ -155,7 +156,7 @@ const useTree = ({
         databaseQualifiedName?: string,
         schemaQualifiedName?: string
     ) => {
-        // treeData.value = [];
+        treeData.value = []
         // console.log('query1: ', queryText)
         if (schemaQualifiedName) {
             const found = loadedKeys.value.find(
@@ -251,12 +252,14 @@ const useTree = ({
             treeData.value = []
         }
         /* removing duplicates */
-        treeData.value = removeDuplicates(
-            treeData,
-            connectionQualifiedName,
-            databaseQualifiedName,
-            schemaQualifiedName
-        )
+        if (!queryText.value?.length) {
+            treeData.value = removeDuplicates(
+                treeData,
+                connectionQualifiedName,
+                databaseQualifiedName,
+                schemaQualifiedName
+            )
+        }
 
         isInitingTree.value = false
     }
@@ -756,7 +759,6 @@ const useTree = ({
             connectionQualifiedName,
             databaseQualifiedName,
             schemaQualifiedName,
-            queryText,
             facets,
             sortOrderTable,
             sortOrderColumn,
@@ -770,6 +772,21 @@ const useTree = ({
             })
             isInitingTree.value = true
             initTreeData(c, d, s)
+        }
+    )
+
+    watchWithFilter(
+        queryText,
+        () => {
+            isInitingTree.value = true
+            initTreeData(
+                connectionQualifiedName?.value,
+                databaseQualifiedName?.value,
+                schemaQualifiedName?.value
+            )
+        },
+        {
+            eventFilter: debounceFilter(400),
         }
     )
 

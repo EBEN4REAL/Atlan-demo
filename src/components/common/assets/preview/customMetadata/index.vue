@@ -83,14 +83,11 @@
                     >
                         Cancel
                     </span>
-                    <AtlanButton
+                    <AtlanButton2
                         :disabled="!isEdit"
-                        size="small"
-                        padding="compact"
+                        label="Update"
                         @click="handleUpdate"
-                    >
-                        Update
-                    </AtlanButton>
+                    />
                 </div>
             </div>
         </div>
@@ -274,7 +271,7 @@
                                 <span> haven’t been populated yet. </span>
                             </template>
                         </div>
-                        <AtlanButton
+                        <AtlanButton2
                             v-if="
                                 selectedAssetUpdatePermission(
                                     selectedAsset,
@@ -282,12 +279,10 @@
                                     'ENTITY_UPDATE_BUSINESS_METADATA'
                                 ) && !viewOnly
                             "
-                            color="primary"
-                            padding="compact"
+                            label="Start Editing"
+                            prefixIcon="Edit"
                             @click="() => (readOnly = false)"
-                        >
-                            <AtlanIcon icon="Edit" /> Start Editing
-                        </AtlanButton>
+                        />
                     </div>
                 </template>
                 <!-- showing empty ends here -->

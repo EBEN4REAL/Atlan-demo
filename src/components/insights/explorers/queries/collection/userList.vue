@@ -32,17 +32,16 @@
                                 >
                                     <ErrorView>
                                         <div>
-                                            <AtlanButton
+                                            <AtlanButton2
                                                 color="secondary"
+                                                label="Try again"
+                                                prefixIcon="Retry"
                                                 @click="
                                                     () => {
                                                         getUserList()
                                                     }
                                                 "
-                                            >
-                                                <AtlanIcon icon="Retry" />
-                                                Try again
-                                            </AtlanButton>
+                                            />
                                         </div>
                                     </ErrorView>
                                 </div>
@@ -117,17 +116,16 @@
                                 >
                                     <ErrorView>
                                         <div>
-                                            <AtlanButton
+                                            <AtlanButton2
                                                 color="secondary"
+                                                prefixIcon="Retry"
+                                                label="Try again"
                                                 @click="
                                                     () => {
                                                         getGroupList()
                                                     }
                                                 "
-                                            >
-                                                <AtlanIcon icon="Retry" />
-                                                Try again
-                                            </AtlanButton>
+                                            />
                                         </div>
                                     </ErrorView>
                                 </div>

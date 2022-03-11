@@ -15,25 +15,22 @@
         </template>
         <template #footer>
             <div class="flex items-center justify-end w-full space-x-3">
-                <AtlanButton
-                    color="minimal"
-                    :size="'sm'"
+                <AtlanButton2
+                    color="secondary"
                     class="px-1"
+                    label="Cancel"
                     @click="handleCancel"
-                >
-                    Cancel
-                </AtlanButton>
-                <AtlanButton
+                />
+
+                <AtlanButton2
                     color="primary"
-                    :size="'sm'"
                     :disabled="buttonDisabled"
                     :loading="
                         addStatus === 'loading' || updateStatus === 'loading'
                     "
+                    :label="isEdit ? 'Update' : 'Add'"
                     @click="handleSubmit"
-                >
-                    {{ isEdit ? 'Update' : 'Add' }}
-                </AtlanButton>
+                />
             </div>
         </template>
         <div class="px-4 pt-0 pb-4">

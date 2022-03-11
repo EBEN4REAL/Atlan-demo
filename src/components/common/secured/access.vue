@@ -5,9 +5,12 @@
             <div class="leading-4 text-center text-gray-500 text">
                 Oops, looks like you don't have access to view this page!
             </div>
-            <AtlanButton color="secondary" @click="backToHome"
-                >Take me home</AtlanButton
-            >
+            <AtlanButton2
+                color="secondary"
+                size="large"
+                label="Take me home"
+                @click="backToHome"
+            />
         </div>
     </div>
 </template>

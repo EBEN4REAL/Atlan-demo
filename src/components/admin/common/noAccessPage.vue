@@ -6,7 +6,11 @@
                 Oops, looks like you don't have access to view this page!
             </div>
             <router-link to="/">
-                <AtlanButton2 color="secondary" label="Take me home" />
+                <AtlanButton2
+                    color="secondary"
+                    size="large"
+                    label="Take me home"
+                />
             </router-link>
         </div>
     </div>

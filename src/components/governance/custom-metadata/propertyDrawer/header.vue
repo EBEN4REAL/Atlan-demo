@@ -35,14 +35,11 @@
             <template v-else>
                 <div class="flex-grow"></div>
                 <div class="">
-                    <AtlanButton
-                        color="minimal"
-                        size="sm"
-                        class="w-7"
+                    <AtlanButton2
+                        color="secondary"
+                        label="Cancel"
                         @click="$emit('close')"
-                    >
-                        Cancel
-                    </AtlanButton>
+                    />
                 </div>
                 <a-dropdown v-model:visible="visible" trigger="click">
                     <div
@@ -88,15 +85,11 @@
                     </template>
                 </a-dropdown>
             </template>
-            <AtlanButton
-                type="primary"
-                size="sm"
-                class="w-7"
+            <AtlanButton2
+                :label="editing ? 'Update' : 'Add'"
                 :loading="loading"
                 @click="$emit('update')"
-            >
-                {{ editing ? 'Update' : 'Add' }}
-            </AtlanButton>
+            />
         </div>
     </div>
 </template>

@@ -71,7 +71,16 @@
                         </div>
                     </template>
                     <template v-else-if="column.key === 'column_name'">
-                        <div class="flex items-center justify-between">
+                        <div
+                            :class="{
+                                'flex items-center justify-between':
+                                    record.is_primary ||
+                                    record.is_foreign ||
+                                    record.is_partition ||
+                                    record.is_sort ||
+                                    record.is_indexed,
+                            }"
+                        >
                             <div class="flex items-center">
                                 <component
                                     :is="dataTypeCategoryImage(record.item)"

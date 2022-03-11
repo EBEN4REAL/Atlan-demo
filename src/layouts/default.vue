@@ -60,7 +60,7 @@
                         @closeNavbar="closeNavbar"
                     />
                 </div> -->
-                <div id="overAssetSidebar" class="bg-white"></div>
+
                 <div class="w-full overflow-y-auto">
                     <a-modal
                         v-model:visible="isCmndKVisible"
@@ -84,7 +84,7 @@
         </a-layout>
     </a-layout>
     <PreviewDrawer />
-
+    <div id="overAssetSidebar" class="bg-white"></div>
     <!-- <div class="mx-auto mt-5" @click="themeToggle">[Default Layout]</div> -->
 </template>
 

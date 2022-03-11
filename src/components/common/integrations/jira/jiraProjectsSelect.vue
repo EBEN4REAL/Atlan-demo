@@ -6,9 +6,9 @@
         :placeholder="placeholder"
         :loading="isLoading"
         :allow-clear="clearable"
-        show-search
-        option-filter-prop="label"
+        :filter-option="() => true"
         dropdown-class-name="max-h-72 overflow-y-scroll"
+        @search="handleSearch"
     >
         <a-select-option
             v-for="o in options"
@@ -32,7 +32,23 @@
                 {{ o.label }}
             </span>
         </a-select-option>
+
+        <a-select-option
+            v-if="!lastPage"
+            class="flex items-end bg-white cursor-default"
+            :disabled="true"
+        >
+            <div class="flex items-center justify-end gap-x-1">
+                <AtlanLoader v-if="isLoading && !searchLoading" class="w-1" />
+                <span
+                    class="text-xs cursor-pointer hover:underline text-primary"
+                    @click="loadMore"
+                    >Load More</span
+                >
+            </div>
+        </a-select-option>
         <template #suffixIcon>
+            <AtlanLoader v-if="isLoading" icon="Loader" class="" />
             <AtlanIcon icon="CaretDown" class="text-gray-500" />
         </template>
     </a-select>
@@ -44,7 +60,15 @@
     import { listProjects } from '~/composables/integrations/jira/useJira'
     import integrationStore from '~/store/integrations/index'
 
-    const { projects, isLoading, error } = listProjects()
+    const {
+        projects,
+        isLoading,
+        error,
+        searchLoading,
+        lastPage,
+        loadMore,
+        handleSearch,
+    } = listProjects()
 
     const props = defineProps({
         modelValue: { type: String, required: true },

@@ -9,6 +9,7 @@ import useIntegrations, {
 } from '~/composables/integrations/useIntegrations'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
 import { Integrations } from '~/services/service/integrations/index'
+import { debouncedWatch } from '@vueuse/core'
 const { jiraListProjects, jiraGetProjectConfigurations } = Integrations
 
 
@@ -195,21 +196,80 @@ export const archiveJira = (pV) => {
 
 
 export const listProjects = () => {
+
+    const searchText = ref()
+    const maxResults = ref(2)
+    const startAt = ref(0)
+    const totalResults = ref()
+
+
+
+    const params = computed(() => ({
+        maxResults: maxResults.value,
+        startAt: startAt.value,
+        query: searchText.value
+    }))
+
+
     const {
         data,
         isLoading,
         error,
-    } = jiraListProjects()
+        mutate,
+    } = jiraListProjects(params)
 
-    const projects = ref()
+    const projects: any = ref([])
 
     watch([data, error], () => {
         if (data.value) {
-            const { values } = data.value
-            projects.value = values
+            const { values, total, isLast } = data.value
+            lastPage.value = isLast
+
+            if (startAt.value > 0) {
+                projects.value = [...projects.value, ...(values || [])]
+            } else
+                projects.value = values
+            totalResults.value = total
         }
-    })
-    return { projects, isLoading, error }
+
+    }, { deep: true })
+
+    const searchLoading = ref(false)
+    const handleSearch = (v) => {
+        projects.value = []
+        startAt.value = 0
+        searchText.value = v
+    }
+
+
+    const loadMore = () => {
+        startAt.value += maxResults.value
+        mutate()
+    }
+
+    debouncedWatch(searchText, async () => {
+        searchLoading.value = true
+        await mutate()
+        searchLoading.value = false
+    },
+        { deep: true, debounce: 500 }
+    )
+
+    const lastPage = computed(() => totalResults.value === projects.value.length)
+
+
+    // const pagination = computed(() => ({
+    //     totalPages: Math.ceil(
+    //         totalResults.value / maxResults.value
+    //     ),
+    //     pageSize: maxResults.value,
+    //     currentPage: startAt.value / maxResults.value + 1,
+    // }))
+
+
+    return {
+        handleSearch, lastPage, projects, isLoading, error, searchText, searchLoading, loadMore
+    }
 }
 
 export const getProjectConfig = (key) => {

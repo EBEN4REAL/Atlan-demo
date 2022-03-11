@@ -15,7 +15,10 @@
             <AtlanIcon :icon="'Jira'" class="h-6 mr-2" />
             <h1 class="text-xl font-bold">Create issue</h1>
         </header>
-        <div class="w-full p-4 rounded">
+        <div
+            class="w-full p-4 overflow-scroll rounded"
+            style="max-height: calc(100vh - 21rem)"
+        >
             <a-form
                 ref="formRef"
                 layout="vertical"
@@ -179,18 +182,6 @@
         })
     )
 
-    const reset = () => {
-        form.value = {
-            ...form.value,
-            ...{
-                issuetype: undefined,
-                project: undefined,
-                summary: undefined,
-                description: undefined,
-            },
-        }
-    }
-
     const issueTypeOptions = ref<any[]>([])
     const projectKey = ref()
     const {
@@ -353,7 +344,7 @@
     const { data, isLoading, error, mutate, isReady } = createIssue(body)
 
     const handleCancel = () => {
-        reset()
+        resetForm()
         visible.value = false
     }
 

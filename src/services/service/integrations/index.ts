@@ -19,8 +19,8 @@ const UpdateSlackConfig = (pathVariables: Ref, body, options: useOptions) => use
 const AskQuestionSlack = (body: Ref, options: useOptions) => useAPI(map.ASK_QUESTION_SLACK, 'POST', { body }, options)
 
 // Jira
-const jiraListProjects = (options = {}) =>
-    useAPI<JiraListProjectsResponse>(map.JIRA_LIST_PROJECTS, 'GET', {}, options);
+const jiraListProjects = (params, options = {}) =>
+    useAPI<JiraListProjectsResponse>(map.JIRA_LIST_PROJECTS, 'GET', { params }, options);
 const jiraListIssueTypes = <T>(options = {}) =>
     useAPI<T>(map.JIRA_LIST_ISSUE_TYPES, 'GET', {}, options);
 const jiraGetIssueProperty = (params: Ref<{ issue: string, property: string }>, options = {}) =>

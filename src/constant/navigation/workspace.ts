@@ -13,7 +13,7 @@ export const workspaceList = [
         icon: 'Glossary',
         isActive: true,
         inactiveIcon: 'GlossaryInactive',
-        description: `Govern all your business terms and metrics`,
+        description: ` Define and organize all your data terms and metrics`,
         activeBackground: '#FFECF1',
     },
     {
@@ -22,7 +22,7 @@ export const workspaceList = [
         icon: 'InsightsActive',
         isActive: true,
         inactiveIcon: 'InsightsInactive',
-        description: `Query datasets and derive business insights`,
+        description: `Query your data and derive business insights`,
         activeBackground: '#FFF5C6',
     },
     // {

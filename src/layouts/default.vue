@@ -2,7 +2,7 @@
     <a-layout class="min-h-full">
         <a-layout-sider
             theme="light"
-            class="border border-r border-gray-300"
+            class="border-r border-gray-300"
             :collapsedWidth="60"
             :width="60"
         >
@@ -80,11 +80,11 @@
 
                     <router-view />
                 </div>
-                <div id="overAssetSidebar" class="bg-white"></div>
             </a-layout-content>
         </a-layout>
     </a-layout>
     <PreviewDrawer />
+    <div id="overAssetSidebar" class="bg-white"></div>
     <!-- <div class="mx-auto mt-5" @click="themeToggle">[Default Layout]</div> -->
 </template>
 

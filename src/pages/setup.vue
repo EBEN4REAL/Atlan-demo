@@ -18,7 +18,20 @@
             </div>
             <div class="mb-6">
                 <div>Username</div>
-                <a-input v-model:value="tenantInfo.username"></a-input>
+                <a-input
+                    v-model:value="tenantInfo.username"
+                    :class="
+                        tenantInfo.username.toLowerCase() === 'admin'
+                            ? 'border border-error'
+                            : ''
+                    "
+                ></a-input>
+                <span
+                    v-if="tenantInfo.username.toLowerCase() === 'admin'"
+                    class="pt-1 text-red-700"
+                >
+                    Username cannot be "{{ tenantInfo.username }}"
+                </span>
             </div>
             <div class="mb-6">
                 <div>Email</div>
@@ -47,6 +60,7 @@
                     padding="compact"
                     size="sm"
                     :is-loading="isRegisteringTenant"
+                    :disabled="tenantInfo.username.toLowerCase() === 'admin'"
                     @click="registerTenant"
                 >
                     <span v-if="isRegisteringTenant">Registering</span
@@ -81,6 +95,7 @@
                 logoBase64: '',
             })
             const registerTenant = () => {
+                if (tenantInfo.username.toLowerCase() === 'admin') return
                 const { data, isReady, error, isLoading } =
                     Tenant.RegisterTenant(tenantInfo)
 

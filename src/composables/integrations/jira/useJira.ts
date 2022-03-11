@@ -198,7 +198,7 @@ export const archiveJira = (pV) => {
 export const listProjects = () => {
 
     const searchText = ref()
-    const maxResults = ref(2)
+    const maxResults = ref(50)
     const startAt = ref(0)
     const totalResults = ref()
 

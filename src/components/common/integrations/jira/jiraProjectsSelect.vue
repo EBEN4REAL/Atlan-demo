@@ -6,6 +6,7 @@
         :placeholder="placeholder"
         :loading="isLoading"
         :allow-clear="clearable"
+        show-search
         :filter-option="() => true"
         dropdown-class-name="max-h-72 overflow-y-scroll"
         @search="handleSearch"

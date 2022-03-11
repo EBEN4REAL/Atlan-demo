@@ -54,10 +54,10 @@
     import TableRow from '@tiptap/extension-table-row'
     import TableHeader from '@tiptap/extension-table-header'
     import TableCell from '@tiptap/extension-table-cell'
-    import { CustomTable } from '@common/editor/extensions/table/extension'
-    import { CustomMention } from '@common/editor/extensions/mentions/extension'
+    import { CustomTable } from './extensions/table/extension'
+    import { CustomMention } from './extensions/mentions/extension'
 
-    import { TrailingNode } from '@common/editor/extensions/trailingNode'
+    import { TrailingNode } from './extensions/trailingNode'
     import SelectionMenu from './selectionMenu.vue'
     import SelectionMenuTable from './selectionMenuTable.vue'
     import SlashCommands from './extensions/slashCommands/commands'
@@ -107,10 +107,10 @@
             const { isEditMode, emptyText } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
 
-            const localModelValue = ref(decodeURIComponent(modelValue.value))
+            const localModelValue = ref(modelValue.value)
 
             const debouncedEmit = useDebounceFn((content: string) => {
-                modelValue.value = encodeURIComponent(content)
+                modelValue.value = content
                 emit('change')
             }, 500)
 

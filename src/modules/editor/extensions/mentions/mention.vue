@@ -16,8 +16,8 @@
 <script lang="ts">
     import { computed, defineComponent, toRefs } from 'vue'
     import { NodeViewWrapper, nodeViewProps } from '@tiptap/vue-3'
-    import UserPopover from '~/components/common/popover/user/user.vue'
-    import GroupPopover from '~/components/common/popover/user/groups.vue'
+    import UserPopover from '@common/popover/user/user.vue'
+    import GroupPopover from '@common/popover/user/groups.vue'
 
     export default defineComponent({
         name: 'MentionNode',

@@ -1,7 +1,7 @@
 import { VueRenderer } from '@tiptap/vue-3'
 import tippy, { Instance } from 'tippy.js'
 import { SuggestionKeyDownProps, SuggestionProps } from '@tiptap/suggestion'
-import CommandsList from '@common/editor/extensions/slashCommands/CommandsList.vue'
+import CommandsList from './CommandsList.vue'
 import { blockMenu } from '~/constant/readmeMenuItems'
 
 export default {

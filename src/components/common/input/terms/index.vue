@@ -224,13 +224,22 @@
 
             const onSearchItemCheck = (checkedNode, checked) => {
                 if (checked) {
-                    localValue.value.push(checkedNode)
+                    if (props.editPermission) localValue.value.push(checkedNode)
+                    else newTerms.value.push(checkedNode)
                 } else {
-                    localValue.value = localValue.value?.filter(
-                        (localTerm) =>
-                            (localTerm.guid ?? localTerm.termGuid) !==
-                            checkedNode.guid
-                    )
+                    if (props.editPermission) {
+                        localValue.value = localValue.value?.filter(
+                            (localTerm) =>
+                                (localTerm.guid ?? localTerm.termGuid) !==
+                                checkedNode.guid
+                        )
+                    } else {
+                        newTerms.value = newTerms.value?.filter(
+                            (localTerm) =>
+                                (localTerm.guid ?? localTerm.termGuid) !==
+                                checkedNode.guid
+                        )
+                    }
                 }
                 hasBeenEdited.value = true
             }

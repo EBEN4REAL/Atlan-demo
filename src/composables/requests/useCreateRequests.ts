@@ -1,6 +1,7 @@
 import { Ref, computed, watch, ref } from 'vue'
 import { createBulkRequest } from '~/services/service/requests'
 import { useDebounceFn } from '@vueuse/core'
+import { message } from 'ant-design-vue'
 
 interface requestPayload {
     requestType: String
@@ -139,7 +140,10 @@ export function useCreateRequests({
         console.log(requests.value)
     }
     constructPayload()
-    console.log('submit req')
+    if (!requests.value?.length) {
+        message.error(`Empty request!`)
+        return
+    }
     const { data, mutate, error, isLoading, isValidating, isReady } =
         createBulkRequest({
             requests: requests?.value,

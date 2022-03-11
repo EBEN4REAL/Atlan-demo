@@ -420,9 +420,17 @@
                     duration: 0,
                     key: messageKey,
                 })
+                const updatedPayload = { ...dataPolicy }
+
+                if (
+                    updatedPayload.actions.includes('entity-update') &&
+                    !updatedPayload.actions.includes('link-assets')
+                ) {
+                    updatedPayload.actions.push('link-assets')
+                }
                 const action = isEdit ? updatePolicy : addPolicy
                 try {
-                    await action(type, dataPolicy)
+                    await action(type, updatedPayload)
                     updateSelectedPersona()
                     refetchPersona(persona.value.id)
                     addpolicyVisible.value = false

@@ -10,7 +10,7 @@
                     :emoji="tab.emoji"
                     height="h-4"
                 />
-                <span class="font-semibold text-gray-500 ml-1">Requests</span>
+                <span class="ml-1 font-semibold text-gray-500">Requests</span>
             </span>
 
             <a-dropdown trigger="click" placement="bottomRight">
@@ -220,7 +220,7 @@
 
 <style lang="less">
     .container-scroll-request {
-        max-height: 555px;
+        max-height: 655px;
     }
     .menu-status {
         width: 100px;

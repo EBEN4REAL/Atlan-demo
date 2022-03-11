@@ -1,4 +1,5 @@
 import { computed, ref, Ref, watch } from 'vue'
+import useAddEvent from '../../eventTracking/useAddEvent';
 import { debouncedWatch, useDebounce } from '@vueuse/core'
 import { Integrations } from '~/services/service/integrations/index'
 import { Issue, IssueTypes } from '~/types/integrations/jira.types'

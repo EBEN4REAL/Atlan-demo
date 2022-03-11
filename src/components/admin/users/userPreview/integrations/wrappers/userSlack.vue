@@ -2,6 +2,7 @@
     <Card
         :integration="props.integration"
         :status="userSlackStatus"
+        :disable-connect="!tenantSlackStatus.configured"
         @connect="
             () =>
                 openSlackOAuth({
@@ -10,7 +11,6 @@
                 })
         "
         @disconnect="disconnect"
-        :disableConnect="!tenantSlackStatus.configured"
     />
 </template>
 
@@ -23,6 +23,7 @@
         openSlackOAuth,
     } from '~/composables/integrations/slack/useSlack'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+
     const emit = defineEmits(['refresh'])
 
     const call = (s) => {

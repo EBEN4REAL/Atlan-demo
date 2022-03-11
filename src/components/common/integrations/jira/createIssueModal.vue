@@ -138,6 +138,7 @@
     import { getProjectConfig } from '~/composables/integrations/jira/useJira'
     import { truncate } from '@antv/x6/lib/util/string/string'
     import JiraDynamicField from '@/common/integrations/jira/jiraDynamicField.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     const props = defineProps({
         visible: { type: Boolean, required: true },
@@ -272,7 +273,21 @@
             (f) => !ignoreFieldsKey.includes(f.key)
         )
     }
+    const parseType = (field) => {
+        const isURL =
+            field.data.schema?.custom &&
+            field.data.schema?.custom.split(':').slice(-1)[0] === 'url'
 
+        if (isURL) return 'url'
+        if (field.unsupported) return 'string'
+        const type = field?.data.schema.type
+        if (type === 'array') return 'array'
+        // if (originalType === 'option') return 'select'
+        // if (originalType === 'priority') return 'select'
+        // if (originalType === 'user') return 'string'
+        // if (originalType === 'number') return 'float' // jria number includes float and decimal
+        return null
+    }
     // This is a watcher will set form rules to be required for the required fields
     watch(
         requiredFields,
@@ -280,20 +295,17 @@
             rules.value = JSON.parse(JSON.stringify(CREATE_TICKET_FORM_RULES))
             if (v?.length)
                 v.forEach((field) => {
-                    const typeName = field.data.schema.type
-                    // some issue with rules removing them for now
-
-                    const isURL =
-                        field.data.schema?.custom &&
-                        field.data.schema?.custom.split(':').slice(-1)[0] ===
-                            'url'
-
                     rules.value[field.key] = [
                         {
                             required: true,
                             trigger: ['submit', 'change'],
-                            message: isURL ? 'Must be a valid URL' : '',
-                            type: isURL ? 'url' : typeName,
+                            message:
+                                parseType(field) === 'url'
+                                    ? 'Must be a valid URL'
+                                    : '',
+                            ...(parseType(field)
+                                ? { type: parseType(field) }
+                                : {}),
                         },
                     ]
                 })
@@ -343,6 +355,17 @@
         },
     }))
 
+    const trackCreateEvent = () => {
+        const issueType = issueTypeOptions.value.find(
+            (type) => type.value === form.value.issuetype
+        ).label
+
+        useAddEvent('integration', 'jira', 'issue_created', {
+            asset_type: asset.value.typeName,
+            issue_type: issueType,
+        })
+    }
+
     const { data, isLoading, error, mutate, isReady } = createIssue(body)
 
     const handleCancel = () => {
@@ -365,6 +388,7 @@
                 content: `Issue "${form.value.summary}" has been created and linked`,
                 duration: 2,
             })
+            trackCreateEvent()
             emit('success', data.value)
             visible.value = false
             resetForm()

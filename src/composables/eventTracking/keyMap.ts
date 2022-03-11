@@ -494,6 +494,43 @@ const keyMap = {
                 }),
             },
         },
+        jira: {
+            issue_created: {
+                action: 'integration_jira_issue_created',
+                properties: (props: {
+                    asset_type: string
+                    issue_type: boolean
+                }) => ({
+                    ...props,
+                }),
+            },
+            issue_linked: {
+                action: 'integration_jira_issue_linked',
+                properties: (props: {
+                    asset_type: string,
+                    issue_count: number
+                }) => ({
+                    ...props,
+                }),
+            },
+            issue_unlinked: {
+                action: 'integration_jira_issue_unlinked',
+                properties: (props: {
+                    asset_type: string,
+                }) => ({
+                    ...props,
+                }),
+            },
+            issue_searched: {
+                action: 'integration_jira_issue_searched',
+                properties: (props: {
+                    asset_type: string
+                }) => ({
+                    ...props,
+                }),
+            }
+
+        },
     },
 }
 export default keyMap

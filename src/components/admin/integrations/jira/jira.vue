@@ -39,7 +39,6 @@
 <script lang="ts">
     import {
         defineComponent,
-        onMounted,
         ref,
         toRefs,
         defineAsyncComponent,
@@ -50,7 +49,6 @@
     import OverviewBanner from '@/admin/integrations/jira/misc/overviewBannerCard.vue'
 
     import integrationStore from '~/store/integrations/index'
-    import { useUsers } from '~/composables/user/useUsers'
     import JiraHeader from '@/admin/integrations/jira/jiraHeader.vue'
     import { issuesCount } from '~/composables/integrations/jira/useJiraTickets'
 
@@ -68,10 +66,6 @@
 
             const store = integrationStore()
             const { tenantJiraStatus } = toRefs(store)
-
-            onMounted(() => {
-                // openKeys.value.push('jira')
-            })
 
             const {
                 count,

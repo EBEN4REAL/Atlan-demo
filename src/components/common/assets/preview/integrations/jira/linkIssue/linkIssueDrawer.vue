@@ -135,7 +135,7 @@
 </template>
 
 <script setup lang="ts">
-    import { useVModels } from '@vueuse/core'
+    import { debouncedWatch, useVModels } from '@vueuse/core'
     import { ref, Ref, watch, toRefs, onMounted, computed, PropType } from 'vue'
     import { message } from 'ant-design-vue'
     import {
@@ -149,6 +149,7 @@
     import ErrorView from '@/common/error/index.vue'
     import Pagination from '@/common/list/pagination.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     const props = defineProps({
         visible: { type: Boolean, required: true },
@@ -176,6 +177,18 @@
         pagination,
         totalResults,
     } = listNotLinkedIssues(assetID)
+
+    debouncedWatch(
+        searchText,
+        (v) => {
+            if (v) {
+                useAddEvent('integration', 'jira', 'issue_searched', {
+                    asset_type: asset.value.typeName,
+                })
+            }
+        },
+        { debounce: 2000 }
+    )
 
     const { href } = window.location
 
@@ -232,8 +245,13 @@
             duration: 2,
         })
         checkedIDs.value.forEach((id) => callLinkIssue(id))
-        Promise.allSettled(alllinkPromises).then(() => {
+        Promise.allSettled(alllinkPromises).then((results) => {
             mutate()
+            const count = results.filter((r) => r.status === 'fulfilled').length
+            useAddEvent('integration', 'jira', 'issue_linked', {
+                issue_count: count,
+                asset_type: asset.value.typeName,
+            })
         })
     }
 

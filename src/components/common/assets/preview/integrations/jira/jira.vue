@@ -84,6 +84,7 @@
     import integrationStore from '~/store/integrations/index'
     import { until } from '@vueuse/core'
     import CreateModal from '@/common/integrations/jira/createIssueModal.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     const props = defineProps({
         selectedAsset: {
@@ -151,6 +152,9 @@
                 })
             } else {
                 fetchLinkedIssues()
+                useAddEvent('integration', 'jira', 'issue_unlinked', {
+                    asset_type: asset.value.typeName,
+                })
                 message.success({
                     content: `"${key}: ${summary}" has been unlinked from "${asset.value.displayText}"`,
                     key,

@@ -1,7 +1,9 @@
 import { computed } from 'vue'
 import updateAssetGif from '~/assets/gifs/Permissions_Popover_Gifs/Update_Assets_Metadata.gif'
 import updateBusinessMetaGif from '~/assets/gifs/Permissions_Popover_Gifs/Update_CM_Metadata.gif'
-import updateClassificationGif from '~/assets/gifs/Permissions_Popover_Gifs/Remove_Classification_Metadata.gif'
+import addClassificationGif from '~/assets/gifs/Permissions_Popover_Gifs/Add_Classification_Metadata.gif'
+// import updateClassificationGif from '~/assets/gifs/Permissions_Popover_Gifs/Remove_Classification_Metadata.gif'
+import deleteClassificationGif from '~/assets/gifs/Permissions_Popover_Gifs/Remove_Classification_Metadata.gif'
 // import updateTermsGif from '~/assets/gifs/Permissions_Popover_Gifs/Update_Terms.gif'
 import viewAssetGif from '~/assets/gifs/Permissions_Popover_Gifs/View_Assets_Metadata.gif'
 import addTermsGif from '~/assets/gifs/Permissions_Popover_Gifs/Add_Term_Metadata.gif'
@@ -68,13 +70,13 @@ export const purposeScopeList = [
                 value: 'entity-add-classification',
                 label: 'Add Classifications',
                 desc: 'Permission to add classifications from assets',
-                gif: updateClassificationGif,
+                gif: addClassificationGif,
             },
             {
                 value: 'entity-remove-classification',
                 label: 'Remove Classifications',
                 desc: 'Permission to remove classifications from assets',
-                gif: updateClassificationGif,
+                gif: deleteClassificationGif,
             },
 
             // {
@@ -200,14 +202,14 @@ export const personaScopeList = [
                 label: 'Add Classifications',
                 // desc: 'Update classifications',
                 desc: 'Permission to add classifications from assets',
-                gif: updateClassificationGif,
+                gif: addClassificationGif,
             },
             {
                 value: 'entity-remove-classification',
                 label: 'Remove Classifications',
                 // desc: 'Update classifications',
                 desc: 'Permission to remove classifications from assets',
-                gif: updateClassificationGif,
+                gif: deleteClassificationGif,
             },
 
             {

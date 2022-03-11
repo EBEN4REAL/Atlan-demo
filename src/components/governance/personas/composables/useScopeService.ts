@@ -243,7 +243,7 @@ export const glossaryPolicyScopeList = [
                 label: 'Update',
                 filterLabel: 'Update asset',
                 desc: 'Permission to update metadata, resources, readme for terms & category and to link those terms with all assets',
-                gif: '',
+                gif: updateAssetGif,
             },
 
             {
@@ -276,19 +276,19 @@ export const glossaryPolicyScopeList = [
                 value: 'entity-add-classification',
                 label: 'Add Classifications',
                 desc: 'Permission to add classifications from terms',
-                gif: '',
+                gif: updateClassificationGif,
             },
             {
                 value: 'entity-remove-classification',
                 label: 'Remove Classifications',
                 desc: 'Permission to remove classifications from terms',
-                gif: '',
+                gif: updateClassificationGif,
             },
             {
                 value: 'entity-update-business-metadata',
                 label: 'Update Custom Metadata',
                 desc: 'Permission to update custom metadata attributes',
-                gif: '',
+                gif: updateBusinessMetaGif,
             },
 
             // {

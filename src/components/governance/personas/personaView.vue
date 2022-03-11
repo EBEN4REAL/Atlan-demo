@@ -13,7 +13,7 @@
             >
                 <div
                     v-if="drawerFilter"
-                    class="close-btn-sidebar button-close-drawer-request"
+                    class="close-btn-sidebar button-close-drawer-persona"
                     @click="handleClickFilter"
                 >
                     <AtlanIcon icon="Add" class="text-white" />
@@ -424,7 +424,7 @@
     }
 </style>
 <style lang="less" scoped>
-    .button-close-drawer-request {
+    .button-close-drawer-persona {
         left: 18% !important;
         top: 5px;
     }

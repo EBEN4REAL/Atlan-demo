@@ -20,6 +20,10 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
                     attributeName: undefined,
                     attributeValue: undefined,
                 },
+                facetsFilters: {},
+                sortOrderTable: 'name.keyword-asc',
+                sortOrderColumn: 'order-asc',
+                activeKey: [],
             },
             queries: {
                 connectors: {

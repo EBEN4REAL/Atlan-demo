@@ -41,7 +41,7 @@ export const insightsFilters = [
     },
     {
         id: 'properties',
-        label: 'Properties',
+        label: 'PROPERTIES',
         component: 'properties',
         attributes: [
             {
@@ -96,7 +96,7 @@ export const insightsFilters = [
     },
     {
         id: 'table',
-        label: 'Table/View',
+        label: 'TABLE/VIEW',
         component: 'properties',
         includes: ['Table', 'View', 'MaterialisedView', 'PartitionTable'],
         attributes: [

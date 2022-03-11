@@ -730,6 +730,7 @@
                 <Classification
                     v-model="localClassifications"
                     :guid="selectedAsset.guid"
+                    :selected-asset="selectedAsset"
                     :edit-permission="
                         selectedAssetUpdatePermission(
                             selectedAsset,

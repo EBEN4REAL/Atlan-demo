@@ -16,10 +16,15 @@
         >
             <a-sub-menu key="jira" mode="inline">
                 <template #title>
-                    <JiraHeader :is-open="openKeys.includes('jira')" />
+                    <JiraHeader
+                        :is-open="openKeys.includes('jira')"
+                        :jira-app-installed="jiraAppInstalled"
+                    />
                 </template>
                 <a-menu-item>
-                    <UpdateJiraConfig v-if="tenantJiraStatus.configured" />
+                    <UpdateJiraConfig
+                        v-if="tenantJiraStatus.configured && jiraAppInstalled"
+                    />
                     <template v-else>
                         <OverviewBanner
                             class="flex flex-col p-4 m-6 border rounded-lg gap-y-3"
@@ -38,6 +43,8 @@
         ref,
         toRefs,
         defineAsyncComponent,
+        computed,
+        watch,
     } from 'vue'
     import { useTimeAgo } from '@vueuse/core'
     import OverviewBanner from '@/admin/integrations/jira/misc/overviewBannerCard.vue'
@@ -45,6 +52,7 @@
     import integrationStore from '~/store/integrations/index'
     import { useUsers } from '~/composables/user/useUsers'
     import JiraHeader from '@/admin/integrations/jira/jiraHeader.vue'
+    import { issuesCount } from '~/composables/integrations/jira/useJiraTickets'
 
     export default defineComponent({
         name: 'JiraIntegrationCard',
@@ -65,7 +73,26 @@
                 // openKeys.value.push('jira')
             })
 
+            const {
+                count,
+                isReady: countReady,
+                mutate,
+            } = issuesCount(false, false)
+
+            watch(
+                () => tenantJiraStatus.value.configured,
+                (v) => {
+                    if (v) mutate()
+                },
+                { immediate: true }
+            )
+
+            const jiraAppInstalled = computed(
+                () => countReady?.value && !!count.value
+            )
+
             return {
+                jiraAppInstalled,
                 openKeys,
                 useTimeAgo,
                 tenantJiraStatus,

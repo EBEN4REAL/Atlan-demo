@@ -205,7 +205,7 @@ export const listProjects = () => {
 
 
     const params = computed(() => ({
-        maxResults: 2,
+        // maxResults: 2,
         startAt: startAt.value,
         query: searchText.value
     }))

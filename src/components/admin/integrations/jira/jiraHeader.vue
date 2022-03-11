@@ -13,24 +13,6 @@
                 <div>
                     <div class="flex items-center mb-1 gap-x-2">
                         <h2 class="text-lg font-bold">Jira</h2>
-                        <div
-                            v-if="
-                                tenantJiraStatus.configured &&
-                                countReady &&
-                                !count
-                            "
-                            class="flex items-center justify-center w-24 px-2 py-1 text-xs rounded gap-x-1 bg-primary-light text-primary"
-                        >
-                            <div class="">
-                                <AtlanIcon icon="External" />
-                            </div>
-                            <a
-                                class="hover:underline"
-                                href="https://marketplace.atlassian.com/apps/1225577/atlan?hosting=cloud&tab=overview"
-                                target="_blank"
-                                >Install now</a
-                            >
-                        </div>
                     </div>
                     <span class="text-gray-500">{{ description }}</span>
                 </div>
@@ -55,6 +37,26 @@
                 </AtlanButton>
             </div>
         </template>
+        <div
+            v-if="tenantJiraStatus.configured && !jiraAppInstalled"
+            class="flex items-center justify-center px-3 py-2 text-xs text-white rounded w-26 gap-x-1 bg-primary"
+        >
+            <a
+                class="flex items-center hover:underline hover:text-white gap-x-1"
+                href="https://marketplace.atlassian.com/apps/1225577/atlan?hosting=cloud&tab=overview"
+                target="_blank"
+                @click="
+                    (e) => {
+                        e.stopPropagation()
+                    }
+                "
+            >
+                <div class="">
+                    <AtlanIcon icon="External" />
+                </div>
+                Add to Jira
+            </a>
+        </div>
         <div
             v-else
             class="px-3 py-1.5 space-y-2 text-primary bg-primary-light rounded"
@@ -92,6 +94,7 @@
 
     const props = defineProps({
         isOpen: { type: Boolean, required: true },
+        jiraAppInstalled: { type: Boolean, required: true },
     })
 
     const store = integrationStore()
@@ -102,16 +105,6 @@
     const { isLoading, connect: handleConnect } = connectJira({
         tenant: true,
     })
-
-    const { count, isReady: countReady, mutate } = issuesCount(false, false)
-
-    watch(
-        () => tenantJiraStatus.value.configured,
-        (v) => {
-            if (v) mutate()
-        },
-        { immediate: true }
-    )
 </script>
 
 <style scoped></style>

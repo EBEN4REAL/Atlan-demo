@@ -4,6 +4,7 @@ import { UserModule } from '~/types/vitessg'
 
 export const install: UserModule = ({ app }) => {
     const segmentKey = import.meta.env.VITE_SEGMENT_ANALYTICS_KEY
+    console.log('segmentKey', segmentKey)
     if (segmentKey) {
         !(function () {
             console.log('segment install')

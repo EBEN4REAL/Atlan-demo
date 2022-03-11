@@ -6,6 +6,7 @@ import { usePurposeStore } from '~/store/purpose'
 import { usePersonaStore } from '~/store/persona'
 import { storeToRefs } from 'pinia'
 import { Replicated } from '~/services/service/replicated'
+import { watchOnce } from '@vueuse/core'
 
 const useAddEvent = (category, obj, action, props = {}) => {
     if (!window.analytics || !window.analytics.track) {
@@ -80,6 +81,7 @@ export const identifyUser = async () => {
 
 export const identifyGroup = async () => {
     await addDelay(1800)
+    console.log('identifyGroup called')
     if (window?.analytics) {
         const tenantStore = useTenantStore()
         const purposeStore = usePurposeStore()
@@ -90,45 +92,46 @@ export const identifyGroup = async () => {
 
         const domain = window.location.host
         const groupId = domain
-        // group
-        if (window?.analytics?.group) {
-            window?.analytics?.group(groupId, {
-                domain,
-                name: tenantStore.displayName,
-                purpose_count: purposeCount,
-                persona_count: personaCount,
-            })
+        const groupBody = {
+            domain,
+            name: tenantStore.displayName,
+            purpose_count: purposeCount,
+            persona_count: personaCount,
         }
+        // group
+        // if (window?.analytics?.group) {
+        //     window?.analytics?.group(groupId, {
+        //         domain,
+        //         name: tenantStore.displayName,
+        //         purpose_count: purposeCount,
+        //         persona_count: personaCount,
+        //     })
+        // }
         // const groupTraits = window?.analytics?.group()?.traits()
-        // const { data, isReady, error, isLoading } = Replicated.getLicense()
-        // watch(
-        //     isLoading,
-        //     (value) => {
-        //         if (!value) {
-        //             console.log('replicated value loaded', data.value)
-        //             const tenantStore = useTenantStore()
-        //             const purposeStore = usePurposeStore()
-        //             const personaStore = usePersonaStore()
-
-        //             const purposeCount = (purposeStore.list || []).length
-        //             const personaCount = (personaStore.list || []).length
-
-        //             const domain = window.location.host
-        //             const groupId = domain
-        //             // group
-        //             if (window?.analytics?.group) {
-        //                 window?.analytics?.group(groupId, {
-        //                     domain,
-        //                     name: tenantStore.displayName,
-        //                     purpose_count: purposeCount,
-        //                     persona_count: personaCount,
-        //                     license_type: data?.value?.license || '',
-        //                 })
-        //             }
-        //         }
-        //     },
-        //     { immediate: true }
-        // )
+        try {
+            const { data, isReady, error, isLoading } = Replicated.getLicense()
+            watchOnce(
+                isLoading,
+                (value) => {
+                    if (!value) {
+                        console.log('replicated value loaded', data.value)
+                        groupBody.license_type = data?.value?.license || ''
+                        groupBody.salesforce_account_id =
+                            data?.value?.salesforceAccountId || ''
+                        // group
+                        if (window?.analytics?.group) {
+                            window?.analytics?.group(groupId, groupBody)
+                        }
+                    }
+                },
+                { immediate: false }
+            )
+        } catch (error) {
+            console.error(error)
+            if (window?.analytics?.group) {
+                window?.analytics?.group(groupId, groupBody)
+            }
+        }
     }
 }
 

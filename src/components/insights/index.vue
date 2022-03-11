@@ -240,6 +240,7 @@
             const schemaNameFromURL = inject('schemaNameFromURL')
             const tableNameFromURL = inject('tableNameFromURL')
             const columnNameFromURL = inject('columnNameFromURL')
+
             const openVQB = inject('openVQB')
 
             const collectionGuidFromURL = inject('collectionGuidFromURL')

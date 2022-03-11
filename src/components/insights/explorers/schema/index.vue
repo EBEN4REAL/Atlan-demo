@@ -141,6 +141,9 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as Ref<string>
 
             const BItypes = getBISourceTypes()
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
@@ -247,7 +250,16 @@
             //     selectNode(selected, event)
             // }
 
-            const facets = ref({})
+            const facets = ref(
+                activeInlineTab.value.explorer.schema.facetsFilters ?? {}
+            )
+
+            watch(activeInlineTabKey, (newActiveInlineTabKey) => {
+                const _index = tabs.value.findIndex(
+                    (tab) => tab.key === newActiveInlineTabKey
+                )
+                facets.value = tabs.value[_index].explorer.schema.facetsFilters
+            })
             const sortOrderTable = ref('name.keyword-asc')
             const sortOrderColumn = ref('order-asc')
             const onFilterChange = (type, value) => {
@@ -264,7 +276,7 @@
 
             const totalFilteredCount = computed(() => {
                 let count = 0
-                Object.keys(facets.value).forEach((key) => {
+                Object.keys(facets.value ?? {}).forEach((key) => {
                     if (Array.isArray(facets.value[key])) {
                         if (facets.value[key].length > 0) {
                             count += 1

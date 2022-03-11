@@ -7,7 +7,9 @@
                     <a-select
                         placeholder="Sort by"
                         class="w-full"
-                        v-model:value="sortOrderTable"
+                        v-model:value="
+                            activeInlineTab.explorer.schema.sortOrderTable
+                        "
                         :allowClear="false"
                         :showSearch="false"
                         @change="handleSortOrderChange"
@@ -34,7 +36,9 @@
                     <a-select
                         placeholder="Sort by"
                         class="w-full"
-                        v-model:value="sortOrderColumn"
+                        v-model:value="
+                            activeInlineTab.explorer.schema.sortOrderColumn
+                        "
                         :allowClear="false"
                         :showSearch="false"
                         @change="handleSortOrderChange"
@@ -59,7 +63,7 @@
             <AssetFilters
                 :key="dirtyTimestamp"
                 v-model="facets"
-                v-model:activeKey="activeKey"
+                v-model:activeKey="activeInlineTab.explorer.schema.activeKey"
                 :filter-list="insightsFilters"
                 :type-name="typeName"
                 @change="handleFilterChange"
@@ -89,13 +93,23 @@
     import { insightsSorting } from './insightsSorting'
     import { insightsFilters } from './insightsFilters'
     import AssetFilters from '@/common/assets/filters/index.vue'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     export default defineComponent({
         components: { AssetFilters },
         props: {},
         emits: ['change'],
         setup(props, { emit }) {
-            const facets = ref({})
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as Ref<activeInlineTabInterface>
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as Ref<string>
+            const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
+            const facets = ref(
+                activeInlineTab.value.explorer.schema.facetsFilters
+            )
 
             let sortListColumn = computed(() => {
                 const arr = insightsSorting.filter((el) => {
@@ -121,24 +135,30 @@
                 })
                 return [...arr]
             })
-            const sortOrderTable = ref('name.keyword-asc')
-            const sortOrderColumn = ref('order-asc')
             // emit('change', 'sortOrderTable', sortOrderTable.value)
             // emit('change', 'sortOrderColumn', sortOrderColumn.value)
 
             const handleSortOrderChange = () => {
-                emit('change', 'sortOrderTable', sortOrderTable.value)
-                emit('change', 'sortOrderColumn', sortOrderColumn.value)
+                emit(
+                    'change',
+                    'sortOrderTable',
+                    activeInlineTab.value.explorer.schema.sortOrderTable
+                )
+                emit(
+                    'change',
+                    'sortOrderColumn',
+                    activeInlineTab.value.explorer.schema.sortOrderColumn
+                )
                 // console.log('sortOrderTable: ', sortOrderTable.value)
                 // console.log('sortOrderColumn: ', sortOrderColumn.value)
             }
 
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
-            const activeKey: Ref<string[]> = ref([])
             const handleActiveKeyChange = () => {}
 
             const handleResetEvent = () => {
                 facets.value = {}
+                activeInlineTab.value.explorer.schema.facetsFilters = {}
 
                 handleFilterChange()
                 dirtyTimestamp.value = `dirty_${Date.now().toString()}`
@@ -148,6 +168,8 @@
                 // offset.value = 0
                 // quickChange()
                 emit('change', 'facets', facets.value)
+                activeInlineTab.value.explorer.schema.facetsFilters =
+                    facets.value
                 // console.log('filters: ', facets.value)
             }
 
@@ -167,22 +189,30 @@
                 handleResetEvent()
             }
 
+            watch(activeInlineTabKey, (newActiveInlineTabKey) => {
+                const _index = tabs.value.findIndex(
+                    (tab) => tab.key === newActiveInlineTabKey
+                )
+                facets.value = tabs.value[_index].explorer.schema.facetsFilters
+
+                handleFilterChange()
+            })
+            handleFilterChange()
+
             return {
                 typeName,
                 handleResetEvent,
                 typeList,
                 handleTypeChange,
-                sortOrderColumn,
-                sortOrderTable,
                 handleSortOrderChange,
                 dirtyTimestamp,
-                activeKey,
                 handleFilterChange,
                 handleActiveKeyChange,
                 insightsFilters,
                 facets,
                 sortListTable,
                 sortListColumn,
+                activeInlineTab,
             }
         },
     })

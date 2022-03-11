@@ -138,7 +138,10 @@
                 emit('update:actions', allScopes)
                 emit('change')
             }
-            const hasLink = ref(actions.value?.includes('link-assets'))
+            const hasLink = ref(
+                actions.value?.includes('link-assets') &&
+                    !actions.value?.includes('entity-update')
+            )
             const handleFilter = (el) => {
                 if (hasLink.value) {
                     return true

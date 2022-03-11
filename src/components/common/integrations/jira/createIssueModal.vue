@@ -195,6 +195,7 @@
         {
             label: string
             key: string
+            unsupported: string
             data: any
             selectedValue: any
             hideError: boolean
@@ -241,12 +242,13 @@
                         data.schema?.custom.split(':').slice(-1)[0] === 'url'
 
                     const typeName = data.schema.type
-                    if (!supportedTypes.includes(typeName)) return
+                    // if (!supportedTypes.includes(typeName)) return
                     finalFields.push({
                         label: data.name,
                         key: data.key,
                         data,
                         hideError: !isURL,
+                        unsupported: !supportedTypes.includes(typeName),
                         selectedValue: data.hasDefaultValue
                             ? data.defaultValue
                             : null,

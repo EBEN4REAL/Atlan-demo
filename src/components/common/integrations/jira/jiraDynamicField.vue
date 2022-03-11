@@ -38,6 +38,7 @@
 
     //  ?   This is a computed property that returns the appropriate type of the field., one that is supported by our components
     const typeName = computed(() => {
+        if (field.value.unsupported) return 'string' // by default render text field for unsupported type
         const originalType =
             field.value?.data.schema?.items || field.value?.data.schema.type
 

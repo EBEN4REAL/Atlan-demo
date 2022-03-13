@@ -21,6 +21,7 @@ export default async function useComputeGraph({
 }) {
     // const { DagreLayout } = window.layout
     const lineageStore = useLineageStore()
+    lineageStore.columnToSelect = {}
     lineageStore.mergedLineageData = {}
     lineageStore.nodesColumnList = {}
     lineageStore.portLineage = {}

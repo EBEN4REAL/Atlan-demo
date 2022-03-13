@@ -22,7 +22,6 @@ export default function useEventGraph({
     graph,
     loaderCords,
     currZoom,
-    searchItems,
     preferences,
     guidToSelectOnGraph,
     mergedLineageData,
@@ -302,7 +301,6 @@ export default function useEventGraph({
                 true
             )
             nodes.value.push(nodeData)
-            if (ent.typeName !== 'vpNode') searchItems.value.push(ent)
             addNode(relations, childrenCounts, ent)
         })
 
@@ -1399,8 +1397,21 @@ export default function useEventGraph({
     /** WATCHERS */
     watch(guidToSelectOnGraph, (newVal) => {
         if (newVal) {
-            resetState()
+            const { isHidden, type, node } = isNodeHidden(newVal, false)
+
+            if (isHidden) {
+                const prefix =
+                    type === 'sameSourceCount' ? 'vpNodeSS' : 'vpNodeST'
+                const vpNodeId = `${prefix}-${node}`
+                const x6Node = getX6Node(vpNodeId)
+                selectVpNode(x6Node, [newVal])
+                resetState(true)
+            } else resetState()
+
             selectNode(newVal)
+
+            const cell = graph.value.getCellById(newVal)
+            graph.value.scrollToCell(cell, { animation: { duration: 600 } })
             guidToSelectOnGraph.value = ''
         }
     })

@@ -1,4 +1,7 @@
 export const getters = {
+    getMergedLineageData(state) {
+        return () => state.mergedLineageData
+    },
     getNodesColumnList(state) {
         return (nodeId) => {
             if (nodeId) return state.nodesColumnList[nodeId]

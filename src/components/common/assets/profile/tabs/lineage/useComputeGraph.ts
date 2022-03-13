@@ -15,7 +15,6 @@ export default async function useComputeGraph({
     graph,
     graphLayout,
     lineage,
-    searchItems,
     currZoom,
     isComputeDone,
     emit,
@@ -35,7 +34,8 @@ export default async function useComputeGraph({
     const { fit } = useTransformGraph(graph, emit)
 
     mergedLineageData.value = { ...lineage.value }
-    searchItems.value = []
+    lineageStore.setMergedLineageData(mergedLineageData.value)
+
     model.value = null
     edges.value = []
     nodes.value = []
@@ -203,9 +203,6 @@ export default async function useComputeGraph({
                 childrenCounts,
                 hasBase ? baseEntityGuid : null
             )
-
-            const searchItem = ent
-            if (ent.typeName !== 'vpNode') searchItems.value.push(searchItem)
 
             nodes.value.push(nodeData)
         })
@@ -400,6 +397,7 @@ export default async function useComputeGraph({
             guidEntityMap,
             relations,
         }
+        lineageStore.setMergedLineageData(mergedLineageData.value)
     }
 
     return {

@@ -107,7 +107,6 @@
             const graph = ref({})
             const graphLayout = ref({})
             const showMinimap = ref(false)
-            const searchItems = ref([])
             const loaderCords = ref({})
             const currZoom = ref('...')
             const isComputeDone = ref(false)
@@ -174,7 +173,6 @@
                     graph,
                     graphLayout,
                     lineage,
-                    searchItems,
                     currZoom,
                     isComputeDone,
                     emit,
@@ -185,7 +183,6 @@
                     graph,
                     loaderCords,
                     currZoom,
-                    searchItems,
                     preferences,
                     guidToSelectOnGraph,
                     mergedLineageData,
@@ -202,7 +199,6 @@
             }
 
             /** PROVIDERS */
-            provide('searchItems', searchItems)
             provide('onSelectAsset', onSelectAsset)
             provide('selectedTypeInRelation', selectedTypeInRelationDrawer)
 

@@ -21,8 +21,9 @@ export default async function useComputeGraph({
 }) {
     // const { DagreLayout } = window.layout
     const lineageStore = useLineageStore()
+    lineageStore.mergedLineageData = {}
     lineageStore.nodesColumnList = {}
-    lineageStore.columnsLineage = {}
+    lineageStore.portLineage = {}
 
     const model = ref(null)
     const edges = ref([])
@@ -206,11 +207,6 @@ export default async function useComputeGraph({
 
             nodes.value.push(nodeData)
         })
-
-        // if (Object.keys(columnEntity).length)
-        //     Object.entries(columnEntity).forEach(([parentGuid, columns]) => {
-        //         // lineageStore.setNodesColumnList(parentGuid, columns)
-        //     })
     }
 
     createNodesFromEntityMap(lineage.value)

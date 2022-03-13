@@ -1,22 +1,35 @@
 <template>
     <a-layout class="min-h-full">
-        <a-layout-header class="z-30 h-10 p-0 m-0">
-            <div class="h-full px-4 bg-white border-b border-gray-300">
-                <NavMenu
-                    :page="activeKey"
-                    :is-sidebar-active="showNavbar"
-                    @toggleNavbar="handleToggleNavbar"
-                    @openNavbar="showNavbar = true"
-                />
-            </div>
-        </a-layout-header>
+        <a-layout-sider
+            theme="light"
+            class="border-r border-gray-300"
+            :collapsedWidth="60"
+            :width="60"
+        >
+            <SidePanel
+                :page="activeKey"
+                @closeNavbar="closeNavbar"
+                :isCollapsed="collapsed"
+            />
+        </a-layout-sider>
 
-        <a-layout class="w-full h-full">
+        <a-layout class="h-full">
+            <a-layout-header class="z-30 h-10 p-0 m-0">
+                <div class="h-full px-4 bg-white border-b border-gray-300">
+                    <NavMenu
+                        :page="activeKey"
+                        :is-sidebar-active="showNavbar"
+                        @toggleNavbar="handleToggleNavbar"
+                        @openNavbar="showNavbar = true"
+                    />
+                </div>
+            </a-layout-header>
+
             <a-layout-content
                 class="relative flex w-full overflow-hidden"
                 style="height: calc(100vh - 40px) !important"
             >
-                <a-drawer
+                <!-- <a-drawer
                     v-if="currentRoute.path !== '/'"
                     placement="left"
                     :destroy-on-close="true"
@@ -46,7 +59,7 @@
                         class="border-r border-gray-300"
                         @closeNavbar="closeNavbar"
                     />
-                </div>
+                </div> -->
 
                 <div class="w-full overflow-y-auto">
                     <a-modal
@@ -67,11 +80,11 @@
 
                     <router-view />
                 </div>
-                <div id="overAssetSidebar" class="bg-white"></div>
             </a-layout-content>
         </a-layout>
     </a-layout>
     <PreviewDrawer />
+    <div id="overAssetSidebar" class="bg-white"></div>
     <!-- <div class="mx-auto mt-5" @click="themeToggle">[Default Layout]</div> -->
 </template>
 
@@ -94,6 +107,7 @@
             CmndK,
         },
         setup() {
+            const collapsed = ref(true)
             const router = useRouter()
             const showNavbar = ref(false)
             const { currentRoute } = router
@@ -148,6 +162,7 @@
                 currentRoute,
                 isCmndKVisible,
                 closeNavbar,
+                collapsed,
             }
         },
     })

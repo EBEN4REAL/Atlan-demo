@@ -1,7 +1,7 @@
 export const helpCenterList = [
     {
         icon: 'Support',
-        label: 'Support',
+        label: 'Contact Support',
         id: 'support',
         isActive: true,
     },

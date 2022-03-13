@@ -186,6 +186,9 @@
             const observer = ref()
             const splitpaneRef = ref()
             const showcustomToolBar = ref(false) // custom variables toolbar
+            const refetchQueryNode = ref({
+                guid: '',
+            }) // for triggering the refetch node function in query explorer from playground
 
             const savedQueryInfo = inject('savedQueryInfo') as Ref<
                 SavedQuery | undefined
@@ -237,6 +240,7 @@
             const schemaNameFromURL = inject('schemaNameFromURL')
             const tableNameFromURL = inject('tableNameFromURL')
             const columnNameFromURL = inject('columnNameFromURL')
+
             const openVQB = inject('openVQB')
 
             const collectionGuidFromURL = inject('collectionGuidFromURL')
@@ -386,6 +390,7 @@
                 limitRows: limitRows,
                 updateAssetCheck,
                 collectionSelectorChange,
+                refetchQueryNode,
             }
             useProvide(provideData)
             /*-------------------------------------*/
@@ -831,7 +836,7 @@
         height: calc(100vh - 3rem);
     }
     .parent_splitpanes {
-        width: calc(100vw - 3.75rem);
+        width: calc(100vw - 3.75rem - 60px);
     }
     .explorer_splitpane {
         background-color: white;

@@ -28,7 +28,7 @@ const useLoadTreeData = (
     })
     let typeName = ref<string | string[]>()
     const from = ref(0)
-    const size = ref(100)
+    const size = ref(50)
     const sort = ref<String>('asc')
     const refreshBody = () => {
         const appliedFilters: Array<any> = []
@@ -61,20 +61,24 @@ const useLoadTreeData = (
 
     const getFacetCount = (facets) => {
         let count = 0
-        Object.keys(facets.value).forEach((key) => {
-            if (Array.isArray(facets.value[key])) {
-                if (facets.value[key].length > 0) {
-                    count += 1
+        try {
+            Object.keys(facets.value ?? {}).forEach((key) => {
+                if (Array.isArray(facets.value[key])) {
+                    if (facets.value[key].length > 0) {
+                        count += 1
+                    }
+                } else if (
+                    typeof facets.value[key] === 'object' &&
+                    facets.value[key] !== null
+                ) {
+                    if (Object.keys(facets.value[key]).length > 0) {
+                        count += 1
+                    }
                 }
-            } else if (
-                typeof facets.value[key] === 'object' &&
-                facets.value[key] !== null
-            ) {
-                if (Object.keys(facets.value[key]).length > 0) {
-                    count += 1
-                }
-            }
-        })
+            })
+        } catch (e) {
+            console.error(e)
+        }
 
         return count
     }

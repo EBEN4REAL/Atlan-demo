@@ -63,7 +63,7 @@
                 >
                     <AtlanIcon icon="NoSchema" class="no-schema-icon h-28" />
                     <p class="mt-6 mb-0 text-base text-gray-700">
-                        No tables available
+                        No tables or views available
                     </p>
                 </div>
                 <div
@@ -271,10 +271,11 @@
         :global(.ant-tree li .ant-tree-node-content-wrapper) {
             border-radius: 0px !important;
             padding: 0 !important;
+            overflow: hidden !important;
         }
         :global(.ant-tree .ant-tree-node-content-wrapper) {
             padding: 0 !important;
-            overflow: hidden;
+            overflow: hidden !important;
         }
         :global(.ant-tree
                 .ant-tree-node-content-wrapper.ant-tree-node-selected) {

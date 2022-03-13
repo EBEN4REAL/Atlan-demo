@@ -35,9 +35,9 @@
                                 {{ item?.options?.emoji }}
                             </span>
                             <span
-                                class="w-full text-xs text-gray hover:text-primary title"
+                                class="w-full text-xs tracking-widest text-gray hover:text-primary title"
                                 :class="{
-                                    'tracking uppercase':
+                                    'tracking-widest uppercase':
                                         item?.component !== 'properties',
                                 }"
                             >
@@ -95,6 +95,7 @@
 <script lang="ts">
     import { useVModels } from '@vueuse/core'
     import {
+        watch,
         computed,
         defineAsyncComponent,
         defineComponent,
@@ -186,6 +187,9 @@
             )
 
             const facetMap = ref(modelValue.value)
+            watch(modelValue, (newModelValue) => {
+                facetMap.value = newModelValue
+            })
             const isFiltered = computed(() => {
                 const id = item.value?.id
                 if (facetMap?.value) {
@@ -275,7 +279,12 @@
 
                 if (id === 'certificateStatus' && facetMap.value[id]) {
                     return facetMap.value[id]?.length < 3
-                        ? facetMap.value[id].join(',')
+                        ? facetMap.value[id]
+                              .map((el) => {
+                                  if (el === null) return 'NONE'
+                                  return el
+                              })
+                              .join(',')
                         : `${facetMap.value[id]?.length} applied`
                 }
 

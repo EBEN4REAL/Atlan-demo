@@ -11,7 +11,7 @@
     import iconMap from './iconMap'
 
     export default defineComponent({
-        name: 'AtlanIcons',
+        name: 'AtlanIcon',
         props: {
             icon: {
                 type: String as PropType<keyof typeof iconMap>,

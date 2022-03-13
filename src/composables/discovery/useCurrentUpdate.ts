@@ -5,7 +5,6 @@ import { assetInterface } from '~/types/assets/asset.interface'
 import useIndexSearch from './useIndexSearch'
 
 import { useBody } from './useBody'
-import useTypedefData from '~/composables/typedefs/useTypedefData'
 
 import {
     AssetAttributes,
@@ -23,8 +22,6 @@ interface DiscoverListParams {
 }
 
 export function useCurrentUpdate({ id }: DiscoverListParams) {
-    const { customMetadataProjections } = useTypedefData()
-
     const defaultBody = ref({})
 
     const defaultAttributes = ref([
@@ -32,7 +29,6 @@ export function useCurrentUpdate({ id }: DiscoverListParams) {
         ...AssetAttributes,
         ...SQLAttributes,
         ...GlossaryAttributes,
-        ...customMetadataProjections,
         ...SavedQueryAttributes,
     ])
     const relationAttributes = ref([...AssetRelationAttributes])
@@ -76,6 +72,52 @@ export function useCurrentUpdate({ id }: DiscoverListParams) {
         cancelRequest,
         mutate,
 
+        error,
+        asset,
+        isReady,
+    }
+}
+
+export function useAssetAttributes({ id, attributes }: DiscoverListParams) {
+    const defaultBody = ref({})
+
+    const generateBody = () => {
+        const dsl = useBody('', 0, 1, { guid: id }, {}, [], {})
+        defaultBody.value = {
+            dsl,
+            attributes: attributes?.value,
+        }
+    }
+
+    const localKey = ref(id.value)
+
+    generateBody()
+    const {
+        data,
+        isLoading,
+        isValidating,
+        aggregationMap,
+        mutate,
+        cancelRequest,
+        error,
+        isReady,
+    } = useIndexSearch<assetInterface>(defaultBody, localKey, false, false, 1)
+
+    const asset = ref<assetInterface[]>([])
+    watch(data, () => {
+        if (data.value?.entities?.length > 0) {
+            asset.value = data?.value?.entities[0]
+        }
+    })
+
+    return {
+        aggregationMap,
+        isValidating,
+        isLoading,
+        data,
+        fetch,
+        cancelRequest,
+        mutate,
         error,
         asset,
         isReady,

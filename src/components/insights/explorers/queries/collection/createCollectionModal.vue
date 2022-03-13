@@ -17,15 +17,23 @@
                 >
                 <span
                     v-if="!isCreate"
-                    class="flex-none text-base font-bold text-gray-700"
+                    class="flex-none w-full overflow-hidden text-base font-bold text-gray-700"
                     >{{ isShare ? 'Invite' : 'Edit collection' }}
                     <!-- <span
                         class="px-2 py-1 bg-gray-100 border border-gray-300 rounded-lg"
                         >{{ item?.attributes?.name }}</span
                     > -->
-                    <span class="block text-sm font-normal text-gray-500">{{
-                        item?.attributes?.name
-                    }}</span>
+                    <Tooltip
+                        :tooltip-text="item?.attributes?.name"
+                        placement="rightTop"
+                        clamp-percentage="99%"
+                        classes="block text-sm font-normal
+                    text-gray-500 truncate"
+                    />
+                    <!-- <span
+                        class="block text-sm font-normal text-gray-500 truncate"
+                        >{{ item?.attributes?.name }}</span
+                    > -->
                 </span>
             </div>
             <div class="px-4 mb-4" v-if="!isShare">
@@ -270,6 +278,7 @@
         computed,
     } from 'vue'
     import { Picker, EmojiIndex } from 'emoji-mart-vue-fast/src'
+    import Tooltip from '@common/ellipsis/index.vue'
     import AtlanBtn from '~/components/UI/button.vue'
     import UserSelectWidget from '~/components/common/input/owner/index.vue'
     import 'emoji-mart-vue-fast/css/emoji-mart.css'
@@ -300,6 +309,7 @@
             UserItem,
             Owners,
             Avatar,
+            Tooltip,
         },
         props: {
             showCollectionModal: {

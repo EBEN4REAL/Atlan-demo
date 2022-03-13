@@ -267,7 +267,7 @@
                 activeInlineTab,
                 inlineTabAdd,
                 modifyActiveInlineTabEditor,
-            } = useInlineTab(undefined, !savedQueryGuidFromURL.value)
+            } = useInlineTab(undefined, true)
 
             const { openSavedQueryInNewTab } = useSavedQuery(
                 tabsArray,

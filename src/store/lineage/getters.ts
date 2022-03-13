@@ -1,4 +1,7 @@
 export const getters = {
+    getColumnToSelect(state) {
+        return () => state.columnToSelect
+    },
     getMergedLineageData(state) {
         return () => state.mergedLineageData
     },

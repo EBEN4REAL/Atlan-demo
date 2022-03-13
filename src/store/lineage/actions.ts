@@ -1,4 +1,7 @@
 export const actions = {
+    setColumnToSelect(column) {
+        this.columnToSelect = column
+    },
     setMergedLineageData(lineage) {
         this.mergedLineageData = lineage
     },

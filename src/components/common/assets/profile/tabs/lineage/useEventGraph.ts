@@ -61,6 +61,7 @@ export default function useEventGraph({
     const activeNodesToggled = ref({})
     const currPortLineage = ref({})
     const actions = ref({})
+    const columnToSelect = computed(() => lineageStore.getColumnToSelect())
 
     /** METHODS */
     /** Utils */
@@ -82,6 +83,16 @@ export default function useEventGraph({
         if (status === 403) msg = "Sorry, you don't have access to this asset"
 
         message.error(msg)
+    }
+
+    // getNodeQN
+    const getNodeQN = (columnQN) => {
+        if (!columnQN) return null
+        const qnArr = columnQN.split('/')
+        qnArr.pop()
+        const parentName = qnArr.join('/')
+
+        return parentName
     }
 
     // getNodeCaretElement
@@ -745,9 +756,8 @@ export default function useEventGraph({
 
         Object.entries(guidEntityMap).forEach(([k, v]) => {
             if (v.typeName === 'Column' && k !== portId) {
-                const qnArr = v.attributes.qualifiedName.split('/')
-                qnArr.pop()
-                const parentName = qnArr.join('/')
+                const parentName = getNodeQN(v.attributes.qualifiedName)
+
                 const parentNode = graph.value
                     .getNodes()
                     .find(
@@ -1396,6 +1406,38 @@ export default function useEventGraph({
     })
 
     /** WATCHERS */
+    watch(
+        columnToSelect,
+        (newVal) => {
+            if (!newVal) return
+
+            resetState()
+
+            const parentName = getNodeQN(newVal.attributes.qualifiedName)
+            const parentNode = graph.value
+                .getNodes()
+                .find(
+                    (x) =>
+                        x.store.data.entity.attributes.qualifiedName ===
+                        parentName
+                )
+
+            addPorts(parentNode, [newVal])
+
+            translateSubsequentNodes(parentNode)
+
+            if (!isExpandedNode(parentNode.id)) {
+                const caretElement = getNodeCaretElement(parentNode.id)
+                controlCaretIcon(parentNode.id, caretElement)
+            }
+
+            selectPort(newVal.guid)
+        },
+        {
+            deep: true,
+        }
+    )
+
     watch(guidToSelectOnGraph, (newVal) => {
         if (newVal) {
             const { isHidden, type, node } = isNodeHidden(newVal, false)
@@ -1416,6 +1458,7 @@ export default function useEventGraph({
             guidToSelectOnGraph.value = ''
         }
     })
+
     watch(
         () => preferences.value.showArrow,
         (val) => {

@@ -174,10 +174,9 @@
                         v-if="run && !errorMesssage"
                         :run="run"
                         :is-loading="runLoading || !run?.status?.progress"
-                        class="mb-3"
                     ></Run>
 
-                    <div class="flex gap-x-3">
+                    <div class="flex justify-center mt-6 gap-x-6">
                         <router-link v-if="status === 'success'" to="/assets">
                             <AtlanButton2 label="Back to Assets" />
                         </router-link>

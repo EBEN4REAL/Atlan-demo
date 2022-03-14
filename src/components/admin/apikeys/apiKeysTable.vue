@@ -135,23 +135,16 @@
                     placement="bottomLeft"
                     :visible="isDeletePopoverVisible[apikey.id]"
                 >
-                    <AtlanBtn
-                        color="secondary"
-                        padding="compact"
-                        size="sm"
-                        class="bg-transparent border-none"
-                    >
-                        <AtlanIcon
-                            icon="Delete"
-                            class="shadow-none cursor-pointer"
-                            :class="
-                                isDeletePopoverVisible[apikey.id]
-                                    ? 'text-error'
-                                    : ''
-                            "
-                            @click="() => showDeletePopover(apikey.id)"
-                        />
-                    </AtlanBtn>
+                    <IconButton
+                        icon="Delete"
+                        :class="
+                            isDeletePopoverVisible[apikey.id]
+                                ? 'text-error'
+                                : ''
+                        "
+                        @click="() => showDeletePopover(apikey.id)"
+                    />
+
                     <template #content>
                         <div class="px-4 py-3">
                             <div class="mb-4 text-base font-bold">
@@ -163,32 +156,27 @@
                                     {{ apikey.attributes.displayName }}?</span
                                 >
                             </div>
-                            <div class="flex justify-end mb-2">
-                                <AtlanBtn
+                            <div class="flex justify-end mb-2 gap-x-3">
+                                <AtlanButton2
                                     color="secondary"
-                                    padding="compact"
-                                    size="sm"
-                                    class="mr-3 shadow-sm"
+                                    label="Cancel"
                                     @click="
                                         isDeletePopoverVisible[
                                             apikey.id
                                         ] = false
                                     "
-                                >
-                                    <span>Cancel</span></AtlanBtn
-                                >
-                                <AtlanBtn
+                                />
+                                <AtlanButton2
                                     v-auth="[map.DELETE_APIKEY]"
-                                    size="sm"
-                                    class="text-white bg-error border-error"
-                                    padding="compact"
-                                    :is-loading="deleteAPIKeyLoading"
+                                    color="danger"
+                                    :loading="deleteAPIKeyLoading"
+                                    :label="
+                                        deleteAPIKeyLoading
+                                            ? 'Deleting'
+                                            : 'Delete'
+                                    "
                                     @click="() => handleDelete(apikey.id)"
-                                    ><span v-if="deleteAPIKeyLoading"
-                                        >Deleting</span
-                                    >
-                                    <span v-else>Delete</span></AtlanBtn
-                                >
+                                />
                             </div>
                         </div>
                     </template>

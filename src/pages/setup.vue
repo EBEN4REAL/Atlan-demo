@@ -43,15 +43,11 @@
                 </div>
             </a-upload>
             <div class="flex justify-end w-full">
-                <AtlanButton
-                    padding="compact"
-                    size="sm"
-                    :is-loading="isRegisteringTenant"
+                <AtlanButton2
+                    :label="isRegisteringTenant ? 'Registering' : 'Register'"
+                    :loading="isRegisteringTenant"
                     @click="registerTenant"
-                >
-                    <span v-if="isRegisteringTenant">Registering</span
-                    ><span v-else>Register</span></AtlanButton
-                >
+                />
             </div>
         </div>
     </div>

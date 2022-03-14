@@ -21,14 +21,14 @@
                 </div>
                 <div class="flex justify-end mr-3">
                     <AtlanButton2
-                        type="secondary"
+                        color="secondary"
                         :disabled="addToGroupLoading"
                         label="Cancel"
                         @click="handleCancel"
                     />
                     <AtlanButton2
                         :loading="addToGroupLoading"
-                        type="primary"
+                        color="primary"
                         :disabled="addToGroupLoading"
                         :label="addToGroupLoading ? 'Adding' : 'Add'"
                         @click="addUserToGroups"

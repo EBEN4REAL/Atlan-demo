@@ -221,6 +221,7 @@
 <style lang="less">
     .container-scroll-request {
         max-height: 655px;
+        padding: 12px;
     }
     .menu-status {
         width: 100px;

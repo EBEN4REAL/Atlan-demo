@@ -83,7 +83,7 @@
                     /* FIX ME: Right now we are recivieing these property as snake_case and sending them as camel case */
                     // display_name
                     // metadata_policies
-                    //data_policies
+                    // data_policies
 
                     const newPersona: IPersona = (await createPersona({
                         description: description.value,
@@ -107,6 +107,7 @@
                     modalVisible.value = false
                     useAddEvent('governance', 'persona', 'created')
                 } catch (error: any) {
+                    console.log('errorNew', error)
                     message.error({
                         content:
                             error?.response?.data?.message ??

@@ -113,6 +113,7 @@
             const drawerActiveKey = ref('Overview')
             const guidToSelectOnGraph = ref('')
             const selectedTypeInRelationDrawer = ref('__all')
+            const removeAllListeners = ref(null)
 
             /** COMPUTED */
             const offsetLoaderCords = computed(() => {
@@ -174,11 +175,10 @@
                     lineage,
                     currZoom,
                     isComputeDone,
-                    emit,
                 })
 
                 // useEventGraph
-                useEventGraph({
+                const { removeAllListeners: ral } = useEventGraph({
                     graph,
                     loaderCords,
                     currZoom,
@@ -194,6 +194,7 @@
                     addSubGraph,
                     renderLayout,
                 })
+                removeAllListeners.value = ral
             }
 
             /** PROVIDERS */
@@ -212,6 +213,9 @@
             onUnmounted(() => {
                 isComputeDone.value = false
                 if (Object.keys(graph.value).length) graph.value.dispose()
+
+                if (typeof removeAllListeners.value === 'function')
+                    removeAllListeners.value()
             })
 
             return {

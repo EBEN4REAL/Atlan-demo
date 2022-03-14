@@ -188,6 +188,7 @@ export const MinimalAttributes = [
     'displayDescription',
     'userDescription',
     'certificateStatus',
+    'certificateUpdatedBy',
     'connectorName',
     'connectionName',
     'connectionQualifiedName',

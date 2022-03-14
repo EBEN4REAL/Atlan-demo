@@ -93,13 +93,13 @@
                 </div>
 
                 <div
-                    v-if="!isLoading && error && !isValidating"
+                    v-if="error && !isValidating"
                     class="flex items-center justify-center flex-grow"
                 >
                     <ErrorView></ErrorView>
                 </div>
                 <div
-                    v-else-if="list.length === 0 && !isLoading && !isValidating"
+                    v-else-if="list.length === 0 && !isValidating"
                     class="flex-grow"
                 >
                     <EmptyView

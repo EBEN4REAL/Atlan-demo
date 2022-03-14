@@ -129,9 +129,11 @@
         selectedPersonaDirty,
         deletePersonaById,
     } from './composables/useEditPersona'
-
+    import {
+        selectedPersonaId,
+        handleUpdateList,
+    } from './composables/usePersonaList'
     import Dropdown from '@/UI/dropdown.vue'
-    import { handleUpdateList } from './composables/usePersonaList'
     import { formatDateTime } from '~/utils/date'
     import map from '~/constant/accessControl/map'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
@@ -187,6 +189,7 @@
                                 duration: 1.5,
                                 key: msgId,
                             })
+                            selectedPersonaId.value = ''
                             useAddEvent('governance', 'persona', 'deleted')
                         } catch (error) {
                             message.error({

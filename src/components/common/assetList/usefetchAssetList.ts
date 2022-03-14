@@ -143,19 +143,31 @@ export default function useFetchAssetList({
                     })
                 })
         }
-        // sort by count
-        temp.sort((a, b) => {
-            if (a.count > b.count) {
-                return -1
-            }
-            if (a.count < b.count) {
-                return 1
-            }
-            return 0
-        })
+
+        if (aggregationKey !== 'group_by_typeName') {
+            // sort by count
+            temp.sort((a, b) => {
+                if (a.count > b.count) {
+                    return -1
+                }
+                if (a.count < b.count) {
+                    return 1
+                }
+                return 0
+            })
+        } else {
+            // we are arranging assets by group and then label - not count
+            temp.sort(
+                (a, b) =>
+                    a?.groupOrder - b?.groupOrder ||
+                    a?.priorityOrder - b?.priorityOrder ||
+                    a.id.localeCompare(b.id)
+            )
+        }
         // return list
         return temp
     }
+
     const assetTypeAggregationList = computed(() =>
         getAggregationList(assetTypeAggregationName, assetTypeList, false)
     )

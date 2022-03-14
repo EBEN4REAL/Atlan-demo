@@ -15,15 +15,16 @@ export default async function useComputeGraph({
     graph,
     graphLayout,
     lineage,
-    searchItems,
     currZoom,
     isComputeDone,
     emit,
 }) {
     // const { DagreLayout } = window.layout
     const lineageStore = useLineageStore()
+    lineageStore.columnToSelect = {}
+    lineageStore.mergedLineageData = {}
     lineageStore.nodesColumnList = {}
-    lineageStore.columnsLineage = {}
+    lineageStore.portLineage = {}
 
     const model = ref(null)
     const edges = ref([])
@@ -35,7 +36,8 @@ export default async function useComputeGraph({
     const { fit } = useTransformGraph(graph, emit)
 
     mergedLineageData.value = { ...lineage.value }
-    searchItems.value = []
+    lineageStore.setMergedLineageData(mergedLineageData.value)
+
     model.value = null
     edges.value = []
     nodes.value = []
@@ -204,16 +206,8 @@ export default async function useComputeGraph({
                 hasBase ? baseEntityGuid : null
             )
 
-            const searchItem = ent
-            if (ent.typeName !== 'vpNode') searchItems.value.push(searchItem)
-
             nodes.value.push(nodeData)
         })
-
-        // if (Object.keys(columnEntity).length)
-        //     Object.entries(columnEntity).forEach(([parentGuid, columns]) => {
-        //         // lineageStore.setNodesColumnList(parentGuid, columns)
-        //     })
     }
 
     createNodesFromEntityMap(lineage.value)
@@ -400,6 +394,7 @@ export default async function useComputeGraph({
             guidEntityMap,
             relations,
         }
+        lineageStore.setMergedLineageData(mergedLineageData.value)
     }
 
     return {

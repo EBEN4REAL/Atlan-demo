@@ -107,14 +107,12 @@
             const graph = ref({})
             const graphLayout = ref({})
             const showMinimap = ref(false)
-            const searchItems = ref([])
             const loaderCords = ref({})
             const currZoom = ref('...')
             const isComputeDone = ref(false)
             const drawerActiveKey = ref('Overview')
             const guidToSelectOnGraph = ref('')
             const selectedTypeInRelationDrawer = ref('__all')
-            let removeListeners = () => {}
 
             /** COMPUTED */
             const offsetLoaderCords = computed(() => {
@@ -174,18 +172,16 @@
                     graph,
                     graphLayout,
                     lineage,
-                    searchItems,
                     currZoom,
                     isComputeDone,
                     emit,
                 })
 
                 // useEventGraph
-                const { registerAllListeners } = useEventGraph({
+                useEventGraph({
                     graph,
                     loaderCords,
                     currZoom,
-                    searchItems,
                     preferences,
                     guidToSelectOnGraph,
                     mergedLineageData,
@@ -198,11 +194,9 @@
                     addSubGraph,
                     renderLayout,
                 })
-                removeListeners = registerAllListeners
             }
 
             /** PROVIDERS */
-            provide('searchItems', searchItems)
             provide('onSelectAsset', onSelectAsset)
             provide('selectedTypeInRelation', selectedTypeInRelationDrawer)
 
@@ -217,10 +211,7 @@
 
             onUnmounted(() => {
                 isComputeDone.value = false
-                if (Object.keys(graph.value).length) {
-                    if (typeof removeListeners === 'function') removeListeners()
-                    graph.value.dispose()
-                }
+                if (Object.keys(graph.value).length) graph.value.dispose()
             })
 
             return {

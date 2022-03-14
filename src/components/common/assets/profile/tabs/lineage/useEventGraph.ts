@@ -1,8 +1,9 @@
+/* eslint-disable no-use-before-define */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-param-reassign */
 /** VUE */
 import { watch, ref, computed } from 'vue'
-import { watchOnce, whenever } from '@vueuse/core'
+import { watchOnce } from '@vueuse/core'
 
 /** PACKAGES */
 import { message } from 'ant-design-vue'
@@ -22,7 +23,6 @@ export default function useEventGraph({
     graph,
     loaderCords,
     currZoom,
-    searchItems,
     preferences,
     guidToSelectOnGraph,
     mergedLineageData,
@@ -61,6 +61,7 @@ export default function useEventGraph({
     const activeNodesToggled = ref({})
     const currPortLineage = ref({})
     const actions = ref({})
+    const columnToSelect = computed(() => lineageStore.getColumnToSelect())
 
     /** METHODS */
     /** Utils */
@@ -82,6 +83,16 @@ export default function useEventGraph({
         if (status === 403) msg = "Sorry, you don't have access to this asset"
 
         message.error(msg)
+    }
+
+    // getNodeQN
+    const getNodeQN = (columnQN) => {
+        if (!columnQN) return null
+        const qnArr = columnQN.split('/')
+        qnArr.pop()
+        const parentName = qnArr.join('/')
+
+        return parentName
     }
 
     // getNodeCaretElement
@@ -302,7 +313,6 @@ export default function useEventGraph({
                 true
             )
             nodes.value.push(nodeData)
-            if (ent.typeName !== 'vpNode') searchItems.value.push(ent)
             addNode(relations, childrenCounts, ent)
         })
 
@@ -746,9 +756,8 @@ export default function useEventGraph({
 
         Object.entries(guidEntityMap).forEach(([k, v]) => {
             if (v.typeName === 'Column' && k !== portId) {
-                const qnArr = v.attributes.qualifiedName.split('/')
-                qnArr.pop()
-                const parentName = qnArr.join('/')
+                const parentName = getNodeQN(v.attributes.qualifiedName)
+
                 const parentNode = graph.value
                     .getNodes()
                     .find(
@@ -1397,13 +1406,59 @@ export default function useEventGraph({
     })
 
     /** WATCHERS */
+    watch(
+        columnToSelect,
+        (newVal) => {
+            if (!newVal) return
+
+            resetState()
+
+            const parentName = getNodeQN(newVal.attributes.qualifiedName)
+            const parentNode = graph.value
+                .getNodes()
+                .find(
+                    (x) =>
+                        x.store.data.entity.attributes.qualifiedName ===
+                        parentName
+                )
+
+            addPorts(parentNode, [newVal])
+
+            translateSubsequentNodes(parentNode)
+
+            if (!isExpandedNode(parentNode.id)) {
+                const caretElement = getNodeCaretElement(parentNode.id)
+                controlCaretIcon(parentNode.id, caretElement)
+            }
+
+            selectPort(newVal.guid)
+        },
+        {
+            deep: true,
+        }
+    )
+
     watch(guidToSelectOnGraph, (newVal) => {
         if (newVal) {
-            resetState()
+            const { isHidden, type, node } = isNodeHidden(newVal, false)
+
+            if (isHidden) {
+                const prefix =
+                    type === 'sameSourceCount' ? 'vpNodeSS' : 'vpNodeST'
+                const vpNodeId = `${prefix}-${node}`
+                const x6Node = getX6Node(vpNodeId)
+                selectVpNode(x6Node, [newVal])
+                resetState(true)
+            } else resetState()
+
             selectNode(newVal)
+
+            const cell = graph.value.getCellById(newVal)
+            graph.value.scrollToCell(cell, { animation: { duration: 600 } })
             guidToSelectOnGraph.value = ''
         }
     })
+
     watch(
         () => preferences.value.showArrow,
         (val) => {

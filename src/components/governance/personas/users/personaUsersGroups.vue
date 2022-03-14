@@ -63,11 +63,11 @@
                 <div>
                     <a-popover
                         v-model:visible="popoverVisible"
-                        placement="left"
+                        placement="bottomRight"
                         trigger="click"
                         :destroy-tooltip-on-hide="true"
                     >
-                        <div
+                        <!-- <div
                             class="text-sm cursor-pointer text-primary"
                             @click="
                                 () => {
@@ -76,16 +76,21 @@
                             "
                         >
                             <AtlanIcon icon="Add" class="mr-2" />Add
-                        </div>
-                        <!-- <AtlanBtn
+                        </div> -->
+                        <AtlanBtn
                             color="primary"
                             padding="compact"
                             :size="'sm'"
                             data-test-id="add-users"
-                            class="items-center px-6 ml-auto"
+                            class="items-center px-3 ml-auto"
+                            @click="
+                                () => {
+                                    setPopoverState(!popoverVisible)
+                                }
+                            "
                             ><AtlanIcon icon="Add"></AtlanIcon>
                             <span>Add </span></AtlanBtn
-                        > -->
+                        >
                         <template #content>
                             <div
                                 class="flex flex-col items-center px-1 py-4 bg-white rounded"

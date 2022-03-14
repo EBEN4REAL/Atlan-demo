@@ -43,7 +43,7 @@
         >
             <PurposeMeta
                 class="flex flex-col"
-                :persona="persona"
+                :persona="selectedPersonaDirty"
                 @editDetails="$emit('editDetails')"
             />
             <PurposeReadme :purpose="selectedPersonaDirty" />
@@ -61,6 +61,7 @@
                     @remove="handleRemoveResource"
                 />
             </div>
+            <PurposeReadme :purpose="selectedPersonaDirty" />
         </div>
         <div
             v-else-if="activeTabKey === 'policies'"

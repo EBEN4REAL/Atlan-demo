@@ -1,26 +1,25 @@
 <template>
-    <div class="p-4 mt-3 bg-white border border-gray-200 rounded">
-        <div class="flex items-center justify-between">
+    <div class="mt-3 bg-white border border-gray-200 rounded">
+        <div class="flex items-center justify-between p-4 border-b">
             <div>
-                <AtlanIcon icon="Readme" class="w-auto h-8 mr-3" />
+                <AtlanIcon icon="Readme" class="w-auto h-4 mr-3 icon-scale-2" />
                 <span class="text-base font-bold text-gray"> Readme </span>
             </div>
             <div>
                 <a-button
                     v-if="!isEditMode"
-                    class="flex items-center"
-                    type="primary"
+                    class="flex items-center h-3 p-0 border-none text-primary"
                     :loading="loadingSave || isLoading"
                     @click="handleClickModeEdit"
                 >
                     <AtlanIcon
-                        icon="Edit"
-                        class="w-auto h-4 mr-1"
+                        :icon="readMe ? 'Edit' : 'Add'"
+                        class="w-auto h-4 mr-2"
                         :class="{
                             'ml-2': loadingSave || isLoading,
                         }"
                     />
-                    {{ readMe ? 'Edit' : 'Add a readme' }}
+                    {{ readMe ? 'Edit' : 'Add' }}
                 </a-button>
                 <template v-else-if="isEditMode">
                     <a-button v-if="!loadingSave" @click="handleCancelEdit"
@@ -48,7 +47,7 @@
             </div>
         </div>
         <!-- <div v-if="!isLoading" class="mt-2"> -->
-        <div class="relative">
+        <div class="relative p-4">
             <div
                 v-if="!editorValue && !isEditMode"
                 class="absolute top-0 z-10 my-2 text-sm text-gray-500"
@@ -190,7 +189,11 @@
     }
 </script>
 
-<style></style>
+<style lang="less">
+    .icon-scale-2 {
+        transform: scale(2);
+    }
+</style>
 <route lang="yaml">
 meta:
     layout: default

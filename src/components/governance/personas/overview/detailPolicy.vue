@@ -97,7 +97,6 @@
             const connStore = useConnectionStore()
             const getImage = (id: string) => connStore.getImage(id)
             const connectionQfName = computed(() => {
-                console.log(selectedPolicy)
                 if (selectedPolicy.value.type === 'meta') {
                     const found = connStore.getList.find(
                         (conn) =>

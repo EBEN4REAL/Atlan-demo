@@ -59,7 +59,7 @@
         >
             <PersonaMeta
                 class="pb-0"
-                :persona="persona"
+                :persona="selectedPersonaDirty"
                 @editDetails="$emit('editDetails')"
             />
             <Readme :persona="selectedPersonaDirty" />
@@ -77,6 +77,7 @@
                     @remove="handleRemoveResource"
                 />
             </div>
+            <Readme :persona="selectedPersonaDirty" />
         </div>
         <div
             v-if="activeTabKey === 'policies'"
@@ -335,7 +336,11 @@
     import Addpolicy from './addpolicy.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import NewPolicyIllustration from '~/assets/images/illustrations/new_policy.svg'
-    import { activeTabKey, tabConfig } from './composables/usePersonaTabs'
+    import {
+        activeTabKey,
+        tabConfig,
+        setActiveTab,
+    } from './composables/usePersonaTabs'
     import {
         newIdTag,
         selectedPersonaDirty,

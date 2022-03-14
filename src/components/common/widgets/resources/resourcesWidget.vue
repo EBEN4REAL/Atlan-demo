@@ -33,9 +33,9 @@
         </template>
 
         <template v-else>
-            <div class="flex justify-between px-5 pt-5 gap-x-6">
+            <div class="flex justify-between p-4 border-b gap-x-6">
                 <div>
-                    <AtlanIcon icon="Resources2" class="w-auto h-8 mr-3" />
+                    <AtlanIcon icon="Link" class="w-auto h-4 mr-3" />
                     <span class="text-base font-bold text-gray">
                         Resources
                     </span>
@@ -53,14 +53,17 @@
                 </template>
                 <AddResource v-if="!readOnly" @add="addCallback">
                     <template #trigger>
-                        <AtlanButton
+                        <!-- <AtlanButton
                             class="flex-none px-2"
                             size="sm"
                             color="secondary"
                             padding="compact"
                         >
                             <AtlanIcon icon="Add" class="text-gray-400" />
-                        </AtlanButton>
+                        </AtlanButton> -->
+                        <span class="text-sm cursor-pointer text-primary"
+                            ><AtlanIcon icon="Add" class="mr-2" />Add</span
+                        >
                     </template>
                 </AddResource>
             </div>
@@ -81,7 +84,7 @@
                 </template>
                 <div
                     v-else
-                    class="flex flex-col items-center justify-center h-40 gap-y-6"
+                    class="flex flex-col items-center justify-center h-48 gap-y-6"
                 >
                     <div class="w-24">
                         <AtlanIcon

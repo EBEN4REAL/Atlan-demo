@@ -206,7 +206,13 @@
                 >
                  
                 </SearchAndFilter> -->
-                <RaisedTab v-model:active="listType" :data="streams" />
+                <RaisedTab
+                    v-if="
+                        filteredList.length || queryText || listType !== 'all'
+                    "
+                    v-model:active="listType"
+                    :data="streams"
+                />
             </div>
             <div
                 v-if="filteredList && filteredList.length"

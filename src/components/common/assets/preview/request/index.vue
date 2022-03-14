@@ -41,22 +41,13 @@
                         </a-menu-item>
                     </a-menu>
                 </template>
-                <AtlanButton
-                    class="flex items-center justify-between filter-status"
+                <AtlanButton2
+                    style="width: 120px"
+                    class="justify-between"
                     color="secondary"
-                    padding="compact"
-                >
-                    <div class="flex items-center">
-                        <!-- <div
-                            :style="{
-                                background: selectedFilter.color,
-                            }"
-                            class="mr-2 dot"
-                        /> -->
-                        {{ selectedFilter.name }}
-                    </div>
-                    <AtlanIcon icon="ChevronDown" :class="'icon-drop'" />
-                </AtlanButton>
+                    suffixIcon="ChevronDown"
+                    :label="selectedFilter.name"
+                />
             </a-dropdown>
         </div>
         <div
@@ -224,10 +215,6 @@
     }
     .menu-status {
         width: 100px;
-    }
-    .filter-status {
-        width: 90px;
-        height: 32px !important;
     }
 </style>
 <style lang="less" scoped>

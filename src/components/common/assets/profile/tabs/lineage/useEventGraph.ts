@@ -884,15 +884,19 @@ export default function useEventGraph({
     /** Controls */
     // controlCaretIcon
     const controlCaretIcon = (nodeId, caretEle, override = false) => {
+        const nodeEle = document.getElementById(`node-${nodeId}`)
+
         if (isExpandedNode(nodeId)) {
             if (override) return
 
             const index = expandedNodes.value.findIndex((x) => x === nodeId)
             expandedNodes.value.splice(index, 1)
             caretEle.classList.remove('caret-expanded')
+            nodeEle?.classList.remove('node-is-expanded')
         } else {
             expandedNodes.value.push(nodeId)
             caretEle.classList.add('caret-expanded')
+            nodeEle?.classList.add('node-is-expanded')
         }
     }
 

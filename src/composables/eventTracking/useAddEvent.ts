@@ -114,7 +114,7 @@ export const identifyGroup = async () => {
                 isLoading,
                 (value) => {
                     if (!value) {
-                        console.log('replicated value loaded', data.value)
+                        // console.log('replicated value loaded', data.value)
                         groupBody.license_type = data?.value?.license || ''
                         groupBody.salesforce_account_id =
                             data?.value?.salesforceAccountId || ''

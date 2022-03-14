@@ -313,9 +313,9 @@
                 try {
                     loadingLink.value = true
                     const payload = { ...persona.value }
-                    delete payload.dataPolicies
-                    delete payload.metadataPolicies
-                    delete payload.glossaryPolicies
+                    // delete payload.dataPolicies
+                    // delete payload.metadataPolicies
+                    // delete payload.glossaryPolicies
                     await savePersona({
                         ...payload,
                         attributes: {

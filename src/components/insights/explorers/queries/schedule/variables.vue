@@ -364,8 +364,9 @@
             auto-fill,
             minmax(300px, 1fr)
         ); /* see notes below */
-        grid-gap: 40px;
-        grid-row-gap: 20px;
+        grid-auto-rows: minmax(auto, 5rem);
+        grid-column-gap: 40px;
+        // grid-row-gap: 20px;
     }
     .item {
         height: fit-content;

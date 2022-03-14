@@ -164,7 +164,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref, toRefs, computed } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        ref,
+        toRefs,
+        computed,
+        watch,
+    } from 'vue'
     import { useTimeAgo } from '@vueuse/core'
     import Avatar from '~/components/common/avatar/index.vue'
     import PopOverUser from '@/common/popover/user/user.vue'
@@ -241,6 +248,16 @@
                       }`
                     : ''
                 return `${meta}${data}`
+            })
+            watch(showPopover, (newVal) => {
+                console.log(
+                    'showPopover',
+                    newVal,
+                    item?.value?.attributes?.channelLink
+                )
+                if (newVal && item?.value?.attributes?.channelLink) {
+                    link.value = item?.value?.attributes?.channelLink
+                }
             })
             return {
                 imageUrl,

@@ -50,8 +50,8 @@
 
         <!-- AssetDrawer -->
         <AssetDrawer
+            :watch-guid="true"
             :guid="selectedAsset?.guid || ''"
-            :show-drawer="!!selectedAsset?.guid"
             :show-mask="false"
             :drawer-active-key="drawerActiveKey"
             :show-close-btn="false"
@@ -90,7 +90,7 @@
             LineageFooter,
             AssetDrawer,
         },
-        setup(_, { emit }) {
+        setup() {
             /** INJECTIONS */
             const lineage = inject('lineage')
             const selectedAsset = inject('selectedAsset')
@@ -100,7 +100,6 @@
             /** DATA */
             const graphHeight = ref(0)
             const graphWidth = ref(0)
-            const resetSelections = ref(false)
             const graphContainer = ref(null)
             const minimapContainer = ref(null)
             const lineageContainer = ref({})
@@ -133,13 +132,15 @@
             const onSelectAsset = (item, selectOnGraph = false) => {
                 if (typeof control === 'function')
                     control('selectedAsset', item)
+
+                if (!item) return
+
                 if (selectOnGraph) guidToSelectOnGraph.value = item?.guid
             }
 
             // onCloseDrawer
             const onCloseDrawer = () => {
                 onSelectAsset(null)
-                resetSelections.value = true
             }
 
             // handleDrawerUpdate

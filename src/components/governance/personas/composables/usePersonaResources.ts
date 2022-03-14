@@ -22,6 +22,7 @@ const usePersonaResources = (persona) => {
             const personaRaw = JSON.parse(JSON.stringify(body))
             delete body.metadataPolicies
             delete body.dataPolicies
+              delete body.glossaryPolicies
             await savePersona(body)
             handleUpdateList(personaRaw) // updating list locally on sucess
             useAddEvent(
@@ -34,7 +35,6 @@ const usePersonaResources = (persona) => {
             )
             addStatus.value = 'success'
         } catch (e) {
-            console.log({ e })
             addStatus.value = 'error'
         }
     }
@@ -52,7 +52,7 @@ const usePersonaResources = (persona) => {
 
             delete body.metadataPolicies
             delete body.dataPolicies
-
+            delete body.glossaryPolicies
             await savePersona(body)
             handleUpdateList(personaRaw)  // updating list locally on sucess
             useAddEvent(

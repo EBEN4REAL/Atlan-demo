@@ -51,6 +51,7 @@
                     :minuteStep="15"
                     v-model:value="infoTabeState.time"
                     @change="buildCron"
+                    inputReadOnly="true"
                 />
             </div>
             <div class="item-3">

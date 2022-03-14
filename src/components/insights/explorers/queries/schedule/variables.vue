@@ -371,6 +371,9 @@
     .item {
         height: fit-content;
     }
+    .ant-input {
+        @apply text-gray-700 !important;
+    }
 </style>
 <style lang="less" module>
     .multi_select {

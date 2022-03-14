@@ -446,12 +446,13 @@
     .item-5 {
         min-width: 230px;
     }
+    .ant-input {
+        @apply text-gray-700 !important;
+    }
     .input-error {
         @apply border-red-500;
-        // box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
     }
     .input-error:focus {
-        // @apply border-red-500;
         box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
     }
 </style>

@@ -125,6 +125,12 @@ export default function useEventGraph({
     }
 
     /** Graph utils */
+    // isGraphLoading
+    const isGraphLoading = () => {
+        if (Object.keys(loaderCords.value).length) return true
+        return false
+    }
+
     // isEdgeClickable
     const isEdgeClickable = (edge) => {
         if (edge.id.includes('vpNode')) return false
@@ -305,6 +311,7 @@ export default function useEventGraph({
 
         const { relations, childrenCounts } = mergedLineageData.value
 
+        graph.value.freeze('selectVpNode-nodesToAdd')
         nodesToAdd.forEach((ent) => {
             const { nodeData } = createNodeData(
                 ent,
@@ -315,6 +322,7 @@ export default function useEventGraph({
             nodes.value.push(nodeData)
             addNode(relations, childrenCounts, ent)
         })
+        graph.value.unfreeze('selectVpNode-nodesToAdd')
 
         const nodesToAddIds = nodesToAdd.map((ent) => ent.guid)
 
@@ -324,6 +332,7 @@ export default function useEventGraph({
             return nodesToAddIds.includes(rel.fromEntityId)
         })
 
+        graph.value.freeze('selectVpNode-edgesToAdd')
         edgesToAdd.forEach((rel) => {
             const { fromEntityId: from, toEntityId: to, processId } = rel
             const relation = {
@@ -345,6 +354,7 @@ export default function useEventGraph({
             edges.value.push(edgeData)
             addEdge(relation)
         })
+        graph.value.unfreeze('selectVpNode-edgesToAdd')
 
         nodes.value = nodes.value.filter((x) => x.id !== node.id)
         edges.value = edges.value.filter((x) => {
@@ -512,24 +522,22 @@ export default function useEventGraph({
 
     // fetchNodeColumns
     const fetchNodeColumns = (node, offset = 0) => {
-        if (lineageStore.hasColumnList(node.id)) {
+        if (lineageStore.hasColumnList(node.id) && offset === 0) {
             const { columns: c, total: t } = lineageStore.getNodesColumnList(
                 node.id
             )
 
-            if (c.length === t) {
-                addPorts(node, c)
-                translateSubsequentNodes(node)
+            addPorts(node, c)
+            if (c.length < t) addPorts(node, ['showMorePort'], true)
+            translateSubsequentNodes(node)
 
-                if (Object.keys(actions.value).length) {
-                    Object.entries(actions.value).forEach(([k, v]) => {
-                        if (k === 'selectPort') selectPort(v)
-                        delete actions.value[k]
-                    })
-                } else hideLoader()
-
-                return
-            }
+            if (Object.keys(actions.value).length) {
+                Object.entries(actions.value).forEach(([k, v]) => {
+                    if (k === 'selectPort') selectPort(v)
+                    delete actions.value[k]
+                })
+            } else hideLoader()
+            return
         }
 
         const asset = node.store.data.entity
@@ -770,7 +778,19 @@ export default function useEventGraph({
 
                 const caretElement = getNodeCaretElement(parentNode.id)
                 controlCaretIcon(parentNode.id, caretElement, true)
-                addPorts(parentNode, [v])
+
+                const shomeMorePortId = `${parentNode.id}-showMorePort`
+                if (parentNode.hasPort(shomeMorePortId)) {
+                    parentNode.removePort(shomeMorePortId)
+
+                    if (!parentNode.hasPort(k)) addPorts(parentNode, [v])
+
+                    const { columns: c, total: t } =
+                        lineageStore.getNodesColumnList(parentNode.id)
+                    if (c.length < t)
+                        addPorts(parentNode, ['showMorePort'], true)
+                } else if (!parentNode.hasPort(k)) addPorts(parentNode, [v])
+
                 setPortStyle(parentNode, k, 'highlight')
                 translateSubsequentNodes(parentNode)
             }
@@ -983,12 +1003,14 @@ export default function useEventGraph({
             const caretElement = getNodeCaretElement(node.id)
             controlCaretIcon(node.id, caretElement)
             node.removePorts(ports)
+            resetTranslatedNodes(node)
             return
         }
 
         if (activeNodesToggled.value[node.id]) {
             const { portsEdges, ports } = activeNodesToggled.value[node.id]
             node.addPorts(ports)
+            translateSubsequentNodes(node)
             portsEdges.forEach((edge) => {
                 const [_, processId, sourceTarget] = edge.id.split('/')
                 const [source, target] = sourceTarget.split('@')
@@ -1180,16 +1202,16 @@ export default function useEventGraph({
         const _expandedNodes = [...expandedNodes.value]
 
         _expandedNodes.forEach((nodeId) => {
-            if (parentNode?.id === nodeId) {
-                const ports = parentNode.getPorts()
+            const x6Node = getX6Node(nodeId)
+            const ports = x6Node.getPorts()
+            if (parentNode?.id === nodeId || ports.length > 2) {
                 ports.shift()
                 ports.forEach((x) => {
-                    resetPortStyle(parentNode, x.id)
+                    resetPortStyle(x6Node, x.id)
                 })
                 return
             }
 
-            const x6Node = getX6Node(nodeId)
             removePorts(x6Node, true)
 
             const nodesToTranslateToDefault =
@@ -1221,6 +1243,13 @@ export default function useEventGraph({
     // resetPortStyle
     const resetPortStyle = (node, portId) => {
         if (!node || !portId) return
+
+        const portEdge = graph.value
+            .getEdges()
+            .filter((x) => x.id.includes('port'))
+            .find((x) => x.id.includes(portId))
+
+        if (portEdge) graph.value.removeCell(portEdge.id)
 
         node.setPortProp(portId, 'attrs/portBody', {
             fill: '#ffffff',
@@ -1271,21 +1300,23 @@ export default function useEventGraph({
 
     /** EVENTS */
     // registerCaretListeners
-    const registerCaretListeners = () => {
+    const registerCaretListeners = (remove = false) => {
         const carets = document.getElementsByClassName('node-caret')
         const caretsArray = Array.from(carets)
 
         caretsArray.forEach((x) => {
-            x.addEventListener('mousedown', controlCaret)
+            if (remove) x.removeEventListener('mousedown', controlCaret)
+            else x.addEventListener('mousedown', controlCaret)
         })
     }
 
     // registerHoriPagiListeners - Horizontal Pagination
-    const registerHoPaCTAListeners = () => {
+    const registerHoPaCTAListeners = (remove = false) => {
         const hoPaCTAs = document.getElementsByClassName('node-hoPaCTA')
         const hoPaCTAsArray = Array.from(hoPaCTAs)
         hoPaCTAsArray.forEach((x) => {
-            x.addEventListener('mousedown', controlHoPaCTA)
+            if (remove) x.removeEventListener('mousedown', controlHoPaCTA)
+            else x.addEventListener('mousedown', controlHoPaCTA)
         })
     }
 
@@ -1296,6 +1327,12 @@ export default function useEventGraph({
     }
     registerAllListeners()
 
+    // removeAllListeners
+    const removeAllListeners = () => {
+        registerCaretListeners(true)
+        registerHoPaCTAListeners(true)
+    }
+
     // Cell - Mousewheel
     graph.value.on('cell:mousewheel', () => {
         currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
@@ -1303,6 +1340,8 @@ export default function useEventGraph({
 
     // Node - Mouseup
     graph.value.on('node:mouseup', ({ e, node }) => {
+        if (isGraphLoading()) return
+
         if (node.id.includes('vpNode')) {
             if (selectedNodeId.value) controlSelectedNodeAction(node, e)
             else if (selectedNodeEdgeId.value)
@@ -1330,6 +1369,8 @@ export default function useEventGraph({
 
     // Edge - Click
     graph.value.on('edge:click', ({ e, edge }) => {
+        if (isGraphLoading()) return
+
         if (!isEdgeClickable(edge)) return
 
         if (edge.id.includes('port')) {
@@ -1371,6 +1412,8 @@ export default function useEventGraph({
     graph.value.on('port:click', ({ e, node }) => {
         e.stopPropagation()
 
+        if (isGraphLoading()) return
+
         const gEle = getEventPath(e).find((x) => x.getAttribute('port'))
         const portId = gEle.getAttribute('port')
 
@@ -1396,6 +1439,8 @@ export default function useEventGraph({
 
     // Blank - Click
     graph.value.on('blank:click', () => {
+        if (isGraphLoading()) return
+
         if (selectedNodeId.value) resetSelectedNode()
         if (selectedNodeEdgeId.value) resetSelectedNodeEdge()
     })
@@ -1409,7 +1454,9 @@ export default function useEventGraph({
     watch(
         columnToSelect,
         (newVal) => {
-            if (!newVal) return
+            if (isGraphLoading()) return
+
+            if (!Object.keys(newVal).length) return
 
             resetState()
 
@@ -1439,6 +1486,8 @@ export default function useEventGraph({
     )
 
     watch(guidToSelectOnGraph, (newVal) => {
+        if (isGraphLoading()) return
+
         if (newVal) {
             const { isHidden, type, node } = isNodeHidden(newVal, false)
 
@@ -1463,14 +1512,17 @@ export default function useEventGraph({
         () => preferences.value.showArrow,
         (val) => {
             const size = val ? 12 : 0.1
+            graph.value.freeze('showArrow')
             graph.value.getEdges().forEach((edge) => {
                 edge.attr('line/targetMarker/height', size)
                 edge.attr('line/targetMarker/width', size)
             })
+            graph.value.unfreeze('showArrow')
         }
     )
 
     return {
         registerAllListeners,
+        removeAllListeners,
     }
 }

@@ -147,15 +147,20 @@
                     </a-popover>
                 </div>
             </div>
-            <div class="px-4">
+            <div class="flex items-center px-4 mt-3 mb-2">
                 <a-input
-                    v-if="filteredList.length || queryText"
+                    v-if="
+                        filteredList.length || queryText || listType !== 'all'
+                    "
                     v-model:value="queryText"
-                    class="mt-3 mb-2 bg-gray-100 border-none shadow-none outline-none input-search-group-user"
+                    class="mr-3 border-t-0 border-b border-l-0 border-r-0 border-gray-300 rounded-none shadow-none outline-none input-search-group-user"
                     :placeholder="placeholder"
                 >
+                    <template #prefix>
+                        <AtlanIcon icon="Search" class="mr-1" />
+                    </template>
                     <template #suffix>
-                        <a-dropdown placement="bottomRight" trigger="click">
+                        <!-- <a-dropdown placement="bottomRight" trigger="click">
                             <template #overlay>
                                 <a-menu class="w-24">
                                     <a-menu-item
@@ -189,7 +194,7 @@
                                 {{ listType }}
                                 <AtlanIcon class="ml-2" icon="ChevronDown" />
                             </div>
-                        </a-dropdown>
+                        </a-dropdown> -->
                     </template>
                 </a-input>
                 <!-- <SearchAndFilter
@@ -201,6 +206,7 @@
                 >
                  
                 </SearchAndFilter> -->
+                <RaisedTab v-model:active="listType" :data="streams" />
             </div>
             <div
                 v-if="filteredList && filteredList.length"
@@ -483,10 +489,16 @@
                 </div>
             </div>
             <EmptyView
-                v-else-if="!filteredList.length && queryText"
+                v-else-if="
+                    !filteredList.length && (queryText || listType !== 'all')
+                "
                 class="mt-4"
                 empty-screen="NoResultIllustration"
-                :desc="`Whoops! couldn't find anyone with '${queryText}' in persona`"
+                :desc="
+                    queryText
+                        ? `Whoops! couldn't find anyone with '${queryText}' in persona`
+                        : `Whoops! couldn't find ${listType} in persona`
+                "
             >
             </EmptyView>
             <EmptyState
@@ -535,6 +547,7 @@
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import { selectedPersonaDirty } from '../composables/useEditPersona'
     import { IGroup, IUser } from '~/types/accessPolicies/personas'
+    import RaisedTab from '@/UI/raisedTab.vue'
 
     export default defineComponent({
         name: 'PersonaUsersGroups',
@@ -548,6 +561,7 @@
             AggregationTabs,
             Loader,
             EmptyState,
+            RaisedTab,
         },
         props: {
             persona: {
@@ -568,6 +582,20 @@
             const { persona, cancelTokenForUsers, cancelTokenForGroups } =
                 toRefs(props)
             const listType: Ref<'all' | 'users' | 'groups'> = ref('all')
+            const streams = computed(() => [
+                {
+                    key: 'all',
+                    label: 'All',
+                },
+                {
+                    key: 'users',
+                    label: 'Users',
+                },
+                {
+                    key: 'groups',
+                    label: 'Groups',
+                },
+            ])
             const enableTabs = computed(() => ['users', 'groups'])
 
             const queryText = ref('')
@@ -885,6 +913,7 @@
                 groupsError,
                 showRemoveUserPopover,
                 errorUsersGroups,
+                streams,
             }
         },
     })
@@ -893,6 +922,7 @@
     .input-search-group-user {
         input {
             background: none !important;
+            box-shadow: none !important;
         }
     }
 </style>

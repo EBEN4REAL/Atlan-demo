@@ -9,7 +9,6 @@ import useLineageStore from '~/store/lineage'
 
 /** COMPOSABLES */
 import useGraph from './useGraph'
-import useTransformGraph from './useTransformGraph'
 
 export default async function useComputeGraph({
     graph,
@@ -17,7 +16,6 @@ export default async function useComputeGraph({
     lineage,
     currZoom,
     isComputeDone,
-    emit,
 }) {
     // const { DagreLayout } = window.layout
     const lineageStore = useLineageStore()
@@ -31,9 +29,7 @@ export default async function useComputeGraph({
     const nodes = ref([])
     const mergedLineageData = ref({})
 
-    const { createNodeData, createEdgeData } = useGraph()
-
-    const { fit } = useTransformGraph(graph, emit)
+    const { createNodeData, createEdgeData } = useGraph(graph)
 
     mergedLineageData.value = { ...lineage.value }
     lineageStore.setMergedLineageData(mergedLineageData.value)
@@ -332,7 +328,10 @@ export default async function useComputeGraph({
     isComputeDone.value = true
 
     /* Transformations */
-    fit(lineage.value.baseEntityGuid)
+    const cell = graph.value.getCellById(lineage.value.baseEntityGuid)
+    graph.value.scrollToCell(cell)
+    graph.value.scale(0.7)
+
     currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
 
     /* addSubGraph */
@@ -347,8 +346,8 @@ export default async function useComputeGraph({
         const assetGuidToFit = Object.keys(newData.guidEntityMap).find(
             (x) => x !== newData.baseEntityGuid
         )
-        const cell = graph.value.getCellById(assetGuidToFit)
-        graph.value.scrollToCell(cell, { animation: { duration: 600 } })
+        const cellToFit = graph.value.getCellById(assetGuidToFit)
+        graph.value.scrollToCell(cellToFit, { animation: { duration: 600 } })
 
         if (!Object.keys(mergedLineageData.value).length)
             mergedLineageData.value = lineage.value

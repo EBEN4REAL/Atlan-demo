@@ -192,12 +192,12 @@
                     />
                 </div>
                 <div v-else-if="item.destinationAttribute === 'ownerUsers'">
-                    <PopOverUser :item="item.destinationValue">
-                        <UserPill
-                            class="classification-pill"
-                            :username="item.destinationValue"
-                        />
-                    </PopOverUser>
+                    <!-- <PopOverUser :item="item.destinationValue"> -->
+                    <UserPill
+                        class="classification-pill"
+                        :username="item.destinationValue"
+                    />
+                    <!-- </PopOverUser> -->
                 </div>
                 <div v-else-if="item.requestType === 'term_link'">
                     <TermPopover
@@ -323,8 +323,8 @@
     import RequestDropdown from '~/components/common/dropdown/requestDropdown.vue'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
     import map from '~/constant/accessControl/map'
-    import PopOverUser from '@/common/popover/user/user.vue'
-    import PopOverGroup from '@/common/popover/user/groups.vue'
+    // import PopOverUser from '@/common/popover/user/user.vue'
+    // import PopOverGroup from '@/common/popover/user/groups.vue'
 
     export default defineComponent({
         name: 'RequestItem',
@@ -340,8 +340,8 @@
             RequestDropdown,
             UserPill,
             CertificatePill,
-            PopOverUser,
-            PopOverGroup,
+            // PopOverUser,
+            // PopOverGroup,
         },
         props: {
             selectedAsset: {

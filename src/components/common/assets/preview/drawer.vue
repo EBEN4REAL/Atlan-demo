@@ -141,7 +141,7 @@
                 relationAttributes,
             })
 
-            watch(showDrawer, () => {
+            watch(guid, () => {
                 if (
                     (guid.value !== '' || qualifiedName.value !== '') &&
                     showDrawer.value

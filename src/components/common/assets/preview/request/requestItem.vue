@@ -280,7 +280,7 @@
                 </div>
             </div>
         </div>
-        <div class="mx-4 mt-1 border-b border-gray-light" />
+        <!-- <div class="mx-4 mt-1 border-b border-gray-light" /> -->
     </div>
 </template>
 

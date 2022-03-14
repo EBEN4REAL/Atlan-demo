@@ -71,11 +71,11 @@
             </div>
             <div
                 class="flex flex-wrap items-center mb-2 overflow-y-auto text-gray-500 gap-y-2"
-                style="height: 52px"
+                style="max-height: 60px"
             >
                 <template v-for="item in variablesData" :key="item.key">
                     <div
-                        style="flex: 0.5; min-width: 280px"
+                        style="flex: 0.5; min-width: 280px; height: 25px"
                         class="flex items-center"
                     >
                         <AtlanIcon

@@ -14,6 +14,7 @@ export const install: UserModule = async () => {
     const domain = window.location.hostname
     if (userflowKey && userflowDomains && userflowDomains.includes(domain)) {
         await addDelay(2000)
+        console.log('sending userflow')
         userflow.init(userflowKey)
         const authStore = useAuthStore()
         userflow.identify(authStore?.id, {

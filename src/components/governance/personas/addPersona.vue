@@ -107,7 +107,6 @@
                     modalVisible.value = false
                     useAddEvent('governance', 'persona', 'created')
                 } catch (error: any) {
-                    console.log('errorNew', error)
                     message.error({
                         content:
                             error?.response?.data?.message ??

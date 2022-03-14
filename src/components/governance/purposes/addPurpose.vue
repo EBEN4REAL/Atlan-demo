@@ -156,7 +156,6 @@
 
                     useAddEvent('governance', 'purpose', 'created')
                 } catch (error) {
-                    console.log('errorNew', error)
                     message.error({
                         content:
                             error?.response?.data?.message ??

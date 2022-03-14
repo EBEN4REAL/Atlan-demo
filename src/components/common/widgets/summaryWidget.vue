@@ -250,11 +250,6 @@
                 return `${meta}${data}`
             })
             watch(showPopover, (newVal) => {
-                console.log(
-                    'showPopover',
-                    newVal,
-                    item?.value?.attributes?.channelLink
-                )
                 if (newVal && item?.value?.attributes?.channelLink) {
                     link.value = item?.value?.attributes?.channelLink
                 }

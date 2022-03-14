@@ -62,7 +62,7 @@
                     placement="topRight"
                     :ok-button-props="{ size: 'default' }"
                     :cancel-button-props="{ size: 'default' }"
-                    @confirm="handleSubmit(false)"
+                    @confirm="handleSubmit"
                 >
                     <template #icon> </template>
                     <template #title>
@@ -87,7 +87,7 @@
                     <AtlanButton2
                         :color="allowSchedule ? 'secondary' : 'primary'"
                         label="Run"
-                        @click="handleSubmit(false)"
+                        @click="handleSubmit"
                     />
 
                     <a-popconfirm
@@ -98,7 +98,7 @@
                         placement="topRight"
                         :ok-button-props="{ size: 'default' }"
                         :cancel-button-props="{ size: 'default' }"
-                        @confirm="handleSubmit(true)"
+                        @confirm="handleSubmit"
                     >
                         <template #icon> </template>
                         <template #title>
@@ -514,9 +514,9 @@
                 execute(true)
             }
 
-            const handleSubmit = (isCron) => {
+            const handleSubmit = () => {
                 if (isEdit.value) {
-                    body.value.metadata = workflowTemplate.value.metadata
+                    body.value.metadata = workflowObject.value.metadata
                 } else {
                     // Copy labels and annotations of the worfklow template
                     body.value.metadata.labels =
@@ -525,7 +525,7 @@
                         workflowTemplate.value.metadata.annotations
 
                     // Schedule Changes
-                    if (cron.value && isCron) {
+                    if (cron.value.cron && cron.value.timezone) {
                         body.value.metadata.annotations[
                             'orchestration.atlan.com/schedule'
                         ] = cron.value.cron

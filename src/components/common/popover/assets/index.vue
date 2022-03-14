@@ -315,7 +315,18 @@
             const schema = computed(() => schemaName(item.value))
             const title = computed(() => assetTypeLabel(item.value))
             const logoTitle = computed(() => getConnectorImage(item.value))
-            const path = computed(() => `/assets/${item.value.guid}`)
+            const path = computed(() => {
+                if (
+                    [
+                        'AtlasGlossaryTerm',
+                        'AtlasGlossaryCategory',
+                        'AtlasGlossary',
+                    ].includes(item?.value?.typeName)
+                ) {
+                    return `/glossary/${item.value.guid}`
+                }
+                return `/assets/${item.value.guid}`
+            })
 
             return {
                 certificateStatus,

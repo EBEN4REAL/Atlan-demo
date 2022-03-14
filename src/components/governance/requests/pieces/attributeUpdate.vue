@@ -33,6 +33,8 @@
             const labelMap = {
                 userDescription: 'Update description',
                 certificateStatus: 'Update certificate',
+                ownerUsers:'Update Owners',
+                ownerGroups:'Update Groups'
             }
 
             const attrLabel = computed(() => labelMap[name.value] || 'ATTR')

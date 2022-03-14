@@ -99,7 +99,7 @@ export default function useGraph(graph) {
                     // prettier-ignore
                     return `
                 <div class="flex items-center">
-                    <div id="${guid}" class="lineage-node group ${isVpNode ? 'isVpNode' : ''} 
+                    <div id="node-${guid}" class="lineage-node group ${isVpNode ? 'isVpNode' : ''} 
                     ${data?.isSelectedNode === data?.id? 'isSelectedNode': ''}
                     ${data?.isHighlightedNode === data?.id? 'isHighlightedNode': ''}
                     ${data?.isGrayed ? 'isGrayed' : ''} ${isBase ? 'isBase' : ''}">

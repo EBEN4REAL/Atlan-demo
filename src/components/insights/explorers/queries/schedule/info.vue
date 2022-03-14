@@ -103,7 +103,9 @@
             </div> -->
         </div>
         <div class="text-sm text-gray-700">
-            <div class="flex flex-wrap items-center gap-y-2 gap-x-1">
+            <div
+                class="flex flex-wrap items-center overflow-scroll gap-y-2 gap-x-1 max-h-24"
+            >
                 <a-button
                     shape="circle"
                     size="small"

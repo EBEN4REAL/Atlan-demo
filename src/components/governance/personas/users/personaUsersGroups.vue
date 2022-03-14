@@ -217,6 +217,7 @@
                     "
                     v-model:active="listType"
                     :data="streams"
+                    class="tab-filter"
                 />
             </div>
             <div
@@ -930,6 +931,13 @@
     })
 </script>
 <style lang="less">
+    .tab-filter {
+        .tab-btn {
+            height: fit-content !important;
+            padding: 6px 10px !important;
+            @apply text-xs;
+        }
+    }
     .input-search-group-user {
         input {
             background: none !important;

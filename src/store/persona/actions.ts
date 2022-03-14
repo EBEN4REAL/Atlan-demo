@@ -11,6 +11,9 @@ export const actions: Actions = {
         this.list = value
     },
     updatePersona(persona) {
+        if(!this.list){
+            return this.list = [persona]
+        }
         const index = this.list.findIndex((p) => p.id === persona.id)
         if (index > -1) this.list[index] = persona
         else this.list.push(persona)

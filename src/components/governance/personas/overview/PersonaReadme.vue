@@ -134,6 +134,7 @@
                     const payload = { ...persona.value }
                     delete payload.dataPolicies
                     delete payload.metadataPolicies
+                    delete payload.glossaryPolicies
                     await savePersona({
                         ...payload,
                         readme: dataEditor,

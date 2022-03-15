@@ -21,7 +21,7 @@
         <div class="p-6 overflow-auto custom-grid" style="height: 240px">
             <!-- {{ variablesData }} -->
             <template v-for="item in variablesData" :key="item.key">
-                <div class="w-full item">
+                <div class="w-full mb-3 item">
                     <p class="mb-1 font-bold text-gray-500 required">
                         {{ item.name }}
                     </p>

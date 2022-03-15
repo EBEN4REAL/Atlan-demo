@@ -509,7 +509,7 @@
                 :desc="
                     queryText
                         ? `Whoops! couldn't find anyone with '${queryText}' in persona`
-                        : `Whoops! couldn't find ${listType} in persona`
+                        : `No ${listType} added in the persona`
                 "
             >
             </EmptyView>

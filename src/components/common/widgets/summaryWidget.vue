@@ -52,6 +52,12 @@
                                     <AtlanIcon icon="Link" />
                                 </template>
                             </a-input>
+                            <div
+                                v-if="!validUrl"
+                                class="mt-1 text-sm text-red-400"
+                            >
+                                Please input a correct url
+                            </div>
                         </div>
                         <div class="flex justify-end mt-4">
                             <AtlanButton
@@ -66,14 +72,16 @@
                             <AtlanButton
                                 padding="compact"
                                 size="sm"
+                                :disabled="!link || !validUrl"
                                 @click="handleChangeLink"
                             >
                                 <AtlanIcon icon="Edit" class="mr-1" />
-                                {{
+                                <!-- {{
                                     item?.attributes?.channelLink
                                         ? 'Edit'
                                         : 'Add'
-                                }}
+                                }} -->
+                                Save
                             </AtlanButton>
                         </div>
                     </div>
@@ -179,6 +187,7 @@
     import { IPurpose } from '~/types/accessPolicies/purposes'
     import { formatDateTime } from '~/utils/date'
     import AtlanBtn from '@/UI/button.vue'
+    import { checkLink } from '~/utils/helper/checkLink'
 
     interface IItem {
         createdAt?: string
@@ -221,8 +230,15 @@
             }
             const handleChangeLink = () => {
                 showPopover.value = false
-                emit('changeLink', link.value)
+                setTimeout(() => {
+                    emit('changeLink', link.value)
+                }, 300)
             }
+            const validUrl = computed(() => {
+                if (!link.value) return true
+                if (!link.value.includes('slack.com')) return false
+                return checkLink(link.value)
+            })
             const handleRemove = () => {
                 showPopover.value = false
                 emit('changeLink', '')
@@ -265,6 +281,7 @@
                 countMeta,
                 total,
                 titlePolices,
+                validUrl,
             }
         },
     })

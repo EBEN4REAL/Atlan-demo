@@ -9,7 +9,8 @@
             select-user-key="id"
             :dropdown-style-object="{ width: '430px' }"
             search-placeholder="Search users"
-            :hideTabs="true"
+            :hide-tabs="true"
+            :exclude-me="false"
         />
         <!-- <a-popover
             :placement="'bottomLeft'"

@@ -168,11 +168,11 @@
     import { useRouter } from 'vue-router'
     import { Modal, message } from 'ant-design-vue'
     import { watchOnce } from '@vueuse/core'
-    import useWorkflowSubmit from '~/composables/package/useWorkflowSubmit'
+    import useWorkflowSubmit from '~/workflows/composables/package/useWorkflowSubmit'
     import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
 
     import Schedule from '@/common/input/schedule.vue'
-    import useWorkflowUpdate from '~/composables/package/useWorkflowUpdate'
+    import useWorkflowUpdate from '~/workflows/composables/package/useWorkflowUpdate'
 
     export default defineComponent({
         name: 'PackageDiscovery',

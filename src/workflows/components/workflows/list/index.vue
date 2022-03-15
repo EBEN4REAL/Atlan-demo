@@ -15,7 +15,7 @@
 
 <script lang="ts">
     import { defineComponent, ref, toRefs, watch } from 'vue'
-    import { useRunDiscoverList } from '~/composables/package/useRunDiscoverList'
+    import { useRunDiscoverList } from '~/workflows/composables/package/useRunDiscoverList'
     import Item from './item.vue'
 
     export default defineComponent({

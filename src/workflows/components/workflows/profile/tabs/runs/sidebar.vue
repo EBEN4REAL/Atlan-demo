@@ -222,7 +222,7 @@
 <script lang="ts">
     // Vue
     import { computed, defineComponent, inject, ref, toRefs, watch } from 'vue'
-    import useWorkflowRunRetry from '~/composables/package/useWorkflowRunRetry'
+    import useWorkflowRunRetry from '~/workflows/composables/package/useWorkflowRunRetry'
     import { Modal, message } from 'ant-design-vue'
     import {
         promiseTimeout,
@@ -231,11 +231,11 @@
         watchOnce,
     } from '@vueuse/core'
     import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
-    import useWorkflowLogsStream from '~/composables/package/useWorkflowLogsStream'
+    import useWorkflowLogsStream from '~/workflows/composables/package/useWorkflowLogsStream'
     import WorkflowLogs from './logs.vue'
     import WorkflowMetrics from './metrics.vue'
-    import useWorkflowRunStop from '~/composables/package/useWorkflowRunStop'
-    import useRunItem from '~/composables/package/useRunItem'
+    import useWorkflowRunStop from '~/workflows/composables/package/useWorkflowRunStop'
+    import useRunItem from '~/workflows/composables/package/useRunItem'
 
     export default defineComponent({
         // mixins: [WorkflowMixin],

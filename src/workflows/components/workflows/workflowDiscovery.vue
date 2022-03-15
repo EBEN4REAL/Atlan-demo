@@ -123,11 +123,11 @@
     import { useRouter } from 'vue-router'
     import { debouncedWatch, useDebounceFn } from '@vueuse/core'
     import WorkflowList from './list/index.vue'
-    import WorkflowPreview from '@/workflows/preview/index.vue'
-    import { useWorkflowDiscoverList } from '~/composables/package/useWorkflowDiscoverList'
-    import { useRunDiscoverList } from '~/composables/package/useRunDiscoverList'
+    import WorkflowPreview from '~/workflows/components/workflows/preview/index.vue'
+    import { useWorkflowDiscoverList } from '~/workflows/composables/package/useWorkflowDiscoverList'
+    import { useRunDiscoverList } from '~/workflows/composables/package/useRunDiscoverList'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
-    import { usePackageDiscoverList } from '~/composables/package/usePackageDiscoverList'
+    import { usePackageDiscoverList } from '~/workflows/composables/package/usePackageDiscoverList'
 
     export default defineComponent({
         name: 'WorkflowListing',

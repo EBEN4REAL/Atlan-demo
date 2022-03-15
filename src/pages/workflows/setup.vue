@@ -29,7 +29,7 @@
     import { computed, defineComponent, ref } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRoute, useRouter } from 'vue-router'
-    import WorfklowPreview from '@/workflows/preview/index.vue'
+    import WorfklowPreview from '~/workflows/components/workflows/preview/index.vue'
 
     import PackageDiscoveryList from '~/workflows/components/packages/index.vue'
 

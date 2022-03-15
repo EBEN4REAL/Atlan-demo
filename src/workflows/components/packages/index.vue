@@ -82,8 +82,8 @@
     import ErrorView from '@/common/error/discover.vue'
     import PackageList from '~/workflows/components/packages/list/index.vue'
     import PackageFilters from '~/workflows/components/packages/filters/index.vue'
-    import { packageFilters } from '~/constant/filters/packageFilters'
-    import { usePackageDiscoverList } from '~/composables/package/usePackageDiscoverList'
+    import { packageFilters } from '~/workflows/constants/packageFilters'
+    import { usePackageDiscoverList } from '~/workflows/composables/package/usePackageDiscoverList'
 
     export default defineComponent({
         name: 'PackageDiscovery',

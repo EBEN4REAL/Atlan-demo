@@ -19,7 +19,7 @@
     } from 'vue'
 
     import APITreeSelect from '@common/treeselect/api/index.vue'
-    import { useWorkflowHelper } from '~/composables/package/useWorkflowHelper'
+    import { useWorkflowHelper } from '~/workflows/composables/package/useWorkflowHelper'
     import { useVModels } from '@vueuse/core'
 
     import { mergeDeep } from '~/utils/array'

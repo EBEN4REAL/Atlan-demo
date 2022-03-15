@@ -234,13 +234,13 @@
     import Schedule from './schedule.vue'
     import Run from './run.vue'
 
-    import { createWorkflow } from '~/composables/package/useWorkflow'
-    import { useWorkflowHelper } from '~/composables/package/useWorkflowHelper'
+    import { createWorkflow } from '~/workflows/composables/package/useWorkflow'
+    import { useWorkflowHelper } from '~/workflows/composables/package/useWorkflowHelper'
     import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
-    import useWorkflowSubmit from '~/composables/package/useWorkflowSubmit'
-    import useWorkflowUpdate from '~/composables/package/useWorkflowUpdate'
+    import useWorkflowSubmit from '~/workflows/composables/package/useWorkflowSubmit'
+    import useWorkflowUpdate from '~/workflows/composables/package/useWorkflowUpdate'
 
-    import { useRunDiscoverList } from '~/composables/package/useRunDiscoverList'
+    import { useRunDiscoverList } from '~/workflows/composables/package/useRunDiscoverList'
 
     import { getEnv } from '~/modules/__env'
 

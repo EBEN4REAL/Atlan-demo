@@ -21,7 +21,7 @@
     } from 'vue'
 
     import SQLTreeSelect from '@common/treeselect/sql/index.vue'
-    import { useWorkflowHelper } from '~/composables/package/useWorkflowHelper'
+    import { useWorkflowHelper } from '~/workflows/composables/package/useWorkflowHelper'
     import { useVModels } from '@vueuse/core'
 
     export default defineComponent({

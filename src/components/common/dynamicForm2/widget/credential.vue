@@ -152,11 +152,11 @@
     import { useTestCredential } from '~/composables/credential/useTestCredential'
     import useGetCredential from '~/composables/credential/useGetCredential'
 
-    import { useConfigMapByName } from '~/composables/package/useConfigMapByName'
+    import { useConfigMapByName } from '~/workflows/composables/package/useConfigMapByName'
     import ErrorView from '@common/error/index.vue'
     import AtlanIcon from '../../icon/atlanIcon.vue'
 
-    import { useWorkflowHelper } from '~/composables/package/useWorkflowHelper'
+    import { useWorkflowHelper } from '~/workflows/composables/package/useWorkflowHelper'
     import useCredentialInfo from '~/composables/credential/useCredentialInfo'
 
     import useTestCredentialByID from '~/composables/credential/useTestCredentialByID'

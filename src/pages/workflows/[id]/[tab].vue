@@ -21,12 +21,12 @@
     import { useHead } from '@vueuse/head'
     import { useRoute } from 'vue-router'
 
-    import WorkflowProfile from '@/workflows/profile/index.vue'
+    import WorkflowProfile from '~/workflows/components/workflows/profile/index.vue'
     import Loader from '@/common/loaders/page.vue'
 
-    import { useWorkflowDiscoverList } from '~/composables/package/useWorkflowDiscoverList'
+    import { useWorkflowDiscoverList } from '~/workflows/composables/package/useWorkflowDiscoverList'
     import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
-    import { usePackageByName } from '~/composables/package/usePackageByName'
+    import { usePackageByName } from '~/workflows/composables/package/usePackageByName'
 
     export default defineComponent({
         components: {

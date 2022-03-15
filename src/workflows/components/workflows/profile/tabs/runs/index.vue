@@ -49,7 +49,7 @@
 
     import RunsSelect from '@/common/select/runs.vue'
     import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
-    import useRunItem from '~/composables/package/useRunItem'
+    import useRunItem from '~/workflows/composables/package/useRunItem'
 
     import Sidebar from './sidebar.vue'
     import MonitorGraph from './monitorGraph.vue'

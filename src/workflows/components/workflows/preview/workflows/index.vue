@@ -26,8 +26,8 @@
     import PopOverUser from '@/common/popover/user/user.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
-    import { useWorkflowDiscoverList } from '~/composables/package/useWorkflowDiscoverList'
-    import { useRunDiscoverList } from '~/composables/package/useRunDiscoverList'
+    import { useWorkflowDiscoverList } from '~/workflows/composables/package/useWorkflowDiscoverList'
+    import { useRunDiscoverList } from '~/workflows/composables/package/useRunDiscoverList'
     import { deleteWorkflowByName } from '~/composables/workflow/useWorkflowList'
 
     import Item from './item.vue'

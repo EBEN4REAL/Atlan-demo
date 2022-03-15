@@ -13,8 +13,8 @@
             </p>
         </div>
         <div class="p-3 mb-4 border border-gray-300 rounded light-shadow">
-            <div class="flex items-center justify-between mb-3">
-                <p class="font-bold text-gray-700" style="font-size: 16px">
+            <div class="flex items-center mb-3">
+                <p class="mr-3 font-bold text-gray-700" style="font-size: 16px">
                     Schedule
                 </p>
 

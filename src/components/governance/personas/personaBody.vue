@@ -1,7 +1,11 @@
 <template>
     <template v-if="selectedPersonaDirty">
         <div class="sticky top-0 z-10 bg-white">
-            <MinimalTab v-model:active="activeTabKey" :data="tabConfig">
+            <MinimalTab
+                v-model:active="activeTabKey"
+                class="minimal-tab"
+                :data="tabConfig"
+            >
                 <template #label="t">
                     <div class="flex items-center overflow-hidden">
                         <div
@@ -677,6 +681,9 @@
     }
 </style>
 <style lang="less">
+    .minimal-tab{
+        margin-top: 0px!important;
+    }
     .container-tabs {
         width: 200px
         // .ant-radio-button-wrapper {

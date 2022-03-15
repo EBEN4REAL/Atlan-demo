@@ -1,5 +1,5 @@
 <template>
-    <div v-if="persona" class="flex flex-col px-5 bg-white">
+    <div v-if="persona" class="flex flex-col px-5 pb-2 bg-white">
         <CreationModal
             v-model:visible="isEditing"
             ok-text="Save"

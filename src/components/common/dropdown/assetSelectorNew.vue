@@ -40,14 +40,10 @@
                     "
                 >
                     <div class="flex items-center justify-between w-full">
-                        <!-- <div class="flex items-center"> -->
                         <AtlanIcon
                             :icon="typeName + `Gray`"
                             class="flex-shrink-0 w-auto h-4 mr-2"
                         />
-                        <!-- <span class="parent-ellipsis-container-base"
-                                >{{ item?.label }}
-                            </span> -->
                         <Tooltip
                             :tooltip-text="item?.label"
                             classes=" w-full"
@@ -62,7 +58,6 @@
                                 class="ml-1 text-primary"
                             />
                         </span>
-                        <!-- </div> -->
                     </div>
                 </div>
             </template>
@@ -82,15 +77,6 @@
             No {{ searchPlaceholder.toLowerCase() }}s available
         </div>
     </div>
-
-    <!-- <template v-for="item in dropdownOption" :key="item.label">
-        <div class="flex items-center truncate">
-            <AtlanIcon :icon="typeName + `Gray`" class="w-auto h-4 mr-2" />
-            <span class="parent-ellipsis-container-base"
-                >{{ item?.label }}
-            </span>
-        </div>
-    </template> -->
 </template>
 
 <script lang="ts">
@@ -101,7 +87,6 @@
         computed,
         PropType,
         ref,
-        onMounted,
         Ref,
         nextTick,
     } from 'vue'
@@ -239,7 +224,6 @@
                 }
             }
 
-            // const filters = computed(() => getFilter(index.value))
             const filters = ref(getFilter(index.value))
 
             const initialBody = {
@@ -311,7 +295,6 @@
                     value: ls.attributes.qualifiedName,
                 }))
 
-                // console.log('selector data: ', data)
                 // Checking if there is no data that's been loaded yet, returns 0 to show AtlanLoader
                 if (data.length === 0) return 0
 
@@ -339,7 +322,6 @@
                 data: any[],
                 forceRefresh = false
             ) => {
-                // debugger
                 if (
                     isSelectFirstDefault(connector.value.id) &&
                     index.value == 0
@@ -376,48 +358,20 @@
 
                 console.log('item: ', item)
                 console.log('itemValue: ', itemValue)
-
-                // console.log('item: ', item.value)
-                // console.log('itemevent: ', event)
-
-                // if (item === undefined) {
-                //     emit('update:modelValue', item)
-                //     emit('change', item)
-                // }
-                // emit('update:modelValue', itemValue)
                 emit('change', itemValue)
             }
-
-            // onMounted(async () => {
-            //     console.log(
-            //         'DBPopoverVisible changed in child',
-            //         DBPopoverVisible.value
-            //     )
-            //     console.log(
-            //         'SchemaPopoverVisible changed in child',
-            //         SchemaPopoverVisible.value
-            //     )
-            //     queryText.value = ''
-            //     await nextTick()
-            //     searchInput.value?.focus()
-            // })
 
             const searchFieldFocus = () => {
                 queryText.value = ''
                 setTimeout(async () => {
                     await nextTick()
                     searchInput.value?.focus()
-                    // console.log('setTimeout running')
                 }, 500)
             }
 
             watch(
                 DBPopoverVisible,
                 () => {
-                    // console.log(
-                    //     'DBPopoverVisible changed in child',
-                    //     DBPopoverVisible.value
-                    // )
                     searchFieldFocus()
                 },
                 { immediate: true }
@@ -426,10 +380,6 @@
             watch(
                 SchemaPopoverVisible,
                 () => {
-                    // console.log(
-                    //     'SchemaPopoverVisible changed in child',
-                    //     SchemaPopoverVisible.value
-                    // )
                     searchFieldFocus()
                 },
                 { immediate: true }
@@ -439,7 +389,6 @@
                 index,
                 typeName,
                 list,
-                // handleChange,
                 totalCount,
                 data,
                 isLoading,
@@ -479,10 +428,6 @@
     .inputSearch:focus {
         outline: none;
     }
-    // .ant-tooltip-placement-rightTop {
-    //     margin-left: 50px !important;
-    //     padding-left: 50px !important;
-    // }
 </style>
 <style lang="less" scoped>
     .parent-ellipsis-container-base {

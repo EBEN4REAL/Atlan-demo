@@ -1,21 +1,7 @@
 <template>
     <div class="flex flex-col w-full pb-1 mt-1 gap-y-2">
-        <!-- <template v-for="(item, index) in list" :key="item.typeName"> -->
         <template v-if="list.length > 0">
             <div>
-                <!-- <AssetSelector
-                    :key="getKey(0)"
-                    :modelValue="asset[list[0].attribute]"
-                    :type-name="list[0].typeName"
-                    :filters="getFilter(0)"
-                    :disabled="isDisabled(0)"
-                    @change="
-                        handleChange(list[0].attribute, $event, list[0].level)
-                    "
-                    :placeholder="`Select ${list[0].name}`"
-                    :data-test-id="list[0].name?.toLowerCase()"
-                    :bgGrayForSelector="bgGrayForSelector"
-                ></AssetSelector> -->
                 <AssetSelectorNew
                     :SchemaPopoverVisible="SchemaPopoverVisible"
                     :_firsCalled="_firsCalled"
@@ -141,47 +127,6 @@
                 }
             }
 
-            // const getFilter = (index) => {
-            //     if (index > 0) {
-            //         const item = list.value[index - 1]
-            //         const typeName = list.value[index].typeName
-            //         if (asset.value[item.attribute]) {
-            //             return bodybuilder()
-            //                 .filter(
-            //                     'term',
-            //                     `${item.attribute}`,
-            //                     asset.value[item.attribute]
-            //                 )
-            //                 .filter('term', '__state', 'ACTIVE')
-            //                 .filter('term', '__typeName.keyword', typeName)
-            //                 .size(100)
-            //                 .build()
-            //         }
-            //     }
-            //     // For the first filter we need the connection name
-            //     else {
-            //         let connectionName = filter.value?.attributeValue
-            //             ?.split('/')
-            //             .slice(0, 3)
-            //             ?.join('/')
-
-            //         return bodybuilder()
-            //             .filter('term', '__state', 'ACTIVE')
-            //             .filter(
-            //                 'term',
-            //                 'connectionQualifiedName',
-            //                 connectionName
-            //             )
-            //             .filter(
-            //                 'term',
-            //                 '__typeName.keyword',
-            //                 list.value[index].typeName
-            //             )
-            //             .size(100)
-            //             .build()
-            //     }
-            // }
-
             const getKey = (index) => {
                 if (index > 0) {
                     const item = list.value[index - 1]
@@ -245,25 +190,14 @@
             }
 
             const handleClear = () => {
-                // clearStateSchema.value = false
                 emit('update:clearStateSchema', false)
             }
 
             watch([clearStateSchema], () => {
-                // console.log(
-                //     'clearStateSchema changed in child before',
-                //     clearStateSchema.value
-                // )
-
                 if (clearStateSchema.value === true) {
                     handleChange('schemaQualifiedName', undefined, 2)
                     handleClear()
                 }
-
-                // console.log(
-                //     'clearStateSchema changed in child after',
-                //     clearStateSchema.value
-                // )
             })
 
             const firstSelectByDefaultChange = (
@@ -289,7 +223,6 @@
                 _firsCalled,
                 list,
                 asset,
-                // getFilter,
                 handleChange,
                 isDisabled,
                 getKey,

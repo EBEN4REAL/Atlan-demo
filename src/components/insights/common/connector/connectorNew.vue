@@ -55,21 +55,8 @@
                                 class="w-6 h-6"
                             />
                         </a-tooltip>
-                        <!-- <img :src="getContextName(`icon`)" class="w-6 h-6"
-                    /> -->
                     </span>
                     <div class="flex flex-col w-full bg">
-                        <!-- <div
-                            class="flex items-center w-full text-sm cursor-pointer max-full place-content-between"
-                            :class="[
-                                getContextName(`database`) ===
-                                'Select database context'
-                                    ? `${$style.empty_db_state}`
-                                    : `${$style.filled_db_state}`,
-                            ]"
-                        >
-                            {{ getContextName(`database`) }}
-                        </div> -->
                         <Tooltip
                             :tooltip-text="getContextName(`database`)"
                             classes="cursor-pointer text-base  text-gray-700 w-full"
@@ -120,6 +107,7 @@
                                 class="rounded-lg w-60"
                                 :class="$style.schemaExplorerTreeStyles"
                             >
+                                <!-- Code for tree search -->
                                 <!-- <div
                                 class="flex flex-row space-x-2"
                                 :class="$style.schemaExplorerTreeStyles"
@@ -159,7 +147,6 @@
                                         ref="treeRef"
                                         :data-test-id="'conector'"
                                         class="tree-select-nodes"
-                                        @change="onChange"
                                         @select="selectNodeTree"
                                         @click="selectNodeTree"
                                     >
@@ -187,16 +174,6 @@
                                                     placement="rightTop"
                                                 >
                                                 </Tooltip>
-                                                <!-- <span
-                                                    class="parent-ellipsis-container-base"
-                                                    >{{
-                                                        node
-                                                            ? nodeStringFilter(
-                                                                  node.title
-                                                              )
-                                                            : null
-                                                    }}
-                                                </span> -->
                                             </div>
                                         </template>
                                         <template #suffixIcon>
@@ -384,318 +361,6 @@
                 </div>
             </template>
         </a-dropdown>
-
-        <!-- Old Design using menu items -->
-        <!-- <a-dropdown
-            :overlay-style="{
-                maxWidth: '10%',
-            }"
-            overlayClassName="dropdown-overlay"
-            :trigger="['click']"
-        >
-            <div class="flex items-center w-full cursor-pointer">
-                <div
-                    v-if="
-                        getContextName(`database`) === 'Select database context'
-                    "
-                    class="flex flex-row items-center w-full"
-                >
-                    <div class="flex flex-col w-full bg">
-                        <div class="flex flex-shrink-0 mr-2">
-                            <img
-                                :src="getContextName(`icon`)"
-                                class="w-4 h-4 mr-1 mt-0.5"
-                            />
-                            <Tooltip
-                                :tooltip-text="getContextName(`connector`)"
-                                classes="cursor-pointer text-base text-gray-700 w-full"
-                                :class="[$style.filled_db_state]"
-                            >
-                            </Tooltip>
-                        </div>
-
-                        <span class="mr-1 text-sm text-gray-500 truncate"
-                            >Select database context</span
-                        >
-                    </div>
-                    <div class="w-4">
-                        <AtlanIcon
-                            icon="ChevronDown"
-                            class="w-4 h-4 text-gray-500"
-                        ></AtlanIcon>
-                    </div>
-                </div>
-                <div v-else class="flex flex-row items-center w-full">
-                    <span class="flex-shrink-0 mr-2" style="font-size: 28px">
-                        <img :src="getContextName(`icon`)" class="w-6 h-6"
-                    /></span>
-                    <div class="flex flex-col w-full bg">
-                        <Tooltip
-                            :tooltip-text="getContextName(`database`)"
-                            classes="cursor-pointer text-base  text-gray-700 w-full"
-                            :class="[
-                                getContextName(`database`) ===
-                                'Select database context'
-                                    ? `${$style.empty_db_state}`
-                                    : `${$style.filled_db_state}`,
-                            ]"
-                        >
-                        </Tooltip>
-                        <span
-                            :class="[
-                                getContextName(`schema`) ===
-                                'Select schema context'
-                                    ? `text-gray-500`
-                                    : ``,
-                            ]"
-                            class="mr-1 text-sm truncate"
-                            >{{ getContextName(`schema`) }}</span
-                        >
-                    </div>
-                    <div class="w-4">
-                        <AtlanIcon
-                            icon="ChevronDown"
-                            class="w-4 h-4 text-gray-500"
-                        ></AtlanIcon>
-                    </div>
-                </div>
-            </div>
-            <template #overlay>
-                <a-menu
-                    v-model:openKeys="openKeys"
-                    class="w-full py-2 rounded-lg"
-                    mode="vertical"
-                    @click="handleClick"
-                >
-                    <a-sub-menu
-                        class="submenu"
-                        key="sub1"
-                        popupClassName="submenu-popup"
-                    >
-                        <template #title>
-                            <div
-                                class="flex items-center justify-center submenu-title-content"
-                            >
-                                <img
-                                    :src="getContextName(`icon`)"
-                                    class="flex-shrink-0 w-6 h-6 mr-1 text-gray-500"
-                                />
-                                <span class="parent-ellipsis-container-base">
-                                    <span class="text-gray-500"
-                                        >Connection
-                                    </span>
-                                    <br />
-                                    <span class="text-base">{{
-                                        getContextName(`connector`)
-                                    }}</span>
-                                </span>
-                                <AtlanIcon
-                                    icon="CaretRight"
-                                    class="self-center flex-shrink-0 w-4 h-4 ml-auto text-gray-500"
-                                ></AtlanIcon>
-                            </div>
-                        </template>
-                        <template #expandIcon></template>
-                        <div
-                            class="pt-1 w-60"
-                            :class="$style.schemaExplorerTreeStyles"
-                        >
-                            <div
-                                class="flex flex-row space-x-2"
-                                :class="$style.schemaExplorerTreeStyles"
-                            >
-                                <a-input
-                                    class="h-8 mt-1 text-base border-t-0 border-l-0 border-r-0 rounded-none"
-                                    placeholder="Search 12 connections"
-                                    bordered="false"
-                                    :class="$style.inputSearch"
-                                    v-model:value="searchValue"
-                                    style="margin-bottom: 8px"
-                                >
-                                    <template #prefix>
-                                        <AtlanIcon
-                                            icon="Search"
-                                            color="#6F7590"
-                                        />
-                                    </template>
-                                </a-input>
-                            </div>
-                            <div
-                                class="w-full overflow-x-hidden tree-container"
-                            >
-                                <a-tree
-                                    v-model:expandedKeys="expandedKeys"
-                                    v-model:selectedKeys="selectedKeys"
-                                    :class="[
-                                        $style.tree_selecttor,
-                                        bgGrayForSelector
-                                            ? `${$style.selector_bg}`
-                                            : '',
-                                    ]"
-                                    style="width: 100%"
-                                    :tree-data="treeData"
-                                    :block-node="true"
-                                    :auto-expand-parent="false"
-                                    ref="treeRef"
-                                    :data-test-id="'conector'"
-                                    class="tree-select-nodes"
-                                    @change="onChange"
-                                    @select="selectNodeTree"
-                                    @click="selectNodeTree"
-                                >
-                                    <template #switcherIcon>
-                                        <AtlanIcon icon="CaretRight" />
-                                    </template>
-                                    <template #title="node">
-                                        <div
-                                            class="flex items-center rounded parent-ellipsis-container-base"
-                                            style="max-width: 14rem"
-                                        >
-                                            <img
-                                                :src="iconName(node)"
-                                                class="flex-shrink-0 h-4 mr-2"
-                                            />
-                                            <span
-                                                class="parent-ellipsis-container-base"
-                                                >{{
-                                                    node
-                                                        ? nodeStringFilter(
-                                                              node.title
-                                                          )
-                                                        : null
-                                                }}
-                                            </span>
-                                        </div>
-                                    </template>
-                                    <template #suffixIcon>
-                                        <AtlanIcon
-                                            icon="ChevronDown"
-                                            class="h-4 -mt-0.5 -ml-1"
-                                            color="#6F7590"
-                                        />
-                                    </template>
-                                </a-tree>
-                            </div>
-                        </div>
-                    </a-sub-menu>
-
-                    <a-sub-menu class="submenu" key="sub2">
-                        <template #title>
-                            <div
-                                class="flex items-center justify-center submenu-title-content"
-                            >
-                                <AtlanIcon
-                                    icon="DatabaseGray"
-                                    class="flex-shrink-0 w-6 h-6 mr-1 text-gray-500"
-                                ></AtlanIcon>
-                                <span class="parent-ellipsis-container-base">
-                                    <span class="text-gray-500">Database</span>
-                                    <br />
-                                    <span class="text-base">{{
-                                        getContextName(`database`)
-                                    }}</span>
-                                </span>
-                                <span
-                                    class="self-center ml-auto mr-4 text-gray-500 clear-btn"
-                                >
-                                    <button
-                                        @click="clearStateDBHandle"
-                                        class="hover:text-primary"
-                                        :class="[
-                                            getContextName(`database`) ===
-                                            'Select database context'
-                                                ? `${$style.clear_btn_invisible}`
-                                                : `${$style.clear_btn_visible}`,
-                                        ]"
-                                    >
-                                        clear
-                                    </button>
-                                </span>
-                                <AtlanIcon
-                                    icon="CaretRight"
-                                    class="self-center flex-shrink-0 w-4 h-4 text-gray-500"
-                                ></AtlanIcon>
-                            </div>
-                        </template>
-                        <template #expandIcon></template>
-
-                        <div
-                            class="overflow-x-hidden overflow-y-hidden w-60 max-h-96"
-                        >
-                            <AssetDropdownNewDatabase
-                                v-if="connection"
-                                v-model:clearStateDB="clearStateDB"
-                                :connector="filteredConnector"
-                                :filter="data"
-                                @change="handleChange"
-                                :bgGrayForSelector="bgGrayForSelector"
-                                @label-change="setPlaceholder($event, 'asset')"
-                            ></AssetDropdownNewDatabase>
-                        </div>
-                    </a-sub-menu>
-
-                    <a-sub-menu
-                        class="submenu"
-                        key="sub3"
-                        :disabled="
-                            getContextName(`schema`) === '' ? true : false
-                        "
-                    >
-                        <template #title>
-                            <div
-                                class="flex items-center justify-center submenu-title-content"
-                            >
-                                <AtlanIcon
-                                    icon="SchemaGray"
-                                    class="flex-shrink-0 w-6 h-6 mr-1 text-gray-500"
-                                ></AtlanIcon>
-                                <span class="parent-ellipsis-container-base">
-                                    <span class="text-gray-500">Schema</span>
-                                    <br />
-                                    <span class="text-base">{{
-                                        getContextName(`schema`) === ''
-                                            ? 'Select schema context'
-                                            : getContextName(`schema`)
-                                    }}</span>
-                                </span>
-                                <span
-                                    class="self-center ml-auto mr-4 text-gray-500 clear-btn"
-                                >
-                                    <button
-                                        :class="[
-                                            getContextName(`schema`) ===
-                                            'Select schema context'
-                                                ? `${$style.clear_btn_invisible}`
-                                                : `${$style.clear_btn_visible}`,
-                                        ]"
-                                        class="hover:text-primary"
-                                        @click="clearStateSchemaHandle"
-                                    >
-                                        clear
-                                    </button>
-                                </span>
-                                <AtlanIcon
-                                    icon="CaretRight"
-                                    class="self-center flex-shrink-0 w-4 h-4 text-gray-500"
-                                ></AtlanIcon></div
-                        ></template>
-                        <template #expandIcon></template>
-
-                        <div class="overflow-x-hidden overflow-y-hidden w-60">
-                            <AssetDropdownNewSchema
-                                v-if="connection"
-                                v-model:clearStateSchema="clearStateSchema"
-                                :connector="filteredConnector"
-                                :filter="data"
-                                @change="handleChange"
-                                :bgGrayForSelector="bgGrayForSelector"
-                                @label-change="setPlaceholder($event, 'asset')"
-                            ></AssetDropdownNewSchema>
-                        </div>
-                    </a-sub-menu>
-                </a-menu>
-            </template>
-        </a-dropdown> -->
     </div>
 </template>
 
@@ -875,16 +540,9 @@
                     emit('update:data', { attributeName, attributeValue })
                     emit('change')
                 } else {
-                    selectNode(data.value?.attributeValue)
+                    selectNode(data?.value?.attributeValue)
                 }
             }
-
-            // const onChange = (value) => {
-            //     debugger
-            //     if (!value) {
-            //         selectNodeTree(undefined, undefined)
-            //     }
-            // }
 
             const filteredConnector = computed(() =>
                 store.getSourceList?.find((item) => item.id === connector.value)
@@ -910,14 +568,6 @@
                 connection.value || connector.value || undefined,
             ])
 
-            // const state = reactive({
-            //     selectedKeys: [],
-            //     openKeys: [],
-            // })
-            // const handleClick: MenuProps['onClick'] = (menuInfo) => {
-            //     console.log('click ', menuInfo)
-            // }
-
             const selectNodeTree = (selected, event: any) => {
                 console.log('selectNodeTree:', selected)
                 let value = selected[0]
@@ -930,11 +580,8 @@
                 // debugger
 
                 if (!(event.event === 'select') && !event.connection) {
-                    //Code for expand based on event
-                    if (
-                        // !expandedKeys?.value?.includes(value) &&
-                        !node?.isLeaf
-                    ) {
+                    // Code for expand based on event
+                    if (!node?.isLeaf) {
                         const isExpanded = expandedKeys.value?.includes(
                             event.value
                         )
@@ -946,7 +593,6 @@
                             )
                             expandedKeys.value?.splice(index, 1)
                         }
-                        // expandedKeys.value.push(value)
                         console.log(
                             'expandedKeys valueHere:',
                             expandedKeys.value
@@ -954,41 +600,11 @@
                     }
                 }
 
-                // if (
-                //     // !expandedKeys?.value?.includes(value) &&
-                //     !node?.isLeaf
-                // ) {
-                //     const isExpanded = expandedKeys.value?.includes(value)
-                //     if (!isExpanded) {
-                //         expandedKeys.value.push(value)
-                //     } else if (isExpanded) {
-                //         const index = expandedKeys.value?.indexOf(value)
-                //         expandedKeys.value?.splice(index, 1)
-                //     }
-                //     // expandedKeys.value.push(value)
-                //     console.log('expandedKeys valueHere:', expandedKeys.value)
-                // }
-
-                // else if (
-                //     expandedKeys?.value?.includes(value) &&
-                //     !node?.isLeaf
-                // ) {
-                //     expandedKeys?.value?.splice(0, 1)
-                //     console.log(
-                //         'expandedKeysRemove valueHere:',
-                //         expandedKeys.value
-                //     )
-                // }
-
                 // Checking for selection of same node again to avoid deselection of a connector
                 else if (value) {
                     selectedKeys.value.splice(0, selectedKeys.value.length)
                     selectedKeys.value.push(value)
 
-                    // if (node?.children?.length > 0 && !isLeafNodeSelectable.value) {
-                    //     expandNode([], node)
-                    //     return
-                    // }
                     const payload: Components.Schemas.FilterCriteria = {
                         attributeName: undefined,
                         attributeValue: undefined,
@@ -1077,7 +693,6 @@
                     return store.getConnectorImageMapping[
                         node.title?.toLowerCase()
                     ]
-                    // return node.title
                 }
                 const el = node?.key?.split('/')
                 if (el && el.length) {
@@ -1092,12 +707,6 @@
                     return store.getConnectorImageMapping[el[1]?.toLowerCase()]
                 }
                 return ''
-
-                // if (chunks?.length > 2)
-                //         return store.getConnectorImageMapping[
-                //             chunks[1]?.toLowerCase()
-                //         ]
-                // }
             }
 
             /**
@@ -1135,7 +744,7 @@
                         const obj = treeData.value.find(
                             ({ connector }) => connector === chunks[1]
                         )
-                        const child = obj.children.find(
+                        const child = obj?.children.find(
                             ({ key }) => key === connectorKey
                         )
                         return `${nodeStringFilter(chunks[1])}: ${child.title}`
@@ -1148,7 +757,7 @@
                         const obj = treeData.value.find(
                             ({ connector }) => connector === chunks[1]
                         )
-                        const child = obj.children.find(
+                        const child = obj?.children.find(
                             ({ key }) => key === connectorKey
                         )
                         return child.title
@@ -1158,12 +767,6 @@
                 }
 
                 if (item === 'icon') {
-                    // if (chunks?.length > 2) {
-                    //     if (chunks[1] === 'bigquery') return 'BigQuery'
-                    //     if (chunks[1] === 'mysql') return 'MySQL'
-                    //     return capitalizeFirstLetter(chunks[1])
-                    // }
-                    // return ''
                     if (chunks?.length > 2)
                         return store.getConnectorImageMapping[
                             chunks[1]?.toLowerCase()
@@ -1184,48 +787,27 @@
             }
 
             const clearStateDBHandle = () => {
-                // console.log(
-                //     'clearStateDB called in parent before',
-                //     clearStateDB.value
-                // )
                 clearStateDB.value = true
-                // console.log(
-                //     'clearStateDB called in parent after',
-                //     clearStateDB.value
-                // )
             }
 
             const clearStateSchemaHandle = () => {
-                // console.log(
-                //     'clearStateSchema called in parent before',
-                //     clearStateSchema.value
-                // )
                 clearStateSchema.value = true
-                // console.log(
-                //     'clearStateSchema called in parent after',
-                //     clearStateSchema.value
-                // )
             }
 
             const onConnectionPopoverVisibleChange = (e) => {
-                // console.log('onPopoverVisibleChange called in DB', e)
                 ConnectionPopoverVisible.value = e
-                // expandedKeys.value = []
             }
 
             const onDBPopoverVisibleChange = (e) => {
-                // console.log('onPopoverVisibleChange called in DB', e)
                 DBPopoverVisible.value = e
             }
             const onSchemaPopoverVisibleChange = (e) => {
-                // console.log('onPopoverVisibleChange called in Schema', e)
                 SchemaPopoverVisible.value = e
             }
 
             return {
                 treeSelectRef,
                 filterSourceIds,
-                // onChange,
                 expandedKeys,
                 selectNode,
                 handleChange,
@@ -1243,8 +825,6 @@
                 connection,
 
                 nodeStringFilter,
-                // ...toRefs(state),
-                // handleClick,
                 selectNodeTree,
                 onBlur,
                 toggleVisibilityOfChildren,
@@ -1427,12 +1007,7 @@
 
     .filled_db_state {
         @apply font-bold !important;
-        // @apply hover:underline !important;
     }
-
-    // .clear_btn_visible {
-    //     visibility: visible !important;
-    // }
     .clear_btn_invisible {
         visibility: hidden !important;
     }

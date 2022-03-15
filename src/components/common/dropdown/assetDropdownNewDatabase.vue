@@ -1,6 +1,5 @@
 <template>
     <div class="flex flex-col w-full pb-1 mt-1 gap-y-2">
-        <!-- <template v-for="(item, index) in list" :key="item.typeName"> -->
         <template v-if="list.length > 0">
             <div>
                 <AssetSelectorNew
@@ -24,19 +23,6 @@
                     :filterFromAssetDropdown="filter"
                     :assetFromAssetDropdown="asset"
                 ></AssetSelectorNew>
-                <!-- <AssetSelector
-                    :key="Database_undefined"
-                    :modelValue="asset[list[1].attribute]"
-                    :type-name="list[1].typeName"
-                    :filters="getFilter(1)"
-                    :disabled="isDisabled(1)"
-                    @change="
-                        handleChange(list[1].attribute, $event, list[1].level)
-                    "
-                    :placeholder="`Select ${list[1].name}`"
-                    :data-test-id="list[1].name?.toLowerCase()"
-                    :bgGrayForSelector="bgGrayForSelector"
-                ></AssetSelector> -->
             </div>
         </template>
     </div>
@@ -49,7 +35,6 @@
         defineComponent,
         ref,
         ComputedRef,
-        Ref,
         toRefs,
         PropType,
         watch,
@@ -146,47 +131,6 @@
                 }
             }
 
-            // const getFilter = (index) => {
-            //     if (index > 0) {
-            //         const item = list.value[index - 1]
-            //         const typeName = list.value[index].typeName
-            //         if (asset.value[item.attribute]) {
-            //             return bodybuilder()
-            //                 .filter(
-            //                     'term',
-            //                     `${item.attribute}`,
-            //                     asset.value[item.attribute]
-            //                 )
-            //                 .filter('term', '__state', 'ACTIVE')
-            //                 .filter('term', '__typeName.keyword', typeName)
-            //                 .size(100)
-            //                 .build()
-            //         }
-            //     }
-            //     // For the first filter we need the connection name
-            //     else {
-            //         let connectionName = filter.value?.attributeValue
-            //             ?.split('/')
-            //             .slice(0, 3)
-            //             ?.join('/')
-
-            //         return bodybuilder()
-            //             .filter('term', '__state', 'ACTIVE')
-            //             .filter(
-            //                 'term',
-            //                 'connectionQualifiedName',
-            //                 connectionName
-            //             )
-            //             .filter(
-            //                 'term',
-            //                 '__typeName.keyword',
-            //                 list.value[index].typeName
-            //             )
-            //             .size(100)
-            //             .build()
-            //     }
-            // }
-
             const getKey = (index) => {
                 if (index > 0) {
                     const item = list.value[index - 1]
@@ -265,32 +209,20 @@
             })
 
             const handleClear = () => {
-                // clearStateDB.value = false
                 emit('update:clearStateDB', false)
             }
 
             watch([clearStateDB], () => {
-                // console.log(
-                //     'clearStateDB changed in child before',
-                //     clearStateDB.value
-                // )
-
                 if (clearStateDB.value === true) {
                     handleChange('databaseQualifiedName', undefined, 1)
                     handleClear()
                 }
-
-                // console.log(
-                //     'clearStateDB changed in child after',
-                //     clearStateDB.value
-                // )
             })
 
             return {
                 _firsCalled,
                 list,
                 asset,
-                // getFilter,
                 handleChange,
                 isDisabled,
                 getKey,

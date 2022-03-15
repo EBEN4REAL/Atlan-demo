@@ -82,6 +82,9 @@
                 />
             </div>
         </div>
+        <div v-if="activeTabKey === 'preferences'">
+            <Preferences />
+        </div>
         <div
             v-if="activeTabKey === 'policies'"
             class="flex flex-col px-6 pt-6"
@@ -340,6 +343,7 @@
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import NewPolicyIllustration from '~/assets/images/illustrations/new_policy.svg'
     import { activeTabKey, tabConfig } from './composables/usePersonaTabs'
+    import Preferences from './overview/preferences.vue'
     import {
         newIdTag,
         selectedPersonaDirty,
@@ -373,6 +377,7 @@
             Addpolicy,
             Readme,
             RaisedTab,
+            Preferences,
         },
         props: {
             persona: {

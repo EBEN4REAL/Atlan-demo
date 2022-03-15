@@ -241,7 +241,9 @@
             })
             const handleRemove = () => {
                 showPopover.value = false
-                emit('changeLink', '')
+                setTimeout(() => {
+                    emit('changeLink', '')
+                }, 300)
                 link.value = ''
             }
             const countData = computed(() => item.value.dataPolicies?.length)

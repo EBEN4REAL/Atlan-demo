@@ -154,7 +154,7 @@
 
     import { useConfigMapByName } from '~/workflows/composables/package/useConfigMapByName'
     import ErrorView from '@common/error/index.vue'
-    import AtlanIcon from '../../icon/atlanIcon.vue'
+    import AtlanIcon from '@/common/icon/atlanIcon.vue'
 
     import { useWorkflowHelper } from '~/workflows/composables/package/useWorkflowHelper'
     import useCredentialInfo from '~/composables/credential/useCredentialInfo'
@@ -164,13 +164,12 @@
     import { useConnectionStore } from '~/store/connection'
     import useUpdateCredential from '~/composables/credential/useUpdateCredential'
     import { message } from 'ant-design-vue'
-    // import DynamicForm from '@/common/dynamicForm2/index.vue'
 
     export default defineComponent({
         name: 'CredentialInput',
         components: {
             FormItem: defineAsyncComponent(() =>
-                import('@/common/dynamicForm2/formItem.vue')
+                import('~/workflows/components/dynamicForm2/formItem.vue')
             ),
             ErrorView,
             AtlanIcon,

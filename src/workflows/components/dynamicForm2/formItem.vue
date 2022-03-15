@@ -99,7 +99,7 @@
     import Schedule from './widget/schedule.vue'
     import ConnectionSelector from './widget/connectionSelector.vue'
     import Alias from './widget/alias.vue'
-    import AtlanIcon from '../icon/atlanIcon.vue'
+    import AtlanIcon from '@/common/icon/atlanIcon.vue'
 
     export default defineComponent({
         name: 'DynamicForm',

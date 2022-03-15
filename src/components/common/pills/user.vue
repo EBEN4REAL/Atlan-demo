@@ -30,7 +30,7 @@
     import { toRefs } from 'vue'
 
     import UserAvatar from '@/common/avatar/user.vue'
-    import AtlanIcon from '../icon/atlanIcon.vue'
+    import AtlanIcon from '@/common/icon/atlanIcon.vue'
 
     export default {
         name: 'Avatar',

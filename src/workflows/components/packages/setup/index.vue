@@ -230,7 +230,7 @@
     import { useRoute, useRouter } from 'vue-router'
 
     // Components
-    import DynamicForm from '@/common/dynamicForm2/index.vue'
+    import DynamicForm from '~/workflows/components/dynamicForm2/index.vue'
     import Schedule from './schedule.vue'
     import Run from './run.vue'
 

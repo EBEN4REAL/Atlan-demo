@@ -24,7 +24,7 @@
         name: 'ObjectInput',
         components: {
             DynamicForm: defineAsyncComponent(() =>
-                import('@/common/dynamicForm2/index.vue')
+                import('~/workflows/components/dynamicForm2/index.vue')
             ),
         },
         props: {

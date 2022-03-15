@@ -201,13 +201,11 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
 
-    // import DynamicForm from '@/common/dynamicForm2/index.vue'
-
     export default defineComponent({
         name: 'ConnectionInput',
         components: {
             FormItem: defineAsyncComponent(() =>
-                import('@/common/dynamicForm2/formItem.vue')
+                import('~/workflows/components/dynamicForm2/formItem.vue')
             ),
             AssetDrawer,
         },

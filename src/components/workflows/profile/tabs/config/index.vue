@@ -123,7 +123,7 @@
 <script lang="ts">
     // Vue
     import { defineComponent, computed, inject, toRefs } from 'vue'
-    import Setup from '@/packages/setup/index.vue'
+    import Setup from '~/workflows/components/packages/setup/index.vue'
     import { useConfigMapByName } from '~/composables/package/useConfigMapByName'
     import Loader from '@/common/loaders/page.vue'
     import ErrorView from '@common/error/discover.vue'

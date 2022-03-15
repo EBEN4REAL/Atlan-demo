@@ -75,15 +75,15 @@
 
 <script lang="ts">
     import { defineComponent, ref, computed } from 'vue'
-    import EmptyView from '@common/empty/index.vue'
-    import ErrorView from '@common/error/discover.vue'
-    import PackageList from '@/packages/list/index.vue'
-    import PackageFilters from '@/packages/filters/index.vue'
-    import { packageFilters } from '~/constant/filters/packageFilters'
-    import { usePackageDiscoverList } from '~/composables/package/usePackageDiscoverList'
     import { useDebounceFn } from '@vueuse/core'
     import { useRouter } from 'vue-router'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
+    import EmptyView from '@/common/empty/index.vue'
+    import ErrorView from '@/common/error/discover.vue'
+    import PackageList from '~/workflows/components/packages/list/index.vue'
+    import PackageFilters from '~/workflows/components/packages/filters/index.vue'
+    import { packageFilters } from '~/constant/filters/packageFilters'
+    import { usePackageDiscoverList } from '~/composables/package/usePackageDiscoverList'
 
     export default defineComponent({
         name: 'PackageDiscovery',

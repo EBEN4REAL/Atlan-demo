@@ -31,9 +31,9 @@
     import { useRoute, useRouter } from 'vue-router'
     import WorfklowPreview from '@/workflows/preview/index.vue'
 
-    import PackageDiscoveryList from '@/packages/index.vue'
+    import PackageDiscoveryList from '~/workflows/components/packages/index.vue'
 
-    // import Sandbox from '@/packages/preview/sandbox.vue'
+    // import Sandbox from '~/workflows/components/packages/preview/sandbox.vue'
 
     export default defineComponent({
         name: 'PackageSetupPage',

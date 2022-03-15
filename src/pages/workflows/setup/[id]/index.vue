@@ -136,7 +136,7 @@
 
     import Loader from '@/common/loaders/page.vue'
     import ErrorView from '@common/error/discover.vue'
-    import PackagesSetup from '@/packages/setup/index.vue'
+    import PackagesSetup from '~/workflows/components/packages/setup/index.vue'
 
     import { usePackageByName } from '~/composables/package/usePackageByName'
     import { usePackageInfo } from '~/composables/package/usePackageInfo'

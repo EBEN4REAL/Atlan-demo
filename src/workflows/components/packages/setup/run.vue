@@ -62,7 +62,7 @@
     import { computed, defineComponent, toRefs } from 'vue'
     import { useIntervalFn, useTimeAgo } from '@vueuse/core'
     import { formatDateTime } from '~/utils/date'
-    import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
+    import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
 
     export default defineComponent({
         name: 'WorkflowRun',

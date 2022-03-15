@@ -1,4 +1,4 @@
-import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
+import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
 import { timeDiffCalc } from '~/utils/date'
 import Success from '~/assets/images/icons/run-success.svg?url'
 import Running from '~/assets/images/icons/running.svg?url'

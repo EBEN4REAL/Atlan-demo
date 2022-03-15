@@ -72,7 +72,7 @@
     import { defineComponent, toRefs } from 'vue'
     import UserPill from '@/common/pills/user.vue'
     import PopOverUser from '@/common/popover/user/user.vue'
-    import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
+    import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
 
     export default defineComponent({

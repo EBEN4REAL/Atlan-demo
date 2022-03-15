@@ -80,7 +80,7 @@
     // Vue
     import { computed, defineComponent, ref, toRefs } from 'vue'
 
-    import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
+    import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
 
     export default defineComponent({
         // mixins: [WorkflowMixin],

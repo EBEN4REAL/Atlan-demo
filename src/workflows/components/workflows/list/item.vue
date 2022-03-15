@@ -121,7 +121,7 @@
     import cronstrue from 'cronstrue'
     import RunWidget from './run.vue'
     import LastRun from './lastRun.vue'
-    import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
+    import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
     import Ellipsis from '@/common/ellipsis/index.vue'
 
     export default defineComponent({

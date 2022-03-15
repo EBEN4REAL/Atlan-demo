@@ -48,7 +48,7 @@
     import { useIntervalFn, whenever } from '@vueuse/core'
 
     import RunsSelect from '@/common/select/runs.vue'
-    import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
+    import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
     import useRunItem from '~/workflows/composables/package/useRunItem'
 
     import Sidebar from './sidebar.vue'

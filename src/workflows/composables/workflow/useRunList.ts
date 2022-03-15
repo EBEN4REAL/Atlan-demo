@@ -3,7 +3,7 @@ import { computed, Ref, ref, watch } from 'vue'
 import {
     getRunList,
     getArchivedRunList,
-} from '~/composables/workflow/useWorkflowList'
+} from '~/workflows/composables/workflow/useWorkflowList'
 import { LiveRun, ArchivedRuns } from '~/types/workflow/runs.interface'
 
 const useRunList = (wf_name) => {

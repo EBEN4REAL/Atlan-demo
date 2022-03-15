@@ -29,7 +29,7 @@
 <script lang="ts">
     import { defineComponent, inject, toRefs } from 'vue'
     import { useRouter } from 'vue-router'
-    import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
+    import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
     import LastRun from './lastRun.vue'
     import Dropdown from '@/UI/dropdown.vue'
 

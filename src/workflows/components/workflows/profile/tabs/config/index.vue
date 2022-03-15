@@ -128,7 +128,7 @@
     import Loader from '@/common/loaders/page.vue'
     import ErrorView from '@common/error/discover.vue'
     import Preview from '~/workflows/components/workflows/preview/property/index.vue'
-    import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
+    import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
 
     export default defineComponent({
         name: 'WorkflowConfig',

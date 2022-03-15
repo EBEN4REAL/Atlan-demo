@@ -230,7 +230,7 @@
         useTimeoutFn,
         watchOnce,
     } from '@vueuse/core'
-    import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
+    import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
     import useWorkflowLogsStream from '~/workflows/composables/package/useWorkflowLogsStream'
     import WorkflowLogs from './logs.vue'
     import WorkflowMetrics from './metrics.vue'

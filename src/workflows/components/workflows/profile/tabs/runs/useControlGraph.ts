@@ -5,7 +5,7 @@ import { watch } from 'vue'
 import {
     retryRunByName,
     stopRunByName,
-} from '~/composables/workflow/useWorkflowList'
+} from '~/workflows/composables/workflow/useWorkflowList'
 
 export default function useControlGraph() {
     const retry = (selectedRunName, isRunning) => {

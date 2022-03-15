@@ -169,7 +169,7 @@
     import { Modal, message } from 'ant-design-vue'
     import { watchOnce } from '@vueuse/core'
     import useWorkflowSubmit from '~/workflows/composables/package/useWorkflowSubmit'
-    import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
+    import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
 
     import Schedule from '@/common/input/schedule.vue'
     import useWorkflowUpdate from '~/workflows/composables/package/useWorkflowUpdate'

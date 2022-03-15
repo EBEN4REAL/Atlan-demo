@@ -236,7 +236,7 @@
 
     import { createWorkflow } from '~/workflows/composables/package/useWorkflow'
     import { useWorkflowHelper } from '~/workflows/composables/package/useWorkflowHelper'
-    import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
+    import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
     import useWorkflowSubmit from '~/workflows/composables/package/useWorkflowSubmit'
     import useWorkflowUpdate from '~/workflows/composables/package/useWorkflowUpdate'
 

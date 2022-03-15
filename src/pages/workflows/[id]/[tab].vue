@@ -25,7 +25,7 @@
     import Loader from '@/common/loaders/page.vue'
 
     import { useWorkflowDiscoverList } from '~/workflows/composables/package/useWorkflowDiscoverList'
-    import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
+    import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
     import { usePackageByName } from '~/workflows/composables/package/usePackageByName'
 
     export default defineComponent({

@@ -25,10 +25,10 @@
     import UserPill from '@/common/pills/user.vue'
     import PopOverUser from '@/common/popover/user/user.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-    import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
+    import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
     import { useWorkflowDiscoverList } from '~/workflows/composables/package/useWorkflowDiscoverList'
     import { useRunDiscoverList } from '~/workflows/composables/package/useRunDiscoverList'
-    import { deleteWorkflowByName } from '~/composables/workflow/useWorkflowList'
+    import { deleteWorkflowByName } from '~/workflows/composables/workflow/useWorkflowList'
 
     import Item from './item.vue'
 

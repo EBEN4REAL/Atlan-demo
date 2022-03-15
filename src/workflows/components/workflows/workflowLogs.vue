@@ -104,11 +104,11 @@
     import Clusterize from 'clusterize.js'
     import { defineComponent, ref, toRefs, watch } from 'vue'
     import EmptyView from '@common/empty/index.vue'
-    import { useArchivedWorkflowRunLogs } from '~/composables/workflow/useWorkflowList'
-    import useWorkflowLogsStream from '~/composables/workflow/useWorkflowLogsStream'
+    import { useArchivedWorkflowRunLogs } from '~/workflows/composables/workflow/useWorkflowList'
+    import useWorkflowLogsStream from '~/workflows/composables/workflow/useWorkflowLogsStream'
 
     // import WorkflowMixin from '~/mixins/workflow'
-    import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
+    import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
 
     export default defineComponent({
         components: { EmptyView },

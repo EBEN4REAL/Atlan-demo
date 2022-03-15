@@ -23,7 +23,7 @@
 
 <script lang="ts">
     import { computed, defineComponent, toRefs } from 'vue'
-    import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
+    import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
     import cronstrue from 'cronstrue'
     import { useRouter } from 'vue-router'
 

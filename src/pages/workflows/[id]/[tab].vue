@@ -12,6 +12,7 @@
         computed,
         defineComponent,
         inject,
+        provide,
         ref,
         watch,
         nextTick,
@@ -45,15 +46,19 @@
             })
             const dependentKey = ref('workflow_profile')
 
-            const { isLoading, list, error } = useWorkflowDiscoverList({
-                isCache: false,
-                dependentKey,
-                facets,
-                limit,
-                offset,
-                queryText,
-                source: ref({}),
-            })
+            const { isLoading, list, error, refresh } = useWorkflowDiscoverList(
+                {
+                    isCache: false,
+                    dependentKey,
+                    facets,
+                    limit,
+                    offset,
+                    queryText,
+                    source: ref({}),
+                }
+            )
+
+            provide('refetchWorkflowObject', refresh)
 
             const workflowObject = computed(() => {
                 if (list.value?.length > 0) {

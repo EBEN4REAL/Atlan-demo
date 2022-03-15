@@ -72,7 +72,7 @@
             const activeKey = ref()
 
             const searchDirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
-
+            const isWorkflowDirty = ref(false)
             const router = useRouter()
             const handleChangeTab = (key) => {
                 router.replace(`/workflows/${route.params.id}/${key}`)
@@ -98,7 +98,9 @@
                     },
                 })
             }
+
             provide('newrun', handleNewRun)
+            provide('isWorkflowDirty', isWorkflowDirty)
 
             return {
                 activeKey,

@@ -62,7 +62,7 @@
                     placement="topRight"
                     :ok-button-props="{ size: 'default' }"
                     :cancel-button-props="{ size: 'default' }"
-                    @confirm="handleSubmit(false)"
+                    @confirm="handleSubmit"
                 >
                     <template #icon> </template>
                     <template #title>
@@ -87,7 +87,7 @@
                     <AtlanButton2
                         :color="allowSchedule ? 'secondary' : 'primary'"
                         label="Run"
-                        @click="handleSubmit(false)"
+                        @click="handleSubmit"
                     />
 
                     <a-popconfirm
@@ -98,7 +98,7 @@
                         placement="topRight"
                         :ok-button-props="{ size: 'default' }"
                         :cancel-button-props="{ size: 'default' }"
-                        @confirm="handleSubmit(true)"
+                        @confirm="handleSubmit"
                     >
                         <template #icon> </template>
                         <template #title>
@@ -174,10 +174,9 @@
                         v-if="run && !errorMesssage"
                         :run="run"
                         :is-loading="runLoading || !run?.status?.progress"
-                        class="mb-3"
                     ></Run>
 
-                    <div class="flex gap-x-3">
+                    <div class="flex justify-center mt-6 gap-x-6">
                         <router-link v-if="status === 'success'" to="/assets">
                             <AtlanButton2 label="Back to Assets" />
                         </router-link>
@@ -278,7 +277,7 @@
         emits: ['change', 'openLog', 'handleSetLogo'],
         setup(props, { emit }) {
             // const graphRef = inject('graphRef')
-
+            const router = useRouter()
             const stepForm = ref()
             const currentStep = ref(0)
             const runOnUpdate = ref(false)
@@ -414,12 +413,16 @@
             const run = ref({})
 
             watch(runList, () => {
-                if (runList.value?.length > 0) {
+                if (runList.value?.length) {
                     run.value = runList.value[0]
 
-                    if (run.value.status?.phase !== 'Running') {
-                        pause()
-                    }
+                    if (
+                        !run.value.status?.startedAt ||
+                        !run.value.status?.phase
+                    )
+                        fetchRun()
+
+                    if (run.value.status?.phase !== 'Running') pause()
 
                     if (run?.value.status?.phase === 'Succeeded')
                         setRunState('success', 'Workflow completed 🎉')
@@ -430,7 +433,7 @@
                             'Worflow run has failed',
                             'Go to Monitor Run > Failed Node > Logs for more details'
                         )
-                }
+                } else fetchRun()
             })
 
             const handleTrackLink = () => {
@@ -510,9 +513,9 @@
                 execute(true)
             }
 
-            const handleSubmit = (isCron) => {
+            const handleSubmit = () => {
                 if (isEdit.value) {
-                    body.value.metadata = workflowTemplate.value.metadata
+                    body.value.metadata = workflowObject.value.metadata
                 } else {
                     // Copy labels and annotations of the worfklow template
                     body.value.metadata.labels =
@@ -521,7 +524,7 @@
                         workflowTemplate.value.metadata.annotations
 
                     // Schedule Changes
-                    if (cron.value && isCron) {
+                    if (cron.value.cron && cron.value.timezone) {
                         body.value.metadata.annotations[
                             'orchestration.atlan.com/schedule'
                         ] = cron.value.cron
@@ -689,8 +692,8 @@
             const handleBackToSetup = () => {
                 status.value = undefined
             }
-            const router = useRouter()
-            const handleExit = (key) => {
+
+            const handleExit = () => {
                 router.replace(`/workflows/setup`)
             }
 

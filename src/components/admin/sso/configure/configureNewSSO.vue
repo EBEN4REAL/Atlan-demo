@@ -47,22 +47,14 @@
                             />
                         </a-form-item>
                     </a-form>
-                    <div class="flex items-center justify-end">
-                        <AtlanBtn
-                            padding="compact"
-                            size="sm"
-                            class="px-5 mr-3 font-bold text-gray-500 bg-transparent border-none"
+                    <div class="flex items-center justify-end gap-x-3">
+                        <AtlanButton2
+                            label="Cancel"
+                            color="secondary"
+                            bold
                             @click="showSSOScreen"
-                            >Cancel</AtlanBtn
-                        >
-                        <AtlanBtn
-                            padding="compact"
-                            size="sm"
-                            color="primary"
-                            class="px-5 font-bold"
-                            @click="changeAlias"
-                            >Next</AtlanBtn
-                        >
+                        />
+                        <AtlanButton2 label="Next" bold @click="changeAlias" />
                     </div>
                 </div>
                 <div v-else>
@@ -101,20 +93,12 @@
                         <div class="">
                             <div class="mb-2.5">Atlan SSO metadata</div>
                             <div>
-                                <AtlanBtn
+                                <AtlanButton2
                                     color="secondary"
-                                    padding="compact"
-                                    size="sm"
-                                    class="shadow-sm"
+                                    prefixIcon="Download"
+                                    label="Download metadata file"
                                     @click="downloadMetadataFile"
-                                >
-                                    <div class="flex flex-row items-center">
-                                        <AtlanIcon icon="Download"></AtlanIcon>
-                                        <span class="ml-1"
-                                            >Download metadata file</span
-                                        >
-                                    </div>
-                                </AtlanBtn>
+                                />
                             </div>
                         </div>
                     </div>
@@ -214,36 +198,26 @@
                                         :disabled="true"
                                     />
                                 </div>
-                                <AtlanBtn
+
+                                <IconButton
                                     v-if="
                                         allowAddDeleteMappers &&
                                         index === mapperLists.length - 1
                                     "
-                                    size="sm"
-                                    color="secondary"
-                                    padding="compact"
+                                    icon="Add"
                                     class="mt-6"
                                     @click="addNewMapper"
-                                    ><AtlanIcon
-                                        icon="Add"
-                                        class="gap-x-0"
-                                    ></AtlanIcon
-                                ></AtlanBtn>
-                                <AtlanBtn
+                                />
+
+                                <IconButton
                                     v-if="
                                         allowAddDeleteMappers &&
                                         index !== mapperLists.length - 1
                                     "
-                                    size="sm"
+                                    icon="Delete"
                                     class="mt-6"
-                                    color="secondary"
-                                    padding="compact"
                                     @click="removeMapper(index)"
-                                    ><AtlanIcon
-                                        icon="Delete"
-                                        class="gap-x-0"
-                                    ></AtlanIcon
-                                ></AtlanBtn>
+                                />
                             </div>
                         </div>
 
@@ -267,26 +241,17 @@
                         </div>
                     </div>
                     <div class="flex justify-end mt-9">
-                        <AtlanBtn
-                            padding="compact"
-                            size="sm"
-                            class="px-5 mr-3 font-bold text-gray-500 bg-transparent border-none"
+                        <AtlanButton2
+                            label="Cancel"
+                            color="secondary"
                             @click="showSSOScreen"
-                            >Cancel</AtlanBtn
-                        >
-                        <AtlanBtn
-                            type="primary"
-                            :is-loading="isLoading"
-                            padding="compact"
-                            size="sm"
-                            class="px-5"
+                        />
+                        <AtlanButton2
+                            :loading="isLoading"
+                            :label="isLoading ? 'Configuring' : 'Save'"
+                            bold
                             @click="onSubmit"
-                        >
-                            <span v-if="isLoading" class="font-bold"
-                                >Configuring</span
-                            >
-                            <span v-else class="font-bold">Save</span>
-                        </AtlanBtn>
+                        />
                     </div>
                     <!-- </a-form> -->
                 </div>

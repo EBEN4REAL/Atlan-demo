@@ -153,24 +153,18 @@
 
             <!-- Footer CTA -->
             <div class="flex justify-end w-full gap-x-4">
-                <AtlanButton
-                    padding="compact"
-                    size="sm"
+                <AtlanButton2
+                    label="Close"
                     color="secondary"
                     @click="$emit('update:visible', false)"
-                >
-                    Close
-                </AtlanButton>
+                />
 
-                <AtlanButton
-                    padding="compact"
-                    size="sm"
+                <AtlanButton2
+                    label="Download"
                     :disabled="columnsData.length === 0 || !isReady"
                     :loading="isLoading"
                     @click="downloadImpactedAssets"
-                >
-                    Download
-                </AtlanButton>
+                />
             </div>
         </div>
     </a-modal>

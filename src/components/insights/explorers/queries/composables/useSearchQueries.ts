@@ -57,7 +57,7 @@ const searchQueries = (
         base.filter('regexp', 'name.keyword', `${query.value}.*`)
         base.filter('term', '__state', 'ACTIVE')
 
-        if (facets.value && Object.keys(facets.value).length > 0) {
+        if (facets.value && Object.keys(facets.value ?? {}).length > 0) {
             Object.keys(facets.value ?? {}).forEach((mkey) => {
                 const filterObject = facets?.value[mkey]
                 const existsValue = 'NONE'

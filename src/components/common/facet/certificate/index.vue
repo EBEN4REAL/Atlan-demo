@@ -49,7 +49,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs } from 'vue'
+    import { defineComponent, ref, toRefs, watch } from 'vue'
     import { certificateList } from '~/constant/certification'
 
     import { useVModels } from '@vueuse/core'
@@ -70,6 +70,9 @@
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
+            watch(modelValue, (newModelValue) => {
+                localValue.value = newModelValue
+            })
 
             const { isRadio } = toRefs(props)
 

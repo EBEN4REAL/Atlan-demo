@@ -99,7 +99,7 @@ export default function useGraph(graph) {
                     // prettier-ignore
                     return `
                 <div class="flex items-center">
-                    <div id="${guid}" class="lineage-node group ${isVpNode ? 'isVpNode' : ''} 
+                    <div id="node-${guid}" class="lineage-node group ${isVpNode ? 'isVpNode' : ''} 
                     ${data?.isSelectedNode === data?.id? 'isSelectedNode': ''}
                     ${data?.isHighlightedNode === data?.id? 'isHighlightedNode': ''}
                     ${data?.isGrayed ? 'isGrayed' : ''} ${isBase ? 'isBase' : ''}">
@@ -184,38 +184,6 @@ export default function useGraph(graph) {
                             },
                         },
                     },
-                    // ctaPort: {
-                    //     markup: [
-                    //         {
-                    //             tagName: 'rect',
-                    //             selector: 'portBody',
-                    //         },
-                    //         {
-                    //             tagName: 'text',
-                    //             selector: 'portNameLabel',
-                    //         },
-                    //     ],
-                    //     attrs: {
-                    //         portBody: {
-                    //             width: 268,
-                    //             height: 40,
-                    //             strokeWidth: 1,
-                    //             stroke: '#e6e6eb',
-                    //             fill: '#ffffff',
-                    //             event: 'port:click',
-                    //             y: -11,
-                    //         },
-                    //         portNameLabel: {
-                    //             ref: 'portBody',
-                    //             refX: 36,
-                    //             refY: 12,
-                    //             fontSize: 16,
-                    //             fill: '#3e4359',
-                    //             event: 'port:click',
-                    //         },
-                    //     },
-                    //     position: 'erPortPosition',
-                    // },
                     columnList: {
                         markup: [
                             {

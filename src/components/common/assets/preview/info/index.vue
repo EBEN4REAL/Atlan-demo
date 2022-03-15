@@ -45,6 +45,7 @@
                 <Name
                     ref="nameRef"
                     v-model="localName"
+                    :selected-asset="selectedAsset"
                     class="mx-4"
                     :edit-permission="editPermission"
                     @change="handleChangeName"
@@ -729,6 +730,7 @@
                 <Classification
                     v-model="localClassifications"
                     :guid="selectedAsset.guid"
+                    :selected-asset="selectedAsset"
                     :edit-permission="
                         selectedAssetUpdatePermission(
                             selectedAsset,
@@ -772,7 +774,7 @@
                             isDrawer,
                             'RELATIONSHIP_ADD',
                             'AtlasGlossaryTerm'
-                        ) && editPermission
+                        ) || editPermission
                     "
                     :allow-delete="
                         selectedAssetUpdatePermission(
@@ -780,7 +782,7 @@
                             isDrawer,
                             'RELATIONSHIP_REMOVE',
                             'AtlasGlossaryTerm'
-                        ) && editPermission
+                        ) || editPermission
                     "
                     @change="handleMeaningsUpdate"
                 >

@@ -42,9 +42,12 @@ export const typeCopyMapping: Record<string, string> = {
     create_glossary: 'Create Glossary',
     create_category: 'Create Category',
     create_term: 'Create Term',
-    bm_attribute: 'Update',
+    bm_attribute: 'Update custom metadata',
     term_link: 'Link Term',
     attach_classification: 'Link Classification',
+    certificateStatus: 'Certificate',
+    ownerUsers: 'Owner',
+    userDescription: 'Description',
 }
 
 export const requestTypeTabList: { id: string; value: RequestType[] }[] = [

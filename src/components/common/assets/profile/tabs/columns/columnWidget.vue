@@ -1,5 +1,5 @@
 <template>
-    <div class="max-profile-width">
+    <div>
         <!-- Search and Filter -->
         <div class="w-1/2 mb-3">
             <SearchAdvanced
@@ -90,6 +90,12 @@
                                 <Tooltip
                                     :tooltip-text="text"
                                     classes="hover:text-primary"
+                                    :clamp-percentage="
+                                        isScrubbed(record.item) ||
+                                        certificateStatus(record.item)
+                                            ? '88%'
+                                            : '93%'
+                                    "
                                 />
 
                                 <CertificateBadge
@@ -103,10 +109,11 @@
                                     "
                                     class="mb-0.5 ml-1"
                                 ></CertificateBadge>
-                                <a-tooltip placement="right"
+                                <a-tooltip
+                                    v-if="isScrubbed(record.item)"
+                                    placement="right"
                                     ><template #title>Limited Access</template>
                                     <AtlanIcon
-                                        v-if="isScrubbed(record.item)"
                                         icon="Lock"
                                         class="h-3.5 mb-0.5 ml-1"
                                     ></AtlanIcon
@@ -120,7 +127,7 @@
                                     record.is_sort ||
                                     record.is_indexed
                                 "
-                                class="relative flex items-center h-full"
+                                class="flex items-center"
                             >
                                 <ColumnKeys
                                     :is-primary="record.is_primary"
@@ -614,9 +621,5 @@
 
     .selected-row {
         @apply border-r-2 border-primary !important;
-    }
-
-    .max-profile-width {
-        max-width: calc(100vw - 516px);
     }
 </style>

@@ -16,7 +16,8 @@ export const actOnRequest = (
         body,
     })
 }
-
+export const createBulkRequest = (body?: any, options?: any) =>
+    useAPI(map.CREATE_REQUESTS_BULK, 'POST', { body }, options || {})
 // getRequests()
 // // useAPI get call with cache true,paramsObject,axios/swrv config options to get list of requests
 // // returns  {data, error, isValidating, mutate}}

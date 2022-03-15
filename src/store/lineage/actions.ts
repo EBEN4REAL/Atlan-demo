@@ -1,4 +1,10 @@
 export const actions = {
+    setColumnToSelect(column) {
+        this.columnToSelect = column
+    },
+    setMergedLineageData(lineage) {
+        this.mergedLineageData = lineage
+    },
     setNodesColumnList(nodeId, columns?, offset?, total?) {
         if (nodeId) {
             this.nodesColumnList[nodeId] = { columns, offset, total }

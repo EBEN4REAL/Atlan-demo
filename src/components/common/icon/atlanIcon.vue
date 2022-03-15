@@ -2,7 +2,7 @@
     <component
         :is="svgIcon"
         :style="{ height: '1rem' }"
-        class="inline w-auto"
+        class="flex-none inline w-auto"
     />
 </template>
 
@@ -11,7 +11,7 @@
     import iconMap from './iconMap'
 
     export default defineComponent({
-        name: 'AtlanIcons',
+        name: 'AtlanIcon',
         props: {
             icon: {
                 type: String as PropType<keyof typeof iconMap>,

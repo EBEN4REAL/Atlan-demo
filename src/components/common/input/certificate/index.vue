@@ -1,7 +1,7 @@
 <template>
     <div class="flex items-center text-xs text-gray-500">
         <a-popover
-            v-if="editPermission"
+            v-if="showPopover && role !== 'Guest'"
             v-model:visible="isEdit"
             placement="leftTop"
             :overlay-class-name="$style.certificatePopover"
@@ -9,6 +9,22 @@
             @visibleChange="handleVisibleChange"
         >
             <template #content>
+                <div
+                    v-if="!editPermission && role !== 'Guest'"
+                    class="px-3 py-2 mx-4 mb-3 bg-gray-100"
+                >
+                    You don't have edit access. Suggest a new Certificate and
+                    <span class="text-primary cursor-pointer">
+                        <a-popover placement="rightBottom">
+                            <template #content>
+                                <AdminList></AdminList>
+                            </template>
+                            <span>Admins</span>
+                        </a-popover>
+                    </span>
+                    can review your request.
+                </div>
+
                 <CertificateFacet
                     v-model="localValue.certificateStatus"
                     :is-radio="true"
@@ -21,9 +37,21 @@
                     >
                     </a-textarea>
                 </div>
+                <div
+                    v-if="!editPermission && role !== 'Guest'"
+                    class="flex items-center justify-end mx-2 space-x-2 mt-5"
+                >
+                    <a-button @click="handleCancelRequest">Cancel</a-button>
+                    <a-button
+                        type="primary"
+                        :loading="requestLoading"
+                        @click="handleRequest"
+                        class="bg-primary"
+                        >Submit Request</a-button
+                    >
+                </div>
             </template>
         </a-popover>
-
         <CertificatePill
             v-if="certificateStatus(selectedAsset)"
             class="w-full"
@@ -42,8 +70,8 @@
             <a-tooltip
                 placement="left"
                 :title="
-                    !editPermission
-                        ? `You don't have permission to add a certification to this asset`
+                    !editPermission && role === 'Guest'
+                        ? `You don't have permission to add owners to this asset`
                         : ''
                 "
                 :mouse-enter-delay="0.5"
@@ -56,7 +84,7 @@
                 >
                     <a-button
                         v-if="showAddBtn"
-                        :disabled="!editPermission"
+                        :disabled="role === 'Guest' && !editPermission"
                         shape="circle"
                         size="small"
                         class="text-center shadow"
@@ -64,7 +92,7 @@
                             editPermission:
                                 'hover:bg-primary-light hover:border-primary',
                         }"
-                        @click="() => (isEdit = true)"
+                        @click="handleOpenPopover"
                     >
                         <span
                             ><AtlanIcon
@@ -73,7 +101,6 @@
                             ></AtlanIcon></span></a-button
                 ></Shortcut>
             </a-tooltip>
-
             <span v-if="!showAddBtn" class="-ml-1 text-sm text-gray-600"
                 >No certification</span
             >
@@ -84,6 +111,7 @@
 <script lang="ts">
     import {
         defineComponent,
+        defineAsyncComponent,
         PropType,
         watch,
         computed,
@@ -98,13 +126,16 @@
         useVModels,
         whenever,
     } from '@vueuse/core'
+    import { message } from 'ant-design-vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
+    import { useCreateRequests } from '~/composables/requests/useCreateRequests'
     import CertificatePill from '@/common/pills/certificate.vue'
     import CertificateFacet from '@/common/facet/certificate/index.vue'
     import whoami from '~/composables/user/whoami'
     import Shortcut from '@/common/popover/shortcut.vue'
+    import CertificateBadge from '@common/badge/certificate/index.vue'
 
     export default defineComponent({
         name: 'CertificateWidget',
@@ -112,6 +143,10 @@
             CertificatePill,
             CertificateFacet,
             Shortcut,
+            CertificateBadge,
+            AdminList: defineAsyncComponent(
+                () => import('@/common/info/adminList.vue')
+            ),
         },
         props: {
             modelValue: {
@@ -148,6 +183,11 @@
                 required: false,
                 default: true,
             },
+            showPopover: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
@@ -156,6 +196,7 @@
             const isEdit = ref(false)
             const { selectedAsset, inProfile, editPermission } = toRefs(props)
 
+            const requestLoading = ref()
             const {
                 certificateStatus,
                 certificateStatusMessage,
@@ -164,17 +205,24 @@
             } = useAssetInfo()
 
             const handleChange = () => {
-                modelValue.value = localValue.value
-                emit('change')
+                if (props.editPermission) {
+                    modelValue.value = localValue.value
+                    emit('change')
+                }
             }
 
-            const { username } = whoami()
+            const { username, role } = whoami()
 
             const handleVisibleChange = (visible) => {
-                if (!visible) {
+                if (!visible && props.editPermission) {
                     localValue.value.certificateUpdatedBy = username.value
                     handleChange()
                 }
+            }
+
+            const handleOpenPopover = () => {
+                isEdit.value = true
+                requestLoading.value = false
             }
 
             const activeElement = useActiveElement()
@@ -185,6 +233,39 @@
                     activeElement.value?.attributes?.contenteditable?.value !==
                         'true'
             )
+            const handleRequest = () => {
+                const {
+                    error: requestError,
+                    isLoading: isRequestLoading,
+                    isReady: requestReady,
+                } = useCreateRequests({
+                    assetGuid: selectedAsset.value?.guid,
+                    assetQf: selectedAsset.value?.attributes?.qualifiedName,
+                    assetType: selectedAsset.value?.typeName,
+                    certificate: localValue.value?.certificateStatus,
+                })
+                whenever(requestError, () => {
+                    if (requestError.value) {
+                        message.error(`Request failed`)
+                        isEdit.value = false
+                        requestLoading.value = false
+                    }
+                })
+                whenever(requestReady, () => {
+                    if (requestReady.value) {
+                        message.success(`Request raised`)
+                        isEdit.value = false
+                        requestLoading.value = false
+                    }
+                })
+                requestLoading.value = isRequestLoading.value
+            }
+
+            const handleCancelRequest = () => {
+                isEdit.value = false
+            }
+
+            // keyboard shortcuts
             const { c, Escape, v, enter, shift } = useMagicKeys()
             whenever(
                 and(c, notUsingInput, !inProfile.value, editPermission.value),
@@ -235,6 +316,11 @@
                 certificateStatusMessage,
                 certificateUpdatedBy,
                 certificateUpdatedAt,
+                handleOpenPopover,
+                role,
+                handleRequest,
+                handleCancelRequest,
+                requestLoading,
             }
         },
     })

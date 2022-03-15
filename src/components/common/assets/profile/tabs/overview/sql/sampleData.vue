@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex items-center justify-center w-full overflow-hidden border rounded max-profile-width h-96 max-h-96"
+        class="flex items-center justify-center w-full overflow-hidden border rounded h-96 max-h-96"
         :class="
             results.length > 0 && !isLoading
                 ? 'border-gray-light'

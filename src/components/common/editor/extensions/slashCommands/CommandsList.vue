@@ -3,7 +3,7 @@
         v-if="items.length"
         id="slash-command-menu"
         ref="menuRef"
-        class="flex flex-col py-1 bg-white border rounded shadow-xl border-gray-light max-h-72 overflow-y-auto w-64"
+        class="flex flex-col py-1 bg-white border rounded shadow-xl border-gray-light max-h-72 overflow-y-auto w-44"
     >
         <ul class="h-full">
             <li
@@ -24,10 +24,10 @@
                         />
                     </span>
                     <span class="ml-2 text-gray-700">
-                        <p class="font-bold">{{ menuItem.title }}</p>
-                        <small class="text-gray-500">
-                            {{ menuItem.helpText }}
-                        </small>
+                        <p>{{ menuItem.title }}</p>
+                        <!--                        <small class="text-gray-500">-->
+                        <!--                            {{ menuItem.helpText }}-->
+                        <!--                        </small>-->
                     </span>
                 </div>
             </li>

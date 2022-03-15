@@ -391,7 +391,7 @@
             }
 
             const validateFileds = () => {
-                if (infoTabeState.value.name === '') {
+                if (infoTabeState.value.name.trim() === '') {
                     rules.value.users.show = true
                     return Promise.reject()
                 }

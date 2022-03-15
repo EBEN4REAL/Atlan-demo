@@ -262,7 +262,8 @@
             )
 
             const onNameBlur = () => {
-                if (!infoTabeState.value.name) rules.value.name.show = true
+                if (!infoTabeState.value.name.trim())
+                    rules.value.name.show = true
                 else rules.value.name.show = false
             }
 

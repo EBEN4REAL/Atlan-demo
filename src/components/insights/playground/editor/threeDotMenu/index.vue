@@ -765,6 +765,10 @@
                     editorText: activeInlineTab.value.playground.editor.text,
                     isVQB: activeInlineTab.value.playground.isVQB,
                     vqb: activeInlineTab.value.playground.vqb,
+                    savedVariables:
+                        activeInlineTab.value.playground.editor.savedVariables,
+                    variables:
+                        activeInlineTab.value.playground.editor.variables,
                 })
 
                 inlineTabAdd(inlineTabData, tabsArray, activeInlineTabKey)

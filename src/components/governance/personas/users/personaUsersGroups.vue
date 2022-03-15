@@ -42,7 +42,9 @@
             v-else-if="!groupsError && !usersError"
             class="flex flex-col h-full overflow-y-hidden"
         >
-            <div class="flex items-center justify-between w-full p-4 border-b">
+            <div
+                class="flex items-center justify-between w-full px-4 py-2.5 border-b"
+            >
                 <!-- <div
                     v-if="filteredList.length || queryText"
                     class="flex mr-4 gap-x-2"

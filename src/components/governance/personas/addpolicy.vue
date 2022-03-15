@@ -110,7 +110,7 @@
                             <div v-else>{{ policy.name }}</div>
                             <div
                                 v-if="rules.policyName.show"
-                                class="absolute text-xs text-red-500 -bottom-5"
+                                class="mt-2 text-xs text-red-500"
                                 data-test-id="policy-validation-name"
                             >
                                 {{ rules.policyName.text }}
@@ -118,7 +118,7 @@
                         </div>
                         <div
                             v-if="type !== 'glossaryPolicy'"
-                            class="relative mt-4"
+                            class="relative mt-3"
                         >
                             <div class="mb-2 text-sm text-gray-500 required">
                                 Select a connection
@@ -153,13 +153,13 @@
                             />
                             <div
                                 v-if="rules.connection.show"
-                                class="absolute text-xs text-red-500 -bottom-5"
+                                class="mt-3 text-xs text-red-500"
                                 data-test-id="policy-validation-connector"
                             >
                                 {{ rules.connection.text }}
                             </div>
                         </div>
-                        <div v-else class="mt-4">
+                        <div v-else class="mt-3">
                             <div class="mb-2 text-sm text-gray-500 required">
                                 Select glossary
                                 <span class="text-red-500">*</span>
@@ -171,6 +171,17 @@
                                 placeholder="Please select"
                                 class="w-full"
                                 @change="handleChangeGlossary"
+                                @blur="
+                                    () => {
+                                        if (
+                                            !policy.glossaryQualifiedNames
+                                                .length
+                                        )
+                                            rules.glossaryQualifiedNames.show = true
+                                        else
+                                            rules.glossaryQualifiedNames.show = false
+                                    }
+                                "
                             >
                                 <a-select-option
                                     v-for="el in glossaryComputed"
@@ -190,7 +201,7 @@
                             </a-select>
                             <div
                                 v-if="rules.glossaryQualifiedNames?.show"
-                                class="absolute text-xs text-red-500 -bottom-5"
+                                class="mt-3 text-xs text-red-500"
                                 data-test-id="policy-validation-connector"
                             >
                                 {{ rules.glossaryQualifiedNames?.text }}
@@ -663,7 +674,9 @@
                         type !== 'glossaryPolicy') ||
                     !policy.name ||
                     (!policy?.assets?.length && type !== 'glossaryPolicy') ||
-                    (policyType === 'meta' && !selectedPermission.length)
+                    (policyType === 'meta' && !selectedPermission.length) ||
+                    (policyType === 'glossaryPolicy' &&
+                        !policy?.glossaryQualifiedNames?.length)
                 "
                 class="px-6 min-w-20"
                 @click="handleSave"
@@ -779,7 +792,7 @@
 
             const rules = ref({
                 glossaryQualifiedNames: {
-                    text: 'Select Glossary',
+                    text: 'Glossary is required!',
                     show: false,
                 },
                 policyName: {
@@ -856,7 +869,7 @@
             const initPolicy = () => {
                 rules.value = {
                     glossaryQualifiedNames: {
-                        text: 'Select Glossary',
+                        text: 'Glossary is required!',
                         show: false,
                     },
                     policyName: {
@@ -1084,6 +1097,11 @@
             )
             const handleChangeGlossary = (glossaryIds) => {
                 policy.value.glossaryQualifiedNames = glossaryIds
+                if (policy.value?.glossaryQualifiedNames?.length) {
+                    rules.value.glossaryQualifiedNames.show = false
+                } else {
+                    rules.value.glossaryQualifiedNames.show = true
+                }
             }
             const { getEntityStatusIcon } = useGlossaryData()
             const { certificateStatus } = useAssetInfo()

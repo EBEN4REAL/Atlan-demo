@@ -547,7 +547,6 @@
                         </div>
                     </div>
                 </div>
-
                 <AssetSelectorDrawer
                     v-if="connectorData.attributeValue"
                     v-model:visible="assetSelectorVisible"
@@ -555,6 +554,7 @@
                     :connection-qf-name="connectorData.attributeValue"
                     class="drawerAddAsset"
                     :get-container="'body'"
+                    :bi-types="BItypes"
                     @update:assets="handleChangeAssets"
                     @close="assetSelectorVisible = false"
                 />

@@ -187,10 +187,14 @@
                 type: Boolean,
                 default: () => false,
             },
+            biTypes: {
+                type: Array,
+                required: true,
+            },
         },
         emits: ['update:visible', 'update:assets'],
         setup(props, { emit }) {
-            const { visible, assets, connectionQfName } = toRefs(props)
+            const { visible, assets, connectionQfName, biTypes } = toRefs(props)
             const preference = ref({
                 sort: 'default',
                 display: [],
@@ -209,7 +213,7 @@
             // Asset related stuff
             const checkedKeys = ref([...assets.value] as string[])
             const regexKeys = ref([] as string[])
-            const BIAssets = ['powerbi', 'tableau']
+            const BIAssets = computed(() => biTypes.value)
             bulkStore.setBulkSelectedAssets(toRaw(checkedKeys.value))
 
             const getConnectorName = (qualifiedName: string) => {
@@ -268,7 +272,6 @@
             // Tab related data
             const activeTab = ref('custom')
             const tabConfig = ref([{ key: 'custom', label: 'Custom' }])
-
             /* For sync b/w tree and selected assets */
             watch(checkedKeys, () => {
                 /* NOTE: If condiion is IMP otherwise this will go in infinite loop */
@@ -296,10 +299,10 @@
             })
 
             watch(
-                connectionQfName,
+                [connectionQfName, BIAssets],
                 () => {
                     if (
-                        BIAssets.includes(
+                        BIAssets.value.includes(
                             getConnectorName(connectionQfName.value)
                         )
                     ) {

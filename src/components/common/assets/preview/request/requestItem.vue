@@ -4,15 +4,29 @@
             class="relative px-2 py-3 mx-1 rounded cursor-pointer hover:bg-primary-light card-container"
         >
             <div class="flex items-center justify-between">
-                <div class="flex">
+                <div class="flex items-center">
+                    <AtlanIcon
+                        v-if="
+                            item.createdBy?.startsWith(
+                                'service-account-apikey-'
+                            )
+                        "
+                        class="h-3"
+                        icon="Key"
+                    />
                     <Avatar
+                        v-else
                         :allow-upload="false"
                         :avatar-name="item.created_by_user?.username"
                         :avatar-size="16"
                         :avatar-shape="'circle'"
                         :image-url="item.createdBy ? '' : atlanLogo"
                     />
-                    <span class="ml-2 text-gray-700">{{ item.createdBy }}</span>
+                    <span class="ml-2 text-gray-700">{{
+                        item.createdBy?.startsWith('service-account-apikey-')
+                            ? 'API key'
+                            : item.createdBy
+                    }}</span>
                     <span class="ml-1 text-gray-400 truncate"
                         >has requested to</span
                     >
@@ -760,7 +774,7 @@
                 loadingApproval,
                 dayjs,
                 typeCopyMapping,
-                map
+                map,
             }
         },
     })

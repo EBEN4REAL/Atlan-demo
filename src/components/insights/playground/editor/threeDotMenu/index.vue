@@ -843,9 +843,9 @@
             const deleteQuery = () => {
                 let item = {
                     attributes: activeInlineTab.value.attributes,
-                    guid: activeInlineTab.value.attributes.__guid,
+                    guid: activeInlineTab.value.queryId,
                 }
-                let key = item.guid
+                let key = activeInlineTab.value.key
                 let parentGuid = item?.attributes?.parent?.guid
                 console.log('delete item: ', item)
                 const { data, error, isLoading } = Insights.DeleteEntity(

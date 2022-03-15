@@ -237,7 +237,7 @@ export function addGroup(
                 item.value?.entity.attributes?.qualifiedName,
             ],
             columnsData: [
-                ...subpanel.columnsData,
+                ...(subpanel.columnsData || []),
 
                 {
                     item: item.value?.entity,

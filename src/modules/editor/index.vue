@@ -69,7 +69,7 @@
 
     import LinkPreview from './extensions/linkPreview/linkPreview'
     import { BLOCK_TIPPY_MENU } from '~/constant/readmeMenuItems'
-    import { EMBED_EXTENSIONS } from '@common/editor/extensions/embeds'
+    import { EMBED_EXTENSIONS } from './extensions/embeds'
 
     export default defineComponent({
         name: 'TiptapEditor',

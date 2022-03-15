@@ -6,7 +6,7 @@
             :footer="footer"
             :issue="issue"
             :error="errorIDs.includes(issue.id)"
-            :class="checkbox ? 'cursor-pointer' : ''"
+            :class="{ 'cursor-pointer': checkbox, [cardClass]: cardClass }"
             @click="handleClick"
         />
     </template>
@@ -19,6 +19,7 @@
 
     const props = defineProps({
         issues: { type: Object, required: true },
+        cardClass: { type: String, default: '' },
         checkbox: { type: Boolean, default: false },
         footer: { type: Boolean, default: true },
         errorIDs: { type: Array, default: () => [] },

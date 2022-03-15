@@ -8,8 +8,10 @@
         <div v-if="showCheckbox">
             <a-checkbox :checked="checked" />
         </div>
-        <aside class="flex-grow space-y-2">
-            <header class="relative flex items-center justify-between">
+        <aside class="flex-grow space-y-2 overflow-hidden">
+            <header
+                class="relative flex items-center justify-between overflow-hidden"
+            >
                 <div class="flex items-center">
                     <img
                         :src="issuetype.iconUrl"

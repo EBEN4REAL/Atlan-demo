@@ -22,7 +22,7 @@
             />
 
             <div
-                v-if="isLoading && !searchLoading"
+                v-if="isLoading && !searchLoading && !issues?.length"
                 class="flex items-center justify-center w-full h-full"
             >
                 <AtlanLoader class="h-10" />
@@ -34,7 +34,6 @@
                 v-else-if="!issues?.length && !searchText && !searchLoading"
                 class="flex items-center justify-center w-full h-full"
             >
-                <!-- // need empty placeholder -->
                 <div
                     class="flex flex-col items-center justify-center w-full h-full px-10 text-center"
                 >
@@ -114,6 +113,9 @@
                             :checkbox="true"
                             :footer="true"
                             :error-i-ds="linkErrorIDs"
+                            :card-class="
+                                isLoading && issues?.length ? 'opacity-80 ' : ''
+                            "
                         />
                     </div>
                 </main>
@@ -156,7 +158,7 @@
         asset: { type: Object as PropType<assetInterface>, required: true },
     })
 
-    const emit = defineEmits(['add', 'close', 'create'])
+    const emit = defineEmits(['add', 'close', 'create', 'fetch'])
 
     const { visible } = useVModels(props, emit)
 
@@ -165,7 +167,6 @@
     const assetID = computed(() => asset.value.guid)
 
     const checkedIDs = ref<string[]>([])
-
     const {
         issues,
         isLoading,
@@ -252,6 +253,8 @@
                 issue_count: count,
                 asset_type: asset.value.typeName,
             })
+            visible.value = false
+            emit('fetch')
         })
     }
 

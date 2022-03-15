@@ -28,23 +28,16 @@ const searchIssues = (jql, immediate = true) => {
     }))
 
     const { data, isLoading, error, mutate, isReady } = jiraSearch<{ issues: Issue[], total: number }>(body, options)
-    watch([data, error, isLoading], (v) => {
-        issues.value = []
+    watch([isReady, error], (v) => {
         if (data.value) {
             const { issues: _issues, total } = data.value || []
-            issues.value = _issues
-            totalResults.value = total
+            if (_issues) {
+                issues.value = _issues
+                totalResults.value = total
+            }
+
         }
     })
-
-    const searchLoading = ref(false)
-    debouncedWatch(body, async () => {
-        searchLoading.value = true
-        await mutate()
-        searchLoading.value = false
-    },
-        { deep: true, debounce: 500 }
-    )
 
     const pagination = computed(() => ({
         total: Math.ceil(
@@ -54,7 +47,7 @@ const searchIssues = (jql, immediate = true) => {
         current: offset.value / pageSize.value + 1,
     }))
 
-    return { issues, isLoading, error, mutate, isReady, searchLoading, pagination, offset, totalResults }
+    return { issues, isLoading, error, mutate, isReady, pagination, offset, totalResults }
 }
 
 export const issuesCount = (onlyLinked = true, immediate = true) => {
@@ -121,7 +114,19 @@ export const listNotLinkedIssues = (assetID: Ref<string>) => {
             ORDER BY created DESC
             `))
 
-    return { searchText, ...searchIssues(jql, false) }
+
+    const { issues, isLoading, error, mutate, isReady, pagination, offset, totalResults } = searchIssues(jql, false)
+
+    const searchLoading = ref(false)
+    debouncedWatch(searchText, async () => {
+        searchLoading.value = true
+        await mutate()
+        searchLoading.value = false
+    },
+        { deep: true, debounce: 500 }
+    )
+
+    return { searchText, issues, isLoading, error, mutate, isReady, pagination, offset, totalResults, searchLoading }
 }
 
 

@@ -7,7 +7,7 @@
     <LinkIssueDrawer
         v-model:visible="linkIssueVisible"
         :asset="asset"
-        @close="fetchLinkedIssues"
+        @fetch="fetchLinkedIssues"
         @create="() => (createModal = true)"
     />
     <Header
@@ -22,7 +22,7 @@
         />
     </div>
     <div
-        v-else-if="isLoading"
+        v-else-if="isLoading && !issues?.length"
         class="flex items-center justify-center w-full h-full"
     >
         <AtlanLoader class="h-10" />
@@ -44,7 +44,11 @@
     >
         <div class="flex flex-col flex-grow p-4 overflow-y-auto gap-y-3">
             <template v-for="issue in issues" :key="issue.id">
-                <IssueCard :issue="issue">
+                <IssueCard
+                    :issue="issue"
+                    class=""
+                    :class="isLoading && issues?.length ? 'opacity-60' : ''"
+                >
                     <template #action>
                         <div
                             class="px-3 py-2 bg-white"
@@ -97,7 +101,6 @@
     const assetID = computed(() => asset.value.guid)
     const linkIssueVisible = ref(false)
     const createModal = ref(false)
-
     const {
         issues,
         isLoading,
@@ -151,7 +154,9 @@
                     duration: 3,
                 })
             } else {
-                fetchLinkedIssues()
+                // fetchLinkedIssues()
+                // ? locally remove the issue that was unlinked instead of removing it
+                issues.value = issues.value.filter((_issue) => _issue.id !== id)
                 useAddEvent('integration', 'jira', 'issue_unlinked', {
                     asset_type: asset.value.typeName,
                 })

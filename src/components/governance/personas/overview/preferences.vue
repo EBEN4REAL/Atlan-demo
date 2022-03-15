@@ -20,7 +20,7 @@
                 </template>
                 <div class="p-4">
                     <div
-                        v-for="meta in finalBusinessMetadataList"
+                        v-for="meta in metaList"
                         :key="meta.guid"
                         class="flex justify-between p-3 border-b border-gray-200"
                     >
@@ -40,7 +40,14 @@
                                 meta.displayName
                             }}</span>
                         </div>
-                        <a-switch class="ml-auro" default-checked />
+                        <a-switch
+                            :checked="metaSwitchValue[meta.guid]"
+                            :disabled="isLoadingMeta"
+                            :loading="
+                                isLoadingMeta && currentIdUpdated === meta.guid
+                            "
+                            @click="handleSwitch(meta.guid)"
+                        />
                     </div>
                 </div>
             </a-collapse-panel>
@@ -49,9 +56,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref } from 'vue'
+    import { defineComponent, ref, computed } from 'vue'
+    import { message } from 'ant-design-vue'
     import useBusinessMetadata from '@/governance/custom-metadata/composables/useBusinessMetadata'
     import CustomMetadataAvatar from '@/governance/custom-metadata/CustomMetadataAvatar.vue'
+    import {
+        savePersona,
+        selectedPersonaDirty,
+        updatedSelectedData,
+    } from '../composables/useEditPersona'
 
     export default defineComponent({
         name: 'Preferences',
@@ -61,7 +74,80 @@
         setup(props) {
             const activeKey = ref('')
             const { finalBusinessMetadataList } = useBusinessMetadata()
-            return { activeKey, finalBusinessMetadataList }
+            const isLoadingMeta = ref(false)
+            const currentIdUpdated = ref('')
+            const metaList = computed(() => finalBusinessMetadataList.value)
+            const metaSwitchValue = computed(() => {
+                let objMeta = {}
+                const meta =
+                    selectedPersonaDirty.value?.attributes?.preferences
+                        ?.custom_metadata || []
+                meta.forEach((el) => {
+                    objMeta = { ...objMeta, ...el }
+                })
+                return objMeta
+            })
+            const metaKey = computed(() =>
+                [...finalBusinessMetadataList.value].map((el) => ({
+                    [el.guid]: metaSwitchValue.value[el.guid] || false,
+                }))
+            )
+            const handleUpdateMeta = async (guid) => {
+                isLoadingMeta.value = true
+                const payload = {
+                    ...selectedPersonaDirty.value,
+                }
+                delete payload.dataPolicies
+                delete payload.glossaryPolicies
+                delete payload.metadataPolicies
+                const metaKeys = [...metaKey.value].map((el) => {
+                    const id = Object.keys(el)[0]
+                    if (id === guid) {
+                        return { [guid]: !el[id] }
+                    }
+                    return el
+                })
+                try {
+                    await savePersona({
+                        ...payload,
+                        attributes: {
+                            ...payload.attributes,
+                            preferences: {
+                                custom_metadata: metaKeys,
+                            },
+                        },
+                    })
+                    updatedSelectedData({
+                        id: payload.id,
+                        attributes: {
+                            ...payload.attributes,
+                            preferences: {
+                                custom_metadata: metaKeys,
+                            },
+                        },
+                    })
+                } catch (error) {
+                    message.error({
+                        content: 'Failed to update',
+                    })
+                } finally {
+                    isLoadingMeta.value = false
+                }
+            }
+            const handleSwitch = (guid) => {
+                currentIdUpdated.value = guid
+                handleUpdateMeta(guid)
+            }
+            return {
+                activeKey,
+                finalBusinessMetadataList,
+                handleUpdateMeta,
+                handleSwitch,
+                isLoadingMeta,
+                currentIdUpdated,
+                metaList,
+                metaSwitchValue,
+            }
         },
     })
 </script>

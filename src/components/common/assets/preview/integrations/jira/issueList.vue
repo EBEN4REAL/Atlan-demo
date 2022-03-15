@@ -1,7 +1,7 @@
 <template>
     <template v-for="issue in issues" :key="issue.id">
         <IssueCard
-            :checked="checkedIDs.includes(issue.id)"
+            :checked="isChecked(issue.id)"
             :show-checkbox="checkbox"
             :footer="footer"
             :issue="issue"
@@ -23,19 +23,22 @@
         checkbox: { type: Boolean, default: false },
         footer: { type: Boolean, default: true },
         errorIDs: { type: Array, default: () => [] },
-        checkedIDs: { type: Array, default: () => [] },
+        checkedIssues: { type: Array, default: () => [] },
     })
 
     const emit = defineEmits([])
 
-    const { checkedIDs } = useVModels(props, emit)
+    const { checkedIssues } = useVModels(props, emit)
+
+    const isChecked = (id) =>
+        checkedIssues.value.findIndex((i) => i.id === id) > -1
 
     const handleClick = (issue) => {
         if (!props.checkbox) return
-        if (checkedIDs.value.includes(issue.id)) {
-            const index = checkedIDs.value.indexOf(issue.id)
-            if (index !== -1) checkedIDs.value.splice(index, 1)
-        } else checkedIDs.value.push(issue.id)
+        const index = checkedIssues.value.findIndex((i) => i.id === issue.id)
+        if (index > -1) {
+            checkedIssues.value.splice(index, 1)
+        } else checkedIssues.value.push(issue)
     }
 </script>
 

@@ -10,7 +10,7 @@
         <div class="h-full bg-primary-light">
             <Header
                 class="mb-4"
-                :checked-i-ds="checkedIDs"
+                :checked-i-ds="checkedIssues"
                 @close="
                     () => {
                         visible = false
@@ -108,7 +108,7 @@
                         style="height: calc(100vh - 10rem)"
                     >
                         <IssueList
-                            v-model:checkedIDs="checkedIDs"
+                            v-model:checkedIssues="checkedIssues"
                             :issues="issues"
                             :checkbox="true"
                             :footer="true"
@@ -166,7 +166,7 @@
 
     const assetID = computed(() => asset.value.guid)
 
-    const checkedIDs = ref<string[]>([])
+    const checkedIssues = ref<string[]>([])
     const {
         issues,
         isLoading,
@@ -206,11 +206,12 @@
 
     const alllinkPromises: any = []
 
-    const callLinkIssue = (id) => {
+    const callLinkIssue = (issue) => {
         const {
+            id,
             key,
             fields: { summary },
-        } = issues.value.find((i) => i.id === id)
+        } = issue
 
         const {
             data: linkData,
@@ -228,8 +229,8 @@
                     duration: 3,
                 })
             } else {
-                const index = checkedIDs.value.indexOf(id)
-                if (index !== -1) checkedIDs.value.splice(index, 1)
+                const index = checkedIssues.value.findIndex((i) => i.id === id)
+                if (index !== -1) checkedIssues.value.splice(index, 1)
                 message.success({
                     content: `"${key}: ${summary}" has been linked to "${asset.value.displayText}"`,
                     key: id,
@@ -245,7 +246,7 @@
             key: 'link',
             duration: 2,
         })
-        checkedIDs.value.forEach((id) => callLinkIssue(id))
+        checkedIssues.value.forEach((issue) => callLinkIssue(issue))
         Promise.allSettled(alllinkPromises).then((results) => {
             mutate()
             const count = results.filter((r) => r.status === 'fulfilled').length
@@ -259,12 +260,13 @@
     }
 
     const resetIDs = () => {
-        checkedIDs.value = []
+        checkedIssues.value = []
         linkErrorIDs.value = []
     }
 
     const reset = () => {
         resetIDs()
+        issues.value = []
         offset.value = 0
         mutate()
     }

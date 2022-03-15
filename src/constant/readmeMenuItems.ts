@@ -168,7 +168,11 @@ export const blockMenu: CommandItem[] = [
                       .deleteRange(range)
                       .toggleCodeBlock({ language: 'json' })
                       .run()
-                : editor.chain().focus().toggleImageBlock().run(),
+                : editor
+                      .chain()
+                      .focus()
+                      .toggleCodeBlock({ language: 'json' })
+                      .run(),
     },
     {
         title: 'Image',
@@ -177,7 +181,7 @@ export const blockMenu: CommandItem[] = [
         icon: 'ReadmeImage',
         border: true,
         searchKeys: ['image', 'images'],
-        disabled: (editor: Editor) => !editor.can().toggleImageBlock(),
+        disabled: () => false,
         command: ({ editor, range }) =>
             range
                 ? editor
@@ -290,7 +294,7 @@ export const menuData: MenuItem[] = [
         key: 'bold',
         helpText: '',
         icon: 'Bold',
-        command: ({ editor, range }) => {
+        command: ({ editor }) => {
             editor.chain().focus().toggleBold().run()
         },
     },
@@ -299,31 +303,35 @@ export const menuData: MenuItem[] = [
         key: 'italic',
         helpText: '',
         icon: 'Italic',
-        command: ({ editor, range }) =>
-            editor.chain().focus().toggleItalic().run(),
+        command: ({ editor }) => editor.chain().focus().toggleItalic().run(),
     },
     {
         title: 'Underline',
         key: 'underline',
         helpText: '',
         icon: 'Underline',
-        command: ({ editor, range }) =>
-            editor.chain().focus().toggleUnderline().run(),
+        command: ({ editor }) => editor.chain().focus().toggleUnderline().run(),
+    },
+    {
+        title: 'Code',
+        key: 'code',
+        helpText: '',
+        icon: 'Code',
+        command: ({ editor }) => editor.chain().focus().toggleCode().run(),
     },
     {
         title: 'Strikethrough',
         key: 'strike',
         helpText: '',
         icon: 'Strike',
-        command: ({ editor, range }) =>
-            editor.chain().focus().toggleStrike().run(),
+        command: ({ editor }) => editor.chain().focus().toggleStrike().run(),
     },
     {
         title: 'Align Center',
         key: 'align-center',
         helpText: '',
         icon: 'TextCenter',
-        command: ({ editor, range }) =>
+        command: ({ editor }) =>
             editor.chain().focus().setTextAlign('center').run(),
     },
 
@@ -332,7 +340,7 @@ export const menuData: MenuItem[] = [
         key: 'align-left',
         helpText: '',
         icon: 'TextLeft',
-        command: ({ editor, range }) =>
+        command: ({ editor }) =>
             editor.chain().focus().setTextAlign('left').run(),
     },
     {
@@ -340,7 +348,7 @@ export const menuData: MenuItem[] = [
         key: 'align-right',
         helpText: '',
         icon: 'TextRight',
-        command: ({ editor, range }) =>
+        command: ({ editor }) =>
             editor.chain().focus().setTextAlign('right').run(),
     },
     {
@@ -348,24 +356,9 @@ export const menuData: MenuItem[] = [
         key: 'align-justify',
         helpText: '',
         icon: 'JustifyText',
-        command: ({ editor, range }) =>
+        command: ({ editor }) =>
             editor.chain().focus().setTextAlign('justify').run(),
     },
-    {
-        title: 'Undo',
-        key: 'undo',
-        helpText: '',
-        icon: 'Undo',
-        command: ({ editor, range }) => editor.chain().focus().undo().run(),
-    },
-    {
-        title: 'Redo',
-        key: 'redo',
-        helpText: '',
-        icon: 'Redo',
-        command: ({ editor, range }) => editor.chain().focus().redo().run(),
-    },
-    // table
 ]
 
 export const menuDataTable: MenuItem[] = [

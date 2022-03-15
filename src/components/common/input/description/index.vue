@@ -43,7 +43,7 @@
                 v-if="!editPermission && role !== 'Guest' && isEdit"
                 class="bg-gray-100 px-3 py-2 mt-3"
             >
-                You don't have edit access. Suggest a new Description and 
+                You don't have edit access. Suggest a new Description and
                 <span class="text-primary cursor-pointer">
                     <a-popover placement="rightBottom">
                         <template #content>
@@ -126,6 +126,11 @@
                 required: false,
                 default: false,
             },
+            readOnly: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
@@ -167,8 +172,10 @@
             }
 
             const handleEdit = () => {
-                isEdit.value = true
-                start()
+                if (!props.readOnly) {
+                    isEdit.value = true
+                    start()
+                }
             }
 
             const handleRequest = () => {

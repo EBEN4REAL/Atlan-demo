@@ -122,7 +122,7 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, computed, watch, ref, toRefs } from 'vue'
+    import { defineComponent, computed, inject, toRefs } from 'vue'
     import Setup from '@/packages/setup/index.vue'
     import { useConfigMapByName } from '~/composables/package/useConfigMapByName'
     import Loader from '@/common/loaders/page.vue'
@@ -154,12 +154,14 @@
             //     required: true,
             // },
         },
-        setup(props, { emit }) {
-            const { workflowObject, packageObject } = toRefs(props)
+        setup(props) {
+            const { packageObject } = toRefs(props)
+            const refetchWorkflowObject = inject<() => void>(
+                'refetchWorkflowObject'
+            )
+            const isWorkflowDirty = inject('isWorkflowDirty')
 
             const { getGlobalArguments } = useWorkflowInfo()
-
-            console.log(workflowObject.value)
 
             const { isLoading, configMap, error } = useConfigMapByName(
                 `${packageObject.value.metadata.name}`,
@@ -175,10 +177,13 @@
                 }
             })
 
+            if (isWorkflowDirty.value) {
+                refetchWorkflowObject()
+                isWorkflowDirty.value = false
+            }
+
             return {
-                workflowObject,
                 configMap,
-                packageObject,
                 isLoading,
                 error,
                 configMapParsed,

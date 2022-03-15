@@ -216,11 +216,17 @@
         toRefs,
         computed,
         provide,
+        inject,
         Ref,
     } from 'vue'
 
     import { message } from 'ant-design-vue'
-    import { useIntervalFn, watchOnce, useThrottleFn } from '@vueuse/core'
+    import {
+        useIntervalFn,
+        watchOnce,
+        useThrottleFn,
+        until,
+    } from '@vueuse/core'
     import { useRoute, useRouter } from 'vue-router'
 
     // Components
@@ -306,6 +312,7 @@
 
             provide('workflowTemplate', localTemplate)
             provide('configMap', localConfigMap)
+            const isWorkflowDirty = inject('isWorkflowDirty')
 
             const { name } = useWorkflowInfo()
 
@@ -513,7 +520,7 @@
                 execute(true)
             }
 
-            const handleSubmit = () => {
+            const handleSubmit = async () => {
                 if (isEdit.value) {
                     body.value.metadata = workflowObject.value.metadata
                 } else {
@@ -652,6 +659,8 @@
                         name: workflowObject.value.metadata.name,
                     }
                     updateWorkflow()
+                    await until(isUpdateLoading).toBe(false)
+                    isWorkflowDirty.value = true
 
                     if (runOnUpdate.value) {
                         const { data: nrd, error: nre } = useWorkflowSubmit(

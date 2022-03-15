@@ -132,6 +132,7 @@ export function useWorkflowDiscoverList({
         cancelRequest,
         error,
         quickChange,
+        refresh,
         packageList,
         workflowDistinctList,
         workflowMapByPackage,

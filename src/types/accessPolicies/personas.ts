@@ -65,6 +65,7 @@ export interface IPersona {
     updatedBy?: string
     createdAt?: number
     createdBy?: string
+    glossaryPolicies?: any[]
 }
 
 export interface IUser {

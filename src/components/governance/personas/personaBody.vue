@@ -636,6 +636,7 @@
                 () =>
                     !selectedPersonaDirty.value?.metadataPolicies?.length &&
                     !selectedPersonaDirty.value?.dataPolicies?.length &&
+                    !selectedPersonaDirty.value?.glossaryPolicies?.length &&
                     !searchPersona.value
             )
             const {

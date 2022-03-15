@@ -1,6 +1,6 @@
 import { VueNodeViewRenderer } from '@tiptap/vue-3'
 import Component from './component.vue'
-import IFrame from '../iframe/extension'
+import IFrame, { IframeOptions } from '../iframe/extension'
 
 interface ValidateInputFunc {
     (input: string): boolean
@@ -10,7 +10,7 @@ interface GetIframeLinkFunc {
     (input: string): string
 }
 
-interface EmbedOptions {
+interface EmbedOptions extends IframeOptions {
     title: string
     icon: string
     validateInput: ValidateInputFunc

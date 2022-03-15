@@ -165,7 +165,7 @@
                     text: 'Connection is required!',
                     show: false,
                 },
-                users: { text: 'Select atleast 1 user!', show: false },
+                users: { text: 'No user selected', show: false },
             })
 
             const variablesData = ref(

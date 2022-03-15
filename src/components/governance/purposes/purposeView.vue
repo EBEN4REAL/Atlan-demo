@@ -406,6 +406,7 @@
         }
         .ant-modal-content {
             height: calc(100%);
+            @apply bg-primary-light;
         }
         .ant-modal-header {
             padding-bottom: 0px;

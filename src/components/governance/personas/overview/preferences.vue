@@ -20,10 +20,10 @@
                 </template>
                 <div class="p-4">
                     <div
-                        v-for="(meta, idx) in metaList"
+                        v-for="(meta, idx) in customMetadataList"
                         :key="meta.guid"
                         :class="`flex justify-between p-3 ${
-                            idx !== metaList.length - 1 && 'border-b'
+                            idx !== customMetadataList.length - 1 && 'border-b'
                         }  border-gray-200`"
                     >
                         <div class="flex">
@@ -78,7 +78,9 @@
             const { finalBusinessMetadataList } = useBusinessMetadata()
             const isLoadingMeta = ref(false)
             const currentIdUpdated = ref('')
-            const metaList = computed(() => finalBusinessMetadataList.value)
+            const customMetadataList = computed(
+                () => finalBusinessMetadataList.value
+            )
             const metaSwitchValue = computed(() => {
                 let objMeta = {}
                 const meta =
@@ -147,7 +149,7 @@
                 handleSwitch,
                 isLoadingMeta,
                 currentIdUpdated,
-                metaList,
+                customMetadataList,
                 metaSwitchValue,
             }
         },

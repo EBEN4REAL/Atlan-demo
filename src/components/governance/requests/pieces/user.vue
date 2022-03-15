@@ -12,7 +12,7 @@
             v-if="user?.username?.startsWith('service-account-apikey-')"
             class="text-gray-700"
         >
-            <AtlanIcon icon="Key" class="h-3" /> API Key
+            <AtlanIcon icon="Key" class="h-3" /> API key
         </span>
         <span v-else class="text-gray-700">{{
             user?.username || defaultName

@@ -72,6 +72,8 @@
                 if (username.value === 'service-account-atlan-argo') {
                     return 'Atlan'
                 }
+                if (username.value.startsWith('service-account-apikey-'))
+                    return 'API key'
                 return username.value
             }
 

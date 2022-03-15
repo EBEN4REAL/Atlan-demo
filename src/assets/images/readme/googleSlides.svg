@@ -1,19 +1,6 @@
-<svg width="26" height="36" viewBox="0 0 26 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M2.5 0H17L26 9V33.5C26 34.8807 24.8807 36 23.5 36H2.5C1.11929 36 0 34.8807 0 33.5V2.5C0 1.11929 1.11929 0 2.5 0Z" fill="#F4B400"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M0 33C0 34.3807 1.11929 35.5 2.5 35.5H23.5C24.8807 35.5 26 34.3807 26 33V33.5C26 34.8807 24.8807 36 23.5 36H2.5C1.11929 36 0 34.8807 0 33.5V33Z" fill="#BF360C" fill-opacity="0.2"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M2.5 0H17V0.5H2.5C1.11929 0.5 0 1.61929 0 3V2.5C0 1.11929 1.11929 0 2.5 0Z" fill="white" fill-opacity="0.2"/>
-<path d="M17.5 8L26 16.5V9" fill="url(#paint0_linear_2_1724)"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M17 0L26 9H19.5C18.1193 9 17 7.88071 17 6.5V0Z" fill="#FADA80"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M7.5 16H18.5C19.3284 16 20 16.6716 20 17.5V28.5C20 29.3284 19.3284 30 18.5 30H7.5C6.67157 30 6 29.3284 6 28.5V17.5C6 16.6716 6.67157 16 7.5 16ZM8 20V26H18V20H8Z" fill="#F1F1F1"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M2.5 0H17L26 9V33.5C26 34.8807 24.8807 36 23.5 36H2.5C1.11929 36 0 34.8807 0 33.5V2.5C0 1.11929 1.11929 0 2.5 0Z" fill="url(#paint1_radial_2_1724)" fill-opacity="0.1"/>
-<defs>
-<linearGradient id="paint0_linear_2_1724" x1="21.7504" y1="8.72981" x2="21.7504" y2="16.5012" gradientUnits="userSpaceOnUse">
-<stop stop-color="#BF360C" stop-opacity="0.2"/>
-<stop offset="1" stop-color="#BF360C" stop-opacity="0.02"/>
-</linearGradient>
-<radialGradient id="paint1_radial_2_1724" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(0.82368 0.714679) scale(41.9245 41.9244)">
-<stop stop-color="white"/>
-<stop offset="1" stop-color="white" stop-opacity="0"/>
-</radialGradient>
-</defs>
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10.5 14H30V30H10.5V14Z" fill="white"/>
+<path d="M24 12L31 15.1L33 11L24 2L21.5 6.2L24 12Z" fill="#F29900"/>
+<path d="M24 11V2H10C8.3 2 7 3.3 7 5V35C7 36.7 8.3 38 10 38H30C31.7 38 33 36.7 33 35V11H24ZM28 16V27H12V16H28Z" fill="#FBBC04"/>
+<path d="M14 18H26V25H14V18Z" fill="#FBBC04"/>
 </svg>

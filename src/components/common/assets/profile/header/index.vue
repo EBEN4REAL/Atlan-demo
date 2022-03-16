@@ -333,10 +333,12 @@
                 <template v-if="!disableSlackAsk">
                     <SlackAskButton :asset="item" />
                 </template>
+                <!--  3 dot menus for GTC -->
                 <AssetMenu
                     @edit="handleEdit"
                     :asset="item"
-                    :edit-permission="selectedAssetUpdatePermission(item)"
+                    :editPermission="glossaryUpdatePermission"
+                    :deletePermission="glossaryDeletePermission"
                 >
                     <a-button
                         v-if="
@@ -400,6 +402,9 @@
     import Name from '@/glossary/common/name.vue'
     import SlackAskButton from '~/components/common/assets/misc/slackAskButton.vue'
     import { disableSlackAsk } from '~/composables/integrations/slack/useAskAQuestion'
+    import useGTCPermissions, {
+        fetchGlossaryPermission,
+    } from '~/composables/glossary/useGTCPermissions'
 
     export default defineComponent({
         name: 'AssetHeader',
@@ -531,7 +536,31 @@
                 console.log(val)
             }
 
+            // * permissions for glossary to check against the glossary and not category or term,
+            // * there providing the anchor (i.e glossary) to the fetchGlossaryPermission fn
+            // ! should we use entity update and remove permission of the term or category itself?
+            const glossary = computed(() => {
+                if (item.value.typeName === 'AtlasGlossary') return item.value
+                if (
+                    ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'].includes(
+                        item.value.typeName
+                    )
+                )
+                    return item.value.attributes.anchor
+                return null
+            })
+            const {
+                entityUpdatePermission: glossaryUpdatePermission,
+                entityDeletePermission: glossaryDeletePermission,
+                fetch,
+            } = fetchGlossaryPermission(glossary)
+
+            if (glossary.value) fetch()
+
             return {
+                glossary,
+                glossaryUpdatePermission,
+                glossaryDeletePermission,
                 disableSlackAsk,
                 title,
                 getConnectorImage,

@@ -5,7 +5,7 @@
     >
         <div
             v-if="item?.typeName === 'cta'"
-            class="flex items-center flex-wrap"
+            class="flex flex-wrap items-center"
             :class="!hasCreateAccess ? '' : 'space-y-0'"
         >
             <span v-if="!checkable" class="pr-1"> Add a </span>
@@ -110,7 +110,7 @@
                             )
                         "
                         :style="iconSize"
-                        class="self-center align-text-bottom text-gray-500"
+                        class="self-center text-gray-500 align-text-bottom"
                     />
                 </div>
                 <div v-show="isEditMode">
@@ -195,6 +195,7 @@
     import useAuth from '~/composables/auth/useAuth'
 
     export default defineComponent({
+        name: 'GlossaryTreeItem',
         components: { Actions, AtlanIcon, AddGtcModal, Tooltip, Name },
         props: {
             item: {

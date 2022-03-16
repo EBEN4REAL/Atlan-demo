@@ -6,7 +6,12 @@
         <AtlanLoader class="h-10" />
     </div>
     <div
-        v-else-if="treeData.length === 0 && !isLoading && !checkable"
+        v-else-if="
+            treeData.length === 0 &&
+            !isLoading &&
+            !checkable &&
+            termAddPermission
+        "
         class="flex items-center justify-center h-full"
     >
         <AddGtcModal
@@ -128,6 +133,10 @@
                 required: false,
                 default: false,
             },
+            termAddPermission: {
+                type: Boolean,
+                required: true,
+            },
             checkedGuids: {
                 type: Object as PropType<string[]>,
                 required: false,
@@ -207,7 +216,11 @@
             // }
 
             const addGTCNode = (asset, entity = {}) => {
-                console.log(asset?.typeName, asset?.attributes?.anchor?.guid, 'add')
+                console.log(
+                    asset?.typeName,
+                    asset?.attributes?.anchor?.guid,
+                    'add'
+                )
                 glossaryStore.updateAssetCount(
                     asset?.typeName,
                     asset?.attributes?.anchor?.guid,

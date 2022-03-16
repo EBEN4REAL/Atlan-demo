@@ -85,9 +85,12 @@
                         </div>
                     </a-menu-item>
                 </a-sub-menu>-->
-                <a-menu-item v-if="isGTC(asset)" key="edit" @click="closeMenu"
+                <a-menu-item
+                    v-if="isGTC(asset) && editPermission"
+                    key="edit"
+                    @click="closeMenu"
                     class="px-4 py-2"
-                    >
+                >
                     <div
                         class="flex items-center"
                         @click="$emit('edit', asset)"
@@ -144,7 +147,7 @@
 
                 <a-menu-item
                     class="px-4 py-2"
-                    v-if="isGTC(asset)"
+                    v-if="isGTC(asset) && deletePermission"
                     key="archive"
                     @click="closeMenu"
                 >
@@ -224,8 +227,13 @@
                 required: false,
                 default: false,
             },
+            deletePermission: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
-        emit:['edit'],
+        emit: ['edit'],
         setup(props) {
             // data
             const isVisible = ref(false)

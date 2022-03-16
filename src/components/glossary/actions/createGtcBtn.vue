@@ -13,7 +13,7 @@
 
         <template #overlay>
             <a-menu class="" mode="vertical">
-                <a-menu-item @click="closeMenu">
+                <a-menu-item v-if="termAddPermission" @click="closeMenu">
                     <AddGTCModal
                         :key="selectedGlossaryQf"
                         entityType="AtlasGlossaryTerm"
@@ -32,7 +32,7 @@
                         </template>
                     </AddGTCModal>
                 </a-menu-item>
-                <a-menu-item @click="closeMenu">
+                <a-menu-item v-if="categoryAddPermission" @click="closeMenu">
                     <AddGTCModal
                         :key="selectedGlossaryQf"
                         entityType="AtlasGlossaryCategory"
@@ -88,6 +88,14 @@
         props: {
             selectedGlossaryQf: {
                 type: String,
+                required: true,
+            },
+            termAddPermission: {
+                type: Boolean,
+                required: true,
+            },
+            categoryAddPermission: {
+                type: Boolean,
                 required: true,
             },
         },

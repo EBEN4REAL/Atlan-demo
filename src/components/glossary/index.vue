@@ -1,8 +1,8 @@
 <template>
     <div
+        ref="glossaryBox"
         class="flex flex-col items-stretch flex-1 h-full mb-1"
         :class="{ [$style.checkableTree]: checkable }"
-        ref="glossaryBox"
     >
         <div
             v-if="!checkable"
@@ -12,9 +12,11 @@
                 v-model="selectedGlossaryQf"
                 @change="handleSelectGlossary"
             ></GlossarySelect>
-            <div class="flex" v-auth="map.CREATE_GLOSSARY">
+            <div v-auth="map.CREATE_GLOSSARY" class="flex">
                 <CreateGtcBtn
                     :selected-glossary-qf="selectedGlossaryQf"
+                    :term-add-permission="addTermPermission"
+                    :category-add-permission="addCategoryPermission"
                     @add="handleAddGTC"
                 />
                 <div v-if="selectedGlossaryQf?.length" class="ml-2">
@@ -27,17 +29,17 @@
 
         <div class="flex px-4">
             <SearchAdvanced
-                v-model="queryText"
-                :connectorName="facets?.hierarchy?.connectorName"
-                :autofocus="true"
                 ref="searchBar"
-                :allowClear="true"
-                @change="handleSearchChange"
+                v-model="queryText"
+                :connector-name="facets?.hierarchy?.connectorName"
+                :autofocus="true"
+                :allow-clear="true"
                 :placeholder="
                     checkable
                         ? 'Search terms...'
                         : 'Search terms & categories...'
                 "
+                @change="handleSearchChange"
             >
                 <template #filter>
                     <a-tooltip v-if="!queryText">
@@ -59,7 +61,7 @@
             </SearchAdvanced>
         </div>
 
-        <div class="w-full px-4" v-if="queryText">
+        <div v-if="queryText" class="w-full px-4">
             <AggregationTabs
                 v-model="postFacets.glossary"
                 class="mt-3"
@@ -76,6 +78,7 @@
         >
             <GlossaryTree
                 ref="glossaryTree"
+                :termAddPermission="addTermPermission"
                 @select="handlePreview"
                 :defaultGlossary="checkable ? '' : selectedGlossaryQf"
                 :checkable="checkable"
@@ -151,10 +154,9 @@
         onMounted,
     } from 'vue'
     import { useRouter } from 'vue-router'
-    import { useVModels } from '@vueuse/core'
+    import { useVModels, useDebounceFn } from '@vueuse/core'
 
     import EmptyView from '@common/empty/index.vue'
-    import { useDebounceFn } from '@vueuse/core'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import PreferenceSelector from '@/assets/preference/index.vue'
@@ -167,6 +169,7 @@
     import GlossarySelect from '@/common/popover/glossarySelect/index.vue'
     import CreateGtcBtn from '@/glossary/actions/createGtcBtn.vue'
     import GlossaryActions from '@/glossary/actions/glossary.vue'
+    import useGTCPermissions from '~/composables/glossary/useGTCPermissions'
 
     import {
         AssetAttributes,
@@ -497,7 +500,30 @@
             onMounted(() => {
                 cancelRequest()
             })
+
+            // * permissions
+            const {
+                termAddPermission,
+                categoryAddPermission,
+                createPermission,
+            } = useGTCPermissions(selectedGlossary)
+
+            // ? additional Check because selectedGlossary can be undefined if context is ALL glossary
+            // ? when in all glossary context, all create permission here and add check in create modal
+            const addTermPermission = computed(() => {
+                if (selectedGlossary.value) return termAddPermission.value
+                return true
+            })
+
+            const addCategoryPermission = computed(() => {
+                if (selectedGlossary.value) return categoryAddPermission.value
+                return true
+            })
+
             return {
+                termAddPermission,
+                addTermPermission,
+                addCategoryPermission,
                 checkDuplicateCategoryNames,
                 handleFilterChange,
                 isLoading,

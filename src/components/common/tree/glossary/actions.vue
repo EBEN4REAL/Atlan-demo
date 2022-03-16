@@ -40,8 +40,12 @@
                         </p>
                     </div>
                 </a-menu-item>
-
-                <a-menu-item v-if="showGtcCrud" key="edit" @click="closeMenu">
+                <!-- entity update -->
+                <a-menu-item
+                    v-if="showGtcCrud && entityUpdatePermission"
+                    key="edit"
+                    @click="closeMenu"
+                >
                     <div
                         class="flex items-center"
                         @click="$emit('edit', entity)"
@@ -50,8 +54,8 @@
                         <p class="p-0 m-0">Rename</p>
                     </div>
                 </a-menu-item>
-
-                <div v-auth="map.CREATE_CATEGORY">
+                <!-- entity create -->
+                <div v-if="createPermission" v-auth="map.CREATE_CATEGORY">
                     <a-menu-item
                         v-if="
                             showGtcCrud &&
@@ -80,7 +84,8 @@
                         </AddGtcModal>
                     </a-menu-item>
                 </div>
-                <div v-auth="map.CREATE_TERM">
+                <!-- entity create -->
+                <div v-if="createPermission" v-auth="map.CREATE_TERM">
                     <a-menu-item
                         v-if="
                             showGtcCrud &&
@@ -106,7 +111,9 @@
                         </AddGtcModal>
                     </a-menu-item>
                 </div>
+                <!-- entity delete -->
                 <div
+                    v-if="entityDeletePermission"
                     v-auth="
                         entity?.typeName === 'AtlasGlossaryTerm'
                             ? map.DELETE_TERM
@@ -185,6 +192,7 @@
     } from '~/types/glossary/glossary.interface'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import map from '~/constant/accessControl/map'
+    import { fetchGlossaryPermission } from '~/composables/glossary/useGTCPermissions'
 
     export default defineComponent({
         components: {
@@ -325,7 +333,30 @@
                 closeMenu()
             }
 
+            // permissions
+
+            const {
+                termAddPermission,
+                categoryAddPermission,
+                entityUpdatePermission,
+                entityDeletePermission,
+                createPermission,
+                fetch,
+            } = fetchGlossaryPermission(entity)
+
+            // ? when action dropdown opens, fetch all permissions, if not fetched already
+            watch(isVisible, (v) => {
+                if (v) {
+                    fetch()
+                }
+            })
+
             return {
+                termAddPermission,
+                categoryAddPermission,
+                entityUpdatePermission,
+                entityDeletePermission,
+                createPermission,
                 assetTypeLabel,
                 isVisible,
                 isModalVisible,

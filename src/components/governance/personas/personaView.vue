@@ -282,7 +282,6 @@
             const whitelistedConnectionIds = ref([])
 
             const selectPersona = (persona) => {
-                console.log('selectPersona', persona)
                 selectedPersonaId.value = persona.id
             }
 

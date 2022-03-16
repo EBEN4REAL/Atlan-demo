@@ -400,12 +400,12 @@ export default function useGraph(graph) {
         }
     }
 
-    const addEdge = (relation, styles: EdgeStyle = {}) => {
+    const addEdge = (relation, styles: EdgeStyle = {}, data = {}) => {
         const graphEdges = graph.value.getEdges()
         const edge = graphEdges.find((x) => x.id === relation.id)
         if (edge) return edge
 
-        const { edgeData } = createEdgeData(relation, {}, styles)
+        const { edgeData } = createEdgeData(relation, data, styles)
 
         const createdEdge = graph.value.addEdge(edgeData)
 

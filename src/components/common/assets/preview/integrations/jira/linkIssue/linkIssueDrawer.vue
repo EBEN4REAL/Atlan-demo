@@ -7,7 +7,7 @@
         :destroy-on-close="true"
         @close="$emit('close')"
     >
-        <div class="h-full bg-primary-light">
+        <div class="flex flex-col h-full overflow-y-hidden bg-primary-light">
             <Header
                 class="mb-4"
                 :checked-i-ds="checkedIssues"
@@ -23,7 +23,7 @@
 
             <div
                 v-if="isLoading && !searchLoading && !issues?.length"
-                class="flex items-center justify-center w-full h-full"
+                class="flex flex-col items-center justify-center flex-grow w-full"
             >
                 <AtlanLoader class="h-10" />
             </div>
@@ -59,11 +59,10 @@
 
             <div
                 v-else
-                class="flex flex-col gap-y-4"
-                style="height: calc(100vh - 3.1rem)"
+                class="flex flex-col flex-grow overflow-y-hidden gap-y-4"
             >
                 <main class="flex flex-col flex-grow overflow-y-hidden">
-                    <div class="flex items-center px-4 mb-2 h-14">
+                    <div class="flex items-center px-4 my-3">
                         <Search
                             v-model:value="searchText"
                             clearable
@@ -73,7 +72,7 @@
                                     ? `Search from ${totalResults} issues to link`
                                     : ''
                             "
-                            @change="searchLoading = true"
+                            @change="handleSearch"
                         />
                     </div>
 
@@ -82,7 +81,7 @@
                     </div>
                     <div
                         v-else-if="searchLoading"
-                        class="flex items-center justify-center w-full h-full"
+                        class="flex flex-col items-center justify-center flex-grow w-full"
                     >
                         <AtlanLoader class="h-10" />
                     </div>
@@ -104,8 +103,7 @@
 
                     <div
                         v-else
-                        class="flex flex-col p-4 pt-1 overflow-y-auto gap-y-2"
-                        style="height: calc(100vh - 10rem)"
+                        class="flex flex-col flex-grow p-4 pt-1 overflow-y-auto gap-y-2"
                     >
                         <IssueList
                             v-model:checkedIssues="checkedIssues"
@@ -121,9 +119,9 @@
                 </main>
             </div>
             <footer
-                v-if="totalResults !== issues.length"
+                v-if="totalResults !== issues.length && !searchLoading"
                 :class="issues?.length ? '' : 'opacity-0'"
-                class="absolute bottom-0 flex justify-center w-full pt-2 pb-2 bg-transparent"
+                class="flex justify-center w-full pt-2 pb-2"
             >
                 <a-button
                     class="flex items-center justify-between py-2 transition-all duration-300 bg-white border-none rounded-full text-primary"
@@ -185,10 +183,12 @@
         mutate,
         searchText,
         searchLoading,
+        handleSearch,
         offset,
         totalResults,
         loadMore,
         reset,
+        isReady,
     } = listNotLinkedIssues(assetID)
 
     debouncedWatch(
@@ -277,6 +277,7 @@
     }
 
     const recall = () => {
+        searchText.value = ''
         resetIDs()
         reset()
     }
@@ -284,8 +285,8 @@
     watch(visible, (v) => {
         // still mounted without open
         if (v && !issues.value?.length) recall()
-        else if (v && (checkedIssues.value.length || linkErrorIDs.value.length))
-            recall()
+        // else if (v && (checkedIssues.value.length || linkErrorIDs.value.length))
+        //     recall()
     })
 </script>
 

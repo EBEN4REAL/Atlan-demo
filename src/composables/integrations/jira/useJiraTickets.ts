@@ -1,5 +1,5 @@
 import { computed, ref, Ref, watch } from 'vue'
-import { debouncedWatch } from '@vueuse/core'
+import { debouncedWatch, useDebounceFn } from '@vueuse/core'
 import { Integrations } from '~/services/service/integrations/index'
 import { Issue, IssueTypes } from '~/types/integrations/jira.types'
 
@@ -128,15 +128,13 @@ export const listNotLinkedIssues = (assetID: Ref<string>) => {
     const { mutate, reset } = search
 
     const searchLoading = ref(false)
-    debouncedWatch(searchText, async () => {
+    const handleSearch = useDebounceFn(async () => {
         searchLoading.value = true
         await reset()
         searchLoading.value = false
-    },
-        { deep: true, debounce: 500 }
-    )
+    }, 1000)
 
-    return { searchText, searchLoading, ...search }
+    return { searchText, searchLoading, handleSearch, ...search }
 }
 
 

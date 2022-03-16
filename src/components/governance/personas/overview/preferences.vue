@@ -6,11 +6,28 @@
             expand-icon-position="right"
             class="bg-red"
         >
+            <template #expandIcon="props">
+                <AtlanIcon
+                    :icon="props.isActive ? 'ChevronUp' : 'ChevronDown'"
+                    class="absolute text-gray-700 right-6"
+                />
+            </template>
             <a-collapse-panel key="1" class="rounded-lg panel">
                 <template #header>
                     <div class="px-3 py-1">
                         <div class="text-base font-bold text-gray-700">
                             Custom Metadata
+                            <a-popover placement="right">
+                                <template #content>
+                                    <div class="p-2 bg-gray-700 rounded-lg">
+                                        <img :src="gifCM" class="w-64 h-52" />
+                                    </div>
+                                </template>
+                                <AtlanIcon
+                                    icon="WarningIcon"
+                                    class="ml-1 text-primary"
+                                />
+                            </a-popover>
                         </div>
                         <div class="mt-1 text-sm text-gray-500">
                             Select the custom metadata that should be visible to
@@ -96,6 +113,7 @@
     import { message } from 'ant-design-vue'
     import useBusinessMetadata from '@/governance/custom-metadata/composables/useBusinessMetadata'
     import CustomMetadataAvatar from '@/governance/custom-metadata/CustomMetadataAvatar.vue'
+    import gifCM from '~/assets/gifs/Preferences/CM_Preferences.gif'
     import {
         savePersona,
         selectedPersonaDirty,
@@ -188,6 +206,7 @@
                 customMetadataList,
                 metaSwitchValue,
                 assetSidebarListComputed,
+                gifCM,
             }
         },
     })
@@ -200,6 +219,7 @@
         box-shadow: 0px 8px 24px 0px #1920380a;
 
         .ant-collapse-header {
+            border-radius: 8px !important;
             @apply bg-white;
         }
         .ant-collapse-content-box {

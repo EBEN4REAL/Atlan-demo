@@ -4,7 +4,7 @@ import {
     updateWorkflowByName,
     runWorkflowByName,
     createWorkflow,
-} from '~/composables/workflow/useWorkflowList'
+} from '~/workflows/composables/workflow/useWorkflowList'
 import { Workflows } from '~/services/service/workflows'
 
 export const isWorkflowRunning = ref(false)

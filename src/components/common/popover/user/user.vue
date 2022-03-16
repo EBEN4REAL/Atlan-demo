@@ -164,6 +164,88 @@
                     <AtlanLoader v-if="isLoading" class="h-8" />
                 </div>
             </div>
+            <div v-else class="relative p-4 user-popover atlan-home-cursor">
+                <div class="z-10 flex flex-col gap-y-2">
+                    <div
+                        class="absolute top-0 left-0 right-0 user-cover-atlan opacity-60"
+                    ></div>
+                    <div class="flex atlan-home-cursor">
+                        <img
+                            :src="atlanLogo"
+                            class="z-10 h-8 mr-3 rounded-full"
+                        />
+                        <div class="z-10 flex flex-col">
+                            <!-- name & basic details -->
+                            <div>
+                                <div
+                                    class="flex text-sm font-semibold capitalize"
+                                >
+                                    <span>Atlan</span>
+                                </div>
+                                <!-- <div class="text-sm text-gray-600">
+                                    <span class="mx-1 text-gray-400">•</span>
+                                    {{ selectedUser?.workspaceRole }}
+                                </div> -->
+                                <span class="text-sm text-gray-600">
+                                    <!-- <span class="mx-1 text-gray-400"
+                                                        >•</span
+                                                    > -->
+                                    <a-tooltip placement="bottom">
+                                        <span class=""
+                                            >Home for your data team
+                                        </span>
+                                    </a-tooltip>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-col mt-2">
+                        <!-- <span class="font-bold">Hello 👋</span> -->
+                        <span class="font-bold">Hello {{ userName }} 👋</span>
+                        <span>
+                            Looks like you’re curious! If you have questions
+                            <span
+                                class="cursor-pointer text-primary hover:underline"
+                                @click="toggleHelpWidget"
+                                >reach out to us</span
+                            >
+                            or visit our
+                            <a
+                                class="cursor-pointer text-primary hover:underline"
+                                target="_blank"
+                                href="https://ask.atlan.com"
+                                >documentation</a
+                            >.
+                        </span>
+                        <!-- <span class="mt-2 font-bold text-pink-400"
+                            >Or just listen to some music 🎵🎼🎸🎧🎶🎹</span
+                        > -->
+                        <span class="mt-4 font-bold text-pink-500"
+                            >Or just listen to some music 🎵</span
+                        >
+                        <div>
+                            <iframe
+                                style="border-radius: 12px"
+                                src="https://open.spotify.com/embed/track/1J6bub4kiTe4h0RCo9IszE?utm_source=generator&theme=0"
+                                width="100%"
+                                height="80"
+                                frameBorder="0"
+                                allowfullscreen=""
+                                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                            ></iframe>
+                            <!-- <iframe
+                                style="border-radius: 12px"
+                                src="https://open.spotify.com/embed/playlist/2ecfGG52m1APXqXaG15muN?utm_source=generator"
+                                width="100%"
+                                height="80"
+                                frameBorder="0"
+                                allowfullscreen=""
+                                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                            ></iframe> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
         </template>
         <slot></slot>
     </a-popover>
@@ -173,10 +255,13 @@
     import { toRefs, computed, watch, ref } from 'vue'
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import { useUsers } from '~/composables/user/useUsers'
-    import AtlanIcon from '../../icon/atlanIcon.vue'
+    import AtlanIcon from '@/common/icon/atlanIcon.vue'
     import SlackMessageCta from './slackMessageCta.vue'
     import UserAvatar from '@/common/avatar/user.vue'
     import AtlanBtn from '@/UI/button.vue'
+    import atlanLogo from '~/assets/images/source/atlan-logo.jpeg'
+    import useHelpWidget from '~/composables/helpCenter/useHelpWidget'
+    import useUserData from '~/composables/user/useUserData'
 
     export default {
         name: 'PopoverUser',
@@ -231,6 +316,8 @@
             const userProfiles = computed(() =>
                 getUserProfiles(selectedUser.value)
             )
+            const { toggleHelpWidget } = useHelpWidget()
+            const { firstName: userName } = useUserData()
 
             return {
                 selectedUser,
@@ -240,6 +327,9 @@
                 getUserList,
                 getUserProfiles,
                 userProfiles,
+                atlanLogo,
+                toggleHelpWidget,
+                userName,
             }
         },
     }
@@ -265,7 +355,20 @@
         // background: url("https://storage.googleapis.com/subtlepatterns-production/designers/subtlepatterns/uploads/fancy-cushion.png");
 
         background-repeat: no-repeat;
-        background-size: cover;
         height: 5rem;
+        background-size: cover;
+    }
+
+    .user-cover-atlan {
+        // curved lines
+        background: url('https://storage.googleapis.com/subtlepatterns-production/designers/subtlepatterns/uploads/round.png');
+        background-repeat: no-repeat;
+        height: 4rem;
+        background-size: cover;
+    }
+    .atlan-home-cursor {
+        cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'  width='40' height='48' viewport='0 0 100 100' style='fill:black;font-size:24px;'><text y='50%'>🏡</text></svg>")
+                16 0,
+            auto;
     }
 </style>

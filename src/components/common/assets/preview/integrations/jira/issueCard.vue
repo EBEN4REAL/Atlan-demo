@@ -5,14 +5,14 @@
         :class="checked ? ' border-primary' : 'border-gray-200'"
         @click="$emit('click', issue)"
     >
-        <div v-if="showCheckbox">
-            <a-checkbox :checked="checked" />
-        </div>
+        <template v-if="showCheckbox">
+            <a-checkbox :checked="checked" :class="$style.checkboxClass" />
+        </template>
         <aside class="flex-grow space-y-3 overflow-hidden">
             <header
                 class="relative flex items-center justify-between overflow-hidden"
             >
-                <div class="flex items-center text-xs">
+                <div class="flex items-start text-xs">
                     <img
                         :src="issuetype.iconUrl"
                         style="max-height: 14px; max-width: 14px"
@@ -160,4 +160,10 @@
     })
 </script>
 
-<style scoped></style>
+<style lang="less" module>
+    .checkboxClass {
+        :global(.ant-checkbox) {
+            top: 0px !important;
+        }
+    }
+</style>

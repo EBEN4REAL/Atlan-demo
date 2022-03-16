@@ -340,13 +340,15 @@ export default async function useComputeGraph({
 
         createNodesFromEntityMap(newData, false)
         createNodeEdges(newData)
-
         renderLayout(registerAllListeners)
 
         const assetGuidToFit = Object.keys(newData.guidEntityMap).find(
-            (x) => x !== newData.baseEntityGuid
+            (x) =>
+                x !== newData.baseEntityGuid &&
+                graph.value.getNodes().find((y) => y.id === x)
         )
         const cellToFit = graph.value.getCellById(assetGuidToFit)
+
         graph.value.scrollToCell(cellToFit, { animation: { duration: 600 } })
 
         if (!Object.keys(mergedLineageData.value).length)

@@ -143,7 +143,7 @@
             const blackListCustomMeta = computed(() => {
                 const meta =
                     selectedPersonaDirty.value?.attributes?.preferences
-                        ?.blackListedCustomMetadata || []
+                        ?.customMetadataDenyList || []
 
                 return meta
             })
@@ -165,7 +165,7 @@
                         attributes: {
                             ...payload.attributes,
                             preferences: {
-                                blackListedCustomMetadata:
+                                customMetadataDenyList:
                                     blackListCustomMetaPayload,
                             },
                         },
@@ -175,7 +175,7 @@
                         attributes: {
                             ...payload.attributes,
                             preferences: {
-                                blackListedCustomMetadata:
+                                customMetadataDenyList:
                                     blackListCustomMetaPayload,
                             },
                         },

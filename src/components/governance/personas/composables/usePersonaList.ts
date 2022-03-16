@@ -132,8 +132,8 @@ export const filteredPersonas = computed(() => {
             return found
         })
     }
-
-      if (glossaries && Object.keys(glossaries.length)) {
+    if (glossaries && Object.keys(glossaries).length) {
+       
         result = result.filter((persona) => {
             if(!persona.glossaryPolicies || !persona?.glossaryPolicies?.length){
                 return false

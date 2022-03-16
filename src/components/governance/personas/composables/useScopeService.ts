@@ -281,7 +281,7 @@ export const glossaryPolicyScopeList = [
             {
                 value: 'entity-add-classification',
                 label: 'Add Classifications',
-                desc: 'Permission to add classifications from terms',
+                desc: 'Permission to add classifications to terms',
                 gif: addClassificationGlossary,
             },
             {

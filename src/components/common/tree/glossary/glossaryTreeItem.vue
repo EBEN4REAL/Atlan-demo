@@ -52,7 +52,7 @@
                                 icon="Category"
                                 class="m-0 mr-1 align-text-bottom"
                             />
-                            <p class="p-0 m-0"> Category</p>
+                            <p class="p-0 m-0">Category</p>
                         </div>
                     </div>
                 </template>
@@ -190,7 +190,7 @@
         Term,
         Category,
     } from '~/types/glossary/glossary.interface'
-    import AtlanIcon from '../../icon/atlanIcon.vue'
+    import AtlanIcon from '@/common/icon/atlanIcon.vue'
     import map from '~/constant/accessControl/map'
     import useAuth from '~/composables/auth/useAuth'
 
@@ -213,7 +213,7 @@
                 default: false,
             },
         },
-        emits: ['addSelectedKey','changeEditMode'],
+        emits: ['addSelectedKey', 'changeEditMode'],
         setup(props, { emit }) {
             // data
             const { item } = toRefs(props)
@@ -306,9 +306,9 @@
             const handleNameUpdate = (val) => {
                 entityTitle.value = val
             }
-            watch(isEditMode,()=>{
-                console.log(isEditMode.value,"drag change");
-                emit('changeEditMode',isEditMode.value)
+            watch(isEditMode, () => {
+                console.log(isEditMode.value, 'drag change')
+                emit('changeEditMode', isEditMode.value)
             })
             return {
                 getEntityStatusIcon,

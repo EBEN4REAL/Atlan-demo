@@ -255,7 +255,7 @@
     import { toRefs, computed, watch, ref } from 'vue'
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import { useUsers } from '~/composables/user/useUsers'
-    import AtlanIcon from '../../icon/atlanIcon.vue'
+    import AtlanIcon from '@/common/icon/atlanIcon.vue'
     import SlackMessageCta from './slackMessageCta.vue'
     import UserAvatar from '@/common/avatar/user.vue'
     import AtlanBtn from '@/UI/button.vue'

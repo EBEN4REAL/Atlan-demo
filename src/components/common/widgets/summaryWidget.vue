@@ -47,6 +47,7 @@
                             <a-input
                                 v-model:value="link"
                                 placeholder="Paste link to your channel"
+                                @change="validUrl = true"
                             >
                                 <template #prefix>
                                     <AtlanIcon icon="Link" />
@@ -75,7 +76,7 @@
                                 :disabled="!link || !validUrl"
                                 @click="handleChangeLink"
                             >
-                                <AtlanIcon icon="Edit" class="mr-1" />
+                                <!-- <AtlanIcon icon="Edit" class="mr-1" /> -->
                                 <!-- {{
                                     item?.attributes?.channelLink
                                         ? 'Edit'
@@ -228,17 +229,25 @@
                 }
                 return ''
             }
+            const validUrl = ref(true)
             const handleChangeLink = () => {
+                if (
+                    !checkLink(link.value) ||
+                    !link.value.includes('.slack.com')
+                ) {
+                    return (validUrl.value = false)
+                }
                 showPopover.value = false
                 setTimeout(() => {
                     emit('changeLink', link.value)
                 }, 300)
             }
-            const validUrl = computed(() => {
-                if (!link.value) return true
-                if (!link.value.includes('.slack.com')) return false
-                return checkLink(link.value)
-            })
+
+            // const validUrl = computed(() => {
+            //     if (!link.value) return true
+            //     if (!link.value.includes('.slack.com')) return false
+            //     return checkLink(link.value)
+            // })
             const handleRemove = () => {
                 showPopover.value = false
                 setTimeout(() => {

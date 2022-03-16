@@ -60,12 +60,17 @@
                             }}</span>
                         </div>
                         <a-switch
-                            :checked="metaSwitchValue[meta.guid]"
+                            :checked="!blackListCustomMeta.includes(meta.guid)"
                             :disabled="isLoadingMeta"
                             :loading="
                                 isLoadingMeta && currentIdUpdated === meta.guid
                             "
-                            @click="handleSwitch(meta.guid)"
+                            @click="
+                                handleSwitch(
+                                    meta.guid,
+                                    blackListCustomMeta.includes(meta.guid)
+                                )
+                            "
                         />
                     </div>
                 </div>
@@ -135,22 +140,15 @@
                 () => finalBusinessMetadataList.value
             )
             const assetSidebarListComputed = computed(() => assetSidebarList)
-            const metaSwitchValue = computed(() => {
-                let objMeta = {}
+            const blackListCustomMeta = computed(() => {
                 const meta =
                     selectedPersonaDirty.value?.attributes?.preferences
-                        ?.custom_metadata || []
-                meta.forEach((el) => {
-                    objMeta = { ...objMeta, ...el }
-                })
-                return objMeta
+                        ?.blackListedCustomMetadata || []
+
+                return meta
             })
-            const metaKey = computed(() =>
-                [...finalBusinessMetadataList.value].map((el) => ({
-                    [el.guid]: metaSwitchValue.value[el.guid] || false,
-                }))
-            )
-            const handleUpdateMeta = async (guid) => {
+
+            const handleUpdateMeta = async (guid, isOnList) => {
                 isLoadingMeta.value = true
                 const payload = {
                     ...selectedPersonaDirty.value,
@@ -158,20 +156,17 @@
                 delete payload.dataPolicies
                 delete payload.glossaryPolicies
                 delete payload.metadataPolicies
-                const metaKeys = [...metaKey.value].map((el) => {
-                    const id = Object.keys(el)[0]
-                    if (id === guid) {
-                        return { [guid]: !el[id] }
-                    }
-                    return el
-                })
+                const blackListCustomMetaPayload = isOnList
+                    ? [...blackListCustomMeta.value].filter((el) => el !== guid)
+                    : [...blackListCustomMeta.value, guid]
                 try {
                     await savePersona({
                         ...payload,
                         attributes: {
                             ...payload.attributes,
                             preferences: {
-                                custom_metadata: metaKeys,
+                                blackListedCustomMetadata:
+                                    blackListCustomMetaPayload,
                             },
                         },
                     })
@@ -180,7 +175,8 @@
                         attributes: {
                             ...payload.attributes,
                             preferences: {
-                                custom_metadata: metaKeys,
+                                blackListedCustomMetadata:
+                                    blackListCustomMetaPayload,
                             },
                         },
                     })
@@ -192,9 +188,9 @@
                     isLoadingMeta.value = false
                 }
             }
-            const handleSwitch = (guid) => {
+            const handleSwitch = (guid, isOnList) => {
                 currentIdUpdated.value = guid
-                handleUpdateMeta(guid)
+                handleUpdateMeta(guid, isOnList)
             }
             return {
                 activeKey,
@@ -204,7 +200,7 @@
                 isLoadingMeta,
                 currentIdUpdated,
                 customMetadataList,
-                metaSwitchValue,
+                blackListCustomMeta,
                 assetSidebarListComputed,
                 gifCM,
             }

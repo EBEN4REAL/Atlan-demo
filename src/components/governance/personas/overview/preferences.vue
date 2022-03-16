@@ -53,6 +53,40 @@
                     </div>
                 </div>
             </a-collapse-panel>
+            <a-collapse-panel key="2" class="mt-4 rounded-lg panel">
+                <template #header>
+                    <div class="px-3 py-1">
+                        <div class="text-base font-bold text-gray-700">
+                            Asset Sidebar
+                        </div>
+                        <div class="mt-1 text-sm text-gray-500">
+                            Select the sidebar tabs that should be visible to
+                            Data consultant persona
+                        </div>
+                    </div>
+                </template>
+                <div class="p-4">
+                    <div
+                        v-for="(item, idx) in assetSidebarListComputed"
+                        :key="item.name"
+                        :class="`flex justify-between p-3 ${
+                            idx !== assetSidebarListComputed.length - 1 &&
+                            'border-b'
+                        }  border-gray-200`"
+                    >
+                        <div class="flex">
+                            <AtlanIcon
+                                :icon="item.icon"
+                                class="mr-2 text-gray-500"
+                            />
+                            <span class="text-sm text-gray-700">{{
+                                item.name
+                            }}</span>
+                        </div>
+                        <a-switch />
+                    </div>
+                </div>
+            </a-collapse-panel>
         </a-collapse>
     </div>
 </template>
@@ -67,6 +101,7 @@
         selectedPersonaDirty,
         updatedSelectedData,
     } from '../composables/useEditPersona'
+    import { assetSidebarList } from '../composables/usePreferences'
 
     export default defineComponent({
         name: 'Preferences',
@@ -81,6 +116,7 @@
             const customMetadataList = computed(
                 () => finalBusinessMetadataList.value
             )
+            const assetSidebarListComputed = computed(() => assetSidebarList)
             const metaSwitchValue = computed(() => {
                 let objMeta = {}
                 const meta =
@@ -151,6 +187,7 @@
                 currentIdUpdated,
                 customMetadataList,
                 metaSwitchValue,
+                assetSidebarListComputed,
             }
         },
     })

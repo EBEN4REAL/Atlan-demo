@@ -236,7 +236,7 @@
             }
             const validUrl = computed(() => {
                 if (!link.value) return true
-                if (!link.value.includes('slack.com')) return false
+                if (!link.value.includes('.slack.com')) return false
                 return checkLink(link.value)
             })
             const handleRemove = () => {

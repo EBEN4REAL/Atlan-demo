@@ -507,7 +507,9 @@
                     !filteredList.length && (queryText || listType !== 'all')
                 "
                 class="mt-4"
-                empty-screen="NoResultIllustration"
+                :empty-screen="
+                    !queryText ? 'CreateGroups' : 'NoResultIllustration'
+                "
                 :desc="
                     queryText
                         ? `Whoops! couldn't find anyone with '${queryText}' in persona`

@@ -53,14 +53,14 @@ const searchIssues = (jql, immediate = true) => {
         mutate()
     }
 
-    const reset = () => {
+    const reset = async () => {
         loadingMore.value = false
         issues.value = []
         offset.value = 0
-        mutate()
+        await mutate()
     }
 
-    return { issues, isLoading, error, mutate, isReady, pagination, offset, totalResults, loadingMore, loadMore, reset }
+    return { issues, isLoading, error, mutate, isReady, pagination, offset, totalResults, loadMore, reset }
 }
 
 export const issuesCount = (onlyLinked = true, immediate = true) => {
@@ -125,12 +125,12 @@ export const listNotLinkedIssues = (assetID: Ref<string>) => {
 
 
     const search = searchIssues(jql, false)
-    const { mutate } = search
+    const { mutate, reset } = search
 
     const searchLoading = ref(false)
     debouncedWatch(searchText, async () => {
         searchLoading.value = true
-        await mutate()
+        await reset()
         searchLoading.value = false
     },
         { deep: true, debounce: 500 }

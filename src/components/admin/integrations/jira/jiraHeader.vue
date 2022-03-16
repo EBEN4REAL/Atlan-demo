@@ -34,12 +34,30 @@
                     "
                 >
                     Connect
+                    <AtlanIcon icon="ArrowRight" />
                 </AtlanButton>
             </div>
         </template>
+        <div v-if="tenantJiraStatus.created && !jiraAppInstalled" class="">
+            <AtlanButton
+                v-auth="access.DELETE_INTEGRATION"
+                color="minimal"
+                class="text-red-500"
+                :is-loading="disconnectLoading"
+                size="lg"
+                @click="
+                    (e) => {
+                        e.stopPropagation()
+                        handleDisconnect()
+                    }
+                "
+            >
+                Disconnect
+            </AtlanButton>
+        </div>
         <div
             v-if="tenantJiraStatus.configured && !jiraAppInstalled"
-            class="flex items-center justify-center px-3 py-2 text-xs text-white rounded w-26 gap-x-1 bg-primary"
+            class="flex items-center justify-center px-3 py-2 text-white rounded w-26 gap-x-1 bg-primary"
         >
             <a
                 class="flex items-center hover:underline hover:text-white gap-x-1"
@@ -48,6 +66,7 @@
                 @click="
                     (e) => {
                         e.stopPropagation()
+                        handleDisconnect()
                     }
                 "
             >
@@ -58,7 +77,7 @@
             </a>
         </div>
         <div
-            v-else
+            v-else-if="tenantJiraStatus.configured"
             class="px-3 py-1.5 space-y-2 text-primary bg-primary-light rounded"
         >
             <div
@@ -84,18 +103,25 @@
 </template>
 
 <script setup lang="ts">
-    import { toRefs, watch } from 'vue'
+    import { computed, h, toRefs, watch } from 'vue'
+    import { Modal } from 'ant-design-vue'
     import useTenantData from '~/composables/tenant/useTenantData'
     import { integrations } from '~/constant/integrations/integrations'
     import integrationStore from '~/store/integrations/index'
     import access from '~/constant/accessControl/map'
-    import { connectJira } from '~/composables/integrations/jira/useJira'
+    import {
+        archiveJira,
+        connectJira,
+    } from '~/composables/integrations/jira/useJira'
     import { issuesCount } from '~/composables/integrations/jira/useJiraTickets'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     const props = defineProps({
         isOpen: { type: Boolean, required: true },
         jiraAppInstalled: { type: Boolean, required: true },
     })
+
+    const emit = defineEmits(['disconnect'])
 
     const store = integrationStore()
     const { tenantJiraStatus } = toRefs(store)
@@ -105,6 +131,71 @@
     const { isLoading, connect: handleConnect } = connectJira({
         tenant: true,
     })
+
+    const pV = computed(() => ({
+        alias: 'jira',
+        id: tenantJiraStatus.value.id,
+    }))
+
+    const { isLoading: disconnectLoading, disconnect } = archiveJira(pV)
+    // ? TODO refactor DRY refactor DRY refactor DRY  @samiran
+    const handleDisconnect = () => {
+        Modal.confirm({
+            class: '',
+            icon: null,
+            content: () =>
+                h('div', { class: [''] }, [
+                    h(
+                        'h1',
+                        {
+                            class: ['font-bold -mt-4 mb-2'],
+                        },
+                        ['Disconnect Jira']
+                    ),
+
+                    h(
+                        'div',
+                        {
+                            class: ['font-normal'],
+                        },
+                        [
+                            'Are you sure you want to disconnect ',
+                            h(
+                                'b',
+                                {
+                                    class: [''],
+                                },
+                                'Jira'
+                            ),
+                            ' integration?',
+                        ]
+                    ),
+                    h(
+                        'div',
+                        {
+                            class: ['font-normal', 'mb-2'],
+                        },
+                        [
+                            'This will also disconnect Jira integration for other users.',
+                        ]
+                    ),
+                ]),
+            okType: 'danger',
+            autoFocusButton: null,
+            okButtonProps: {
+                type: 'primary',
+            },
+            okText: 'Disconnect',
+            cancelText: 'Cancel',
+            async onOk() {
+                await disconnect()
+                useAddEvent('admin', 'integration', 'removed', {
+                    integration: 'jira',
+                    level: 'tenant',
+                })
+            },
+        })
+    }
 </script>
 
 <style scoped></style>

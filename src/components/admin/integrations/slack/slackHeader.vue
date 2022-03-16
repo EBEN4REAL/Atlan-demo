@@ -51,6 +51,7 @@
                         v-auth="access.CREATE_INTEGRATION"
                         size="sm"
                         padding="compact"
+                        class=""
                     >
                         Add to Slack <AtlanIcon icon="ArrowRight" />
                     </AtlanButton>

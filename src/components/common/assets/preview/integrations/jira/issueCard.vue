@@ -8,11 +8,11 @@
         <div v-if="showCheckbox">
             <a-checkbox :checked="checked" />
         </div>
-        <aside class="flex-grow space-y-2 overflow-hidden">
+        <aside class="flex-grow space-y-3 overflow-hidden">
             <header
                 class="relative flex items-center justify-between overflow-hidden"
             >
-                <div class="flex items-center">
+                <div class="flex items-center text-xs">
                     <img
                         :src="issuetype.iconUrl"
                         style="max-height: 14px; max-width: 14px"
@@ -74,7 +74,6 @@
                         @click="(e) => e.stopPropagation()"
                     />
                 </div>
-
                 <span class="text-xs">
                     <Truncate
                         classes="text-gray-600"

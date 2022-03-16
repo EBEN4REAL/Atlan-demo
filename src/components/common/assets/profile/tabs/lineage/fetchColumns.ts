@@ -77,7 +77,7 @@ export default function fetchColumns(
         relationAttributes,
         suppressLogs: true,
     }
-    const { data } = useIndexSearch<assetInterface>(
+    const { data, error } = useIndexSearch<assetInterface>(
         body,
         localKey,
         isCache,
@@ -90,5 +90,6 @@ export default function fetchColumns(
     return {
         list,
         count,
+        error,
     }
 }

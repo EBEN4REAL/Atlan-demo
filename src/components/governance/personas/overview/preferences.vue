@@ -53,7 +53,7 @@
                     </div>
                 </div>
             </a-collapse-panel>
-            <a-collapse-panel key="2" class="mt-4 rounded-lg panel">
+            <!-- <a-collapse-panel key="2" class="mt-4 rounded-lg panel">
                 <template #header>
                     <div class="px-3 py-1">
                         <div class="text-base font-bold text-gray-700">
@@ -86,7 +86,7 @@
                         <a-switch />
                     </div>
                 </div>
-            </a-collapse-panel>
+            </a-collapse-panel> -->
         </a-collapse>
     </div>
 </template>

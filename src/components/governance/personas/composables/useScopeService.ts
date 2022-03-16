@@ -12,7 +12,7 @@ import removeClassificationGlossary from '~/assets/gifs/Permissions_Popover_Gifs
 import updateCustomMetadataGlossary from '~/assets/gifs/Permissions_Popover_Gifs/Update_CM_Glossary.gif'
 import createGlossary from '~/assets/gifs/Permissions_Popover_Gifs/Create_Glossary.gif'
 import deleteGlossary from '~/assets/gifs/Permissions_Popover_Gifs/Delete_Glossary.gif'
-import updateGlossary from '~/assets/gifs/Permissions_Popover_Gifs/Update+link_Glossary.gif'
+import updateGlossary from '~/assets/gifs/Permissions_Popover_Gifs/Update_&_link_Glossary.gif'
 
 export const purposeScopeList = [
     {
@@ -248,7 +248,7 @@ export const glossaryPolicyScopeList = [
                 value: 'entity-update',
                 label: 'Update',
                 filterLabel: 'Update asset',
-                desc: 'Permission to update metadata, resources, readme for terms & category and to link those terms with all assets',
+                desc: 'Permission to update metadata, resources, readme for glossary, terms & categories and to link those terms with all assets',
                 gif: updateGlossary,
             },
 

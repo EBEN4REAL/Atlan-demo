@@ -335,6 +335,17 @@
 
             // permissions
 
+            const glossary = computed(() => {
+                if (entity.value.typeName === 'AtlasGlossary')
+                    return entity.value
+                if (
+                    ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'].includes(
+                        entity.value.typeName
+                    )
+                )
+                    return entity.value.attributes.anchor
+                return null
+            })
             const {
                 termAddPermission,
                 categoryAddPermission,
@@ -342,11 +353,11 @@
                 entityDeletePermission,
                 createPermission,
                 fetch,
-            } = fetchGlossaryPermission(entity)
+            } = fetchGlossaryPermission(glossary)
 
             // ? when action dropdown opens, fetch all permissions, if not fetched already
             watch(isVisible, (v) => {
-                if (v) {
+                if (v && glossary.value) {
                     fetch()
                 }
             })

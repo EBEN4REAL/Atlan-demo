@@ -4,7 +4,7 @@
             class="relative p-3 mx-1 border border-gray-200 rounded-lg cursor-pointer hover:border-primary card-container"
         >
             <div class="flex items-center justify-between">
-                <div class="font-bold text-gray-500">
+                <div class="text-xs font-bold text-gray-500">
                     {{ typeCopyMapping[item?.requestType] }}
                     {{ destinationAttributeMapping[item.destinationAttribute] }}
                 </div>
@@ -32,7 +32,7 @@
                 <div
                     v-if="item.status === 'active'"
                     v-auth="[map.APPROVE_REQUEST]"
-                    class="flex -mr-1.5 hover-action"
+                    class="flex -mr-1.5 hover-action linear-gradient"
                 >
                     <RequestDropdown
                         :type="'approve'"
@@ -40,7 +40,7 @@
                         :item-drop-down="'Approve with comment'"
                         @submit="(message) => handleApproval(message || '')"
                     >
-                        <span class="text-green-500"> Approve </span>
+                        <span class="text-xs text-green-500"> Approve </span>
                     </RequestDropdown>
                     <RequestDropdown
                         :type="'reject'"
@@ -49,14 +49,14 @@
                         :item-drop-down="'Reject with comment'"
                         @submit="(message) => handleRejection(message || '')"
                     >
-                        <span class="text-red-500"> Reject </span>
+                        <span class="text-xs text-red-500"> Reject </span>
                     </RequestDropdown>
                 </div>
                 <div
                     v-if="
                         item.status === 'rejected' || item.status === 'approved'
                     "
-                    class="flex items-center justify-end font-light whitespace-nowrap hover-reject-approve"
+                    class="flex items-center justify-end text-xs font-light whitespace-nowrap hover-reject-approve linear-gradient"
                     :class="
                         item.status === 'approved'
                             ? 'text-success'
@@ -77,7 +77,9 @@
                             class="mr-2"
                         />
 
-                        <span class="text-gray-700">{{ nameUpdater }}</span>
+                        <span class="text-xs text-gray-700">{{
+                            nameUpdater
+                        }}</span>
                     </div>
                 </div>
                 <AtlanIcon
@@ -219,7 +221,7 @@
                         </Pill>
                     </TermPopover>
                 </div>
-                <div v-else class="ml-1 text-sm text-gray-700 truncate">
+                <div v-else class="text-xs text-gray-700 truncate">
                     {{ item.destinationValue }}
                 </div>
             </div>
@@ -539,6 +541,8 @@
         transform: scale(0.8);
     }
     .card-container {
+        box-shadow: 0px 2px 5px 1px rgba(0, 0, 0, 0.05);
+
         &:hover {
             .asset-term {
                 background: transparent !important;
@@ -565,7 +569,7 @@
             top: 1px;
             display: none;
             .action-btn {
-                height: 32px;
+                height: 24px;
                 width: 32px;
                 border-radius: 50%;
                 background: white;
@@ -583,6 +587,18 @@
     }
     .mr-cta {
         margin-left: 8px;
+    }
+    .hover-action {
+        .sparator {
+            display: none !important;
+        }
+        button {
+            box-shadow: 0px 1px 0px 0px rgba(0, 0, 0, 0.05);
+            border-radius: 4px !important;
+            border: 1px solid rgba(230, 230, 235, 1) !important;
+            height: fit-content !important;
+            padding: 4px 8px !important;
+        }
     }
 </style>
 <style lang="less" scoped>
@@ -628,11 +644,17 @@
         padding-left: 20px;
     }
     .linear-gradient {
-        background: rgb(244, 246, 253);
+        // background: rgb(244, 246, 253);
+        // background: linear-gradient(
+        //     90deg,
+        //     rgba(244, 246, 253, 0.8183648459383753) 6%,
+        //     rgba(244, 246, 253, 1) 16%
+        // );
+        background: rgb(255, 255, 255);
         background: linear-gradient(
             90deg,
-            rgba(244, 246, 253, 0.8183648459383753) 6%,
-            rgba(244, 246, 253, 1) 16%
+            rgba(255, 255, 255, 0.779171043417367) 32%,
+            rgba(255, 255, 255, 1) 53%
         );
     }
 </style>

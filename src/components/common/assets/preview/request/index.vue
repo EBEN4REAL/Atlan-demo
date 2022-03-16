@@ -46,27 +46,18 @@
                         </a-menu-item>
                     </a-menu>
                 </template>
-                <AtlanButton
-                    class="flex items-center justify-between filter-status"
-                    color="secondary"
-                    padding="compact"
+
+                <div
+                    class="flex text-gray-700 text-xs items-center bg-white py-1.5 px-2 rounded border border-gray-300 cursor-pointer w-32"
                 >
-                    <div class="flex items-center">
-                        <AtlanIcon
-                            :class="selectedFilter.class"
-                            class="mr-2"
-                            :icon="selectedFilter.icon"
-                        />
-                        <!-- <div
-                            :style="{
-                                background: selectedFilter.color,
-                            }"
-                            class="mr-2 dot"
-                        /> -->
-                        {{ selectedFilter.name }}
-                    </div>
-                    <AtlanIcon icon="ChevronDown" :class="'icon-drop'" />
-                </AtlanButton>
+                    <AtlanIcon
+                        :class="selectedFilter.class"
+                        class="mr-2"
+                        :icon="selectedFilter.icon"
+                    />
+                    {{ selectedFilter.name }}
+                    <AtlanIcon class="ml-auto" icon="ChevronDown" />
+                </div>
             </a-dropdown>
         </div>
         <div

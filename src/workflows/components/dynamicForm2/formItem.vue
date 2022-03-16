@@ -77,6 +77,7 @@
     import { useVModels } from '@vueuse/core'
 
     import Input from './widget/input.vue'
+    import TextInput from './widget/textarea.vue'
     import Boolean from './widget/boolean.vue'
     import InputNumber from './widget/inputNumber.vue'
     import Select from './widget/select.vue'
@@ -106,6 +107,7 @@
         components: {
             Credential,
             Input,
+            TextInput,
             InputNumber,
             Boolean,
             Select,

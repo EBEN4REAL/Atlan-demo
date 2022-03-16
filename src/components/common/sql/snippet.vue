@@ -117,7 +117,7 @@
                     })
                         .replaceAll('` ', '`') // needed for backticks, as formatter put space by default between backticks
                         .replaceAll(' `', '`')
-                        .replaceAll('AS`', 'AS  `') // previous replace removes space bw AS and backtick - undoing that change with this replace
+                        .replaceAll('AS`', 'AS `') // previous replace removes space bw AS and backtick - undoing that change with this replace
                 } catch (error) {
                     return text.value
                 }

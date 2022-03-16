@@ -1,6 +1,5 @@
 import { computed, ref, Ref, watch } from 'vue'
-import useAddEvent from '../../eventTracking/useAddEvent';
-import { debouncedWatch, useDebounce } from '@vueuse/core'
+import { debouncedWatch } from '@vueuse/core'
 import { Integrations } from '~/services/service/integrations/index'
 import { Issue, IssueTypes } from '~/types/integrations/jira.types'
 
@@ -20,6 +19,7 @@ const searchIssues = (jql, immediate = true) => {
     const pageSize = ref(10)
     const offset = ref(0)
     const totalResults = ref()
+    const loadingMore = ref(false)
 
     const body = computed(() => ({
         jql: jql.value,
@@ -29,14 +29,14 @@ const searchIssues = (jql, immediate = true) => {
 
     const { data, isLoading, error, mutate, isReady } = jiraSearch<{ issues: Issue[], total: number }>(body, options)
     watch([isReady, error], (v) => {
-        if (data.value) {
-            const { issues: _issues, total } = data.value || []
-            if (_issues) {
-                issues.value = _issues
-                totalResults.value = total
-            }
-
+        const { issues: _issues, total } = data.value || {}
+        if (_issues) {
+            if (loadingMore.value)
+                issues.value = [...issues.value, ..._issues]
+            else issues.value = _issues
+            totalResults.value = total
         }
+
     })
 
     const pagination = computed(() => ({
@@ -47,7 +47,20 @@ const searchIssues = (jql, immediate = true) => {
         current: offset.value / pageSize.value + 1,
     }))
 
-    return { issues, isLoading, error, mutate, isReady, pagination, offset, totalResults }
+    const loadMore = () => {
+        loadingMore.value = true
+        offset.value += pageSize.value
+        mutate()
+    }
+
+    const reset = () => {
+        loadingMore.value = false
+        issues.value = []
+        offset.value = 0
+        mutate()
+    }
+
+    return { issues, isLoading, error, mutate, isReady, pagination, offset, totalResults, loadingMore, loadMore, reset }
 }
 
 export const issuesCount = (onlyLinked = true, immediate = true) => {
@@ -79,7 +92,6 @@ export const issuesCount = (onlyLinked = true, immediate = true) => {
 }
 
 export const createIssue = (body) => {
-
     const options = {
         asyncOptions: {
             immediate: false,
@@ -94,7 +106,6 @@ export const createIssue = (body) => {
 }
 
 export const listLinkedIssues = (assetID: Ref<string>) => {
-
     const jql = computed(() => `(issue.property[atlan].guid = ${assetID.value}) ORDER BY created DESC`)
 
     return searchIssues(jql, false)
@@ -102,9 +113,7 @@ export const listLinkedIssues = (assetID: Ref<string>) => {
 }
 
 export const listNotLinkedIssues = (assetID: Ref<string>) => {
-
     const searchText = ref()
-
     const jql = computed(() => (searchText.value ?
         `(issue.property[atlan].guid != ${assetID.value} OR issue.property[atlan].guid = null) 
                 AND summary ~ \"${searchText.value}*\"
@@ -115,7 +124,8 @@ export const listNotLinkedIssues = (assetID: Ref<string>) => {
             `))
 
 
-    const { issues, isLoading, error, mutate, isReady, pagination, offset, totalResults } = searchIssues(jql, false)
+    const search = searchIssues(jql, false)
+    const { mutate } = search
 
     const searchLoading = ref(false)
     debouncedWatch(searchText, async () => {
@@ -126,12 +136,11 @@ export const listNotLinkedIssues = (assetID: Ref<string>) => {
         { deep: true, debounce: 500 }
     )
 
-    return { searchText, issues, isLoading, error, mutate, isReady, pagination, offset, totalResults, searchLoading }
+    return { searchText, searchLoading, ...search }
 }
 
 
 export const listIssueTypes = () => {
-
     const options = { asyncOptions: { immediate: true } }
     const { data, isLoading, error, mutate } = jiraListIssueTypes<IssueTypes[]>(options)
 
@@ -177,13 +186,9 @@ export const unlinkIssue = (_body, id) => {
             ..._body.value
         }
     ))
-
     const issueID = ref(id)
-
     const pathVariables = computed(() => ({ id: issueID.value }))
-
     const { data, isLoading, error, mutate, isReady } = jiraUnlinkIssue(body, pathVariables, options)
-
 
     return { data, isLoading, error, mutate, isReady }
 }

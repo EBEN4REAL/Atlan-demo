@@ -122,15 +122,25 @@
             </div>
             <footer
                 :class="issues?.length ? '' : 'opacity-0'"
-                class="absolute bottom-0 flex justify-center w-full pt-2 pb-2 bg-white"
+                class="absolute bottom-0 flex justify-center w-full pt-2 pb-2 bg-transparent"
             >
-                <Pagination
-                    v-model:offset="offset"
-                    :loading="isLoading || searchLoading"
-                    :page-size="pagination.pageSize"
-                    :total-pages="pagination.total"
-                    @mutate="mutate"
-                />
+                <a-button
+                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white border-none rounded-full text-primary"
+                    @click="loadMore"
+                >
+                    <template
+                        v-if="totalResults !== issues.length && !isLoading"
+                    >
+                        <p
+                            class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
+                        >
+                            Load more
+                        </p>
+                        <AtlanIcon icon="ArrowDown"
+                    /></template>
+
+                    <AtlanLoader v-else-if="isLoading" class="h-5" />
+                </a-button>
             </footer>
         </div>
     </a-drawer>
@@ -175,8 +185,9 @@
         searchText,
         searchLoading,
         offset,
-        pagination,
         totalResults,
+        loadMore,
+        reset,
     } = listNotLinkedIssues(assetID)
 
     debouncedWatch(
@@ -264,16 +275,16 @@
         linkErrorIDs.value = []
     }
 
-    const reset = () => {
+    const recall = () => {
         resetIDs()
-        issues.value = []
-        offset.value = 0
-        mutate()
+        reset()
     }
 
     watch(visible, (v) => {
         // still mounted without open
-        if (v) reset()
+        if (v && !issues.value?.length) recall()
+        else if (v && (checkedIssues.value.length || linkErrorIDs.value.length))
+            recall()
     })
 </script>
 

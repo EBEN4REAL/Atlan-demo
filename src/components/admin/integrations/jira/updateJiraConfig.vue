@@ -17,6 +17,7 @@
                     <ProjectSelector
                         v-model="defaultProject.id"
                         class="w-full"
+                        :defaultSelect="true"
                         @change="handleProjectChange"
                     />
                 </div>
@@ -120,15 +121,6 @@
 
             onMounted(() => {
                 activeTabKey.value = 'configuration'
-
-                const {
-                    config: { defaultProject: _defaultProject },
-                } = tenantJiraStatus.value
-
-                if (_defaultProject) {
-                    defaultProject.value.id = _defaultProject.id
-                    defaultProject.value.name = _defaultProject.name
-                }
             })
 
             return {

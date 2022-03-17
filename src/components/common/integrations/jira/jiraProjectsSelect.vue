@@ -102,22 +102,28 @@
 
     const { tenantJiraStatus } = toRefs(store)
 
-    onMounted(() => {
-        watch(projects, (v) => {
-            errorAvatarOptions.value = []
-            if (v?.length && !modelValue.value && props.defaultSelect) {
-                const { defaultProject } = tenantJiraStatus.value.config
-                if (defaultProject) {
-                    const project = options.value.find(
-                        (p) => p.value === defaultProject.id
-                    )
-                    if (project) {
-                        modelValue.value = project.value
-                        handleChange(project.value, project)
-                    }
+    const afterLoad = () => {
+        errorAvatarOptions.value = []
+        if (
+            projects.value?.length &&
+            !modelValue.value &&
+            props.defaultSelect
+        ) {
+            const { defaultProject } = tenantJiraStatus.value.config
+            if (defaultProject) {
+                const project = options.value.find(
+                    (p) => p.value === defaultProject.id
+                )
+                if (project) {
+                    modelValue.value = project.value
+                    handleChange(project.value, project)
                 }
             }
-        })
+        }
+    }
+
+    watch(lastPage, (v) => {
+        if (v && !modelValue.value) afterLoad()
     })
 </script>
 

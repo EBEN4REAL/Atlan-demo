@@ -104,14 +104,7 @@
     const createModal = ref(false)
     const linkIssueDrawerRef = ref()
 
-    // const refreshUnlinkedIssueList = () => {
-    //     if (linkIssueDrawerRef.value?.issues?.length) {
-    //         linkIssueDrawerRef.value.recall()
-    //     }
-    // }
-
     const clearStaleUnlinkIssue = () => {
-        debugger
         if (linkIssueVisible.value) linkIssueVisible.value = false
         if (linkIssueDrawerRef.value?.issues?.length)
             linkIssueDrawerRef.value.issues = []

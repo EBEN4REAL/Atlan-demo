@@ -259,7 +259,7 @@ export const listProjects = () => {
         { deep: true, debounce: 500 }
     )
 
-    const lastPage = computed(() => totalResults.value === projects.value.length)
+    const lastPage = computed(() => totalResults.value === projects.value?.length)
 
 
     // const pagination = computed(() => ({

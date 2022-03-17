@@ -18,7 +18,7 @@
                         style="max-height: 14px; max-width: 14px"
                         class="mr-1"
                     />
-                    <span>{{ key }}</span>
+                    <span class="text-gray-500">{{ key }}</span>
                 </div>
                 <div class="flex-grow"></div>
                 <template v-if="footer">
@@ -68,7 +68,7 @@
             </header>
 
             <main class="flex flex-col space-y-1">
-                <div class="flex items-center flex-grow">
+                <div class="flex items-center flex-grow font-bold">
                     <Truncate
                         placement="left"
                         :route-to="issueUrl"

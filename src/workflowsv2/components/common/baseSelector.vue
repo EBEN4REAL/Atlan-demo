@@ -13,7 +13,7 @@
         <template v-for="item in list" :key="item.id">
             <a-select-option :value="item.id">
                 <div class="flex items-center truncate gap-x-2">
-                    <img v-if="item.icon" :src="item.icon" class="w-auto h-4" />
+                    <img v-if="item.icon" :src="item.icon" class="w-4 h-auto" />
                     {{ item.label }}
                 </div>
             </a-select-option>

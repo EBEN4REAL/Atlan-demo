@@ -1,6 +1,6 @@
 <template>
     <div
-        class="box-border flex items-stretch h-8 overflow-hidden border border-gray-300 divide-x rounded"
+        class="box-border flex items-stretch h-8 overflow-hidden border border-gray-300 divide-x divide-gray-300 rounded"
     >
         <button
             v-for="item in ranges"

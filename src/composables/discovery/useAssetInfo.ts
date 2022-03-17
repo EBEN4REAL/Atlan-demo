@@ -315,19 +315,26 @@ export default function useAssetInfo() {
         const discoveryStoreTest = useAssetStore()
         const { globalState } = toRefs(discoveryStoreTest)
 
-        // allTabs = allTabs.filter((tab) => {
+        computed(() => {
+            return connectionStore.getConnectorImageMapping
+        })
 
-        // })
+        const currentPersona = computed(() => {
+            return personaStore.list.filter(
+                (persona) => persona.id === globalState?.value[1]
+            )[0]
+        })
 
-        // const persona = computed(() => {
-        //     return personaStore.list.find((i) => {
-        //         i.id === contextValue.value
-        //     })
-        // })
-
-        console.log('globalState', globalState?.value)
-        console.log('personaStore', personaStore.list)
-        console.log('allTabs', allTabs)
+        if (currentPersona?.value?.attributes?.preferences) {
+            const {
+                attributes: {
+                    preferences: { customMetadataDenyList },
+                },
+            } = currentPersona.value
+            allTabs = allTabs.filter(
+                (tab) => !customMetadataDenyList.includes(tab?.data?.guid)
+            )
+        }
 
         return allTabs
     }

@@ -267,26 +267,38 @@
                 }, 300)
                 link.value = ''
             }
-            const countData = computed(() => item.value.dataPolicies?.length)
-            const countMeta = computed(
-                () => item.value.metadataPolicies?.length
+            const countData = computed(
+                () => item.value.dataPolicies?.length || 0
             )
-            const total = computed(() => countData.value + countMeta.value)
+            const countMeta = computed(
+                () => item.value.metadataPolicies?.length || 0
+            )
+            const countGlossary = computed(
+                () => item.value.glossaryPolicies?.length || 0
+            )
+            const total = computed(
+                () => countData.value + countMeta.value + countGlossary.value
+            )
             const titlePolices = computed(() => {
                 if (!total.value) {
                     return 'Add policies'
                 }
                 const meta = countMeta.value
                     ? `${countMeta.value} metadata ${
-                          countMeta.value > 1 ? 'policies' : 'policy'
+                          countMeta.value > 1 ? 'policies ' : 'policy '
                       } `
                     : ''
                 const data = countData.value
                     ? `${countData.value} data ${
-                          countData.value > 1 ? 'policies' : 'policy'
+                          countData.value > 1 ? 'policies ' : 'policy '
                       }`
                     : ''
-                return `${meta}${data}`
+                const glossary = countData.value
+                    ? `${countGlossary.value}  ${
+                          countGlossary.value > 1 ? 'glossaries' : 'glossary'
+                      }`
+                    : ''
+                return `${meta}${data}${glossary}`
             })
             watch(showPopover, (newVal) => {
                 if (newVal && item?.value?.attributes?.channelLink) {

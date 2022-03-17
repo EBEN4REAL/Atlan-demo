@@ -1,16 +1,27 @@
 <template>
-    <div v-for="(tab, index) in cmList(assetType(selectedAsset))" :key="index">
-        <SingleTab
-            :selected-asset="selectedAsset"
-            :data="tab"
-            :is-drawer="isDrawer"
-            :tab="{
-                image: tab.options?.imageId || tab.options?.logoUrl,
-                emoji: tab.options?.emoji,
-                name: tab.label,
-                tooltip: tab.label,
-            }"
-        />
+    <div class="flex flex-col">
+        <p
+            class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+        >
+            Custom Metadata
+        </p>
+        <div
+            v-for="(tab, index) in cmList(assetType(selectedAsset))"
+            :key="index"
+            class="border border-gray-300 rounded-md"
+        >
+            <SingleTab
+                :selected-asset="selectedAsset"
+                :data="tab"
+                :is-drawer="isDrawer"
+                :tab="{
+                    image: tab.options?.imageId || tab.options?.logoUrl,
+                    emoji: tab.options?.emoji,
+                    name: tab.label,
+                    tooltip: tab.label,
+                }"
+            />
+        </div>
     </div>
 </template>
 

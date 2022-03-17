@@ -847,22 +847,17 @@
                 >
                 </RelatedTerms>
             </div>
-            <div class="flex flex-col">
-                <p
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
-                >
-                    Custom Metadata
-                </p>
-                <CustomMetadataPreview
-                    :selected-asset="selectedAsset"
-                    class="px-5"
-                    :edit-permission="editPermission"
-                    :allow-delete="editPermission"
-                    :is-drawer="isDrawer"
-                    :tab="tab"
-                >
-                </CustomMetadataPreview>
-            </div>
+
+            <CustomMetadataPreview
+                :selected-asset="selectedAsset"
+                class="px-5"
+                :edit-permission="editPermission"
+                :allow-delete="editPermission"
+                :is-drawer="isDrawer"
+                :tab="tab"
+            >
+            </CustomMetadataPreview>
+
             <div
                 v-if="isBiAsset(selectedAsset) || isSaasAsset(selectedAsset)"
                 class="flex flex-col px-5 gap-y-4"

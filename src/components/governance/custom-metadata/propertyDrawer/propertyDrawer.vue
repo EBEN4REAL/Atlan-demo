@@ -224,6 +224,7 @@
                     data_type: dataType,
                     multi_value: tempForm?.options.multiValueSelect,
                     allow_filtering: tempForm?.options.allowFiltering,
+                    show_in_overview: tempForm?.options.showInOverview,
                 }
                 return properties
             }

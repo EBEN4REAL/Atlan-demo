@@ -38,7 +38,7 @@
                               }
                             : {}
                     "
-                    clamp-percentage="85%"
+                    clamp-percentage="80%"
                 />
                 <a-tooltip>
                     <template #title>
@@ -327,22 +327,3 @@
         },
     })
 </script>
-<style scoped>
-    /* Enter and leave animations can use different */
-    /* durations and timing functions.              */
-    .slide-fade-enter-active {
-        transition: all 0.3s ease-out;
-        max-height: 500px;
-    }
-
-    .slide-fade-leave-active {
-        transition: all 0.3s ease-out;
-        max-height: 500px;
-    }
-
-    .slide-fade-enter-from,
-    .slide-fade-leave-to {
-        max-height: 0;
-    }
-    /* // m-0 h-10 mt-4 mx-auto w-32 */
-</style>

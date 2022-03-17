@@ -293,7 +293,7 @@
                           countData.value > 1 ? 'policies ' : 'policy '
                       }`
                     : ''
-                const glossary = countData.value
+                const glossary = countGlossary.value
                     ? `${countGlossary.value}  ${
                           countGlossary.value > 1 ? 'glossaries' : 'glossary'
                       }`

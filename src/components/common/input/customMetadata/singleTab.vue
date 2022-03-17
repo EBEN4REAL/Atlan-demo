@@ -3,7 +3,7 @@
         <AtlanLoader class="h-8" />
     </div>
     <div
-        v-else
+        v-else-if="applicableList.filter((i) => hasValue(i)).length"
         ref="target"
         class="flex flex-col w-full overflow-hidden gap-y-2"
     >
@@ -38,7 +38,7 @@
                               }
                             : {}
                     "
-                    clamp-percentage="90%"
+                    clamp-percentage="85%"
                 />
                 <a-tooltip>
                     <template #title>
@@ -47,7 +47,7 @@
                     <div class="flex items-center">
                         <AtlanIcon
                             v-if="data?.description"
-                            class="text-gray-400 hover:text-gray-500"
+                            class="text-gray-400 hover:text-gray-500 mb-0.5"
                             icon="Info"
                         />
                     </div>
@@ -61,21 +61,10 @@
                         'ENTITY_UPDATE_BUSINESS_METADATA'
                     ) && !viewOnly
                 "
+                class="font-bold cursor-pointer hover:underline text-primary"
+                @click="switchTab(selectedAsset, data?.label)"
             >
-                <div
-                    v-if="
-                        readOnly &&
-                        applicableList.filter((i) => hasValue(i)).length
-                    "
-                    class=""
-                >
-                    <span
-                        class="font-bold cursor-pointer hover:underline text-primary"
-                        @click="() => (readOnly = false)"
-                    >
-                        Edit
-                    </span>
-                </div>
+                Edit
             </div>
         </div>
         <!-- header ends here -->
@@ -90,103 +79,35 @@
 
         <div class="flex flex-col flex-grow pl-5 pr-5 overflow-y-auto">
             <!-- showing non empty starts here -->
-            <template v-if="readOnly">
-                <template
-                    v-if="applicableList.filter((i) => hasValue(i)).length"
-                >
-                    <template
-                        v-for="(a, x) in applicableList.filter((i) =>
-                            hasValue(i)
-                        )"
-                        :key="x"
-                    >
-                        <div class="mb-3">
-                            <div class="flex mb-1 font-normal text-gray-500">
-                                <Truncate
-                                    :tooltip-text="a.displayName"
-                                    :rows="1"
-                                    width="500px"
-                                    placement="left"
-                                    classes="text-gray-500"
-                                />
-                                <a-tooltip>
-                                    <template #title>
-                                        <span>{{ a.options.description }}</span>
-                                    </template>
-                                    <div class="">
-                                        <AtlanIcon
-                                            v-if="a.options.description"
-                                            class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
-                                            icon="Info"
-                                        />
-                                    </div>
-                                </a-tooltip>
-                            </div>
-
-                            <ReadOnly :attribute="a" />
-                        </div>
-                    </template>
-                </template>
-                <!-- showing non empty ends here -->
-
-                <!-- showing empty starts here -->
-                <template
-                    v-if="applicableList.filter((i) => !hasValue(i)).length"
-                >
-                    <transition name="slide-fade">
-                        <div v-if="showMore" class="pt-2 border-t">
-                            <template
-                                v-for="(a, x) in applicableList.filter(
-                                    (i) => !hasValue(i)
-                                )"
-                                :key="x"
-                            >
-                                <div
-                                    class="flex mb-2 font-normal text-gray-600 gap-x-2"
-                                >
-                                    <Truncate
-                                        classes="text-gray-600"
-                                        clamp-percentage="80%"
-                                        :tooltip-text="a.displayName"
-                                        width="500px"
-                                        placement="left"
-                                    />
-                                    <template
-                                        v-if="
-                                            getHumanTypeName(
-                                                getDatatypeOfAttribute(a)
-                                            ) !== 'Text'
-                                        "
-                                    >
-                                        <div>
-                                            ({{
-                                                getHumanTypeName(
-                                                    getDatatypeOfAttribute(a)
-                                                ).toLowerCase()
-                                            }})
-                                        </div>
-                                    </template>
-                                    <a-tooltip>
-                                        <template #title>
-                                            <span>{{
-                                                a.options.description
-                                            }}</span>
-                                        </template>
-                                        <div class="">
-                                            <AtlanIcon
-                                                v-if="a.options.description"
-                                                class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
-                                                icon="Info"
-                                            />
-                                        </div>
-                                    </a-tooltip>
-                                </div>
+            <template
+                v-for="(a, x) in applicableList.filter((i) => hasValue(i))"
+                :key="x"
+            >
+                <div class="mb-3">
+                    <div class="flex mb-1 font-normal text-gray-500">
+                        <Truncate
+                            :tooltip-text="a.displayName"
+                            :rows="1"
+                            width="500px"
+                            placement="left"
+                            classes="text-gray-500"
+                        />
+                        <a-tooltip>
+                            <template #title>
+                                <span>{{ a.options.description }}</span>
                             </template>
-                        </div>
-                    </transition>
-                </template>
+                            <div class="">
+                                <AtlanIcon
+                                    v-if="a.options.description"
+                                    class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
+                                    icon="Info"
+                                />
+                            </div>
+                        </a-tooltip>
+                    </div>
 
-                <!-- showing empty ends here -->
+                    <ReadOnly :attribute="a" />
+                </div>
             </template>
         </div>
     </div>
@@ -199,44 +120,26 @@
         toRefs,
         watch,
         PropType,
-        inject,
         defineAsyncComponent,
-        Ref,
-        h,
-        resolveComponent,
         inject,
         computed,
     } from 'vue'
-    import {
-        whenever,
-        useMagicKeys,
-        onKeyStroke,
-        watchOnce,
-        onClickOutside,
-    } from '@vueuse/core'
-    import { message, Modal } from 'ant-design-vue'
+    import { whenever } from '@vueuse/core'
     import useCustomMetadataHelpers from '~/composables/custommetadata/useCustomMetadataHelpers'
-    import { Types } from '~/services/meta/types/index'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { useAssetAttributes } from '~/composables/discovery/useCurrentUpdate'
-    import Confirm from '@/common/modal/confirm.vue'
-    import EmptyView from '@/common/empty/index.vue'
     import Truncate from '@/common/ellipsis/index.vue'
-    import { truncate } from '~/utils/string'
     import page from '~/constant/accessControl/page'
     import useAuth from '~/composables/auth/useAuth'
-    import PropertyPopover from '@/common/assets/preview/customMetadata/misc/propertyPopover.vue'
     import InternalCMBanner from '@/common/customMetadata/internalCMBanner.vue'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import { useTypedefStore } from '~/store/typedef'
-    import useCustomMetadataFacet from '~/composables/custommetadata/useCustomMetadataFacet'
 
     export default defineComponent({
         name: 'CustomMetadata',
         components: {
             InternalCMBanner,
-            PropertyPopover,
             Truncate,
             ReadOnly: defineAsyncComponent(
                 () =>
@@ -244,7 +147,6 @@
                         '@/common/assets/preview/customMetadata/readOnly.vue'
                     )
             ),
-            EmptyView,
             PreviewTabsIcon,
         },
         props: {
@@ -267,17 +169,12 @@
             },
         },
         setup(props) {
-            const { selectedAsset, data, isDrawer } = toRefs(props)
+            const { selectedAsset, data } = toRefs(props)
 
-            const readOnly = ref(true)
             const loading = ref(false)
-            const showMore = ref(false)
             const viewOnly = ref(data.value?.options?.isLocked === 'true')
             const guid = ref()
             const { checkAccess } = useAuth()
-            const isEvaluating = inject('isEvaluating')
-
-            const { getList: cmList } = useCustomMetadataFacet()
 
             const typedefStore = useTypedefStore()
 
@@ -297,7 +194,7 @@
                 attributes: customMetadataListProjections,
             })
 
-            const { title, selectedAssetUpdatePermission } = useAssetInfo()
+            const { selectedAssetUpdatePermission } = useAssetInfo()
             const {
                 getDatatypeOfAttribute,
                 isLink,
@@ -314,7 +211,6 @@
                     selectedAsset.value?.typeName
                 )
             )
-            const payload = ref({})
 
             const initializeAttributesList = () => {
                 applicableList.value = []
@@ -360,124 +256,6 @@
                         })
                 }
             }
-
-            const payloadConstructor = () => {
-                const payloadObj = { [data.value.id]: {} }
-                const checkIfDelete = (v, multiValue) => {
-                    if (multiValue) return !v?.length
-                    return v == null || v === ''
-                }
-
-                applicableList.value.forEach((at) => {
-                    if (at.unsavedChanges) {
-                        if (
-                            checkIfDelete(
-                                at.value,
-                                at.options.multiValueSelect === 'true'
-                            )
-                        )
-                            payloadObj[data.value.id][at.name] = null
-                        else payloadObj[data.value.id][at.name] = at.value
-                    }
-                })
-
-                return payloadObj
-            }
-
-            const isEdit = ref(false)
-
-            const handleUpdate = () => {
-                payload.value = payloadConstructor()
-                const { error, isReady, isLoading } =
-                    Types.updateAssetBMChanges(
-                        selectedAsset.value?.guid,
-                        payload.value
-                    )
-                loading.value = isLoading.value
-
-                watch([() => isLoading, error, isReady], () => {
-                    if (error.value) {
-                        loading.value = false
-                        message.error(
-                            'Some error occured...Please try again later.'
-                        )
-                        setAttributesList()
-                    } else if (isReady?.value) {
-                        loading.value = false
-                        message.success(
-                            `${truncate(
-                                data.value?.label,
-                                25
-                            )} attributes for ${title(
-                                selectedAsset.value
-                            )} updated`
-                        )
-                    }
-                    isEdit.value = false
-                })
-
-                readOnly.value = true
-            }
-
-            const cancel = () => {
-                applicableList.value.forEach((att, idx) => {
-                    applicableList.value[idx].value = ''
-                    applicableList.value[idx].unsavedChanges = false
-                })
-                setAttributesList()
-                readOnly.value = true
-                isEdit.value = false
-            }
-
-            const handleCancel = () => {
-                if (isEdit.value) {
-                    Modal.confirm({
-                        icon: null,
-                        title: () =>
-                            h(
-                                'span',
-                                {
-                                    class: ['font-bold'],
-                                },
-                                'Discard'
-                            ),
-                        content: () =>
-                            h(Confirm, {
-                                title: data.value.label,
-                            }),
-                        okType: 'danger',
-                        autoFocusButton: null,
-                        okButtonProps: {
-                            type: 'primary',
-                        },
-                        okText: 'Discard',
-                        onOk: cancel,
-                    })
-                } else cancel()
-            }
-
-            const handleChange = (index, value) => {
-                if (!isEdit.value) isEdit.value = true
-                applicableList.value[index].value = value
-                applicableList.value[index].unsavedChanges = true
-            }
-
-            /*  const updateList = inject('updateList', () => ({})) as Function
-            const updateDrawerList = inject(
-                'updateDrawerList',
-                () => ({})
-            ) as Function
-
-              whenever(isCmReady, () => {
-                if (
-                    asset.value.typeName !== 'AtlasGlossary' &&
-                    asset.value.typeName !== 'AtlasGlossaryCategory' &&
-                    asset.value.typeName !== 'AtlasGlossaryTerm'
-                ) {
-                    if (isDrawer.value) updateDrawerList(asset.value)
-                    else updateList(asset.value)
-                }
-            }) */
 
             whenever(isCmReady, () => setAttributesList())
 
@@ -528,36 +306,21 @@
             }
             const isProfile = inject('isProfile')
 
-            const readOnlySort = (a, b) =>
-                hasValue(a) && !hasValue(b) ? -1 : 1
-
-            onKeyStroke(['Enter'], (e) => {
-                e.stopPropagation()
-                if ((e.ctrlKey || e.metaKey) && isEdit.value && !readOnly.value)
-                    handleUpdate()
-            })
+            const switchTab = inject('switchTab')
 
             return {
                 viewOnly,
-                isEvaluating,
+                switchTab,
                 checkAccess,
                 page,
                 getHumanTypeName,
                 isProfile,
-
-                showMore,
-                readOnlySort,
                 hasValue,
-                isEdit,
                 getDatatypeOfAttribute,
                 isLink,
                 formatDisplayValue,
                 applicableList,
-                readOnly,
-                handleUpdate,
-                handleCancel,
                 getEnumOptions,
-                handleChange,
                 loading,
                 selectedAssetUpdatePermission,
             }

@@ -115,6 +115,12 @@
                     return 0
                 },
             },
+            denyCustomMetadata: {
+                required: false,
+                default() {
+                    return []
+                },
+            },
         },
         emits: [
             'change',
@@ -131,6 +137,7 @@
                 filterList,
                 allowCustomFilters,
                 extraCountFilter,
+                denyCustomMetadata,
             } = toRefs(props)
             const localValue = ref(modelValue.value)
             const localActiveKeyValue = ref(activeKey.value)
@@ -168,7 +175,14 @@
                     return true
                 })
                 if (allowCustomFilters.value) {
-                    return [...arr, ...cmList(typeName.value, true)]
+                    return [
+                        ...arr,
+                        ...cmList(
+                            typeName.value,
+                            true,
+                            denyCustomMetadata.value
+                        ),
+                    ]
                 }
                 return [...arr]
             })

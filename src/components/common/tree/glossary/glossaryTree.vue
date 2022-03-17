@@ -6,15 +6,11 @@
         <AtlanLoader class="h-10" />
     </div>
     <div
-        v-else-if="
-            treeData.length === 0 &&
-            !isLoading &&
-            !checkable &&
-            termAddPermission
-        "
+        v-else-if="treeData.length === 0 && !isLoading && !checkable"
         class="flex items-center justify-center h-full"
     >
         <AddGtcModal
+            v-if="termAddPermission"
             entityType="AtlasGlossaryTerm"
             @add="reInitTree"
             :glossary-qualified-name="defaultGlossary"
@@ -30,6 +26,12 @@
                 </div>
             </template>
         </AddGtcModal>
+        <template v-else>
+            <EmptyView
+                empty-screen="EmptyGlossary"
+                desc="No terms found"
+            ></EmptyView>
+        </template>
     </div>
     <div v-else-if="treeData.length === 0 && !isLoading && checkable">
         <EmptyView

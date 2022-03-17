@@ -18,6 +18,11 @@
                         !selectedGlossaryQf?.length &&
                         role.toLowerCase() !== 'admin'
                             ? false
+                            : selectedGlossaryQf?.length &&
+                              !addTermPermission &&
+                              !addCategoryPermission &&
+                              role.toLowerCase() !== 'admin'
+                            ? false
                             : true
                     "
                     :selected-glossary-qf="selectedGlossaryQf"

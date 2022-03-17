@@ -28,7 +28,7 @@ export default function useAssetEvaluate() {
         if (isGTC(asset)) {
             const { typeName } = asset
 
-            const permissions = [
+            const evaluateObject = [
                 {
                     typeName: asset?.typeName,
                     entityGuid: asset?.guid,
@@ -101,15 +101,16 @@ export default function useAssetEvaluate() {
             ]
 
             if (typeName === 'AtlasGlossaryTerm')
-                permissions.push({
-                    "action": "RELATIONSHIP_ADD",
-                    "relationShipTypeName": "AtlasGlossaryTermAnchor",
-                    "entityIdEnd1": asset?.attributes?.qualifiedName,
-                    "entityTypeEnd1": "AtlasGlossaryTerm",
-                    "entityIdEnd2": "*",
-                    "entityTypeEnd2": "*"
+                evaluateObject.push({
+                    action: 'RELATIONSHIP_ADD',
+                    relationShipTypeName: 'AtlasGlossarySemanticAssignment',
+                    entityGuidEnd1: asset?.guid,
+                    entityTypeEnd1: 'AtlasGlossaryTerm',
+                    entityIdEnd2: '*',
+                    entityTypeEnd2: '*',
                 })
-            return permissions
+
+            return evaluateObject
         }
         return [
             {

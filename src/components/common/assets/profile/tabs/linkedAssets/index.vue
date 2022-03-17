@@ -13,6 +13,14 @@
                     >Assets linked to this term will appear here.</span
                 >
                 <AtlanBtn
+                    v-if="
+                        selectedAssetUpdatePermission(
+                            selectedAsset,
+                            false,
+                            'RELATIONSHIP_ADD',
+                            '*'
+                        )
+                    "
                     size="sm"
                     padding="compact"
                     data-test-id="save"
@@ -35,16 +43,35 @@
                 >
                     <template #searchAction>
                         <AtlanBtn
+                            v-if="
+                                selectedAssetUpdatePermission(
+                                    selectedAsset,
+                                    false,
+                                    'RELATIONSHIP_ADD',
+                                    '*'
+                                )
+                            "
                             class="mt-2 ml-4 mr-6"
                             size="sm"
                             padding="compact"
                             data-test-id="save"
                             @click="openLinkDrawer"
-                            >Link assets</AtlanBtn
                         >
+                            Link assets
+                        </AtlanBtn>
                     </template>
 
-                    <template #assetItemCta="{ item }">
+                    <template
+                        v-if="
+                            selectedAssetUpdatePermission(
+                                selectedAsset,
+                                false,
+                                'RELATIONSHIP_ADD',
+                                '*'
+                            )
+                        "
+                        #assetItemCta="{ item }"
+                    >
                         <a-dropdown>
                             <AtlanBtn
                                 class="flex items-center justify-center w-8 h-8 p-0 rounded cursor-pointer hover:border-primary-focus"
@@ -153,7 +180,9 @@
         },
         setup(props, { emit }) {
             // data
-            const { qualifiedName } = useAssetInfo()
+            const { qualifiedName, selectedAssetUpdatePermission } =
+                useAssetInfo()
+
             const { selectedAsset } = toRefs(props)
             const linkedAssets = ref<assetInterface[]>([]) // assets which need to be linked in current api call
             const unlinkedAssets = ref<assetInterface[]>([]) // assets which need to be unlinked in the current api call
@@ -278,6 +307,7 @@
                 }
             })
             return {
+                selectedAssetUpdatePermission,
                 handleCancel,
                 openLinkDrawer,
                 isVisible,

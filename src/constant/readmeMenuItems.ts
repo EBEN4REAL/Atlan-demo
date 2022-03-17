@@ -28,7 +28,7 @@ export const blockMenu: CommandItem[] = [
         title: 'Heading 1',
         key: 'heading-1',
         level: 1,
-        helpText: '',
+        helpText: 'The biggest, boldest heading',
         icon: 'HOne',
         searchKeys: ['h1', 'heading', 'heading1', 'heading 1'],
         disabled: () => false,
@@ -46,7 +46,7 @@ export const blockMenu: CommandItem[] = [
         title: 'Heading 2',
         key: 'heading-2',
         level: 2,
-        helpText: '',
+        helpText: 'The bigger, bolder heading',
         icon: 'HTwo',
         searchKeys: ['h2', 'heading', 'heading2', 'heading 2'],
         disabled: () => false,
@@ -67,7 +67,7 @@ export const blockMenu: CommandItem[] = [
         icon: 'HThree',
         searchKeys: ['h3', 'heading', 'heading3', 'heading 3'],
         border: true,
-        helpText: '',
+        helpText: 'The big, bold heading',
         disabled: () => false,
         command: ({ editor, range }) =>
             range
@@ -83,7 +83,7 @@ export const blockMenu: CommandItem[] = [
     {
         title: 'Bulleted List',
         key: 'bulletList',
-        helpText: '',
+        helpText: 'A simple, bulleted list',
         icon: 'BulletList',
         searchKeys: ['ul', 'bullet', 'list', 'bulleted list'],
         disabled: (editor: Editor) =>
@@ -101,7 +101,7 @@ export const blockMenu: CommandItem[] = [
     {
         title: 'Numbered List',
         key: 'orderedList',
-        helpText: '',
+        helpText: 'A serialised list with numbers',
         icon: 'NumberedList',
         border: true,
         searchKeys: ['ol', 'number', 'list', 'numbered list'],
@@ -121,7 +121,7 @@ export const blockMenu: CommandItem[] = [
     {
         title: 'Checklist',
         key: 'taskList',
-        helpText: '',
+        helpText: 'A to-do list with checkboxes',
         icon: 'TaskList',
         searchKeys: ['checklist', 'check', 'list', 'task list', 'tasklist'],
         disabled: (editor: Editor) => !editor.can().toggleTaskList(),
@@ -138,7 +138,7 @@ export const blockMenu: CommandItem[] = [
     {
         title: 'Quote',
         key: 'blockquote',
-        helpText: '',
+        helpText: 'A quote to emphasise a segment',
         icon: 'Quotes',
         searchKeys: ['quote', 'blockquote'],
         disabled: () => false,
@@ -155,7 +155,7 @@ export const blockMenu: CommandItem[] = [
     {
         title: 'Code',
         key: 'codeBlock',
-        helpText: '',
+        helpText: 'Highlight a chunk of code',
         icon: 'Code',
         border: true,
         searchKeys: ['code', 'codeblock'],
@@ -177,7 +177,7 @@ export const blockMenu: CommandItem[] = [
     {
         title: 'Image',
         key: 'uploadimage',
-        helpText: '',
+        helpText: 'Upload an image',
         icon: 'ReadmeImage',
         border: true,
         searchKeys: ['image', 'images'],
@@ -217,8 +217,8 @@ export const blockMenu: CommandItem[] = [
     {
         title: 'Google Doc',
         key: 'googleDoc',
-        helpText: '',
-        icon: 'Gdoc',
+        helpText: 'Embed a Google Doc',
+        icon: 'GoogleDoc',
         border: true,
         searchKeys: ['google', 'doc', 'embed', 'google doc'],
         disabled: () => false,
@@ -235,7 +235,7 @@ export const blockMenu: CommandItem[] = [
     {
         title: 'Google Sheet',
         key: 'googleSheet',
-        helpText: '',
+        helpText: 'Embed a Google Sheet',
         icon: 'GoogleSheet',
         border: true,
         searchKeys: ['google', 'sheet', 'excel'],
@@ -253,7 +253,7 @@ export const blockMenu: CommandItem[] = [
     {
         title: 'Google Slides',
         key: 'googleSlide',
-        helpText: '',
+        helpText: 'Embed with a Google Presentation',
         icon: 'GoogleSlide',
         border: true,
         searchKeys: ['google', 'slide', 'presentation'],
@@ -286,6 +286,55 @@ export const blockMenu: CommandItem[] = [
     //                   .run()
     //             : editor.chain().focus().insertGoogleDrive().run(),
     // },
+    {
+        title: 'Miro Board',
+        key: 'miro',
+        helpText: 'Embed a Miro board',
+        icon: 'Miro',
+        border: true,
+        searchKeys: ['miro', 'board', 'drawing'],
+        disabled: () => false,
+        command: ({ editor, range }) =>
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .insertMiroBoard()
+                      .run()
+                : editor.chain().focus().insertMiroBoard().run(),
+    },
+    {
+        title: 'FigJam',
+        key: 'figjam',
+        helpText: 'Embed a FigJam',
+        icon: 'Figma',
+        border: true,
+        searchKeys: ['figma', 'fig', 'jam'],
+        disabled: () => false,
+        command: ({ editor, range }) =>
+            range
+                ? editor.chain().focus().deleteRange(range).insertFigjam().run()
+                : editor.chain().focus().insertFigjam().run(),
+    },
+    {
+        title: 'Lucidchart',
+        key: 'lucid',
+        helpText: 'Embed a Lucidchart Diagram',
+        icon: 'Lucid',
+        border: true,
+        searchKeys: ['lucid', 'chart'],
+        disabled: () => false,
+        command: ({ editor, range }) =>
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .insertLucidChart()
+                      .run()
+                : editor.chain().focus().insertLucidChart().run(),
+    },
 ]
 
 export const menuData: MenuItem[] = [

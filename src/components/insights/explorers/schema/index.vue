@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col items-center w-full h-full bg-white">
-        <div class="w-full p-4 pb-1">
+        <div class="w-full pt-2 pb-1 pl-2 pr-2">
             <Connector
                 v-model:data="connectorsData"
                 :bgGrayForSelector="true"
@@ -27,7 +27,7 @@
                 @update:data="setConnector"
             ></Connector>
 
-            <div class="flex flex-row space-x-2">
+            <div class="flex flex-row mt-1 ml-2 mr-2 space-x-2">
                 <a-input
                     v-model:value="queryText"
                     class="h-8 mt-1 rounded"
@@ -116,7 +116,8 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { tablesData } from './tablesDemoData'
     import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
-    import Connector from '~/components/insights/common/connector/connector.vue'
+    // import Connector from '~/components/insights/common/connector/connector.vue'
+    import Connector from '~/components/insights/common/connector/connectorNew.vue'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import { useUtils } from '~/components/insights/common/composables/useUtils'

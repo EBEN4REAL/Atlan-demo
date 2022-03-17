@@ -1,6 +1,6 @@
 {
   "private": true,
-  "version": "2.18.2",
+  "version": "2.19.1",
   "scripts": {
     "dev": "vite --port 3333 --open",
     "build-dev": "vite build --mode development",
@@ -70,6 +70,7 @@
     "qs": "^6.10.3",
     "regular-table": "^0.5.5",
     "short-unique-id": "^4.4.4",
+    "smooth-scroll-into-view-if-needed": "^1.1.33",
     "splitpanes": "^3.0.6",
     "sql-formatter": "^4.0.2",
     "sql-highlight": "^4.0.1",
@@ -186,6 +187,7 @@
         "qs",
         "regular-table",
         "short-unique-id",
+        "smooth-scroll-into-view-if-needed",
         "splitpanes",
         "sql-formatter",
         "squel",

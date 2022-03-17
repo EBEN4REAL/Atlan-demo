@@ -18,6 +18,7 @@
                 v-model:visible="showPopover"
                 trigger="click"
                 placement="bottom"
+                :align="{ offset: [140, 10] }"
             >
                 <template #content>
                     <div class="p-3 bg-white w-72">
@@ -87,30 +88,41 @@
                         </div>
                     </div>
                 </template>
-                <div
-                    v-if="item?.attributes?.channelLink && !isLoading"
-                    class="flex text-sm text-gray-700"
-                >
-                    <a-tooltip placement="bottom">
-                        <template #title>{{
-                            item?.attributes?.channelLink
-                        }}</template>
-                        <AtlanIcon icon="Slack" />
-                        Slack
-                    </a-tooltip>
-                    <span class="ml-auto text-primary edit-channel">
-                        EDIT
-                    </span>
-                </div>
-                <span
-                    v-else-if="!isLoading"
-                    class="text-sm cursor-pointer text-primary"
-                    ><AtlanIcon icon="Add" class="mr-2" />Add link</span
-                >
-                <span v-if="isLoading">
-                    <AtlanLoader class="h-5" />
-                </span>
             </a-popover>
+            <div
+                v-if="item?.attributes?.channelLink && !isLoading"
+                class="flex text-sm text-gray-700"
+            >
+                <a-tooltip placement="bottom">
+                    <template #title>{{
+                        item?.attributes?.channelLink
+                    }}</template>
+                    <AtlanIcon icon="Slack" />
+                    <span class="text-gray-700 hover:text-primary">
+                        <a
+                            :href="item?.attributes?.channelLink"
+                            target="_blank"
+                        >
+                            Slack
+                        </a>
+                    </span>
+                </a-tooltip>
+                <span
+                    class="ml-auto text-primary edit-channel"
+                    @click="showPopover = true"
+                >
+                    EDIT
+                </span>
+            </div>
+            <span
+                v-else-if="!isLoading"
+                class="text-sm cursor-pointer text-primary"
+                @click="showPopover = true"
+                ><AtlanIcon icon="Add" class="mr-2" />Add link</span
+            >
+            <span v-if="isLoading">
+                <AtlanLoader class="h-5" />
+            </span>
         </div>
         <div class="flex flex-col p-4 pt-0">
             <div class="mt-5">

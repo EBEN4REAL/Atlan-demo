@@ -312,12 +312,8 @@ export default function useAssetInfo() {
         }
 
         const personaStore = usePersonaStore()
-        const discoveryStoreTest = useAssetStore()
-        const { globalState } = toRefs(discoveryStoreTest)
-
-        computed(() => {
-            return connectionStore.getConnectorImageMapping
-        })
+        const assetStore = useAssetStore()
+        const { globalState } = toRefs(assetStore)
 
         const currentPersona = computed(() => {
             return personaStore.list.filter(

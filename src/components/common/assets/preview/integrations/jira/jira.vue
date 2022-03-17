@@ -8,6 +8,7 @@
         v-model:visible="linkIssueVisible"
         :asset="asset"
         @fetch="fetchLinkedIssues"
+        ref="linkIssueDrawerRef"
         @create="() => (createModal = true)"
     />
     <Header
@@ -101,6 +102,21 @@
     const assetID = computed(() => asset.value.guid)
     const linkIssueVisible = ref(false)
     const createModal = ref(false)
+    const linkIssueDrawerRef = ref()
+
+    // const refreshUnlinkedIssueList = () => {
+    //     if (linkIssueDrawerRef.value?.issues?.length) {
+    //         linkIssueDrawerRef.value.recall()
+    //     }
+    // }
+
+    const clearStaleUnlinkIssue = () => {
+        debugger
+        if (linkIssueVisible.value) linkIssueVisible.value = false
+        if (linkIssueDrawerRef.value?.issues?.length)
+            linkIssueDrawerRef.value.issues = []
+    }
+
     const {
         issues,
         isLoading,
@@ -110,7 +126,7 @@
 
     const handleIssueCreationSuccess = () => {
         fetchLinkedIssues()
-        if (linkIssueVisible.value) linkIssueVisible.value = false
+        clearStaleUnlinkIssue()
     }
 
     const store = integrationStore()
@@ -165,6 +181,7 @@
                     key,
                     duration: 3,
                 })
+                clearStaleUnlinkIssue()
             }
         })
     }

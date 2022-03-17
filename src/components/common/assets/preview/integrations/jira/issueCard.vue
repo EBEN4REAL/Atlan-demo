@@ -54,10 +54,12 @@
                     <div
                         class="absolute right-0 flex items-center justify-end w-24 h-5 opacity-0 bg-gradient-to-l from-white via-white group-hover:opacity-100"
                     >
-                        <AtlanIcon
-                            icon="ThreeDotsAlt"
-                            class="z-50 h-1 cursor-pointer"
-                        />
+                        <div class="pl-3 cursor-pointer">
+                            <AtlanIcon
+                                icon="ThreeDotsAlt"
+                                class="h-1 cursor-pointer"
+                            />
+                        </div>
                     </div>
                     <template #overlay>
                         <slot name="action" />

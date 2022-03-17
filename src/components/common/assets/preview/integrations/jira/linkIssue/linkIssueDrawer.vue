@@ -119,7 +119,7 @@
                 </main>
             </div>
             <footer
-                v-if="totalResults !== issues.length && !searchLoading"
+                v-if="issues.length < totalResults && !searchLoading"
                 :class="issues?.length ? '' : 'opacity-0'"
                 class="flex justify-center w-full pt-2 pb-2"
             >
@@ -127,9 +127,7 @@
                     class="flex items-center justify-between py-2 transition-all duration-300 bg-white border-none rounded-full text-primary"
                     @click="loadMore"
                 >
-                    <template
-                        v-if="totalResults !== issues.length && !isLoading"
-                    >
+                    <template v-if="!isLoading">
                         <p
                             class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
                         >
@@ -281,6 +279,11 @@
         resetIDs()
         reset()
     }
+
+    defineExpose({
+        recall,
+        issues,
+    })
 
     watch(visible, (v) => {
         // still mounted without open

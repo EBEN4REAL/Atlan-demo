@@ -3,8 +3,8 @@
         <div
             class="relative p-3 mx-1 border border-gray-200 rounded-lg cursor-pointer hover:border-primary card-container"
         >
-            <div class="flex items-center justify-between">
-                <div class="text-xs font-bold text-gray-500">
+            <div class="flex items-center">
+                <div class="text-sm font-bold text-gray-500">
                     {{ typeCopyMapping[item?.requestType] }}
                     {{ destinationAttributeMapping[item.destinationAttribute] }}
                 </div>
@@ -52,48 +52,55 @@
                         <span class="text-xs text-red-500"> Reject </span>
                     </RequestDropdown>
                 </div>
-                <div
-                    v-if="
-                        item.status === 'rejected' || item.status === 'approved'
-                    "
-                    class="flex items-center justify-end text-xs font-light whitespace-nowrap hover-reject-approve linear-gradient"
-                    :class="
-                        item.status === 'approved'
-                            ? 'text-success'
-                            : 'text-error'
-                    "
-                >
-                    {{
-                        item.status === 'approved'
-                            ? 'Approved by'
-                            : 'Rejected by'
-                    }}
-                    <div class="flex items-center mx-2 truncate">
-                        <Avatar
-                            :allow-upload="false"
-                            :avatar-name="nameUpdater"
-                            :avatar-size="18"
-                            :avatar-shape="'circle'"
-                            class="mr-2"
-                        />
+                <!-- hover-reject-approve -->
+                <div class="flex items-center justify-end ml-auto">
+                    <div
+                        v-if="
+                            item.status === 'rejected' ||
+                            item.status === 'approved'
+                        "
+                        class="flex items-center justify-end text-xs font-light whitespace-nowrap linear-gradient hover-reject-approve"
+                        :class="
+                            item.status === 'approved'
+                                ? 'text-success'
+                                : 'text-error'
+                        "
+                    >
+                        {{
+                            item.status === 'approved'
+                                ? 'Approved by'
+                                : 'Rejected by'
+                        }}
+                        <div class="flex items-center mx-1 truncate">
+                            <Avatar
+                                :allow-upload="false"
+                                :avatar-name="nameUpdater"
+                                :avatar-size="18"
+                                :avatar-shape="'circle'"
+                                class="mr-1"
+                            />
 
-                        <span class="text-xs text-gray-700">{{
-                            nameUpdater
-                        }}</span>
+                            <span class="text-xs text-gray-700">{{
+                                nameUpdater
+                            }}</span>
+                        </div>
                     </div>
+                    <AtlanIcon
+                        v-if="
+                            item.status === 'rejected' ||
+                            item.status === 'approved'
+                        "
+                        :class="{
+                            'approved-icon text-success':
+                                item.status === 'approved',
+                            'rejected-icon': item.status === 'rejected',
+                        }"
+                        :icon="
+                            item.status === 'rejected' ? 'CrossCircle' : 'Check'
+                        "
+                    />
+                    <AtlanIcon v-else icon="Clock" class="icon-warning" />
                 </div>
-                <AtlanIcon
-                    v-if="
-                        item.status === 'rejected' || item.status === 'approved'
-                    "
-                    :class="{
-                        'approved-icon text-success':
-                            item.status === 'approved',
-                        'rejected-icon': item.status === 'rejected',
-                    }"
-                    :icon="item.status === 'rejected' ? 'CrossCircle' : 'Check'"
-                />
-                <AtlanIcon v-else icon="Clock" class="icon-warning" />
             </div>
             <div v-if="selectedAsset.typeName === 'AtlasGlossaryTerm'">
                 <div
@@ -221,7 +228,7 @@
                         </Pill>
                     </TermPopover>
                 </div>
-                <div v-else class="text-xs text-gray-700 truncate">
+                <div v-else class="text-sm text-gray-700 truncate">
                     {{ item.destinationValue }}
                 </div>
             </div>
@@ -597,7 +604,7 @@
             border-radius: 4px !important;
             border: 1px solid rgba(230, 230, 235, 1) !important;
             height: fit-content !important;
-            padding: 4px 8px !important;
+            padding: 2px 8px !important;
         }
     }
 </style>

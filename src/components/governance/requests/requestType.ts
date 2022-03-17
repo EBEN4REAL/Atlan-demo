@@ -52,7 +52,8 @@ export const typeCopyMapping: Record<string, string> = {
 
 export const destinationAttributeMapping: Record<string, string> = {
     ownerUsers: "Owner",
-    userDescription: "Description"
+    userDescription: "Description",
+    certificateStatus: "Certificate"
 }
 
 export const requestTypeTabList: { id: string; value: RequestType[] }[] = [

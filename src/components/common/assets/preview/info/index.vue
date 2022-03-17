@@ -860,7 +860,6 @@
                     :allow-delete="editPermission"
                     :is-drawer="isDrawer"
                     :tab="tab"
-                    :data="tab?.data"
                 >
                 </CustomMetadataPreview>
             </div>

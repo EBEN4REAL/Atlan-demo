@@ -24,7 +24,6 @@
                 />
                 <Truncate
                     :tooltip-text="data.label"
-                    :rows="2"
                     placement="left"
                     :should-open-in-new-tab="true"
                     :classes="
@@ -32,7 +31,6 @@
                             ? 'text-primary hover:underline mr-1 font-semibold'
                             : 'mr-1 line-clamp-1'
                     "
-                    width="200px"
                     v-bind="
                         checkAccess(page.PAGE_GOVERNANCE)
                             ? {
@@ -40,6 +38,7 @@
                               }
                             : {}
                     "
+                    clamp-percentage="90%"
                 />
                 <a-tooltip>
                     <template #title>
@@ -76,19 +75,6 @@
                     >
                         Edit
                     </span>
-                </div>
-                <div v-else-if="!readOnly" class="flex items-center gap-x-2">
-                    <span
-                        class="text-sm font-medium text-gray-500 cursor-pointer"
-                        @click="handleCancel"
-                    >
-                        Cancel
-                    </span>
-                    <AtlanButton2
-                        :disabled="!isEdit"
-                        label="Update"
-                        @click="handleUpdate"
-                    />
                 </div>
             </div>
         </div>
@@ -198,130 +184,9 @@
                             </template>
                         </div>
                     </transition>
-                    <div
-                        v-if="applicableList.filter((i) => hasValue(i)).length"
-                        class="mt-2 mb-2"
-                    >
-                        <span
-                            class="text-gray-500 bg-white border-b border-gray-500 border-dashed cursor-pointer hover:text-primary hover:border-primary"
-                            :class="
-                                !applicableList.filter((i) => !hasValue(i))
-                                    .length
-                                    ? 'hidden'
-                                    : ''
-                            "
-                            @click="showMore = !showMore"
-                        >
-                            <AtlanIcon
-                                v-if="!showMore"
-                                icon="Add"
-                                class="h-3 mb-1"
-                            />
-                            {{
-                                showMore
-                                    ? 'Hide empty properties'
-                                    : `Show ${
-                                          applicableList.filter(
-                                              (i) => !hasValue(i)
-                                          ).length
-                                      } empty properties`
-                            }}
-                        </span>
-                    </div>
                 </template>
 
-                <template
-                    v-if="
-                        applicableList.length ===
-                        applicableList.filter((i) => !hasValue(i)).length
-                    "
-                >
-                    <EmptyView empty-screen="EmptyCM" class="h-24 mt-8 mb-6" />
-                    <div
-                        class="flex flex-col items-center text-gray-500 gap-y-5"
-                    >
-                        <div class="">
-                            <div v-if="isEvaluating" class="w-64">
-                                <a-skeleton
-                                    :loading="true"
-                                    active
-                                    class="w-full"
-                                    :title="false"
-                                    :paragraph="{ rows: 2 }"
-                                />
-                            </div>
-                            <template
-                                v-else-if="
-                                    selectedAssetUpdatePermission(
-                                        selectedAsset,
-                                        isDrawer,
-                                        'ENTITY_UPDATE_BUSINESS_METADATA'
-                                    ) && !viewOnly
-                                "
-                            >
-                                <PropertyPopover
-                                    :applicable-list="applicableList"
-                                />
-
-                                <span> are available to be populated.</span>
-                            </template>
-                            <template v-else>
-                                <PropertyPopover
-                                    :applicable-list="applicableList"
-                                />
-                                <span> haven’t been populated yet. </span>
-                            </template>
-                        </div>
-                        <AtlanButton2
-                            v-if="
-                                selectedAssetUpdatePermission(
-                                    selectedAsset,
-                                    isDrawer,
-                                    'ENTITY_UPDATE_BUSINESS_METADATA'
-                                ) && !viewOnly
-                            "
-                            label="Start Editing"
-                            prefixIcon="Edit"
-                            @click="() => (readOnly = false)"
-                        />
-                    </div>
-                </template>
                 <!-- showing empty ends here -->
-            </template>
-
-            <!-- if edit mode show everything as it is -->
-            <template v-if="!readOnly">
-                <template v-for="(a, x) in applicableList" :key="x">
-                    <div class="mb-3">
-                        <div class="flex mb-1 font-normal text-gray-500">
-                            <Truncate
-                                :tooltip-text="a.displayName"
-                                width="500px"
-                                placement="left"
-                                classes="text-gray-500"
-                            />
-                            <a-tooltip>
-                                <template #title>
-                                    <span>{{ a.options.description }}</span>
-                                </template>
-                                <div class="">
-                                    <AtlanIcon
-                                        v-if="a.options.description"
-                                        class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
-                                        icon="Info"
-                                    />
-                                </div>
-                            </a-tooltip>
-                        </div>
-
-                        <EditState
-                            v-model="a.value"
-                            :index="x"
-                            :attribute="a"
-                            @change="handleChange(x, a.value)"
-                        />
-                    </div>
-                </template>
             </template>
         </div>
     </div>
@@ -365,6 +230,7 @@
     import InternalCMBanner from '@/common/customMetadata/internalCMBanner.vue'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import { useTypedefStore } from '~/store/typedef'
+    import useCustomMetadataFacet from '~/composables/custommetadata/useCustomMetadataFacet'
 
     export default defineComponent({
         name: 'CustomMetadata',
@@ -372,8 +238,12 @@
             InternalCMBanner,
             PropertyPopover,
             Truncate,
-            ReadOnly: defineAsyncComponent(() => import('./readOnly.vue')),
-            EditState: defineAsyncComponent(() => import('./editState.vue')),
+            ReadOnly: defineAsyncComponent(
+                () =>
+                    import(
+                        '@/common/assets/preview/customMetadata/readOnly.vue'
+                    )
+            ),
             EmptyView,
             PreviewTabsIcon,
         },
@@ -402,10 +272,12 @@
             const readOnly = ref(true)
             const loading = ref(false)
             const showMore = ref(false)
-            const viewOnly = ref(data.value.options?.isLocked === 'true')
+            const viewOnly = ref(data.value?.options?.isLocked === 'true')
             const guid = ref()
             const { checkAccess } = useAuth()
             const isEvaluating = inject('isEvaluating')
+
+            const { getList: cmList } = useCustomMetadataFacet()
 
             const typedefStore = useTypedefStore()
 
@@ -439,7 +311,7 @@
             const applicableList = ref(
                 getApplicableAttributes(
                     data.value,
-                    selectedAsset.value.typeName
+                    selectedAsset.value?.typeName
                 )
             )
             const payload = ref({})
@@ -448,7 +320,7 @@
                 applicableList.value = []
                 applicableList.value = getApplicableAttributes(
                     data.value,
-                    selectedAsset.value.typeName
+                    selectedAsset.value?.typeName
                 )
             }
 
@@ -460,7 +332,7 @@
                 initializeAttributesList()
                 if (asset.value?.attributes) {
                     const bmAttributes = Object.keys(
-                        asset.value.attributes
+                        asset.value?.attributes
                     ).filter((attr) => attr.split('.').length > 1)
 
                     if (bmAttributes.length)
@@ -468,7 +340,7 @@
                             if (data.value.id === ab.split('.')[0]) {
                                 const attribute = ab.split('.')[1]
 
-                                const value = asset.value.attributes[ab]
+                                const value = asset.value?.attributes[ab]
                                 const attrIndex =
                                     applicableList.value.findIndex(
                                         (a) => a.name === attribute

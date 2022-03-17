@@ -19,7 +19,9 @@
                             Custom Metadata
                             <a-popover placement="right">
                                 <template #content>
-                                    <div class="p-2 bg-gray-700 rounded-lg">
+                                    <div
+                                        class="p-2 bg-gray-700 rounded-lg popover-cm"
+                                    >
                                         <img :src="gifCM" class="w-64 h-52" />
                                     </div>
                                 </template>
@@ -208,6 +210,12 @@
     })
 </script>
 <style lang="less">
+    .popover-cm {
+        transition: all ease 0.3s;
+        &:hover {
+            transform: scale(1.7);
+        }
+    }
     .container-preferences {
         max-height: 70vh;
     }

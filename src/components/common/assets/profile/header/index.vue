@@ -349,14 +349,12 @@
                     <a-button
                         v-if="
                             isGTC(item) &&
-                            checkAccess(
-                                [
-                                    map.DELETE_TERM,
-                                    map.DELETE_GLOSSARY,
-                                    map.DELETE_CATEGORY,
-                                ],
-                                'or'
-                            )
+                            (selectedAssetUpdatePermission(item) ||
+                                selectedAssetUpdatePermission(
+                                    item,
+                                    false,
+                                    'ENTITY_DELETE'
+                                ))
                         "
                         block
                         class="flex items-center justify-center p-2"

@@ -86,30 +86,68 @@
                     </a-menu-item>
                 </a-sub-menu>-->
                 <a-menu-item
-                    v-if="isGTC(asset) && editPermission"
+                    v-if="isGTC(asset)"
                     key="edit"
-                    @click="closeMenu"
                     class="px-4 py-2"
+                    @click="closeMenu"
                 >
-                    <div
-                        class="flex items-center"
-                        @click="$emit('edit', asset)"
-                    >
-                        <AtlanIcon icon="Pencil" class="mr-2" />
-                        <p class="p-0 m-0">Rename</p>
-                    </div>
+                    <template v-if="editPermission">
+                        <div
+                            class="flex items-center"
+                            @click="$emit('edit', asset)"
+                        >
+                            <AtlanIcon icon="Pencil" class="mr-2" />
+                            <p class="p-0 m-0">Rename</p>
+                        </div>
+                    </template>
+                    <template v-else>
+                        <a-tooltip
+                            placement="right"
+                            title="You don't have permission to perform this action"
+                        >
+                            <div
+                                class="flex items-center text-gray-500 cursor-not-allowed"
+                            >
+                                <AtlanIcon icon="Pencil" class="mr-2" />
+                                <p class="p-0 m-0">Rename</p>
+                            </div>
+                        </a-tooltip>
+                    </template>
                 </a-menu-item>
 
                 <a-menu-item
-                    v-if="editPermission"
-                    class="px-4 py-2"
                     key="announcement"
+                    class="px-4 py-2"
                     @click="closeMenu"
-                    ><AnnouncementModal
-                        :updating="announcementTitle(asset) ? true : false"
-                        :asset="asset"
-                        ><template #trigger>
-                            <div class="flex items-center">
+                >
+                    <template v-if="editPermission">
+                        <AnnouncementModal
+                            :updating="announcementTitle(asset) ? true : false"
+                            :asset="asset"
+                        >
+                            <template #trigger>
+                                <div class="flex items-center">
+                                    <AtlanIcon icon="Megaphone" />
+                                    <span class="pl-2 text-sm">
+                                        {{
+                                            announcementTitle(asset)
+                                                ? 'Edit'
+                                                : 'Add'
+                                        }}
+                                        Announcement
+                                    </span>
+                                </div>
+                            </template>
+                        </AnnouncementModal>
+                    </template>
+                    <template v-else>
+                        <a-tooltip
+                            placement="right"
+                            title="You don't have permission to perform this action"
+                        >
+                            <div
+                                class="flex items-center text-gray-500 cursor-not-allowed"
+                            >
                                 <AtlanIcon icon="Megaphone" />
                                 <span class="pl-2 text-sm"
                                     >{{
@@ -117,17 +155,17 @@
                                             ? 'Edit'
                                             : 'Add'
                                     }}
-                                    Announcement</span
-                                >
-                            </div></template
-                        ></AnnouncementModal
-                    ></a-menu-item
-                >
+                                    Announcement
+                                </span>
+                            </div>
+                        </a-tooltip>
+                    </template>
+                </a-menu-item>
                 <!-- Bulk upload hidden for GA  : only available for secret url i.e. ?sandbox=true-->
                 <a-menu-item
-                    class="px-4 py-2"
                     v-if="asset?.typeName === 'AtlasGlossary' && sandbox"
                     key="bulk upload"
+                    class="px-4 py-2"
                     @click="closeMenu"
                 >
                     <BulkUploadModal :entity="asset">
@@ -146,37 +184,48 @@
                 </a-menu-item>
 
                 <a-menu-item
-                    class="px-4 py-2"
-                    v-if="isGTC(asset) && deletePermission"
+                    v-if="isGTC(asset)"
                     key="archive"
+                    class="px-4 py-2"
                     @click="closeMenu"
                 >
-                    <RemoveGTCModal
-                        :entityType="asset.typeName"
-                        :entity="asset"
-                        :redirect="true"
-                    >
-                        <template #trigger>
-                            <div
-                                v-auth="
-                                    asset.typeName === 'AtlasGlossary'
-                                        ? map.DELETE_GLOSSARY
-                                        : asset.typeName ===
-                                          'AtlasGlossaryCategory'
-                                        ? map.DELETE_CATEGORY
-                                        : map.DELETE_TERM
-                                "
-                            >
-                                <div class="flex items-center">
+                    <template v-if="deletePermission">
+                        <RemoveGTCModal
+                            :entity-type="asset.typeName"
+                            :entity="asset"
+                            :redirect="true"
+                        >
+                            <template #trigger>
+                                <div>
+                                    <div class="flex items-center">
+                                        <AtlanIcon
+                                            icon="Trash"
+                                            class="m-0 mr-2 text-red-700"
+                                        />
+                                        <p class="p-0 m-0">Archive</p>
+                                    </div>
+                                </div>
+                            </template>
+                        </RemoveGTCModal>
+                    </template>
+                    <template v-else>
+                        <a-tooltip
+                            placement="right"
+                            title="You don't have permission to perform this action"
+                        >
+                            <div>
+                                <div
+                                    class="flex items-center text-gray-500 cursor-not-allowed"
+                                >
                                     <AtlanIcon
                                         icon="Trash"
-                                        class="m-0 mr-2 text-red-700"
+                                        class="m-0 mr-2 text-red-300"
                                     />
                                     <p class="p-0 m-0">Archive</p>
                                 </div>
                             </div>
-                        </template>
-                    </RemoveGTCModal>
+                        </a-tooltip>
+                    </template>
                 </a-menu-item>
 
                 <!-- <a-menu-item

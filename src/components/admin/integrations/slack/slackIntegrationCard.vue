@@ -24,6 +24,7 @@
             <a-sub-menu key="slack" mode="inline">
                 <template #title>
                     <SlackHeader
+                        class="cursor-pointer"
                         :is-open="openKeys.includes('slack')"
                         @openConfig="showSlackConfigModal = true"
                     />
@@ -92,6 +93,10 @@
             :global(.ant-menu-submenu-arrow) {
                 @apply hidden !important;
             }
+        }
+
+        :global(.ant-menu-title-content) {
+            @apply cursor-default;
         }
 
         :global(.ant-menu-item) {

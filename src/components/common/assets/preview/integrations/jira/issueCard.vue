@@ -37,10 +37,12 @@
                     class="flex items-center px-2 py-1 text-gray-500 rounded gap-x-1"
                 >
                     <img
+                        v-if="showProjectImage"
                         style="height: 16px; width: 16px"
                         :src="project.avatarUrls['24x24']"
                         alt=""
                         class="rounded-full"
+                        @error="showProjectImage = false"
                     />
                     <div class="text-xs text-gray-600">{{ project.key }}</div>
                 </div>
@@ -84,25 +86,32 @@
                 </span>
             </main>
             <footer v-if="footer" class="flex gap-x-2">
-                <div class="flex items-center p-1 bg-gray-200 rounded gap-x-1">
+                <div
+                    v-if="priority"
+                    class="flex items-center p-1 bg-gray-200 rounded gap-x-1"
+                >
                     <img
                         :src="priority.iconUrl"
                         style="height: 16px; width: 16px"
                     />
                 </div>
                 <div
+                    v-if="status"
                     class="flex items-center px-2 py-1 text-xs text-gray-500 bg-gray-200 rounded gap-x-1"
                 >
                     {{ status.name }}
                 </div>
                 <div
+                    v-if="project"
                     class="flex items-center px-2 py-1 bg-gray-200 rounded gap-x-1"
                 >
                     <img
+                        v-if="showProjectImage"
                         style="height: 16px; width: 16px"
                         :src="project.avatarUrls['24x24']"
                         alt=""
                         class="rounded-full"
+                        @error="showProjectImage = false"
                     />
                     <div class="text-xs text-gray-500">
                         {{ project.key }}
@@ -114,7 +123,7 @@
 </template>
 
 <script setup lang="ts">
-    import { computed, PropType, toRefs } from 'vue'
+    import { computed, PropType, ref, toRefs } from 'vue'
     import { useTimeAgo, useVModels } from '@vueuse/core'
     import { Issue } from '~/types/integrations/jira.types'
     import Truncate from '@/common/ellipsis/index.vue'
@@ -133,6 +142,8 @@
     // const { checked } = useVModels(props, emit)
 
     const { issue } = toRefs(props)
+
+    const showProjectImage = ref(true)
 
     const {
         key,

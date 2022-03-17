@@ -11,7 +11,12 @@
             <div class="grid items-center grid-cols-9">
                 <span class="text-sm text-gray-500">Added by</span>
                 <div class="flex items-center col-span-5 text-gray-700 gap-x-1">
-                    <img :src="avatarURL" class="w-4 h-4 rounded-full" />
+                    <img
+                        v-if="showImage"
+                        :src="avatarURL"
+                        class="w-4 h-4 rounded-full"
+                        @error="showImage = false"
+                    />
                     {{ user?.name }}
                     <span class="text-gray-300">•</span>
                     <span class="flex">
@@ -29,6 +34,7 @@
 
 <script setup lang="ts">
     import { useTimeAgo } from '@vueuse/core'
+    import { ref } from 'vue'
     import OverviewBanner from '@/admin/integrations/jira/misc/overviewBannerCard.vue'
 
     const props = defineProps({
@@ -37,6 +43,8 @@
         avatarURL: { type: String, required: true },
         createdAt: { type: String, required: true },
     })
+
+    const showImage = ref(true)
 </script>
 
 <style scoped></style>

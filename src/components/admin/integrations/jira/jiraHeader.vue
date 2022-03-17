@@ -84,9 +84,10 @@
                 class="flex items-center justify-center text-sm rounded gap-x-1"
             >
                 <img
-                    v-if="tenantJiraStatus.avatar"
+                    v-if="tenantJiraStatus.avatar && showImage"
                     :src="tenantJiraStatus.avatar"
                     class="w-4 h-4 rounded-full"
+                    @error="showImage = false"
                 />
                 <AtlanIcon v-else icon="Check" />
                 {{ tenantJiraStatus.orgName }} workspace connected
@@ -103,7 +104,7 @@
 </template>
 
 <script setup lang="ts">
-    import { computed, h, toRefs, watch } from 'vue'
+    import { computed, h, ref, toRefs, watch } from 'vue'
     import { Modal } from 'ant-design-vue'
     import useTenantData from '~/composables/tenant/useTenantData'
     import { integrations } from '~/constant/integrations/integrations'
@@ -125,6 +126,7 @@
 
     const store = integrationStore()
     const { tenantJiraStatus } = toRefs(store)
+    const showImage = ref(true)
 
     const { description } = integrations.jira
 

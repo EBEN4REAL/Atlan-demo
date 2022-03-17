@@ -17,6 +17,7 @@
             <a-sub-menu key="jira" mode="inline">
                 <template #title>
                     <JiraHeader
+                        class="cursor-pointer"
                         :is-open="openKeys.includes('jira')"
                         :jira-app-installed="jiraAppInstalled"
                     />
@@ -112,6 +113,10 @@
             :global(.ant-menu-submenu-arrow) {
                 @apply hidden !important;
             }
+        }
+
+        :global(.ant-menu-title-content) {
+            @apply cursor-default;
         }
 
         :global(.ant-menu-item) {

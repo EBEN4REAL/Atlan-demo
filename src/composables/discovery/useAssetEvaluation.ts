@@ -103,10 +103,10 @@ export default function useAssetEvaluate() {
             if (typeName === 'AtlasGlossaryTerm')
                 permissions.push({
                     "action": "RELATIONSHIP_ADD",
-                    "relationShipTypeName": "AtlasGlossarySemanticAssignment",
-                    "entityIdEnd1": "*",
+                    "relationShipTypeName": "AtlasGlossaryTermAnchor",
+                    "entityIdEnd1": asset?.attributes?.qualifiedName,
                     "entityTypeEnd1": "AtlasGlossaryTerm",
-                    "entityGuidEnd2": "*",
+                    "entityIdEnd2": "*",
                     "entityTypeEnd2": "*"
                 })
             return permissions

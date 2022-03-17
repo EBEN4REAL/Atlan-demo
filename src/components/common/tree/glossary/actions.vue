@@ -41,21 +41,33 @@
                     </div>
                 </a-menu-item>
                 <!-- entity update -->
-                <a-menu-item
-                    v-if="showGtcCrud && entityUpdatePermission"
-                    key="edit"
-                    @click="closeMenu"
-                >
-                    <div
-                        class="flex items-center"
-                        @click="$emit('edit', entity)"
-                    >
-                        <AtlanIcon icon="Pencil" class="m-0 mr-2" />
-                        <p class="p-0 m-0">Rename</p>
-                    </div>
+                <a-menu-item v-if="showGtcCrud" key="edit" @click="closeMenu">
+                    <template v-if="entityUpdatePermission">
+                        <div
+                            class="flex items-center"
+                            @click="$emit('edit', entity)"
+                        >
+                            <AtlanIcon icon="Pencil" class="m-0 mr-2" />
+                            <p class="p-0 m-0">Rename</p>
+                        </div>
+                    </template>
+                    <template v-else>
+                        <a-tooltip
+                            placement="right"
+                            title="You don't have permission to perform this action"
+                        >
+                            <div
+                                :class="'cursor-not-allowed text-gray-500'"
+                                class="flex items-center"
+                            >
+                                <AtlanIcon icon="Pencil" class="m-0 mr-2" />
+                                <p class="p-0 m-0">Rename</p>
+                            </div>
+                        </a-tooltip>
+                    </template>
                 </a-menu-item>
                 <!-- entity create -->
-                <div v-if="createPermission" v-auth="map.CREATE_CATEGORY">
+                <div>
                     <a-menu-item
                         v-if="
                             showGtcCrud &&
@@ -64,28 +76,47 @@
                         key="add"
                         @click="closeMenu"
                     >
-                        <AddGtcModal
-                            entityType="AtlasGlossaryCategory"
-                            :glossaryName="glossaryName"
-                            :categoryName="categoryName"
-                            @add="handleAdd"
-                            :glossary-qualified-name="glossaryQualifiedName"
-                            :categoryGuid="categoryId"
-                        >
-                            <template #trigger>
-                                <div class="flex items-center">
+                        <template v-if="createPermission">
+                            <AddGtcModal
+                                entityType="AtlasGlossaryCategory"
+                                :glossaryName="glossaryName"
+                                :categoryName="categoryName"
+                                @add="handleAdd"
+                                :glossary-qualified-name="glossaryQualifiedName"
+                                :categoryGuid="categoryId"
+                            >
+                                <template #trigger>
+                                    <div class="flex items-center">
+                                        <AtlanIcon
+                                            icon="Category"
+                                            class="m-0 mr-2"
+                                        />
+                                        <p class="p-0 m-0">Add Category</p>
+                                    </div>
+                                </template>
+                            </AddGtcModal>
+                        </template>
+                        <template v-else>
+                            <a-tooltip
+                                placement="right"
+                                title="You don't have permission to perform this action"
+                            >
+                                <div
+                                    :class="'cursor-not-allowed text-gray-500'"
+                                    class="flex items-center"
+                                >
                                     <AtlanIcon
                                         icon="Category"
                                         class="m-0 mr-2"
                                     />
                                     <p class="p-0 m-0">Add Category</p>
                                 </div>
-                            </template>
-                        </AddGtcModal>
+                            </a-tooltip>
+                        </template>
                     </a-menu-item>
                 </div>
                 <!-- entity create -->
-                <div v-if="createPermission" v-auth="map.CREATE_TERM">
+                <div>
                     <a-menu-item
                         v-if="
                             showGtcCrud &&
@@ -94,34 +125,44 @@
                         key="add"
                         @click="closeMenu"
                     >
-                        <AddGtcModal
-                            entityType="AtlasGlossaryTerm"
-                            :glossaryName="glossaryName"
-                            :categoryName="categoryName"
-                            @add="handleAdd"
-                            :glossary-qualified-name="glossaryQualifiedName"
-                            :categoryGuid="categoryId"
-                        >
-                            <template #trigger>
-                                <div class="flex items-center">
+                        <template v-if="createPermission">
+                            <AddGtcModal
+                                entityType="AtlasGlossaryTerm"
+                                :glossaryName="glossaryName"
+                                :categoryName="categoryName"
+                                @add="handleAdd"
+                                :glossary-qualified-name="glossaryQualifiedName"
+                                :categoryGuid="categoryId"
+                            >
+                                <template #trigger>
+                                    <div class="flex items-center">
+                                        <AtlanIcon
+                                            icon="Term"
+                                            class="m-0 mr-2"
+                                        />
+                                        <p class="p-0 m-0">Add Term</p>
+                                    </div>
+                                </template>
+                            </AddGtcModal>
+                        </template>
+                        <template v-else>
+                            <a-tooltip
+                                placement="right"
+                                title="You don't have permission to perform this action"
+                            >
+                                <div
+                                    :class="'cursor-not-allowed text-gray-500'"
+                                    class="flex items-center"
+                                >
                                     <AtlanIcon icon="Term" class="m-0 mr-2" />
                                     <p class="p-0 m-0">Add Term</p>
                                 </div>
-                            </template>
-                        </AddGtcModal>
+                            </a-tooltip>
+                        </template>
                     </a-menu-item>
                 </div>
                 <!-- entity delete -->
-                <div
-                    v-if="entityDeletePermission"
-                    v-auth="
-                        entity?.typeName === 'AtlasGlossaryTerm'
-                            ? map.DELETE_TERM
-                            : entity?.typeName === 'AtlasGlossaryCategory'
-                            ? map.DELETE_CATEGORY
-                            : map.DELETE_GLOSSARY
-                    "
-                >
+                <div>
                     <a-menu-divider
                         v-if="
                             showGtcCrud &&
@@ -134,22 +175,41 @@
                         key="archive"
                         @click="closeMenu"
                     >
-                        <RemoveGTCModal
-                            :entityType="entity.typeName"
-                            :entity="entity"
-                            @delete="handleDelete"
-                            :redirect="shouldRedirect"
-                        >
-                            <template #trigger>
-                                <div class="flex items-center">
+                        <template v-if="entityDeletePermission">
+                            <RemoveGTCModal
+                                :entityType="entity.typeName"
+                                :entity="entity"
+                                @delete="handleDelete"
+                                :redirect="shouldRedirect"
+                            >
+                                <template #trigger>
+                                    <div class="flex items-center">
+                                        <AtlanIcon
+                                            icon="Trash"
+                                            class="m-0 mr-2 text-red-700"
+                                        />
+                                        <p class="p-0 m-0">Archive</p>
+                                    </div>
+                                </template>
+                            </RemoveGTCModal>
+                        </template>
+                        <template v-else>
+                            <a-tooltip
+                                placement="right"
+                                title="You don't have permission to perform this action"
+                            >
+                                <div
+                                    :class="'cursor-not-allowed text-gray-500'"
+                                    class="flex items-center"
+                                >
                                     <AtlanIcon
                                         icon="Trash"
-                                        class="m-0 mr-2 text-red-700"
+                                        class="m-0 mr-2 text-red-200"
                                     />
                                     <p class="p-0 m-0">Archive</p>
                                 </div>
-                            </template>
-                        </RemoveGTCModal>
+                            </a-tooltip>
+                        </template>
                     </a-menu-item>
                 </div>
             </a-menu>

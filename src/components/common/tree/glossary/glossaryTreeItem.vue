@@ -132,17 +132,7 @@
             <div v-if="!item.dataRef.isLoading && item.dataRef.isError">
                 <AtlanIcon icon="Error"></AtlanIcon>
             </div>
-            <div
-                v-else-if="!checkable"
-                v-auth.or="[
-                    map.CREATE_CATEGORY,
-                    map.CREATE_TERM,
-                    map.DELETE_CATEGORY,
-                    map.DELETE_TERM,
-                    map.DELETE_GLOSSARY,
-                ]"
-                class="hidden group-hover:flex"
-            >
+            <div v-else-if="!checkable" class="hidden group-hover:flex">
                 <Actions
                     :treeMode="true"
                     :glossaryName="getAnchorName(item) || title(item)"

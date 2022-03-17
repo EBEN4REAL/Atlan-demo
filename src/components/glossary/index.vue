@@ -12,8 +12,14 @@
                 v-model="selectedGlossaryQf"
                 @change="handleSelectGlossary"
             ></GlossarySelect>
-            <div v-auth="map.CREATE_GLOSSARY" class="flex">
+            <div class="flex">
                 <CreateGtcBtn
+                    v-if="
+                        !selectedGlossaryQf?.length &&
+                        role.toLowerCase() !== 'admin'
+                            ? false
+                            : true
+                    "
                     :selected-glossary-qf="selectedGlossaryQf"
                     :term-add-permission="addTermPermission"
                     :category-add-permission="addCategoryPermission"
@@ -21,6 +27,7 @@
                 />
                 <div v-if="selectedGlossaryQf?.length" class="ml-2">
                     <GlossaryActions
+                        :entityDeletePermission="entityDeletePermission"
                         :entity="selectedGlossary"
                     ></GlossaryActions>
                 </div>
@@ -170,6 +177,7 @@
     import CreateGtcBtn from '@/glossary/actions/createGtcBtn.vue'
     import GlossaryActions from '@/glossary/actions/glossary.vue'
     import useGTCPermissions from '~/composables/glossary/useGTCPermissions'
+    import whoami from '~/composables/user/whoami'
 
     import {
         AssetAttributes,
@@ -234,6 +242,8 @@
         },
         emits: ['check', 'update:checkedGuids', 'searchItemCheck'],
         setup(props, { emit }) {
+            const { role } = whoami()
+
             const glossaryStore = useGlossaryStore()
             const { checkedGuids } = useVModels(props, emit)
             const router = useRouter()
@@ -506,6 +516,7 @@
                 termAddPermission,
                 categoryAddPermission,
                 createPermission,
+                entityDeletePermission,
             } = useGTCPermissions(selectedGlossary)
 
             // ? additional Check because selectedGlossary can be undefined if context is ALL glossary
@@ -521,6 +532,8 @@
             })
 
             return {
+                role,
+                entityDeletePermission,
                 termAddPermission,
                 addTermPermission,
                 addCategoryPermission,

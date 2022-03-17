@@ -295,7 +295,9 @@
                     : ''
                 const glossary = countGlossary.value
                     ? `${countGlossary.value}  ${
-                          countGlossary.value > 1 ? 'glossaries' : 'glossary'
+                          countGlossary.value > 1
+                              ? 'glossary policies'
+                              : 'glossary policy'
                       }`
                     : ''
                 return `${meta}${data}${glossary}`

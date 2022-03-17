@@ -50,7 +50,7 @@
         </a-select-option> -->
         <template #suffixIcon>
             <AtlanLoader v-if="isLoading" icon="Loader" class="" />
-            <AtlanIcon icon="CaretDown" class="text-gray-500" />
+            <AtlanIcon v-else icon="CaretDown" class="text-gray-500" />
         </template>
     </a-select>
 </template>

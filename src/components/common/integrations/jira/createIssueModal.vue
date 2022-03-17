@@ -161,6 +161,17 @@
         description: undefined,
     })
 
+    const requiredFields: Ref<
+        {
+            label: string
+            key: string
+            unsupported: string
+            data: any
+            selectedValue: any
+            hideError: boolean
+        }[]
+    > = ref([])
+
     const resetForm = () => {
         form.value = {
             issuetype: undefined,
@@ -168,6 +179,7 @@
             summary: undefined,
             description: undefined,
         }
+        requiredFields.value = []
     }
 
     const rules = ref(JSON.parse(JSON.stringify(CREATE_TICKET_FORM_RULES)))
@@ -192,20 +204,10 @@
         mutate: fetchConfig,
     } = getProjectConfig(projectKey)
 
-    const requiredFields: Ref<
-        {
-            label: string
-            key: string
-            unsupported: string
-            data: any
-            selectedValue: any
-            hideError: boolean
-        }[]
-    > = ref([])
-
     const initRequiredFields = () => {
         const finalFields: any = []
-        if (!config.value) return []
+        if (!config.value) requiredFields.value = []
+
         const { fields } = config.value.issuetypes.find(
             (_type) => _type.id === form.value.issuetype
         )
@@ -238,6 +240,8 @@
         if (fields && typeof fields === 'object') {
             Object.entries(fields).forEach(([_, data]: any) => {
                 if (data.required) {
+                    // ! hide fields that has defaultValue set but no defaultValue options provided
+                    if (data.hasDefaultValue && !data.defaultValue) return
                     const isURL =
                         data.schema?.custom &&
                         data.schema?.custom.split(':').slice(-1)[0] === 'url'
@@ -273,6 +277,7 @@
             (f) => !ignoreFieldsKey.includes(f.key)
         )
     }
+
     const parseType = (field) => {
         const isURL =
             field.data.schema?.custom &&

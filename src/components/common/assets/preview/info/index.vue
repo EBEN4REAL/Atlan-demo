@@ -847,6 +847,23 @@
                 >
                 </RelatedTerms>
             </div>
+            <div class="flex flex-col">
+                <p
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+                >
+                    Custom Metadata
+                </p>
+                <CustomMetadataPreview
+                    :selected-asset="selectedAsset"
+                    class="px-5"
+                    :edit-permission="editPermission"
+                    :allow-delete="editPermission"
+                    :is-drawer="isDrawer"
+                    :tab="tab"
+                    :data="tab?.data"
+                >
+                </CustomMetadataPreview>
+            </div>
             <div
                 v-if="isBiAsset(selectedAsset) || isSaasAsset(selectedAsset)"
                 class="flex flex-col px-5 gap-y-4"
@@ -906,6 +923,7 @@
     import { copyToClipboard } from '~/utils/clipboard'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import ColumnKeys from '~/components/common/column/columnKeys.vue'
+    import CustomMetadataPreview from '@/common/input/customMetadata/index.vue'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -918,6 +936,7 @@
             Classification,
             SavedQuery,
             Certificate,
+            CustomMetadataPreview,
             RowInfoHoverCard,
             SQL,
             SQLSnippet,

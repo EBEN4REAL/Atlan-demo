@@ -211,10 +211,10 @@
 </script>
 <style lang="less">
     .popover-cm {
-        transition: all ease 0.3s;
-        &:hover {
-            transform: scale(1.7);
-        }
+        // transition: all ease 0.3s;
+        // &:hover {
+        //     transform: scale(1.7);
+        // }
     }
     .container-preferences {
         max-height: 70vh;

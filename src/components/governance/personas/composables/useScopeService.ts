@@ -151,20 +151,6 @@ export const personaScopeList = [
                 gif: updateAssetGif,
             },
             {
-                value: 'entity-create',
-                label: 'Create',
-                filterLabel: 'Create asset',
-                // desc: 'Create entities within selected assets',
-                desc: 'Gives ability to create new assets within the selected connection or specified database/schema',
-            },
-            {
-                value: 'entity-delete',
-                label: 'Delete',
-                filterLabel: 'Delete asset',
-                // desc: 'Permission to delete selected assets',
-                desc: 'Gives ability to delete assets within the selected connection or specified database/schema',
-            },
-            {
                 value: 'link-assets',
                 label: 'Link other assets',
                 desc: 'Permission to link assets like readme, resources to this asset',
@@ -228,6 +214,26 @@ export const personaScopeList = [
         type: 'Governance',
         label: 'Governance',
     },
+    {
+        type: 'API',
+        label: 'API',
+        scopes: [
+            {
+                value: 'entity-create',
+                label: 'Create',
+                filterLabel: 'Create asset',
+                // desc: 'Create entities within selected assets',
+                desc: 'Gives ability to create new assets within the selected connection or specified database/schema',
+            },
+            {
+                value: 'entity-delete',
+                label: 'Delete',
+                filterLabel: 'Delete asset',
+                // desc: 'Permission to delete selected assets',
+                desc: 'Gives ability to delete assets within the selected connection or specified database/schema',
+            },
+        ]
+    }
 ]
 
 export default function scopeService() {

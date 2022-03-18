@@ -386,67 +386,6 @@
                     >
                         {{ rules.metadata.text }}
                     </div>
-                    <div class="p-3 pt-2 bg-gray-100 rounded-lg rounded-t-none">
-                        <div
-                            v-if="
-                                isEdit
-                                    ? canEdit
-                                    : true && connectorData.attributeValue
-                            "
-                        >
-                            <div class="flex mt-1">
-                                <div>
-                                    <span>Deny</span>
-                                    <a-tooltip placement="top" color="white">
-                                        <AtlanIcon
-                                            icon="Overview"
-                                            class="mx-2"
-                                        />
-                                        <template #title>
-                                            <p class="m-3 text-gray">
-                                                This will deny the permissions
-                                                you have selected above, for all
-                                                the users in the persona, even
-                                                if they had access to those
-                                                permissions via some other
-                                                persona or purpose.
-                                            </p>
-                                        </template>
-                                    </a-tooltip>
-                                </div>
-                                <a-switch
-                                    :class="policy.allow ? `` : 'bg-red-600'"
-                                    data-test-id="toggle-switch"
-                                    class="ml-2"
-                                    :checked="!policy.allow"
-                                    style="width: 40px !important"
-                                    @update:checked="policy.allow = !$event"
-                                />
-                            </div>
-                        </div>
-                        <div
-                            v-else-if="!policy.allow"
-                            class="flex items-center justify-between"
-                        >
-                            <div class="mt-4">
-                                <span class="text-error"
-                                    >Denied Permissions</span
-                                >
-                                <a-tooltip placement="top" color="white">
-                                    <AtlanIcon icon="Overview" class="mx-2" />
-                                    <template #title>
-                                        <p class="m-3 text-gray">
-                                            The above permissions have been
-                                            overidden for all the users in the
-                                            persona, even if they have access to
-                                            those permissions via some other
-                                            persona or purpose
-                                        </p>
-                                    </template>
-                                </a-tooltip>
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 <div
                     v-if="policyType === 'data' && connectorData.attributeValue"
@@ -493,7 +432,7 @@
                                     : true && connectorData.attributeValue
                             "
                         >
-                            <div class="flex mt-4">
+                            <!-- <div class="flex mt-4">
                                 <div>
                                     <span>Deny Query</span>
                                     <a-tooltip placement="top" color="white">
@@ -521,7 +460,7 @@
                                     style="width: 40px !important"
                                     @update:checked="policy.allow = !$event"
                                 />
-                            </div>
+                            </div> -->
                         </div>
                         <div
                             v-else-if="!policy.allow"
@@ -547,7 +486,81 @@
                         </div>
                     </div>
                 </div>
-
+                <div
+                    v-if="
+                        isEdit
+                            ? canEdit
+                            : true &&
+                              connectorData.attributeValue &&
+                              (type === 'meta' || type === 'data')
+                    "
+                    class="p-4 mt-4 bg-white shadow-section"
+                >
+                    <div class="flex">
+                        <span class="text-sm font-bold text-gray-700">{{
+                            type === 'meta'
+                                ? 'Deny selected permissions'
+                                : 'Deny Query'
+                        }}</span>
+                        <!-- <a-tooltip placement="top" color="white">
+                                    <AtlanIcon icon="Overview" class="mx-2" />
+                                    <template #title>
+                                        <p class="m-3 text-gray">
+                                            This will deny the permissions you
+                                            have selected above, for all the
+                                            users in the persona, even if they
+                                            had access to those permissions via
+                                            some other persona or purpose.
+                                        </p>
+                                    </template>
+                                </a-tooltip> -->
+                        <a-switch
+                            :class="policy.allow ? `bg-gray-300` : 'bg-red-600'"
+                            data-test-id="toggle-switch"
+                            class="ml-auto"
+                            :checked="!policy.allow"
+                            style="width: 40px !important"
+                            @update:checked="policy.allow = !$event"
+                        />
+                    </div>
+                    <div
+                        v-if="!policy.allow"
+                        class="flex p-3 mt-3 bg-red-100 rounded-lg"
+                    >
+                        <div class="w-4 mr-2">
+                            <AtlanIcon
+                                icon="IssuesAnnouncement"
+                                class="icon-annoucemnet"
+                            />
+                        </div>
+                        <div class="flex-1 text-sm text-gray-700">
+                            This will deny the permissions you have selected
+                            above, for all the users in the persona, even if
+                            they had access to those permissions via some other
+                            persona or purpose
+                        </div>
+                    </div>
+                </div>
+                <div
+                    v-else-if="!policy.allow"
+                    class="flex items-center justify-between"
+                >
+                    <div class="mt-4">
+                        <span class="text-error">Denied Permissions</span>
+                        <a-tooltip placement="top" color="white">
+                            <AtlanIcon icon="Overview" class="mx-2" />
+                            <template #title>
+                                <p class="m-3 text-gray">
+                                    {{
+                                        type === 'meta'
+                                            ? 'The above permissions have been overidden for all the users in the persona, even if they have access to those permissions via some other persona or purpose'
+                                            : 'This will deny the permissions you have selected above, for all the users in the persona, even if they had access to those permissions via some other persona or purpose'
+                                    }}
+                                </p>
+                            </template>
+                        </a-tooltip>
+                    </div>
+                </div>
                 <AssetSelectorDrawer
                     v-if="connectorData.attributeValue"
                     v-model:visible="assetSelectorVisible"
@@ -1020,6 +1033,11 @@
 </script>
 
 <style lang="less">
+    .icon-annoucemnet {
+        circle {
+            fill: #3e4359;
+        }
+    }
     .shadow-section {
         box-shadow: 0px 1px 4px 0px #0000001f;
         border-radius: 8px !important;

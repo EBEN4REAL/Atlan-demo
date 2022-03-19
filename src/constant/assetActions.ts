@@ -3,7 +3,7 @@ export const assetActions = [
         id: 'open',
         label: 'Open',
         description: 'Open asset profile',
-        icon: 'Enter',
+        icon: 'EnterProfile',
     },
     {
         id: 'query',
@@ -18,12 +18,5 @@ export const assetActions = [
             'TablePartition',
             'MaterialisedView',
         ],
-    },
-    {
-        id: 'share',
-        label: 'Share',
-        description: 'Share asset link',
-        icon: 'Share',
-        component: 'ShareMenu',
     },
 ]

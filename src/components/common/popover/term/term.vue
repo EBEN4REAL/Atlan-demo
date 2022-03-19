@@ -119,9 +119,7 @@
                         </div>
                     </div>
                     <div
-                        v-if="
-                            attributes?.localSeeAlso?.length
-                        "
+                        v-if="attributes?.localSeeAlso?.length"
                         style="font-size: 12px"
                         class=""
                     >
@@ -133,22 +131,19 @@
                                 v-for="term in attributes?.localSeeAlso"
                                 :key="term.guid"
                             >
-                                <TermPill
-                                    :term="term"
-                                    :allow-delete="false"
-                                />
+                                <TermPill :term="term" :allow-delete="false" />
                             </template>
                         </div>
                     </div>
                     <div class="w-full pt-4">
-                        <router-link :to="`/glossary/${fetchedTerm.guid}/overview`">
-                            <AtlanButton
+                        <router-link
+                            :to="`/glossary/${fetchedTerm.guid}/overview`"
+                        >
+                            <AtlanButton2
                                 color="secondary"
                                 class="w-full p-0 h-7"
-                                padding="compact"
-                            >
-                                View Term profile
-                            </AtlanButton>
+                                label="View Term profile"
+                            />
                         </router-link>
                     </div>
                 </div>

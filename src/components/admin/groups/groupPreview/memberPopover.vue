@@ -21,32 +21,20 @@
                 />
             </div>
             <div class="flex justify-end mr-3">
-                <AtlanButton
-                    :is-loading="addMemberLoading"
-                    type="primary"
-                    size="sm"
-                    padding="compact"
+                <AtlanButton2
+                    :loading="addMemberLoading"
                     :disabled="addMemberLoading"
+                    :label="addMemberLoading ? 'Saving' : 'Save'"
                     @click="addMembersToGroup"
-                >
-                    <div class="flex items-center">
-                        <div v-if="!addMemberLoading">Save</div>
-                        <div v-else>Saving</div>
-                    </div>
-                </AtlanButton>
+                />
             </div>
         </template>
         <slot name="label">
-            <AtlanButton
-                size="sm"
-                padding="compact"
-                class="text-gray-500 bg-transparent border-gray-300 hover:bg-transparent hover:text-primary hover:border-primary"
-            >
-                <div class="flex items-center">
-                    <AtlanIcon icon="Add" class="h-3 mr-2"></AtlanIcon>
-                    <div>Add Member</div>
-                </div>
-            </AtlanButton>
+            <AtlanButton2
+                color="secondary"
+                label="Add Member"
+                prefixIcon="Add"
+            />
         </slot>
     </a-popover>
 </template>

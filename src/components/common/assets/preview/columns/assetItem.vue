@@ -10,7 +10,10 @@
                 <div
                     class="flex flex-wrap items-center justify-between mb-0 overflow-hidden"
                 >
-                    <div class="flex items-center">
+                    <div
+                        class="flex items-center"
+                        :class="dataTypeCategoryImage(item) ? '' : 'w-full'"
+                    >
                         <component
                             :is="dataTypeCategoryImage(item)"
                             class="h-4 mr-1 text-gray-500 mb-0.5"
@@ -37,6 +40,18 @@
                                 class="h-3.5 ml-1 mb-0.5"
                             ></AtlanIcon
                         ></a-tooltip>
+                        <div v-if="item?.attributes?.__hasLineage" class="ml-4">
+                            <a-tooltip placement="top"
+                                ><template #title
+                                    >View Lineage In Graph</template
+                                >
+                                <AtlanIcon
+                                    icon="Play"
+                                    class="w-4 h-4 my-auto text-gray-500 outline-none cursor-pointer"
+                                    @click="setColumnToSelect(item)"
+                                ></AtlanIcon>
+                            </a-tooltip>
+                        </div>
                     </div>
                     <div class="flex ml-1 gap-x-2">
                         <ColumnKeys
@@ -63,6 +78,8 @@
                         <PopoverClassification
                             :classification="classification"
                             :entity-guid="item?.guid"
+                            :mouse-enter-delay="mouseEnterDelay"
+                            @mouse-entered="enteredPill"
                         >
                             <ClassificationPill
                                 :name="classification.name"
@@ -110,6 +127,8 @@
     import ClassificationPill from '@/common/pills/classification.vue'
     import PopoverClassification from '@/common/popover/classification/index.vue'
     import ColumnKeys from '~/components/common/column/columnKeys.vue'
+    import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
+    import useLineageStore from '~/store/lineage'
 
     export default defineComponent({
         name: 'ColumnListItem',
@@ -135,6 +154,12 @@
         },
         emits: ['update'],
         setup(props, { emit }) {
+            const lineageStore = useLineageStore()
+
+            const setColumnToSelect = (item) => {
+                lineageStore.setColumnToSelect(item)
+            }
+
             const {
                 title,
                 getConnectorImage,
@@ -200,7 +225,13 @@
                 return matchingIdsResult
             })
 
-            watch(shouldDrawerUpdate, () => emit('update', asset.value))
+            watch(shouldDrawerUpdate, () => {
+                if (shouldDrawerUpdate.value) {
+                    emit('update', asset.value)
+                    shouldDrawerUpdate.value = false
+                }
+            })
+            const { mouseEnterDelay, enteredPill } = useMouseEnterDelay()
 
             return {
                 title,
@@ -232,6 +263,9 @@
                 isScrubbed,
                 list,
                 isIndexed,
+                mouseEnterDelay,
+                enteredPill,
+                setColumnToSelect,
             }
         },
     })

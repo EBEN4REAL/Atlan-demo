@@ -1,4 +1,13 @@
 import { computed } from 'vue'
+import updateAssetGif from '~/assets/gifs/Permissions_Popover_Gifs/Update_Assets_Metadata.gif'
+import updateBusinessMetaGif from '~/assets/gifs/Permissions_Popover_Gifs/Update_CM_Metadata.gif'
+import addClassificationGif from '~/assets/gifs/Permissions_Popover_Gifs/Add_Classification_Metadata.gif'
+// import updateClassificationGif from '~/assets/gifs/Permissions_Popover_Gifs/Remove_Classification_Metadata.gif'
+import deleteClassificationGif from '~/assets/gifs/Permissions_Popover_Gifs/Remove_Classification_Metadata.gif'
+// import updateTermsGif from '~/assets/gifs/Permissions_Popover_Gifs/Update_Terms.gif'
+import viewAssetGif from '~/assets/gifs/Permissions_Popover_Gifs/View_Assets_Metadata.gif'
+import addTermsGif from '~/assets/gifs/Permissions_Popover_Gifs/Add_Term_Metadata.gif'
+import deleteTermsGif from '~/assets/gifs/Permissions_Popover_Gifs/Delete_Term_Metadata.gif'
 // import scopeAPI from '../apis/scopes'
 
 export const purposeScopeList = [
@@ -7,22 +16,28 @@ export const purposeScopeList = [
             {
                 value: 'entity-read',
                 label: 'read',
-                desc: 'Read access to private attributes',
+                // desc: 'Read access to private attributes',
+                desc: 'Gives permission to view Activity, Lineage, Custom metadata and sensitive info like SQL queries for processes in lineage or view defintions',
+                gif: viewAssetGif,
             },
             {
                 value: 'entity-update',
                 label: 'update',
-                desc: 'Access to update asset metadata',
+                // desc: 'Access to update asset metadata',
+                desc: 'Update asset metatada including description, certification, owners, readme & resources',
+                gif: updateAssetGif,
             },
             {
                 value: 'entity-create',
                 label: 'create',
-                desc: 'Create entities within selected assets',
+                // desc: 'Create entities within selected assets',
+                desc: 'Gives ability to create new assets within the selected connection or specified database/schema',
             },
             {
                 value: 'entity-delete',
                 label: 'delete',
-                desc: 'Permission to delete selected assets',
+                // desc: 'Permission to delete selected assets',
+                desc: 'Gives ability to delete assets within the selected connection or specified database/schema',
             },
         ],
         type: 'Assets',
@@ -34,6 +49,7 @@ export const purposeScopeList = [
                 value: 'entity-update-business-metadata',
                 label: 'Update Custom Metadata',
                 desc: 'Update classifications for selected assets',
+                gif: updateBusinessMetaGif,
             },
             // {
             //     value: 'entity-add-classification',
@@ -45,10 +61,22 @@ export const purposeScopeList = [
             //     label: 'remove: Classifications',
             //     desc: 'Remove classifications for selected assets'
             // },
+            // {
+            //     value: 'entity-update-classification',
+            //     label: 'Update Classifications',
+            //     desc: 'Update values for BM attributes for selected assets',
+            // },
             {
-                value: 'entity-update-classification',
-                label: 'Update Classifications',
-                desc: 'Update values for BM attributes for selected assets',
+                value: 'entity-add-classification',
+                label: 'Add Classifications',
+                desc: 'Permission to add classifications from assets',
+                gif: addClassificationGif,
+            },
+            {
+                value: 'entity-remove-classification',
+                label: 'Remove Classifications',
+                desc: 'Permission to remove classifications from assets',
+                gif: deleteClassificationGif,
             },
 
             // {
@@ -111,25 +139,30 @@ export const personaScopeList = [
                 value: 'entity-read',
                 label: 'Read',
                 filterLabel: 'Read asset',
-                desc: 'Read access to private attributes',
+                desc: 'Gives permission to view Activity, Lineage, Custom metadata and sensitive info like SQL queries for processes in lineage or view defintions',
+                gif: viewAssetGif,
             },
             {
                 value: 'entity-update',
                 label: 'Update',
                 filterLabel: 'Update asset',
-                desc: 'Access to update asset metadata',
+                // desc: 'Access to update asset metadata',
+                desc: 'Update asset metatada including description, certification, owners, readme & resources',
+                gif: updateAssetGif,
             },
             {
                 value: 'entity-create',
                 label: 'Create',
                 filterLabel: 'Create asset',
-                desc: 'Create entities within selected assets',
+                // desc: 'Create entities within selected assets',
+                desc: 'Gives ability to create new assets within the selected connection or specified database/schema',
             },
             {
                 value: 'entity-delete',
                 label: 'Delete',
                 filterLabel: 'Delete asset',
-                desc: 'Permission to delete selected assets',
+                // desc: 'Permission to delete selected assets',
+                desc: 'Gives ability to delete assets within the selected connection or specified database/schema',
             },
             {
                 value: 'link-assets',
@@ -145,7 +178,9 @@ export const personaScopeList = [
             {
                 value: 'entity-update-business-metadata',
                 label: 'Update Custom Metadata',
-                desc: 'Update values for BM attributes',
+                // desc: 'Update values for BM attributes',
+                desc: 'Permission to update custom metadata attributes',
+                gif: updateBusinessMetaGif,
             },
             // {
             //     value: 'entity-add-classification',
@@ -155,21 +190,39 @@ export const personaScopeList = [
             //     value: 'entity-remove-classification',
             //     label: 'remove: Classifications',
             // },
+            // {
+            //     value: 'entity-update-classification',
+            //     label: 'Update Classifications',
+            //     // desc: 'Update classifications',
+            //     desc: "Permission to add or remove classifications from assets",
+            //     gif: updateClassificationGif
+            // },
             {
-                value: 'entity-update-classification',
-                label: 'Update Classifications',
-                desc: 'Update classifications',
+                value: 'entity-add-classification',
+                label: 'Add Classifications',
+                // desc: 'Update classifications',
+                desc: 'Permission to add classifications from assets',
+                gif: addClassificationGif,
+            },
+            {
+                value: 'entity-remove-classification',
+                label: 'Remove Classifications',
+                // desc: 'Update classifications',
+                desc: 'Permission to remove classifications from assets',
+                gif: deleteClassificationGif,
             },
 
             {
                 value: 'add-terms',
                 label: 'Add Terms',
-                desc: 'Link terms',
+                desc: 'Gives permission to add terms to asset',
+                gif: addTermsGif,
             },
             {
                 value: 'remove-terms',
                 label: 'Remove Terms',
-                desc: 'Unlink terms',
+                desc: 'Gives permission to remove terms to asset',
+                gif: deleteTermsGif,
             },
         ],
         type: 'Governance',

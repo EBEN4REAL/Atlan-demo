@@ -35,17 +35,7 @@
             :trigger="['click']"
             placement="bottomRight"
         >
-            <AtlanBtn
-                color="secondary"
-                padding="compact"
-                size="sm"
-                class="px-2 bg-white border-gray-300 rounded-md shadow-sm cursor-pointer"
-                @click="downloadMetadataFile"
-            >
-                <div class="flex items-center">
-                    <AtlanIcon icon="KebabMenu"></AtlanIcon>
-                </div>
-            </AtlanBtn>
+            <IconButton icon="KebabMenu" />
             <template #overlay>
                 <a-menu>
                     <a-menu-item @click="$emit('editAnnouncement')">
@@ -79,13 +69,12 @@
     import { computed, defineComponent } from 'vue'
     import useTenantData from '~/composables/tenant/useTenantData'
     import { formatDateTime } from '~/utils/date'
-    import AtlanBtn from '@/UI/button.vue'
     import Avatar from '~/components/common/avatar/index.vue'
     import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'CompanyAnnouncement',
-        components: { AtlanBtn, Avatar },
+        components: { Avatar },
         emits: ['editAnnouncement', 'deleteAnnouncement'],
         setup() {
             const imageUrl = (username: any) =>

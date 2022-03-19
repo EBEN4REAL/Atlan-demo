@@ -130,7 +130,7 @@
                         class="flex items-center p-2 py-1 border rounded cursor-pointer reload-button"
                         @click="mutate"
                     >
-                        <AtlanIcon class="refresh-icon-request" icon="Retry2" />
+                        <AtlanIcon class="refresh-icon-request" icon="Retry" />
                     </div>
                 </a-tooltip>
             </div>
@@ -473,14 +473,19 @@
                     // typeName,
                 }
                 delete filterMerge.destinationQualifiedName
-                if (facetsValue.hierarchy?.connectorName) {
+                if (facetsValue?.hierarchy?.connectorName) {
                     filterMerge.destinationQualifiedName =
                         facetsValue.hierarchy?.connectorName
                 }
-                if (facetsValue.hierarchy?.connectionQualifiedName) {
+                if (facetsValue?.hierarchy?.connectionQualifiedName) {
                     filterMerge.destinationQualifiedName =
                         facetsValue.hierarchy?.connectionQualifiedName
                 }
+                if (facetsValue?.hierarchy?.attributeValue) {
+                    filterMerge.destinationQualifiedName =
+                        facetsValue.hierarchy?.attributeValue
+                }
+
                 if (facetsValue.__traitNames) {
                     const filterClasification = []
                     facetsValue.__traitNames?.classifications?.forEach((el) => {
@@ -637,7 +642,7 @@
         }
     }
     .button-close-drawer-request {
-        left: 300px !important;
+        left: 260px !important;
         top: 12px;
     }
     .governance-request {

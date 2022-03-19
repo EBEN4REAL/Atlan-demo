@@ -409,6 +409,10 @@
             const { selectedAsset } = storeToRefs(storeDiscovery)
             const router = useRouter()
             const showSaveQueryModal: Ref<boolean> = ref(false)
+            const refetchQueryNode = inject('refetchQueryNode') as Ref<{
+                guid: string
+            }>
+
             const fullSreenState = inject('fullSreenState') as Ref<boolean>
             const saveQueryLoading = ref(false)
             const showCollectionModal = ref(false)
@@ -836,22 +840,30 @@
             }
             const totalFilteredCount = computed(() => {
                 let count = 0
-                Object.keys(facets.value).forEach((key) => {
-                    if (Array.isArray(facets.value[key])) {
-                        if (facets.value[key].length > 0) {
-                            count += 1
+                try {
+                    Object.keys(facets.value ?? {}).forEach((key) => {
+                        if (Array.isArray(facets.value[key])) {
+                            if (facets.value[key].length > 0) {
+                                count += 1
+                            }
+                        } else if (
+                            typeof facets.value[key] === 'object' &&
+                            facets.value[key] !== null
+                        ) {
+                            if (Object.keys(facets.value[key]).length > 0) {
+                                count += 1
+                            }
                         }
-                    } else if (
-                        typeof facets.value[key] === 'object' &&
-                        facets.value[key] !== null
-                    ) {
-                        if (Object.keys(facets.value[key]).length > 0) {
-                            count += 1
-                        }
-                    }
-                })
+                    })
+                } catch (e) {
+                    console.error(e)
+                }
                 return count
             })
+
+            const showcustomToolBar = inject(
+                'showcustomToolBar'
+            ) as Ref<boolean>
 
             const {
                 treeData: treeData,
@@ -889,6 +901,7 @@
                     readFolders: permissions.value.public.readFolders,
                 },
                 collection: selectedCollection,
+                showcustomToolBar,
             })
 
             const { data1: searchResults, isLoading1: searchLoading } =
@@ -993,6 +1006,14 @@
             // provide('savedQueryType', savedQueryType)
             provide('refetchParentNode', refetchParentNode)
             provide('refetchNode', refetchNode)
+            // refecthing node on updating the query
+            watch(refetchQueryNode, (newRefetchQueryNode) => {
+                updateNode({
+                    guid: refetchQueryNode.value.guid,
+                    entity: {} as any,
+                    updateAttributesOnly: true,
+                })
+            })
 
             /* Watcher for updating the node in tree */
             watch(assetSidebarUpdatedData, () => {

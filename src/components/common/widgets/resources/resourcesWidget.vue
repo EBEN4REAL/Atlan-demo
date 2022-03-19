@@ -53,28 +53,23 @@
                 </template>
                 <AddResource v-if="!readOnly" @add="addCallback">
                     <template #trigger>
-                        <AtlanButton
-                            class="flex-none px-2"
-                            size="sm"
-                            color="secondary"
-                            padding="compact"
-                        >
-                            <AtlanIcon icon="Add" class="text-gray-400" />
-                        </AtlanButton>
+                        <IconButton icon="Add" class="text-gray-400" />
                     </template>
                 </AddResource>
             </div>
         </template>
-        <div>
+        <section :class="{ 'overflow-y-auto': resources?.length }">
             <template v-if="!resources?.length">
                 <template v-if="$slots?.placeholder">
                     <slot name="placeholder" />
                     <div>
                         <AddResource @add="addCallback">
                             <template #trigger>
-                                <AtlanButton class="mx-auto"
-                                    >Add Resource</AtlanButton
-                                >
+                                <AtlanButton2
+                                    class="mx-auto"
+                                    size="large"
+                                    label="Add Resource"
+                                />
                             </template>
                         </AddResource>
                     </div>
@@ -134,7 +129,7 @@
                     </template>
                 </div>
             </template>
-        </div>
+        </section>
     </div>
 </template>
 

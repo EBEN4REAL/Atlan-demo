@@ -54,25 +54,21 @@
                     placement="bottom"
                 >
                     <template #content>
-                        <div class="p-4 space-y-5">
+                        <div class="p-4 gap-y-5">
                             <h1>
                                 Are you sure you want to disconnect from
                                 <b>Slack</b>?
                             </h1>
-                            <div class="flex justify-end space-x-2">
-                                <AtlanButton
+                            <div class="flex justify-end gap-x-3">
+                                <AtlanButton2
+                                    label="Cancel"
+                                    color="secondary"
                                     @click="popover = false"
-                                    padding="compact"
-                                    size="sm"
-                                    color="minimal"
-                                    >Cancel</AtlanButton
-                                >
-                                <AtlanButton
+                                />
+                                <AtlanButton2
+                                    label="Confirm"
                                     @click="disconnect"
-                                    padding="compact"
-                                    size="sm"
-                                    >Confirm</AtlanButton
-                                >
+                                />
                             </div>
                         </div>
                     </template>

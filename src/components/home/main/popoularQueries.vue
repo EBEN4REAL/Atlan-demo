@@ -11,7 +11,7 @@
                 class="flex flex-col border border-gray-200 rounded resources-container"
             >
                 <div
-                    class="flex items-baseline py-1 pl-6 pr-5 mb-1 mb-2 bg-gray-100 border-b"
+                    class="flex items-baseline py-1 pl-6 pr-5 mb-1 bg-gray-100 border-b"
                 >
                     <span class="text-sm font-semibold text-gray-500">
                         <!-- <AtlanIcon icon="TrendUp"></AtlanIcon> -->
@@ -29,7 +29,7 @@
                     />
                 </div>
                 <div
-                    class="px-4 pb-4 overflow-y-auto"
+                    class="px-4 pb-4 overflow-x-hidden overflow-y-auto"
                     v-show="popularQueriesList.length > 0"
                 >
                     <div

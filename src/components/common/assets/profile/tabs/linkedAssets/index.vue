@@ -47,7 +47,7 @@
                     <template #assetItemCta="{ item }">
                         <a-dropdown>
                             <AtlanBtn
-                                class="flex items-center justify-center w-8 h-8 p-0 rounded opacity-0 cursor-pointer hover:border-primary-focus group-hover:opacity-100"
+                                class="flex items-center justify-center w-8 h-8 p-0 rounded cursor-pointer hover:border-primary-focus"
                                 size="sm"
                                 color="secondary"
                                 padding="compact"

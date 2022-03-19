@@ -3,10 +3,10 @@
         <div
             class="flex flex-col w-1/6 h-full overflow-hidden bg-white border-r"
         >
-            <div class="flex items-center px-6 mt-6 font-semibold">
+            <!-- <div class="flex items-center px-6 mt-6 font-semibold">
                 <AtlanIcon icon="GovernanceCenter" class="mr-2 -mt-0.5" />
                 <span class="text-base">Governance Center</span>
-            </div>
+            </div> -->
 
             <div class="flex flex-grow w-full px-6 mt-4 mb-2 overflow-y-auto">
                 <a-menu
@@ -45,7 +45,7 @@
                         >
                             Custom Metadata
                         </a-menu-item>
-                        <a-menu-item key="picklist" v-auth="[map.LIST_ENUM]">
+                        <a-menu-item key="options" v-auth="[map.LIST_ENUM]">
                             Options
                         </a-menu-item>
                     </a-menu-item-group>

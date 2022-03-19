@@ -10,7 +10,7 @@
                     :emoji="tab.emoji"
                     height="h-4"
                 />
-                <span class="font-semibold text-gray-500 ml-1">Requests</span>
+                <span class="ml-1 font-semibold text-gray-500">Requests</span>
             </span>
 
             <a-dropdown trigger="click" placement="bottomRight">
@@ -41,22 +41,13 @@
                         </a-menu-item>
                     </a-menu>
                 </template>
-                <AtlanButton
-                    class="flex items-center justify-between filter-status"
+                <AtlanButton2
+                    style="width: 120px"
+                    class="justify-between"
                     color="secondary"
-                    padding="compact"
-                >
-                    <div class="flex items-center">
-                        <!-- <div
-                            :style="{
-                                background: selectedFilter.color,
-                            }"
-                            class="mr-2 dot"
-                        /> -->
-                        {{ selectedFilter.name }}
-                    </div>
-                    <AtlanIcon icon="ChevronDown" :class="'icon-drop'" />
-                </AtlanButton>
+                    suffixIcon="ChevronDown"
+                    :label="selectedFilter.name"
+                />
             </a-dropdown>
         </div>
         <div
@@ -220,14 +211,10 @@
 
 <style lang="less">
     .container-scroll-request {
-        max-height: 555px;
+        max-height: 655px;
     }
     .menu-status {
         width: 100px;
-    }
-    .filter-status {
-        width: 90px;
-        height: 32px !important;
     }
 </style>
 <style lang="less" scoped>

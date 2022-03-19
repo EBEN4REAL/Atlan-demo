@@ -38,7 +38,7 @@
     }
 
     a {
-        @apply text-blue-500 !important;
+        @apply text-blue-500;
     }
 
     ul > li::before {
@@ -125,6 +125,20 @@
     .resize-cursor {
         cursor: ew-resize;
         cursor: col-resize;
+    }
+
+    .mention {
+        color: rgba(18, 100, 163, 1);
+        background-color: rgba(18, 100, 163, 0.1);
+        padding: 0 2px 1px;
+    }
+
+    .mention[data-is-me='true'] {
+        @apply bg-warning-light;
+    }
+
+    code::before, code::after {
+        content: "" !important;
     }
 }
 
@@ -428,4 +442,8 @@ placeholder:after {
 }
 .imageResizeBoxControl {
     z-index: 1000;
+}
+
+.embed-input::placeholder {
+    @apply text-gray-500;
 }

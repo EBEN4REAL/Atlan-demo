@@ -4,9 +4,8 @@
             :visible="drawerFilter"
             :mask="false"
             :placement="'left'"
-            style="width: 17%"
+            :width="250"
             :closable="false"
-            :class="'drawer-filter-request'"
         >
             <div
                 class="relative h-full pb-10 overflow-scroll bg-gray-50"
@@ -14,7 +13,7 @@
             >
                 <div
                     v-if="drawerFilter"
-                    class="close-btn-sidebar button-close-drawer-request"
+                    class="close-btn-sidebar button-close-drawer-purpose"
                     @click="handleClickFilter"
                 >
                     <AtlanIcon icon="Add" class="text-white" />
@@ -43,12 +42,12 @@
         />
         <a-modal
             v-model:visible="purposeViewModalVisible"
-            :destroyOnClose="true"
+            :destroy-on-close="true"
             :closable="false"
             width="80%"
-            wrapClassName="persona-modal"
+            wrap-class-name="persona-modal"
             :centered="true"
-            :maskClosable="true"
+            :mask-closable="true"
             @cancel="closePurposeViewModal"
         >
             <template #title>
@@ -58,16 +57,16 @@
                 />
             </template>
             <template #footer>
-                <div style="display: none">
+                <!-- <div style="display: none">
                     <div class="flex items-center justify-between pb-1">
                         <slot name="footerLeft"></slot>
                         <div
                             class="flex items-center justify-end w-full space-x-3"
                         >
-                            <!-- Hi -->
+                        
                         </div>
                     </div>
-                </div>
+                </div> -->
             </template>
             <div class="h-full bg-primary-light">
                 <PurposeBody
@@ -407,6 +406,7 @@
         }
         .ant-modal-content {
             height: calc(100%);
+            @apply bg-primary-light;
         }
         .ant-modal-header {
             padding-bottom: 0px;
@@ -419,7 +419,7 @@
     }
 </style>
 <style lang="less" scoped>
-    .button-close-drawer-request {
+    .button-close-drawer-purpose {
         left: 18% !important;
         top: 5px;
     }

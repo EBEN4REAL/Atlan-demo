@@ -42,7 +42,7 @@
     import { defineComponent, ref, computed, toRefs } from 'vue'
 
     import useGlossaryData from '~/composables/glossary/useGlossaryData'
-    import AtlanIcon from '../icon/atlanIcon.vue'
+    import AtlanIcon from '@/common/icon/atlanIcon.vue'
 
     export default defineComponent({
         props: {

@@ -12,7 +12,9 @@
         :show-sorter-tooltip="false"
         :row-class-name="
             (r, i) =>
-                isPreview && selectedUserId === r.id ? 'bg-primary-light' : ''
+                isPreview && selectedUserId === r.id
+                    ? $style.fixSelectedRowBG
+                    : ''
         "
         @change="handleTableChange"
     >
@@ -320,31 +322,30 @@
                                     class="flex items-center justify-between mt-3 gap-x-3"
                                 >
                                     <div class="flex-grow"></div>
-                                    <AtlanButton
-                                        color="minimal"
-                                        size="sm"
-                                        padding="compact"
+                                    <AtlanButton2
+                                        color="secondary"
+                                        label="Cancel"
                                         @click="
                                             $emit('toggleDisableEnablePopover')
                                         "
-                                        >Cancel
-                                    </AtlanButton>
-                                    <AtlanButton
+                                    />
+
+                                    <AtlanButton2
                                         :color="
-                                            user.enabled ? 'danger' : 'primary'
+                                            user.enabled
+                                                ? 'text-red-500'
+                                                : 'primary'
                                         "
-                                        size="sm"
-                                        padding="compact"
+                                        :label="
+                                            user.enabled ? 'Disable' : 'Enable'
+                                        "
                                         @click="
                                             emit(
                                                 'confirmEnableDisablePopover',
                                                 user
                                             )
                                         "
-                                        >{{
-                                            user.enabled ? 'Disable' : 'Enable'
-                                        }}
-                                    </AtlanButton>
+                                    />
                                 </div>
                             </div>
                         </template>
@@ -374,27 +375,24 @@
                                     class="flex items-center justify-between mt-3 gap-x-3"
                                 >
                                     <div class="flex-grow"></div>
-                                    <AtlanButton
-                                        color="minimal"
-                                        size="sm"
-                                        padding="compact"
+                                    <AtlanButton2
+                                        color="secondary"
+                                        label="Cancel"
                                         @click="
                                             $emit('handleRevokeInvite', false)
                                         "
-                                        >Cancel
-                                    </AtlanButton>
-                                    <AtlanButton
-                                        :color="'danger'"
-                                        size="sm"
-                                        padding="compact"
+                                    />
+
+                                    <AtlanButton2
+                                        color="text-red-500"
+                                        label="Revoke"
                                         @click="
                                             $emit('revokeInvite', {
                                                 email: user.email,
                                                 id: user.id,
                                             })
                                         "
-                                        >Revoke
-                                    </AtlanButton>
+                                    />
                                 </div>
                             </div>
                         </template>
@@ -515,7 +513,6 @@
     import useRoles from '~/composables/roles/useRoles'
     import ChangeRole from './changeRole.vue'
     import map from '~/constant/accessControl/map'
-    import AtlanButton from '@/UI/button.vue'
     import Groups from './groups.vue'
     import AddGroups from './addGroups.vue'
     import AddPersonas from './addPersona.vue'
@@ -527,7 +524,6 @@
         components: {
             Avatar,
             ChangeRole,
-            AtlanButton,
             Groups,
             AddGroups,
             AddPersonas,
@@ -700,6 +696,18 @@
         // width: auto;
         height: auto;
         max-height: 170px;
+    }
+</style>
+
+<style lang="less" module>
+    .fixSelectedRowBG {
+        @apply bg-gray-100;
+        :global(.ant-table-cell.ant-table-cell-fix-left.ant-table-cell-fix-left-last) {
+            @apply bg-gray-100;
+        }
+        td {
+            @apply bg-gray-100 hover:bg-gray-100 !important;
+        }
     }
 </style>
 

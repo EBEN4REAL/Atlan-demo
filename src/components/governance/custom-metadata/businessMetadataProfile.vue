@@ -38,7 +38,7 @@
         </div>
 
         <div class="p-6" style="height: calc(100vh - 9.5rem)">
-            <template v-if="localBm.attributeDefs.length">
+            <template v-if="finalAttributeList.length">
                 <div class="pt-4 space-y-4 bg-white rounded-lg">
                     <div
                         class="sticky top-0 z-10 flex items-center justify-between px-4"
@@ -50,7 +50,7 @@
                                 <a-input
                                     v-model:value="attrsearchText"
                                     class="h-8 px-2 pl-2 border border-gray-300 rounded-lg w-80"
-                                    :placeholder="'Search for property'"
+                                    :placeholder="`Search from ${finalAttributeList.length} properties`"
                                 >
                                     <template #prefix>
                                         <AtlanIcon
@@ -78,7 +78,7 @@
                             <div
                                 class="flex items-center p-2 text-xs rounded gap-x-2 bg-primary-light text-primary"
                             >
-                              <InternalCMBanner />
+                                <InternalCMBanner />
                             </div>
                         </template>
                         <a-button
@@ -96,14 +96,17 @@
                         class="flex flex-col items-center justify-center space-y-8"
                         style="height: calc(100vh - 16.3rem)"
                     >
-                         <AtlanIcon icon="NoProperty" class="h-40" />
-                                <p>{{`No properties found for "${attrsearchText}"`}}</p>
+                        <AtlanIcon icon="NoProperty" class="h-40" />
+                        <p>
+                            {{ `No properties found for "${attrsearchText}"` }}
+                        </p>
 
-                            <AtlanButton
-                                class="mx-auto"
-                                @click="attrsearchText = ''"
-                                >Clear Search</AtlanButton
-                            >
+                        <AtlanButton2
+                            class="mx-auto"
+                            size="large"
+                            label="Clear Search"
+                            @click="attrsearchText = ''"
+                        />
                     </div>
                     <PropertyList
                         v-else
@@ -120,25 +123,24 @@
                 class="flex flex-col items-center justify-center h-full gap-y-8"
             >
                 <AtlanIcon icon="NoProperty" class="h-52" />
-                <div class="flex flex-col items-center space-y-8">
-                    <p
-                        v-if="checkAccess(map.UPDATE_BUSINESS_METADATA)"
-                        class="font-bold text-center"
-                    >
-                        Start Creating Properties
-                        <p class="mt-2 text-base font-normal text-gray-500">
+                <div class="flex flex-col items-center gap-y-1">
+                    <template v-if="checkAccess(map.UPDATE_BUSINESS_METADATA)">
+                        <span class="font-bold text-center">
+                            Start Creating Properties
+                        </span>
+                        <span class="text-base font-normal text-gray-500">
                             Create properties to manage custom fields
-                        </p>
-                    </p>
+                        </span>
+                    </template>
                     <p v-else>This custom metadata has no properties</p>
 
-                    <a-button
+                    <AtlanButton2
                         v-auth="map.UPDATE_BUSINESS_METADATA"
-                        type="primary"
+                        color="primary"
+                        label="New property"
+                        class="mt-4"
                         @click="addPropertyDrawer.open(undefined, false)"
-                    >
-                        New property
-                    </a-button>
+                    />
                 </div>
                 <!-- <a-empty
                     :image="noPropertyImage"
@@ -193,13 +195,11 @@
     import { useTypedefStore } from '~/store/typedef'
     import map from '~/constant/accessControl/map'
     import useAuth from '~/composables/auth/useAuth'
-    import AtlanButton from '@/UI/button.vue'
     import Truncate from '@/common/ellipsis/index.vue'
 
     export default defineComponent({
         components: {
             Truncate,
-            AtlanButton,
             CreateUpdateInfo,
             MetadataHeaderButton,
             InternalCMBanner,
@@ -224,6 +224,12 @@
                     store.updateCustomMetadata(value)
                 },
             })
+            // ? attribute list that is not- deprecated,
+            const finalAttributeList = computed(() =>
+                (localBm.value.attributeDefs ?? []).filter(
+                    (a) => a.options.isDeprecated !== 'true'
+                )
+            )
 
             const attrsearchText = ref('')
             const panelModel = ref(1)
@@ -258,14 +264,14 @@
 
             const searchedAttributes = computed(() => {
                 if (attrsearchText.value) {
-                    return localBm.value.attributeDefs.filter(
+                    return finalAttributeList.value.filter(
                         (attr: { name: string }) =>
                             attr.displayName
                                 .toUpperCase()
                                 .includes(attrsearchText.value.toUpperCase())
                     )
                 }
-                return localBm.value.attributeDefs
+                return finalAttributeList.value
             })
 
             // converts customApplicableEntityTypes from string to array so they can be set on the a-tree component
@@ -302,7 +308,7 @@
             const searchedAttributeList = computed(() =>
                 attrsearchText.value
                     ? searchedAttributes.value
-                    : localBm.value.attributeDefs
+                    : finalAttributeList.value
             )
 
             const handlePropertyUpdate = ($event) => {
@@ -369,6 +375,7 @@
                 handlePropertyUpdate,
                 map,
                 checkAccess,
+                finalAttributeList,
             }
         },
         data() {

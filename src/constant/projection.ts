@@ -188,6 +188,7 @@ export const MinimalAttributes = [
     'displayDescription',
     'userDescription',
     'certificateStatus',
+    'certificateUpdatedBy',
     'connectorName',
     'connectionName',
     'connectionQualifiedName',
@@ -330,6 +331,8 @@ export const LineageAttributes = [
     'certificateStatus',
     'link',
     'dataType',
+    'columnCount',
+    'rowCount',
     // BI Relationships
     'workspace',
     'report',

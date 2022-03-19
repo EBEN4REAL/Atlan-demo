@@ -10,6 +10,10 @@ import variant from '~/assets/images/dataType/variant.svg'
 import percent from '~/assets/images/dataType/percent.svg'
 import enum2 from '~/assets/images/dataType/enum2.svg'
 import lookup from '~/assets/images/dataType/lookup.svg'
+import Super from '~/assets/images/dataType/super.svg'
+import bits from '~/assets/images/dataType/bits.svg'
+import spatial from '~/assets/images/dataType/spatial.svg'
+import blob from '~/assets/images/dataType/blob.svg'
 
 export const images = {
     Number: number,
@@ -21,6 +25,10 @@ export const images = {
     Object: struct,
     Geography: geography,
     Variant: variant,
+    Bits: bits,
+    Spatial: spatial,
+    Blob: blob,
+    Super,
 }
 
 export const dataTypeCategoryList = [
@@ -42,6 +50,8 @@ export const dataTypeCategoryList = [
             'INT4',
             'INT2',
             'INT64',
+            'INT8',
+            'TINYINT',
         ],
         image: number,
         imageText: 'number',
@@ -54,6 +64,7 @@ export const dataTypeCategoryList = [
             'FLOAT',
             'FLOAT4',
             'FLOAT8',
+            'FLOAT64',
             'DOUBLE',
             'DOUBLE PRECISION',
             'REAL',
@@ -75,6 +86,8 @@ export const dataTypeCategoryList = [
             'VARBINARY',
             'BPCHAR',
             'VARCHAR',
+            'CHARACTER VARYING',
+            'NCHAR',
             'AnyType',
             'Base64',
             'Byte',
@@ -87,6 +100,12 @@ export const dataTypeCategoryList = [
             'Textarea',
             'String',
             'URL',
+            'MEDIUMTEXT',
+            'LONGTEXT',
+            'TINYTEXT',
+            'SET',
+            'BINARY VARYING',
+            'VARBYTE',
         ],
         image: string,
         imageText: 'string',
@@ -94,7 +113,7 @@ export const dataTypeCategoryList = [
     {
         id: 'boolean',
         label: 'Boolean',
-        type: ['BOOLEAN'],
+        type: ['BOOLEAN', 'BOOL'],
         image: boolean,
         imageText: 'boolean',
     },
@@ -111,6 +130,7 @@ export const dataTypeCategoryList = [
             'TIMESTAMPLTZ',
             'TIMESTAMPNTZ',
             'TIMESTAMPTZ',
+            'TIMETZ',
             'DateTime',
         ],
         image: date,
@@ -126,7 +146,7 @@ export const dataTypeCategoryList = [
     {
         id: 'variant',
         label: 'Variant',
-        type: ['VARIANT', 'ANY'],
+        type: ['VARIANT', 'ANY', 'HLLSKETCH'],
         image: variant,
         imageText: 'variant',
     },
@@ -147,7 +167,7 @@ export const dataTypeCategoryList = [
     {
         id: 'enum',
         label: 'Enum',
-        type: ['Picklist', 'Multipicklist'],
+        type: ['Picklist', 'Multipicklist', 'ENUM'],
         image: enum2,
         imageText: 'enum',
     },
@@ -164,5 +184,42 @@ export const dataTypeCategoryList = [
         type: ['Lookup', 'Reference'],
         image: lookup,
         imageText: 'lookup',
+    },
+    {
+        id: 'super',
+        label: 'super',
+        type: ['Super'],
+        image: Super,
+        imageText: 'super',
+    },
+    {
+        id: 'bits',
+        label: 'bits',
+        type: ['BIT'],
+        image: bits,
+        imageText: 'bits',
+    },
+    {
+        id: 'spatial',
+        label: 'spatial',
+        type: [
+            'GEOMETRY',
+            'POINT',
+            'LINESTRING',
+            'POLYGON',
+            'MULTIPOINT',
+            'MULTILINESTRING',
+            'MULTIPOLYGON',
+            'GEOMETRYCOLLECTION',
+        ],
+        image: spatial,
+        imageText: 'spatial',
+    },
+    {
+        id: 'blob',
+        label: 'blob',
+        type: ['BLOB', 'TINYBLOB', 'MEDIUMBLOB', 'LONGBLOB'],
+        image: blob,
+        imageText: 'blob',
     },
 ]

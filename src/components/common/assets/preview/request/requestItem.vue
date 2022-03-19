@@ -4,21 +4,41 @@
             class="relative px-2 py-3 mx-1 rounded cursor-pointer hover:bg-primary-light card-container"
         >
             <div class="flex items-center justify-between">
-                <div class="flex">
+                <div class="flex items-center">
+                    <AtlanIcon
+                        v-if="
+                            item.createdBy?.startsWith(
+                                'service-account-apikey-'
+                            )
+                        "
+                        class="h-3"
+                        icon="Key"
+                    />
                     <Avatar
+                        v-else
                         :allow-upload="false"
                         :avatar-name="item.created_by_user?.username"
                         :avatar-size="16"
                         :avatar-shape="'circle'"
                         :image-url="item.createdBy ? '' : atlanLogo"
                     />
-                    <span class="ml-2 text-gray-700">{{ item.createdBy }}</span>
-                    <span class="ml-1 text-gray-400">has requested to</span>
-                    <span class="ml-1 font-bold text-gray-700"
+                    <span class="ml-2 text-gray-700">{{
+                        item.createdBy?.startsWith('service-account-apikey-')
+                            ? 'API key'
+                            : item.createdBy
+                    }}</span>
+                    <span class="ml-1 text-gray-400 truncate"
+                        >has requested to</span
+                    >
+                    <span class="ml-1 font-bold text-gray-700 truncate"
                         >{{
-                            item?.requestType === 'attach_classification'
-                                ? 'Link Classification'
-                                : 'Link Term'
+                            item?.requestType === 'attribute'
+                                ? `${typeCopyMapping[item?.requestType]} ${
+                                      typeCopyMapping[
+                                          item?.destinationAttribute
+                                      ]
+                                  }`
+                                : typeCopyMapping[item?.requestType]
                         }}
                     </span>
                     <span
@@ -29,6 +49,7 @@
                 </div>
                 <div
                     v-if="item.status === 'active'"
+                    v-auth="[map.APPROVE_REQUEST]"
                     class="flex -mr-1.5 hover-action linear-gradient"
                 >
                     <RequestDropdown
@@ -137,6 +158,7 @@
                     {{ createdTime(item.createdAt) }}
                 </div>
             </div>
+
             <div v-else class="flex items-center justify-between mt-2">
                 <div
                     v-if="item.requestType === 'attach_classification'"
@@ -151,6 +173,8 @@
                         popover-trigger="hover"
                         read-only
                         :is-plain="true"
+                        :mouse-enter-delay="mouseEnterDelay"
+                        @mouse-entered="enteredPill"
                     >
                         <ClassificationPill
                             class="clasification-pill"
@@ -173,6 +197,27 @@
                         />
                     </Popover>
                 </div>
+
+                <div
+                    v-else-if="
+                        item.destinationAttribute === 'certificateStatus'
+                    "
+                >
+                    <CertificatePill
+                        class="px-2 py-1 text-sm rounded-full classification-pill"
+                        :status="item.destinationValue"
+                    />
+                </div>
+                <!-- <div
+                    v-else-if="item.destinationAttribute === 'ownerUsers'"
+                    class="mt-2"
+                > -->
+                <!-- <UserPill
+                    class="mt-2 classification-pill"
+                    :username="item.destinationValue"
+                /> -->
+                <!-- {{ item.destinationValue }}
+                </div> -->
                 <div v-else-if="item.requestType === 'term_link'">
                     <TermPopover
                         :loading="termLoading"
@@ -192,6 +237,9 @@
                             </template>
                         </Pill>
                     </TermPopover>
+                </div>
+                <div v-else class="ml-1 text-sm text-gray-500 truncate">
+                    {{ item.destinationValue }}
                 </div>
                 <div class="flex items-center">
                     <a-popover
@@ -514,12 +562,15 @@
     import { useTimeAgo, useTimeAgo } from '@vueuse/core'
     import { message } from 'ant-design-vue'
     import CertificateBadge from '@common/badge/certificate/index.vue'
+    import UserPill from '@common/pills/user.vue'
+    import CertificatePill from '@common/pills/certificate.vue'
     import dayjs from 'dayjs'
     import atlanLogo from '~/assets/images/atlan-logo.png'
     import Pill from '~/components/UI/pill/pill.vue'
     import ClassificationPill from '@/common/pills/classification.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import { typeCopyMapping } from '~/components/governance/requests/requestType'
     import {
         approveRequest,
         declineRequest,
@@ -532,6 +583,8 @@
     import { Users } from '~/services/service/users/index'
     import AtlanButton from '@/UI/button.vue'
     import RequestDropdown from '~/components/common/dropdown/requestDropdown.vue'
+    import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
+    import map from '~/constant/accessControl/map'
 
     export default defineComponent({
         name: 'RequestItem',
@@ -545,6 +598,8 @@
             TermPopover,
             AtlanButton,
             RequestDropdown,
+            UserPill,
+            CertificatePill,
         },
         props: {
             selectedAsset: {
@@ -697,6 +752,7 @@
                 }
                 return ''
             })
+            const { mouseEnterDelay, enteredPill } = useMouseEnterDelay()
             return {
                 createdTime,
                 localClassification,
@@ -717,6 +773,8 @@
                 nameUpdater,
                 loadingApproval,
                 dayjs,
+                typeCopyMapping,
+                map,
             }
         },
     })

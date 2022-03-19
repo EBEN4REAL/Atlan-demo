@@ -27,12 +27,21 @@
 
 <script lang="ts">
     import { useVModels } from '@vueuse/core'
-    import { defineComponent, watch, ref, toRefs, computed } from 'vue'
+    import {
+        defineComponent,
+        watch,
+        ref,
+        toRefs,
+        computed,
+        onMounted,
+    } from 'vue'
     import useConnectionData from '~/composables/connection/useConnectionData'
+    import { useConnection } from '~/composables/connection/useConnection'
     import { usePersonaStore } from '~/store/persona'
-    import AtlanIcon from '../icon/atlanIcon.vue'
+    import AtlanIcon from '@/common/icon/atlanIcon.vue'
 
     export default defineComponent({
+        components: { AtlanIcon },
         props: {
             modelValue: {
                 type: String,
@@ -79,17 +88,19 @@
                 modelValue.value = localValue.value
                 emit('change')
             })
+
+            onMounted(() => {
+                useConnection()
+            })
+
             return {
                 sourceList,
                 localValue,
-                showCount,
                 list,
                 sourceFilteredList,
                 applicableConnectionArray,
-                persona,
             }
         },
-        components: { AtlanIcon },
     })
 </script>
 

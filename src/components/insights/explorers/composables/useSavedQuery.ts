@@ -326,138 +326,147 @@ export function useSavedQuery(
             rowsCount: number
         }>
     ) => {
-        const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
-            {},
-            activeInlineTab
-        )
-
-        console.log('update query attribute: ', activeInlineTab)
-
-        let visualBuilderSchemaBase64 = undefined
-        let isVisualQuery = false
-        let rawQuery = activeInlineTab?.playground?.editor?.text
-        // if (isVQB) {
-        //     visualBuilderSchemaBase64 = serializeQuery(
-        //         activeInlineTabCopy?.playground.vqb
-        //     )
-        //     isVisualQuery = true
-        // }
-        if (activeInlineTabCopy.playground.isVQB && limitRows?.value) {
-            visualBuilderSchemaBase64 = serializeQuery(
-                activeInlineTabCopy?.playground.vqb
+        return new Promise((resolvePromise, rejectPromise) => {
+            const activeInlineTabCopy: activeInlineTabInterface = Object.assign(
+                {},
+                activeInlineTab
             )
-            rawQuery = generateSQLQuery(activeInlineTab, limitRows.value)
-            isVisualQuery = true
-        }
 
-        const attributeValue =
-            activeInlineTab.playground.editor.context.attributeValue
+            console.log('update query attribute: ', activeInlineTab)
 
-        const attributeName =
-            activeInlineTab.playground.editor.context.attributeName
-        const connectorName = getConnectorName(attributeValue)
-        const connectionQualifiedName =
-            getConnectionQualifiedName(attributeValue)
-        const connectionName = getConnectorName(attributeValue)
-        const name = activeInlineTab?.label
-        const certificateStatus = activeInlineTab?.status
-        const description = activeInlineTab?.description
-        const isSQLSnippet = activeInlineTab?.isSQLSnippet
-        const collectionQualifiedName = getCollectionByQualifiedName(
-            activeInlineTab.collectionQualifiedName
-        )?.attributes.qualifiedName
-        console.log(
-            'update saved query collectionQualifiedName',
-            collectionQualifiedName
-        )
-        /* NEED TO CHECK IF qualifiedName will also change acc to connectors it has connectionQualifiedName */
-        const qualifiedName = activeInlineTab?.qualifiedName
-        // const
+            let visualBuilderSchemaBase64 = undefined
+            let isVisualQuery = false
+            let rawQuery = activeInlineTab?.playground?.editor?.text
+            // if (isVQB) {
+            //     visualBuilderSchemaBase64 = serializeQuery(
+            //         activeInlineTabCopy?.playground.vqb
+            //     )
+            //     isVisualQuery = true
+            // }
+            if (activeInlineTabCopy.playground.isVQB && limitRows?.value) {
+                visualBuilderSchemaBase64 = serializeQuery(
+                    activeInlineTabCopy?.playground.vqb
+                )
+                rawQuery = generateSQLQuery(activeInlineTab, limitRows.value)
+                isVisualQuery = true
+            }
 
-        const defaultSchemaQualifiedName =
-            getSchemaQualifiedName(attributeValue) ?? undefined
+            const attributeValue =
+                activeInlineTab.playground.editor.context.attributeValue
 
-        const defaultDatabaseQualifiedName =
-            getDatabaseQualifiedName(attributeValue) ?? undefined
+            const attributeName =
+                activeInlineTab.playground.editor.context.attributeName
+            const connectorName = getConnectorName(attributeValue)
+            const connectionQualifiedName =
+                getConnectionQualifiedName(attributeValue)
+            const connectionName = getConnectorName(attributeValue)
+            const name = activeInlineTab?.label
+            const certificateStatus = activeInlineTab?.status
+            const description = activeInlineTab?.description
+            const isSQLSnippet = activeInlineTab?.isSQLSnippet
+            const collectionQualifiedName = getCollectionByQualifiedName(
+                activeInlineTab.collectionQualifiedName
+            )?.attributes.qualifiedName
+            console.log(
+                'update saved query collectionQualifiedName',
+                collectionQualifiedName
+            )
+            /* NEED TO CHECK IF qualifiedName will also change acc to connectors it has connectionQualifiedName */
+            const qualifiedName = activeInlineTab?.qualifiedName
+            // const
 
-        const variablesSchemaBase64 = serializeQuery(
-            activeInlineTab?.playground.editor.variables
-        )
-        const body = ref({
-            entity: {
-                typeName: 'Query',
-                attributes: {
-                    visualBuilderSchemaBase64,
-                    isVisualQuery,
-                    connectorName,
-                    name,
-                    qualifiedName,
-                    connectionName,
-                    defaultSchemaQualifiedName,
-                    defaultDatabaseQualifiedName,
-                    certificateStatus:
-                        certificateStatus === 'is_null'
-                            ? undefined
-                            : certificateStatus,
-                    isSnippet: isSQLSnippet,
-                    connectionId: connectionQualifiedName,
-                    connectionQualifiedName,
-                    collectionQualifiedName,
-                    description,
-                    ownerUsers: [username.value],
-                    tenantId: 'default',
-                    rawQuery,
-                    variablesSchemaBase64,
-                    isPrivate: true,
-                    parent: {
-                        guid: activeInlineTab.parentGuid,
+            const defaultSchemaQualifiedName =
+                getSchemaQualifiedName(attributeValue) ?? undefined
+
+            const defaultDatabaseQualifiedName =
+                getDatabaseQualifiedName(attributeValue) ?? undefined
+
+            const variablesSchemaBase64 = serializeQuery(
+                activeInlineTab?.playground.editor.variables
+            )
+            const body = ref({
+                entity: {
+                    typeName: 'Query',
+                    attributes: {
+                        visualBuilderSchemaBase64,
+                        isVisualQuery,
+                        connectorName,
+                        name,
+                        qualifiedName,
+                        connectionName,
+                        defaultSchemaQualifiedName,
+                        defaultDatabaseQualifiedName,
+                        certificateStatus:
+                            certificateStatus === 'is_null'
+                                ? undefined
+                                : certificateStatus,
+                        isSnippet: isSQLSnippet,
+                        connectionId: connectionQualifiedName,
+                        connectionQualifiedName,
+                        collectionQualifiedName,
+                        description,
+                        ownerUsers: [username.value],
+                        tenantId: 'default',
+                        rawQuery,
+                        variablesSchemaBase64,
+                        isPrivate: true,
+                        parent: {
+                            guid: activeInlineTab.parentGuid,
+                        },
+                        parentQualifiedName:
+                            activeInlineTab?.parentQualifiedName,
                     },
-                    parentQualifiedName: activeInlineTab?.parentQualifiedName,
+                    guid: activeInlineTab?.queryId,
                 },
-                guid: activeInlineTab?.queryId,
-            },
-        })
+            })
 
-        // console.log('update query body: ', body.value)
+            // console.log('update query body: ', body.value)
 
-        isUpdating.value = true
-        const { data, error, isLoading } = Insights.UpdateSavedQuery(
-            body.value,
-            {}
-        )
+            isUpdating.value = true
+            const { data, error, isLoading } = Insights.UpdateSavedQuery(
+                body.value,
+                {}
+            )
 
-        watch([data, error, isLoading], () => {
-            if (isLoading.value == false) {
-                isUpdating.value = false
-                if (error.value === undefined) {
-                    useAddEvent('insights', 'query', 'updated', {
-                        variables_count: getVariableCount(),
-                        visual_query: !!activeInlineTab.playground.isVQB,
-                    })
-                    message.success({
-                        content: `${name} query saved!`,
-                    })
+            watch([data, error, isLoading], () => {
+                if (isLoading.value == false) {
+                    isUpdating.value = false
+                    if (error.value === undefined) {
+                        useAddEvent('insights', 'query', 'updated', {
+                            variables_count: getVariableCount(),
+                            visual_query: !!activeInlineTab.playground.isVQB,
+                        })
+                        message.success({
+                            content: `${name} query saved!`,
+                        })
 
-                    /* Not present in response */
-                    activeInlineTabCopy.updateTime = Date.now()
-                    activeInlineTabCopy.updatedBy = username.value
-                    /* ----------------------------------------------- */
-                    // making it save
-                    activeInlineTabCopy.isSaved = true
-                    modifyActiveInlineTab(activeInlineTabCopy, tabsArray, true)
-                } else {
-                    if (
-                        error?.value?.response?.data?.errorCode ===
-                        'ATLAS-403-00-001'
-                    ) {
-                        message.error(
-                            `You are not allowed to create the query within the selected collection`
+                        /* Not present in response */
+                        activeInlineTabCopy.updateTime = Date.now()
+                        activeInlineTabCopy.updatedBy = username.value
+                        /* ----------------------------------------------- */
+                        // making it save
+                        activeInlineTabCopy.isSaved = true
+                        modifyActiveInlineTab(
+                            activeInlineTabCopy,
+                            tabsArray,
+                            true
                         )
+                        resolvePromise(true)
                     } else {
-                        message.error(`Error in saving query!`)
+                        if (
+                            error?.value?.response?.data?.errorCode ===
+                            'ATLAS-403-00-001'
+                        ) {
+                            message.error(
+                                `You are not allowed to create the query within the selected collection`
+                            )
+                        } else {
+                            message.error(`Error in saving query!`)
+                        }
+                        return rejectPromise(false)
                     }
                 }
-            }
+            })
         })
     }
     const saveQueryToDatabase = async (

@@ -547,7 +547,6 @@
                         </div>
                     </div>
                 </div>
-
                 <AssetSelectorDrawer
                     v-if="connectorData.attributeValue"
                     v-model:visible="assetSelectorVisible"
@@ -555,6 +554,7 @@
                     :connection-qf-name="connectorData.attributeValue"
                     class="drawerAddAsset"
                     :get-container="'body'"
+                    :bi-types="BItypes"
                     @update:assets="handleChangeAssets"
                     @close="assetSelectorVisible = false"
                 />
@@ -860,9 +860,11 @@
                         'entity-update',
                         'entity-create',
                         'entity-delete',
-                        'link-assets',
+                        // 'link-assets',
                         'entity-update-business-metadata',
-                        'entity-update-classification',
+                        // 'entity-update-classification',
+                        'entity-add-classification',
+                        'entity-remove-classification',
                         'add-terms',
                         'remove-terms',
                     ]
@@ -922,7 +924,16 @@
                         (elc) => elc.value === el
                     )
                     if (assetPermission) {
-                        assetsPermission.push(assetPermission.label)
+                        if (el === 'link-assets') {
+                            if (
+                                !policy.value.actions.includes('entity-update')
+                            ) {
+                                assetsPermission.push(assetPermission.label)
+                            }
+                        } else {
+                            assetsPermission.push(assetPermission.label)
+                        }
+                        console.log(el, '<<<<')
                     }
                     if (governancePermission) {
                         governance.push(governancePermission.label)

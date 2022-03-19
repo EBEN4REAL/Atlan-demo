@@ -27,13 +27,7 @@
         </div>
 
         <!-- Lineage Header -->
-        <LineageHeader
-            v-if="isComputeDone"
-            :base-entity-guid="lineage.baseEntityGuid"
-            :highlighted-node="highlightedNode"
-            :is-cyclic="false"
-            :graph="graph"
-        />
+        <LineageHeader v-if="isComputeDone" :graph="graph" />
 
         <!-- Lineage Footer -->
         <LineageFooter
@@ -56,8 +50,8 @@
 
         <!-- AssetDrawer -->
         <AssetDrawer
-            :guid="selectedAssetGuid"
-            :show-drawer="isDrawerVisible && selectedAssetGuid"
+            :watch-guid="true"
+            :guid="selectedAsset?.guid || ''"
             :show-mask="false"
             :drawer-active-key="drawerActiveKey"
             :show-close-btn="false"
@@ -96,10 +90,9 @@
             LineageFooter,
             AssetDrawer,
         },
-        setup(_, { emit }) {
+        setup() {
             /** INJECTIONS */
             const lineage = inject('lineage')
-            const baseEntity = inject('baseEntity')
             const selectedAsset = inject('selectedAsset')
             const preferences = inject('preferences', ref({}))
             const control = inject('control')
@@ -107,26 +100,21 @@
             /** DATA */
             const graphHeight = ref(0)
             const graphWidth = ref(0)
-            const resetSelections = ref(false)
             const graphContainer = ref(null)
             const minimapContainer = ref(null)
             const lineageContainer = ref({})
             const graph = ref({})
             const graphLayout = ref({})
             const showMinimap = ref(false)
-            const searchItems = ref([])
-            const assetGuidToHighlight = ref('') // TODO:
-            const highlightedNode = ref('')
             const loaderCords = ref({})
             const currZoom = ref('...')
-            const isDrawerVisible = ref(false)
             const isComputeDone = ref(false)
             const drawerActiveKey = ref('Overview')
+            const guidToSelectOnGraph = ref('')
             const selectedTypeInRelationDrawer = ref('__all')
-            let removeListeners = () => {}
+            const removeAllListeners = ref(null)
 
             /** COMPUTED */
-            const selectedAssetGuid = computed(() => selectedAsset.value?.guid)
             const offsetLoaderCords = computed(() => {
                 const isFullScr = !!document.fullscreenElement
                 return {
@@ -141,21 +129,18 @@
 
             /** METHODS */
             // onSelectAsset
-            const onSelectAsset = (
-                item,
-                highlight = false,
-                openDrawer = true
-            ) => {
-                if (openDrawer) isDrawerVisible.value = true
+            const onSelectAsset = (item, selectOnGraph = false) => {
                 if (typeof control === 'function')
                     control('selectedAsset', item)
-                if (highlight) assetGuidToHighlight.value = item.guid
+
+                if (!item) return
+
+                if (selectOnGraph) guidToSelectOnGraph.value = item?.guid
             }
 
             // onCloseDrawer
             const onCloseDrawer = () => {
-                isDrawerVisible.value = false
-                resetSelections.value = true
+                onSelectAsset(null)
             }
 
             // handleDrawerUpdate
@@ -189,25 +174,17 @@
                     graph,
                     graphLayout,
                     lineage,
-                    searchItems,
                     currZoom,
                     isComputeDone,
-                    emit,
                 })
 
                 // useEventGraph
-                const { registerAllListeners } = useEventGraph({
+                const { removeAllListeners: ral } = useEventGraph({
                     graph,
-                    lineage,
-                    baseEntity,
-                    assetGuidToHighlight,
-                    highlightedNode,
                     loaderCords,
                     currZoom,
-                    searchItems,
-                    resetSelections,
-                    drawerActiveKey,
                     preferences,
+                    guidToSelectOnGraph,
                     mergedLineageData,
                     sameSourceCount,
                     sameTargetCount,
@@ -218,11 +195,10 @@
                     addSubGraph,
                     renderLayout,
                 })
-                removeListeners = registerAllListeners
+                removeAllListeners.value = ral
             }
 
             /** PROVIDERS */
-            provide('searchItems', searchItems)
             provide('onSelectAsset', onSelectAsset)
             provide('selectedTypeInRelation', selectedTypeInRelationDrawer)
 
@@ -237,11 +213,10 @@
 
             onUnmounted(() => {
                 isComputeDone.value = false
-                if (Object.keys(graph.value).length) {
-                    if (typeof removeListeners === 'function')
-                        removeListeners(true)
-                    graph.value.dispose()
-                }
+                if (Object.keys(graph.value).length) graph.value.dispose()
+
+                if (typeof removeAllListeners.value === 'function')
+                    removeAllListeners.value()
             })
 
             return {
@@ -250,13 +225,11 @@
                 graphHeight,
                 graphWidth,
                 offsetLoaderCords,
-                selectedAssetGuid,
+                selectedAsset,
                 currZoom,
                 showMinimap,
-                highlightedNode,
                 loaderCords,
                 drawerActiveKey,
-                isDrawerVisible,
                 isComputeDone,
                 lineageContainer,
                 graphContainer,
@@ -428,7 +401,7 @@
                 border: 1px solid #5277d7 !important;
                 background-color: #ffffff !important;
 
-                &.isHighlightedNode {
+                &.isSelectedNode {
                     border: 1px solid #5277d7 !important;
                 }
 
@@ -490,7 +463,7 @@
         }
 
         .isGrayed {
-            border: 1px solid #e6e6eb !important;
+            border: 1px solid #e6e6eb;
 
             .node-text {
                 color: #6f7590 !important;
@@ -501,7 +474,7 @@
             }
         }
 
-        .isHighlightedNode {
+        .isSelectedNode {
             border: 1px solid #5277d7 !important;
             background-color: #f4f6fd !important;
             @apply text-primary;
@@ -518,7 +491,7 @@
             }
         }
 
-        .isHighlightedNodePath {
+        .isHighlightedNode {
             border: 1px solid #5277d7;
             background-color: #ffffff;
         }

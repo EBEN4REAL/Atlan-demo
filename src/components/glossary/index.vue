@@ -124,13 +124,13 @@
             >
                 <template v-slot:default="{ item }">
                     <GlossaryItem
-                        v-if="!disabledGuids?.includes(item.guid)"
                         :item="item"
                         :selectedGuid="selectedGlossary?.guid"
                         :checkable="checkable"
                         :checked="checkedGuids?.includes(item.guid)"
                         @preview="handlePreview"
                         @check="onSearchItemCheck"
+                        :isCheckboxDisabled="disabledGuids?.includes(item.guid)"
                     ></GlossaryItem>
                 </template>
             </AssetList>
@@ -174,7 +174,6 @@
         InternalAttributes,
         GlossaryAttributes,
     } from '~/constant/projection'
-    import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
 
@@ -267,13 +266,11 @@
                 glossary: '__all',
             })
             const dependentKey = ref('DEFAULT_GLOSSARY_ITEMS_LIST')
-            const { customMetadataProjections } = useTypedefData()
 
             const defaultAttributes = ref([
                 ...InternalAttributes,
                 ...AssetAttributes,
                 ...GlossaryAttributes,
-                ...customMetadataProjections,
             ])
             const relationAttributes = ref([...AssetRelationAttributes])
             const activeKey: Ref<string[]> = ref([])

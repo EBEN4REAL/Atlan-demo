@@ -505,7 +505,6 @@
             const newFolderName = ref('')
             const newFolderCreateable = ref(true)
             const showEmptyState = ref(true)
-
             const {
                 treeData,
                 loadedKeys,
@@ -554,6 +553,11 @@
 
                 showCollectionModal.value = !showCollectionModal.value
             }
+
+            watch(writeAccessCollections, (newVal, prevVal) => {
+                if ((!prevVal || !prevVal.length) && newVal && newVal.length)
+                    onSelect(writeAccessCollections.value[0], 'root')
+            })
 
             const saveFolderLoading = ref(false)
             const folderCreated = ref(false)

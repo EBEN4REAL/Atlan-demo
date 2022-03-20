@@ -92,14 +92,18 @@
                     </AggregationTabs>
                 </div>
 
-                <!--  <div
-                    v-if="error && !isValidating"
+                <div
+                    v-if="
+                        error &&
+                        error?.message !== 'operation cancelled' &&
+                        !isValidating
+                    "
                     class="flex items-center justify-center flex-grow"
                 >
                     <ErrorView></ErrorView>
-                </div> -->
+                </div>
                 <div
-                    v-if="list.length === 0 && !isValidating"
+                    v-else-if="list.length === 0 && !isValidating"
                     class="flex-grow"
                 >
                     <EmptyView

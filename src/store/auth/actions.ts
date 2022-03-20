@@ -43,18 +43,16 @@ export const actions: Actions = {
     setEvaluations(value) {
         const valueMap = value.map(
             (evaluation) =>
-                `${
-                    evaluation.entityGuid ||
-                    evaluation.entityGuidEnd1 ||
-                    evaluation.entityGuidEnd2
+                `${evaluation.entityGuid ||
+                evaluation.entityGuidEnd1 ||
+                evaluation.entityGuidEnd2
                 }_${evaluation.action}`
         )
         const evaluationMap = this.evaluations.map(
             (evaluation) =>
-                `${
-                    evaluation.entityGuid ||
-                    evaluation.entityGuidEnd1 ||
-                    evaluation.entityGuidEnd2
+                `${evaluation.entityGuid ||
+                evaluation.entityGuidEnd1 ||
+                evaluation.entityGuidEnd2
                 }_${evaluation.action}`
         )
         const uniqueValues = valueMap.filter(
@@ -63,14 +61,15 @@ export const actions: Actions = {
         const uniqueArray = value.filter(
             (i) =>
                 uniqueValues.indexOf(
-                    `${i.entityGuid || i.entityGuidEnd1 || i.entityGuidEnd2}_${
-                        i.action
+                    `${i.entityGuid || i.entityGuidEnd1 || i.entityGuidEnd2}_${i.action
                     }`
                 ) >= 0
         )
-        if (this.evaluations.length + uniqueArray.length > 30) {
-            this.evaluations.splice(0, uniqueArray.length)
-        }
+        /* This is a hack to prevent the list from growing too large. */
+        //  ! below line is limitting evaluation array size to 29 items, glossary needs more than this,  
+        // if (this.evaluations.length + uniqueArray.length > 30) {
+        //     this.evaluations.splice(0, uniqueArray.length)
+        // }
         this.evaluations.push(...uniqueArray)
     },
     // For asset drawers and widgets that require temporary evaluations
@@ -78,18 +77,16 @@ export const actions: Actions = {
     setSecondaryEvaluations(value) {
         const valueMap = value.map(
             (evaluation) =>
-                `${
-                    evaluation.entityGuid ||
-                    evaluation.entityGuidEnd1 ||
-                    evaluation.entityGuidEnd2
+                `${evaluation.entityGuid ||
+                evaluation.entityGuidEnd1 ||
+                evaluation.entityGuidEnd2
                 }_${evaluation.action}`
         )
         const evaluationMap = this.secondaryEvaluations.map(
             (evaluation) =>
-                `${
-                    evaluation.entityGuid ||
-                    evaluation.entityGuidEnd1 ||
-                    evaluation.entityGuidEnd2
+                `${evaluation.entityGuid ||
+                evaluation.entityGuidEnd1 ||
+                evaluation.entityGuidEnd2
                 }_${evaluation.action}`
         )
         const uniqueValues = valueMap.filter(
@@ -98,8 +95,7 @@ export const actions: Actions = {
         const uniqueArray = value.filter(
             (i) =>
                 uniqueValues.indexOf(
-                    `${i.entityGuid || i.entityGuidEnd1 || i.entityGuidEnd2}_${
-                        i.action
+                    `${i.entityGuid || i.entityGuidEnd1 || i.entityGuidEnd2}_${i.action
                     }`
                 ) >= 0
         )

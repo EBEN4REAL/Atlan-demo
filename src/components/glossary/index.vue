@@ -14,25 +14,15 @@
             ></GlossarySelect>
             <div class="flex">
                 <CreateGtcBtn
-                    v-if="
-                        !selectedGlossaryQf?.length &&
-                        role.toLowerCase() !== 'admin'
-                            ? false
-                            : selectedGlossaryQf?.length &&
-                              !addTermPermission &&
-                              !addCategoryPermission &&
-                              role.toLowerCase() !== 'admin'
-                            ? false
-                            : true
-                    "
+                    v-if="createButtonVisibility"
                     :selected-glossary-qf="selectedGlossaryQf"
-                    :term-add-permission="addTermPermission"
-                    :category-add-permission="addCategoryPermission"
+                    :term-add-permission="termAddPermission"
+                    :category-add-permission="categoryAddPermission"
                     @add="handleAddGTC"
                 />
                 <div v-if="selectedGlossaryQf?.length" class="ml-2">
                     <GlossaryActions
-                        :entityDeletePermission="entityDeletePermission"
+                        :entity-delete-permission="entityDeletePermission"
                         :entity="selectedGlossary"
                     ></GlossaryActions>
                 </div>
@@ -90,7 +80,7 @@
         >
             <GlossaryTree
                 ref="glossaryTree"
-                :termAddPermission="addTermPermission"
+                :termAddPermission="termAddPermission"
                 @select="handlePreview"
                 :defaultGlossary="checkable ? '' : selectedGlossaryQf"
                 :checkable="checkable"
@@ -181,7 +171,9 @@
     import GlossarySelect from '@/common/popover/glossarySelect/index.vue'
     import CreateGtcBtn from '@/glossary/actions/createGtcBtn.vue'
     import GlossaryActions from '@/glossary/actions/glossary.vue'
-    import useGTCPermissions from '~/composables/glossary/useGTCPermissions'
+    import useGTCPermissions, {
+        fetchGlossaryPermission,
+    } from '~/composables/glossary/useGTCPermissions'
     import whoami from '~/composables/user/whoami'
 
     import {
@@ -516,32 +508,43 @@
                 cancelRequest()
             })
 
-            // * permissions
+            // * permissions being checked against the parent glossary not against individual node
             const {
                 termAddPermission,
                 categoryAddPermission,
                 createPermission,
                 entityDeletePermission,
-            } = useGTCPermissions(selectedGlossary)
+                fetch: fetchEvaluation,
+            } = fetchGlossaryPermission(selectedGlossary, false)
 
-            // ? additional Check because selectedGlossary can be undefined if context is ALL glossary
-            // ? when in all glossary context, all create permission here and add check in create modal
-            const addTermPermission = computed(() => {
-                if (selectedGlossary.value) return termAddPermission.value
-                return true
-            })
+            if (selectedGlossaryQf.value?.length) fetchEvaluation()
 
-            const addCategoryPermission = computed(() => {
-                if (selectedGlossary.value) return categoryAddPermission.value
+            const createButtonVisibility = computed(() => {
+                // ? if in All Glossary Context, disable for non-admin users
+                if (
+                    !selectedGlossaryQf.value?.length &&
+                    role.value?.toLowerCase() !== 'admin'
+                )
+                    return false
+
+                // ? if glossary is selected & non of the create permission exists , disable it
+                if (
+                    selectedGlossaryQf.value?.length &&
+                    !termAddPermission.value &&
+                    !categoryAddPermission.value &&
+                    role.value?.toLowerCase() !== 'admin'
+                )
+                    return false
+
                 return true
             })
 
             return {
+                createButtonVisibility,
                 role,
                 entityDeletePermission,
                 termAddPermission,
-                addTermPermission,
-                addCategoryPermission,
+                categoryAddPermission,
                 checkDuplicateCategoryNames,
                 handleFilterChange,
                 isLoading,

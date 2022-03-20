@@ -394,7 +394,7 @@
             }
 
             // permissions
-
+            // ? evaluate permission for glossary are checked against their glossary of any child, hence parse the glossary from category or  term
             const glossary = computed(() => {
                 if (entity.value.typeName === 'AtlasGlossary')
                     return entity.value
@@ -406,6 +406,7 @@
                     return entity.value.attributes.anchor
                 return null
             })
+
             const {
                 termAddPermission,
                 categoryAddPermission,

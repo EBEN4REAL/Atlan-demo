@@ -5,75 +5,91 @@
     >
         <div
             v-if="item?.typeName === 'cta'"
-            class="flex flex-wrap items-center"
-            :class="!hasCreateAccess ? '' : 'space-y-0'"
+            class="flex flex-wrap items-center w-full"
+            :class="!createPermission ? '' : 'space-y-0'"
         >
-            <span v-if="!checkable" class="pr-1"> Add a </span>
-            <AddGtcModal
-                v-if="!checkable"
-                entityType="AtlasGlossaryTerm"
-                :glossaryName="item?.glossaryName"
-                :categoryName="item?.categoryName"
-                :categoryGuid="item?.categoryGuid"
-                :glossary-qualified-name="glossaryQualifiedName"
-                @add="handleAdd"
-            >
-                <template #trigger>
-                    <div v-auth="map.CREATE_TERM">
-                        <div
-                            class="flex items-center hover:underline text-primary"
-                        >
-                            <AtlanIcon
-                                icon="Term"
-                                class="m-0 mr-0.5 align-text-bottom"
-                            />
-                            <p class="p-0 m-0">Term</p>
-                        </div>
-                    </div>
-                </template>
-            </AddGtcModal>
-            <span v-if="!checkable" class="px-1">or </span>
-
-            <AddGtcModal
-                v-if="!checkable"
-                entityType="AtlasGlossaryCategory"
-                :glossaryName="item?.glossaryName"
-                :categoryName="item?.categoryName"
-                :categoryGuid="item?.categoryGuid"
-                :glossary-qualified-name="glossaryQualifiedName"
-                @add="handleAdd"
-            >
-                <template #trigger>
-                    <div v-auth="map.CREATE_CATEGORY">
-                        <div
-                            class="flex items-center hover:underline text-primary"
-                        >
-                            <AtlanIcon
-                                icon="Category"
-                                class="m-0 mr-1 align-text-bottom"
-                            />
-                            <p class="p-0 m-0">Category</p>
-                        </div>
-                    </div>
-                </template>
-            </AddGtcModal>
-            <div v-if="checkable || !hasCreateAccess">
-                This
-                <span v-if="item.categoryName">category</span>
-                <span v-else-if="item.glossaryName">glossary</span>
-                <span v-else>node</span>
-                is empty!
-                <br />
-                <span v-auth="map.CREATE_TERM"
-                    >Go to the
-                    <span
-                        class="hover:underline text-primary"
-                        @click="ctaToProfile"
-                        >profile</span
-                    >
-                    to add some terms.</span
-                >
+            <div v-if="isEvaluating" class="w-full">
+                <a-skeleton
+                    :class="$style.skeleton"
+                    :loading="true"
+                    active
+                    :title="true"
+                    :paragraph="null"
+                />
             </div>
+            <template v-else>
+                <template v-if="createPermission">
+                    <span v-if="!checkable" class="pr-1"> Add a </span>
+                    <AddGtcModal
+                        v-if="!checkable"
+                        entityType="AtlasGlossaryTerm"
+                        :glossaryName="item?.glossaryName"
+                        :categoryName="item?.categoryName"
+                        :categoryGuid="item?.categoryGuid"
+                        :glossary-qualified-name="glossaryQualifiedName"
+                        @add="handleAdd"
+                    >
+                        <template #trigger>
+                            <div v-if="termAddPermission">
+                                <div
+                                    class="flex items-center hover:underline text-primary"
+                                >
+                                    <AtlanIcon
+                                        icon="Term"
+                                        class="m-0 mr-0.5 align-text-bottom"
+                                    />
+                                    <p class="p-0 m-0">Term</p>
+                                </div>
+                            </div>
+                        </template>
+                    </AddGtcModal>
+                    <span v-if="!checkable" class="px-1">or </span>
+
+                    <AddGtcModal
+                        v-if="!checkable"
+                        entityType="AtlasGlossaryCategory"
+                        :glossaryName="item?.glossaryName"
+                        :categoryName="item?.categoryName"
+                        :categoryGuid="item?.categoryGuid"
+                        :glossary-qualified-name="glossaryQualifiedName"
+                        @add="handleAdd"
+                    >
+                        <template #trigger>
+                            <div v-if="categoryAddPermission">
+                                <div
+                                    class="flex items-center hover:underline text-primary"
+                                >
+                                    <AtlanIcon
+                                        icon="Category"
+                                        class="m-0 mr-1 align-text-bottom"
+                                    />
+                                    <p class="p-0 m-0">Category</p>
+                                </div>
+                            </div>
+                        </template>
+                    </AddGtcModal>
+                </template>
+
+                <div v-if="checkable || !createPermission">
+                    This
+                    <span v-if="item.categoryName">category</span>
+                    <span v-else-if="item.glossaryName">glossary</span>
+                    <span v-else>node</span>
+                    is empty!
+                    <br />
+
+                    <span v-if="termAddPermission">
+                        Go to the
+                        <span
+                            class="hover:underline text-primary"
+                            @click="ctaToProfile"
+                        >
+                            profile
+                        </span>
+                        to add some terms.
+                    </span>
+                </div>
+            </template>
         </div>
 
         <div
@@ -183,6 +199,7 @@
     import AtlanIcon from '@/common/icon/atlanIcon.vue'
     import map from '~/constant/accessControl/map'
     import useAuth from '~/composables/auth/useAuth'
+    import { fetchGlossaryPermission } from '~/composables/glossary/useGTCPermissions'
 
     export default defineComponent({
         name: 'GlossaryTreeItem',
@@ -282,9 +299,6 @@
             watch(item, () => {
                 entityTitle.value = title(item.value)
             })
-            const hasCreateAccess = computed(() =>
-                checkAccess([map.CREATE_TERM, map.CREATE_CATEGORY], 'or')
-            )
 
             const handleEdit = (asset) => {
                 isEditMode.value = true
@@ -301,7 +315,44 @@
                 console.log(isEditMode.value, 'drag change')
                 emit('changeEditMode', isEditMode.value)
             })
+
+            // permissions
+            // ? evaluate are checked against the glossary & not the category or term
+            const parentGlossary = computed(() => {
+                if (item.value?.typeName === 'cta') {
+                    return {
+                        guid:
+                            item.value?.glossaryGuid ??
+                            item.value?.parentCategory?.attributes?.anchor
+                                ?.guid,
+                        typeName: 'AtlasGlossary',
+                    }
+                }
+                return null
+            })
+
+            const {
+                termAddPermission,
+                categoryAddPermission,
+                entityUpdatePermission,
+                entityDeletePermission,
+                createPermission,
+                fetch,
+                isEvaluating,
+            } = fetchGlossaryPermission(parentGlossary, false)
+
+            onMounted(() => {
+                if (item.value?.typeName === 'cta') fetch()
+            })
+
             return {
+                isEvaluating,
+                termAddPermission,
+                categoryAddPermission,
+                entityUpdatePermission,
+                entityDeletePermission,
+                createPermission,
+                parentGlossary,
                 getEntityStatusIcon,
                 certificateStatus,
                 title,
@@ -315,7 +366,6 @@
                 profileId,
                 ctaToProfile,
                 map,
-                hasCreateAccess,
                 handleEdit,
                 isEditMode,
                 handleEditCancel,
@@ -326,6 +376,11 @@
     })
 </script>
 <style lang="less" module>
+    .skeleton {
+        :global(.ant-skeleton-title) {
+            @apply mt-0 w-full !important;
+        }
+    }
     .shake {
         animation: listItemShake 0.5s infinite;
         @apply text-gray-500 !important;

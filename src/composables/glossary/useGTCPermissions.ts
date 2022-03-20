@@ -9,7 +9,6 @@ const useGTCPermissions = (GTC) => {
     // ? use this if you think evaluations are already fetches
     const {
         selectedAssetUpdatePermission,
-        assetPermission,
     } = useAssetInfo()
 
 
@@ -21,7 +20,7 @@ const useGTCPermissions = (GTC) => {
                 false,
                 'RELATIONSHIP_ADD',
                 'AtlasGlossaryTerm'
-            ) // && assetPermission('CREATE_TERM')
+            )
         }
 
     )
@@ -34,7 +33,7 @@ const useGTCPermissions = (GTC) => {
                 false,
                 'RELATIONSHIP_ADD',
                 'AtlasGlossaryCategory'
-            )  // && assetPermission('CREATE_CATEGORY')
+            )
         }
     )
 
@@ -68,9 +67,8 @@ const useGTCPermissions = (GTC) => {
 }
 
 
-export const fetchGlossaryPermission = (glossary) => {
+export const fetchGlossaryPermission = (glossary, immediate = false) => {
     // ? use this if you want to fetch evaluations if not fetched already
-
     const body = ref({})
     const authStore = useAuthStore()
     const { getAssetEvaluationsBody } = useAssetEvaluate()
@@ -89,9 +87,10 @@ export const fetchGlossaryPermission = (glossary) => {
         }
         const permissionsAlreadyFetched = authStore?.evaluations?.some((ev) => ev?.entityGuid === glossary.value?.guid)
         if (permissionsAlreadyFetched) return
-
         refresh()
     }
+
+    if (immediate) fetch()
 
     const allPermissions = useGTCPermissions(glossary)
 

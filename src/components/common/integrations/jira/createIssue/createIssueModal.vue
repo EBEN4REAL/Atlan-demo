@@ -13,7 +13,7 @@
             style="height: 68px"
         >
             <AtlanIcon :icon="'Jira'" class="h-6 mr-2" />
-            <h1 class="text-xl font-bold">Create issue</h1>
+            <h1 class="text-xl font-bold">Creating issue</h1>
         </header>
         <div
             class="w-full p-4 overflow-scroll rounded"

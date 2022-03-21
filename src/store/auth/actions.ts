@@ -67,9 +67,9 @@ export const actions: Actions = {
         )
         /* This is a hack to prevent the list from growing too large. */
         //  ! below line is limitting evaluation array size to 29 items, glossary needs more than this,  
-        // if (this.evaluations.length + uniqueArray.length > 30) {
-        //     this.evaluations.splice(0, uniqueArray.length)
-        // }
+        if (this.evaluations.length + uniqueArray.length > 30) {
+            this.evaluations.splice(0, uniqueArray.length)
+        }
         this.evaluations.push(...uniqueArray)
     },
     // For asset drawers and widgets that require temporary evaluations

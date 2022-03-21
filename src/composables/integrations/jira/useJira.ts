@@ -294,5 +294,10 @@ export const getProjectConfig = (key) => {
         }
     })
 
-    return { config, data, isLoading, error, mutate, isReady }
+    const fetchConfig = async () => {
+        config.value = null
+        await mutate()
+    }
+
+    return { config, data, isLoading, error, fetchConfig, isReady }
 }

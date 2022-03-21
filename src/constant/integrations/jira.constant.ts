@@ -19,12 +19,6 @@ export const CREATE_TICKET_FORM_RULES = {
             message: 'Summary is required',
             trigger: ['submit', 'change'],
         },
-    ],
-    description: [
-        {
-            required: true,
-            message: 'Description is required',
-            trigger: ['submit', 'change'],
-        },
-    ],
+    ]
+
 }

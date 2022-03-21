@@ -156,6 +156,10 @@
     import { getProjectConfig } from '~/composables/integrations/jira/useJira'
     import JiraDynamicField from '@/common/integrations/jira/jiraDynamicField.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import {
+        requiredDynamicFields,
+        staticDynamicFields,
+    } from '@/common/integrations/jira/createIssue/handleDynamicFields'
 
     const props = defineProps({
         visible: { type: Boolean, required: true },
@@ -166,7 +170,6 @@
 
     const { asset } = toRefs(props)
     const formRef = ref()
-
     const { visible } = useVModels(props, emit)
 
     const { origin } = window.location
@@ -178,17 +181,24 @@
         description: undefined,
     })
 
-    const requiredFields: Ref<
-        {
-            label: string
-            key: string
-            unsupported: string
-            data: any
-            selectedValue: any
-            hideError: boolean
-        }[]
-    > = ref([])
-    const staticFields = ref({})
+    const issueTypeOptions = ref<any[]>([])
+    const projectKey = ref()
+
+    const {
+        config,
+        isReady: configReady,
+        error: configError,
+        isLoading: configLoading,
+        fetchConfig,
+    } = getProjectConfig(projectKey)
+
+    const { staticFields, initStaticFields, staticFieldsKeyValues } =
+        staticDynamicFields(config, form)
+
+    const { requiredFields, initRequiredFields } = requiredDynamicFields(
+        config,
+        form
+    )
 
     const resetForm = () => {
         form.value = {
@@ -213,136 +223,6 @@
             return false
         })
     )
-
-    const issueTypeOptions = ref<any[]>([])
-    const projectKey = ref()
-    const {
-        config,
-        isReady: configReady,
-        error: configError,
-        isLoading: configLoading,
-        mutate: fetchConfig,
-    } = getProjectConfig(projectKey)
-
-    // ? utility fn
-    const getModelValue = (values) => {
-        if (Array.isArray(values)) {
-            return values.map((value) => {
-                if (typeof value === 'object') {
-                    return value.value || value.id
-                }
-                return value
-            })
-        }
-        if (typeof values === 'object') {
-            return values.value || values.id
-        }
-        return values
-    }
-
-    // ? grab field config of static dynamic fields
-    const initStaticFields = () => {
-        const finalFields: any = {}
-        if (!config.value) staticFields.value = {}
-
-        const { fields } = config.value.issuetypes.find(
-            (_type) => _type.id === form.value.issuetype
-        )
-
-        const includedTypes = ['priority', 'description']
-
-        if (fields && typeof fields === 'object') {
-            Object.entries(fields).forEach(([_, data]: any) => {
-                if (includedTypes.includes(data.key)) {
-                    finalFields[data.key] = {
-                        label: data.name,
-                        key: data.key,
-                        data,
-                        selectedValue: data.hasDefaultValue
-                            ? data.defaultValue
-                            : null,
-                    }
-                    // ? if field has allowedValues, creation options for a-select with them
-                    let options
-                    const allowedValues = data?.allowedValues
-                    if (allowedValues) {
-                        options = allowedValues.map((v) => ({
-                            label: v.value ?? v.name,
-                            value: v.value ?? v.id,
-                            meta: v,
-                        }))
-                    }
-                    if (options) finalFields[data.key].options = options
-                    // also add default value to form model, strip other details
-                    if (data.hasDefaultValue)
-                        form.value[data.key] = getModelValue(data.defaultValue)
-                }
-            })
-        }
-
-        staticFields.value = finalFields
-    }
-
-    // ? grab field config of required only dynamic fields
-    const initRequiredFields = () => {
-        const finalFields: any = []
-        if (!config.value) requiredFields.value = []
-
-        const { fields } = config.value.issuetypes.find(
-            (_type) => _type.id === form.value.issuetype
-        )
-
-        // ? any types  that we dont want can be blacklisted here
-        const blackListTypes = [] // lets not add any now and render all as text // issueLink
-        const supportedTypes = [
-            'number',
-            'string',
-            'array',
-            'priority',
-            'option',
-        ] // lets not add any now and render all as text // issueLink
-
-        if (fields && typeof fields === 'object') {
-            Object.entries(fields).forEach(([_, data]: any) => {
-                if (data.required) {
-                    // ! hiding fields that has defaultValue set but no defaultValue options provided
-                    if (data.hasDefaultValue && !data.defaultValue) return
-                    const isURL =
-                        data.schema?.custom &&
-                        data.schema?.custom.split(':').slice(-1)[0] === 'url'
-
-                    const typeName = data.schema.type
-                    // if (!supportedTypes.includes(typeName)) return
-                    finalFields.push({
-                        label: data.name,
-                        key: data.key,
-                        data,
-                        hideError: !isURL,
-                        unsupported: !supportedTypes.includes(typeName),
-                        selectedValue: data.hasDefaultValue
-                            ? data.defaultValue
-                            : null,
-                    })
-                    // also add default value to form model, strip other details
-                    if (data.hasDefaultValue)
-                        form.value[data.key] = getModelValue(data.defaultValue)
-                }
-            })
-        }
-        // remove fields that are added static
-        const ignoreFieldsKey = [
-            'description',
-            'priority',
-            'issuetype',
-            'labels',
-            'project',
-            'summary',
-        ]
-
-        requiredFields.value = finalFields.filter(
-            (f) => !ignoreFieldsKey.includes(f.key)
-        )
-    }
 
     const initDynamicFields = () => {
         initStaticFields()
@@ -428,16 +308,6 @@
         initDynamicFields()
     }
 
-    const staticFieldsKeyValues = computed(() => {
-        const result = {}
-        if (Object.keys(staticFields.value)?.length) {
-            Object.values(staticFields.value).forEach((field) => {
-                if (field.selectedValue) result[field.key] = field.selectedValue
-            })
-        }
-        return result
-    })
-
     // The above code is creating a computed object that will be used to create the body of the Jira
     // issue. it includes all necessary form values, including static, & dynamic fields with value as per jira standards
     const body = computed(() => ({
@@ -473,7 +343,6 @@
             issue_type: issueType,
         })
     }
-
     const { data, isLoading, error, mutate, isReady } = createIssue(body)
 
     const handleCancel = () => {
@@ -513,8 +382,6 @@
         emit('failure', error.value)
     }
 </script>
-
-<style lang="less"></style>
 
 <style module lang="less">
     .createModal {

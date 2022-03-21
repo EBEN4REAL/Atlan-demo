@@ -99,7 +99,7 @@
     import EmptyPlaceholder from '@/common/assets/preview/integrations/jira/misc/emptyPlaceholder.vue'
     import integrationStore from '~/store/integrations/index'
     import { until } from '@vueuse/core'
-    import CreateModal from '@/common/integrations/jira/createIssueModal.vue'
+    import CreateModal from '@/common/integrations/jira/createIssue/createIssueModal.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     const props = defineProps({

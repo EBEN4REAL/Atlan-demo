@@ -34,16 +34,25 @@ export default function useIndexSearch<T>(
             })
         }
     } else {
-        options.cacheOptions = ref({
-            dedupingInterval: 0,
-            shouldRetryOnError: false,
-            revalidateOnFocus: false,
-            ttl,
-            revalidateDebounce: 0,
-        })
         if (isLocal) {
-            options.cacheOptions.cache = new LocalStorageCache()
+            options.cacheOptions = ref({
+                shouldRetryOnError: false,
+                revalidateOnFocus: false,
+                dedupingInterval: 0,
+                revalidateDebounce: 1,
+                cache: new LocalStorageCache(),
+                ttl,
+            })
+        } else {
+            options.cacheOptions = ref({
+                shouldRetryOnError: false,
+                revalidateOnFocus: false,
+                dedupingInterval: 0,
+                revalidateDebounce: 1,
+                ttl,
+            })
         }
+
         options.cacheKey = dependentKey
     }
 

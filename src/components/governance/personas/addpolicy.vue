@@ -65,7 +65,7 @@
                     </span>
                 </div> -->
             </div>
-            <div class="px-4 my-20 bg-gray-100">
+            <div class="px-4 mb-20 bg-gray-100 mt-75">
                 <div class="relative mt-2 bg-white shadow-section">
                     <div class="p-3 text-sm font-bold text-gray-700 border-b">
                         Overview
@@ -152,7 +152,7 @@
                 </div>
                 <div
                     v-if="connectorData.attributeValue"
-                    class="mt-4 bg-white shadow-section"
+                    class="mt-3 bg-white shadow-section"
                 >
                     <div class="flex items-center justify-between p-3 border-b">
                         <div class="text-sm font-bold text-gray-700">
@@ -305,7 +305,7 @@
                 </div>
                 <div
                     v-if="policyType === 'meta' && connectorData.attributeValue"
-                    class="mt-4 bg-white shadow-section"
+                    class="mt-3 bg-white shadow-section"
                 >
                     <div class="p-3 border-b">
                         <div class="flex justify-between">
@@ -355,7 +355,7 @@
                                 class="flex flex-col h-auto mb-3 overflow-auto tag-permission max-h-32"
                                 :class="
                                     i !== selectedPermission.length - 1 &&
-                                    'mb-6'
+                                    'mb-4'
                                 "
                             >
                                 <div
@@ -487,7 +487,7 @@
                               connectorData.attributeValue &&
                               (type === 'meta' || type === 'data')
                     "
-                    class="p-4 mt-4 bg-white shadow-section"
+                    class="p-4 mt-3 bg-white shadow-section"
                 >
                     <div class="flex">
                         <span class="text-sm font-bold text-gray-700">{{
@@ -1071,6 +1071,9 @@
             path {
                 stroke: #5277d7 !important;
             }
+        }
+        .mt-75 {
+            margin-top: 75px !important;
         }
         height: 100vh;
         display: flex;

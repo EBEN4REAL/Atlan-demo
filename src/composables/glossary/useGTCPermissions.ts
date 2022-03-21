@@ -86,6 +86,7 @@ export const fetchGlossaryPermission = (glossary, immediate = false) => {
             ),
         }
         const permissionsAlreadyFetched = authStore?.evaluations?.some((ev) => ev?.entityGuid === glossary.value?.guid)
+        console.log(permissionsAlreadyFetched);
         if (permissionsAlreadyFetched) return
         refresh()
     }

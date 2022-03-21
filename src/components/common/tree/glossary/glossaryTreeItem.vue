@@ -6,7 +6,7 @@
         <div
             v-if="item?.typeName === 'cta'"
             class="flex flex-wrap items-center w-full"
-            :class="!createPermission ? '' : 'space-y-0'"
+            :class="!hasCreatePermission ? '' : 'space-y-0'"
         >
             <div v-if="isEvaluating" class="w-full">
                 <a-skeleton
@@ -18,7 +18,7 @@
                 />
             </div>
             <template v-else>
-                <template v-if="createPermission">
+                <template v-if="hasCreatePermission">
                     <span v-if="!checkable" class="pr-1"> Add a </span>
                     <AddGtcModal
                         v-if="!checkable"
@@ -30,7 +30,7 @@
                         @add="handleAdd"
                     >
                         <template #trigger>
-                            <div v-if="termAddPermission">
+                            <div v-if="hasTermAddPermission">
                                 <div
                                     class="flex items-center hover:underline text-primary"
                                 >
@@ -43,7 +43,11 @@
                             </div>
                         </template>
                     </AddGtcModal>
-                    <span v-if="!checkable" class="px-1">or </span>
+                    <span
+                        v-if="!checkable && hasCategoryAddPermission"
+                        class="px-1"
+                        >or
+                    </span>
 
                     <AddGtcModal
                         v-if="!checkable"
@@ -55,7 +59,7 @@
                         @add="handleAdd"
                     >
                         <template #trigger>
-                            <div v-if="categoryAddPermission">
+                            <div v-if="hasCategoryAddPermission">
                                 <div
                                     class="flex items-center hover:underline text-primary"
                                 >
@@ -70,7 +74,7 @@
                     </AddGtcModal>
                 </template>
 
-                <div v-if="checkable || !createPermission">
+                <div v-if="checkable || !hasCreatePermission">
                     This
                     <span v-if="item.categoryName">category</span>
                     <span v-else-if="item.glossaryName">glossary</span>
@@ -78,7 +82,7 @@
                     is empty!
                     <br />
 
-                    <span v-if="termAddPermission">
+                    <span v-if="hasTermAddPermission">
                         Go to the
                         <span
                             class="hover:underline text-primary"
@@ -229,6 +233,9 @@
             const router = useRouter()
             const profileId = computed(() => route?.params?.id || null)
             const isEditMode = ref(false)
+            const hasCreatePermission = ref()
+            const hasTermAddPermission = ref()
+            const hasCategoryAddPermission = ref()
             const { checkAccess } = useAuth()
 
             const { getEntityStatusIcon } = useGlossaryData()
@@ -341,8 +348,34 @@
                 isEvaluating,
             } = fetchGlossaryPermission(parentGlossary, false)
 
+            const handleLocalPermissionChange = () => {
+                console.log(createPermission.value)
+                if (createPermission.value !== undefined) {
+                    hasCreatePermission.value = createPermission.value
+                }
+                if (termAddPermission.value !== undefined) {
+                    hasTermAddPermission.value = termAddPermission.value
+                }
+                if (categoryAddPermission.value !== undefined) {
+                    hasCategoryAddPermission.value = categoryAddPermission.value
+                }
+            }
+            watch(
+                [
+                    createPermission,
+                    termAddPermission,
+                    categoryAddPermission,
+                    isEvaluating,
+                ],
+                () => {
+                    handleLocalPermissionChange()
+                }
+            )
             onMounted(() => {
-                if (item.value?.typeName === 'cta') fetch()
+                if (item.value?.typeName === 'cta') {
+                    fetch()
+                    handleLocalPermissionChange()
+                }
             })
 
             return {
@@ -371,6 +404,9 @@
                 handleEditCancel,
                 handleNameUpdate,
                 entityTitle,
+                hasCreatePermission,
+                hasTermAddPermission,
+                hasCategoryAddPermission,
             }
         },
     })

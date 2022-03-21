@@ -43,12 +43,22 @@
         ref="wrapper"
         class="flex flex-col flex-grow w-full overflow-hidden"
     >
-        <div class="flex flex-col flex-grow p-4 overflow-y-auto gap-y-3">
-            <template v-for="issue in issues" :key="issue.id">
+        <!-- <div class="flex flex-col flex-grow p-4 overflow-y-auto gap-y-3"> -->
+        <transition-group
+            tag="div"
+            name="unlink-done"
+            class="flex flex-col flex-grow p-4 overflow-y-auto gap-y-3"
+        >
+            <div v-for="issue in issues" :key="issue.id">
                 <IssueCard
                     :issue="issue"
                     class=""
-                    :class="isLoading && issues?.length ? 'opacity-60' : ''"
+                    :class="
+                        (isLoading && issues?.length) ||
+                        unlinkInProgressID === issue.id
+                            ? 'opacity-60'
+                            : ''
+                    "
                 >
                     <template #action>
                         <div
@@ -67,8 +77,9 @@
                         </div>
                     </template>
                 </IssueCard>
-            </template>
-        </div>
+            </div>
+        </transition-group>
+        <!-- </div> -->
     </div>
 </template>
 
@@ -125,12 +136,15 @@
     const store = integrationStore()
     const { userJiraStatus, tenantJiraStatus } = toRefs(store)
 
+    // ? id of issue that is currently getting unlinked, started but not finished
+    const unlinkInProgressID = ref('')
     const handleUnlick = (issue) => {
         const {
             id,
             key,
             fields: { summary },
         } = issue
+        unlinkInProgressID.value = id
 
         message.loading({
             content: `unlinking issues from "${asset.value.displayText}"`,
@@ -151,7 +165,7 @@
 
         const {
             data: unlinkData,
-            isLoading: linkLoading,
+            isLoading: unlinkLoading,
             error: unlinkError,
             mutate: unlink,
         } = unlinkIssue(body, id)
@@ -176,6 +190,7 @@
                 })
                 clearStaleUnlinkIssue()
             }
+            unlinkInProgressID.value = ''
         })
     }
 
@@ -193,4 +208,12 @@
     )
 </script>
 
-<style scoped></style>
+<style lang="less" scoped>
+    .unlink-done-leave-active {
+        transition: all 300ms cubic-bezier(0.4, 0, 1, 1);
+    }
+    .unlink-done-leave-to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+</style>

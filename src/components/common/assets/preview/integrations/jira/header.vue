@@ -5,7 +5,12 @@
         >
             <div>
                 <AtlanIcon icon="Jira" class="mr-2" />
-                <span class="font-semibold text-gray-500">Jira</span>
+                <span class="mr-2 font-semibold text-gray-500">Jira</span>
+                <span
+                    v-if="assetIssueCount"
+                    class="p-1 text-xs text-gray-500 bg-gray-200 rounded"
+                    >{{ assetIssueCount }} issues</span
+                >
             </div>
             <div class="flex-grow"></div>
 

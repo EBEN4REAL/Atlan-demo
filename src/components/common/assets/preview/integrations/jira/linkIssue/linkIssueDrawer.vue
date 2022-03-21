@@ -11,13 +11,7 @@
             <Header
                 class="mb-4"
                 :checked-i-ds="checkedIssues"
-                @close="
-                    () => {
-                        visible = false
-                        handleCancel()
-                        $emit('close')
-                    }
-                "
+                @close="handleCancel"
                 @save="handleIssueLink"
             />
 
@@ -222,7 +216,7 @@
 
     const linkErrorIDs = ref<string[]>([])
 
-    const alllinkPromises: any = []
+    let alllinkPromises: any[] = []
 
     const callLinkIssue = (issue) => {
         const {
@@ -241,19 +235,9 @@
         watch([linkData, linkError], (v) => {
             if (linkError.value) {
                 linkErrorIDs.value.push(id)
-                message.error({
-                    content: `Failed to link "${key}: ${summary}"`,
-                    key: id,
-                    duration: 3,
-                })
             } else {
                 const index = checkedIssues.value.findIndex((i) => i.id === id)
                 if (index !== -1) checkedIssues.value.splice(index, 1)
-                message.success({
-                    content: `"${key}: ${summary}" has been linked to "${asset.value.displayText}"`,
-                    key: id,
-                    duration: 3,
-                })
             }
         })
     }
@@ -275,9 +259,12 @@
 
     const handleCancel = () => {
         recall()
+        visible.value = false
+        emit('close')
     }
 
     const handleIssueLink = () => {
+        alllinkPromises = []
         message.loading({
             content: `linking issues to "${asset.value.displayText}"`,
             key: 'link',
@@ -287,11 +274,32 @@
         Promise.allSettled(alllinkPromises).then((results) => {
             mutate()
             const count = results.filter((r) => r.status === 'fulfilled').length
+            const rejectedCount = results.filter(
+                (r) => r.status === 'rejected'
+            ).length
+
+            if (count)
+                message.success({
+                    content: `${count} ${
+                        count > 1 ? 'issues' : 'issue'
+                    } have been linked to "${asset.value.displayText}"`,
+                    key: 'linkSuccess',
+                    duration: 3,
+                })
+
+            if (rejectedCount)
+                message.error({
+                    content: `Failed to link ${rejectedCount} ${
+                        rejectedCount > 1 ? 'issues' : 'issue'
+                    } to "${asset.value.displayText}"`,
+                    key: 'linkFailure',
+                    duration: 3,
+                })
+
             useAddEvent('integration', 'jira', 'issue_linked', {
-                issue_count: count,
+                issue_count: count, // ? make this total issue count added to this asset
                 asset_type: asset.value.typeName,
             })
-            // visible.value = false
             handleCancel()
             emit('fetch')
         })

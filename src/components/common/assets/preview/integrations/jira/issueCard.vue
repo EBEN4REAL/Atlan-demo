@@ -1,74 +1,40 @@
 <template>
     <section
-        class="flex p-3 bg-white border shadow gap-x-4 group"
-        style="border-radius: 8px"
+        class="flex p-3 bg-white border border-gray-200 gap-x-3 group"
+        style="
+            border-radius: 8px;
+            box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.05);
+        "
         :class="checked ? ' border-primary' : 'border-gray-200'"
         @click="$emit('click', issue)"
     >
         <template v-if="showCheckbox">
             <a-checkbox :checked="checked" :class="$style.checkboxClass" />
         </template>
-        <aside class="flex-grow space-y-3 overflow-hidden">
-            <header
-                class="relative flex items-center justify-between overflow-hidden"
+        <aside class="relative flex flex-col flex-grow overflow-hidden gap-y-3">
+            <a-dropdown
+                v-model:visible="actionVisible"
+                v-if="$slots?.action"
+                :trigger="['click']"
+                placement="bottomRight"
             >
-                <div class="flex items-start text-xs">
-                    <img
-                        :src="issuetype.iconUrl"
-                        style="max-height: 14px; max-width: 14px"
-                        class="mr-1"
-                    />
-                    <span class="text-gray-500">{{ key }}</span>
-                </div>
-                <div class="flex-grow"></div>
-                <template v-if="footer">
-                    <span class="mr-1 text-xs text-gray-600">{{
-                        useTimeAgo(created).value
-                    }}</span>
-                    <img
-                        style="max-height: 16px; max-width: 16px"
-                        class="rounded-full"
-                        :src="creator.avatarUrls['24x24']"
-                        alt=""
-                    />
-                </template>
                 <div
-                    v-else
-                    class="flex items-center px-2 py-1 text-gray-500 rounded gap-x-1"
+                    :class="actionVisible ? 'opacity-100' : ''"
+                    class="absolute right-0 flex items-center justify-end w-24 h-5 opacity-0 bg-gradient-to-l from-white via-white group-hover:opacity-100"
                 >
-                    <img
-                        v-if="showProjectImage"
-                        style="height: 16px; width: 16px"
-                        :src="project.avatarUrls['24x24']"
-                        alt=""
-                        class="rounded-full"
-                        @error="showProjectImage = false"
-                    />
-                    <div class="text-xs text-gray-600">{{ project.key }}</div>
-                </div>
-                <a-dropdown
-                    v-if="$slots?.action"
-                    :trigger="['click']"
-                    placement="bottomRight"
-                >
-                    <div
-                        class="absolute right-0 flex items-center justify-end w-24 h-5 opacity-0 bg-gradient-to-l from-white via-white group-hover:opacity-100"
-                    >
-                        <div class="pl-3 cursor-pointer">
-                            <AtlanIcon
-                                icon="ThreeDotsAlt"
-                                class="h-1 cursor-pointer"
-                            />
-                        </div>
+                    <div class="pl-3 cursor-pointer">
+                        <AtlanIcon
+                            icon="ThreeDotsAlt"
+                            class="h-1 cursor-pointer"
+                        />
                     </div>
-                    <template #overlay>
-                        <slot name="action" />
-                    </template>
-                </a-dropdown>
-            </header>
-
-            <main class="flex flex-col space-y-1">
-                <div class="flex items-center flex-grow font-bold">
+                </div>
+                <template #overlay>
+                    <slot name="action" />
+                </template>
+            </a-dropdown>
+            <main class="flex flex-col gap-y-1">
+                <div class="flex items-center flex-grow text-sm font-bold">
                     <Truncate
                         placement="left"
                         :route-to="issueUrl"
@@ -80,14 +46,24 @@
                 </div>
                 <span class="text-xs">
                     <Truncate
-                        classes="text-gray-600"
+                        classes="text-gray-500"
                         placement="left"
                         :tooltip-text="description"
                         :rows="2"
                     />
                 </span>
             </main>
-            <footer v-if="footer" class="flex gap-x-2">
+            <section class="flex gap-x-2">
+                <div
+                    class="flex items-center p-1 text-xs bg-gray-200 rounded gap-x-1"
+                >
+                    <img
+                        :src="issuetype.iconUrl"
+                        style="max-height: 14px; max-width: 14px"
+                        class="mr-1"
+                    />
+                    <span class="text-gray-500">{{ key }}</span>
+                </div>
                 <div
                     v-if="priority"
                     class="flex items-center p-1 bg-gray-200 rounded gap-x-1"
@@ -119,6 +95,23 @@
                         {{ project.key }}
                     </div>
                 </div>
+            </section>
+            <footer
+                class="flex items-center justify-between overflow-hidden text-xs text-gray-400"
+            >
+                <div class="flex items-center gap-x-1">
+                    <img
+                        style="max-height: 16px; max-width: 16px"
+                        class="rounded-full"
+                        :src="creator.avatarUrls['24x24']"
+                        alt=""
+                    />
+                    {{ creator.displayName }}
+                </div>
+                <div class="flex-grow"></div>
+                <span class="mr-1 text-xs">{{
+                    useTimeAgo(created).value
+                }}</span>
             </footer>
         </aside>
     </section>
@@ -146,6 +139,7 @@
     const { issue } = toRefs(props)
 
     const showProjectImage = ref(true)
+    const actionVisible = ref(false)
 
     const {
         key,

@@ -388,6 +388,7 @@ import VqbVerified from '~/assets/images/icons/VqbVerified.svg'
 import VqbDeprecated from '~/assets/images/icons/VqbDeprecated.svg'
 import VqbDraft from '~/assets/images/icons/VqbDraft.svg'
 import Clock from '~/assets/images/icons/clock.svg'
+import Mail from '~/assets/images/icons/mail.svg'
 import Collapsed from '~/assets/images/icons/Collapsed.svg'
 
 import InnerJoinInfo from '~/assets/images/illustrations/InnerJoinInfo.svg'
@@ -429,6 +430,7 @@ import NoProperty from '~/assets/images/admin/customMetadata/empty-property.svg'
 import TrashAlt from '~/assets/images/icons/Trash-alt.svg'
 
 export default {
+    Mail,
     TrashAlt,
     NoProperty,
     ThreeDotsAlt,

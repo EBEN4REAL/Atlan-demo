@@ -1,32 +1,14 @@
 <template>
-    <div class="px-1 my-0.5">
+    <div class="mb-3">
         <div
-            class="relative px-2 py-3 mx-1 rounded cursor-pointer hover:bg-primary-light card-container"
+            class="relative p-3 mx-1 border border-gray-200 rounded-lg cursor-pointer hover:border-primary card-container"
         >
-            <div class="flex items-center justify-between">
-                <div class="flex items-center">
-                    <AtlanIcon
-                        v-if="
-                            item.createdBy?.startsWith(
-                                'service-account-apikey-'
-                            )
-                        "
-                        class="h-3"
-                        icon="Key"
-                    />
-                    <Avatar
-                        v-else
-                        :allow-upload="false"
-                        :avatar-name="item.created_by_user?.username"
-                        :avatar-size="16"
-                        :avatar-shape="'circle'"
-                        :image-url="item.createdBy ? '' : atlanLogo"
-                    />
-                    <span class="ml-2 text-gray-700">{{
-                        item.createdBy?.startsWith('service-account-apikey-')
-                            ? 'API key'
-                            : item.createdBy
-                    }}</span>
+            <div class="flex items-center">
+                <div class="text-sm font-bold text-gray-500">
+                    {{ typeCopyMapping[item?.requestType] }}
+                    {{ destinationAttributeMapping[item.destinationAttribute] }}
+                </div>
+                <!-- <div class="flex">
                     <span class="ml-1 text-gray-400 truncate"
                         >has requested to</span
                     >
@@ -46,7 +28,7 @@
                         class="ml-1 text-gray-400"
                         >on</span
                     >
-                </div>
+                </div> -->
                 <div
                     v-if="item.status === 'active'"
                     v-auth="[map.APPROVE_REQUEST]"
@@ -58,7 +40,7 @@
                         :item-drop-down="'Approve with comment'"
                         @submit="(message) => handleApproval(message || '')"
                     >
-                        <span class="text-green-500"> Approve </span>
+                        <span class="text-xs text-green-500"> Approve </span>
                     </RequestDropdown>
                     <RequestDropdown
                         :type="'reject'"
@@ -67,48 +49,58 @@
                         :item-drop-down="'Reject with comment'"
                         @submit="(message) => handleRejection(message || '')"
                     >
-                        <span class="text-red-500"> Reject </span>
+                        <span class="text-xs text-red-500"> Reject </span>
                     </RequestDropdown>
                 </div>
-                <div
-                    v-if="
-                        item.status === 'rejected' || item.status === 'approved'
-                    "
-                    class="flex items-center justify-end font-light whitespace-nowrap hover-reject-approve linear-gradient"
-                    :class="
-                        item.status === 'approved'
-                            ? 'text-success'
-                            : 'text-error'
-                    "
-                >
-                    {{
-                        item.status === 'approved'
-                            ? 'Approved by'
-                            : 'Rejected by'
-                    }}
-                    <div class="flex items-center mx-2 truncate">
-                        <Avatar
-                            :allow-upload="false"
-                            :avatar-name="nameUpdater"
-                            :avatar-size="18"
-                            :avatar-shape="'circle'"
-                            class="mr-2"
-                        />
+                <!-- hover-reject-approve -->
+                <div class="flex items-center justify-end ml-auto">
+                    <div
+                        v-if="
+                            item.status === 'rejected' ||
+                            item.status === 'approved'
+                        "
+                        class="flex items-center justify-end text-xs font-light whitespace-nowrap linear-gradient hover-reject-approve"
+                        :class="
+                            item.status === 'approved'
+                                ? 'text-success'
+                                : 'text-error'
+                        "
+                    >
+                        {{
+                            item.status === 'approved'
+                                ? 'Approved by'
+                                : 'Rejected by'
+                        }}
+                        <div class="flex items-center mx-1 truncate">
+                            <Avatar
+                                :allow-upload="false"
+                                :avatar-name="nameUpdater"
+                                :avatar-size="18"
+                                :avatar-shape="'circle'"
+                                class="mr-1"
+                            />
 
-                        <span class="text-gray-700">{{ nameUpdater }}</span>
+                            <span class="text-xs text-gray-700">{{
+                                nameUpdater
+                            }}</span>
+                        </div>
                     </div>
+                    <AtlanIcon
+                        v-if="
+                            item.status === 'rejected' ||
+                            item.status === 'approved'
+                        "
+                        :class="{
+                            'approved-icon text-success':
+                                item.status === 'approved',
+                            'rejected-icon': item.status === 'rejected',
+                        }"
+                        :icon="
+                            item.status === 'rejected' ? 'CrossCircle' : 'Check'
+                        "
+                    />
+                    <AtlanIcon v-else icon="Clock" class="icon-warning" />
                 </div>
-                <AtlanIcon
-                    v-if="
-                        item.status === 'rejected' || item.status === 'approved'
-                    "
-                    :class="{
-                        'approved-icon text-success':
-                            item.status === 'approved',
-                        'rejected-icon': item.status === 'rejected',
-                    }"
-                    :icon="item.status === 'rejected' ? 'CrossCircle' : 'Check'"
-                />
             </div>
             <div v-if="selectedAsset.typeName === 'AtlasGlossaryTerm'">
                 <div
@@ -208,16 +200,14 @@
                         :status="item.destinationValue"
                     />
                 </div>
-                <!-- <div
-                    v-else-if="item.destinationAttribute === 'ownerUsers'"
-                    class="mt-2"
-                > -->
-                <!-- <UserPill
-                    class="mt-2 classification-pill"
-                    :username="item.destinationValue"
-                /> -->
-                <!-- {{ item.destinationValue }}
-                </div> -->
+                <div v-else-if="item.destinationAttribute === 'ownerUsers'">
+                    <!-- <PopOverUser :item="item.destinationValue"> -->
+                    <UserPill
+                        class="classification-pill"
+                        :username="item.destinationValue"
+                    />
+                    <!-- </PopOverUser> -->
+                </div>
                 <div v-else-if="item.requestType === 'term_link'">
                     <TermPopover
                         :loading="termLoading"
@@ -238,10 +228,32 @@
                         </Pill>
                     </TermPopover>
                 </div>
-                <div v-else class="ml-1 text-sm text-gray-500 truncate">
+                <div v-else class="text-sm text-gray-700 truncate">
                     {{ item.destinationValue }}
                 </div>
-                <div class="flex items-center">
+            </div>
+
+            <div class="flex mt-3">
+                <AtlanIcon
+                    v-if="item.createdBy?.startsWith('service-account-apikey-')"
+                    class="h-3 mt-1"
+                    icon="Key"
+                />
+
+                <Avatar
+                    v-else
+                    :allow-upload="false"
+                    :avatar-name="item.created_by_user?.username"
+                    :avatar-size="16"
+                    :avatar-shape="'circle'"
+                    :image-url="item.createdBy ? '' : atlanLogo"
+                />
+                <span class="ml-2 text-gray-700">{{
+                    item.createdBy?.startsWith('service-account-apikey-')
+                        ? 'API key'
+                        : item.createdBy
+                }}</span>
+                <div class="flex ml-auto">
                     <a-popover
                         v-if="messageUpdate"
                         trigger="hover"
@@ -267,17 +279,15 @@
                                 </div>
                             </div>
                         </template>
-                        <div class="flex items-center">
+                        <div class="flex items-center ml-auto">
                             <AtlanIcon icon="Comment" />
                             <div class="ml-1 text-sm text-right text-gray-500">
                                 1
                             </div>
-                            <div class="mx-2 text-sm text-right text-gray-500">
-                                -
-                            </div>
+                            <span class="mx-2 text-gray-300">•</span>
                         </div>
                     </a-popover>
-                    <div class="ml-auto text-sm text-right text-gray-500">
+                    <div class="text-sm text-right text-gray-500">
                         <a-tooltip placement="topLeft">
                             <template #title>
                                 <span>{{
@@ -291,262 +301,8 @@
                     </div>
                 </div>
             </div>
-
-            <!-- <template v-if="item.requestType === 'attach_classification'">
-            <p class="text-gray-500">Link Classification</p>
-            <div class="mt-1 w-fit">
-                <Popover
-                    v-if="localClassification(item.payload.typeName)"
-                    :classification="localClassification(item.payload.typeName)"
-                    label-key="displayName"
-                    popover-trigger="hover"
-                    read-only
-                    :is-plain="true"
-                >
-                    <ClassificationPill
-                        :name="localClassification(item.payload.typeName).name"
-                        :display-name="
-                            localClassification(item.payload.typeName)
-                                ?.displayName
-                        "
-                        :allow-delete="false"
-                        :color="
-                            localClassification(item.payload.typeName).options
-                                ?.color
-                        "
-                        :no-hover="true"
-                        :created-by="
-                            localClassification(item.payload.typeName)
-                                ?.createdBy
-                        "
-                    />
-                </Popover>
-            </div>
-            <div class="mt-1">
-                <span class="text-sm text-gray-500">{{ item.createdBy }}</span>
-                <span class="sparator" />
-                <span class="text-sm text-gray-500">{{
-                    createdTime(item.createdAt)
-                }}</span>
-            </div>
-        </template>
-        <template
-            v-if="
-                item.requestType === 'term_link' &&
-                selectedAsset.typeName !== 'AtlasGlossaryTerm'
-            "
-        >
-            <p class="text-gray-500">Link Term</p>
-            <div class="mt-1">
-                <Pill
-                    :label="item?.sourceEntity?.attributes.name"
-                    :has-action="false"
-                >
-                    <template #prefix>
-                        <AtlanIcon icon="Term" />
-                    </template>
-                </Pill>
-            </div>
-            <div class="mt-1">
-                <span class="text-sm text-gray-500">{{ item.createdBy }}</span>
-                <span class="sparator" />
-                <span class="text-sm text-gray-500">{{
-                    createdTime(item.createdAt)
-                }}</span>
-            </div>
-        </template>
-        <template
-            v-if="
-                item.requestType === 'term_link' &&
-                selectedAsset.typeName === 'AtlasGlossaryTerm'
-            "
-        >
-            <p class="text-gray-500">
-                {{ assetText[0] }}
-
-                <CertificateBadge
-                    v-if="item.destinationEntity?.attributes?.certificateStatus"
-                    :status="
-                        item.destinationEntity?.attributes?.certificateStatus
-                    "
-                    class="mb-1 ml-1"
-                    :username="
-                        item.destinationEntity?.attributes?.certificateUpdatedBy
-                    "
-                    :timestamp="timeAgo"
-                />
-            </p>
-            <div class="mt-1">
-                <div class="flex items-center text-xs">
-                    <AssetLogo :selected="false" :asset="assetWrappper" />
-                    <span
-                        class="ml-1 overflow-hidden text-gray-500 overflow-ellipsis"
-                        >{{ item.entityType.toUpperCase() }}</span
-                    >
-                    <AtlanIcon class="mx-1 ml-2" icon="Schema2" />
-                    <span
-                        class="overflow-hidden text-gray-500 overflow-ellipsis"
-                    >
-                        {{ assetText[2] }}</span
-                    >
-                    <AtlanIcon class="mx-1 ml-2" icon="SchemaGray" />
-
-                    <span
-                        class="overflow-hidden text-gray-500 overflow-ellipsis"
-                    >
-                        {{ assetText[1] }}</span
-                    >
-                </div>
-            </div>
-            <div class="mt-1">
-                <span class="text-sm text-gray-500">{{ item.createdBy }}</span>
-                <span class="sparator" />
-                <span class="text-sm text-gray-500">{{
-                    createdTime(item.createdAt)
-                }}</span>
-            </div>
-        </template>
-        <div
-            v-if="isLoading"
-            class="absolute flex items-center justify-center loading-container"
-        >
-            <AtlanLoader />
         </div>
-        <div
-            v-else
-            class="absolute items-center bg-gray-100 actions-container justify-evenly"
-        >
-            <a-tooltip placement="topLeft">
-                <template #title>
-                    <span>Reject</span>
-                </template>
-                <div
-                    class="flex items-center justify-center cursor-pointer action-btn"
-                    @click="handleRejection('')"
-                >
-                    <AtlanIcon class="btn-reject" icon="Cross" />
-                </div>
-            </a-tooltip>
-            <a-tooltip placement="topLeft">
-                <template #title>
-                    <span>Approve</span>
-                </template>
-                <div
-                    class="flex items-center justify-center cursor-pointer action-btn"
-                    @click="handleApproval('')"
-                >
-                    <AtlanIcon class="btn-approve" icon="CheckCurrentColor" />
-                </div>
-            </a-tooltip>
-            <a-dropdown
-                v-model:visible="isVisible"
-                trigger="click"
-                placement="bottomRight"
-            >
-                <template #overlay>
-                    <a-menu>
-                        <a-menu-item
-                            key="1"
-                            @click="handleClickApproveWithComment"
-                        >
-                            <a-popover
-                                v-model:visible="isVisibleApproveWithComment"
-                                trigger="click"
-                                placement="bottomRight"
-                                :align="{ offset: [15, -70] }"
-                            >
-                                <template #content>
-                                    <div class="comment-delete">
-                                        <div class="flex">
-                                            <a-textarea
-                                                v-model:value="messageApprove"
-                                                placeholder="Message"
-                                                class="border-none"
-                                                :rows="2"
-                                            />
-                                        </div>
-                                        <div
-                                            class="flex items-center justify-between mt-4"
-                                        >
-                                            <a-button
-                                                class="text-gray-500"
-                                                size="small"
-                                                type="link"
-                                                @click="cancelApprove"
-                                            >
-                                                Cancel
-                                            </a-button>
-                                            <a-button
-                                                size="small"
-                                                type="link"
-                                                :class="'text-green-500'"
-                                                @click="handleApprove"
-                                            >
-                                                Approve
-                                            </a-button>
-                                        </div>
-                                    </div>
-                                </template>
-                                Approve with comment
-                            </a-popover>
-                        </a-menu-item>
-
-                        <a-menu-item
-                            key="2"
-                            @click="handleClickRejectWithComment"
-                        >
-                            <a-popover
-                                v-model:visible="isVisibleRejectWithComment"
-                                trigger="click"
-                                placement="bottomRight"
-                                :align="{ offset: [15, -60] }"
-                            >
-                                <template #content>
-                                    <div class="comment-delete">
-                                        <div class="flex">
-                                            <a-textarea
-                                                v-model:value="messageReject"
-                                                placeholder="Message"
-                                                class="border-none"
-                                                :rows="2"
-                                            />
-                                        </div>
-                                        <div
-                                            class="flex items-center justify-between mt-4"
-                                        >
-                                            <a-button
-                                                class="text-gray-500"
-                                                size="small"
-                                                type="link"
-                                                @click="cancelReject"
-                                            >
-                                                Cancel
-                                            </a-button>
-                                            <a-button
-                                                size="small"
-                                                type="link"
-                                                :class="'text-red-500'"
-                                                @click="handleReject"
-                                            >
-                                                Reject
-                                            </a-button>
-                                        </div>
-                                    </div>
-                                </template>
-                                Reject with comment
-                            </a-popover>
-                        </a-menu-item>
-                    </a-menu>
-                </template>
-                <div
-                    class="flex items-center justify-center cursor-pointer action-btn"
-                >
-                    <AtlanIcon icon="ThreeDots" />
-                </div>
-            </a-dropdown>
-        </div> -->
-        </div>
-        <div class="mx-4 mt-1 border-b border-gray-light" />
+        <!-- <div class="mx-4 mt-1 border-b border-gray-light" /> -->
     </div>
 </template>
 
@@ -570,7 +326,10 @@
     import ClassificationPill from '@/common/pills/classification.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
-    import { typeCopyMapping } from '~/components/governance/requests/requestType'
+    import {
+        typeCopyMapping,
+        destinationAttributeMapping,
+    } from '~/components/governance/requests/requestType'
     import {
         approveRequest,
         declineRequest,
@@ -580,11 +339,12 @@
     import Avatar from '~/components/common/avatar/index.vue'
     import TermPopover from '@/common/popover/term/term.vue'
     import useTermPopover from '@/common/popover/term/useTermPopover'
-    import { Users } from '~/services/service/users/index'
     import AtlanButton from '@/UI/button.vue'
     import RequestDropdown from '~/components/common/dropdown/requestDropdown.vue'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
     import map from '~/constant/accessControl/map'
+    // import PopOverUser from '@/common/popover/user/user.vue'
+    // import PopOverGroup from '@/common/popover/user/groups.vue'
 
     export default defineComponent({
         name: 'RequestItem',
@@ -600,6 +360,8 @@
             RequestDropdown,
             UserPill,
             CertificatePill,
+            // PopOverUser,
+            // PopOverGroup,
         },
         props: {
             selectedAsset: {
@@ -775,12 +537,18 @@
                 dayjs,
                 typeCopyMapping,
                 map,
+                destinationAttributeMapping,
             }
         },
     })
 </script>
 
 <style lang="less">
+    .icon-warning {
+        path {
+            stroke: #f7b43d;
+        }
+    }
     .clasification-pill {
         // @apply hover:text-gray-700 !important;
     }
@@ -791,6 +559,8 @@
         transform: scale(0.8);
     }
     .card-container {
+        box-shadow: 0px 2px 5px 1px rgba(0, 0, 0, 0.05);
+
         &:hover {
             .asset-term {
                 background: transparent !important;
@@ -817,7 +587,7 @@
             top: 1px;
             display: none;
             .action-btn {
-                height: 32px;
+                height: 24px;
                 width: 32px;
                 border-radius: 50%;
                 background: white;
@@ -835,6 +605,18 @@
     }
     .mr-cta {
         margin-left: 8px;
+    }
+    .hover-action {
+        .sparator {
+            display: none !important;
+        }
+        button {
+            box-shadow: 0px 1px 0px 0px rgba(0, 0, 0, 0.05);
+            border-radius: 4px !important;
+            border: 1px solid rgba(230, 230, 235, 1) !important;
+            height: fit-content !important;
+            padding: 2px 8px !important;
+        }
     }
 </style>
 <style lang="less" scoped>
@@ -880,11 +662,17 @@
         padding-left: 20px;
     }
     .linear-gradient {
-        background: rgb(244, 246, 253);
+        // background: rgb(244, 246, 253);
+        // background: linear-gradient(
+        //     90deg,
+        //     rgba(244, 246, 253, 0.8183648459383753) 6%,
+        //     rgba(244, 246, 253, 1) 16%
+        // );
+        background: rgb(255, 255, 255);
         background: linear-gradient(
             90deg,
-            rgba(244, 246, 253, 0.8183648459383753) 6%,
-            rgba(244, 246, 253, 1) 16%
+            rgba(255, 255, 255, 0.779171043417367) 32%,
+            rgba(255, 255, 255, 1) 53%
         );
     }
 </style>

@@ -15,6 +15,7 @@ interface DiscoverListParams {
     source?: Ref<any>
     attributes?: Ref<string[]>
     relationAttributes?: Ref<string[]>
+    immediate?: boolean
 }
 
 export function useWorkflowDiscoverList({
@@ -26,6 +27,7 @@ export function useWorkflowDiscoverList({
     limit,
     source,
     offset = ref(0),
+    immediate,
 }: DiscoverListParams) {
     const defaultBody = ref({})
 
@@ -48,7 +50,7 @@ export function useWorkflowDiscoverList({
     generateBody()
 
     const { data, refresh, isLoading, isValidating, cancelRequest, error } =
-        useWorkflowIndexSearch(defaultBody)
+        useWorkflowIndexSearch(defaultBody, immediate)
 
     const list = ref([])
 

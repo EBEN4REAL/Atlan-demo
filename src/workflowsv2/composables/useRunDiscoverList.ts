@@ -7,7 +7,6 @@ import useRunIndexSearch from './useRunIndexSearch'
 interface DiscoverListParams {
     queryText?: Ref<any>
     facets?: Ref<any>
-    postFacets?: Ref<any>
     aggregations?: Ref<string[]>
     limit?: Ref<Number>
     offset?: Ref<Number>
@@ -18,7 +17,6 @@ interface DiscoverListParams {
 export function useRunDiscoverList({
     queryText,
     facets,
-    postFacets,
     aggregations,
     preference,
     limit,
@@ -33,7 +31,6 @@ export function useRunDiscoverList({
             offset?.value,
             limit?.value,
             facets?.value,
-            postFacets?.value,
             aggregations?.value,
             preference?.value
         )
@@ -83,7 +80,6 @@ export function useRunDiscoverList({
         queryText,
         limit,
         offset,
-        postFacets,
 
         isValidating,
         isLoading,

@@ -1,9 +1,10 @@
 <template>
     <BaseSelector
-        v-model:value="packageName"
+        :value="value"
         :list="packageList"
         placeholder="Select package"
         not-found-content="No package found"
+        @update:value="$emit('update:value', $event)"
     />
 </template>
 
@@ -16,10 +17,11 @@
     export default defineComponent({
         name: 'PackageSelector',
         components: { BaseSelector },
-        props: {},
-        emits: [],
+        props: {
+            value: { type: String, required: false, default: () => undefined },
+        },
+        emits: ['update:value'],
         setup() {
-            const packageName = ref(undefined)
             const workflowStore = useWorkflowStore()
 
             const init = async () => {
@@ -37,7 +39,7 @@
             )
 
             init()
-            return { packageList, packageName }
+            return { packageList }
         },
     })
 </script>

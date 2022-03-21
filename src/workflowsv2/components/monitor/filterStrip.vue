@@ -28,8 +28,12 @@
             label="Filters"
             @click="drawerFilter = !drawerFilter"
         />
-        <PackageSelector />
-        <WorkflowSelector />
+        <PackageSelector v-model:value="packageId" />
+        <WorkflowSelector
+            v-model:value="workflowId"
+            :package-name="packageId"
+            :disabled="!packageId"
+        />
         <TabbedDateRangePicker v-model:value="runDateRange" />
     </div>
 </template>
@@ -52,8 +56,10 @@
         setup() {
             const runDateRange = ref('Today')
             const drawerFilter = ref(false)
+            const packageId = ref(undefined)
+            const workflowId = ref(undefined)
 
-            return { runDateRange, drawerFilter }
+            return { runDateRange, drawerFilter, packageId, workflowId }
         },
     })
 </script>

@@ -19,7 +19,9 @@
                     {{ head.title }}
                 </span>
             </div>
+            <!-- <AtlanLoader v-if="isLoading" /> -->
             <div
+                v-if="runs?.length"
                 class="overflow-y-scroll divide-y divide-gray-300"
                 style="height: 45vh"
             >
@@ -29,6 +31,9 @@
                     :run="run"
                 />
             </div>
+            <!-- <template v-else>
+                <EmptyLogsIllustration />
+            </template> -->
             <span>Pagination</span>
         </div>
     </div>
@@ -38,6 +43,7 @@
     import { defineComponent, ref } from 'vue'
     import { useRunDiscoverList } from '~/workflowsv2/composables/useRunDiscoverList'
     import RunListItem from '~/workflowsv2/components/monitor/runListItem.vue'
+    import EmptyLogsIllustration from '~/assets/images/illustrations/empty_logs.svg'
 
     export default defineComponent({
         name: 'RunHistoryTable',
@@ -75,7 +81,7 @@
                 { title: 'Duration', style: 'flex-grow: 1' },
                 { title: 'Output', style: 'flex-grow: 2' },
             ]
-            return { runs, tableHeaders }
+            return { runs, tableHeaders, isLoading, EmptyLogsIllustration }
         },
     })
 </script>

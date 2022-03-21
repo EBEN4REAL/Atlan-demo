@@ -1,38 +1,82 @@
 <template>
     <BaseSelector
-        v-model:value="workflowName"
+        :value="value"
         :list="workflowList"
+        :loading="isLoading"
         placeholder="Select workflow"
-        not-found-content="No workflow found"
+        :not-found-content="isLoading ? 'Loading' : 'No workflow found'"
+        @update:value="$emit('update:value', $event)"
     />
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref } from 'vue'
+    import { whenever } from '@vueuse/core'
+    import { computed, defineComponent, ref, toRefs, watch } from 'vue'
+    import { useWorkflowDiscoverList } from '~/workflowsv2/composables/useWorkflowDiscoverList'
+    import { useWorkflowStore } from '~/workflowsv2/store'
+    import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
+
     import BaseSelector from './baseSelector.vue'
 
     export default defineComponent({
         name: 'WorkflowSelector',
         components: { BaseSelector },
-        props: {},
-        emits: [],
-        setup() {
+        props: {
+            value: { type: String, required: false, default: () => undefined },
+            packageName: {
+                type: String,
+                required: false,
+                default: () => undefined,
+            },
+        },
+        emits: ['update:value'],
+        setup(props, { emit }) {
+            const { packageName } = toRefs(props)
             const workflowName = ref(undefined)
-            const workflowList = [
-                {
-                    id: '8434328049',
-                    label: 'Workflow 1',
-                },
-                {
-                    id: '340394790',
-                    label: 'Workflow 2',
-                },
-                {
-                    id: '342959390',
-                    label: 'Workflow 3',
-                },
-            ]
-            return { workflowName, workflowList }
+            const workflowStore = useWorkflowStore()
+            const workflowList = ref([])
+
+            const pkg = computed(() =>
+                packageName.value
+                    ? workflowStore.packageMeta?.[packageName.value]
+                    : {}
+            )
+            const { displayName } = useWorkflowInfo()
+
+            const { list, quickChange, isLoading } = useWorkflowDiscoverList({
+                facets: computed(() => ({
+                    ui: true,
+                    packageName:
+                        pkg.value?.metadata?.annotations?.[
+                            'package.argoproj.io/name'
+                        ],
+                })),
+                limit: ref(100),
+                source: ref({
+                    excludes: ['spec'],
+                }),
+                preference: ref({
+                    sort: 'metadata.creationTimestamp-desc',
+                }),
+                immediate: false,
+            })
+
+            whenever(list, () => {
+                workflowList.value = list.value.map((workflow) => ({
+                    id: workflow.metadata.uid,
+                    label: displayName(pkg.value, workflow.metadata.name),
+                }))
+            })
+
+            watch(packageName, () => {
+                workflowList.value = []
+                emit('update:value', undefined)
+
+                if (packageName.value) {
+                    quickChange()
+                }
+            })
+            return { workflowName, workflowList, pkg, list, isLoading }
         },
     })
 </script>

@@ -5,7 +5,8 @@ import { useOptions } from '~/services/api/common'
 import { Workflows } from '~/services/service/workflows'
 
 export default function useWorkflowIndexSearch(
-    body: Record<string, any> | Ref<Record<string, any>>
+    body: Record<string, any> | Ref<Record<string, any>>,
+    immediate = true
 ) {
     let cancel = axios.CancelToken.source()
 
@@ -14,7 +15,7 @@ export default function useWorkflowIndexSearch(
             cancelToken: cancel.token,
         }),
         asyncOptions: ref({
-            immediate: true,
+            immediate,
         }),
     }
 

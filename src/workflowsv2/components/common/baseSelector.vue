@@ -8,7 +8,8 @@
         @update:value="$emit('update:value', $event)"
     >
         <template #suffixIcon>
-            <AtlanIcon icon="CaretDown" />
+            <AtlanLoader v-if="loading" />
+            <AtlanIcon v-else icon="CaretDown" />
         </template>
         <template v-for="item in list" :key="item.id">
             <a-select-option :value="item.id">
@@ -34,12 +35,13 @@
         name: 'BaseSelector',
         components: {},
         props: {
-            value: { type: String, required: false, default: () => undefined },
+            value: { type: String, default: () => undefined },
             list: {
                 type: Array as PropType<selectorOptions[]>,
                 required: true,
                 default: () => [],
             },
+            loading: { type: Boolean, default: () => false },
         },
         emits: ['update:value'],
     })

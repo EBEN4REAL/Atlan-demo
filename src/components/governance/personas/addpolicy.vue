@@ -361,14 +361,7 @@
                                 <div
                                     class="mb-2 text-sm text-gray-500 title-tag"
                                 >
-                                    <AtlanIcon
-                                        :icon="
-                                            el.title.toLowerCase() === 'assets'
-                                                ? 'AssetsInactiveLight'
-                                                : 'GovernanceCenter'
-                                        "
-                                        class="h-4"
-                                    />
+                                    <AtlanIcon :icon="el.icon" class="h-4" />
                                     {{ el.title }}
                                 </div>
                                 <div
@@ -927,8 +920,10 @@
                 const result = []
                 const assetsPermission = []
                 const governance = []
+                const api = []
                 const assetsList = scopeList[0]
                 const governanceList = scopeList[1]
+                const apiList = scopeList[2]
                 policy.value.actions.forEach((el) => {
                     const assetPermission = assetsList.scopes.find(
                         (elc) => elc.value === el
@@ -936,6 +931,10 @@
                     const governancePermission = governanceList.scopes.find(
                         (elc) => elc.value === el
                     )
+                    const apiPermission = apiList.scopes.find(
+                        (elc) => elc.value === el
+                    )
+
                     if (assetPermission) {
                         if (el === 'link-assets') {
                             if (
@@ -946,22 +945,33 @@
                         } else {
                             assetsPermission.push(assetPermission.label)
                         }
-                        console.log(el, '<<<<')
                     }
                     if (governancePermission) {
                         governance.push(governancePermission.label)
+                    }
+                    if (apiPermission) {
+                        api.push(apiPermission.label)
                     }
                 })
                 if (assetsPermission.length > 0) {
                     result.push({
                         title: `Assets`,
                         value: assetsPermission.join(', '),
+                        icon: 'AssetsInactiveLight',
                     })
                 }
                 if (governance.length > 0) {
                     result.push({
                         title: `Governance`,
                         value: governance.join(', '),
+                        icon: 'GovernanceCenter',
+                    })
+                }
+                if (api.length > 0) {
+                    result.push({
+                        title: `API`,
+                        value: api.join(', '),
+                        icon: 'APIKey',
                     })
                 }
                 return result

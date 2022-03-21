@@ -87,7 +87,11 @@
     }
 </script>
 
-<style></style>
+<style lang="less">
+    .icon-scale-2 {
+        transform: scale(2);
+    }
+</style>
 <route lang="yaml">
 meta:
     layout: default

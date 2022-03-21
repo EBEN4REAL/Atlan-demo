@@ -334,13 +334,20 @@
                         //     filters.value.attributeValue,
                         //     0
                         // )
-                        emit(
-                            'firstSelectByDefaultChange',
-                            'databaseQualifiedName',
-                            data[0].value,
-                            1,
-                            forceRefresh
-                        )
+
+                        // If there is already a schema selected under the "default" DB -> No need to reselect DB as default
+                        if (
+                            assetFromAssetDropdown?.value
+                                ?.schemaQualifiedName === undefined
+                        ) {
+                            emit(
+                                'firstSelectByDefaultChange',
+                                'databaseQualifiedName',
+                                data[0].value,
+                                1,
+                                forceRefresh
+                            )
+                        }
                     }
                 }
             }

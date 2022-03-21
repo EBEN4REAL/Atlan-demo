@@ -990,7 +990,7 @@
                                             )
                                         )
                                     activeInlineTabCopy.attributes.name =
-                                        input.value
+                                        newName
                                     activeInlineTabCopy.label = newName
 
                                     if (
@@ -1128,7 +1128,7 @@
                                             )
                                         )
                                     activeInlineTabCopy.attributes.name =
-                                        input.value
+                                        newName
                                     activeInlineTabCopy.label = newName
 
                                     if (

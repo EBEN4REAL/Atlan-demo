@@ -31,7 +31,7 @@
         "
         v-model="localValue"
         class="flex-grow shadow-none"
-        placeholder="Press Enter to add"
+        placeholder="Type & press return to add"
         :data-type="dataType"
         @change="handleInputChange"
     />

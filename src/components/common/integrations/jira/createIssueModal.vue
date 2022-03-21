@@ -54,23 +54,41 @@
                             dropdown-class-name="max-h-72 overflow-y-scroll"
                             placeholder="Select issue type"
                             :options="issueTypeOptions"
-                            @change="initRequiredFields"
+                            @change="initDynamicFields"
                         />
                     </a-form-item>
                 </div>
                 <a-form-item :name="['summary']" class="mb-6" label="Title">
-                    <a-input
-                        v-model:value="form.summary"
-                        placeholder="Enter a name for this issue"
-                    />
+                    <a-input v-model:value="form.summary" />
                 </a-form-item>
                 <a-form-item
+                    v-if="!configReady || staticFields.description"
                     :name="['description']"
                     class="mb-6"
                     label="Description"
                 >
                     <a-textarea v-model:value="form.description" />
                 </a-form-item>
+
+                <div class="w-1/2">
+                    <a-form-item
+                        v-if="!configReady || staticFields.priority"
+                        :name="['priority']"
+                        class="w-full mb-6"
+                        :label="'Priority'"
+                    >
+                        <CustomSelect
+                            v-model:value="form.priority"
+                            :disabled="!configReady"
+                            :options="staticFields?.priority?.options || []"
+                            @change="
+                                (v, option) =>
+                                    (staticFields.priority.selectedValue =
+                                        option)
+                            "
+                        />
+                    </a-form-item>
+                </div>
 
                 <div v-if="configLoading" class="grid grid-cols-2 gap-x-4">
                     <a-skeleton :loading="true" :paragraph="false" active />
@@ -83,7 +101,6 @@
                         :key="field.key"
                         :name="[field.key]"
                         class="w-full mb-6"
-                        :classx="$style.hideErrorMessage"
                         :label="field.label"
                         :class="field.hideError ? $style.hideErrorMessage : ''"
                     >
@@ -126,6 +143,7 @@
     import { useVModels } from '@vueuse/core'
     import { computed, onMounted, PropType, Ref, ref, toRefs, watch } from 'vue'
     import { message } from 'ant-design-vue'
+    import { truncate } from '@antv/x6/lib/util/string/string'
     import ProjectSelector from '@/common/integrations/jira/jiraProjectsSelect.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import {
@@ -136,7 +154,6 @@
     import { CREATE_TICKET_FORM_RULES } from '~/constant/integrations/jira.constant'
     import CustomSelect from '@/common/integrations/jira/customizedSelect.vue'
     import { getProjectConfig } from '~/composables/integrations/jira/useJira'
-    import { truncate } from '@antv/x6/lib/util/string/string'
     import JiraDynamicField from '@/common/integrations/jira/jiraDynamicField.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
@@ -171,6 +188,7 @@
             hideError: boolean
         }[]
     > = ref([])
+    const staticFields = ref({})
 
     const resetForm = () => {
         form.value = {
@@ -180,6 +198,7 @@
             description: undefined,
         }
         requiredFields.value = []
+        staticFields.value = {}
     }
 
     const rules = ref(JSON.parse(JSON.stringify(CREATE_TICKET_FORM_RULES)))
@@ -199,11 +218,72 @@
     const projectKey = ref()
     const {
         config,
+        isReady: configReady,
         error: configError,
         isLoading: configLoading,
         mutate: fetchConfig,
     } = getProjectConfig(projectKey)
 
+    // ? utility fn
+    const getModelValue = (values) => {
+        if (Array.isArray(values)) {
+            return values.map((value) => {
+                if (typeof value === 'object') {
+                    return value.value || value.id
+                }
+                return value
+            })
+        }
+        if (typeof values === 'object') {
+            return values.value || values.id
+        }
+        return values
+    }
+
+    // ? grab field config of static dynamic fields
+    const initStaticFields = () => {
+        const finalFields: any = {}
+        if (!config.value) staticFields.value = {}
+
+        const { fields } = config.value.issuetypes.find(
+            (_type) => _type.id === form.value.issuetype
+        )
+
+        const includedTypes = ['priority', 'description']
+
+        if (fields && typeof fields === 'object') {
+            Object.entries(fields).forEach(([_, data]: any) => {
+                if (includedTypes.includes(data.key)) {
+                    finalFields[data.key] = {
+                        label: data.name,
+                        key: data.key,
+                        data,
+                        selectedValue: data.hasDefaultValue
+                            ? data.defaultValue
+                            : null,
+                    }
+                    // ? if field has allowedValues, creation options for a-select with them
+                    let options
+                    const allowedValues = data?.allowedValues
+                    if (allowedValues) {
+                        options = allowedValues.map((v) => ({
+                            label: v.value ?? v.name,
+                            value: v.value ?? v.id,
+                            meta: v,
+                        }))
+                    }
+                    if (options) finalFields[data.key].options = options
+                    // also add default value to form model, strip other details
+                    if (data.hasDefaultValue)
+                        form.value[data.key] = getModelValue(data.defaultValue)
+                }
+            })
+        }
+
+        staticFields.value = finalFields
+    }
+
+    // ? grab field config of required only dynamic fields
     const initRequiredFields = () => {
         const finalFields: any = []
         if (!config.value) requiredFields.value = []
@@ -222,25 +302,10 @@
             'option',
         ] // lets not add any now and render all as text // issueLink
 
-        const getModelValue = (values) => {
-            if (Array.isArray(values)) {
-                return values.map((value) => {
-                    if (typeof value === 'object') {
-                        return value.value || value.id
-                    }
-                    return value
-                })
-            }
-            if (typeof values === 'object') {
-                return values.value || values.id
-            }
-            return values
-        }
-
         if (fields && typeof fields === 'object') {
             Object.entries(fields).forEach(([_, data]: any) => {
                 if (data.required) {
-                    // ! hide fields that has defaultValue set but no defaultValue options provided
+                    // ! hiding fields that has defaultValue set but no defaultValue options provided
                     if (data.hasDefaultValue && !data.defaultValue) return
                     const isURL =
                         data.schema?.custom &&
@@ -267,6 +332,7 @@
         // remove fields that are added static
         const ignoreFieldsKey = [
             'description',
+            'priority',
             'issuetype',
             'labels',
             'project',
@@ -276,6 +342,11 @@
         requiredFields.value = finalFields.filter(
             (f) => !ignoreFieldsKey.includes(f.key)
         )
+    }
+
+    const initDynamicFields = () => {
+        initStaticFields()
+        initRequiredFields()
     }
 
     const parseType = (field) => {
@@ -293,16 +364,34 @@
         // if (originalType === 'number') return 'float' // jria number includes float and decimal
         return null
     }
-    // This is a watcher will set form rules to be required for the required fields
+    // ? This is a watcher will set form rules to be required for the required fields
     watch(
-        requiredFields,
-        (v) => {
+        [requiredFields, staticFields],
+        () => {
             rules.value = JSON.parse(JSON.stringify(CREATE_TICKET_FORM_RULES))
-            if (v?.length)
-                v.forEach((field) => {
+
+            if (requiredFields.value?.length)
+                requiredFields.value.forEach((field) => {
                     rules.value[field.key] = [
                         {
                             required: true,
+                            trigger: ['submit', 'change'],
+                            message:
+                                parseType(field) === 'url'
+                                    ? 'Must be a valid URL'
+                                    : '',
+                            ...(parseType(field)
+                                ? { type: parseType(field) }
+                                : {}),
+                        },
+                    ]
+                })
+
+            if (Object.values(staticFields.value)?.length)
+                Object.values(staticFields.value).forEach((field) => {
+                    rules.value[field.key] = [
+                        {
+                            required: field.data.required,
                             trigger: ['submit', 'change'],
                             message:
                                 parseType(field) === 'url'
@@ -320,6 +409,7 @@
 
     const handleProjectSelect = async (v, option) => {
         requiredFields.value = []
+        staticFields.value = {}
         const {
             meta: { issueTypes, key },
         } = option
@@ -335,9 +425,21 @@
 
         form.value.issuetype = issueTypeOptions.value[0].value
         await fetchConfig()
-        initRequiredFields()
+        initDynamicFields()
     }
 
+    const staticFieldsKeyValues = computed(() => {
+        const result = {}
+        if (Object.keys(staticFields.value)?.length) {
+            Object.values(staticFields.value).forEach((field) => {
+                if (field.selectedValue) result[field.key] = field.selectedValue
+            })
+        }
+        return result
+    })
+
+    // The above code is creating a computed object that will be used to create the body of the Jira
+    // issue. it includes all necessary form values, including static, & dynamic fields with value as per jira standards
     const body = computed(() => ({
         guid: asset.value.guid,
         name: asset.value.displayText,
@@ -357,6 +459,7 @@
                     [f.key]: f.selectedValue,
                 }))
             ),
+            ...staticFieldsKeyValues.value,
         },
     }))
 

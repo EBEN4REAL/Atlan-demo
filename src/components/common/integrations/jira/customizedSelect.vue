@@ -47,9 +47,9 @@
 
     const { value } = useVModels(props, emit)
 
-    const handleChange = (a) => {
-        console.log('handleChange', a)
-        emit('change', a)
+    const handleChange = (v) => {
+        const option = props.options.find((o) => o.value === v)
+        emit('change', v, option)
     }
 
     const handleClick = (v) => {

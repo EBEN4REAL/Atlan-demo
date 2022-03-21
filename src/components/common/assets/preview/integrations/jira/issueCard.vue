@@ -60,7 +60,7 @@
                     <img
                         :src="issuetype.iconUrl"
                         style="max-height: 14px; max-width: 14px"
-                        class="mr-1"
+                        class=""
                     />
                     <span class="text-gray-500">{{ key }}</span>
                 </div>

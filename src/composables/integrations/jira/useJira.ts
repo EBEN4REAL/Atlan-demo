@@ -286,7 +286,7 @@ export const getProjectConfig = (key) => {
         }
     }
     const params = computed(() => ({ projectKey: key.value }))
-    const { data, isLoading, error, mutate } = jiraGetProjectConfigurations(params, options)
+    const { data, isLoading, error, mutate, isReady } = jiraGetProjectConfigurations(params, options)
     const config = ref()
     watch(data, (v: any) => {
         if (v.projects?.length) {
@@ -294,5 +294,5 @@ export const getProjectConfig = (key) => {
         }
     })
 
-    return { config, data, isLoading, error, mutate }
+    return { config, data, isLoading, error, mutate, isReady }
 }

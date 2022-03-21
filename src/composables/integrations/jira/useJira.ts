@@ -199,14 +199,14 @@ export const archiveJira = (pV) => {
 export const listProjects = () => {
 
     const searchText = ref()
-    // const maxResults = ref(100)
+    const maxResults = ref(100)
     const startAt = ref(0)
     const totalResults = ref()
 
 
 
     const params = computed(() => ({
-        // maxResults: 2,
+        maxResults: maxResults.value,
         startAt: startAt.value,
         query: searchText.value
     }))

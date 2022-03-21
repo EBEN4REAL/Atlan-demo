@@ -7,9 +7,8 @@
         :loading="isLoading"
         :allow-clear="clearable"
         show-search
-        :filter-option="() => true"
+        optionFilterProp="label"
         dropdown-class-name="max-h-72 overflow-y-scroll"
-        @search="handleSearch"
     >
         <a-select-option
             v-for="o in options"

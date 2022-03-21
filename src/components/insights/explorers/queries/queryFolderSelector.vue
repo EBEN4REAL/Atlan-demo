@@ -20,19 +20,27 @@
                     selectedFolderContext?.typeName === 'Collection' ||
                     Object.keys(selectedFolderContext)?.length === 0
                 "
-                class="w-4 h-4 -mt-1 text-base"
-                >{{
-                    selectedFolderContext?.attributes?.icon
-                        ? selectedFolderContext?.attributes?.icon
-                        : '🗃'
-                }}</span
+                class="w-4 h-4 mb-1 -mt-1 text-base"
             >
+                <span v-if="selectedFolderContext?.attributes?.icon">
+                    {{
+                        selectedFolderContext?.attributes?.icon
+                            ? selectedFolderContext?.attributes?.icon
+                            : '🗃'
+                    }}</span
+                >
+                <AtlanIcon
+                    v-else
+                    icon="CollectionIconSmall"
+                    class="w-4 h-4 my-auto mr-1 parent-ellipsis-container-extension"
+                ></AtlanIcon>
+            </span>
 
             <AtlanIcon v-else icon="FolderClosed"></AtlanIcon>
 
             <span class="flex ml-1 truncate">
                 <span class="max-w-xs truncate">{{
-                    selectedFolder ? selectedFolder : 'Collection'
+                    selectedFolder ? selectedFolder : 'Query collection'
                 }}</span>
             </span>
         </div>
@@ -45,7 +53,8 @@
                     class="w-full h-full"
                 >
                     <div
-                        class="absolute top-0 left-0 z-10 flex items-center justify-between w-full px-4 pt-3 pb-2 bg-white rounded-t"
+                        class="absolute top-0 left-0 z-10 flex items-center justify-between px-4 pt-3 pb-2 bg-white rounded-t"
+                        style="width: 300px"
                     >
                         <span class="text-sm font-bold text-gray-700"
                             >Save query to</span
@@ -95,19 +104,37 @@
                                             expandCollection(collection, $event)
                                         "
                                     ></AtlanIcon>
-                                    <!-- <AtlanIcon
+
+                                    <span
+                                        v-if="collection?.attributes?.icon"
+                                        class="w-5 h-5 mr-1 -mt-1 text-lg"
+                                        >{{
+                                            collection?.attributes?.icon
+                                                ? collection?.attributes?.icon
+                                                : '-'
+                                        }}</span
+                                    >
+                                    <AtlanIcon
+                                        v-else
                                         icon="CollectionIconSmall"
-                                        class="w-4 h-4 my-auto mr-2 parent-ellipsis-container-extension"
-                                    ></AtlanIcon> -->
-                                    <span class="w-5 h-5 mr-1 -mt-1 text-lg">{{
-                                        collection?.attributes?.icon
-                                            ? collection?.attributes?.icon
-                                            : '🗃'
-                                    }}</span>
+                                        class="w-4 h-4 my-auto mr-1 parent-ellipsis-container-extension"
+                                    ></AtlanIcon>
                                     <span
                                         class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
                                         >{{ collection?.attributes.name }}</span
                                     >
+                                    <div>
+                                        <AtlanIcon
+                                            v-if="
+                                                !isCollectionPrivate(
+                                                    collection,
+                                                    username
+                                                )
+                                            "
+                                            icon="PublicCollection"
+                                            class="self-center w-4 h-4 ml-1 -mt-1"
+                                        ></AtlanIcon>
+                                    </div>
                                 </div>
 
                                 <AtlanIcon
@@ -181,7 +208,7 @@
                                 size="sm"
                                 color="secondary"
                                 padding="compact"
-                                class="h-6 py-1 text-center border-none cursor-pointer hover:text-primary"
+                                class="h-6 py-1 text-center cursor-pointer hover:text-primary"
                                 style="width: 102px"
                                 @click.stop="(e) => closeDropdown('cancel', e)"
                             >
@@ -255,6 +282,8 @@
         Folder,
         QueryCollection,
     } from '~/types/insights/savedQuery.interface'
+    import { isCollectionPrivate } from '~/components/insights/explorers/queries/composables/useQueryCollection'
+    import whoami from '~/composables/user/whoami'
 
     // import { colSize } from 'ant-design-vue/lib/grid/Col'
 
@@ -350,6 +379,7 @@
             // console.log('already selected: ', parentFolder)
 
             const previousContext = ref(selectedFolderContext.value)
+            const { username } = whoami()
 
             watch(
                 parentFolder,
@@ -722,7 +752,7 @@
 
                             input.setAttribute(
                                 'class',
-                                `outline-none py-0 rounded my-1 w-full ${inputClassName}`
+                                `outline-none py-0 rounded my-1 ${inputClassName}`
                             )
                             input.setAttribute(
                                 'placeholder',
@@ -843,6 +873,9 @@
                 readAccessCollections,
                 finalCollectionList,
                 folderCreated,
+                isCollectionPrivate,
+                whoami,
+                username,
             }
         },
     })

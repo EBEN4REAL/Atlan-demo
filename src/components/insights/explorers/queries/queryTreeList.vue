@@ -179,7 +179,8 @@
         :global(.ant-tree .ant-tree-node-content-wrapper) {
             padding: 0 !important;
             overflow: hidden;
-            @apply h-8 !important;
+            min-height: 2rem !important;
+            // @apply h-8 !important;
         }
 
         :global(.ant-tree-treenode) {

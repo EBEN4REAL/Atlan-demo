@@ -235,15 +235,11 @@
 
             <div class="flex mt-3">
                 <AtlanIcon
-                        v-if="
-                            item.createdBy?.startsWith(
-                                'service-account-apikey-'
-                            )
-                        "
-                        class="h-3"
-                        icon="Key"
-                    />
-                    
+                    v-if="item.createdBy?.startsWith('service-account-apikey-')"
+                    class="h-3 mt-1"
+                    icon="Key"
+                />
+
                 <Avatar
                     v-else
                     :allow-upload="false"
@@ -253,10 +249,10 @@
                     :image-url="item.createdBy ? '' : atlanLogo"
                 />
                 <span class="ml-2 text-gray-700">{{
-                        item.createdBy?.startsWith('service-account-apikey-')
-                            ? 'API key'
-                            : item.createdBy
-                    }}</span>
+                    item.createdBy?.startsWith('service-account-apikey-')
+                        ? 'API key'
+                        : item.createdBy
+                }}</span>
                 <div class="flex ml-auto">
                     <a-popover
                         v-if="messageUpdate"

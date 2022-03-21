@@ -16,8 +16,8 @@
                 <CreateGtcBtn
                     v-if="createButtonVisibility"
                     :selected-glossary-qf="selectedGlossaryQf"
-                    :term-add-permission="termAddPermission"
-                    :category-add-permission="categoryAddPermission"
+                    :term-add-permission="true"
+                    :category-add-permission="true"
                     @add="handleAddGTC"
                 />
                 <div v-if="selectedGlossaryQf?.length" class="ml-2">

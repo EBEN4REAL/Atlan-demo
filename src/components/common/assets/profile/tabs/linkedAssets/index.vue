@@ -37,7 +37,17 @@
                     :enableSidebarDrawer="true"
                     customPlaceholder="Search linked assets"
                     aggregation-tab-class="px-5 my-1"
-                    search-bar-class="pl-5 my-1"
+                    :search-bar-class="`${
+                        selectedAssetUpdatePermission(
+                            selectedAsset,
+                            false,
+                            'RELATIONSHIP_ADD',
+                            '*'
+                        )
+                            ? 'pl-5'
+                            : 'px-5'
+                    }
+                    pl-5 my-1`"
                     asset-item-class="px-2"
                     :openAssetProfileInNewTab="true"
                 >

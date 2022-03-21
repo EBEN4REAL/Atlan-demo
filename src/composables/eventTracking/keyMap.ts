@@ -528,6 +528,14 @@ const keyMap = {
                 }) => ({
                     ...props,
                 }),
+            },
+            config_updated: {
+                action: 'integration_jira_config_updated',
+                properties: (props: {
+                    default_project_present: Boolean
+                }) => ({
+                    ...props,
+                }),
             }
 
         },

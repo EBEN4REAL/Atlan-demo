@@ -38,61 +38,63 @@
                 </AtlanButton>
             </div>
         </template>
-        <div v-if="tenantJiraStatus.created && !jiraAppInstalled" class="">
-            <AtlanButton
-                v-auth="access.DELETE_INTEGRATION"
-                color="minimal"
-                class="text-red-500"
-                :is-loading="disconnectLoading"
-                size="lg"
-                @click="
-                    (e) => {
-                        e.stopPropagation()
-                        handleDisconnect()
-                    }
-                "
-            >
-                Disconnect
-            </AtlanButton>
-        </div>
-        <div
-            v-if="tenantJiraStatus.configured && !jiraAppInstalled"
-            class="flex items-center justify-center px-3 py-2 text-white rounded w-26 gap-x-1 bg-primary"
-        >
-            <a
-                class="flex items-center hover:underline hover:text-white gap-x-1"
-                href="https://marketplace.atlassian.com/apps/1225577/atlan?hosting=cloud&tab=overview"
-                target="_blank"
-                @click="
-                    (e) => {
-                        e.stopPropagation()
-                        handleDisconnect()
-                    }
-                "
-            >
-                <div class="">
-                    <AtlanIcon icon="External" />
-                </div>
-                Add to Jira
-            </a>
-        </div>
-        <div
-            v-else-if="tenantJiraStatus.configured"
-            class="px-3 py-1.5 space-y-2 text-primary bg-primary-light rounded"
-        >
-            <div
-                class="flex items-center justify-center text-sm rounded gap-x-1"
-            >
-                <img
-                    v-if="tenantJiraStatus.avatar && showImage"
-                    :src="tenantJiraStatus.avatar"
-                    class="w-4 h-4 rounded-full"
-                    @error="showImage = false"
-                />
-                <AtlanIcon v-else icon="Check" />
-                {{ tenantJiraStatus.orgName }} workspace connected
+
+        <template v-if="jiraAppStatusReady">
+            <div v-if="tenantJiraStatus.created && !jiraAppInstalled" class="">
+                <AtlanButton
+                    v-auth="access.DELETE_INTEGRATION"
+                    color="minimal"
+                    class="text-red-500"
+                    :is-loading="disconnectLoading"
+                    size="lg"
+                    @click="
+                        (e) => {
+                            e.stopPropagation()
+                            handleDisconnect()
+                        }
+                    "
+                >
+                    Disconnect
+                </AtlanButton>
             </div>
-        </div>
+            <div
+                v-if="tenantJiraStatus.configured && !jiraAppInstalled"
+                class="flex items-center justify-center px-3 py-2 text-white rounded w-26 gap-x-1 bg-primary"
+            >
+                <a
+                    class="flex items-center hover:underline hover:text-white gap-x-1"
+                    href="https://marketplace.atlassian.com/apps/1225577/atlan?hosting=cloud&tab=overview"
+                    target="_blank"
+                    @click="
+                        (e) => {
+                            e.stopPropagation()
+                        }
+                    "
+                >
+                    <div class="">
+                        <AtlanIcon icon="External" />
+                    </div>
+                    Add to Jira
+                </a>
+            </div>
+            <div
+                v-else-if="tenantJiraStatus.configured"
+                class="px-3 py-1.5 space-y-2 text-primary bg-primary-light rounded"
+            >
+                <div
+                    class="flex items-center justify-center text-sm rounded gap-x-1"
+                >
+                    <img
+                        v-if="tenantJiraStatus.avatar && showImage"
+                        :src="tenantJiraStatus.avatar"
+                        class="w-4 h-4 rounded-full"
+                        @error="showImage = false"
+                    />
+                    <AtlanIcon v-else icon="Check" />
+                    {{ tenantJiraStatus.orgName }} workspace connected
+                </div>
+            </div>
+        </template>
         <div class="">
             <AtlanIcon
                 icon="CaretDown"
@@ -120,6 +122,7 @@
     const props = defineProps({
         isOpen: { type: Boolean, required: true },
         jiraAppInstalled: { type: Boolean, required: true },
+        jiraAppStatusReady: { type: Boolean, required: true },
     })
 
     const emit = defineEmits(['disconnect'])

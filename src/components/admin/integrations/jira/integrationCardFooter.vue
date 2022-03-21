@@ -59,9 +59,13 @@
     }))
 
     const { isLoading, disconnect } = archiveJira(pV)
-    const body = computed(() => ({
-        config: { defaultProject: defaultProject.value },
-    }))
+    const body = computed(() =>
+        defaultProject.value?.name && defaultProject.value?.id
+            ? {
+                  config: { defaultProject: defaultProject.value },
+              }
+            : { config: {} }
+    )
 
     const {
         data,
@@ -87,7 +91,9 @@
             })
         } else {
             if (data.value?.id) updateStore(data.value)
-            useAddEvent('integration', 'jira', 'default_project_updated')
+            useAddEvent('integration', 'jira', 'config_updated', {
+                default_project_present: !!defaultProject.value.id,
+            })
 
             message.success({
                 content: 'Default project saved.',

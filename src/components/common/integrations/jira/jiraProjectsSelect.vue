@@ -92,9 +92,9 @@
         return []
     })
 
-    const handleChange = (value, option) => {
+    const handleChange = (value, option, isDefautSet = false) => {
         modelValue.value = value
-        emit('change', value, option)
+        emit('change', value, option, isDefautSet)
     }
 
     const store = integrationStore()
@@ -115,7 +115,7 @@
                 )
                 if (project) {
                     modelValue.value = project.value
-                    handleChange(project.value, project)
+                    handleChange(project.value, project, true)
                 }
             }
         }
@@ -123,6 +123,11 @@
 
     watch(lastPage, (v) => {
         if (v && !modelValue.value) afterLoad()
+    })
+
+    // ? hack to fire clear event
+    watch(modelValue, (n, o) => {
+        if (!n && o) emit('change')
     })
 </script>
 

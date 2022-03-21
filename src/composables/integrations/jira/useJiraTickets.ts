@@ -65,7 +65,7 @@ const searchIssues = (jql, immediate = true) => {
 
 export const issuesCount = (onlyLinked = true, immediate = true) => {
     const body = ref({
-        "jql": onlyLinked ? "issue.property[atlan].guid != null" : "",
+        "jql": onlyLinked ? "issue.property[atlan].guid != null" : "issue.property[atlan].guid = null OR issue.property[atlan].guid != null",
         "maxResults": 1,
         "startAt": 0
     })

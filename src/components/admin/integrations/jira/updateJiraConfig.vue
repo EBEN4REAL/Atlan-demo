@@ -103,12 +103,15 @@
             )
 
             const unsavedChanges = ref(false)
-            const defaultProject = ref({ name: '' })
+            const defaultProject = ref({})
 
-            const handleProjectChange = (value, option) => {
-                defaultProject.value.id = value
-                defaultProject.value.name = option.label
-                unsavedChanges.value = true
+            const handleProjectChange = (value, option, isDefautSet) => {
+                if (!value) defaultProject.value = {}
+                else {
+                    defaultProject.value.id = value
+                    defaultProject.value.name = option.label
+                }
+                if (!isDefautSet) unsavedChanges.value = true
             }
 
             const activeTabKey = ref()

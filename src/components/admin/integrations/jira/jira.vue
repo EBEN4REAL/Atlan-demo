@@ -20,16 +20,28 @@
                         class="cursor-pointer"
                         :is-open="openKeys.includes('jira')"
                         :jira-app-installed="jiraAppInstalled"
+                        :jira-app-status-ready="countReady"
                     />
                 </template>
                 <a-menu-item>
-                    <UpdateJiraConfig
-                        v-if="tenantJiraStatus.configured && jiraAppInstalled"
-                    />
-                    <template v-else>
-                        <OverviewBanner
-                            class="flex flex-col p-4 m-6 border rounded-lg gap-y-3"
+                    <!-- <template v-if="!countReady">
+                        <div
+                            class="flex items-center justify-center w-full h-40"
+                        >
+                            <AtlanLoader class="h-10" />
+                        </div>
+                    </template> -->
+                    <template v-if="countReady">
+                        <UpdateJiraConfig
+                            v-if="
+                                tenantJiraStatus.configured && jiraAppInstalled
+                            "
                         />
+                        <template v-else>
+                            <OverviewBanner
+                                class="flex flex-col p-4 m-6 border rounded-lg gap-y-3"
+                            />
+                        </template>
                     </template>
                 </a-menu-item>
             </a-sub-menu>
@@ -63,7 +75,7 @@
             OverviewBanner,
         },
         setup() {
-            const openKeys = ref<String[]>(['jira'])
+            const openKeys = ref<String[]>([])
 
             const store = integrationStore()
             const { tenantJiraStatus } = toRefs(store)
@@ -87,6 +99,7 @@
             )
 
             return {
+                countReady,
                 jiraAppInstalled,
                 openKeys,
                 useTimeAgo,

@@ -54,7 +54,7 @@
     import SlackHeader from '@/admin/integrations/slack/slackHeader.vue'
     import OverviewBanner from '@/admin/integrations/slack/misc/overviewBannerCard.vue'
 
-    const openKeys = ref(['slack'])
+    const openKeys = ref([])
 
     const showSlackConfigModal = ref(false)
     // store

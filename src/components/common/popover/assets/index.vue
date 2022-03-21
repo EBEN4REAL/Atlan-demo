@@ -334,9 +334,8 @@
                         </div>
                     </div>
 
-                    <div class="flex">
+                    <div class="flex" v-if="showPreviewLink">
                         <router-link
-                            v-if="showPreviewLink"
                             :to="path"
                             class="ml-auto"
                         >

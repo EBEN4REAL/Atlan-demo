@@ -31,7 +31,7 @@
             :disabled="!checkedIDs.length"
             @click="$emit('save')"
         >
-            Add
+            Link
         </AtlanButton>
     </div>
 </template>

@@ -55,7 +55,7 @@ const searchIssues = (jql, immediate = true) => {
 
     const reset = async () => {
         loadingMore.value = false
-        issues.value = []
+        // issues.value = []
         offset.value = 0
         await mutate()
     }
@@ -116,7 +116,7 @@ export const listNotLinkedIssues = (assetID: Ref<string>) => {
     const searchText = ref()
     const jql = computed(() => (searchText.value ?
         `(issue.property[atlan].guid != ${assetID.value} OR issue.property[atlan].guid = null) 
-                AND summary ~ \"${searchText.value}*\"
+                AND (summary ~ \"${searchText.value}*\" OR description ~ \"${searchText.value}*\")
                 ORDER BY created DESC
                 `
         : `(issue.property[atlan].guid != ${assetID.value} OR issue.property[atlan].guid = null) 
@@ -128,13 +128,17 @@ export const listNotLinkedIssues = (assetID: Ref<string>) => {
     const { mutate, reset } = search
 
     const searchLoading = ref(false)
-    const handleSearch = useDebounceFn(async () => {
+    const handleSearch = async () => {
         searchLoading.value = true
         await reset()
         searchLoading.value = false
-    }, 1000)
+    }
+    const clearSearch = () => {
+        searchText.value = ''
+        handleSearch()
+    }
 
-    return { searchText, searchLoading, handleSearch, ...search }
+    return { searchText, searchLoading, clearSearch, handleSearch, ...search }
 }
 
 

@@ -14,15 +14,15 @@
                 @close="
                     () => {
                         visible = false
+                        handleCancel()
                         $emit('close')
                     }
                 "
-                @cancel="resetIDs"
                 @save="handleIssueLink"
             />
 
             <div
-                v-if="isLoading && !searchLoading && !issues?.length"
+                v-if="firstLoad"
                 class="flex flex-col items-center justify-center flex-grow w-full"
             >
                 <AtlanLoader class="h-10" />
@@ -30,6 +30,7 @@
             <div v-else-if="error && !searchText" class="h-full">
                 <ErrorView :error="error" />
             </div>
+            <!-- there is no issue in jira that is unlinked -->
             <div
                 v-else-if="!issues?.length && !searchText && !searchLoading"
                 class="flex items-center justify-center w-full h-full"
@@ -68,7 +69,7 @@
                             clearable
                             class="bg-white rounded-lg"
                             :placeholder="
-                                totalResults
+                                totalResults && !isLoading
                                     ? `Search from ${totalResults} issues to link`
                                     : ''
                             "
@@ -78,12 +79,6 @@
 
                     <div v-if="error" class="h-full">
                         <ErrorView :error="error" />
-                    </div>
-                    <div
-                        v-else-if="searchLoading"
-                        class="flex flex-col items-center justify-center flex-grow w-full"
-                    >
-                        <AtlanLoader class="h-10" />
                     </div>
 
                     <div
@@ -99,11 +94,18 @@
                             Oops… we didn’t find any jira issues that matches
                             this search
                         </span>
+                        <AtlanButton
+                            class="px-5"
+                            size="sm"
+                            @click="clearSearch"
+                        >
+                            Clear Search
+                        </AtlanButton>
                     </div>
 
                     <div
                         v-else
-                        class="flex flex-col flex-grow p-4 pt-1 overflow-y-auto gap-y-2"
+                        class="flex flex-col flex-grow p-4 py-3 pt-1 overflow-y-auto gap-y-2"
                     >
                         <IssueList
                             v-model:checkedIssues="checkedIssues"
@@ -115,30 +117,35 @@
                                 isLoading && issues?.length ? 'opacity-80 ' : ''
                             "
                         />
+                        <footer
+                            v-if="
+                                issues.length < totalResults && !searchLoading
+                            "
+                            :class="issues?.length ? '' : 'opacity-0'"
+                            class="flex justify-center w-full pt-1"
+                        >
+                            <a-button
+                                class="flex items-center justify-between py-2 transition-all duration-300 bg-white border-none rounded-full text-primary"
+                                @click="loadMore"
+                            >
+                                <template v-if="!isLoading">
+                                    <p
+                                        class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
+                                    >
+                                        Load more
+                                    </p>
+                                    <AtlanIcon icon="ArrowDown"
+                                /></template>
+
+                                <AtlanLoader
+                                    v-else-if="isLoading"
+                                    class="h-5"
+                                />
+                            </a-button>
+                        </footer>
                     </div>
                 </main>
             </div>
-            <footer
-                v-if="issues.length < totalResults && !searchLoading"
-                :class="issues?.length ? '' : 'opacity-0'"
-                class="flex justify-center w-full pt-2 pb-2"
-            >
-                <a-button
-                    class="flex items-center justify-between py-2 transition-all duration-300 bg-white border-none rounded-full text-primary"
-                    @click="loadMore"
-                >
-                    <template v-if="!isLoading">
-                        <p
-                            class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
-                        >
-                            Load more
-                        </p>
-                        <AtlanIcon icon="ArrowDown"
-                    /></template>
-
-                    <AtlanLoader v-else-if="isLoading" class="h-5" />
-                </a-button>
-            </footer>
         </div>
     </a-drawer>
 </template>
@@ -187,6 +194,7 @@
         loadMore,
         reset,
         isReady,
+        clearSearch,
     } = listNotLinkedIssues(assetID)
 
     debouncedWatch(
@@ -250,6 +258,25 @@
         })
     }
 
+    const resetIDs = () => {
+        checkedIssues.value = []
+        linkErrorIDs.value = []
+    }
+    const isLoadingFirst = ref(true)
+    //  ? use first load loading state for showing loader once, additional loading via opacity effect
+    const firstLoad = computed(() => isLoadingFirst.value && isLoading.value)
+
+    const recall = async () => {
+        searchText.value = ''
+        resetIDs()
+        await reset()
+        isLoadingFirst.value = false
+    }
+
+    const handleCancel = () => {
+        recall()
+    }
+
     const handleIssueLink = () => {
         message.loading({
             content: `linking issues to "${asset.value.displayText}"`,
@@ -264,20 +291,10 @@
                 issue_count: count,
                 asset_type: asset.value.typeName,
             })
-            visible.value = false
+            // visible.value = false
+            handleCancel()
             emit('fetch')
         })
-    }
-
-    const resetIDs = () => {
-        checkedIssues.value = []
-        linkErrorIDs.value = []
-    }
-
-    const recall = () => {
-        searchText.value = ''
-        resetIDs()
-        reset()
     }
 
     defineExpose({

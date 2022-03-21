@@ -4,7 +4,13 @@ import {
     getSchema,
     getNodeTypeText,
 } from './util.js'
-import { iconPlus, iconVerified, iconDraft, iconDeprecated } from './icons'
+import {
+    iconPlus,
+    iconVerified,
+    iconDraft,
+    iconDeprecated,
+    iconLoader,
+} from './icons'
 import CaretDown from '~/assets/images/icons/caret-down.svg?url'
 
 import { dataTypeCategoryList } from '~/constant/dataType'
@@ -99,15 +105,29 @@ export default function useGraph(graph) {
                     // prettier-ignore
                     return `
                 <div class="flex items-center">
-                    <div id="node-${guid}" class="lineage-node group ${isVpNode ? 'isVpNode' : ''} 
-                    ${data?.isSelectedNode === data?.id? 'isSelectedNode': ''}
-                    ${data?.isHighlightedNode === data?.id? 'isHighlightedNode': ''}
-                    ${data?.isGrayed ? 'isGrayed' : ''} ${isBase ? 'isBase' : ''}">
+                    <div id="node-${guid}" class="lineage-node group ${
+                        isVpNode ? 'isVpNode' : ''
+                    } 
+                    ${data?.isSelectedNode === data?.id ? 'isSelectedNode' : ''}
+                    ${
+                        data?.isHighlightedNode === data?.id
+                            ? 'isHighlightedNode'
+                            : ''
+                    }
+                    ${data?.isGrayed ? 'isGrayed' : ''} ${
+                        isBase ? 'isBase' : ''
+                    }">
                         <div class=" ${isBase ? 'inscr' : 'hidden'}">BASE</div>
                         ${
                             isVpNode
-                                ? `<span class="font-bold text-primary">Load ${totalHidden > 4 ? 4 : totalHidden} more</span>${totalHidden > 4 ?  `<span class="text-gray-500">(out of ${totalHidden})</span>`: ''}`
-                                : `<div class="popover group-hover:visible group-hover:bottom-20 group-hover:opacity-100 group-hover:delay-1000">
+                                ? `<span class="font-bold text-primary leading-none">Load ${
+                                      totalHidden > 4 ? 4 : totalHidden
+                                  } more</span>${
+                                      totalHidden > 4
+                                          ? `<span class="text-gray-500 leading-none">(out of ${totalHidden})</span>`
+                                          : ''
+                                  }`
+                                : `<div class="popover  group-hover:opacity-100 group-hover:delay-1000">
                                 ${displayText}
                             </div>
                             <div>
@@ -121,7 +141,7 @@ export default function useGraph(graph) {
                                         </div>
                                     </span>
                                     <div class="flex items-center gap-x-1">
-                                        <span class="truncate node-title group-hover:underline">${displayText}</span>
+                                        <span class="truncate node-title">${displayText}</span>
                                         <span class="flex-none mr-1">${status}</span>
                                     </div>
                                 </div>
@@ -149,12 +169,27 @@ export default function useGraph(graph) {
                         }
 
                     </div>
-                    ${(isRootNode || isLeafNode) && isCtaNode
-                        ?   `<div id="node-${guid}-hoPaCTA" style="position: absolute;z-index: 99;" class="${isRootNode ? 'l-m20px' : 'r-m20px'} 
-                                node-hoPaCTA h-6 w-6 bg-gray-400 text-white rounded-full flex justify-center items-center cursor-pointer">
-                                ${iconPlus}
-                            </div>` : ''
+                    ${
+                        (isRootNode || isLeafNode) && isCtaNode
+                            ? `<div id="node-${guid}-hoPaCTA" class="${
+                                  isRootNode ? '-left-5' : '-right-5'
+                              } node-hoPaCTA
+                                ${
+                                    data?.isSelectedNode === data?.id
+                                        ? 'isSelected'
+                                        : ''
+                                }
+                                ${
+                                    data?.isHighlightedNode === data?.id
+                                        ? 'isHighlighted'
+                                        : ''
+                                }
+                            ">${iconPlus} <span id="node-${guid}-hoPaLoader" class="absolute w-9 h-9 hidden">${iconLoader}</span></div>`
+                            : ''
                     } 
+                    <div id="node-${guid}-columnListLoader" class="node-columnListLoader hidden">
+                        <span class="absolute w-9 h-9">${iconLoader}</span>
+                    </div>
                     
                 </div>`
                 },
@@ -204,7 +239,7 @@ export default function useGraph(graph) {
                                 width: 268,
                                 height: 40,
                                 strokeWidth: 1,
-                                stroke: '#e6e6eb',
+                                stroke: '#E0E4EB',
                                 fill: '#ffffff',
                                 event: 'port:click',
                                 y: -11,
@@ -214,7 +249,7 @@ export default function useGraph(graph) {
                                 refX: 36,
                                 refY: 12,
                                 fontSize: 16,
-                                fill: '#3e4359',
+                                fill: '#374151',
                                 event: 'port:click',
                             },
                             portImage: {
@@ -265,7 +300,7 @@ export default function useGraph(graph) {
                 portNameLabel: {
                     text: 'Show more columns',
                     // event: 'showMorePort:click',
-                    fill: '#5277d7',
+                    fill: '#3c71df',
                 },
             },
         }
@@ -353,7 +388,7 @@ export default function useGraph(graph) {
                 ],
                 attrs: {
                     label: {
-                        fill: relation?.type === 'related' ? '#3e4359' : 'none',
+                        fill: relation?.type === 'related' ? '#374151' : 'none',
                         fontSize: 14,
                         textAnchor: 'middle',
                         textVerticalAnchor: 'middle',

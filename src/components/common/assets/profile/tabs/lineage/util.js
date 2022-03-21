@@ -117,8 +117,8 @@ export const isCyclicEdge = (mergedLineageData, source, target) => {
     })
     const conditionArr = Array.from(conditionSet)
 
-    if (conditionArr.length === 1) return false
-    return true
+    if (conditionArr.length === 2) return true
+    return false
 }
 
 export const getFilteredRelations = (relations) => {

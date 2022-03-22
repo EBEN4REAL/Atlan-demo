@@ -2,7 +2,7 @@
     <div class="h-full">
         <div
             class="w-full p-3 vqb"
-            style="z-index: 3; background-color: #f6f8fd"
+            style="z-index: 3; background-color: #f6f7f9"
         >
             <template
                 v-for="(item, index) in activeInlineTab?.playground?.vqb

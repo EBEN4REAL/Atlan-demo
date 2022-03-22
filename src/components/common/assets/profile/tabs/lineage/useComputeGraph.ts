@@ -256,7 +256,7 @@ export default async function useComputeGraph({
 
             let edgeExtraData = {}
             const styles = {
-                stroke: '#aaaaaa',
+                stroke: '#B2B8C7',
             }
 
             if (isCyclicEdge(mergedLineageData, from, to)) {
@@ -299,7 +299,7 @@ export default async function useComputeGraph({
                 return 20
             },
             ranksepFunc() {
-                return 190
+                return 250
             },
             preset: {
                 nodes: model.value?.nodes?.map((node) => ({

@@ -62,8 +62,8 @@ export default function useUpdateGraph(graph) {
         graph.value.freeze('highlightEdges')
         graph.value.getEdges().forEach((edge) => {
             const _isCyclicEdge = edge.store.data.data?.isCyclicEdge
-            const defaultStateColor = _isCyclicEdge ? '#ff4848' : '#aaaaaa'
-            const highlightStateColor = _isCyclicEdge ? '#ff4848' : '#5277d7'
+            const defaultStateColor = _isCyclicEdge ? '#ff4848' : '#B2B8C7'
+            const highlightStateColor = _isCyclicEdge ? '#ff4848' : '#3c71df'
             const gray = nodesToHighlight.length ? '#dce0e5' : defaultStateColor
 
             const cell = graph.value.getCellById(edge.id)
@@ -95,7 +95,7 @@ export default function useUpdateGraph(graph) {
         graph.value.freeze('dimNodesEdges')
         graph.value.getEdges().forEach((edge) => {
             const _isCyclicEdge = edge.store.data.data?.isCyclicEdge
-            const defaultStateColor = _isCyclicEdge ? '#ff4848' : '#aaaaaa'
+            const defaultStateColor = _isCyclicEdge ? '#ff4848' : '#B2B8C7'
 
             const cell = graph.value.getCellById(edge.id)
             cell.attr('line/stroke', dim ? '#dce0e5' : defaultStateColor)

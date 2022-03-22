@@ -224,10 +224,12 @@
             background-color: #fff !important;
         }
         :global(.ant-tree-treenode-selected) {
-            @apply border !important;
-            @apply border-primary !important;
+            // @apply border !important;
+            // @apply border-primary !important;
             @apply bg-new-gray-200 !important;
             @apply hover:bg-new-gray-200 !important;
+            box-shadow: inset 0px 0px 0px 1px #5277d7;
+
             // background-color: rgba(219, 234, 254, 1) !important;
         }
         // :global(.ant-tree-treenode) {
@@ -291,7 +293,8 @@
         :global(.ant-tree
                 .ant-tree-node-content-wrapper.ant-tree-node-selected) {
             // background-color: rgba(219, 234, 254, 1) !important;
-            @apply bg-new-gray-200 !important;
+            // @apply bg-new-gray-200 !important;
+            @apply bg-transparent !important;
         }
         :global(.ant-tree-treenode-selected) {
             // background-color: rgba(219, 234, 254, 1) !important;

@@ -415,15 +415,18 @@ TR
         }
 
         :global(.ant-tree-node-selected) {
-            @apply bg-new-gray-200 !important;
-            @apply hover:bg-new-gray-200 !important;
+            // @apply bg-new-gray-200 !important;
+            // @apply hover:bg-new-gray-200 !important;
+            @apply bg-transparent !important;
+            @apply hover:bg-transparent !important;
             // @apply hover:bg-gray-light !important;
         }
         :global(.ant-tree-treenode-selected) {
-            @apply border !important;
-            @apply border-primary !important;
+            // @apply border !important;
+            // @apply border-primary !important;
             @apply bg-new-gray-200 !important;
             @apply hover:bg-new-gray-200 !important;
+            box-shadow: inset 0px 0px 0px 1px #5277d7;
         }
 
         // fix tree width Jan,7 ,2021

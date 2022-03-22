@@ -13,8 +13,8 @@
         </template>
         <aside class="relative flex flex-col flex-grow overflow-hidden gap-y-3">
             <a-dropdown
-                v-model:visible="actionVisible"
                 v-if="$slots?.action"
+                v-model:visible="actionVisible"
                 :trigger="['click']"
                 placement="bottomRight"
             >

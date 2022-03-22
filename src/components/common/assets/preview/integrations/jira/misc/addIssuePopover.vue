@@ -9,30 +9,7 @@
         <template #content>
             <div class="p-2">
                 <!-- connect with jira banner -->
-                <div
-                    v-if="!userJiraStatus.configured"
-                    class="flex flex-col px-4 py-3 mb-2 bg-primary-light"
-                >
-                    <h1 class="mb-1 font-bold text-gray-700">
-                        Connect with Jira
-                    </h1>
-                    <span class="mb-3 text-xs text-gray-500 w-52">
-                        To create and link issues to assets connect your Jira
-                        account with Atlan
-                    </span>
-                    <div
-                        class="flex cursor-pointer items-center px-2 py-1.5 text-xs text-white bg-gray-800 rounded gap-x-1"
-                        style="width: 82px"
-                        @click="handleConnect"
-                    >
-                        <AtlanIcon
-                            icon="Jira"
-                            style="height: 14px"
-                            :loading="ConfigLoading"
-                        />
-                        Connect
-                    </div>
-                </div>
+                <ConnectJira v-if="!userJiraStatus.configured" />
 
                 <a-menu click="border-0" :style="{ border: 'none' }">
                     <div
@@ -81,7 +58,7 @@
 <script setup lang="ts">
     import { toRefs, useVModels } from '@vueuse/core'
     import integrationStore from '~/store/integrations/index'
-    import { connectJira } from '~/composables/integrations/jira/useJira'
+    import ConnectJira from '@/common/assets/preview/integrations/jira/misc/connectJiraCard.vue'
 
     const props = defineProps({
         visible: { type: Boolean, required: true },
@@ -93,10 +70,6 @@
 
     const store = integrationStore()
     const { userJiraStatus } = toRefs(store)
-
-    const { isLoading: configLoading, connect: handleConnect } = connectJira({
-        tenant: false,
-    })
 </script>
 
 <style lang="less" scoped>

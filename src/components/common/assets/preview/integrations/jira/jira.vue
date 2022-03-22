@@ -44,7 +44,6 @@
         ref="wrapper"
         class="flex flex-col flex-grow w-full overflow-hidden"
     >
-        <!-- <div class="flex flex-col flex-grow p-4 overflow-y-auto gap-y-3"> -->
         <transition-group
             tag="div"
             name="unlink-done"
@@ -63,15 +62,30 @@
                 >
                     <template #action>
                         <div
-                            class="px-3 py-2 bg-white"
+                            class="p-2 bg-white w=full"
                             style="
                                 box-shadow: 0px 9px 32px rgba(0, 0, 0, 0.12);
                                 border-radius: 4px;
                             "
                         >
+                            <ConnectJira
+                                v-if="!userJiraStatus.configured"
+                                description="To unlink issues from assets connect your Jira account with Atlan"
+                            />
                             <div
-                                class="text-red-500 cursor-pointer"
-                                @click="handleUnlick(issue)"
+                                :class="
+                                    !userJiraStatus.configured
+                                        ? 'text-gray-400 cursor-not-allowed'
+                                        : 'text-red-500 cursor-pointer'
+                                "
+                                class="px-2 py-1 rounded hover:bg-gray-100"
+                                @click="
+                                    () => {
+                                        if (userJiraStatus.configured) {
+                                            handleUnlick(issue)
+                                        }
+                                    }
+                                "
                             >
                                 <AtlanIcon icon="Link" /> Unlink issue
                             </div>
@@ -80,7 +94,6 @@
                 </IssueCard>
             </div>
         </transition-group>
-        <!-- </div> -->
     </div>
 </template>
 
@@ -102,6 +115,7 @@
     import integrationStore from '~/store/integrations/index'
     import CreateModal from '@/common/integrations/jira/createIssue/createIssueModal.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import ConnectJira from '@/common/assets/preview/integrations/jira/misc/connectJiraCard.vue'
 
     const props = defineProps({
         selectedAsset: {

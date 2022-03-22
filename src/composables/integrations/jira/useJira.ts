@@ -180,7 +180,7 @@ export const archiveJira = (pV) => {
         } else {
             intStore.removeIntegration(pV.value.id)
             message.success({
-                content: 'Jira integration disconnected successfully',
+                content: 'Jira integration has been disconnected',
                 key: 'disconnect',
                 duration: 2,
             })

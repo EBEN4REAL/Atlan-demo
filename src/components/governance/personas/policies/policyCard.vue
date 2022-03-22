@@ -180,8 +180,10 @@
                                 icon="ShieldBlank"
                                 class="-mt-1 icon-gray"
                             />
+
                             {{
-                                permissions.length >= 8
+                                permissions.length >=
+                                (type !== 'glossaryPolicy' ? 9 : 5)
                                     ? 'All'
                                     : permissions.length -
                                       (!permissions.includes(

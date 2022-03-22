@@ -63,7 +63,7 @@
                             clearable
                             class="bg-white rounded-lg"
                             :placeholder="
-                                totalResults && !isLoading
+                                totalResults && !searchLoading
                                     ? `Search from ${totalResults} issues to link`
                                     : ''
                             "

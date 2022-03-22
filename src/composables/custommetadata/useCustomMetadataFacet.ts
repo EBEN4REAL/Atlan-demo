@@ -70,11 +70,11 @@ export default function useCustomMetadataFacet() {
      * @param facet flag to check if required list is for filtering, if facet then check for allowFiltering
      * @returns 
      */
-    const getList = (typeName, facet = false) => {
+    const getList = (typeName, facet = false, denyCustomMetadata = []) => {
         const finalList: any = []
         customMetadataList.value.forEach((bm) => {
             const attributeList = typeNameFiltering(bm.attributeDefs.filter(a => a.options?.isDeprecated !== 'true' && (facet ? a.options?.allowFiltering === 'true' : true)), typeName)
-            if (attributeList.length > 0) {
+            if (attributeList.length > 0 && !denyCustomMetadata.includes(bm.guid)) {
                 finalList.push({
                     guid: bm.guid,
                     description: bm.description,

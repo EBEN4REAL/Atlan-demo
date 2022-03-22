@@ -260,7 +260,7 @@ export const glossaryPolicyScopeList = [
                 gif: deleteGlossary,
             },
         ],
-        type: 'Assets',
+        type: 'Glossary, Terms and Categories',
         label: 'Assets',
     },
     {

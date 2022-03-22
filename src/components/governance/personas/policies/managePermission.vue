@@ -37,14 +37,7 @@
             class="fixed flex items-center justify-end p-3 mt-auto border-t border-gray-300 gap-x-2 btn-wrapper-manage"
         >
             <span class="mr-auto text-gray-500"
-                >{{
-                    actionsLocal.length -
-                        (!actionsLocal.includes('link-assets') &&
-                        actionsLocal.includes('entity-update')
-                            ? 0
-                            : 1) || 'No'
-                }}
-                items updated</span
+                >{{ actionsLocal.length - min || 'No' }} items updated</span
             >
             <AtlanBtn
                 size="sm"
@@ -70,7 +63,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, toRefs, ref, watch, onMounted } from 'vue'
+    import {
+        defineComponent,
+        toRefs,
+        ref,
+        watch,
+        onMounted,
+        computed,
+    } from 'vue'
     import MetadataScopes from '~/components/governance/personas/policies/metadataScopes.vue'
     import AtlanBtn from '@/UI/button.vue'
 
@@ -102,6 +102,14 @@
                 emit('save', actionsLocal.value)
                 handleClose()
             }
+            const min = computed(() => {
+                const minPolicy =
+                    actionsLocal.value.includes('link-assets') &&
+                    actionsLocal.value.includes('entity-update')
+                        ? 1
+                        : 0
+                return minPolicy
+            })
             watch(visibleDrawer, () => {
                 if (visibleDrawer.value) {
                     actionsLocal.value = actions.value
@@ -118,6 +126,7 @@
                 handleClose,
                 handleSave,
                 actionsLocal,
+                min,
             }
         },
     })

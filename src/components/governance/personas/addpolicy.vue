@@ -702,7 +702,12 @@
         },
         emits: ['close'],
         setup(props, { emit }) {
-            const { scopeList } = useScopeService().listScopes('persona')
+            const glossaryStore = useGlossaryStore()
+            const glossaryComputed = computed(() => glossaryStore.list)
+            const { scopeList: scopeListPersona } =
+                useScopeService().listScopes('persona')
+            const { scopeList: scopeListGlossary } =
+                useScopeService().listScopes('glossaryPolicy')
             const policyType = ref('')
             const assetSelectorVisible = ref(false)
             const isShow = ref(false)
@@ -917,13 +922,17 @@
                 }
             }
             const selectedPermission = computed(() => {
+                const scopeList =
+                    policyType.value === 'glossaryPolicy'
+                        ? scopeListGlossary
+                        : scopeListPersona
                 const result = []
                 const assetsPermission = []
                 const governance = []
                 const api = []
-                const assetsList = scopeList[0]
-                const governanceList = scopeList[1]
-                const apiList = scopeList[2]
+                const assetsList = scopeList[0] || []
+                const governanceList = scopeList[1] || []
+                const apiList = scopeList[2] || []
                 policy.value.actions.forEach((el) => {
                     const assetPermission = assetsList.scopes.find(
                         (elc) => elc.value === el

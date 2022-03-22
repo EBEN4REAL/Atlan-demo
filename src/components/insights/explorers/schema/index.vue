@@ -27,7 +27,7 @@
                 @update:data="setConnector"
             ></Connector>
 
-            <div class="flex flex-row mt-1 ml-2 mr-2 space-x-2">
+            <div class="flex flex-row ml-2 mr-2 space-x-2">
                 <a-input
                     v-model:value="queryText"
                     class="h-8 mt-1 rounded"

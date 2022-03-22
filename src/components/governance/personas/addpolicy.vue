@@ -437,11 +437,7 @@
                                         "
                                         class="h-4"
                                     />
-                                    {{
-                                        type !== 'glossaryPolicy'
-                                            ? el.title
-                                            : 'Glossary, Terms and Categories'
-                                    }}
+                                    {{ el.title }}
                                 </div>
                                 <div
                                     class="font-mono text-xs tracking-wide value-tag"
@@ -1051,7 +1047,11 @@
                 })
                 if (assetsPermission.length > 0) {
                     result.push({
-                        title: `Assets`,
+                        title: `${
+                            policyType.value === 'glossaryPolicy'
+                                ? 'Glossary, Terms and Categories'
+                                : 'Assets'
+                        }`,
                         value: assetsPermission.join(', '),
                     })
                 }

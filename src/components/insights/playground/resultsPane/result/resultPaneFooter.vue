@@ -1,34 +1,33 @@
 <template>
     <div
         class="flex justify-between w-full h-8 py-1 text-xs border-b"
-        style="max-height: 8%; background: #fbfbfb"
+        style="max-height: 8%; background: #f6f7f9"
         v-if="
             activeInlineTab.playground.editor.columnList.length > 0 &&
             isQueryRunning === 'success'
         "
     >
         <div class="flex items-center px-3 text-gray-700 mt-0.5">
-            <!-- Execution Time will be shown when it is >0 -->
-            <span v-if="queryExecutionTime > 0" class="flex items-center mr-1">
-                <AtlanIcon class="w-4 h-4 mr-1 mb-0.5" icon="QueryTime" />
-                <span class="mr-1">
-                    {{ getFormattedTimeFromMilliSeconds(queryExecutionTime) }}
-                </span>
-                <div class="w-1 h-1 bg-gray-C4C4C4 rounded-full mb-0.5"></div>
-            </span>
-            <!-- -------------------------------------------- -->
             <span class="mr-1">
                 {{
-                    `${activeInlineTab.playground.resultsPane.result.totalRowsCount?.toLocaleString()} rows`
+                    `${activeInlineTab.playground.resultsPane.result.totalRowsCount?.toLocaleString()} rows, `
                 }}
             </span>
-            <div class="w-1 h-1 mr-1 bg-gray-C4C4C4 rounded-full mb-0.5"></div>
 
             <span class="mr-1">
                 {{
                     activeInlineTab.playground.editor.columnList.length?.toLocaleString()
-                }}&nbsp;cols
+                }}
+                cols in
             </span>
+
+            <!-- Execution Time will be shown when it is >0 -->
+            <span v-if="queryExecutionTime > 0" class="flex items-center mr-1">
+                <span class="mr-1">
+                    {{ getFormattedTimeFromMilliSeconds(queryExecutionTime) }}
+                </span>
+            </span>
+            <!-- -------------------------------------------- -->
         </div>
         <div class="flex items-center">
             <a-tooltip

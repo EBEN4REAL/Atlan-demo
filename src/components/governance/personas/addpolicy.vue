@@ -482,7 +482,7 @@
                 <div
                     v-if="
                         isEdit
-                            ? canEdit
+                            ? canEdit && (type === 'meta' || type === 'data')
                             : true &&
                               connectorData.attributeValue &&
                               (type === 'meta' || type === 'data')

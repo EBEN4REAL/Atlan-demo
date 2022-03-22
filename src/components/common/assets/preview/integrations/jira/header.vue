@@ -9,7 +9,8 @@
                 <span
                     v-if="assetIssueCount"
                     class="p-1 text-xs text-gray-500 bg-gray-200 rounded"
-                    >{{ assetIssueCount }} issues</span
+                    >{{ assetIssueCount }}
+                    {{ assetIssueCount > 1 ? 'issues' : 'issue' }}</span
                 >
             </div>
             <div class="flex-grow"></div>

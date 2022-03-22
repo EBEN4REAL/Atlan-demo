@@ -645,6 +645,7 @@
     import { IPersona } from '~/types/accessPolicies/personas'
     import useScopeService from './composables/useScopeService'
     import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
+    import useGlossaryStore from '~/store/glossary'
 
     export default defineComponent({
         name: 'AddPolicy',

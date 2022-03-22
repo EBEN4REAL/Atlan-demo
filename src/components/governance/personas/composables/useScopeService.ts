@@ -232,8 +232,8 @@ export const personaScopeList = [
                 // desc: 'Permission to delete selected assets',
                 desc: 'Gives ability to delete assets within the selected connection or specified database/schema',
             },
-        ]
-    }
+        ],
+    },
 ]
 
 export default function scopeService() {
@@ -254,6 +254,9 @@ export default function scopeService() {
             return {
                 scopeList: purposeScopeList,
             }
+        return {
+            scopeList: [],
+        }
     }
     function findActions(actions: string[], type: string) {
         const scopeList =

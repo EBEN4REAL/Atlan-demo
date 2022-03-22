@@ -941,7 +941,7 @@
                     const governancePermission = governanceList.scopes.find(
                         (elc) => elc.value === el
                     )
-                    const apiPermission = apiList.scopes.find(
+                    const apiPermission = apiList.scopes?.find(
                         (elc) => elc.value === el
                     )
 

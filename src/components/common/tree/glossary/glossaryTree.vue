@@ -59,6 +59,8 @@
         @check="onCheck"
         :blockNode="true"
         @drop="dragAndDropNode"
+        @dragend="dragEnd"
+        @dragstart="dragStart"
         :multiple="true"
     >
         <template #switcherIcon>
@@ -193,6 +195,7 @@
                 nodeToParentKeyMap,
                 allKeys,
                 checkDuplicateCategoryNames,
+                dragStart
             } = useGlossaryTree({
                 emit,
                 parentGlossaryQualifiedName: defaultGlossary,
@@ -319,7 +322,8 @@
             const handleChangeEditMode = (val) => {
                 isDraggable.value = !val
             }
-            provide('addGTCNode', addGTCNode)
+
+           provide('addGTCNode', addGTCNode)
             provide('deleteGTCNode', deleteGTCNode)
             provide('treeData', treeData)
             provide('checkDuplicateCategoryNames', checkDuplicateCategoryNames)
@@ -357,6 +361,7 @@
                 parentGlossary,
                 isDraggable,
                 handleChangeEditMode,
+                dragStart,
             }
         },
     })

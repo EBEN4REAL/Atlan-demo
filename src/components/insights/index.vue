@@ -276,7 +276,7 @@
                 activeInlineTab,
                 inlineTabAdd,
                 modifyActiveInlineTabEditor,
-            } = useInlineTab(undefined, !savedQueryGuidFromURL.value)
+            } = useInlineTab(undefined, true)
 
             const { openSavedQueryInNewTab } = useSavedQuery(
                 tabsArray,
@@ -577,7 +577,11 @@
                 )
             }
 
-            const fetchQueryCollections = () => {
+            const fetchQueryCollections = ({
+                selectOneByDefault,
+            }: {
+                selectOneByDefault: boolean
+            }) => {
                 const { data, error, isLoading, mutate } = getQueryCollections()
                 refetchQueryCollection.value = mutate
                 queryCollectionsLoading.value = true
@@ -600,14 +604,16 @@
                                     path: `insights`,
                                 })
                             }
+                            if (selectOneByDefault) {
+                                selectFirstCollectionByDefault(
+                                    queryCollections.value,
+                                    activeInlineTab,
+                                    tabsArray,
+                                    isCollectionCreated,
+                                    collectionGuidFromURL
+                                )
+                            }
 
-                            selectFirstCollectionByDefault(
-                                queryCollections.value,
-                                activeInlineTab,
-                                tabsArray,
-                                isCollectionCreated,
-                                collectionGuidFromURL
-                            )
                             queryCollectionsError.value = undefined
                         } else {
                             queryCollectionsLoading.value = false
@@ -636,7 +642,7 @@
                         el.style.transition = 'width .2s ease-out'
                     })
                 }, 100)
-                fetchQueryCollections()
+                fetchQueryCollections({ selectOneByDefault: true })
                 window.addEventListener('keydown', _keyListener)
 
                 if (

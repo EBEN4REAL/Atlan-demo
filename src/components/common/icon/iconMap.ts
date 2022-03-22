@@ -261,6 +261,10 @@ import GoogleDoc from '~/assets/images/readme/googleDocs.svg'
 import GoogleSheet from '~/assets/images/readme/googleSheets.svg'
 import GoogleSlide from '~/assets/images/readme/googleSlides.svg'
 import GoogleDrive from '~/assets/images/readme/googleDrive.svg'
+import Confluence from '~/assets/images/readme/confluence.svg'
+import Miro from '~/assets/images/readme/miro.svg'
+import Figma from '~/assets/images/readme/Figma.svg'
+import Lucid from '~/assets/images/readme/lucid.svg'
 
 import Running from '~/assets/images/icons/running.svg'
 import ExclaimCircle from '~/assets/images/icons/exclaimCircle.svg'
@@ -711,6 +715,10 @@ export default {
     GoogleSheet,
     GoogleSlide,
     GoogleDrive,
+    Confluence,
+    Figma,
+    Lucid,
+    Miro,
     Running,
     Refresh,
     ErrorLogs,

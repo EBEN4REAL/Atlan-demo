@@ -40,8 +40,8 @@
 <script lang="ts">
     import { until, useVModels } from '@vueuse/core'
     import { computed, defineComponent, ref, toRefs, watch } from 'vue'
-    import { useRunDiscoverList } from '~/composables/package/useRunDiscoverList'
-    import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
+    import { useRunDiscoverList } from '~/workflows/composables/package/useRunDiscoverList'
+    import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
     import Ellipsis from '@/common/ellipsis/index.vue'
 
     export default defineComponent({

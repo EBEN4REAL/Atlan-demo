@@ -168,7 +168,7 @@
     import UserPill from '@/common/pills/user.vue'
     import GroupPill from '@/common/pills/group.vue'
     import OwnerFacets from '@/common/facet/owners/index.vue'
-    import AtlanIcon from '../../icon/atlanIcon.vue'
+    import AtlanIcon from '@/common/icon/atlanIcon.vue'
     import PopOverUser from '@/common/popover/user/user.vue'
     import PopOverGroup from '@/common/popover/user/groups.vue'
     import Shortcut from '@/common/popover/shortcut.vue'

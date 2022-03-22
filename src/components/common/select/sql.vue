@@ -44,7 +44,7 @@
     import { useVModels } from '@vueuse/core'
 
     import { useQueryCredential } from '~/composables/credential/useQueryCredential'
-    import AtlanIcon from '../icon/atlanIcon.vue'
+    import AtlanIcon from '@/common/icon/atlanIcon.vue'
 
     export default defineComponent({
         name: 'testQuery',

@@ -26,8 +26,8 @@
                         }}</span>
                         <!-- :style="`color:${getTokenColor(kt)}`" -->
                         <div
-                            v-html="generateHTMLFromLine(i, line)"
                             class="flex flex-wrap"
+                            v-html="generateHTMLFromLine(i, line)"
                         ></div>
                     </div>
                 </template>
@@ -117,6 +117,7 @@
                     })
                         .replaceAll('` ', '`') // needed for backticks, as formatter put space by default between backticks
                         .replaceAll(' `', '`')
+                        .replaceAll('AS`', 'AS `') // previous replace removes space bw AS and backtick - undoing that change with this replace
                 } catch (error) {
                     return text.value
                 }

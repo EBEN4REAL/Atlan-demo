@@ -70,6 +70,7 @@ export function useDiscoverList({
     const {
         data,
         refresh,
+        mutate,
         isLoading,
         isReady,
         isValidating,
@@ -77,7 +78,7 @@ export function useDiscoverList({
         approximateCount,
         cancelRequest,
         error,
-    } = useIndexSearch<assetInterface>(defaultBody, localKey, isCache, false, 1)
+    } = useIndexSearch<assetInterface>(defaultBody, localKey, isCache, false, 0)
 
     const list = ref<assetInterface[]>([])
 
@@ -240,11 +241,12 @@ export function useDiscoverList({
         generateBody()
         cancelRequest()
 
-        if (localKey.value) {
+        /*  if (localKey.value) {
             localKey.value = `dirty_${Date.now().toString()}`
         } else {
             refresh()
-        }
+        } */
+        mutate()
     }
 
     const fetch = () => {

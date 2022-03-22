@@ -104,7 +104,7 @@
 
     import { useVModels, onKeyStroke } from '@vueuse/core'
     import useFacetGroups from '~/composables/group/useFacetGroups'
-    import AtlanIcon from '../../icon/atlanIcon.vue'
+    import AtlanIcon from '@/common/icon/atlanIcon.vue'
 
     export default defineComponent({
         name: 'OwnersFilter',

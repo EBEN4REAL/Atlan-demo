@@ -43,6 +43,7 @@
                     v-model="localDescription"
                     :selected-asset="asset"
                     :edit-permission="false"
+                    :read-only="true"
                     :in-profile="true"
                     class="-ml-1"
                     @change="handleChangeDescription"
@@ -62,6 +63,7 @@
                         :edit-permission="false"
                         :in-profile="true"
                         :show-add-btn="false"
+                        :show-popover="false"
                         @change="handleChangeCertificate"
                     />
                 </div>

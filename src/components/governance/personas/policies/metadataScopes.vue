@@ -5,7 +5,8 @@
                 <div class="flex px-4 py-3 bg-gray-100">
                     <a-checkbox
                         :indeterminate="
-                            groupedActions[idx].scopes.length ===
+                            groupedActions[idx].scopes.filter(handleFilter)
+                                .length ===
                             scopeList[idx].scopes.filter(handleFilterScope)
                                 .length
                                 ? false
@@ -14,7 +15,8 @@
                         class="text-sm font-bold text-gray-700"
                         data-test-id="checkbox"
                         :checked="
-                            groupedActions[idx].scopes.length ===
+                            groupedActions[idx].scopes.filter(handleFilter)
+                                .length ===
                             scopeList[idx].scopes.filter(handleFilterScope)
                                 .length
                         "

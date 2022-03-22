@@ -73,7 +73,7 @@
                                 :class="
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
-                                        : 'bg-gradient-to-l from-gray-light-color via-gray-light-color'
+                                        : 'bg-gradient-to-l from-tree-light-color via-tree-light-color'
                                 "
                                 @click.stop="() => {}"
                             >
@@ -89,12 +89,7 @@
                                         >
                                         <AtlanIcon
                                             icon="AddAssetName"
-                                            class="w-4 h-4 my-auto focus:outline-none"
-                                            :class="
-                                                item?.selected
-                                                    ? 'tree-light-color'
-                                                    : 'bg-gray-light-color'
-                                            "
+                                            class="w-4 h-4 my-auto focus:outline-none hover:bg-new-gray-300"
                                         ></AtlanIcon>
                                     </a-tooltip>
                                 </div>
@@ -102,11 +97,6 @@
                                 <div
                                     :data-test-id="'preview'"
                                     class="pl-2"
-                                    :class="
-                                        item?.selected
-                                            ? 'tree-light-color'
-                                            : 'bg-gray-light-color'
-                                    "
                                     @click="() => actionClick('info', item)"
                                 >
                                     <a-tooltip color="#363636" placement="top">
@@ -116,12 +106,7 @@
 
                                         <AtlanIcon
                                             icon="SidebarSwitch"
-                                            :class="
-                                                item?.selected
-                                                    ? 'tree-light-color'
-                                                    : ''
-                                            "
-                                            class="w-4 h-4 my-auto outline-none"
+                                            class="w-4 h-4 my-auto outline-none hover:bg-new-gray-300"
                                         ></AtlanIcon>
                                     </a-tooltip>
                                 </div>
@@ -220,7 +205,7 @@
                                 :class="
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
-                                        : 'bg-gradient-to-l from-gray-light-color via-gray-light-color'
+                                        : 'bg-gradient-to-l from-tree-light-color via-tree-light-color'
                                 "
                             >
                                 <div
@@ -235,12 +220,7 @@
                                         >
                                         <AtlanIcon
                                             icon="AddAssetName"
-                                            class="w-4 h-4 my-auto focus:outline-none"
-                                            :class="
-                                                item?.selected
-                                                    ? 'tree-light-color'
-                                                    : 'bg-gray-light-color'
-                                            "
+                                            class="w-4 h-4 my-auto focus:outline-none hover:bg-new-gray-300"
                                         ></AtlanIcon>
                                     </a-tooltip>
                                 </div>
@@ -263,11 +243,6 @@
                                 <div
                                     class="pl-2 pr-2"
                                     :data-test-id="'preview'"
-                                    :class="
-                                        item?.selected
-                                            ? 'tree-light-color'
-                                            : 'bg-gray-light-color'
-                                    "
                                     @click="() => actionClick('info', item)"
                                 >
                                     <a-tooltip color="#363636" placement="top">
@@ -277,12 +252,7 @@
 
                                         <AtlanIcon
                                             icon="SidebarSwitch"
-                                            :class="
-                                                item?.selected
-                                                    ? 'tree-light-color'
-                                                    : ''
-                                            "
-                                            class="w-4 h-4 my-auto outline-none"
+                                            class="w-4 h-4 my-auto outline-none hover:bg-new-gray-300"
                                         ></AtlanIcon>
                                     </a-tooltip>
                                 </div>
@@ -305,12 +275,7 @@
 
                                         <AtlanIcon
                                             icon="Play"
-                                            :class="
-                                                item?.selected
-                                                    ? 'tree-light-color'
-                                                    : ''
-                                            "
-                                            class="w-4 h-4 my-auto outline-none"
+                                            class="w-4 h-4 my-auto outline-none hover:bg-new-gray-300"
                                         ></AtlanIcon>
                                     </a-tooltip>
                                 </div>
@@ -334,12 +299,7 @@
 
                                         <AtlanIcon
                                             icon="Play"
-                                            :class="
-                                                item?.selected
-                                                    ? 'tree-light-color'
-                                                    : ''
-                                            "
-                                            class="w-4 h-4 my-auto outline-none"
+                                            class="w-4 h-4 my-auto outline-none hover:bg-new-gray-300"
                                         ></AtlanIcon>
                                     </a-tooltip>
                                 </div>
@@ -412,20 +372,15 @@
                         :class="
                             item?.selected
                                 ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
-                                : 'bg-gradient-to-l from-gray-light-color via-gray-light-color'
+                                : 'bg-gradient-to-l from-tree-light-color via-tree-light-color'
                         "
                         @click.stop="() => {}"
                     >
                         <div class="pl-2 ml-4">
                             <a-dropdown :trigger="['click']">
                                 <AtlanIcon
-                                    icon="KebabMenu"
+                                    icon="KebabMenuHorizontal"
                                     class="w-4 h-4 my-auto -mr-1.5 outline-none"
-                                    :class="
-                                        item?.selected
-                                            ? 'tree-light-color'
-                                            : 'bg-gray-light-color'
-                                    "
                                 />
                                 <template #overlay>
                                     <a-menu>
@@ -522,7 +477,7 @@
                             :class="
                                 item?.selected
                                     ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
-                                    : 'bg-gradient-to-l from-gray-light-color via-gray-light-color'
+                                    : 'bg-gradient-to-l from-tree-light-color via-tree-light-color'
                             "
                         >
                             <div
@@ -537,22 +492,12 @@
                                     <AtlanIcon
                                         icon="AddAssetName"
                                         class="w-4 h-4 my-auto focus:outline-none"
-                                        :class="
-                                            item?.selected
-                                                ? 'tree-light-color'
-                                                : 'bg-gray-light-color'
-                                        "
                                     ></AtlanIcon>
                                 </a-tooltip>
                             </div>
                             <div
                                 class="pl-2 pr-2"
                                 :data-test-id="'preview'"
-                                :class="
-                                    item?.selected
-                                        ? 'tree-light-color'
-                                        : 'bg-gray-light-color'
-                                "
                                 @click="() => actionClick('info', item)"
                             >
                                 <a-tooltip color="#363636" placement="top">
@@ -562,12 +507,7 @@
 
                                     <AtlanIcon
                                         icon="SidebarSwitch"
-                                        :class="
-                                            item?.selected
-                                                ? 'tree-light-color'
-                                                : ''
-                                        "
-                                        class="w-4 h-4 my-auto outline-none"
+                                        class="w-4 h-4 my-auto outline-none hover:bg-new-gray-300"
                                     ></AtlanIcon>
                                 </a-tooltip>
                             </div>
@@ -588,12 +528,7 @@
 
                                     <AtlanIcon
                                         icon="Play"
-                                        :class="
-                                            item?.selected
-                                                ? 'tree-light-color'
-                                                : ''
-                                        "
-                                        class="w-4 h-4 my-auto outline-none"
+                                        class="w-4 h-4 my-auto outline-none hover:bg-new-gray-300"
                                     ></AtlanIcon>
                                 </a-tooltip>
                             </div>
@@ -1537,14 +1472,17 @@
     }
     /* Tree selection actions bg change */
     .tree-light-color {
-        background-color: #dbe9fe;
+        // background-color: #dbe9fe;
+        @apply bg-new-gray-300;
     }
     .via-tree-light-color {
-        --tw-gradient-stops: var(--tw-gradient-from), #dbe9fe,
+        // --tw-gradient-stops: var(--tw-gradient-from), #dbe9fe,
+        --tw-gradient-stops: var(--tw-gradient-from), #eff1f5,
             var(--tw-gradient-to, rgba(244, 246, 253, 0)) !important;
     }
     .from-tree-light-color {
-        --tw-gradient-from: #dbe9fe !important;
+        // --tw-gradient-from: #dbe9fe !important;
+        --tw-gradient-from: #eff1f5 !important;
     }
     .from-gray-light-color {
         --tw-gradient-from: #f8f8f8;
@@ -1554,7 +1492,8 @@
 
     .bg-gray-light-color {
         --tw-bg-opacity: 1;
-        background-color: rgba(248, 248, 248, var(--tw-bg-opacity));
+        // background-color: rgba(248, 248, 248, var(--tw-bg-opacity));
+        @apply bg-new-gray-200;
     }
     .via-gray-light-color {
         --tw-gradient-stops: var(--tw-gradient-from), #f8f8f8,

@@ -1,14 +1,11 @@
 <template>
     <div class="flex flex-col">
-        <p
-            class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
-        >
+        <p class="flex items-center justify-between mb-1 text-sm text-gray-500">
             Custom Metadata
         </p>
         <div
             v-for="(tab, index) in cmList(assetType(selectedAsset))"
             :key="index"
-            class="border border-gray-300 rounded-md"
         >
             <SingleTab
                 :selected-asset="selectedAsset"

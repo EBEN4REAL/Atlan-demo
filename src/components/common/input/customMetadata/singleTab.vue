@@ -1,115 +1,121 @@
 <template>
-    <div v-if="loading" class="flex items-center justify-center w-full h-full">
-        <AtlanLoader class="h-8" />
-    </div>
     <div
-        v-else-if="applicableList.filter((i) => hasValue(i)).length"
+        v-if="applicableList.filter((i) => hasValue(i)).length"
         ref="target"
-        class="flex flex-col w-full overflow-hidden gap-y-2"
+        class="flex flex-col w-full mb-2 overflow-hidden border border-gray-300 rounded-lg"
     >
-        <!-- header starts here -->
-        <div
-            class="flex items-center justify-between px-5 py-2 border-b border-gray-200 gap-x-4 group bg-gray-50"
-        >
-            <span class="flex items-center">
-                <PreviewTabsIcon
-                    :icon="tab.icon"
-                    :image="tab.image"
-                    :emoji="tab.emoji"
-                    height="h-4"
-                    width="w-4"
-                    class="mr-1"
-                    :display-mode="true"
-                    emoji-size="text-md"
-                />
-                <Truncate
-                    :tooltip-text="data.label"
-                    placement="left"
-                    :should-open-in-new-tab="true"
-                    :classes="
-                        checkAccess(page.PAGE_GOVERNANCE)
-                            ? 'text-primary hover:underline mr-1 font-semibold'
-                            : 'mr-1 line-clamp-1'
-                    "
-                    v-bind="
-                        checkAccess(page.PAGE_GOVERNANCE)
-                            ? {
-                                  routeTo: `/governance/custom-metadata/${data.guid}`,
-                              }
-                            : {}
-                    "
-                    clamp-percentage="80%"
-                />
-                <a-tooltip>
-                    <template #title>
-                        <span>{{ data?.description }}</span>
-                    </template>
-                    <div class="flex items-center">
-                        <AtlanIcon
-                            v-if="data?.description"
-                            class="text-gray-400 hover:text-gray-500 mb-0.5"
-                            icon="Info"
-                        />
+        <a-collapse v-model:activeKey="activeKey" ghost :class="$style.cmTab">
+            <a-collapse-panel key="1" :show-arrow="false">
+                <template #header>
+                    <!-- header starts here -->
+                    <div
+                        class="flex items-center justify-between py-2 pl-2 pr-3 gap-x-4 group"
+                    >
+                        <span class="flex items-center">
+                            <AtlanIcon
+                                icon="CaretDown"
+                                class="mr-3 text-gray-700"
+                            />
+                            <PreviewTabsIcon
+                                :icon="tab.icon"
+                                :image="tab.image"
+                                :emoji="tab.emoji"
+                                height="h-4"
+                                width="w-4"
+                                class="mr-1"
+                                :display-mode="true"
+                                emoji-size="text-md"
+                            />
+                            <Truncate
+                                :tooltip-text="data.label"
+                                placement="left"
+                                :should-open-in-new-tab="true"
+                                :classes="
+                                    checkAccess(page.PAGE_GOVERNANCE)
+                                        ? 'text-primary hover:underline mr-1 font-semibold'
+                                        : 'mr-1 line-clamp-1'
+                                "
+                                v-bind="
+                                    checkAccess(page.PAGE_GOVERNANCE)
+                                        ? {
+                                              routeTo: `/governance/custom-metadata/${data.guid}`,
+                                          }
+                                        : {}
+                                "
+                                clamp-percentage="75%"
+                            />
+                            <a-tooltip>
+                                <template #title>
+                                    <span>{{ data?.description }}</span>
+                                </template>
+                                <div class="flex items-center">
+                                    <AtlanIcon
+                                        v-if="data?.description"
+                                        class="text-gray-400 hover:text-gray-500 mb-0.5"
+                                        icon="Info"
+                                    />
+                                </div>
+                            </a-tooltip>
+                        </span>
+                        <div
+                            v-if="
+                                selectedAssetUpdatePermission(
+                                    selectedAsset,
+                                    isDrawer,
+                                    'ENTITY_UPDATE_BUSINESS_METADATA'
+                                ) && !viewOnly
+                            "
+                            class="font-bold cursor-pointer hover:underline text-primary"
+                            @click="switchTab(selectedAsset, data?.label)"
+                        >
+                            Edit
+                        </div>
                     </div>
-                </a-tooltip>
-            </span>
-            <div
-                v-if="
-                    selectedAssetUpdatePermission(
-                        selectedAsset,
-                        isDrawer,
-                        'ENTITY_UPDATE_BUSINESS_METADATA'
-                    ) && !viewOnly
-                "
-                class="font-bold cursor-pointer hover:underline text-primary"
-                @click="switchTab(selectedAsset, data?.label)"
-            >
-                Edit
-            </div>
-        </div>
-        <!-- header ends here -->
+                    <!-- header ends here -->
+                </template>
+                <template v-if="data?.options?.isLocked === 'true'">
+                    <div
+                        class="flex items-center p-2 mx-5 my-2 text-xs rounded gap-x-2 bg-primary-light text-primary"
+                    >
+                        <InternalCMBanner />
+                    </div>
+                </template>
 
-        <template v-if="data?.options?.isLocked === 'true'">
-            <div
-                class="flex items-center p-2 mx-5 my-2 text-xs rounded gap-x-2 bg-primary-light text-primary"
-            >
-                <InternalCMBanner />
-            </div>
-        </template>
-
-        <div class="flex flex-col flex-grow pl-5 pr-5 overflow-y-auto">
-            <!-- showing non empty starts here -->
-            <template
-                v-for="(a, x) in applicableList.filter((i) => hasValue(i))"
-                :key="x"
-            >
-                <div class="mb-3">
-                    <div class="flex mb-1 font-normal text-gray-500">
-                        <Truncate
-                            :tooltip-text="a.displayName"
-                            :rows="1"
-                            width="500px"
-                            placement="left"
-                            classes="text-gray-500"
-                        />
-                        <a-tooltip>
-                            <template #title>
-                                <span>{{ a.options.description }}</span>
-                            </template>
-                            <div class="">
-                                <AtlanIcon
-                                    v-if="a.options.description"
-                                    class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
-                                    icon="Info"
+                <div class="flex flex-col flex-grow pr-5 overflow-y-auto pl-9">
+                    <!-- showing non empty starts here -->
+                    <template
+                        v-for="(a, x) in applicableList.filter((i) =>
+                            hasValue(i)
+                        )"
+                        :key="x"
+                    >
+                        <div class="my-1.5">
+                            <div class="flex mb-1 font-normal text-gray-500">
+                                <Truncate
+                                    :tooltip-text="a.displayName"
+                                    :rows="1"
+                                    width="500px"
+                                    placement="left"
+                                    classes="text-gray-500"
                                 />
+                                <a-tooltip>
+                                    <template #title>
+                                        <span>{{ a.options.description }}</span>
+                                    </template>
+                                    <div class="">
+                                        <AtlanIcon
+                                            v-if="a.options.description"
+                                            class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
+                                            icon="Info"
+                                        />
+                                    </div>
+                                </a-tooltip>
                             </div>
-                        </a-tooltip>
-                    </div>
 
-                    <ReadOnly :attribute="a" />
-                </div>
-            </template>
-        </div>
+                            <ReadOnly :attribute="a" />
+                        </div>
+                    </template></div></a-collapse-panel
+        ></a-collapse>
     </div>
 </template>
 
@@ -173,6 +179,7 @@
 
             const loading = ref(false)
             const viewOnly = ref(data.value?.options?.isLocked === 'true')
+            const activeKey = ref(['0'])
             const guid = ref()
             const { checkAccess } = useAuth()
 
@@ -323,7 +330,18 @@
                 getEnumOptions,
                 loading,
                 selectedAssetUpdatePermission,
+                activeKey,
             }
         },
     })
 </script>
+
+<style lang="less" module>
+    .cmTab {
+        :global(.ant-collapse-item) {
+            :global(.ant-collapse-header) {
+                padding: 0 !important;
+            }
+        }
+    }
+</style>

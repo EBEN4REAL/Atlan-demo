@@ -290,7 +290,6 @@
                             if (Object.keys(facets.value[key]).length > 0) {
                                 count += 1
                             }
-
                         }
                     })
                 } catch (e) {

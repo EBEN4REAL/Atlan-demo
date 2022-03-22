@@ -38,8 +38,7 @@
             <div class="w-6 h-1 mr-1 rounded bg-success"></div> -->
             <div class="flex items-center w-full">
                 <RunWidget
-                    v-if="isWorkflowTemplateFetched"
-                    :item="workflowTemplate"
+                    :item="runMap[item.metadata.name]"
                     :workflow="item.metadata.name"
                     :runs="runs(item.metadata.name)"
                     statusType="line"
@@ -51,6 +50,7 @@
 
 <script lang="ts">
     import {
+        watch,
         defineComponent,
         PropType,
         toRefs,
@@ -76,10 +76,7 @@
             const { item } = toRefs(props)
             const format = 'hh:MM A,'
             const runMap = inject('runMap') as Ref<any>
-            const workflowTemplate = inject('workflowTemplate') as Ref<any>
-            const isWorkflowTemplateFetched = inject(
-                'isWorkflowTemplateFetched'
-            ) as Ref<any>
+
             const workflowParameters = computed(() => {
                 if (
                     item.value.spec.templates.length &&
@@ -165,11 +162,12 @@
                     ]
                 )
             )
+
             const runs = (workflow) => runMap.value[workflow]
+
             // const parsedDate = new Date(_date.toString())
             return {
-                workflowTemplate,
-                isWorkflowTemplateFetched,
+                runMap,
                 format,
                 _date,
                 item,

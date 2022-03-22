@@ -48,7 +48,6 @@
     import { useRunDiscoverList } from '~/composables/package/useRunDiscoverList'
     import { debouncedWatch, until } from '@vueuse/core'
     import whoami from '~/composables/user/whoami'
-    import { usePackageDiscoverList } from '~/composables/package/usePackageDiscoverList'
     import { invoke, until } from '@vueuse/core'
 
     import WorkflowCard from './workflowCard.vue'
@@ -117,49 +116,9 @@
                 { debounce: 250 }
             )
 
-            const facetPackage = ref({})
-            const packageLimit = ref(5)
-            const isWorkflowTemplateFetched = ref(false)
-            const workflowTemplate = ref({})
-
-            const {
-                isLoading: isLoadingPackage,
-                refresh,
-                error: errorPackage,
-                list: packageList,
-            } = usePackageDiscoverList({
-                facets: facetPackage,
-                limit: packageLimit,
-            })
-            refresh()
-
-            try {
-                invoke(async () => {
-                    await until(isLoadingPackage).toBe(true)
-                    if (errorPackage.value) {
-                        console.error(
-                            errorPackage.value,
-                            'Error in fetching schedule query template'
-                        )
-                    } else if (list.value) {
-                        watch(list, () => {
-                            if (list.value?.length > 0) {
-                                isWorkflowTemplateFetched.value = true
-                                workflowTemplate.value = list.value[0]
-                            }
-                        })
-                    }
-                })
-            } catch (e) {
-                console.error(e)
-            }
-
             provide('runMap', runByWorkflowMap)
-            provide('isWorkflowTemplateFetched', isWorkflowTemplateFetched)
-            provide('workflowTemplate', workflowTemplate)
 
             return {
-                isWorkflowTemplateFetched,
                 queryText,
                 runByWorkflowMap,
                 list,

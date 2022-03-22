@@ -51,7 +51,7 @@
                         >{{ usersData?.ownerUsers?.length }} users</span
                     >
                     will be notified over email at
-                    {{ _date?.format('hh:MM A') }}
+                    {{ _date?.format('hh:mm A') }}
                     {{ getAbbreviation(timeZoneAbbreviation) }}
                     <span class="capitalize">{{
                         infoTabeState.frequency

@@ -1,33 +1,37 @@
 import { defaultSettings, imagePlugin } from 'prosemirror-image-plugin'
-import { ImagePluginSettings } from 'prosemirror-image-plugin/dist/types'
-import Image, { ImageOptions } from '@tiptap/extension-image'
+import Image from '@tiptap/extension-image'
 import useUploadImage from '~/composables/image/uploadImage'
+import {
+    NAME_OF_EVENTS,
+    README_TRIGGERS,
+    TYPE_OF_EVENTS,
+    useTrackEvent,
+} from '~/modules/editor/analytics/useTrackEvent'
 
-interface CustomImageOptions extends ImageOptions {
-    imageSettings: ImagePluginSettings
-}
-
-export default Image.extend<CustomImageOptions>({
-    addOptions() {
-        return {
-            ...this.parent?.(),
-            imageSettings: {
+export default Image.extend({
+    addProseMirrorPlugins() {
+        const assetType =
+            this.editor.options.editorProps.attributes['data-asset-type']
+        return [
+            imagePlugin(this.editor.schema, {
                 ...defaultSettings,
                 hasTitle: false,
                 enableResize: true,
                 uploadFile(file: File): Promise<string> {
                     const { upload, data } = useUploadImage()
-                    return upload(file).then(
-                        () =>
-                            `/api/service/images/${data.value?.id}?ContentDisposition=inline&name=image`
-                    )
+                    return upload(file).then(() => {
+                        useTrackEvent({
+                            type: TYPE_OF_EVENTS.NODE,
+                            name: NAME_OF_EVENTS.IMAGE_PASTED,
+                            trigger: README_TRIGGERS.SLASH_MENU,
+                            properties: {
+                                assetType,
+                            },
+                        })
+                        return `/api/service/images/${data.value?.id}?ContentDisposition=inline&name=image`
+                    })
                 },
-            },
-        }
-    },
-    addProseMirrorPlugins() {
-        return [
-            imagePlugin(this.editor.schema, { ...this.options.imageSettings }),
+            }),
         ]
     },
 })

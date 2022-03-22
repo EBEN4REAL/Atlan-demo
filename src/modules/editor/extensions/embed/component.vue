@@ -43,14 +43,15 @@
 </template>
 
 <script lang="ts">
-    import { ref, toRefs, defineComponent, computed } from 'vue'
-    import { NodeViewWrapper, nodeViewProps } from '@tiptap/vue-3'
+    import { computed, defineComponent, ref, toRefs } from 'vue'
+    import { nodeViewProps, NodeViewWrapper } from '@tiptap/vue-3'
     import AtlanIcon from '@common/icon/atlanIcon.vue'
     import AtlanButton from '@/UI/button.vue'
     import {
         useTrackEvent,
         TYPE_OF_EVENTS,
         README_TRIGGERS,
+        NAME_OF_EVENTS,
     } from '~/modules/editor/analytics/useTrackEvent'
 
     export default defineComponent({

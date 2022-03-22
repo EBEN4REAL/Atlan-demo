@@ -1,5 +1,4 @@
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
-import properties from '@common/facet/properties/index.vue'
 
 export enum TYPE_OF_EVENTS {
     MARK = 'mark',

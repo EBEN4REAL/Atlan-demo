@@ -3,6 +3,12 @@ import Component from './component.vue'
 import IFrame from '../iframe/extension'
 import iconMap from '@common/icon/iconMap'
 import { defineComponent, h, VNode } from 'vue'
+import {
+    NAME_OF_EVENTS,
+    README_TRIGGERS,
+    TYPE_OF_EVENTS,
+    useTrackEvent,
+} from '~/modules/editor/analytics/useTrackEvent'
 
 interface ValidateInputFunc {
     (input: string): boolean
@@ -73,7 +79,6 @@ export default IFrame.extend<EmbedOptions>({
                     if (dispatch) {
                         tr.replaceRangeWith(selection.from, selection.to, node)
                     }
-
                     // useTrackEvent({
                     //     type: TYPE_OF_EVENTS.NODE,
                     //     name: NAME_OF_EVENTS.EMBED_INSERTED,

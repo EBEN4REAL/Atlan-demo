@@ -184,7 +184,8 @@ export default function useGraph(graph) {
                                         ? 'isHighlighted'
                                         : ''
                                 }
-                            ">${iconPlus} <span id="node-${guid}-hoPaLoader" class="absolute w-9 h-9 hidden">${iconLoader}</span></div>`
+                            ">
+                            <span id="node-${guid}-hoPaCTAIcon">${iconPlus}</span> <span id="node-${guid}-hoPaLoader" class="absolute w-9 h-9 hidden">${iconLoader}</span></div>`
                             : ''
                     } 
                     <div id="node-${guid}-columnListLoader" class="node-columnListLoader hidden">

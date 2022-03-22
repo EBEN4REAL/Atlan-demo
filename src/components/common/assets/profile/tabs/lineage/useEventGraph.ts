@@ -1104,16 +1104,24 @@ export default function useEventGraph({
 
     // controlHoPaCTALoader
     const controlHoPaCTALoader = (nodeId, show) => {
-        const id = `node-${nodeId}-hoPaLoader`
-        const ele = document.getElementById(id)
+        const hoPaCTAIconId = `node-${nodeId}-hoPaCTAIcon`
+        const hoPaCTAIconEle = document.getElementById(hoPaCTAIconId)
+        const hoPaLoaderId = `node-${nodeId}-hoPaLoader`
+        const hoPaLoaderEle = document.getElementById(hoPaLoaderId)
         if (show) {
             isGraphLoading.value = true
-            ele?.classList.remove('hidden')
-            ele?.classList.add('inline')
+            hoPaLoaderEle?.classList.remove('hidden')
+            hoPaLoaderEle?.classList.add('inline')
+
+            hoPaCTAIconEle?.classList.remove('inline')
+            hoPaCTAIconEle?.classList.add('hidden')
         } else {
             isGraphLoading.value = false
-            ele?.classList.remove('inline')
-            ele?.classList.add('hidden')
+            hoPaLoaderEle?.classList.remove('inline')
+            hoPaLoaderEle?.classList.add('hidden')
+
+            hoPaCTAIconEle?.classList.remove('hidden')
+            hoPaCTAIconEle?.classList.add('inline')
         }
     }
 

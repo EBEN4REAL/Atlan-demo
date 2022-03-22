@@ -284,21 +284,11 @@
                     return 'Add policies'
                 }
                 const meta = countMeta.value
-                    ? `${countMeta.value} metadata ${
-                          countMeta.value > 1 ? 'policies ' : 'policy '
-                      } `
+                    ? `${countMeta.value} metadata`
                     : ''
-                const data = countData.value
-                    ? `${countData.value} data ${
-                          countData.value > 1 ? 'policies ' : 'policy '
-                      }`
-                    : ''
+                const data = countData.value ? `, ${countData.value} data` : ''
                 const glossary = countGlossary.value
-                    ? `${countGlossary.value}  ${
-                          countGlossary.value > 1
-                              ? 'glossary policies'
-                              : 'glossary policy'
-                      }`
+                    ? `, ${countGlossary.value} glossary `
                     : ''
                 return `${meta}${data}${glossary}`
             })

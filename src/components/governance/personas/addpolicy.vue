@@ -437,7 +437,11 @@
                                         "
                                         class="h-4"
                                     />
-                                    {{ el.title }}
+                                    {{
+                                        type !== 'glossaryPolicy'
+                                            ? el.title
+                                            : 'Glossary, Terms and Categories'
+                                    }}
                                 </div>
                                 <div
                                     class="font-mono text-xs tracking-wide value-tag"

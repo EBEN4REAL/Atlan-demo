@@ -1,14 +1,12 @@
 <template>
-    <span class="text-2xl">Manage Workflows</span>
-    <WorkflowList />
+    <div>List item</div>
 </template>
 
 <script lang="ts">
     import { defineComponent } from 'vue'
-    import WorkflowList from '~/workflowsv2/components/manage/workflowList.vue'
 
     export default defineComponent({
-        name: 'ManageWorkflows',
+        name: 'WorkflowListItem',
         components: {},
         props: {},
         emits: [],

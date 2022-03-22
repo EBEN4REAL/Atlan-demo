@@ -9,7 +9,7 @@
         <div
             class="flex flex-col overflow-hidden divide-y divide-gray-300 rounded-lg"
         >
-            <div class="flex items-center h-10 px-3 bg-gray-100">
+            <div class="grid items-center h-10 grid-cols-10 px-3 bg-gray-100">
                 <span
                     v-for="head in tableHeaders"
                     :key="head.title"
@@ -19,21 +19,33 @@
                     {{ head.title }}
                 </span>
             </div>
-            <!-- <AtlanLoader v-if="isLoading" /> -->
             <div
-                v-if="runs?.length"
-                class="overflow-y-scroll divide-y divide-gray-300"
+                class="flex items-center justify-center overflow-y-scroll"
                 style="height: 45vh"
             >
-                <RunListItem
-                    v-for="run in runs"
-                    :key="run.metadata.uid"
-                    :run="run"
-                />
+                <AtlanLoader v-if="isLoading" class="h-10 mx-auto" />
+                <div v-else-if="runs?.length" class="divide-y divide-gray-300">
+                    <RunListItem
+                        v-for="run in runs"
+                        :key="run.metadata.uid"
+                        :run="run"
+                    />
+                </div>
+                <div
+                    v-else
+                    class="flex flex-col items-center text-center gap-y-3 w-72"
+                >
+                    <component :is="EmptyLogsIllustration" />
+                    <span class="text-sm text-gray">
+                        Oops… we couldn't find any workflow runs matching your
+                        filters.
+                    </span>
+                    <span class="text-sm text-gray-500">
+                        Try modifying your filters or resetting them.
+                    </span>
+                </div>
             </div>
-            <!-- <template v-else>
-                <EmptyLogsIllustration />
-            </template> -->
+
             <span>Pagination</span>
         </div>
     </div>
@@ -75,11 +87,14 @@
 
             // If changed this should be manually synced with the flex-grow properties of <RunListItem/>
             const tableHeaders = [
-                { title: 'Workflow Run', style: 'flex-grow: 5' },
-                { title: 'Status', style: 'flex-grow: 1' },
-                { title: 'Started', style: 'flex-grow: 1' },
-                { title: 'Duration', style: 'flex-grow: 1' },
-                { title: 'Output', style: 'flex-grow: 2' },
+                {
+                    title: 'Workflow Run',
+                    style: 'grid-column: span 5 / span 5',
+                },
+                { title: 'Status', style: 'grid-column: span 1 / span 1' },
+                { title: 'Started', style: 'grid-column: span 1 / span 1' },
+                { title: 'Duration', style: 'grid-column: span 1 / span 1' },
+                { title: 'Output', style: 'grid-column: span 2 / span 2' },
             ]
             return { runs, tableHeaders, isLoading, EmptyLogsIllustration }
         },

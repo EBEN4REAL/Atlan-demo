@@ -1,16 +1,12 @@
 <template>
     <div class="run-list-item">
-        <div style="flex-grow: 5" class="flex flex-col">
-            <div class="flex items-center truncate gap-x-2">
-                <!-- <img v-if="item.icon" :src="item.icon" class="w-auto h-4" />
-                <span>{{ item.label }}</span> -->
-            </div>
-            <div class="flex"></div>
+        <div class="flex flex-col items-start col-span-5">
+            <span>{{ run.metadata.name }}</span>
         </div>
-        <div style="flex-grow: 1"></div>
-        <div style="flex-grow: 1"></div>
-        <div style="flex-grow: 1"></div>
-        <div style="flex-grow: 2"></div>
+        <div class="col-span-1">{{ run.status.phase }}</div>
+        <div class="col-span-1">{{ run.status.startedAt }}</div>
+        <div class="col-span-1">{{ run.status.finishedAt }}</div>
+        <div class="col-span-2">Output</div>
     </div>
 </template>
 
@@ -31,9 +27,10 @@
         setup() {},
     })
 </script>
-<style scoped>
+<style lang="less" scoped>
     .run-list-item {
         height: 70px;
-        @apply flex items-center;
+        @apply px-3;
+        @apply grid grid-cols-10;
     }
 </style>

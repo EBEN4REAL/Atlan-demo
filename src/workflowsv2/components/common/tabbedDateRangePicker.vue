@@ -6,7 +6,7 @@
             v-for="item in ranges"
             :key="item.label"
             class="tabbed-btn"
-            :class="{ selected: value === item.label }"
+            :class="value === item.label ? 'fake-bold selected' : ''"
             @click="$emit('update:value', item.label)"
         >
             {{ item.label }}
@@ -59,7 +59,7 @@
 
         &.selected {
             @apply bg-primary-light;
-            @apply text-primary font-bold;
+            @apply text-primary;
         }
 
         &:focus-visible {

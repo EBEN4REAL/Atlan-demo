@@ -7,13 +7,10 @@ export function useRunBody(
     offset?: any,
     limit?: any,
     facets?: Record<string, any>,
-    postFacets?: Record<string, any>,
     aggregations?: string[],
     preference?: Record<string, any>
 ) {
     const base = bodybuilder()
-
-    const filterQuery = bodybuilder()
 
     base.from(offset || 0)
     base.size(limit || 0)
@@ -92,7 +89,7 @@ export function useRunBody(
 
     // //aggregations
 
-    if (aggregations) {
+    if (Array.isArray(aggregations)) {
         aggregations?.forEach((mkey) => {
             switch (mkey) {
                 case 'status': {

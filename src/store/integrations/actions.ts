@@ -7,11 +7,15 @@ export interface Actions extends State {
     removeIntegration(id: string): void
     updateIntegration(payload: any): void
     jiraSetProjectList(list: any): void
+    setAllIntegrationsFetchError(error: any): void
 }
 
 const actions: Actions = {
     setAllIntegrationsList(list) {
         this.allIntegrations = list
+    },
+    setAllIntegrationsFetchError(error) {
+        this.allIntegrationError = error
     },
     setAllIntegrationsConfig(list) {
         this.integrationConfigs = list

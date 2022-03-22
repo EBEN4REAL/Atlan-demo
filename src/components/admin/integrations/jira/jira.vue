@@ -31,17 +31,13 @@
                             <AtlanLoader class="h-10" />
                         </div>
                     </template> -->
-                    <template v-if="countReady">
-                        <UpdateJiraConfig
-                            v-if="
-                                tenantJiraStatus.configured && jiraAppInstalled
-                            "
+                    <UpdateJiraConfig
+                        v-if="tenantJiraStatus.configured && jiraAppInstalled"
+                    />
+                    <template v-else>
+                        <OverviewBanner
+                            class="flex flex-col p-4 m-6 border rounded-lg gap-y-3"
                         />
-                        <template v-else>
-                            <OverviewBanner
-                                class="flex flex-col p-4 m-6 border rounded-lg gap-y-3"
-                            />
-                        </template>
                     </template>
                 </a-menu-item>
             </a-sub-menu>

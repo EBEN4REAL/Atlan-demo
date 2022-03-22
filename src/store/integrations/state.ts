@@ -17,12 +17,14 @@ export interface JiraStore {
 
 export interface State {
     allIntegrations: Integration[],
+    allIntegrationError,
     integrationConfigs: IntegrationConfig[],
     jira: JiraStore,
 }
 
 export const state: State = {
     allIntegrations: [],
+    allIntegrationError: null,
     integrationConfigs: [],
     jira: {},
 }

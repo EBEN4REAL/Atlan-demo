@@ -5,7 +5,10 @@
     >
         <AtlanLoader class="h-10" />
     </div>
-    <div v-else-if="error" class="flex items-center justify-center h-full">
+    <div
+        v-else-if="error || store.allIntegrationError"
+        class="flex items-center justify-center h-full"
+    >
         <ErrorView />
     </div>
     <main class="mx-4 space-y-8 my-9">

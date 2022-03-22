@@ -65,14 +65,17 @@ export const refetchIntegration = (id) => {
 
 const useIntegrations = (immediate = true) => {
 
-    const { setAllIntegrationsList } = integrationStore()
+    const { setAllIntegrationsList, setAllIntegrationsFetchError } = integrationStore()
 
 
     const { data, isLoading, error, isReady, call } = getIntegrationsList(immediate)
 
-    watch(data, () => {
+    watch([error, data], () => {
         if (data?.value?.length) {
             setAllIntegrationsList(data.value)
+            setAllIntegrationsFetchError(null)
+        } else if (error) {
+            setAllIntegrationsFetchError(error)
         }
     })
 

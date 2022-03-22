@@ -5,14 +5,14 @@
                 <template v-if="getRunStatus(index)">
                     <a-tooltip :title="tooltipContent(index)">
                         <div
-                            class="w-3 h-3 p-1 bg-gray-200 rounded-sm"
+                            class="bg-gray-200 rounded-sm"
                             :class="getRunClass(index)"
                             @click.stop.prevent="handleRunClick(index)"
                         ></div>
                     </a-tooltip>
                 </template>
                 <div
-                    class="w-3 h-3 p-1 bg-gray-200 rounded-sm cursor-default"
+                    class="bg-gray-200 rounded-sm cursor-default"
                     :class="getRunClass(index)"
                     v-else
                 ></div>
@@ -47,20 +47,43 @@
                 type: String,
                 required: false,
             },
+            statusType: {
+                type: String,
+                required: false,
+                default: 'square',
+            },
         },
         setup(props, { emit }) {
-            const { item, runs, workflow } = toRefs(props)
+            const { item, runs, workflow, statusType } = toRefs(props)
 
             const getRunClass = (index) => {
                 const tempStatus = getRunStatus(index)
-                if (tempStatus === 'Succeeded') {
-                    return 'bg-green-500 opacity-75'
-                } else if (tempStatus === 'Failed' || tempStatus === 'Error') {
-                    return 'bg-red-500 opacity-75'
-                } else if (tempStatus === 'Running') {
-                    return 'bg-primary opacity-75 animate-pulse'
-                } else {
-                    return 'bg-gray-200'
+                if (statusType.value === 'square') {
+                    if (tempStatus === 'Succeeded') {
+                        return 'bg-green-500 opacity-75 p-1 w-3 h-3'
+                    } else if (
+                        tempStatus === 'Failed' ||
+                        tempStatus === 'Error'
+                    ) {
+                        return 'bg-red-500 opacity-75 p-1'
+                    } else if (tempStatus === 'Running') {
+                        return 'bg-primary opacity-75 animate-pulse p-1 w-3 h-3'
+                    } else {
+                        return 'bg-gray-200 p-1 w-3 h-3'
+                    }
+                } else if (statusType.value === 'line') {
+                    if (tempStatus === 'Succeeded') {
+                        return 'bg-green-500 opacity-75 w-6 h-1'
+                    } else if (
+                        tempStatus === 'Failed' ||
+                        tempStatus === 'Error'
+                    ) {
+                        return 'bg-red-500 opacity-75 w-6 h-1'
+                    } else if (tempStatus === 'Running') {
+                        return 'bg-primary opacity-75 w-6 h-1 animate-pulse'
+                    } else {
+                        return 'bg-gray-200 w-6 h-1'
+                    }
                 }
             }
 

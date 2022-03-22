@@ -156,9 +156,11 @@
                 isScheduleWorkFlowLoading,
                 isWorkflowTemplateFetched,
             } = toRefs(props)
+            debugger
             const interval = parser.parseExpression(cronData.value.cron)
 
             const _date = dayjs(interval.next().toString())
+            console.log(_date.toString())
             const parsedDate = new Date(_date.toString())
             const timeZoneAbbreviation = String(
                 String(parsedDate).split('(')[1]
@@ -199,7 +201,7 @@
                 emit('runWorkFlow')
             }
 
-            const format = 'MMM DD, dddd, hh:MM A'
+            const format = 'MMM DD, dddd, hh:mm A'
             return {
                 format,
                 _date,
@@ -213,6 +215,7 @@
                 isScheduleWorkFlowLoading,
                 isWorkflowTemplateFetched,
                 runWorkFlow,
+                parsedDate,
             }
         },
     })

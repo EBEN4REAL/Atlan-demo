@@ -49,6 +49,7 @@
                     :allowClear="false"
                     :minuteStep="15"
                     v-model:value="infoTabeState.time"
+                    @change="buildCron"
                 />
             </div>
             <div class="item-3">
@@ -290,6 +291,7 @@
             }
 
             const buildCron = () => {
+                debugger
                 const interval = parser.parseExpression('* * * * *')
                 const fields = JSON.parse(JSON.stringify(interval.fields))
 

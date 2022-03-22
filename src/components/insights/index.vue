@@ -79,6 +79,14 @@
                         <!-- <Variables /> -->
                         <History />
                     </div>
+                    <div
+                        :class="
+                            activeTab.component === 'schedule' ? 'z-30' : 'z-10'
+                        "
+                        class="absolute h-full full-width"
+                    >
+                        <Schedule />
+                    </div>
                     <!--explorer pane end -->
                 </pane>
                 <pane
@@ -134,7 +142,7 @@
     import Schema from './explorers/schema/index.vue'
     import Queries from './explorers/queries/index.vue'
     import History from './explorers/history/index.vue'
-    import Schedule from './explorers/schedule.vue'
+    import Schedule from './explorers/schedule/index.vue'
 
     import useInsightsTabList from './common/composables/useTabList'
     import { useLocalStorageSync } from './common/composables/useLocalStorageSync'

@@ -147,7 +147,7 @@
                 <!-- End Header-->
                 <div class="w-full px-4 mt-3">
                     <!-- Start Row 1  -->
-                    <div class="mb-4">
+                    <div>
                         <!-- #rows/cols/size for tables, views etc. -->
                         <div
                             v-if="
@@ -158,7 +158,7 @@
                                     'materialisedview',
                                 ].includes(item.typeName?.toLowerCase())
                             "
-                            class="flex justify-between flex-grow"
+                            class="flex justify-between flex-grow pb-4"
                         >
                             <div class="">
                                 <div class="text-gray-500">Rows</div>
@@ -215,7 +215,7 @@
                     <!-- End Row 1  -->
 
                     <!-- Description -->
-                    <div v-if="description(item)" class="mb-4">
+                    <div v-if="description(item)" class="pb-4">
                         <div class="text-gray-500">Description</div>
                         <div class="flex items-center mt-1">
                             {{ description(item) }}
@@ -229,7 +229,7 @@
                             item?.meanings?.length ||
                             item?.attributes?.meanings?.length
                         "
-                        class="mb-4"
+                        class="pb-4"
                     >
                         <div class="text-gray-500">Terms & Classifications</div>
 
@@ -316,7 +316,7 @@
                     <!-- Owners -->
                     <div
                         v-if="item?.attributes?.ownerUsers?.length > 0"
-                        class="mb-4"
+                        class="pb-4"
                     >
                         <div class="text-gray-500">Owners</div>
                         <div class="flex flex-wrap gap-1 mt-1">
@@ -334,10 +334,10 @@
                         </div>
                     </div>
 
-                    <div class="flex" v-if="showPreviewLink">
+                    <div class="flex" v-if="showPreviewLink" >
                         <router-link
                             :to="path"
-                            class="ml-auto"
+                            class="ml-auto" 
                         >
                             <AtlanBtn
                                 class="flex-none px-0"

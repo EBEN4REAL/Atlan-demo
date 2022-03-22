@@ -1,4 +1,7 @@
 export const getters = {
+    getCyclicRelations(state) {
+        return () => state.cyclicRelations
+    },
     getColumnToSelect(state) {
         return () => state.columnToSelect
     },

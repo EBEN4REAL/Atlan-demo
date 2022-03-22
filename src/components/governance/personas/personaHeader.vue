@@ -234,6 +234,7 @@
                     const personaRaw = JSON.parse(JSON.stringify(body))
                     delete body.metadataPolicies
                     delete body.dataPolicies
+                    delete body.glossaryPolicies
                     await savePersona(body)
                     handleUpdateList(personaRaw)
 

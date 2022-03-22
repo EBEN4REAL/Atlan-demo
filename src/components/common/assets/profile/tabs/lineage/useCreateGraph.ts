@@ -139,8 +139,13 @@ export default function useCreateGraph({
         autoResize: true,
         interacting: false,
         container: graphContainer.value,
-        grid: true,
-        background: { color: '#f8f8f8' },
+        grid: {
+            visible: true,
+            size: 14,
+            type: 'fixedDot',
+            args: { color: '#bbc1ce', thickness: 1.5 },
+        },
+        background: { color: '#f6f7f9' },
         height: graphHeight.value / 1.35,
         width: graphWidth.value,
         scroller: {
@@ -150,11 +155,11 @@ export default function useCreateGraph({
             pannable: true,
         },
         mousewheel: {
-            minScale: 0.5,
-            maxScale: 1.2,
+            minScale: 0.01,
+            maxScale: 1.3,
             enabled: true,
             global: false,
-            factor: 1.04,
+            factor: 1.1,
             modifiers: ['ctrl', 'meta'],
         },
         minimap: {
@@ -187,7 +192,7 @@ export default function useCreateGraph({
         },
         ranksepFunc() {
             // horizontal spacing btw nodes
-            return 190
+            return 250
         },
     })
 }

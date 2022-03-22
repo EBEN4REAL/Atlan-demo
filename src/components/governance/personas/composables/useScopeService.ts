@@ -151,20 +151,6 @@ export const personaScopeList = [
                 gif: updateAssetGif,
             },
             {
-                value: 'entity-create',
-                label: 'Create',
-                filterLabel: 'Create asset',
-                // desc: 'Create entities within selected assets',
-                desc: 'Gives ability to create new assets within the selected connection or specified database/schema',
-            },
-            {
-                value: 'entity-delete',
-                label: 'Delete',
-                filterLabel: 'Delete asset',
-                // desc: 'Permission to delete selected assets',
-                desc: 'Gives ability to delete assets within the selected connection or specified database/schema',
-            },
-            {
                 value: 'link-assets',
                 label: 'Link other assets',
                 desc: 'Permission to link assets like readme, resources to this asset',
@@ -228,6 +214,26 @@ export const personaScopeList = [
         type: 'Governance',
         label: 'Governance',
     },
+    {
+        type: 'API',
+        label: 'API',
+        scopes: [
+            {
+                value: 'entity-create',
+                label: 'Create',
+                filterLabel: 'Create asset',
+                // desc: 'Create entities within selected assets',
+                desc: 'Gives ability to create new assets within the selected connection or specified database/schema',
+            },
+            {
+                value: 'entity-delete',
+                label: 'Delete',
+                filterLabel: 'Delete asset',
+                // desc: 'Permission to delete selected assets',
+                desc: 'Gives ability to delete assets within the selected connection or specified database/schema',
+            },
+        ],
+    },
 ]
 
 export default function scopeService() {
@@ -248,6 +254,9 @@ export default function scopeService() {
             return {
                 scopeList: purposeScopeList,
             }
+        return {
+            scopeList: [],
+        }
     }
     function findActions(actions: string[], type: string) {
         const scopeList =
@@ -255,7 +264,7 @@ export default function scopeService() {
         const res = [
             { label: 'Asset', action: [] },
             { label: 'Governance', action: [] },
-            // { label: 'Metadata', action: [] },
+            { label: 'API', action: [] },
         ]
         actions.forEach((action) => {
             scopeList.forEach((scope) => {
@@ -265,6 +274,8 @@ export default function scopeService() {
                             res[0].action.push(s.label)
                         } else if (scope.label === 'Governance') {
                             res[1].action.push(s.label)
+                        } else if (scope.label === 'API') {
+                            res[2].action.push(s.label)
                         }
                         // else if (scope.label === 'Metadata') {
                         //     res[2].action.push(s.label)

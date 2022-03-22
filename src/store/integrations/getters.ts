@@ -25,6 +25,7 @@ interface JiraStatus {
     orgId?: string,
     avatar?: string,
     config?: any
+    projectList?: any
     integrationConfig?: any
 }
 
@@ -71,6 +72,7 @@ const getters: _GettersTree<State> & Getters = {
     tenantJiraStatus: (state: State): JiraStatus => {
         const integration = JSON.parse(JSON.stringify(state.allIntegrations.find(i => i.name.toLowerCase() === 'jira' && i.integrationLevel === 'tenant') ?? null))
         const integrationConfig = JSON.parse(JSON.stringify(state.integrationConfigs.find(i => i.name.toLowerCase() === 'jira') ?? null))
+        const projectList = state.jira?.projectList ?? []
 
         return {
             oAuth: integration?.oauthUrl ?? '',
@@ -84,6 +86,7 @@ const getters: _GettersTree<State> & Getters = {
             orgUrl: integration?.orgUrl,
             avatar: integration?.sourceMetadata?.avatar,
             config: integration?.config || {},
+            projectList,
             integrationConfig: {
                 ...(integrationConfig || {})
             }

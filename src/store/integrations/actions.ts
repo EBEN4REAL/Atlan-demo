@@ -6,6 +6,7 @@ export interface Actions extends State {
     setAllIntegrationsConfig(list: any): void
     removeIntegration(id: string): void
     updateIntegration(payload: any): void
+    jiraSetProjectList(list: any): void
 }
 
 const actions: Actions = {
@@ -25,5 +26,9 @@ const actions: Actions = {
     removeIntegration(id) {
         this.allIntegrations = this.allIntegrations?.filter(i => i.id !== id) ?? []
     },
+    jiraSetProjectList(list) {
+        this.jira.projectList = list
+    },
+
 }
 export default actions

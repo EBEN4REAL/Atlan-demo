@@ -7,7 +7,7 @@
         :loading="isLoading"
         :allow-clear="clearable"
         show-search
-        optionFilterProp="label"
+        option-filter-prop="label"
         dropdown-class-name="max-h-72 overflow-y-scroll"
     >
         <a-select-option
@@ -57,18 +57,14 @@
 <script setup lang="ts">
     import { useVModels } from '@vueuse/core'
     import { computed, onMounted, watch, h, toRefs, ref } from 'vue'
-    import { listProjects } from '~/composables/integrations/jira/useJira'
+    import { fetchJiraProjects } from '~/composables/integrations/jira/useJira'
     import integrationStore from '~/store/integrations/index'
 
-    const {
-        projects,
-        isLoading,
-        error,
-        searchLoading,
-        lastPage,
-        loadMore,
-        handleSearch,
-    } = listProjects()
+    const store = integrationStore()
+    const { tenantJiraStatus } = toRefs(store)
+    const projectList = computed(() => tenantJiraStatus.value.projectList)
+
+    const { isLoading, error, lastPage, mutate, isReady } = fetchJiraProjects()
 
     const props = defineProps({
         modelValue: { type: String, required: true },
@@ -82,8 +78,8 @@
     const errorAvatarOptions = ref([])
 
     const options = computed(() => {
-        if (projects.value?.length) {
-            return projects.value.map((p) => ({
+        if (projectList.value?.length) {
+            return projectList.value.map((p) => ({
                 label: p.name,
                 value: p.id,
                 meta: { ...p },
@@ -97,14 +93,10 @@
         emit('change', value, option, isDefautSet)
     }
 
-    const store = integrationStore()
-
-    const { tenantJiraStatus } = toRefs(store)
-
     const afterLoad = () => {
         errorAvatarOptions.value = []
         if (
-            projects.value?.length &&
+            projectList.value?.length &&
             !modelValue.value &&
             props.defaultSelect
         ) {
@@ -121,7 +113,14 @@
         }
     }
 
+    onMounted(() => {
+        debugger
+        if (projectList.value?.length) afterLoad()
+        else mutate()
+    })
+
     watch(lastPage, (v) => {
+        debugger
         if (v && !modelValue.value) afterLoad()
     })
 

@@ -196,14 +196,16 @@ export const archiveJira = (pV) => {
 }
 
 
-export const listProjects = () => {
+export const fetchJiraProjects = () => {
+
+    const store = integrationStore()
+    const { tenantJiraStatus } = toRefs(store)
+    const { jiraSetProjectList } = store
 
     const searchText = ref()
     const maxResults = ref(100)
     const startAt = ref(0)
     const totalResults = ref()
-
-
 
     const params = computed(() => ({
         maxResults: maxResults.value,
@@ -211,15 +213,14 @@ export const listProjects = () => {
         query: searchText.value
     }))
 
-
     const projects: any = ref([])
-
     const {
         data,
         isLoading,
         error,
         mutate,
-    } = jiraListProjects(params)
+        isReady,
+    } = jiraListProjects(params, { asyncOptions: { immediate: false } })
 
     const loadMore = () => {
         startAt.value += projects.value?.length || 0
@@ -238,41 +239,13 @@ export const listProjects = () => {
             if (isLast === false)
                 loadMore()
         }
-
+        jiraSetProjectList(projects.value)
     }, { deep: true })
-
-    const searchLoading = ref(false)
-    const handleSearch = (v) => {
-        projects.value = []
-        startAt.value = 0
-        searchText.value = v
-    }
-
-
-
-
-    debouncedWatch(searchText, async () => {
-        searchLoading.value = true
-        await mutate()
-        searchLoading.value = false
-    },
-        { deep: true, debounce: 500 }
-    )
 
     const lastPage = computed(() => totalResults.value === projects.value?.length)
 
-
-    // const pagination = computed(() => ({
-    //     totalPages: Math.ceil(
-    //         totalResults.value / maxResults.value
-    //     ),
-    //     pageSize: maxResults.value,
-    //     currentPage: startAt.value / maxResults.value + 1,
-    // }))
-
-
     return {
-        handleSearch, lastPage, projects, isLoading, error, searchText, searchLoading, loadMore
+        isLoading, error, isReady, mutate, lastPage
     }
 }
 

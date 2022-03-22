@@ -11,12 +11,18 @@ export interface IntegrationConfig {
     integrationLevel?: string,
 }
 
+export interface JiraStore {
+    projectList?: any[]
+}
+
 export interface State {
     allIntegrations: Integration[],
     integrationConfigs: IntegrationConfig[],
+    jira: JiraStore,
 }
 
 export const state: State = {
     allIntegrations: [],
     integrationConfigs: [],
+    jira: {},
 }

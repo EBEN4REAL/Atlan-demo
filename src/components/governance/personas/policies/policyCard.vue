@@ -175,7 +175,7 @@
                             />
 
                             {{
-                                computedActions >
+                                computedActions >=
                                 (type !== 'glossaryPolicy' ? 9 : 5)
                                     ? 'All'
                                     : computedActions

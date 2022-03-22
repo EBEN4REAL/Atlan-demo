@@ -6,7 +6,11 @@
             class="flex-1"
         >
             <a-tab-pane v-for="tab in mainTabs" :key="tab.id" :tab="tab.label">
-                <component :is="tab.component" :key="tab.id" />
+                <component
+                    :is="tab.component"
+                    :key="tab.id"
+                    style="height: calc(100vh - 86px)"
+                />
             </a-tab-pane>
         </a-tabs>
     </div>

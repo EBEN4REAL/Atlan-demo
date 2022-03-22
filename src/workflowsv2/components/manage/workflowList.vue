@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col h-full px-4 overflow-y-scroll gap-y-2">
+    <div class="flex flex-col h-full px-4 pb-4 overflow-y-scroll gap-y-2">
         <WorkflowListItem
             v-for="workflow in workflows"
             :key="workflow?._id"

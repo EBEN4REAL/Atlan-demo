@@ -1,7 +1,10 @@
 <template>
     <div class="wf-list-item">
         <div class="flex items-center text-sm gap-x-1">
-            <span class="font-bold truncate text-primary">{{ dName }}</span>
+            <span
+                class="font-bold tracking-wide truncate cursor-pointer text-primary hover:underline"
+                >{{ dName }}</span
+            >
             <!-- <span class="text-gray-500">({{ workflow?.metadata?.name }})</span> -->
         </div>
 
@@ -67,6 +70,7 @@
 
             const { displayName, isCronRun, cronString, creatorUsername } =
                 useWorkflowInfo()
+
             const { name, icon, emoji, type } = usePackageInfo()
 
             const pkg = computed(
@@ -98,11 +102,12 @@
         height: 124px;
         @apply flex flex-col gap-y-1;
         @apply bg-white rounded-lg p-4;
+        @apply cursor-default;
 
         .badge {
             @apply flex items-center justify-center;
             @apply h-5 rounded uppercase px-2 mx-1;
-            @apply text-xs bg-gray-200 text-gray;
+            @apply text-xs tracking-wider bg-gray-200 text-gray;
         }
     }
 </style>

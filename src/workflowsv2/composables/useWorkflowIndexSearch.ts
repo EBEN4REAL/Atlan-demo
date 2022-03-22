@@ -16,6 +16,7 @@ export default function useWorkflowIndexSearch(
         }),
         asyncOptions: ref({
             immediate,
+            resetOnExecute: false,
         }),
     }
 

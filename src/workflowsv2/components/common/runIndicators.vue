@@ -5,7 +5,7 @@
                 <template v-if="getRunStatus(index)">
                     <a-tooltip :title="tooltipContent(index)">
                         <div
-                            class="w-6 h-1 bg-gray-200 rounded-full cursor-pointer"
+                            class="w-6 h-1.5 bg-gray-200 rounded-full cursor-pointer"
                             :class="getRunClass(index)"
                             @click.stop.prevent="handleRunClick(index)"
                         ></div>
@@ -13,7 +13,7 @@
                 </template>
                 <div
                     v-else
-                    class="w-6 h-1 bg-gray-200 rounded-full cursor-default"
+                    class="w-6 h-1.5 bg-gray-200 rounded-full cursor-default"
                     :class="getRunClass(index)"
                 ></div>
             </template>

@@ -329,6 +329,7 @@ export default function useWorkflowInfo() {
         getRunBorderClass,
         getRunTextClass,
         creatorUsername,
+        modifierUsername,
         packageType,
         displayName,
         packageName,

@@ -61,7 +61,7 @@
     import Tooltip from '@common/ellipsis/index.vue'
     import parser from 'cron-parser'
     import dayjs from 'dayjs'
-    import RunWidget from '~/components/workflows/preview/workflows/run.vue'
+    import RunWidget from '~/workflows/components/workflows/preview/workflows/run.vue'
     import Ellipsis from '@/common/ellipsis/index.vue'
 
     export default defineComponent({

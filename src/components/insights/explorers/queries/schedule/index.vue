@@ -102,15 +102,15 @@
     import Success from './success.vue'
     import AtlanButton from '@/UI/button.vue'
     import { useVModels } from '@vueuse/core'
-    import { usePackageDiscoverList } from '~/composables/package/usePackageDiscoverList'
+    import { usePackageDiscoverList } from '~/workflows/composables/package/usePackageDiscoverList'
     import { invoke, until } from '@vueuse/core'
     import { useSchedule } from './composables/useSchedule'
-    import { createWorkflow } from '~/composables/package/useWorkflow'
+    import { createWorkflow } from '~/workflows/composables/package/useWorkflow'
     import { useUsers } from '~/composables/user/useUsers'
     import { message } from 'ant-design-vue'
-    import useWorkflowSubmit from '~/composables/package/useWorkflowSubmit'
+    import useWorkflowSubmit from '~/workflows/composables/package/useWorkflowSubmit'
     import { useTimeoutFn } from '@vueuse/core'
-    import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
+    import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
 
     export default defineComponent({
         name: 'Schedule Query',

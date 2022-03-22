@@ -35,6 +35,27 @@
             <template v-for="item in list" :key="item.name">
                 <WorkflowCard class="mb-3" :item="item" />
             </template>
+            <div
+                v-if="list.length > 0"
+                class="flex items-center justify-center mb-3"
+            >
+                <button
+                    :disabled="isLoading"
+                    class="flex items-center justify-between px-3 py-2 transition-all duration-300 bg-white rounded-full text-primary"
+                    :class="isLoading ? 'px-3 py-2' : ''"
+                    @click="handleLoadMore"
+                >
+                    <template v-if="!isLoading">
+                        <p
+                            class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
+                        >
+                            Load more
+                        </p>
+                        <AtlanIcon icon="ArrowDown" class="-mt-0.5" />
+                    </template>
+                    <AtlanLoader v-else class="w-6 h-6" />
+                </button>
+            </div>
         </div>
         <div class="flex justify-center w-full h-full px-4" v-else>
             <p class="text-gray-500">No scheduled workflows!</p>
@@ -44,8 +65,8 @@
 
 <script lang="ts">
     import { defineComponent, ref, watch, provide } from 'vue'
-    import { useWorkflowDiscoverList } from '~/composables/package/useWorkflowDiscoverList'
-    import { useRunDiscoverList } from '~/composables/package/useRunDiscoverList'
+    import { useWorkflowDiscoverList } from '~/workflows/composables/package/useWorkflowDiscoverList'
+    import { useRunDiscoverList } from '~/workflows/composables/package/useRunDiscoverList'
     import { debouncedWatch, until } from '@vueuse/core'
     import whoami from '~/composables/user/whoami'
     import { invoke, until } from '@vueuse/core'
@@ -68,16 +89,17 @@
                 sort: 'metadata.creationTimestamp-desc',
             })
             const dependentKey = ref('default_schedule_workflow')
-            const { list, quickChange } = useWorkflowDiscoverList({
-                isCache: false,
-                dependentKey,
-                facets,
-                limit,
-                offset,
-                queryText,
-                source: ref({}),
-                preference,
-            })
+            const { list, quickChange, isLoading, refresh } =
+                useWorkflowDiscoverList({
+                    isCache: false,
+                    dependentKey,
+                    facets,
+                    limit,
+                    offset,
+                    queryText,
+                    source: ref({}),
+                    preference,
+                })
 
             const dependentKeyRun = ref()
             const facetRun = ref({})
@@ -103,7 +125,6 @@
                 facetRun.value = {
                     workflowTemplates: map,
                 }
-                debugger
                 // Only get the run details when there are actually any workflows from the previous API call
                 if (map.length) quickChangeRun()
             })
@@ -116,12 +137,19 @@
                 { debounce: 250 }
             )
 
+            const handleLoadMore = () => {
+                offset.value += limit.value
+                quickChange(true)
+            }
+
             provide('runMap', runByWorkflowMap)
 
             return {
+                isLoading,
                 queryText,
                 runByWorkflowMap,
                 list,
+                handleLoadMore,
             }
         },
     })

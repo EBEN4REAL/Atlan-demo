@@ -5,7 +5,7 @@
             fullSreenState ? 'height: calc( 100vh - 40px )' : 'height:100vh'
         "
     >
-        <div class="relative flex flex-col bg-gray-light">
+        <div class="relative flex flex-col bg-new-gray-100">
             <div class="flex w-full text-gray">
                 <a-tabs
                     v-model:activeKey="activeInlineTabKey"
@@ -598,7 +598,7 @@
             border-bottom: 0px !important;
             padding: 0 12px !important;
             height: 28px !important;
-            @apply bg-gray-light !important;
+            @apply bg-new-gray-100 !important;
             transition: none !important;
 
             > div {

@@ -97,7 +97,7 @@
                 <div class="flex w-full bg">
                     <div class="flex flex-col w-full">
                         <div class="flex items-center w-11/12">
-                            <div class="flex w-full">
+                            <div class="flex w-auto max-w-full">
                                 <Tooltip
                                     :tooltip-text="`${selectedCollection?.attributes?.name}`"
                                     classes="cursor-pointer text-base font-bold mr-1

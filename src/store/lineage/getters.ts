@@ -1,4 +1,13 @@
 export const getters = {
+    getCyclicRelations(state) {
+        return () => state.cyclicRelations
+    },
+    getColumnToSelect(state) {
+        return () => state.columnToSelect
+    },
+    getMergedLineageData(state) {
+        return () => state.mergedLineageData
+    },
     getNodesColumnList(state) {
         return (nodeId) => {
             if (nodeId) return state.nodesColumnList[nodeId]

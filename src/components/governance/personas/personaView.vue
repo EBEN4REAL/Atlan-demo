@@ -44,27 +44,26 @@
             wrap-class-name="persona-modal"
             :centered="true"
             :mask-closable="true"
+            :footer="null"
             @cancel="closePersonaViewModal"
         >
             <template #title>
                 <PersonaHeader
                     v-model:openEditModal="openEditModal"
                     :persona="selectedPersona"
-                    class=""
                 />
             </template>
-            <template #footer>
+            <!-- <template #footer>
                 <div style="display: none">
                     <div class="flex items-center justify-between pb-1">
                         <slot name="footerLeft"></slot>
                         <div
                             class="flex items-center justify-end w-full space-x-3"
                         >
-                            <!-- Hi -->
                         </div>
                     </div>
                 </div>
-            </template>
+            </template> -->
             <div class="h-full bg-primary-light">
                 <PersonaBody
                     v-model:persona="selectedPersona"
@@ -131,7 +130,7 @@
             <!-- persona cards -->
             <div
                 v-if="filteredPersonas && filteredPersonas.length"
-                class="grid grid-cols-4 gap-4 gap-y-6 mt-7"
+                class="grid grid-cols-4 gap-4 gap-y-6 mt-7 pb-7"
             >
                 <PersonaCard
                     v-for="persona in filteredPersonas"
@@ -412,6 +411,7 @@
         }
         .ant-modal-content {
             height: calc(100%);
+            @apply bg-primary-light;
         }
         .ant-modal-header {
             padding-bottom: 0px;

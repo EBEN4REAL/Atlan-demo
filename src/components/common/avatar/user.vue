@@ -1,6 +1,7 @@
 <template>
     <div :class="`flex items-center ${className}`">
         <avatar
+            v-if="getUserName() !== 'API key'"
             :image-url="avatarURL"
             :allow-upload="false"
             :avatar-size="avatarSize"
@@ -10,6 +11,7 @@
             class="mr-1"
         >
         </avatar>
+        <AtlanIcon v-else icon="Key" class="h-3 mr-1" />
         <div v-if="showUsername">{{ getUserName() }}</div>
     </div>
 </template>
@@ -66,6 +68,8 @@
                 if (username.value === 'service-account-atlan-argo') {
                     return 'Atlan'
                 }
+                if (username.value.startsWith('service-account-apikey-'))
+                    return 'API key'
                 return username.value
             }
 

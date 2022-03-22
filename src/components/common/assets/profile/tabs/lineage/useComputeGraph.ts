@@ -9,33 +9,34 @@ import useLineageStore from '~/store/lineage'
 
 /** COMPOSABLES */
 import useGraph from './useGraph'
-import useTransformGraph from './useTransformGraph'
+
+import { isCyclicEdge, getFilteredRelations } from './util.js'
 
 export default async function useComputeGraph({
     graph,
     graphLayout,
     lineage,
-    searchItems,
     currZoom,
     isComputeDone,
-    emit,
 }) {
     // const { DagreLayout } = window.layout
     const lineageStore = useLineageStore()
+    lineageStore.cyclicRelations = []
+    lineageStore.columnToSelect = {}
+    lineageStore.mergedLineageData = {}
     lineageStore.nodesColumnList = {}
-    lineageStore.columnsLineage = {}
+    lineageStore.portLineage = {}
 
     const model = ref(null)
     const edges = ref([])
     const nodes = ref([])
     const mergedLineageData = ref({})
 
-    const { createNodeData, createEdgeData } = useGraph()
-
-    const { fit } = useTransformGraph(graph, emit)
+    const { createNodeData, createEdgeData } = useGraph(graph)
 
     mergedLineageData.value = { ...lineage.value }
-    searchItems.value = []
+    lineageStore.setMergedLineageData(mergedLineageData.value)
+
     model.value = null
     edges.value = []
     nodes.value = []
@@ -204,16 +205,8 @@ export default async function useComputeGraph({
                 hasBase ? baseEntityGuid : null
             )
 
-            const searchItem = ent
-            if (ent.typeName !== 'vpNode') searchItems.value.push(searchItem)
-
             nodes.value.push(nodeData)
         })
-
-        // if (Object.keys(columnEntity).length)
-        //     Object.entries(columnEntity).forEach(([parentGuid, columns]) => {
-        //         // lineageStore.setNodesColumnList(parentGuid, columns)
-        //     })
     }
 
     createNodesFromEntityMap(lineage.value)
@@ -246,8 +239,10 @@ export default async function useComputeGraph({
             })
         })
 
-        lineageData.relations.forEach((x) => {
-            const { fromEntityId: from, toEntityId: to, processId } = x
+        const newRels = getFilteredRelations(lineageData.relations)
+
+        newRels.forEach((rel) => {
+            const { fromEntityId: from, toEntityId: to, processId } = rel
 
             if (from === to) return
 
@@ -264,21 +259,14 @@ export default async function useComputeGraph({
                 stroke: '#aaaaaa',
             }
 
-            const fromAndToId = `${from}@${to}`
+            if (isCyclicEdge(mergedLineageData, from, to)) {
+                styles.stroke = '#ff4848'
+                edgeExtraData = { ...edgeExtraData, isCyclicEdge: true }
 
-            edges.value.forEach((y, index) => {
-                const fromTo = y.id.split('/')[1]
+                lineageStore.setCyclicRelation(`${from}@${to}`)
+            }
 
-                if (fromTo === fromAndToId) {
-                    edgeExtraData = { isDup: true }
-                    edges.value.splice(index, 1)
-                    return
-                }
-
-                const [fromTwo, toTwo] = fromTo.split('@')
-                if (toTwo === from && fromTwo === to)
-                    edgeExtraData = { ...edgeExtraData, isCyclicEdge: true }
-            })
+            edgeExtraData = { ...edgeExtraData, isDup: !!rel?.isDup }
 
             const relation = {
                 id: `${processId}/${from}@${to}`,
@@ -287,8 +275,6 @@ export default async function useComputeGraph({
                 targetCell: to,
                 targetPort: `${to}-invisiblePort`,
             }
-
-            if (x.type) relation.type = x.type
 
             const { edgeData } = createEdgeData(relation, edgeExtraData, styles)
             edges.value.push(edgeData)
@@ -338,24 +324,14 @@ export default async function useComputeGraph({
     isComputeDone.value = true
 
     /* Transformations */
-    fit(lineage.value.baseEntityGuid)
+    const cell = graph.value.getCellById(lineage.value.baseEntityGuid)
+    graph.value.scrollToCell(cell)
+    graph.value.scale(0.7)
+
     currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
 
     /* addSubGraph */
     const addSubGraph = (data, registerAllListeners) => {
-        const newData = { ...data }
-
-        createNodesFromEntityMap(newData, false)
-        createNodeEdges(newData)
-
-        renderLayout(registerAllListeners)
-
-        const assetGuidToFit = Object.keys(newData.guidEntityMap).find(
-            (x) => x !== newData.baseEntityGuid
-        )
-        const cell = graph.value.getCellById(assetGuidToFit)
-        graph.value.scrollToCell(cell, { animation: { duration: 600 } })
-
         if (!Object.keys(mergedLineageData.value).length)
             mergedLineageData.value = lineage.value
 
@@ -400,6 +376,22 @@ export default async function useComputeGraph({
             guidEntityMap,
             relations,
         }
+        lineageStore.setMergedLineageData(mergedLineageData.value)
+
+        const newData = { ...data }
+
+        createNodesFromEntityMap(newData, false)
+        createNodeEdges(newData)
+        renderLayout(registerAllListeners)
+
+        const assetGuidToFit = Object.keys(newData.guidEntityMap).find(
+            (x) =>
+                x !== newData.baseEntityGuid &&
+                graph.value.getNodes().find((y) => y.id === x)
+        )
+        const cellToFit = graph.value.getCellById(assetGuidToFit)
+
+        graph.value.scrollToCell(cellToFit, { animation: { duration: 600 } })
     }
 
     return {

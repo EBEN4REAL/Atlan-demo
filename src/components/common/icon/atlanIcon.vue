@@ -2,7 +2,7 @@
     <component
         :is="svgIcon"
         :style="{ height: '1rem' }"
-        class="inline w-auto"
+        class="flex-none inline w-auto"
     />
 </template>
 

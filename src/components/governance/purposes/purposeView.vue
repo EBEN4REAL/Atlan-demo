@@ -57,16 +57,16 @@
                 />
             </template>
             <template #footer>
-                <div style="display: none">
+                <!-- <div style="display: none">
                     <div class="flex items-center justify-between pb-1">
                         <slot name="footerLeft"></slot>
                         <div
                             class="flex items-center justify-end w-full space-x-3"
                         >
-                            <!-- Hi -->
+                        
                         </div>
                     </div>
-                </div>
+                </div> -->
             </template>
             <div class="h-full bg-primary-light">
                 <PurposeBody
@@ -134,7 +134,7 @@
             <!-- persona cards -->
             <div
                 v-if="filteredPurposes && filteredPurposes.length"
-                class="grid grid-cols-4 gap-4 gap-y-6 mt-7"
+                class="grid grid-cols-4 gap-4 gap-y-6 mt-7 pb-7"
             >
                 <PurposeCard
                     v-for="persona in filteredPurposes"
@@ -406,6 +406,7 @@
         }
         .ant-modal-content {
             height: calc(100%);
+            @apply bg-primary-light;
         }
         .ant-modal-header {
             padding-bottom: 0px;

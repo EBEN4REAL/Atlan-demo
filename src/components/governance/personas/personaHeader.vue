@@ -1,5 +1,5 @@
 <template>
-    <div v-if="persona" class="flex flex-col px-5">
+    <div v-if="persona" class="flex flex-col px-5 pb-2">
         <CreationModal
             v-model:visible="isEditing"
             ok-text="Save"
@@ -129,9 +129,11 @@
         selectedPersonaDirty,
         deletePersonaById,
     } from './composables/useEditPersona'
-
+    import {
+        selectedPersonaId,
+        handleUpdateList,
+    } from './composables/usePersonaList'
     import Dropdown from '@/UI/dropdown.vue'
-    import { handleUpdateList } from './composables/usePersonaList'
     import { formatDateTime } from '~/utils/date'
     import map from '~/constant/accessControl/map'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
@@ -187,6 +189,7 @@
                                 duration: 1.5,
                                 key: msgId,
                             })
+                            selectedPersonaId.value = ''
                             useAddEvent('governance', 'persona', 'deleted')
                         } catch (error) {
                             message.error({
@@ -231,6 +234,7 @@
                     const personaRaw = JSON.parse(JSON.stringify(body))
                     delete body.metadataPolicies
                     delete body.dataPolicies
+                    delete body.glossaryPolicies
                     await savePersona(body)
                     handleUpdateList(personaRaw)
 

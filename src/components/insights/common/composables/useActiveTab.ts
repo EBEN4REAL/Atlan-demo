@@ -14,6 +14,8 @@ export function useActiveTab() {
         schemaConnectors,
         queryConnectors,
         assetInfo,
+        savedVariables,
+        variables,
     }: {
         activeInlineTab: Ref<activeInlineTabInterface>
         label: string
@@ -24,6 +26,8 @@ export function useActiveTab() {
         schemaConnectors?: object
         queryConnectors?: object
         assetInfo?: object
+        savedVariables?: any[]
+        variables?: any[]
     }): activeInlineTabInterface {
         const activeInlineTabCopy: activeInlineTabInterface = JSON.parse(
             JSON.stringify(toRaw(activeInlineTab.value))
@@ -76,6 +80,14 @@ export function useActiveTab() {
         if (assetInfo) {
             assetInfoData = assetInfo
         }
+        let savedVariablesData: any[] = []
+        if (savedVariables) {
+            savedVariablesData = savedVariables
+        }
+        let variablesData: any[] = []
+        if (variables) {
+            variablesData = variables
+        }
 
         const key = generateUUID()
 
@@ -115,9 +127,8 @@ export function useActiveTab() {
                     ...inlineTabData.playground.editor,
                     context: contextData,
                     text: editorText ?? '',
-                    savedVariables:
-                        activeInlineTabCopy.playground.editor.savedVariables,
-                    variables: activeInlineTabCopy.playground.editor.variables,
+                    savedVariables: savedVariablesData,
+                    variables: variablesData,
                 },
             },
             assetSidebar: {

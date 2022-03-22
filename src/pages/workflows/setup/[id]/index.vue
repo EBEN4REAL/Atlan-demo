@@ -136,12 +136,12 @@
 
     import Loader from '@/common/loaders/page.vue'
     import ErrorView from '@common/error/discover.vue'
-    import PackagesSetup from '@/packages/setup/index.vue'
+    import PackagesSetup from '~/workflows/components/packages/setup/index.vue'
 
-    import { usePackageByName } from '~/composables/package/usePackageByName'
-    import { usePackageInfo } from '~/composables/package/usePackageInfo'
+    import { usePackageByName } from '~/workflows/composables/package/usePackageByName'
+    import { usePackageInfo } from '~/workflows/composables/package/usePackageInfo'
     import { useRoute, useRouter } from 'vue-router'
-    import { useConfigMapByName } from '~/composables/package/useConfigMapByName'
+    import { useConfigMapByName } from '~/workflows/composables/package/useConfigMapByName'
     import { useHead } from '@vueuse/head'
 
     export default defineComponent({

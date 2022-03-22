@@ -3,15 +3,7 @@
     <div class="flex flex-col justify-between h-full pt-5">
         <div>
             <div
-                class="
-                    relative
-                    flex
-                    items-center
-                    justify-between
-                    px-4
-                    pb-5
-                    border-b
-                "
+                class="relative flex items-center justify-between px-4 pb-5 border-b"
             >
                 <div
                     v-if="!generatedAPIKey.attributes"
@@ -66,12 +58,7 @@
                                     <template #prefix>
                                         <div
                                             v-if="!apiKeyDirty.personas.length"
-                                            class="
-                                                flex
-                                                items-center
-                                                text-primary
-                                                group-hover:text-white
-                                            "
+                                            class="flex items-center text-primary group-hover:text-white"
                                         >
                                             <AtlanIcon
                                                 icon="Add"
@@ -81,10 +68,7 @@
                                         </div>
                                         <div
                                             v-else
-                                            class="
-                                                text-gray
-                                                group-hover:text-white
-                                            "
+                                            class="text-gray group-hover:text-white"
                                         >
                                             <AtlanIcon
                                                 icon="Add"
@@ -138,13 +122,7 @@
                                         class="w-full"
                                     >
                                         <div
-                                            class="
-                                                flex flex-col
-                                                w-full
-                                                px-1
-                                                text-sm text-gray-700
-                                                hover:text-primary
-                                            "
+                                            class="flex flex-col w-full px-1 text-sm text-gray-700 hover:text-primary"
                                         >
                                             <template
                                                 v-for="item in validityOptions"
@@ -165,23 +143,10 @@
                                             </template>
                                             <div
                                                 @click.stop="() => {}"
-                                                class="
-                                                    flex flex-col
-                                                    items-center
-                                                    py-2
-                                                    pb-0.5
-                                                    border-t border-300
-                                                    hover:text-primary
-                                                "
+                                                class="flex flex-col items-center py-2 pb-0.5 border-t border-300 hover:text-primary"
                                             >
                                                 <div
-                                                    class="
-                                                        flex
-                                                        items-center
-                                                        justify-start
-                                                        w-full
-                                                        mb-2
-                                                    "
+                                                    class="flex items-center justify-start w-full mb-2"
                                                 >
                                                     <a-radio
                                                         @click="
@@ -233,10 +198,11 @@
                             apiKeyDirty.rawKey.attributes.validityString
                         }}</template>
                         {{
-                             apiKeyDirty.rawKey.attributes.validity.$y >
+                            apiKeyDirty.rawKey.attributes.validity.$y >
                             new Date().getFullYear() + 5
                                 ? 'Never'
-                                : apiKeyDirty.rawKey.attributes.validityStringRelative
+                                : apiKeyDirty.rawKey.attributes
+                                      .validityStringRelative
                         }}
                     </a-tooltip>
                     <div v-else>
@@ -248,58 +214,28 @@
             </div>
             <div
                 v-else
-                class="
-                    flex flex-col
-                    items-center
-                    justify-center
-                    w-full
-                    h-full
-                    px-4
-                "
+                class="flex flex-col items-center justify-center w-full h-full px-4"
             >
                 <component :is="SuccessIllustration" class="mb-5"></component>
                 <div class="mb-5 text-xl font-bold">API key generated</div>
                 <div
-                    class="
-                        w-full
-                        h-24
-                        p-4
-                        mb-5
-                        overflow-y-scroll
-                        bg-gray-100
-                        border
-                        rounded
-                    "
+                    class="w-full h-24 p-4 mb-5 overflow-y-scroll bg-gray-100 border rounded"
                 >
                     {{ generatedAPIKey.attributes.accessToken }}
                 </div>
                 <div class="flex items-center justify-between w-full mb-3">
-                    <AtlanBtn
-                        class="px-8 bg-transparent border-none text-primary"
-                        size="sm"
+                    <AtlanButton2
+                        label="Download"
                         color="secondary"
-                        padding="compact"
+                        prefixIcon="Download"
                         @click="handleDownload"
-                    >
-                        <AtlanIcon icon="Download" class="ml-2"></AtlanIcon>
-                        Download
-                    </AtlanBtn>
+                    />
 
-                    <AtlanBtn
-                        class="px-10"
-                        size="sm"
-                        color="primary"
-                        padding="compact"
+                    <AtlanButton2
+                        prefixIcon="CopyOutlined"
+                        label="Copy"
                         @click="handleCopy"
-                    >
-                        <div class="flex items-center">
-                            <AtlanIcon
-                                icon="CopyOutlined"
-                                class="mr-2"
-                            ></AtlanIcon>
-                            <div>Copy</div>
-                        </div>
-                    </AtlanBtn>
+                    />
                 </div>
             </div>
         </div>
@@ -313,19 +249,13 @@
                 placement="bottomLeft"
                 :visible="isDeletePopoverVisible"
             >
-                <AtlanBtn
-                    color="secondary"
-                    padding="compact"
-                    size="sm"
-                    class="px-0 bg-transparent border-none text-error"
+                <AtlanButton2
+                    color="danger"
+                    label="Delete"
+                    prefixIcon="Delete"
                     @click="isDeletePopoverVisible = true"
-                >
-                    <AtlanIcon
-                        icon="Delete"
-                        class="shadow-none cursor-pointer"
-                    />
-                    <span>Delete</span>
-                </AtlanBtn>
+                />
+
                 <template #content>
                     <div class="px-4 py-3">
                         <div class="mb-4 text-base font-bold">
@@ -338,61 +268,48 @@
                             >
                         </div>
                         <div class="flex justify-end mb-2">
-                            <AtlanBtn
+                            <AtlanButton2
                                 color="secondary"
-                                padding="compact"
-                                size="sm"
-                                class="mr-3 shadow-sm"
+                                class="mr-3"
+                                label="Cancel"
                                 @click="isDeletePopoverVisible = false"
-                            >
-                                <span>Cancel</span></AtlanBtn
-                            >
-                            <AtlanBtn
-                                class="
-                                    mr-3
-                                    text-white
-                                    bg-transparent
-                                    border-none
-                                    bg-error
-                                "
-                                size="lg"
-                                padding="compact"
-                                :is-loading="deleteAPIKeyLoading"
+                            />
+                            <AtlanButton2
+                                :loading="deleteAPIKeyLoading"
                                 :disabled="deleteAPIKeyLoading"
+                                color="danger"
+                                prefixIcon="Delete"
+                                :label="
+                                    deleteAPIKeyLoading ? 'Deleting' : 'Delete'
+                                "
                                 @click="$emit('deleteAPIKey', apiKeyDirty.id)"
-                            >
-                                <AtlanIcon icon="Delete" />
-                                <span v-if="deleteAPIKeyLoading">Deleting</span>
-                                <span v-else>Delete</span>
-                            </AtlanBtn>
+                            />
                         </div>
                     </div>
                 </template>
             </a-popover>
 
             <div class="flex justify-end w-full">
-                <AtlanBtn
+                <AtlanButton2
                     color="secondary"
-                    padding="compact"
-                    size="sm"
-                    class="px-5 mr-3 border-none"
+                    label="Cancel"
                     @click="$emit('closeDrawer')"
-                >
-                    <span>Cancel</span></AtlanBtn
-                >
-                <AtlanBtn
-                    class="px-5"
-                    size="sm"
-                    color="primary"
-                    padding="compact"
-                    :is-loading="createUpdateLoading"
+                />
+
+                <AtlanButton2
+                    :loading="createUpdateLoading"
                     :disabled="createUpdateLoading"
+                    :label="
+                        createUpdateLoading
+                            ? apiKeyDirty.id
+                                ? 'Updating'
+                                : 'Saving'
+                            : apiKeyDirty.id
+                            ? 'Update'
+                            : 'Save'
+                    "
                     @click="handleSave"
-                    ><span v-if="createUpdateLoading">{{
-                        apiKeyDirty.id ? 'Updating' : 'Saving'
-                    }}</span>
-                    <span v-else>{{ apiKeyDirty.id ? 'Update' : 'Save' }}</span>
-                </AtlanBtn>
+                />
             </div>
         </div>
         <div v-else class="px-4 py-6">
@@ -408,231 +325,233 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, watch } from 'vue'
-import dayjs, { Dayjs } from 'dayjs'
-import relativeTime from 'dayjs/plugin/relativeTime'
-import { useVModels } from '@vueuse/core'
-import { message } from 'ant-design-vue'
-import { capitalizeFirstLetter } from '~/utils/string'
-import PillGroup from '@/UI/pill/pillGroup.vue'
-import Pill from '@/UI/pill/pill.vue'
-import PersonaList from '@/common/popover/persona/personaList.vue'
-import AtlanBtn from '@/UI/button.vue'
-// @ts-ignore
-import { downloadFile } from '~/utils/library/download'
-import { copyToClipboard } from '~/utils/clipboard'
-import { formatDateTime } from '~/utils/date'
+    import { computed, defineComponent, ref, watch } from 'vue'
+    import dayjs, { Dayjs } from 'dayjs'
+    import relativeTime from 'dayjs/plugin/relativeTime'
+    import { useVModels } from '@vueuse/core'
+    import { message } from 'ant-design-vue'
+    import { capitalizeFirstLetter } from '~/utils/string'
+    import PillGroup from '@/UI/pill/pillGroup.vue'
+    import Pill from '@/UI/pill/pill.vue'
+    import PersonaList from '@/common/popover/persona/personaList.vue'
+    import AtlanBtn from '@/UI/button.vue'
+    // @ts-ignore
+    import { downloadFile } from '~/utils/library/download'
+    import { copyToClipboard } from '~/utils/clipboard'
+    import { formatDateTime } from '~/utils/date'
 
-import SuccessIllustration from '~/assets/images/illustrations/check-success.svg'
+    import SuccessIllustration from '~/assets/images/illustrations/check-success.svg'
 
-dayjs.extend(relativeTime)
+    dayjs.extend(relativeTime)
 
-const DEFAULT_VALIDITY_IN_YEARS = 13 // 13 years; same as BE
-const DEFAULT_VALIDITY_IN_SECONDS =
-    DEFAULT_VALIDITY_IN_YEARS * 365 * 24 * 60 * 60
+    const DEFAULT_VALIDITY_IN_YEARS = 13 // 13 years; same as BE
+    const DEFAULT_VALIDITY_IN_SECONDS =
+        DEFAULT_VALIDITY_IN_YEARS * 365 * 24 * 60 * 60
 
-export default defineComponent({
-    name: 'APIKeyDrawer',
-    components: { PillGroup, PersonaList, Pill, AtlanBtn },
-    props: {
-        apiKey: {
-            type: Object,
-            default: () => {},
-        },
-        createUpdateLoading: {
-            type: Boolean,
-            default: false,
-        },
-        deleteAPIKeyLoading: {
-            type: Boolean,
-            default: false,
-        },
-        generatedAPIKey: {
-            type: Object,
-            default: {},
-        },
-    },
-    emits: ['updateAPIKey', 'createAPIKey', 'closeDrawer'],
-    setup(props, { emit }) {
-        const apiKeyDirty = ref({})
-        const nameEmptyOnSubmit = ref(false)
-        const addPersonaPopoverVisible = ref(false)
-        const isDeletePopoverVisible = ref(false)
-        const { generatedAPIKey } = useVModels(props, emit)
-        const validityDate = ref(dayjs()) // actual expiry date in case of existing api key and selected custom expiry date in case of new apikey
-        const showDeletePopover = () => {
-            isDeletePopoverVisible.value = true
-        }
-        const showDatePicker = ref(false)
-        const validity = ref('') // handles dropdown options
-        const validityOptions = ref([
-            {
-                label: 'Never',
-                value: 'never',
+    export default defineComponent({
+        name: 'APIKeyDrawer',
+        components: { PillGroup, PersonaList, Pill, AtlanBtn },
+        props: {
+            apiKey: {
+                type: Object,
+                default: () => {},
             },
-            {
-                label: '1 Week',
-                value: 'one-week',
+            createUpdateLoading: {
+                type: Boolean,
+                default: false,
             },
-            {
-                label: '1 Month',
-                value: 'one-month',
+            deleteAPIKeyLoading: {
+                type: Boolean,
+                default: false,
             },
-        ])
-        watch(
-            () => props.deleteAPIKeyLoading,
-            (newVal, prevVal) => {
-                if (newVal === false && prevVal === true) {
-                    isDeletePopoverVisible.value = false
+            generatedAPIKey: {
+                type: Object,
+                default: {},
+            },
+        },
+        emits: ['updateAPIKey', 'createAPIKey', 'closeDrawer'],
+        setup(props, { emit }) {
+            const apiKeyDirty = ref({})
+            const nameEmptyOnSubmit = ref(false)
+            const addPersonaPopoverVisible = ref(false)
+            const isDeletePopoverVisible = ref(false)
+            const { generatedAPIKey } = useVModels(props, emit)
+            const validityDate = ref(dayjs()) // actual expiry date in case of existing api key and selected custom expiry date in case of new apikey
+            const showDeletePopover = () => {
+                isDeletePopoverVisible.value = true
+            }
+            const showDatePicker = ref(false)
+            const validity = ref('') // handles dropdown options
+            const validityOptions = ref([
+                {
+                    label: 'Never',
+                    value: 'never',
+                },
+                {
+                    label: '1 Week',
+                    value: 'one-week',
+                },
+                {
+                    label: '1 Month',
+                    value: 'one-month',
+                },
+            ])
+            watch(
+                () => props.deleteAPIKeyLoading,
+                (newVal, prevVal) => {
+                    if (newVal === false && prevVal === true) {
+                        isDeletePopoverVisible.value = false
+                    }
                 }
-            }
-        )
-        const handleSave = () => {
-            if (!apiKeyDirty.value.displayName) {
-                nameEmptyOnSubmit.value = true
-                return
-            }
-            //calculate validity seconds from validityDate in case of custom
-            if (validity.value === 'never') {
-                const validityUnixEpoch =
-                    dayjs().unix() + DEFAULT_VALIDITY_IN_SECONDS
-                // getting dayjs obj from the calculated unix epoch to pass in datepicker
-                validityDate.value = dayjs.unix(validityUnixEpoch)
-            } else if (validity.value === 'one-week') {
-                validityDate.value = dayjs().add(1, 'week')
-            } else if (validity.value === 'one-month') {
-                validityDate.value = dayjs().add(1, 'month')
-            }
-            // if custom, make no changes to validity date
-            const modifiedDate = validityDate.value.endOf('day')
-            const validityInSeconds = modifiedDate.diff(dayjs(), 's')
-            if (props?.apiKey?.id)
-                emit('updateAPIKey', {
-                    ...apiKeyDirty.value,
-                    validitySeconds: validityInSeconds,
-                    personas: (apiKeyDirty?.value?.personas ?? []).map(
-                        (p) => p.id
-                    ),
-                })
-            else
-                emit('createAPIKey', {
-                    ...apiKeyDirty.value,
-                    validitySeconds: validityInSeconds,
-                    personas: (apiKeyDirty?.value?.personas ?? []).map(
-                        (p) => p.id
-                    ),
-                })
-        }
-        watch(
-            () => props?.apiKey,
-            () => {
-                const personas = (props?.apiKey?.personas || []).map(
-                    (persona) => ({ id: persona.id, name: persona.persona })
-                )
-                apiKeyDirty.value = { ...props.apiKey, personas }
-                if (
-                    props?.apiKey?.id &&
-                    props?.apiKey?.rawKey?.attributes?.createdAt &&
-                    props?.apiKey?.validitySeconds
-                ) {
-                    // adding validity in seconds to created timestamp unix epoch to find the date till which the api key is valid
-                    // const validityUnixEpoch =
-                    //     dayjs(
-                    //         props?.apiKey?.rawKey?.attributes?.createdAt
-                    //     ).unix() + parseInt(props.apiKey.validitySeconds)
-                    // getting dayjs obj from the calculated unix epoch to pass in datepicker
-                    validityDate.value =
-                        props?.apiKey?.rawKey?.attributes?.validity
-                } else {
+            )
+            const handleSave = () => {
+                if (!apiKeyDirty.value.displayName) {
+                    nameEmptyOnSubmit.value = true
+                    return
+                }
+                //calculate validity seconds from validityDate in case of custom
+                if (validity.value === 'never') {
                     const validityUnixEpoch =
                         dayjs().unix() + DEFAULT_VALIDITY_IN_SECONDS
                     // getting dayjs obj from the calculated unix epoch to pass in datepicker
                     validityDate.value = dayjs.unix(validityUnixEpoch)
-                    validity.value = 'never'
+                } else if (validity.value === 'one-week') {
+                    validityDate.value = dayjs().add(1, 'week')
+                } else if (validity.value === 'one-month') {
+                    validityDate.value = dayjs().add(1, 'month')
                 }
-            },
-            { immediate: true, deep: true }
-        )
-
-        const toggleAddPersonaPopover = () => {
-            addPersonaPopoverVisible.value = !addPersonaPopoverVisible.value
-        }
-        const handleDownload = () => {
-            if (generatedAPIKey.value.attributes.accessToken) {
-                const createDate = formatDateTime(
-                    generatedAPIKey.value?.attributes?.createdAt || '',
-                    {
-                        month: 'short',
-                        day: 'numeric',
-                    },
-                    'en-GB'
-                )
-                const data = generatedAPIKey.value.attributes.accessToken
-                const filename = `${generatedAPIKey.value.attributes.displayName}_${createDate}_atlan api key.txt`
-                const type = 'text/plain'
-                downloadFile(data, filename, type)
+                // if custom, make no changes to validity date
+                const modifiedDate = validityDate.value.endOf('day')
+                const validityInSeconds = modifiedDate.diff(dayjs(), 's')
+                if (props?.apiKey?.id)
+                    emit('updateAPIKey', {
+                        ...apiKeyDirty.value,
+                        validitySeconds: validityInSeconds,
+                        personas: (apiKeyDirty?.value?.personas ?? []).map(
+                            (p) => p.id
+                        ),
+                    })
+                else
+                    emit('createAPIKey', {
+                        ...apiKeyDirty.value,
+                        validitySeconds: validityInSeconds,
+                        personas: (apiKeyDirty?.value?.personas ?? []).map(
+                            (p) => p.id
+                        ),
+                    })
             }
-        }
-        const handleCopy = () => {
-            if (generatedAPIKey.value.attributes.accessToken) {
-                copyToClipboard(generatedAPIKey.value.attributes.accessToken)
-                message.success('API Key Copied')
-            }
-        }
-        const handleClose = () => {
-            if (generatedAPIKey && generatedAPIKey.value)
-                generatedAPIKey.value = {}
-            emit('closeDrawer')
-        }
-        const disabledDate = (current: Dayjs) => {
-            // Cannot select days before today and after 13 years from today
-            const validityUnixEpoch =
-                dayjs().unix() + DEFAULT_VALIDITY_IN_SECONDS
-            return (
-                dayjs(current) < dayjs().startOf('day') ||
-                dayjs(current) > dayjs.unix(validityUnixEpoch).endOf('day')
+            watch(
+                () => props?.apiKey,
+                () => {
+                    const personas = (props?.apiKey?.personas || []).map(
+                        (persona) => ({ id: persona.id, name: persona.persona })
+                    )
+                    apiKeyDirty.value = { ...props.apiKey, personas }
+                    if (
+                        props?.apiKey?.id &&
+                        props?.apiKey?.rawKey?.attributes?.createdAt &&
+                        props?.apiKey?.validitySeconds
+                    ) {
+                        // adding validity in seconds to created timestamp unix epoch to find the date till which the api key is valid
+                        // const validityUnixEpoch =
+                        //     dayjs(
+                        //         props?.apiKey?.rawKey?.attributes?.createdAt
+                        //     ).unix() + parseInt(props.apiKey.validitySeconds)
+                        // getting dayjs obj from the calculated unix epoch to pass in datepicker
+                        validityDate.value =
+                            props?.apiKey?.rawKey?.attributes?.validity
+                    } else {
+                        const validityUnixEpoch =
+                            dayjs().unix() + DEFAULT_VALIDITY_IN_SECONDS
+                        // getting dayjs obj from the calculated unix epoch to pass in datepicker
+                        validityDate.value = dayjs.unix(validityUnixEpoch)
+                        validity.value = 'never'
+                    }
+                },
+                { immediate: true, deep: true }
             )
-        }
-        /* Following computed properties are reqd. only for displaying expiry date of existing API Key*/
-        const validityDateStringRelative = computed(() => {
-            if (validityDate && validityDate.value) {
-                return capitalizeFirstLetter(validityDate.value.fromNow())
+
+            const toggleAddPersonaPopover = () => {
+                addPersonaPopoverVisible.value = !addPersonaPopoverVisible.value
             }
-            return ''
-        })
-        const validityDateString = computed(() => {
-            if (validityDate && validityDate.value) {
-                return formatDateTime(validityDate.value.format())
+            const handleDownload = () => {
+                if (generatedAPIKey.value.attributes.accessToken) {
+                    const createDate = formatDateTime(
+                        generatedAPIKey.value?.attributes?.createdAt || '',
+                        {
+                            month: 'short',
+                            day: 'numeric',
+                        },
+                        'en-GB'
+                    )
+                    const data = generatedAPIKey.value.attributes.accessToken
+                    const filename = `${generatedAPIKey.value.attributes.displayName}_${createDate}_atlan api key.txt`
+                    const type = 'text/plain'
+                    downloadFile(data, filename, type)
+                }
             }
-            return ''
-        })
-        return {
-            apiKeyDirty,
-            handleSave,
-            addPersonaPopoverVisible,
-            toggleAddPersonaPopover,
-            nameEmptyOnSubmit,
-            handleDownload,
-            handleCopy,
-            handleClose,
-            SuccessIllustration,
-            showDeletePopover,
-            isDeletePopoverVisible,
-            validityDate,
-            disabledDate,
-            dayjs,
-            validityOptions,
-            validity,
-            showDatePicker,
-            validityDateStringRelative,
-            validityDateString,
-        }
-    },
-})
+            const handleCopy = () => {
+                if (generatedAPIKey.value.attributes.accessToken) {
+                    copyToClipboard(
+                        generatedAPIKey.value.attributes.accessToken
+                    )
+                    message.success('API Key Copied')
+                }
+            }
+            const handleClose = () => {
+                if (generatedAPIKey && generatedAPIKey.value)
+                    generatedAPIKey.value = {}
+                emit('closeDrawer')
+            }
+            const disabledDate = (current: Dayjs) => {
+                // Cannot select days before today and after 13 years from today
+                const validityUnixEpoch =
+                    dayjs().unix() + DEFAULT_VALIDITY_IN_SECONDS
+                return (
+                    dayjs(current) < dayjs().startOf('day') ||
+                    dayjs(current) > dayjs.unix(validityUnixEpoch).endOf('day')
+                )
+            }
+            /* Following computed properties are reqd. only for displaying expiry date of existing API Key*/
+            const validityDateStringRelative = computed(() => {
+                if (validityDate && validityDate.value) {
+                    return capitalizeFirstLetter(validityDate.value.fromNow())
+                }
+                return ''
+            })
+            const validityDateString = computed(() => {
+                if (validityDate && validityDate.value) {
+                    return formatDateTime(validityDate.value.format())
+                }
+                return ''
+            })
+            return {
+                apiKeyDirty,
+                handleSave,
+                addPersonaPopoverVisible,
+                toggleAddPersonaPopover,
+                nameEmptyOnSubmit,
+                handleDownload,
+                handleCopy,
+                handleClose,
+                SuccessIllustration,
+                showDeletePopover,
+                isDeletePopoverVisible,
+                validityDate,
+                disabledDate,
+                dayjs,
+                validityOptions,
+                validity,
+                showDatePicker,
+                validityDateStringRelative,
+                validityDateString,
+            }
+        },
+    })
 </script>
 <style lang="less" scoped>
-.persona-list {
-    width: 256px;
-    height: 300px;
-}
+    .persona-list {
+        width: 256px;
+        height: 300px;
+    }
 </style>

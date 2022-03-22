@@ -1,7 +1,11 @@
 <template>
     <div
         v-if="slackEnabled"
-        class="flex items-center px-1 overflow-hidden rounded-full cursor-pointer hover:scale-125 slack-cta hover:bg-primary-light"
+        class="flex items-center overflow-hidden rounded-full cursor-pointer"
+        :class="{
+            'hover:scale-125 px-1 slack-cta hover:bg-primary-light':
+                ctaText?.length,
+        }"
         @click="handleClick"
     >
         <AtlanIcon
@@ -17,7 +21,7 @@
 <script lang="ts">
     import { toRefs, computed, ref } from 'vue'
     import { getDeepLinkFromUserDmLink } from '~/composables/integrations/slack/useSlack'
-    import AtlanIcon from '../../icon/atlanIcon.vue'
+    import AtlanIcon from '@/common/icon/atlanIcon.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default {

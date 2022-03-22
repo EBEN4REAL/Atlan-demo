@@ -247,8 +247,8 @@
         workflowName,
         useArtifacts,
     } from `@/glossary/modal/useBulkUpload.ts`
-    import { getRunList } from '~/composables/workflow/useWorkflowList'
-    import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
+    import { getRunList } from '~/workflows/composables/workflow/useWorkflowList'
+    import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
     import { downloadFile } from '~/utils/library/download'
 
     export default defineComponent({

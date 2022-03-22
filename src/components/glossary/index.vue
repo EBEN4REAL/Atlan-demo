@@ -124,13 +124,13 @@
             >
                 <template v-slot:default="{ item }">
                     <GlossaryItem
-                        v-if="!disabledGuids?.includes(item.guid)"
                         :item="item"
                         :selectedGuid="selectedGlossary?.guid"
                         :checkable="checkable"
                         :checked="checkedGuids?.includes(item.guid)"
                         @preview="handlePreview"
                         @check="onSearchItemCheck"
+                        :isCheckboxDisabled="disabledGuids?.includes(item.guid)"
                     ></GlossaryItem>
                 </template>
             </AssetList>

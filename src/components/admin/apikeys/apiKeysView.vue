@@ -35,16 +35,12 @@
                     </div>
 
                     <div class="flex-grow w-0"></div>
-                    <AtlanBtn
+
+                    <AtlanButton2
                         v-auth="[map.CREATE_APIKEY]"
-                        padding="compact"
-                        size="sm"
-                        color="primary"
-                        class="px-7"
+                        label="Generate API Key"
                         @click="handleGenerateKey"
-                    >
-                        <AtlanIcon icon="Add" />Generate API Key
-                    </AtlanBtn>
+                    />
                 </div>
             </template>
 

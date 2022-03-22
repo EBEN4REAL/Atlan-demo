@@ -1,13 +1,14 @@
 <template>
     <div class="flex items-center justify-between w-full h-full">
         <div class="flex items-center h-full">
-            <AtlanIcon
+            <!-- <AtlanIcon
                 v-if="!isHome"
                 icon="Dots"
                 class="h-6 mr-2 rounded cursor-pointer select-none hover:bg-primary-menu hover:text-primary"
                 :class="{ 'text-primary': isSidebarActive }"
                 @click="$emit('toggleNavbar')"
-            />
+            /> -->
+            <!-- 
             <div
                 v-if="logoUrl && !logoNotFound"
                 class="mb-0.5 flex items-center"
@@ -20,17 +21,25 @@
                         @error="onLogoNotFound"
                     />
                 </router-link>
-            </div>
-            <p
+            </div> -->
+
+            <!-- <p
                 v-else
                 class="text-lg font-bold text-gray-600 bg-white cursor-pointer hover:text-primary mt-0.5"
             >
                 {{ logoName }}
-            </p>
+            </p> -->
+
+            <div
+                class="flex items-center justify-center h-full pr-3 font-semibold leading-none"
+            >
+                <AtlanIcon :icon="pageIcon" class="h-5 mb-0.5 mr-1"></AtlanIcon>
+                <span class="text-base">{{ pageName }}</span>
+            </div>
 
             <div
                 v-if="isAssets"
-                class="flex items-center h-full ml-3 transition border-l border-r border-gray-200 hover:bg-primary-menu"
+                class="flex items-center h-full transition border-l border-r border-gray-200 hover:bg-primary-menu"
             >
                 <GlobalSelection
                     :key="dirtyTimestamp"
@@ -113,15 +122,12 @@
                         </a-menu-item>
                     </a-menu></template
                 >
-                <AtlanButton
-                    size="sm"
+                <AtlanButton2
+                    color="secondary"
                     class="px-2 mx-1 text-gray-700 bg-transparent border-none"
-                    padding="compact"
                 >
-                    <div class="flex items-center">
-                        <AtlanIcon icon="QuestionRound" class="h-6" />
-                    </div>
-                </AtlanButton>
+                    <AtlanIcon icon="QuestionRound" class="h-6" />
+                </AtlanButton2>
             </a-dropdown>
             <!-- <atlan-icon icon="Search" class="h-5 mr-3" />
 
@@ -225,6 +231,51 @@
                 }
             )
 
+            const pageIcon = computed(() => {
+                if (currentRoute.path.startsWith('/assets')) {
+                    return 'AssetsActive'
+                }
+                if (currentRoute.path.startsWith('/glossary')) {
+                    return 'Glossary'
+                }
+                if (currentRoute.path.startsWith('/insights')) {
+                    return 'InsightsActive'
+                }
+                if (currentRoute.path.startsWith('/workflows')) {
+                    return 'WorkflowsActive'
+                }
+                if (currentRoute.path.startsWith('/governance')) {
+                    return 'GovernanceCenter'
+                }
+                if (currentRoute.path.startsWith('/admin')) {
+                    return 'Admin'
+                }
+            })
+
+            const pageName = computed(() => {
+                if (currentRoute.path.startsWith('/assets')) {
+                    return 'Assets'
+                }
+                if (currentRoute.path.startsWith('/glossary')) {
+                    return 'Glossary'
+                }
+                if (currentRoute.path.startsWith('/insights')) {
+                    return 'Insights'
+                }
+                if (currentRoute.path.startsWith('/workflows')) {
+                    return 'Workflow Center'
+                }
+                if (currentRoute.path.startsWith('/workflows')) {
+                    return 'Workflow Center'
+                }
+                if (currentRoute.path.startsWith('/governance')) {
+                    return 'Governance Center'
+                }
+                if (currentRoute.path.startsWith('/admin')) {
+                    return 'Admin Center'
+                }
+            })
+
             const handleGlobalStateChange = () => {
                 assetStore.setGlobalState(globalState.value)
             }
@@ -258,6 +309,8 @@
                 infoVisible,
                 toggleHelpWidget,
                 documentationLink,
+                pageName,
+                pageIcon,
             }
         },
     })

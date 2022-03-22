@@ -97,3 +97,54 @@ export const getSchema = (entity) => {
     if (item[0] === 'default') return item[4]
     return item[3]
 }
+
+export const isCyclicEdge = (mergedLineageData, source, target) => {
+    const filtered = mergedLineageData.value.relations.filter((rel) => {
+        const { fromEntityId, toEntityId } = rel
+        if (
+            (fromEntityId === source || fromEntityId === target) &&
+            (toEntityId === source || toEntityId === target)
+        )
+            return true
+
+        return false
+    })
+
+    const conditionSet = new Set()
+    filtered.forEach((rel) => {
+        const { fromEntityId, toEntityId } = rel
+        conditionSet.add(`${fromEntityId}@${toEntityId}`)
+    })
+    const conditionArr = Array.from(conditionSet)
+
+    if (conditionArr.length === 2) return true
+    return false
+}
+
+export const getFilteredRelations = (relations) => {
+    const relsSet = new Set()
+    const newRels = []
+    relations.forEach((rel) => {
+        const { processId, fromEntityId, toEntityId } = rel
+        const entry = `${fromEntityId}@${toEntityId}`
+
+        if (!relsSet.has(entry)) {
+            const arr = relations.filter((x) => {
+                const { fromEntityId: from, toEntityId: to } = x
+                if (entry === `${from}@${to}`) return true
+                return false
+            })
+
+            relsSet.add(entry)
+
+            newRels.push({
+                processId,
+                fromEntityId,
+                toEntityId,
+                isDup: !!(arr.length > 1),
+            })
+        }
+    })
+
+    return newRels
+}

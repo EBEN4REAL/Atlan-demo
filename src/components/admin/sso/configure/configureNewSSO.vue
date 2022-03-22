@@ -95,7 +95,7 @@
                             <div>
                                 <AtlanButton2
                                     color="secondary"
-                                    prefixIcon="Download"
+                                    prefix-icon="Download"
                                     label="Download metadata file"
                                     @click="downloadMetadataFile"
                                 />
@@ -157,6 +157,20 @@
                                         @importCertificate="importCertificate"
                                     />
                                 </span>
+                            </a-form-item>
+                            <a-form-item class="-mt-2.5">
+                                <template #label>
+                                    <div class="">
+                                        <div class="mb-2">
+                                            Single Logout Service URL
+                                        </div>
+                                    </div>
+                                </template>
+                                <a-input
+                                    v-model:value="
+                                        ssoForm.singleLogoutServiceUrl
+                                    "
+                                />
                             </a-form-item>
                         </a-form>
                     </div>
@@ -297,6 +311,7 @@
     interface FormState {
         alias: string
         singleSignOnServiceUrl: string
+        singleLogoutServiceUrl: string
         signingCertificate: string
         displayName: string
     }
@@ -317,6 +332,7 @@
             const ssoForm: UnwrapRef<FormState> = reactive({
                 alias: '',
                 singleSignOnServiceUrl: '',
+                singleLogoutServiceUrl: '',
                 signingCertificate: '',
                 displayName: '',
             })
@@ -532,6 +548,10 @@
                     (mapper) => mapper?.userAttr && addMapper(mapper)
                 )
                 const params = toRaw(config)
+                if (ssoForm.singleLogoutServiceUrl)
+                    params.config.singleLogoutServiceUrl =
+                        ssoForm.singleLogoutServiceUrl
+                else delete params.config.singleLogoutServiceUrl
                 console.log('submit SSO data=>', params, mappers)
                 const mapperResponse: any = []
                 try {

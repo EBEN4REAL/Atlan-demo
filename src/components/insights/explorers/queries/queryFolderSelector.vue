@@ -151,7 +151,7 @@
                                     treeSelectedCollection?.guid ===
                                     collection?.guid
                                 "
-                                class="w-full h-full ml-1 overflow-y-auto bg-white"
+                                class="w-full h-full overflow-y-auto bg-white"
                             >
                                 <query-tree-list
                                     v-if="newTreeData.length"

@@ -19,7 +19,11 @@
                 >
             </span>
         </AtlanBtn> -->
-        <div class="flex btn-shadow" @click="toggleDropdown">
+        <div
+            id="toggleDropdownBtn"
+            class="flex btn-shadow"
+            @click="toggleDropdown"
+        >
             <AtlanIcon
                 :icon="
                     checkedTerms?.length === 1
@@ -47,6 +51,7 @@
                 <div class="py-2">
                     <div>
                         <GlossaryTree
+                            ref="glossaryTreeRef"
                             v-model:checkedGuids="checkedGuids"
                             :checkable="true"
                             @check="onCheck"
@@ -61,6 +66,7 @@
 
 <script lang="ts">
     import { defineComponent, PropType, ref, toRefs } from 'vue'
+    import { onClickOutside } from '@vueuse/core'
     import { assetInterface } from '~/types/assets/asset.interface'
     import AtlanBtn from '~/components/UI/button.vue'
     import GlossaryTree from '~/components/glossary/index.vue'
@@ -103,6 +109,14 @@
             const showDropdown = () => {
                 dropdownVisible.value = true
             }
+
+            // on click outside logic
+            const glossaryTreeRef = ref(null)
+            onClickOutside(glossaryTreeRef, (event) => {
+                if (event?.path?.find((p) => p?.id === 'toggleDropdownBtn'))
+                    return
+                closeDropdown()
+            })
 
             const onCheck = (checkedNodes) => {
                 checkedNodes.forEach((term) => {
@@ -148,6 +162,7 @@
                 title,
                 certificateStatus,
                 getEntityStatusIcon,
+                glossaryTreeRef,
             }
         },
     })

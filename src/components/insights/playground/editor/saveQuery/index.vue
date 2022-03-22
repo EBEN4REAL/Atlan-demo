@@ -75,18 +75,38 @@
                     @click.stop="() => {}"
                 >
                     <template #overlay>
-                        <a-menu>
+                        <a-menu class="w-48">
                             <a-menu-item
-                                v-for="item in List"
+                                v-for="(item, index) in List"
                                 :key="item.id"
+                                class="w-full p-2"
+                                :class="[
+                                    currentStatus === item.id
+                                        ? 'bg-primary-light'
+                                        : '',
+                                    index === List.length - 1
+                                        ? 'rounded-b-lg'
+                                        : '',
+                                ]"
                                 @click="handleMenuClick(item)"
                             >
-                                <div class="flex items-center space-x-2">
-                                    <component
-                                        :is="item.icon"
-                                        class="w-auto h-4 ml-1 mr-2 pushtop"
-                                    />
-                                    {{ item.label }}
+                                <div class="flex justify-between w-full">
+                                    <div class="flex justify-between w-full">
+                                        <div
+                                            class="flex items-center w-full space-x-2"
+                                        >
+                                            <component
+                                                :is="item.icon"
+                                                class="w-auto h-4 ml-1 mr-2 pushtop"
+                                            />
+                                            {{ item.label }}
+                                        </div>
+                                        <AtlanIcon
+                                            v-if="currentStatus === item.id"
+                                            icon="Check"
+                                            class="w-4 h-4 pr-4 mb-0.5 text-primary"
+                                        />
+                                    </div>
                                 </div>
                             </a-menu-item>
                         </a-menu>

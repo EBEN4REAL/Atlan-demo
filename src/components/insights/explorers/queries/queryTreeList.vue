@@ -174,6 +174,8 @@
         }
         :global(.ant-tree-switcher) {
             width: 16px !important;
+            align-self: start;
+            @apply mt-2;
         }
 
         :global(.ant-tree .ant-tree-node-content-wrapper) {

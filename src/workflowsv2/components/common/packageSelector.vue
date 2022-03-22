@@ -28,6 +28,7 @@
                 await workflowStore.fetchActivePackages()
                 workflowStore.fetchActivePackageMeta()
             }
+
             const { identifier, name, icon } = usePackageInfo()
 
             const packageList = computed(() =>

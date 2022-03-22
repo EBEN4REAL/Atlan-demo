@@ -19,12 +19,15 @@
                     {{ head.title }}
                 </span>
             </div>
-            <div
-                class="flex items-center justify-center overflow-y-scroll"
-                style="height: 45vh"
-            >
-                <AtlanLoader v-if="isLoading" class="h-10 mx-auto" />
-                <div v-else-if="runs?.length" class="divide-y divide-gray-300">
+            <div class="flex overflow-y-scroll" style="height: 45vh">
+                <AtlanLoader
+                    v-if="isLoading"
+                    class="h-10 mx-auto place-self-center"
+                />
+                <div
+                    v-else-if="runs?.length"
+                    class="w-full divide-y divide-gray-300"
+                >
                     <RunListItem
                         v-for="run in runs"
                         :key="run.metadata.uid"
@@ -33,7 +36,7 @@
                 </div>
                 <div
                     v-else
-                    class="flex flex-col items-center text-center gap-y-3 w-72"
+                    class="flex flex-col items-center mx-auto text-center gap-y-3 w-72 place-self-center"
                 >
                     <component :is="EmptyLogsIllustration" />
                     <span class="text-sm text-gray">

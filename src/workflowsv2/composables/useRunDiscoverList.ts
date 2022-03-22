@@ -12,6 +12,7 @@ interface DiscoverListParams {
     offset?: Ref<Number>
     preference?: Ref<any>
     source?: Ref<any>
+    immediate?: Boolean
 }
 
 export function useRunDiscoverList({
@@ -22,6 +23,7 @@ export function useRunDiscoverList({
     limit,
     source,
     offset = ref(0),
+    immediate = true,
 }: DiscoverListParams) {
     const defaultBody = ref({})
 
@@ -43,7 +45,7 @@ export function useRunDiscoverList({
     generateBody()
 
     const { data, refresh, isLoading, isValidating, cancelRequest, error } =
-        useRunIndexSearch(defaultBody)
+        useRunIndexSearch(defaultBody, immediate)
 
     const list: Ref<LiveRun[]> = ref([])
     const runByWorkflowMap = ref({})

@@ -4,7 +4,6 @@
             v-model:activeKey="activeKey"
             :class="$style.profiletab"
             class="flex-1"
-            :destroy-inactive-tab-pane="true"
         >
             <a-tab-pane v-for="tab in mainTabs" :key="tab.id" :tab="tab.label">
                 <component :is="tab.component" :key="tab.id" />
@@ -41,7 +40,6 @@
             })
             const route = useRoute()
             const router = useRouter()
-            router.replace({ params: { tab: 'monitor' } })
 
             const activeKey = computed({
                 get: () => route?.params?.tab,

@@ -8,7 +8,7 @@
                 >
                     <AtlanIcon icon="Chat" class="text-green-600" />
                 </span>
-                Receive chat notifications directly into Slack
+                Ask question on slack directly from an asset
             </div>
             <div class="flex items-center gap-x-2">
                 <span
@@ -27,7 +27,16 @@
                         class="text-yellow-600"
                     />
                 </span>
-                Get updates whenever there are changes in a Term or Asset
+                Get workflow success and failure notifications
+            </div>
+            <div class="flex items-center gap-x-2">
+                <span
+                    style="background: #fcf3fc"
+                    class="flex items-center justify-center p-1 rounded w-7 h-7"
+                >
+                    <AtlanIcon icon="Search" class="text-pink-600" />
+                </span>
+                Search assets directly from slack
             </div>
         </section>
     </div>

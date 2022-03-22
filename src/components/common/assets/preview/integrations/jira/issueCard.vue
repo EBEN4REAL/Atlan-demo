@@ -41,7 +41,7 @@
                         :should-open-in-new-tab="true"
                         :tooltip-text="summary"
                         classes="text-primary hover:underline"
-                        @click="(e) => e.stopPropagation()"
+                        @click="handleUrlClick"
                     />
                 </div>
                 <span class="text-xs">
@@ -123,6 +123,7 @@
     import { Issue } from '~/types/integrations/jira.types'
     import Truncate from '@/common/ellipsis/index.vue'
     import integrationStore from '~/store/integrations/index'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     const props = defineProps({
         issue: { type: Object as PropType<Issue>, required: true },
@@ -165,6 +166,11 @@
         const { orgUrl } = tenantJiraStatus.value
         return `${orgUrl.replace('https://', '//')}/browse/${key}`
     })
+
+    const handleUrlClick = (e) => {
+        e?.stopPropagation()
+        useAddEvent('integration', 'jira', 'issue_link_opened')
+    }
 </script>
 
 <style lang="less" module>

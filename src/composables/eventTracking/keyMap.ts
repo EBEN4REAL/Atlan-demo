@@ -508,10 +508,14 @@ const keyMap = {
                 action: 'integration_jira_issue_linked',
                 properties: (props: {
                     asset_type: string,
-                    issue_count: number
+                    selected_issue_count: number
+                    total_issue_count: number
                 }) => ({
                     ...props,
                 }),
+            },
+            issue_link_opened: {
+                action: 'integration_jira_issue_link_opened',
             },
             issue_unlinked: {
                 action: 'integration_jira_issue_unlinked',

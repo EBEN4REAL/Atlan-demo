@@ -5,7 +5,7 @@ import { Issue, IssueTypes } from '~/types/integrations/jira.types'
 
 const { jiraSearch, jiraCreateIssue, jiraListIssueTypes, jiraLinkIssue, jiraUnlinkIssue } = Integrations
 
-const searchIssues = (jql, immediate = true) => {
+const searchIssues = (jql, { immediate = true, page_size = 10 }) => {
     const options = {
         asyncOptions: {
             immediate,
@@ -16,7 +16,7 @@ const searchIssues = (jql, immediate = true) => {
     }
     const issues = ref<Issue[]>([])
 
-    const pageSize = ref(10)
+    const pageSize = ref(page_size)
     const offset = ref(0)
     const totalResults = ref()
     const loadingMore = ref(false)
@@ -108,7 +108,7 @@ export const createIssue = (body) => {
 export const listLinkedIssues = (assetID: Ref<string>) => {
     const jql = computed(() => `(issue.property[atlan].guid = ${assetID.value}) ORDER BY created DESC`)
 
-    return searchIssues(jql, false)
+    return searchIssues(jql, { immediate: false, page_size: 100 })
 
 }
 
@@ -124,7 +124,7 @@ export const listNotLinkedIssues = (assetID: Ref<string>) => {
             `))
 
 
-    const search = searchIssues(jql, false)
+    const search = searchIssues(jql, { immediate: false })
     const { mutate, reset } = search
 
     const searchLoading = ref(false)

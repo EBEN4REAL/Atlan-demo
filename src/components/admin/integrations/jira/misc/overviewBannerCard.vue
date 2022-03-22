@@ -26,15 +26,6 @@
                 </span>
                 See history of all Jira issues for any asset
             </div>
-            <div class="flex items-center gap-x-2">
-                <span
-                    class="flex items-center justify-center p-1 rounded w-7 h-7"
-                    style="background: #efeffb"
-                >
-                    <AtlanIcon icon="Request" style="color: #5c5cd6" />
-                </span>
-                Request asset access by jira issue
-            </div>
         </section>
     </div>
 </template>

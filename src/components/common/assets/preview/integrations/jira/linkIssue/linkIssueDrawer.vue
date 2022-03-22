@@ -164,13 +164,14 @@
     const props = defineProps({
         visible: { type: Boolean, required: true },
         asset: { type: Object as PropType<assetInterface>, required: true },
+        assetIssueCount: { type: Number, required: true },
     })
 
     const emit = defineEmits(['add', 'close', 'create', 'fetch'])
 
     const { visible } = useVModels(props, emit)
 
-    const { asset } = toRefs(props)
+    const { asset, assetIssueCount } = toRefs(props)
 
     const assetID = computed(() => asset.value.guid)
 
@@ -272,7 +273,6 @@
         })
         checkedIssues.value.forEach((issue) => callLinkIssue(issue))
         Promise.allSettled(alllinkPromises).then((results) => {
-            mutate()
             const count = results.filter((r) => r.status === 'fulfilled').length
             const rejectedCount = results.filter(
                 (r) => r.status === 'rejected'
@@ -297,7 +297,9 @@
                 })
 
             useAddEvent('integration', 'jira', 'issue_linked', {
-                issue_count: count, // ? make this total issue count added to this asset
+                // issue_count: count, // ? make this total issue count added to this asset
+                selected_issue_count: count,
+                total_issue_count: assetIssueCount.value + count, // by the time this is called, the assetIssueCount haven't refreshed
                 asset_type: asset.value.typeName,
             })
             handleCancel()

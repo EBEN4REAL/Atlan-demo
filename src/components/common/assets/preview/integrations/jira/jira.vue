@@ -5,10 +5,11 @@
         @success="handleIssueCreationSuccess"
     />
     <LinkIssueDrawer
+        ref="linkIssueDrawerRef"
         v-model:visible="linkIssueVisible"
         :asset="asset"
+        :asset-issue-count="issues?.length || 0"
         @fetch="fetchLinkedIssues"
-        ref="linkIssueDrawerRef"
         @create="() => (createModal = true)"
     />
     <Header
@@ -86,6 +87,7 @@
 <script setup lang="ts">
     import { PropType, computed, toRefs, ref, watch, onMounted } from 'vue'
     import { message } from 'ant-design-vue'
+    import { until } from '@vueuse/core'
     import Header from '@/common/assets/preview/integrations/jira/header.vue'
     import IssueCard from '@/common/assets/preview/integrations/jira/issueCard.vue'
     import LinkIssueDrawer from '@/common/assets/preview/integrations/jira/linkIssue/linkIssueDrawer.vue'
@@ -98,7 +100,6 @@
     import ErrorView from '@/common/error/index.vue'
     import EmptyPlaceholder from '@/common/assets/preview/integrations/jira/misc/emptyPlaceholder.vue'
     import integrationStore from '~/store/integrations/index'
-    import { until } from '@vueuse/core'
     import CreateModal from '@/common/integrations/jira/createIssue/createIssueModal.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
 

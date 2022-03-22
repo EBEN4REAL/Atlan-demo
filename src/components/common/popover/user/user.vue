@@ -6,7 +6,10 @@
     >
         <template #content>
             <div
-                v-if="item !== 'service-account-atlan-argo'"
+                v-if="
+                    item !== 'service-account-atlan-argo' ||
+                    !item?.startsWith('service-account-apikey-')
+                "
                 class="relative p-4 user-popover"
             >
                 <div

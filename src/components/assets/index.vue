@@ -93,7 +93,11 @@
                 </div>
 
                 <div
-                    v-if="error && !isValidating"
+                    v-if="
+                        error &&
+                        error?.message !== 'operation cancelled' &&
+                        !isValidating
+                    "
                     class="flex items-center justify-center flex-grow"
                 >
                     <ErrorView></ErrorView>

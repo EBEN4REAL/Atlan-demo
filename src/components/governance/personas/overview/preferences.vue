@@ -33,7 +33,7 @@
                         </div>
                         <div class="mt-1 text-sm text-gray-500">
                             Select the custom metadata that should be visible to
-                            Data consultant persona
+                            {{ selectedPersonaDirty.displayName }} persona
                         </div>
                     </div>
                 </template>
@@ -205,6 +205,7 @@
                 blackListCustomMeta,
                 assetSidebarListComputed,
                 gifCM,
+                selectedPersonaDirty,
             }
         },
     })

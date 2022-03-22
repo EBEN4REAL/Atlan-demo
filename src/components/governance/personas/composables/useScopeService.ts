@@ -261,7 +261,7 @@ export default function scopeService() {
         const res = [
             { label: 'Asset', action: [] },
             { label: 'Governance', action: [] },
-            // { label: 'Metadata', action: [] },
+            { label: 'API', action: [] },
         ]
         actions.forEach((action) => {
             scopeList.forEach((scope) => {
@@ -271,6 +271,8 @@ export default function scopeService() {
                             res[0].action.push(s.label)
                         } else if (scope.label === 'Governance') {
                             res[1].action.push(s.label)
+                        } else if (scope.label === 'API') {
+                            res[2].action.push(s.label)
                         }
                         // else if (scope.label === 'Metadata') {
                         //     res[2].action.push(s.label)

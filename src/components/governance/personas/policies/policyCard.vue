@@ -153,8 +153,20 @@
                     >
                     <a-tooltip v-if="permissions.length" placement="top">
                         <template #title>
-                            <div v-if="permissions.length < 8">
-                                {{ permissions.length }}
+                            <div
+                                v-if="
+                                    permissions.length <
+                                    (type !== 'glossaryPolicy' ? 9 : 5)
+                                "
+                            >
+                                {{
+                                    permissions.length -
+                                    (!permissions.includes(
+                                        'Link other assets'
+                                    ) && permissions.includes('Update')
+                                        ? 0
+                                        : 1)
+                                }}
                                 {{
                                     permissions.length > 1
                                         ? 'permissions'
@@ -171,7 +183,12 @@
                             {{
                                 permissions.length >= 8
                                     ? 'All'
-                                    : permissions.length
+                                    : permissions.length -
+                                      (!permissions.includes(
+                                          'Link other assets'
+                                      ) && permissions.includes('Update')
+                                          ? 0
+                                          : 1)
                             }}
                         </div>
                     </a-tooltip>

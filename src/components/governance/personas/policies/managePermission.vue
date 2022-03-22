@@ -37,7 +37,14 @@
             class="fixed flex items-center justify-end p-3 mt-auto border-t border-gray-300 gap-x-2 btn-wrapper-manage"
         >
             <span class="mr-auto text-gray-500"
-                >{{ actionsLocal.length || 'No' }} items updated</span
+                >{{
+                    actionsLocal.length -
+                        (!actionsLocal.includes('link-assets') &&
+                        actionsLocal.includes('entity-update')
+                            ? 0
+                            : 1) || 'No'
+                }}
+                items updated</span
             >
             <AtlanBtn
                 size="sm"

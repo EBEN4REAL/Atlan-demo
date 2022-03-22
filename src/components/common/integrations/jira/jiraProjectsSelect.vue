@@ -114,13 +114,11 @@
     }
 
     onMounted(() => {
-        debugger
         if (projectList.value?.length) afterLoad()
         else mutate()
     })
 
     watch(lastPage, (v) => {
-        debugger
         if (v && !modelValue.value) afterLoad()
     })
 

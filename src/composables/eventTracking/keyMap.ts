@@ -489,7 +489,10 @@ const keyMap = {
             },
             share_channels_updated: {
                 action: 'integration_slack_share_channels_updated',
-                properties: (props: { channel_count: string }) => ({
+                properties: (props: {
+                    channel_count: string,
+                    workflow_alert_channel_present: boolean
+                }) => ({
                     ...props,
                 }),
             },

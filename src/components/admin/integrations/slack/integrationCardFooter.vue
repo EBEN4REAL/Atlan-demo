@@ -116,6 +116,7 @@
             refetchIntegration(pV.value.id)
             useAddEvent('integration', 'slack', 'share_channels_updated', {
                 channel_count: updatedChannelCount,
+                workflow_alert_channel_present: !!workflowChannel.value.name,
             })
 
             message.success({

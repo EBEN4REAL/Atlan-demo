@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col h-full" style="height: calc(100% - 84px)">
+    <div class="flex flex-col h-full">
         <div
             class="flex items-center justify-between px-5 py-2 border-b border-gray-200 bg-gray-50"
         >
@@ -40,7 +40,7 @@
             ></EmptyView>
         </div>
 
-        <div v-else class="flex flex-col flex-grow">
+        <div v-else class="flex flex-col flex-grow overflow-y-auto">
             <div class="px-5 pt-3 pb-0">
                 <SearchAdvanced
                     v-model:value="queryText"
@@ -70,7 +70,7 @@
                 :is-load-more="isLoadMore"
                 :is-loading="isValidating"
                 @loadMore="handleLoadMore"
-                class="mt-4"
+                class="mt-2"
             >
                 <template #default="{ item, itemIndex }">
                     <Popover :item="item">
@@ -81,7 +81,6 @@
                             :asset-name-truncate-percentage="'93%'"
                             class="px-2 hover:bg-primary-menu"
                             @updateDrawer="handleListUpdate"
-                            isCompact
                     /></Popover>
                 </template>
             </AssetList>
@@ -96,12 +95,10 @@
     import ErrorView from '@common/error/discover.vue'
     import EmptyView from '@common/empty/index.vue'
 
+    import AssetItem from '@common/assets/list/assetItem.vue'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
-    import Sorting from '@/common/select/sorting.vue'
 
     import AssetList from '@/common/assets/list/index.vue'
-    import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
-    import AssetItem from '@common/assets/list/assetItem.vue'
 
     import {
         DefaultRelationAttributes,
@@ -120,7 +117,6 @@
             PreviewTabsIcon,
             AssetList,
             AssetItem,
-            Sorting,
             EmptyView,
             ErrorView,
             Popover,
@@ -142,23 +138,27 @@
             const limit = ref(20)
             const offset = ref(0)
             const queryText = ref('')
-            const facets = ref({
-                typeName: 'Query',
-            })
-            const postFacets = ref({})
+            const facets = ref({})
+            const postFacets = ref({ typeName: 'Query' })
             const dependentKey = ref('DEFAULT_QUERIES')
             const defaultAttributes = ref([...MinimalAttributes])
-            const preference = ref({
-                sort: 'order-asc',
-            })
+            const preference = ref({})
             const relationAttributes = ref([...DefaultRelationAttributes])
 
             const updateFacet = () => {
                 facets.value = {}
 
-                facets.value.guidList = queries(selectedAsset.value)?.map(
-                    (query) => query.guid
-                )
+                if (
+                    selectedAsset?.value.typeName?.toLowerCase() ===
+                    'collection'
+                ) {
+                    facets.value.collectionQualifiedName =
+                        selectedAsset.value?.attributes?.qualifiedName
+                } else {
+                    facets.value.guidList = queries(selectedAsset.value)?.map(
+                        (query) => query.guid
+                    )
+                }
             }
 
             updateFacet()

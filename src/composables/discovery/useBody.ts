@@ -381,6 +381,12 @@ export function useBody(
                 }
                 break
             }
+            case 'collectionQualifiedName': {
+                if (filterObject) {
+                    base.filter('term', 'collectionQualifiedName', filterObject)
+                }
+                break
+            }
             case 'glossary': {
                 if (filterObject) {
                     base.filter('term', '__glossary', filterObject)

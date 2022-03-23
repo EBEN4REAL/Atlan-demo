@@ -112,7 +112,13 @@
                     v-else-if="creatorUsername(selectedRun)"
                 >
                     via
-                    {{ creatorUsername(selectedRun) }}
+                    {{
+                        creatorUsername(selectedRun).startsWith(
+                            'service-account-apikey-'
+                        )
+                            ? 'Atlan services'
+                            : creatorUsername(selectedRun)
+                    }}
                 </div>
 
                 <p class="text-gray-500">Reference</p>

@@ -96,11 +96,25 @@
                                                 true
                                             )
                                         }}
-                                        ago by
-                                        {{
-                                            creatorUsername(workflowObject)
-                                        }}</span
-                                    >
+                                        ago
+                                        <template
+                                            v-if="
+                                                creatorUsername(
+                                                    workflowObject
+                                                ).startsWith(
+                                                    'service-account-apikey-'
+                                                )
+                                            "
+                                        >
+                                            using Atlan services
+                                        </template>
+                                        <template v-else>
+                                            by
+                                            {{
+                                                creatorUsername(workflowObject)
+                                            }}
+                                        </template>
+                                    </span>
                                 </div>
                                 <div
                                     class="flex items-center text-gray-500"

@@ -26,8 +26,20 @@
                         </div>
                         <div class="text-gray-500">
                             last updated
-                            {{ modifiedAt(selectedConnection) }} ago by
-                            {{ modifiedBy(selectedConnection) }}
+                            {{ modifiedAt(selectedConnection) }} ago
+                            <template
+                                v-if="
+                                    modifiedBy(selectedConnection).startsWith(
+                                        'service-account-apikey-'
+                                    )
+                                "
+                            >
+                                using Atlan services
+                            </template>
+                            <template v-else>
+                                by
+                                {{ modifiedBy(selectedConnection) }}
+                            </template>
                         </div>
                     </div>
                     <div class="flex gap-x-2">

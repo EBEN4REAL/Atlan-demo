@@ -84,8 +84,9 @@
                                 </div>
                                 <span class="px-1 text-sm text-white"
                                     >Go to your slack profile, after clicking on
-                                    more menu you'll see the member ID. Make
-                                    sure you're in right slack workspace.</span
+                                    "More" menu you'll see the member ID. Make
+                                    sure you're in the right slack
+                                    workspace.</span
                                 >
                             </div>
                         </template>

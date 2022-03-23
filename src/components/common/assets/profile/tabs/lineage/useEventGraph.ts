@@ -643,7 +643,7 @@ export default function useEventGraph({
                 const total = count.value || 0
                 const columns = list.value
 
-                if (columns) {
+                if (columns.length) {
                     addPorts(node, columns)
 
                     let columnsLength = columns.length

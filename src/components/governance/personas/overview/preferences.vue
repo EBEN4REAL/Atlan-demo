@@ -212,7 +212,7 @@
 </script>
 <style lang="less">
     .container-accordion {
-        max-height: 53vh;
+        max-height: 55vh;
         overflow-y: scroll;
     }
     .popover-cm {

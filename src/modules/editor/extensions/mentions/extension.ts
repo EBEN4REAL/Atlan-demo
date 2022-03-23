@@ -25,4 +25,13 @@ export const CustomMention = Mention.extend({
     addNodeView() {
         return VueNodeViewRenderer(MentionNode)
     },
+    addCommands() {
+        return {
+            insertMention:
+                () =>
+                ({ commands }) => {
+                    return commands.insertContent('@')
+                },
+        }
+    },
 })

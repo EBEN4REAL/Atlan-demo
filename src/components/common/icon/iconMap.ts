@@ -265,6 +265,7 @@ import Confluence from '~/assets/images/readme/confluence.svg'
 import Miro from '~/assets/images/readme/miro.svg'
 import Figma from '~/assets/images/readme/Figma.svg'
 import Lucid from '~/assets/images/readme/lucid.svg'
+import Mention from '~/assets/images/readme/mention.svg'
 
 import Running from '~/assets/images/icons/running.svg'
 import ExclaimCircle from '~/assets/images/icons/exclaimCircle.svg'
@@ -716,6 +717,7 @@ export default {
     Confluence,
     Figma,
     Lucid,
+    Mention,
     Miro,
     Running,
     Refresh,

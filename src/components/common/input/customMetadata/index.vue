@@ -1,10 +1,18 @@
 <template>
-    <div class="flex flex-col">
+    <div
+        v-if="cmList(assetType(selectedAsset), false, true).length > 0"
+        class="flex flex-col"
+    >
         <p class="flex items-center justify-between mb-1 text-sm text-gray-500">
             Custom Metadata
         </p>
+        <!--  Checking for overview flag -->
         <div
-            v-for="(tab, index) in cmList(assetType(selectedAsset))"
+            v-for="(tab, index) in cmList(
+                assetType(selectedAsset),
+                false,
+                true
+            )"
             :key="index"
         >
             <SingleTab

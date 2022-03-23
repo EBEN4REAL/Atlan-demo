@@ -1,6 +1,6 @@
 <template>
     <div
-        v-if="applicableList.filter((i) => hasValue(i)).length"
+        v-if="applicableList"
         ref="target"
         class="flex flex-col w-full mb-2 overflow-hidden border border-gray-300 rounded-lg"
     >
@@ -83,12 +83,7 @@
 
                 <div class="flex flex-col flex-grow pr-5 overflow-y-auto pl-9">
                     <!-- showing non empty starts here -->
-                    <template
-                        v-for="(a, x) in applicableList.filter((i) =>
-                            hasValue(i)
-                        )"
-                        :key="x"
-                    >
+                    <template v-for="(a, x) in applicableList" :key="x">
                         <div class="my-1.5">
                             <div class="flex mb-1 font-normal text-gray-500">
                                 <Truncate

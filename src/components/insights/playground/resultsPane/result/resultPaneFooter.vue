@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex justify-between w-full h-8 py-1 text-xs text-sm border-b"
+        class="flex justify-between flex-shrink-0 w-full h-8 py-1 text-xs text-sm border-b"
         style="max-height: 8%; background: #f6f7f9"
         v-if="
             activeInlineTab.playground.editor.columnList.length > 0 &&
@@ -53,9 +53,9 @@
                 >
                     <AtlanIcon
                         icon="CopyOutlined"
-                        class="w-4 h-4 mr-1 text-gray-500"
+                        class="w-4 h-4 mr-1 text-gray-700"
                     />
-                    <span class="mt-0.5">Copy</span>
+                    <span class="mt-0.5 text-gray-700">Copy</span>
                 </div>
             </a-tooltip>
             <a-tooltip
@@ -81,9 +81,9 @@
                 >
                     <AtlanIcon
                         icon="Download"
-                        class="w-4 h-4 mr-1 text-gray-500"
+                        class="w-4 h-4 mr-1 text-gray-700"
                     />
-                    <span class="mt-1">Download</span>
+                    <span class="mt-1 text-gray-700">Download</span>
                 </div>
             </a-tooltip>
         </div>

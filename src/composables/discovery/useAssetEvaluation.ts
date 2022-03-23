@@ -74,30 +74,37 @@ export default function useAssetEvaluate() {
                     entityTypeEnd2: 'Link',
                 },
                 /** create and link term to a glossary check, if
-                 *  check passes for the glossary then 
-                 * user can create & link term to any category 
+                 *  check passes for the glossary then
+                 * user can create & link term to any category
                  * inside this glossary */
                 {
-                    "action": "RELATIONSHIP_ADD",
-                    "relationShipTypeName": "AtlasGlossaryTermAnchor",
+                    action: 'RELATIONSHIP_ADD',
+                    relationShipTypeName: 'AtlasGlossaryTermAnchor',
                     entityGuidEnd1: asset?.guid,
                     entityTypeEnd1: asset?.typeName,
-                    "entityIdEnd2": "*",
-                    "entityTypeEnd2": "AtlasGlossaryTerm"
+                    entityIdEnd2: `*${
+                        asset?.attributes?.qualifiedName ??
+                        asset?.qualifiedName ??
+                        asset?.uniqueAttributes?.qualifiedName
+                    }*`,
+                    entityTypeEnd2: 'AtlasGlossaryTerm',
                 },
                 /** create and link category to a glossary check, if
-              *  check passes for the glossary then 
-              * user can create & link category to any category 
-              * inside this glossary */
+                 *  check passes for the glossary then
+                 * user can create & link category to any category
+                 * inside this glossary */
                 {
-                    "action": "RELATIONSHIP_ADD",
-                    "relationShipTypeName": "AtlasGlossaryCategoryAnchor",
+                    action: 'RELATIONSHIP_ADD',
+                    relationShipTypeName: 'AtlasGlossaryCategoryAnchor',
                     entityGuidEnd1: asset?.guid,
                     entityTypeEnd1: asset?.typeName,
-                    "entityIdEnd2": "*",
-                    "entityTypeEnd2": "AtlasGlossaryCategory"
-                }
-
+                    entityIdEnd2: `*${
+                        asset?.attributes?.qualifiedName ??
+                        asset?.qualifiedName ??
+                        asset?.uniqueAttributes?.qualifiedName
+                    }*`,
+                    entityTypeEnd2: 'AtlasGlossaryCategory',
+                },
             ]
 
             if (typeName === 'AtlasGlossaryTerm')

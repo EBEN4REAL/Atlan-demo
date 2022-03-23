@@ -319,7 +319,6 @@
                 entityTitle.value = val
             }
             watch(isEditMode, () => {
-                console.log(isEditMode.value, 'drag change')
                 emit('changeEditMode', isEditMode.value)
             })
 
@@ -333,6 +332,10 @@
                             item.value?.parentCategory?.attributes?.anchor
                                 ?.guid,
                         typeName: 'AtlasGlossary',
+                        qualifiedName:
+                            item?.value?.glossaryQualifiedName ??
+                            item.value?.parentCategory?.attributes
+                                ?.qualifiedName,
                     }
                 }
                 return null

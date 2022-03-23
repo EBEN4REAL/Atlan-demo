@@ -116,7 +116,7 @@
                         creatorUsername(selectedRun)?.startsWith(
                             'service-account-apikey-'
                         )
-                            ? 'Atlan services'
+                            ? 'API key'
                             : creatorUsername(selectedRun)
                     }}
                 </div>

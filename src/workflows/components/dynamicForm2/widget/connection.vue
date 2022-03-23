@@ -34,7 +34,7 @@
                                     )
                                 "
                             >
-                                using Atlan services
+                                using API key
                             </template>
                             <template v-else>
                                 by

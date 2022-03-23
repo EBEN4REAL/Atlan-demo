@@ -673,7 +673,9 @@
             <div
                 v-if="
                     selectedAsset.guid &&
-                    !['Column', 'Connection'].includes(selectedAsset.typeName)
+                    !['Column', 'Connection', 'Collection'].includes(
+                        selectedAsset.typeName
+                    )
                 "
                 class="flex flex-col"
             >

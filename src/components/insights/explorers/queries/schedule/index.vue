@@ -361,6 +361,7 @@
                 }
                 if (type === 'next') {
                     if (activeTabIndex.value < 2) {
+                        debugger
                         if (variablesData.value.length === 0) {
                             validateFileds()
                                 .then(() => {
@@ -374,10 +375,12 @@
                                         }
                                         if (data.value) {
                                             activeTabIndex.value = 2
-                                            // refetch schedule workflows
-                                            refreshSchedulesWorkflowTab.value(
-                                                true
-                                            )
+                                            setTimeout(() => {
+                                                // refetch schedule workflows
+                                                refreshSchedulesWorkflowTab.value(
+                                                    true
+                                                )
+                                            }, 1000)
                                         }
                                     })()
                                 })
@@ -397,10 +400,12 @@
                                             if (data.value) {
                                                 activeTabIndex.value =
                                                     activeTabIndex.value + 1
-                                                // refetch schedule workflows
-                                                refreshSchedulesWorkflowTab.value(
-                                                    true
-                                                )
+                                                setTimeout(() => {
+                                                    // refetch schedule workflows
+                                                    refreshSchedulesWorkflowTab.value(
+                                                        true
+                                                    )
+                                                }, 1000)
                                             }
                                         })()
                                     } else {

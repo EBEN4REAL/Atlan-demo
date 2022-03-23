@@ -170,6 +170,8 @@
                                 :size="size"
                                 placeholder="Please select"
                                 class="w-full"
+                                option-filter-prop="displayText"
+                                :filter-option="filterOption"
                                 @change="handleChangeGlossary"
                                 @blur="
                                     () => {
@@ -186,6 +188,7 @@
                                 <a-select-option
                                     v-for="el in glossaryComputed"
                                     :key="el.id"
+                                    :display-text="el.displayText"
                                 >
                                     <AtlanIcon
                                         :icon="
@@ -1109,6 +1112,7 @@
             }
             const { getEntityStatusIcon } = useGlossaryData()
             const { certificateStatus } = useAssetInfo()
+            const filterOption = (val, opt) => opt['display-text'].includes(val)
             return {
                 certificateStatus,
                 getEntityStatusIcon,
@@ -1140,6 +1144,7 @@
                 BItypes,
                 glossaryComputed,
                 handleChangeGlossary,
+                filterOption,
             }
         },
     })

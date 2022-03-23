@@ -162,7 +162,6 @@
         },
         emits: ['change'],
         setup(props, { emit }) {
-            const ellipsis = ref(false)
             const createEnum = ref<boolean>(false)
             const selectedEnum = ref()
             const search = ref('')
@@ -349,7 +348,6 @@
             })
 
             return {
-                ellipsis,
                 dropdownVisible,
                 search,
                 access,

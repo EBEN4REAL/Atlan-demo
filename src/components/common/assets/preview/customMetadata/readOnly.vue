@@ -194,8 +194,6 @@
             },
         },
         setup(props) {
-            const ellipsis = ref(false)
-
             const { getDatatypeOfAttribute, formatDisplayValue } =
                 useCustomMetadataHelpers()
 
@@ -219,7 +217,6 @@
             )
 
             return {
-                ellipsis,
                 getDomain,
                 isMultivalued,
                 getDatatypeOfAttribute,

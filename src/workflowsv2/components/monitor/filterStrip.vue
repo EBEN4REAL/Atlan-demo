@@ -1,6 +1,6 @@
 <template>
     <a-drawer
-        :visible="drawerFilter"
+        :visible="isDrawerVisible"
         :mask="false"
         :placement="'left'"
         :width="240"
@@ -12,9 +12,9 @@
             :class="$style['request-filter-wrapper']"
         >
             <div
-                v-if="drawerFilter"
+                v-if="isDrawerVisible"
                 class="close-btn-sidebar button-close-drawer-run"
-                @click="drawerFilter = false"
+                @click="isDrawerVisible = false"
             >
                 <AtlanIcon icon="Add" class="text-white" />
             </div>
@@ -36,7 +36,7 @@
             color="secondary"
             prefix-icon="FilterFunnel"
             label="Filters"
-            @click="drawerFilter = !drawerFilter"
+            @click="isDrawerVisible = !isDrawerVisible"
         />
         <PackageSelector v-model:value="packageId" />
         <WorkflowSelector
@@ -50,10 +50,11 @@
 
 <script lang="ts">
     import { computed, defineComponent, ref, toRefs } from 'vue'
+    import dayjs from 'dayjs'
+    import AssetFilters from '@/common/assets/filters/index.vue'
     import PackageSelector from '~/workflowsv2/components/common/packageSelector.vue'
     import WorkflowSelector from '~/workflowsv2/components/common/workflowSelector.vue'
     import TabbedDateRangePicker from '~/workflowsv2/components/common/tabbedDateRangePicker.vue'
-    import AssetFilters from '@/common/assets/filters/index.vue'
     import { runFilter } from '~/workflowsv2/constants/filters'
 
     export default defineComponent({
@@ -72,8 +73,7 @@
         },
         emits: ['update:filters'],
         setup(props, { emit }) {
-            const runDateRange = ref('Today')
-            const drawerFilter = ref(false)
+            const isDrawerVisible = ref(false)
             const activeKey = ref([])
             const { filters } = toRefs(props)
 
@@ -104,6 +104,15 @@
                 },
             })
 
+            const runDateRange = computed({
+                get: () => filters.value?.startDate,
+                set: (val) => {
+                    const tmpFilter = filters.value
+                    tmpFilter.startDate = val
+                    emit('update:filters', tmpFilter)
+                },
+            })
+
             const handleResetEvent = () => {
                 drawerFilters.value = {}
             }
@@ -112,7 +121,7 @@
 
             return {
                 runDateRange,
-                drawerFilter,
+                isDrawerVisible,
                 packageId,
                 workflowId,
                 runFilter,

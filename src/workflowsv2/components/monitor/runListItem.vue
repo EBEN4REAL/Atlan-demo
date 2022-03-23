@@ -1,14 +1,30 @@
 <template>
     <div class="run-list-item">
-        <div class="flex flex-col items-start col-span-5 gap-y-1">
-            <span class="text-gray-500">{{ run.metadata.name }}</span>
-            <div class="flex items-center gap-x-3">
+        <div class="flex flex-col items-start col-span-5 text-gray-500 gap-y-1">
+            <span>{{ run.metadata.name }}</span>
+            <div class="flex items-center gap-x-2">
                 <span class="font-medium text-primary">{{
                     startedAt(run, false)
                 }}</span>
-                <span class="text-gray"
-                    >Created by {{ creatorUsername(run) }}</span
-                >
+                <template v-if="isCronRun(run)">
+                    <AtlanIcon icon="Schedule" class="text-success" />
+                    <span class="pt-0.5">Scheduled Run</span>
+                </template>
+                <template v-else>
+                    <span class="pt-0.5">Manual Run by</span>
+                    <span
+                        class="cursor-pointer hover:underline"
+                        @click="() => handleClickUser(createdBy)"
+                    >
+                        <img
+                            v-if="showCreatorImage"
+                            :src="imageUrl(creatorUsername(run))"
+                            class="flex-none inline-block h-4 rounded-full"
+                            @error="showCreatorImage = false"
+                        />
+                        {{ creatorUsername(run) }}
+                    </span>
+                </template>
             </div>
         </div>
         <div class="flex items-center col-span-1">
@@ -26,8 +42,9 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType } from 'vue'
+    import { defineComponent, PropType, ref } from 'vue'
     import { LiveRun } from '~/types/workflow/runs.interface'
+    import { useUserPreview } from '~/composables/user/showUserPreview'
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
 
     export default defineComponent({
@@ -47,7 +64,13 @@
                 duration,
                 startedAt,
                 creatorUsername,
+                cronString,
+                isCronRun,
             } = useWorkflowInfo()
+
+            const showCreatorImage = ref(true)
+            const imageUrl = (username: any) =>
+                `${window.location.origin}/api/service/avatars/${username}`
 
             return {
                 getRunTextClass,
@@ -55,6 +78,11 @@
                 duration,
                 startedAt,
                 creatorUsername,
+                cronString,
+                isCronRun,
+                useUserPreview,
+                imageUrl,
+                showCreatorImage,
             }
         },
     })

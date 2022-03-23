@@ -6,8 +6,8 @@
             v-for="item in ranges"
             :key="item.label"
             class="tabbed-btn"
-            :class="value === item.label ? 'fake-bold selected' : ''"
-            @click="$emit('update:value', item.label)"
+            :class="selected === item.label ? 'fake-bold selected' : ''"
+            @click="handleSelect(item.label, item.value())"
         >
             {{ item.label }}
         </button>
@@ -15,25 +15,50 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import dayjs from 'dayjs'
+    import { defineComponent, ref } from 'vue'
 
     export default defineComponent({
         name: 'TabbedDateRangePicker',
         components: {},
         props: {
-            value: { type: String, required: false, default: () => undefined },
+            value: { type: Number, required: false, default: () => undefined },
         },
         emits: ['update:value'],
-        setup() {
+        setup(_, { emit }) {
+            const selected = ref(undefined)
             const ranges = [
-                { label: 'Today' },
-                { label: 'Yesterday' },
-                { label: '7 days' },
-                { label: '30 days' },
-                { label: 'Custom' },
+                {
+                    label: 'Today',
+                    value: () => dayjs().startOf('day').valueOf(),
+                },
+                {
+                    label: 'Yesterday',
+                    value: () =>
+                        dayjs().startOf('day').subtract(1, 'day').valueOf(),
+                },
+                {
+                    label: '7 days',
+                    value: () =>
+                        dayjs().startOf('day').subtract(7, 'day').valueOf(),
+                },
+                {
+                    label: '30 days',
+                    value: () =>
+                        dayjs().startOf('day').subtract(30, 'day').valueOf(),
+                },
+                // { label: 'Custom' },
             ]
-
-            return { ranges }
+            const handleSelect = (sel, val) => {
+                if (sel === selected.value) {
+                    emit('update:value', undefined)
+                    selected.value = undefined
+                } else {
+                    emit('update:value', val)
+                    selected.value = sel
+                }
+            }
+            return { selected, ranges, handleSelect }
         },
     })
 </script>

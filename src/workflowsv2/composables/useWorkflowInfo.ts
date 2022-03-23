@@ -111,7 +111,7 @@ export default function useWorkflowInfo() {
                 item.status.startedAt,
                 'second'
             )
-            return `${Math.floor(sec / 60)} mins, ${sec % 60} seconds`
+            return `${Math.floor(sec / 60)} mins, ${sec % 60} secs`
         }
         return ''
     }

@@ -125,6 +125,19 @@ export function useRunBody(
                     }
                     break
                 }
+                case 'startDate': {
+                    if (filterObject) {
+                        base.andFilter('nested', {
+                            path: 'metadata',
+                            ...bodybuilder()
+                                .query('range', 'metadata.creationTimestamp', {
+                                    gt: filterObject,
+                                })
+                                .build(),
+                        })
+                    }
+                    break
+                }
             }
         })
     } catch (e) {

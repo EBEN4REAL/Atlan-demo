@@ -4,7 +4,7 @@
             <span class="text-sm font-bold leading-6 tracking-widest"
                 >WORKFLOW RUN HISTORY</span
             >
-            <IconButton icon="Retry" class="ml-auto" />
+            <IconButton icon="Retry" class="ml-auto" @click="quickChange" />
         </div>
         <div
             class="flex flex-col overflow-hidden divide-y divide-gray-300 rounded-lg"
@@ -78,6 +78,7 @@
 
             const facets = computed(() => ({
                 workflowTemplate: filters.value?.workflowId,
+                startDate: filters.value?.startDate,
                 ...filters.value?.sidebar,
             }))
 
@@ -112,7 +113,13 @@
 
             watch(filters, () => quickChange(), { deep: true })
 
-            return { runs, tableHeaders, isLoading, EmptyLogsIllustration }
+            return {
+                runs,
+                tableHeaders,
+                isLoading,
+                EmptyLogsIllustration,
+                quickChange,
+            }
         },
     })
 </script>

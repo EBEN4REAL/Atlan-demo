@@ -1,6 +1,10 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
-    <div class="flex flex-col">
+    <div
+        class="flex flex-col"
+        @mouseenter="showLineageGraphButton = true"
+        @mouseleave="showLineageGraphButton = false"
+    >
         <div
             class="flex items-start flex-1 px-3 py-1 transition-all duration-300"
         >
@@ -40,7 +44,15 @@
                                 class="h-3.5 ml-1 mb-0.5"
                             ></AtlanIcon
                         ></a-tooltip>
-                        <div v-if="item?.attributes?.__hasLineage" class="ml-4">
+
+                        <div
+                            v-if="
+                                item?.attributes?.__hasLineage &&
+                                showLineageGraphButton &&
+                                isLineageRoute
+                            "
+                            class="ml-4"
+                        >
                             <a-tooltip placement="top"
                                 ><template #title
                                     >View Lineage In Graph</template
@@ -129,6 +141,7 @@
     import ColumnKeys from '~/components/common/column/columnKeys.vue'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
     import useLineageStore from '~/store/lineage'
+    import { useRoute } from 'vue-router'
 
     export default defineComponent({
         name: 'ColumnListItem',
@@ -159,6 +172,14 @@
             const setColumnToSelect = (item) => {
                 lineageStore.setColumnToSelect(item)
             }
+
+            const showLineageGraphButton = ref(false)
+
+            const route = useRoute()
+
+            const isLineageRoute = computed(
+                () => route.params.tab === 'lineage'
+            )
 
             const {
                 title,
@@ -266,6 +287,8 @@
                 mouseEnterDelay,
                 enteredPill,
                 setColumnToSelect,
+                showLineageGraphButton,
+                isLineageRoute,
             }
         },
     })

@@ -95,6 +95,7 @@ import KebabMenuHorizontal from '~/assets/images/icons/kebab-menu.svg'
 import Overview from '~/assets/images/icons/overview.svg'
 import OverviewActive from '~/assets/images/icons/overview_active.svg'
 import Lineage from '~/assets/images/icons/lineage.svg'
+import LineageSmall from '~/assets/images/icons/lineage-small.svg'
 import Activity from '~/assets/images/icons/activity.svg'
 import Columns from '~/assets/images/icons/columns.svg'
 import Relation from '~/assets/images/icons/relation.svg'
@@ -528,6 +529,7 @@ export default {
     Overview,
     Pin,
     Lineage,
+    LineageSmall,
     Activity,
     Columns,
     BookmarkFilled,

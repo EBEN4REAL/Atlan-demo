@@ -44,7 +44,21 @@
                                 class="h-3.5 ml-1 mb-0.5"
                             ></AtlanIcon
                         ></a-tooltip>
-
+                        <div
+                            v-if="
+                                item?.attributes?.__hasLineage &&
+                                !isLineageRoute
+                            "
+                            class="ml-1"
+                        >
+                            <a-tooltip placement="top"
+                                ><template #title>Lineage Exists</template>
+                                <AtlanIcon
+                                    icon="LineageSmall"
+                                    class="w-4 h-4 text-gray-500 cursor-pointer mb-0.5 ml-2"
+                                ></AtlanIcon>
+                            </a-tooltip>
+                        </div>
                         <div
                             v-if="
                                 item?.attributes?.__hasLineage &&

@@ -99,7 +99,6 @@
                                         ago
                                         <template
                                             v-if="
-                                                true ||
                                                 creatorUsername(
                                                     workflowObject
                                                 )?.startsWith(

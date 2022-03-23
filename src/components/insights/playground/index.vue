@@ -598,7 +598,7 @@
             border-bottom: 0px !important;
             padding: 0 12px !important;
             height: 28px !important;
-            @apply bg-new-gray-100 !important;
+            @apply bg-gray-light !important;
             transition: none !important;
 
             > div {

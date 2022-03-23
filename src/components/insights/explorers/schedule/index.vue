@@ -30,7 +30,7 @@
 
         <div
             class="flex flex-col w-full h-full px-4 overflow-y-scroll"
-            v-if="list.length"
+            v-if="list.length && !isLoading"
         >
             <template v-for="item in list" :key="item.name">
                 <WorkflowCard class="mb-3" :item="item" />
@@ -57,8 +57,36 @@
                 </button>
             </div>
         </div>
-        <div class="flex justify-center w-full h-full px-4" v-else>
+
+        <div
+            class="flex justify-center w-full h-full px-4"
+            v-else-if="list.length === 0 && !isLoading && !fetchListError"
+        >
             <p class="text-gray-500">No scheduled workflows!</p>
+        </div>
+        <div
+            class="flex items-center justify-center w-full h-full px-4"
+            v-if="false"
+        >
+            <Loader class="" style="min-height: 64px !important"></Loader>
+        </div>
+        <div
+            v-else-if="fetchListError && !isLoading"
+            class="flex items-center justify-center h-full px-4"
+        >
+            <ErrorView :error="errorObjectForScheduleWorkflows">
+                <div class="mt-3">
+                    <a-button
+                        data-test-id="try-again"
+                        size="large"
+                        type="primary"
+                        ghost
+                        @click="quickChangeRun"
+                    >
+                        Try again
+                    </a-button>
+                </div>
+            </ErrorView>
         </div>
     </div>
 </template>
@@ -70,10 +98,12 @@
     import { debouncedWatch, until, invoke } from '@vueuse/core'
     import whoami from '~/composables/user/whoami'
     import { useSavedQueriesMeta } from './composables/useSavedQueriesMeta'
+    import Loader from '@common/loaders/page.vue'
+    import ErrorView from '@common/error/index.vue'
 
     import WorkflowCard from './workflowCard.vue'
     export default defineComponent({
-        components: { WorkflowCard },
+        components: { WorkflowCard, Loader, ErrorView },
         props: {},
         setup(props) {
             const {
@@ -83,6 +113,16 @@
                 error: savedQueryFetchError,
                 updatedRequestBody: updatedSavedQueriesFetchRequestBody,
             } = useSavedQueriesMeta([])
+            const errorObjectForScheduleWorkflows = ref({
+                response: {
+                    status: 400,
+                    data: {
+                        errorMessage:
+                            'Failed to fetch schedule workflows. Please try again',
+                    },
+                },
+            })
+
             // for fetching the metdata of the saved queries
             const uniqueSavedQueryIds = ref([])
             const limit = ref(20)
@@ -98,17 +138,22 @@
                 sort: 'metadata.creationTimestamp-desc',
             })
             const dependentKey = ref('default_schedule_workflow')
-            const { list, quickChange, isLoading, refresh } =
-                useWorkflowDiscoverList({
-                    isCache: false,
-                    dependentKey,
-                    facets,
-                    limit,
-                    offset,
-                    queryText,
-                    source: ref({}),
-                    preference,
-                })
+            const {
+                list,
+                quickChange,
+                isLoading,
+                refresh,
+                error: fetchListError,
+            } = useWorkflowDiscoverList({
+                isCache: false,
+                dependentKey,
+                facets,
+                limit,
+                offset,
+                queryText,
+                source: ref({}),
+                preference,
+            })
 
             const dependentKeyRun = ref()
             const facetRun = ref({})
@@ -189,6 +234,9 @@
             provide('savedQueryMetaMap', savedQueryMetaMap)
 
             return {
+                quickChangeRun,
+                fetchListError,
+                errorObjectForScheduleWorkflows,
                 isLoading,
                 queryText,
                 runByWorkflowMap,

@@ -175,6 +175,7 @@
 
 <style lang="less" module>
     .checkboxClass {
+        @apply h-3; // reduce extra height
         :global(.ant-checkbox) {
             top: 0px !important;
         }

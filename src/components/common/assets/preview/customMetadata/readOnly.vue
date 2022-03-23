@@ -125,14 +125,24 @@
         </div>
         <div
             v-else-if="getDatatypeOfAttribute(attribute) === 'enum'"
-            class="flex flex-wrap gap-1"
+            class="flex flex-wrap w-full gap-1"
         >
             <template v-if="!isMultivalued && attribute.value">
-                <EnumPill :label="attribute.value" />
+                <div
+                    class="px-2 py-1 border rounded-full"
+                    :style="{ 'max-width': '100%' }"
+                >
+                    <SimpleEllipsis :text="attribute.value" />
+                </div>
             </template>
             <template v-else-if="isMultivalued && attribute.value?.length">
-                <div v-for="e in attribute.value" :key="e">
-                    <EnumPill :label="e" />
+                <div
+                    v-for="e in attribute.value"
+                    :key="e"
+                    class="px-2 py-1 border rounded-full"
+                    :style="{ 'max-width': '100%' }"
+                >
+                    <SimpleEllipsis :text="e" />
                 </div>
             </template>
             <template v-else>-</template>
@@ -157,7 +167,6 @@
     import GroupPill from '@/common/pills/group.vue'
     import PopOverUser from '@/common/popover/user/user.vue'
     import PopOverGroup from '@/common/popover/user/groups.vue'
-    import EnumPill from '@/UI/pill/pill.vue'
 
     // Composables
     import useCustomMetadataHelpers from '~/composables/custommetadata/useCustomMetadataHelpers'
@@ -166,16 +175,17 @@
     import { CUSTOM_METADATA_ATTRIBUTE as CMA } from '~/types/typedefs/customMetadata.interface'
     import { getDomain } from '~/utils/url'
     import SQLFormatter from '@common/sql/snippet.vue'
+    import SimpleEllipsis from '@/common/ellipsis/simpleEllipsis.vue'
 
     export default defineComponent({
         name: 'CustomMetadataReadOnly',
         components: {
+            SimpleEllipsis,
             SQLFormatter,
             UserPill,
             GroupPill,
             PopOverUser,
             PopOverGroup,
-            EnumPill,
         },
         props: {
             attribute: {
@@ -184,6 +194,8 @@
             },
         },
         setup(props) {
+            const ellipsis = ref(false)
+
             const { getDatatypeOfAttribute, formatDisplayValue } =
                 useCustomMetadataHelpers()
 
@@ -207,6 +219,7 @@
             )
 
             return {
+                ellipsis,
                 getDomain,
                 isMultivalued,
                 getDatatypeOfAttribute,

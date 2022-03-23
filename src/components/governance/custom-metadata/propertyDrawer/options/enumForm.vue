@@ -100,8 +100,18 @@
                     v-for="(e, x) in selectedEnumOptions"
                     :key="x"
                     class="flex items-center justify-center mb-1 bg-gray-200 border-0 rounded h-7"
-                    >{{ e.title }}</a-tag
+                    style=""
                 >
+                    <a-typography-text
+                        :style="{ width: 'auto', 'max-width': '100px' }"
+                        :ellipsis="{
+                            tooltip: e.title,
+                            onEllipsis: () => (ellipsis = !ellipsis),
+                        }"
+                        :content="e.title"
+                    />
+                    <!-- {{ e.title }} -->
+                </a-tag>
             </p>
         </div>
 
@@ -142,10 +152,12 @@
     import MultiInput from '@/common/input/customizedTagInput.vue'
     import EnumDef from '@/governance/enums/enum.interface'
     import Search from '@/common/input/searchAdvanced.vue'
+    import Truncate from '@/common/ellipsis/index.vue'
 
     export default defineComponent({
         components: {
             Search,
+            Truncate,
             CreateEnumForm,
             MultiInput,
             VNodes: (_, { attrs }) => attrs.vnodes,
@@ -157,6 +169,7 @@
         },
         emits: ['change'],
         setup(props, { emit }) {
+            const ellipsis = ref(false)
             const createEnum = ref<boolean>(false)
             const selectedEnum = ref()
             const search = ref('')
@@ -343,6 +356,7 @@
             })
 
             return {
+                ellipsis,
                 dropdownVisible,
                 search,
                 access,

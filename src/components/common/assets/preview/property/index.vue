@@ -182,7 +182,7 @@
                     <div class="flex">
                         <template
                             v-if="
-                                modifiedBy(selectedAsset).startsWith(
+                                modifiedBy(selectedAsset)?.startsWith(
                                     'service-account-apikey-'
                                 )
                             "
@@ -263,7 +263,7 @@
                     <div class="flex">
                         <template
                             v-if="
-                                createdBy(selectedAsset).startsWith(
+                                createdBy(selectedAsset)?.startsWith(
                                     'service-account-apikey-'
                                 )
                             "

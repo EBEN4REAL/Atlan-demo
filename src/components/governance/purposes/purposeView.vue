@@ -134,7 +134,7 @@
             <!-- persona cards -->
             <div
                 v-if="filteredPurposes && filteredPurposes.length"
-                class="grid grid-cols-4 gap-4 gap-y-6 mt-7"
+                class="grid grid-cols-4 gap-4 gap-y-6 mt-7 pb-7"
             >
                 <PurposeCard
                     v-for="persona in filteredPurposes"

@@ -11,6 +11,7 @@
         </div>
 
         <div
+            v-if="userList.length > 0"
             class="flex flex-col w-full overflow-y-auto"
             :class="checkboxListClass ? checkboxListClass : 'h-40'"
         >
@@ -345,6 +346,7 @@
             })
 
             return {
+                users,
                 loadMore,
                 isLoading,
                 map,
@@ -360,7 +362,6 @@
                 imageUrl,
                 username,
                 totalActiveUsers,
-                excludeMe,
             }
         },
     })

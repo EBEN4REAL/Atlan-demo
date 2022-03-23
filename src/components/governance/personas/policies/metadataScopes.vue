@@ -5,7 +5,8 @@
                 <div class="flex px-4 py-3 bg-gray-100">
                     <a-checkbox
                         :indeterminate="
-                            groupedActions[idx].scopes.length ===
+                            groupedActions[idx].scopes.filter(handleFilter)
+                                .length ===
                             scopeList[idx].scopes.filter(handleFilterScope)
                                 .length
                                 ? false
@@ -14,7 +15,8 @@
                         class="text-sm font-bold text-gray-700"
                         data-test-id="checkbox"
                         :checked="
-                            groupedActions[idx].scopes.length ===
+                            groupedActions[idx].scopes.filter(handleFilter)
+                                .length ===
                             scopeList[idx].scopes.filter(handleFilterScope)
                                 .length
                         "
@@ -34,8 +36,15 @@
                         <div
                             v-for="(check, i) in scope.scopes"
                             :key="i"
-                            class="w-full p-1 px-2 hover:bg-primary-light"
-                            :class="{ ' mt-4': i !== 0 }"
+                            class="w-full hover:bg-primary-light"
+                            :class="{
+                                'mt-4':
+                                    i !== 0 &&
+                                    check.value !== 'link-assets' &&
+                                    !hasLink,
+                                'p-1 px-2':
+                                    check.value !== 'link-assets' && !hasLink,
+                            }"
                         >
                             <a-popover
                                 v-if="

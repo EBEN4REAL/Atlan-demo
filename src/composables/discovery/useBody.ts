@@ -300,13 +300,13 @@ export function useBody(
                                 filterObject.ownerGroups
                             )
                         if (filterObject.empty === true) {
-                            q.orFilter('bool', (query) => {
-                                return query.filter('bool', (query2) => {
+                            q.orFilter('bool', (query) =>
+                                query.filter('bool', (query2) => {
                                     query2.notFilter('exists', 'ownerUsers')
                                     query2.notFilter('exists', 'ownerGroups')
                                     return query2
                                 })
-                            })
+                            )
                         }
                         return q
                     })
@@ -332,20 +332,30 @@ export function useBody(
             case '__traitNames': {
                 if (filterObject) {
                     base.filter('bool', (q) => {
-                        if (filterObject.classifications?.length > 0)
+                        if (filterObject.classifications?.length > 0) {
                             q.orFilter(
                                 'terms',
                                 '__traitNames',
                                 filterObject.classifications
                             )
+                            q.orFilter(
+                                'terms',
+                                '__propagatedTraitNames',
+                                filterObject.classifications
+                            )
+                        }
 
                         if (filterObject.empty === true) {
-                            q.orFilter('bool', (query) => {
-                                return query.filter('bool', (query2) => {
+                            q.orFilter('bool', (query) =>
+                                query.filter('bool', (query2) => {
                                     query2.notFilter('exists', '__traitNames')
+                                    query2.notFilter(
+                                        'exists',
+                                        '__propagatedTraitNames'
+                                    )
                                     return query2
                                 })
-                            })
+                            )
                         }
                         return q
                     })

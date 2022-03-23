@@ -9,7 +9,7 @@
     import { computed, defineComponent, onMounted, provide, ref } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRoute } from 'vue-router'
-    import WorkflowDiscovery from '@/workflows/workflowDiscovery.vue'
+    import WorkflowDiscovery from '~/workflows/components/workflows/workflowDiscovery.vue'
 
     export default defineComponent({
         components: {

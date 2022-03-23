@@ -147,33 +147,38 @@
                         </div>
                     </a-tooltip>
                     <span
-                        v-if="permissions.length || maskComputed"
+                        v-if="computedActions || maskComputed"
                         class="text-gray-300 mx-1.5"
                         >•</span
                     >
-                    <a-tooltip v-if="permissions.length" placement="top">
+                    <a-tooltip v-if="computedActions" placement="top">
                         <template #title>
-                            <div v-if="permissions.length !== 9">
-                                {{ permissions.length }}
+                            <div
+                                v-if="
+                                    computedActions <
+                                    (type !== 'glossaryPolicy' ? 9 : 5)
+                                "
+                            >
+                                {{ computedActions }}
                                 {{
-                                    permissions.length > 1
+                                    computedActions > 1
                                         ? 'permissions'
                                         : 'permission'
                                 }}
                             </div>
-                            <div v-if="permissions.length === 9">
-                                All permissions
-                            </div>
+                            <div v-else>All permissions</div>
                         </template>
                         <div class="font-semibold text-gray-500">
                             <AtlanIcon
                                 icon="ShieldBlank"
                                 class="-mt-1 icon-gray"
                             />
+
                             {{
-                                permissions.length === 9
+                                computedActions >=
+                                (type !== 'glossaryPolicy' ? 9 : 5)
                                     ? 'All'
-                                    : permissions.length
+                                    : computedActions
                             }}
                         </div>
                     </a-tooltip>
@@ -432,6 +437,15 @@
                 }
                 return false
             }
+            const computedActions = computed(() => {
+                const actionsPolicy = policy.value?.actions || []
+                const min =
+                    actionsPolicy.includes('link-assets') &&
+                    actionsPolicy.includes('entity-update')
+                        ? 1
+                        : 0
+                return actionsPolicy?.length - min || 0
+            })
             return {
                 getPopoverContent,
                 removePolicy,
@@ -452,6 +466,7 @@
                 permissions,
                 createdAtFormated,
                 isAllAssets,
+                computedActions,
             }
         },
     })

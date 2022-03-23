@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col items-center w-full h-full bg-white">
-        <div class="w-full p-4 pb-1">
+        <div class="w-full pt-2 pb-1 pl-2 pr-2">
             <Connector
                 v-model:data="connectorsData"
                 :bgGrayForSelector="true"
@@ -27,7 +27,7 @@
                 @update:data="setConnector"
             ></Connector>
 
-            <div class="flex flex-row space-x-2">
+            <div class="flex flex-row mt-1 ml-2 mr-2 space-x-2">
                 <a-input
                     v-model:value="queryText"
                     class="h-8 mt-1 rounded"
@@ -116,7 +116,8 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { tablesData } from './tablesDemoData'
     import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
-    import Connector from '~/components/insights/common/connector/connector.vue'
+    // import Connector from '~/components/insights/common/connector/connector.vue'
+    import Connector from '~/components/insights/common/connector/connectorNew.vue'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import { useUtils } from '~/components/insights/common/composables/useUtils'
@@ -141,6 +142,9 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as Ref<string>
 
             const BItypes = getBISourceTypes()
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
@@ -247,7 +251,16 @@
             //     selectNode(selected, event)
             // }
 
-            const facets = ref({})
+            const facets = ref(
+                activeInlineTab.value.explorer.schema.facetsFilters ?? {}
+            )
+
+            watch(activeInlineTabKey, (newActiveInlineTabKey) => {
+                const _index = tabs.value.findIndex(
+                    (tab) => tab.key === newActiveInlineTabKey
+                )
+                facets.value = tabs.value[_index].explorer.schema.facetsFilters
+            })
             const sortOrderTable = ref('name.keyword-asc')
             const sortOrderColumn = ref('order-asc')
             const onFilterChange = (type, value) => {
@@ -264,20 +277,24 @@
 
             const totalFilteredCount = computed(() => {
                 let count = 0
-                Object.keys(facets.value).forEach((key) => {
-                    if (Array.isArray(facets.value[key])) {
-                        if (facets.value[key].length > 0) {
-                            count += 1
+                try {
+                    Object.keys(facets.value ?? {}).forEach((key) => {
+                        if (Array.isArray(facets.value[key])) {
+                            if (facets.value[key].length > 0) {
+                                count += 1
+                            }
+                        } else if (
+                            typeof facets.value[key] === 'object' &&
+                            facets.value[key] !== null
+                        ) {
+                            if (Object.keys(facets.value[key]).length > 0) {
+                                count += 1
+                            }
                         }
-                    } else if (
-                        typeof facets.value[key] === 'object' &&
-                        facets.value[key] !== null
-                    ) {
-                        if (Object.keys(facets.value[key]).length > 0) {
-                            count += 1
-                        }
-                    }
-                })
+                    })
+                } catch (e) {
+                    console.error(e)
+                }
                 return count
             })
 

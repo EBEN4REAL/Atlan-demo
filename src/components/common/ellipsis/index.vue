@@ -89,11 +89,11 @@
                 required: false,
                 default: '95%',
             },
-            mouseLeaveDelay:{
+            mouseLeaveDelay: {
                 type: Number,
                 required: false,
                 default: 0.1,
-            }
+            },
         },
         setup(props) {
             const truncated = ref<boolean>(false)

@@ -275,6 +275,7 @@
                         !isGTC(item) &&
                         !isBiAsset(item) &&
                         !isSaasAsset(item) &&
+                        assetType(item) !== 'Connection' &&
                         connectorName(item) !== 'glue'
                     "
                     title="Query"

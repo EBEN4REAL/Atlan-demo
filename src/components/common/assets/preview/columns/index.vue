@@ -166,6 +166,7 @@
                 'isForeign',
                 'isDist',
                 'order',
+                '__hasLineage',
             ])
             const defaultAttributes = ref([...columnAttributes.value])
             const preference = ref({

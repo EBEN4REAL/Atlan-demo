@@ -22,20 +22,20 @@
                 maxlength="140"
                 rows="2"
                 placeholder="Add description..."
-                @keyup.esc="$event?.target?.blur()"
                 data-test-id="input-description"
+                @keyup.esc="$event?.target?.blur()"
             />
         </div>
         <template #extraFooterContent>
             <div class="flex items-center">
                 <Classification
                     v-model:modelValue="selectedClassifications"
+                    :edit-permission="true"
                     @change="handleClassificationChange"
-                    :editPermission="true"
                 />
                 <span
-                    class="ml-2 text-red-500"
                     v-if="rules.classification.show"
+                    class="ml-2 text-red-500"
                     data-test-id="validation-classification"
                 >
                     {{ rules.classification.text }}
@@ -57,11 +57,11 @@
         watch,
     } from 'vue'
     import { whenever } from '@vueuse/core'
+    import Classification from '@common/input/classification/index.vue'
     import CreationModal from '@/admin/common/addModal.vue'
     import { selectedPurposeId } from './composables/usePurposeList'
     import { IPurpose } from '~/types/accessPolicies/purposes'
     import { generateUUID } from '~/utils/helper/generator'
-    import Classification from '@common/input/classification/index.vue'
     import usePurposeService from './composables/usePurposeService'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import { usePurposeStore } from '~/store/purpose'
@@ -128,7 +128,7 @@
                     /* FIX ME: Right now we are recivieing these property as snake_case and sending them as camel case */
                     // display_name
                     // metadata_policies
-                    //data_policies
+                    // data_policies
                     const newPurpose: IPurpose = (await createPersona({
                         id: generateUUID(),
                         description: description.value,
@@ -165,8 +165,8 @@
                     })
                 }
             }
-            const addClassificationsDisabled = computed(() =>
-                selectedClassifications.value.length > 0 ? true : false
+            const addClassificationsDisabled = computed(
+                () => selectedClassifications.value.length > 0
             )
             const handleClassificationChange = () => {
                 if (selectedClassifications.value.length > 0) {

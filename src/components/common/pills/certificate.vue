@@ -20,8 +20,13 @@
         </p>
 
         <div class="flex items-center mt-1 text-gray-500" v-if="username">
-            <div class="flex text-sm gap-x-1">
-                <AtlanIcon icon="User"></AtlanIcon>
+            <div class="flex items-center text-sm gap-x-1">
+                <AtlanIcon
+                    v-if="username === 'API key'"
+                    icon="Key"
+                    class="h-3"
+                />
+                <AtlanIcon v-else icon="User"></AtlanIcon>
                 <div class="mr-1">{{ username }}</div>
                 <span v-if="timestamp">{{ timestamp }}</span>
             </div>

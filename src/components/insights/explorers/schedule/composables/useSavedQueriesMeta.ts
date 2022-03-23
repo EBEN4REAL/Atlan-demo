@@ -1,4 +1,4 @@
-import { ref, watch, Ref } from 'vue'
+import { ref, watch, Ref, h } from 'vue'
 import useIndexSearch from '~/composables/discovery/useIndexSearch'
 import bodybuilder from 'bodybuilder'
 

@@ -1,5 +1,9 @@
 <template>
-    <div class="w-full p-3 text-sm border border-b border-gray-300 rounded-lg">
+    <div
+        class="w-full p-3 text-sm border border-gray-300 rounded-lg hover:border-primary group"
+        :class="selectedCardKey === item.metadata.uid ? 'selected-card' : ''"
+        @click="() => onSelectCard(item.metadata.uid)"
+    >
         <div class="flex items-center justify-between">
             <div class="flex items-center" style="flex: 1">
                 <AtlanIcon
@@ -22,8 +26,29 @@
                     />
                 </p>
             </div>
-            <div>
-                <AtlanIcon icon="Mail" class="text-gray-500" />
+            <div class="" style="">
+                <div class="items-center hidden h-5 group-hover:flex">
+                    <!-- <a-tooltip color="#363636" placement="top">
+                        style="min-width: 44px"
+                        <template #title>Open preview sidebar</template>
+
+                        <AtlanIcon
+                            icon="SidebarSwitch"
+                            class="w-4 h-4 my-auto mr-1 text-gray-500 outline-none"
+                            style="min-width: 16px"
+                        ></AtlanIcon>
+                    </a-tooltip> -->
+                    <!-- <AtlanIcon
+                        icon="KebabMenuHorizontal"
+                        class="w-4 h-4 pl-2 my-auto text-gray-500 outline-none"
+                        style="min-width: 16px"
+                    /> -->
+                    <ThreeDotMenu :dropdownOptions="dropdownOptions" />
+                </div>
+                <AtlanIcon
+                    icon="Mail"
+                    class="visible text-gray-500 group-hover:hidden"
+                />
             </div>
         </div>
         <div class="w-full pb-3 mt-1 mb-3 font-bold border-b border-gray-300">
@@ -74,6 +99,7 @@
         computed,
         inject,
         Ref,
+        ref,
     } from 'vue'
     import Tooltip from '@common/ellipsis/index.vue'
     import parser from 'cron-parser'
@@ -82,18 +108,27 @@
     import Ellipsis from '@/common/ellipsis/index.vue'
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import { useVModels } from '@vueuse/core'
+    import ThreeDotMenu from './threeDotMenu.vue'
 
     export default defineComponent({
-        components: { Tooltip, RunWidget, Ellipsis },
+        components: { Tooltip, RunWidget, Ellipsis, ThreeDotMenu },
         props: {
             item: {
                 required: true,
                 type: Object as PropType<any>,
             },
+            selectedCardKey: {
+                required: true,
+                type: String,
+            },
         },
-        setup(props) {
+        emits: ['archive'],
+        setup(props, { emit }) {
             const { item } = toRefs(props)
+            const isCardHovered = ref(false)
             const { title, certificateStatus } = useAssetInfo()
+            const { selectedCardKey } = useVModels(props)
             const format = 'hh:MM A,'
             const runMap = inject('runMap') as Ref<any>
             const savedQueryMetaMap = inject('savedQueryMetaMap') as Ref<
@@ -196,7 +231,22 @@
 
             const runs = (workflow) => runMap.value[workflow]
 
-            // const parsedDate = new Date(_date.toString())
+            const onSelectCard = (key: string) => {
+                selectedCardKey.value = key
+            }
+
+            const dropdownOptions = [
+                {
+                    title: 'Delete',
+                    icon: 'Trash',
+                    class: 'text-red-700',
+                    handleClick: () => {
+                        // debugger
+                        emit('archive', item.value?.metadata?.name)
+                    },
+                },
+            ]
+
             return {
                 title,
                 certificateStatus,
@@ -210,6 +260,9 @@
                 runs,
                 getEntityStatusIcon,
                 savedQueryMetData,
+                onSelectCard,
+                selectedCardKey,
+                dropdownOptions,
             }
         },
     })
@@ -217,6 +270,10 @@
 <style lang="less" scoped>
     .shadow-custom {
         box-shadow: 1px 2px 3px 3px #0000000d;
+    }
+    .selected-card {
+        @apply border border-primary !important;
+        background: #fbfbfe;
     }
 </style>
 

@@ -33,7 +33,12 @@
             v-if="list.length && !isLoading"
         >
             <template v-for="item in list" :key="item.name">
-                <WorkflowCard class="mb-3" :item="item" />
+                <WorkflowCard
+                    class="mb-3"
+                    :item="item"
+                    v-model:selectedCardKey="selectedCardKey"
+                    @archive="onWorkflowArchive"
+                />
             </template>
             <div
                 v-if="list.length > 0"
@@ -66,7 +71,7 @@
         </div>
         <div
             class="flex items-center justify-center w-full h-full px-4"
-            v-if="false"
+            v-if="isLoading"
         >
             <Loader class="" style="min-height: 64px !important"></Loader>
         </div>
@@ -100,12 +105,14 @@
     import { useSavedQueriesMeta } from './composables/useSavedQueriesMeta'
     import Loader from '@common/loaders/page.vue'
     import ErrorView from '@common/error/index.vue'
+    import { archiveWorkflow } from './composables/useScheduleQueryWorkflow'
 
     import WorkflowCard from './workflowCard.vue'
     export default defineComponent({
         components: { WorkflowCard, Loader, ErrorView },
         props: {},
         setup(props) {
+            const selectedCardKey = ref('')
             const {
                 savedQueryMetaMap,
                 mutate: savedQueryRefresh,
@@ -220,20 +227,21 @@
                         )
                     } else {
                         console.log(savedQueryMetaMap)
-                        watch(savedQueryMetaMap, () => {
-                            console.log(savedQueryMetaMap)
-                            debugger
-                        })
                     }
                 })
             } catch (e) {
                 console.error(e)
             }
 
+            const onWorkflowArchive = (name: string) => {
+                archiveWorkflow(name, quickChange)
+            }
+
             provide('runMap', runByWorkflowMap)
             provide('savedQueryMetaMap', savedQueryMetaMap)
 
             return {
+                selectedCardKey,
                 quickChangeRun,
                 fetchListError,
                 errorObjectForScheduleWorkflows,
@@ -242,6 +250,7 @@
                 runByWorkflowMap,
                 list,
                 handleLoadMore,
+                onWorkflowArchive,
             }
         },
     })

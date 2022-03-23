@@ -19,9 +19,7 @@
                 <AtlanIcon :icon="prefixIcon" class="h-4 -ml-0.5 mr-1" />
             </span>
             <span class="">
-                <Truncate :tooltip-text="label" :rows="1" classes="w-full" />
-
-                <!-- {{ label }} -->
+                {{ label }}
             </span>
         </div>
 
@@ -41,7 +39,6 @@
 
 <script lang="ts">
     import { defineComponent, PropType, toRefs } from 'vue'
-    import Truncate from '@/common/ellipsis/index.vue'
 
     export default defineComponent({
         name: 'Pill',
@@ -80,7 +77,6 @@
                 default: () => false,
             },
         },
-        components: { Truncate },
         // Do not uncomment, else code will break
         emits: ['action', 'blur'],
         setup(prop, { emit }) {

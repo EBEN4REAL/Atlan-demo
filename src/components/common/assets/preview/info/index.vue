@@ -849,6 +849,7 @@
             </div>
 
             <CustomMetadataPreview
+                v-if="readPermission"
                 :selected-asset="selectedAsset"
                 class="px-5"
                 :edit-permission="editPermission"

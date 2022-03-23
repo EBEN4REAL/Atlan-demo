@@ -56,6 +56,7 @@ export const previewTabs = [
             'Column',
             'Process',
             'Procedure',
+            'Collection',
         ],
         icon: 'Relation',
         activeIcon: 'RelationActive',

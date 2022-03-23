@@ -34,8 +34,9 @@
             <EmptyView
                 empty-screen="EmptyQueriesTab"
                 desc="This asset doesn't have any saved queries"
-                buttonText="Create a new query"
-                buttonColor="secondary"
+                button-text="Create a new query"
+                button-color="secondary"
+                button-class="mt-4"
                 @event="handleCreateQuery"
             ></EmptyView>
         </div>

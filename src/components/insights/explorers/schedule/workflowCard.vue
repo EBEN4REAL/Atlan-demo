@@ -1,9 +1,26 @@
 <template>
     <div class="w-full p-3 text-sm border border-b border-gray-300 rounded-lg">
         <div class="flex items-center justify-between">
-            <div class="flex items-center">
-                <AtlanIcon icon="Query" class="text-primary -mt-0.5 mr-1" />
-                <p class="text-gray-500">Aggregate Bevrage order</p>
+            <div class="flex items-center" style="flex: 1">
+                <AtlanIcon
+                    :icon="
+                        getEntityStatusIcon(
+                            savedQueryMetData?.attributes?.isVisualQuery
+                                ? 'Vqb'
+                                : 'Query',
+                            certificateStatus(savedQueryMetData)
+                        )
+                    "
+                    class="text-primary -mt-0.5 mr-1"
+                />
+                <p class="w-full text-gray-500">
+                    <Tooltip
+                        clampPercentage="99%"
+                        :tooltip-text="title(savedQueryMetData)"
+                        :rows="1"
+                        classes="text-gray-500"
+                    />
+                </p>
             </div>
             <div>
                 <AtlanIcon icon="Mail" class="text-gray-500" />
@@ -63,6 +80,8 @@
     import dayjs from 'dayjs'
     import RunWidget from '~/workflows/components/workflows/preview/workflows/run.vue'
     import Ellipsis from '@/common/ellipsis/index.vue'
+    import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         components: { Tooltip, RunWidget, Ellipsis },
@@ -74,8 +93,12 @@
         },
         setup(props) {
             const { item } = toRefs(props)
+            const { title, certificateStatus } = useAssetInfo()
             const format = 'hh:MM A,'
             const runMap = inject('runMap') as Ref<any>
+            const savedQueryMetaMap = inject('savedQueryMetaMap') as Ref<
+                Record<string, any>
+            >
 
             const workflowParameters = computed(() => {
                 if (
@@ -162,11 +185,21 @@
                     ]
                 )
             )
+            const savedQueryMetData = computed(() => {
+                const guid = workflowParameters.value.find(
+                    (e) => e.name === 'saved-query-id'
+                ).value
+                const t = savedQueryMetaMap.value[guid]
+
+                return t
+            })
 
             const runs = (workflow) => runMap.value[workflow]
 
             // const parsedDate = new Date(_date.toString())
             return {
+                title,
+                certificateStatus,
                 runMap,
                 format,
                 _date,
@@ -175,6 +208,8 @@
                 queryVariables,
                 frequency,
                 runs,
+                getEntityStatusIcon,
+                savedQueryMetData,
             }
         },
     })

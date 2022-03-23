@@ -67,15 +67,24 @@
     import { defineComponent, ref, watch, provide } from 'vue'
     import { useWorkflowDiscoverList } from '~/workflows/composables/package/useWorkflowDiscoverList'
     import { useRunDiscoverList } from '~/workflows/composables/package/useRunDiscoverList'
-    import { debouncedWatch, until } from '@vueuse/core'
+    import { debouncedWatch, until, invoke } from '@vueuse/core'
     import whoami from '~/composables/user/whoami'
-    import { invoke, until } from '@vueuse/core'
+    import { useSavedQueriesMeta } from './composables/useSavedQueriesMeta'
 
     import WorkflowCard from './workflowCard.vue'
     export default defineComponent({
         components: { WorkflowCard },
         props: {},
         setup(props) {
+            const {
+                savedQueryMetaMap,
+                mutate: savedQueryRefresh,
+                isLoading: savedQueryFetchLoading,
+                error: savedQueryFetchError,
+                updatedRequestBody: updatedSavedQueriesFetchRequestBody,
+            } = useSavedQueriesMeta([])
+            // for fetching the metdata of the saved queries
+            const uniqueSavedQueryIds = ref([])
             const limit = ref(20)
             const offset = ref(0)
             const queryText = ref('')
@@ -122,6 +131,20 @@
 
             watch(list, () => {
                 const map = list.value.map((i) => i?.metadata?.name)
+                let tempSavedQueries: any[] =
+                    list.value.map(
+                        (workflow) =>
+                            workflow.spec?.templates[0]?.dag?.tasks[0]?.arguments?.parameters?.find(
+                                (e) => e?.name === 'saved-query-id'
+                            )?.value
+                    ) ?? []
+                debugger
+                // for removing duplicates saved query ids
+                tempSavedQueries = new Set(tempSavedQueries)
+                uniqueSavedQueryIds.value = Array.from(tempSavedQueries)
+                updatedSavedQueriesFetchRequestBody(uniqueSavedQueryIds.value)
+                savedQueryRefresh()
+
                 facetRun.value = {
                     workflowTemplates: map,
                 }
@@ -142,7 +165,28 @@
                 quickChange(true)
             }
 
+            try {
+                invoke(async () => {
+                    await until(savedQueryFetchLoading).toBe(true)
+                    if (savedQueryFetchError.value) {
+                        console.error(
+                            savedQueryFetchError.value,
+                            'Error in fetching saved queries metadata'
+                        )
+                    } else {
+                        console.log(savedQueryMetaMap)
+                        watch(savedQueryMetaMap, () => {
+                            console.log(savedQueryMetaMap)
+                            debugger
+                        })
+                    }
+                })
+            } catch (e) {
+                console.error(e)
+            }
+
             provide('runMap', runByWorkflowMap)
+            provide('savedQueryMetaMap', savedQueryMetaMap)
 
             return {
                 isLoading,

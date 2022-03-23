@@ -100,7 +100,7 @@ export default function useAssetInfo() {
     const getConnectorImage = (asset: assetInterface) => {
         const found =
             connectionStore.getConnectorImageMapping[
-            attributes(asset)?.connectorName?.toLowerCase()
+                attributes(asset)?.connectorName?.toLowerCase()
             ]
         return found
     }
@@ -108,7 +108,7 @@ export default function useAssetInfo() {
     const getConnectorLabel = (asset: assetInterface) => {
         const found =
             connectionStore.getConnectorLabelMapping[
-            attributes(asset)?.connectorName?.toLowerCase()
+                attributes(asset)?.connectorName?.toLowerCase()
             ]
         return found
     }
@@ -364,11 +364,15 @@ export default function useAssetInfo() {
 
     const getProfilePath = (asset, appendOverview = false) => {
         if (assetType(asset) === 'Column') {
-            const tableGuid = asset?.attributes?.table?.guid
+            const tableGuid =
+                asset?.attributes?.table?.guid ||
+                asset?.attributes?.tablePartition?.guid
             if (tableGuid) {
                 return `/assets/${tableGuid}/overview?column=${asset?.guid}`
             }
-            const viewGuid = asset?.attributes?.view?.guid
+            const viewGuid =
+                asset?.attributes?.view?.guid ||
+                asset?.attributes?.materialisedView?.guid
             if (viewGuid) {
                 return `/assets/${viewGuid}/overview?column=${asset?.guid}`
             }
@@ -403,8 +407,9 @@ export default function useAssetInfo() {
 
     const getAssetQueryPath = (asset) => {
         let queryPath = '/insights'
-        const databaseQualifiedName = `${attributes(asset).connectionQualifiedName
-            }/${attributes(asset).databaseName}`
+        const databaseQualifiedName = `${
+            attributes(asset).connectionQualifiedName
+        }/${attributes(asset).databaseName}`
         const schema = attributes(asset).schemaName
 
         if (assetType(asset) === 'Column') {
@@ -453,12 +458,12 @@ export default function useAssetInfo() {
 
         const found = attributes(asset)?.integrationName
             ? SourceList.find(
-                (src) => src.id === attributes(asset)?.integrationName
-            )
+                  (src) => src.id === attributes(asset)?.integrationName
+              )
             : SourceList.find(
-                (src) =>
-                    src.id === attributes(asset)?.qualifiedName?.split('/')[1]
-            )
+                  (src) =>
+                      src.id === attributes(asset)?.qualifiedName?.split('/')[1]
+              )
 
         if (found) img = found.image
 
@@ -667,7 +672,7 @@ export default function useAssetInfo() {
     const readmeContent = (asset: assetInterface) =>
         attributes(asset)?.readme?.attributes?.description
 
-    const isEditAllowed = (asset: assetInterface) => { }
+    const isEditAllowed = (asset: assetInterface) => {}
 
     const isScrubbed = (asset: assetInterface) => {
         if (asset?.scrubbed) {
@@ -735,7 +740,9 @@ export default function useAssetInfo() {
     }
     const certificateUpdatedBy = (asset: assetInterface) => {
         const username = attributes(asset)?.certificateUpdatedBy
-        return username?.startsWith('service-account-apikey-') ? 'API key' : username
+        return username?.startsWith('service-account-apikey-')
+            ? 'API key'
+            : username
     }
 
     const certificateUpdatedAt = (
@@ -745,7 +752,7 @@ export default function useAssetInfo() {
         if (attributes(asset)?.certificateUpdatedAt) {
             return raw
                 ? formatDateTime(attributes(asset)?.certificateUpdatedAt) ||
-                'N/A'
+                      'N/A'
                 : useTimeAgo(attributes(asset)?.certificateUpdatedAt).value
         }
         return ''
@@ -774,7 +781,7 @@ export default function useAssetInfo() {
         if (attributes(asset)?.announcementUpdatedAt) {
             return raw
                 ? formatDateTime(attributes(asset)?.announcementUpdatedAt) ||
-                'N/A'
+                      'N/A'
                 : useTimeAgo(attributes(asset)?.announcementUpdatedAt).value
         }
         return ''
@@ -1025,17 +1032,17 @@ export default function useAssetInfo() {
             },
             attributes(asset).isPublished
                 ? {
-                    id: 'tableauPublishedDatasource',
-                    label: 'Published Datasource',
-                    value: attributes(asset).datasourceName,
-                    icon: 'TableauPublishedDatasource',
-                }
+                      id: 'tableauPublishedDatasource',
+                      label: 'Published Datasource',
+                      value: attributes(asset).datasourceName,
+                      icon: 'TableauPublishedDatasource',
+                  }
                 : {
-                    id: 'tableauEmbeddedDatasource',
-                    label: 'Embedded Datasource',
-                    value: attributes(asset).datasourceName,
-                    icon: 'TableauEmbeddedDatasource',
-                },
+                      id: 'tableauEmbeddedDatasource',
+                      label: 'Embedded Datasource',
+                      value: attributes(asset).datasourceName,
+                      icon: 'TableauEmbeddedDatasource',
+                  },
             {
                 id: 'tableauDatasourceField',
                 label: 'Tableau DatasourceField',

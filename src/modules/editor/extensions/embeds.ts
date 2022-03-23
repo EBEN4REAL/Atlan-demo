@@ -1,4 +1,6 @@
+import { h } from 'vue'
 import Embed from './embed/extension'
+import AtlanIcon from '@common/icon/atlanIcon.vue'
 
 const GOOGLE_DOC_REGEX =
     /^https?:\/\/(www\.)?docs.google.com\/document\/d\/([^/]*)/
@@ -10,6 +12,8 @@ const MIRO_BOARD_REGEX =
     /^https:\/\/(realtimeboard|miro).com\/app\/board\/(.*)$/
 const FIGJAM_REGEX = /^https:\/\/(www\.)?figma.com\/file\/([^/]*)/
 const LUCID_CHART_REGEX = /^https?:\/\/(www\.)?lucid.app\/lucidchart\/([^/]*)/
+const DB_DIAGRAM_REGEX = /^https?:\/\/(www\.)?dbdiagram.io\/(embed|d)\/([^/]*)/
+const ONEDRIVE_REGEX = /^https?:\/\/(www\.)?onedrive.live.com\/.+/
 
 export const EMBED_EXTENSIONS = [
     Embed.extend({
@@ -190,6 +194,133 @@ export const EMBED_EXTENSIONS = [
         addCommands() {
             return {
                 insertLucidChart: this.parent?.().insertEmbed,
+            }
+        },
+    }),
+    Embed.extend({
+        name: 'dbDiagram',
+        addOptions() {
+            return {
+                ...this.parent?.(),
+                title: 'DBDiagram',
+                icon: 'DBDiagram',
+                showFooter: false,
+                validateInput(input) {
+                    const res = DB_DIAGRAM_REGEX.exec(input)
+                    return (
+                        DB_DIAGRAM_REGEX.test(input) &&
+                        !!res &&
+                        res.length === 4
+                    )
+                },
+                getIframeLink(input) {
+                    const capturedParts = DB_DIAGRAM_REGEX.exec(input) || []
+                    const documentId = capturedParts[3]
+                    return `https://dbdiagram.io/embed/${documentId}`
+                },
+            }
+        },
+        addCommands() {
+            return {
+                insertDbDiagram: this.parent?.().insertEmbed,
+            }
+        },
+    }),
+    Embed.extend({
+        name: 'microsoftWord',
+        addOptions() {
+            return {
+                ...this.parent?.(),
+                title: 'Microsoft Word',
+                icon: 'MicrosoftWord',
+                showFooter: false,
+                validateInput(input: string) {
+                    if (!input.includes('?') || !ONEDRIVE_REGEX.test(input)) {
+                        return false
+                    }
+                    const queryString = input.split('?')[1]
+                    const params = new URLSearchParams(queryString)
+                    return params.has('resid') && params.has('authkey')
+                },
+                getIframeLink(input) {
+                    const queryString = input.split('?')[1]
+                    const params = new URLSearchParams(queryString)
+                    const resid = params.get('resid')
+                    const authkey = params.get('authkey')
+                    return `https://onedrive.live.com/embed?resid=${resid}&authkey=${authkey}&em=2&wdAllowInteractivity=False&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True`
+                },
+            }
+        },
+        addCommands() {
+            return {
+                insertMicrosoftWord: this.parent?.().insertEmbed,
+            }
+        },
+    }),
+    Embed.extend({
+        name: 'microsoftExcel',
+        addOptions() {
+            return {
+                ...this.parent?.(),
+                title: 'Microsoft Excel',
+                icon: 'MicrosoftExcel',
+                showFooter: false,
+                validateInput(input: string) {
+                    if (!input.includes('?') || !ONEDRIVE_REGEX.test(input)) {
+                        return false
+                    }
+                    const queryString = input.split('?')[1]
+                    const params = new URLSearchParams(queryString)
+                    return params.has('resid') && params.has('authkey')
+                },
+                getIframeLink(input) {
+                    const queryString = input.split('?')[1]
+                    const params = new URLSearchParams(queryString)
+                    const resid = params.get('resid')
+                    const authkey = params.get('authkey')
+                    return `https://onedrive.live.com/embed?resid=${resid}&authkey=${authkey}&em=2&wdAllowInteractivity=False&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True`
+                },
+                customFooter: h('small', { class: 'text-gray-400' }, [
+                    'Learn more about embedding Excel Sheets Here',
+                    h(AtlanIcon, { icon: 'QuestionRound' }),
+                ]),
+            }
+        },
+        addCommands() {
+            return {
+                insertMicrosoftExcel: this.parent?.().insertEmbed,
+            }
+        },
+    }),
+    Embed.extend({
+        name: 'microsoftPowerpoint',
+        addOptions() {
+            return {
+                ...this.parent?.(),
+                title: 'Microsoft PowerPoint',
+                icon: 'MicrosoftPowerpoint',
+                showFooter: false,
+                validateInput(input: string) {
+                    if (!input.includes('?') || !ONEDRIVE_REGEX.test(input)) {
+                        return false
+                    }
+                    const queryString = input.split('?')[1]
+                    const params = new URLSearchParams(queryString)
+                    return params.has('resid') && params.has('authkey')
+                },
+                getIframeLink(input) {
+                    const queryString = input.split('?')[1]
+                    const params = new URLSearchParams(queryString)
+                    const resid = params.get('resid')
+                    const authkey = params.get('authkey')
+                    return `https://onedrive.live.com/embed?resid=${resid}&authkey=${authkey}&em=2&wdAllowInteractivity=False&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True`
+                },
+                customFooter: `<p class='text-gray'>Learn how to embed a Microsoft PowerPoint presentation</p>`,
+            }
+        },
+        addCommands() {
+            return {
+                insertMicrosoftPowerpoint: this.parent?.().insertEmbed,
             }
         },
     }),

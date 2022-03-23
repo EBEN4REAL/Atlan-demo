@@ -37,6 +37,9 @@
                     {{ error }}
                 </p>
             </div>
+            <div v-if="options.value?.customFooter" class="mt-1">
+                {{ options.value?.customFooter }}
+            </div>
         </div>
     </node-view-wrapper>
 </template>
@@ -58,6 +61,7 @@
             const { selected, deleteNode, editor, extension } = toRefs(props)
 
             const options = computed(() => extension.value?.options)
+            console.log(options.value?.customFooter)
             const error = ref('')
 
             const linkInput = ref('')

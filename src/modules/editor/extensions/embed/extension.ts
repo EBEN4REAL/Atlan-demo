@@ -1,6 +1,8 @@
 import { VueNodeViewRenderer } from '@tiptap/vue-3'
 import Component from './component.vue'
 import IFrame from '../iframe/extension'
+import iconMap from '@common/icon/iconMap'
+import { VNode } from 'vue'
 
 interface ValidateInputFunc {
     (input: string): boolean
@@ -12,9 +14,10 @@ interface GetIframeLinkFunc {
 
 interface EmbedOptions {
     title: string
-    icon: string
+    icon: keyof typeof iconMap
     validateInput: ValidateInputFunc
     getIframeLink: GetIframeLinkFunc
+    customFooter?: VNode
 }
 
 declare module '@tiptap/core' {

@@ -37,6 +37,12 @@ export default function useAssetEvaluate() {
                 {
                     typeName: asset?.typeName,
                     entityGuid: asset?.guid,
+                    action: 'ENTITY_CREATE',
+                },
+
+                {
+                    typeName: asset?.typeName,
+                    entityGuid: asset?.guid,
                     action: 'ENTITY_DELETE',
                 },
                 {

@@ -165,6 +165,7 @@
         },
         props: {},
         setup(props) {
+            const refreshSchedulesWorkflowTab = ref()
             const activeKey = ref(0)
             const observer = ref()
             const splitpaneRef = ref()
@@ -374,6 +375,7 @@
                 updateAssetCheck,
                 collectionSelectorChange,
                 refetchQueryNode,
+                refreshSchedulesWorkflowTab,
             }
             useProvide(provideData)
             /*-------------------------------------*/

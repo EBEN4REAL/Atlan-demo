@@ -97,7 +97,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, provide } from 'vue'
+    import { defineComponent, ref, watch, provide, inject, Ref } from 'vue'
     import { useWorkflowDiscoverList } from '~/workflows/composables/package/useWorkflowDiscoverList'
     import { useRunDiscoverList } from '~/workflows/composables/package/useRunDiscoverList'
     import { debouncedWatch, until, invoke } from '@vueuse/core'
@@ -112,6 +112,9 @@
         components: { WorkflowCard, Loader, ErrorView },
         props: {},
         setup(props) {
+            const refreshSchedulesWorkflowTab = inject(
+                'refreshSchedulesWorkflowTab'
+            ) as Ref<Function>
             const selectedCardKey = ref('')
             const {
                 savedQueryMetaMap,
@@ -190,7 +193,6 @@
                                 (e) => e?.name === 'saved-query-id'
                             )?.value
                     ) ?? []
-                debugger
                 // for removing duplicates saved query ids
                 tempSavedQueries = new Set(tempSavedQueries)
                 uniqueSavedQueryIds.value = Array.from(tempSavedQueries)
@@ -233,14 +235,17 @@
                 console.error(e)
             }
 
-            const onWorkflowArchive = (name: string) => {
-                archiveWorkflow(name, quickChange)
+            const onWorkflowArchive = (name: string, reportName: string) => {
+                archiveWorkflow(name, quickChange, reportName)
             }
 
             provide('runMap', runByWorkflowMap)
             provide('savedQueryMetaMap', savedQueryMetaMap)
+            // assigning quickchange function as callback
+            refreshSchedulesWorkflowTab.value = quickChange
 
             return {
+                refreshSchedulesWorkflowTab,
                 selectedCardKey,
                 quickChangeRun,
                 fetchListError,

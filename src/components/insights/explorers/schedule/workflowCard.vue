@@ -241,8 +241,11 @@
                     icon: 'Trash',
                     class: 'text-red-700',
                     handleClick: () => {
-                        // debugger
-                        emit('archive', item.value?.metadata?.name)
+                        emit(
+                            'archive',
+                            item.value?.metadata?.name,
+                            scheduleQueryName.value
+                        )
                     },
                 },
             ]

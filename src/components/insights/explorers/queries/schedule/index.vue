@@ -87,6 +87,8 @@
 
 <script lang="ts">
     import {
+        Ref,
+        inject,
         defineComponent,
         ref,
         PropType,
@@ -128,6 +130,9 @@
         setup(props) {
             const { scheduleQueryModal, item } = useVModels(props)
             const { handleWorkflowSubmit } = useSchedule()
+            const refreshSchedulesWorkflowTab = inject(
+                'refreshSchedulesWorkflowTab'
+            ) as Ref<Function>
 
             const rules = ref({
                 name: {
@@ -361,7 +366,6 @@
                                 .then(() => {
                                     scheduleWorkFlow()
                                     ;(async () => {
-                                        debugger
                                         await until(isLoading).toBe(true)
                                         if (error.value) {
                                             message.error(
@@ -370,6 +374,10 @@
                                         }
                                         if (data.value) {
                                             activeTabIndex.value = 2
+                                            // refetch schedule workflows
+                                            refreshSchedulesWorkflowTab.value(
+                                                true
+                                            )
                                         }
                                     })()
                                 })
@@ -389,6 +397,10 @@
                                             if (data.value) {
                                                 activeTabIndex.value =
                                                     activeTabIndex.value + 1
+                                                // refetch schedule workflows
+                                                refreshSchedulesWorkflowTab.value(
+                                                    true
+                                                )
                                             }
                                         })()
                                     } else {

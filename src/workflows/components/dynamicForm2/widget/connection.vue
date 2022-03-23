@@ -29,7 +29,7 @@
                             {{ modifiedAt(selectedConnection) }} ago
                             <template
                                 v-if="
-                                    modifiedBy(selectedConnection).startsWith(
+                                    modifiedBy(selectedConnection)?.startsWith(
                                         'service-account-apikey-'
                                     )
                                 "

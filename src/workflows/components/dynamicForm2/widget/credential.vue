@@ -33,7 +33,7 @@
                         last updated {{ updatedAt(credential, true) }} ago
                         <template
                             v-if="
-                                updatedBy(credential).startsWith(
+                                updatedBy(credential)?.startsWith(
                                     'service-account-apikey-'
                                 )
                             "

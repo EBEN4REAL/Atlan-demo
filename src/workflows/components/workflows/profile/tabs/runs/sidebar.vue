@@ -113,7 +113,7 @@
                 >
                     via
                     {{
-                        creatorUsername(selectedRun).startsWith(
+                        creatorUsername(selectedRun)?.startsWith(
                             'service-account-apikey-'
                         )
                             ? 'Atlan services'

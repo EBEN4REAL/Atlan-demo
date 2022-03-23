@@ -101,7 +101,7 @@
                                             v-if="
                                                 creatorUsername(
                                                     workflowObject
-                                                ).startsWith(
+                                                )?.startsWith(
                                                     'service-account-apikey-'
                                                 )
                                             "

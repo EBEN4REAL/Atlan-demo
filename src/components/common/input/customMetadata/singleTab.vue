@@ -66,7 +66,7 @@
                                 ) && !viewOnly
                             "
                             class="font-bold cursor-pointer hover:underline text-primary"
-                            @click="switchTab(selectedAsset, data?.label)"
+                            @click="switchTab(selectedAsset, data?.label, true)"
                         >
                             Edit
                         </div>

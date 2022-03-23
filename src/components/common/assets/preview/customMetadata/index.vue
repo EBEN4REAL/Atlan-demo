@@ -395,11 +395,18 @@
                 type: Object,
                 required: false,
             },
+            // For the case when we want to direct the user from overview to edit mode
+            readOnlyInCm: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
         },
         setup(props) {
-            const { selectedAsset, data, isDrawer } = toRefs(props)
+            const { selectedAsset, data, readOnlyInCm } = toRefs(props)
 
-            const readOnly = ref(true)
+            const readOnly = ref(readOnlyInCm.value)
+
             const loading = ref(false)
             const showMore = ref(false)
             const viewOnly = ref(data.value.options?.isLocked === 'true')
@@ -624,6 +631,14 @@
                     immediate: true,
                 }
             )
+
+            /*  watch(
+                readOnlyInCm,
+                () => {
+                    readOnly.value = readOnlyInCm.value
+                },
+                { immediate: true }
+            ) */
 
             const hasValue = (a) => {
                 const isMultivalued =

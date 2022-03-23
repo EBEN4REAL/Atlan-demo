@@ -261,6 +261,7 @@
                     "
                     :tab="tab"
                     :data="tab.data"
+                    :read-only-in-cm="readOnlyInCm"
                     :collection-data="{
                         collectionInfo,
                         hasCollectionReadPermission,
@@ -395,6 +396,8 @@
             const actions = computed(() =>
                 getAllowedActions(selectedAsset.value)
             )
+            const readOnlyInCm = ref(true)
+
             provide('actions', actions)
             provide('selectedAsset', selectedAsset)
             provide('sidebarPage', page)
@@ -491,11 +494,25 @@
                 { debounce: 100, immediate: true }
             )
 
-            const switchTab = (asset, tabName: string) => {
+            const switchTab = (
+                asset,
+                tabName: string,
+                enableEditinCM = false
+            ) => {
+                if (enableEditinCM) {
+                    readOnlyInCm.value = false
+                }
+
                 const idx = getPreviewTabs(asset, isProfile.value).findIndex(
                     (tl) => tl.name === tabName
                 )
                 if (idx > -1) activeKey.value = idx
+
+                // After a while change back to read state as the same component is being used for other CM tabs
+
+                setTimeout(() => {
+                    readOnlyInCm.value = true
+                }, 1000)
             }
 
             provide('switchTab', switchTab)
@@ -643,6 +660,7 @@
                 hasCollectionWritePermission,
                 isCollectionCreatedByCurrentUser,
                 handleQueryAction,
+                readOnlyInCm,
             }
         },
     })

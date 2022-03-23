@@ -63,7 +63,7 @@
 
             whenever(list, () => {
                 workflowList.value = list.value.map((workflow) => ({
-                    id: workflow.metadata.uid,
+                    id: workflow.metadata.name,
                     label: displayName(pkg.value, workflow.metadata.name),
                 }))
             })

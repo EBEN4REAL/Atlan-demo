@@ -81,6 +81,50 @@ export function useRunBody(
                     }
                     break
                 }
+                case 'startedAt': {
+                    if (filterObject) {
+                        base.andFilter('nested', {
+                            path: 'metadata',
+                            ...bodybuilder()
+                                .query('range', 'metadata.creationTimestamp', {
+                                    gt: filterObject,
+                                })
+                                .build(),
+                        })
+                    }
+                    break
+                }
+                case 'status': {
+                    if (filterObject) {
+                        base.andFilter('nested', {
+                            path: 'metadata',
+                            ...bodybuilder()
+                                .query(
+                                    'terms',
+                                    'metadata.labels.workflows.argoproj.io/phase.keyword',
+                                    filterObject
+                                )
+                                .build(),
+                        })
+                    }
+
+                    break
+                }
+                case 'creators': {
+                    if (filterObject?.ownerUsers) {
+                        base.andFilter('nested', {
+                            path: 'metadata',
+                            ...bodybuilder()
+                                .query(
+                                    'terms',
+                                    'metadata.labels.workflows.argoproj.io/creator-preferred-username',
+                                    filterObject.ownerUsers
+                                )
+                                .build(),
+                        })
+                    }
+                    break
+                }
             }
         })
     } catch (e) {
@@ -88,7 +132,6 @@ export function useRunBody(
     }
 
     // //aggregations
-
     if (Array.isArray(aggregations)) {
         aggregations?.forEach((mkey) => {
             switch (mkey) {

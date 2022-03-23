@@ -103,9 +103,8 @@ export default function useWorkflowInfo() {
         return finishedAtProp
     }
     const duration = (item) => {
-        if (!item?.status?.finishedAt || !item?.status?.startedAt) {
-            return 'N/A'
-        }
+        if (!item?.status?.startedAt) return 'N/A'
+        if (!item?.status?.finishedAt) return 'In progress'
 
         if (item?.status?.startedAt && item?.status?.finishedAt) {
             const sec = dayjs(item.status.finishedAt).diff(
@@ -177,13 +176,13 @@ export default function useWorkflowInfo() {
     const getRunClassByPhase = (tempStatus) => {
         switch (tempStatus) {
             case 'Succeeded':
-                return 'bg-green-500 opacity-75'
+                return 'bg-green-500 bg-opacity-10'
             case 'Running':
-                return 'bg-primary opacity-75 animate-pulse'
+                return 'bg-primary bg-opacity-10 animate-pulse'
             case 'Failed':
             case 'Error':
             case 'Stopped':
-                return 'bg-red-500 opacity-75'
+                return 'bg-red-500 bg-opacity-10'
             default:
                 return 'bg-gray-200'
         }
@@ -213,20 +212,11 @@ export default function useWorkflowInfo() {
         return 'border-gray-400'
     }
 
-    const getRunClass = (item) => {
-        const tempStatus = phase(item)
-        return getRunClassByPhase(tempStatus)
-    }
+    const getRunClass = (item) => getRunClassByPhase(phase(item))
 
-    const getRunBorderClass = (item) => {
-        const tempStatus = phase(item)
-        return getRunBorderClassByPhase(tempStatus)
-    }
+    const getRunBorderClass = (item) => getRunBorderClassByPhase(phase(item))
 
-    const getRunTextClass = (item) => {
-        const tempStatus = phase(item)
-        return getRunTextClassByPhase(tempStatus)
-    }
+    const getRunTextClass = (item) => getRunTextClassByPhase(phase(item))
 
     // const getRunTimeContent = (item, relativeTime) => {
     //     const tempStatus = phase(item)

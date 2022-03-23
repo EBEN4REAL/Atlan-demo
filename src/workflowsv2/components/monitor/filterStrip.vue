@@ -18,7 +18,17 @@
             >
                 <AtlanIcon icon="Add" class="text-white" />
             </div>
-            <span class="text-xl">Filters go here</span>
+
+            <AssetFilters
+                v-model="drawerFilters"
+                v-model:activeKey="activeKey"
+                :filter-list="runFilter"
+                :allow-custom-filters="false"
+                :no-filter-title="'No filters applied'"
+                class="bg-gray-100 drawer-request"
+                @change="handleFilterChange"
+                @reset="handleResetEvent"
+            />
         </div>
     </a-drawer>
     <div class="flex items-center w-full h-16 px-5 bg-white gap-x-4">
@@ -39,10 +49,12 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref } from 'vue'
+    import { computed, defineComponent, ref, toRefs } from 'vue'
     import PackageSelector from '~/workflowsv2/components/common/packageSelector.vue'
     import WorkflowSelector from '~/workflowsv2/components/common/workflowSelector.vue'
     import TabbedDateRangePicker from '~/workflowsv2/components/common/tabbedDateRangePicker.vue'
+    import AssetFilters from '@/common/assets/filters/index.vue'
+    import { runFilter } from '~/workflowsv2/constants/filters'
 
     export default defineComponent({
         name: 'FilterStrip',
@@ -50,16 +62,65 @@
             PackageSelector,
             WorkflowSelector,
             TabbedDateRangePicker,
+            AssetFilters,
         },
-        props: {},
-        emits: [],
-        setup() {
+        props: {
+            filters: {
+                type: Object,
+                default: () => {},
+            },
+        },
+        emits: ['update:filters'],
+        setup(props, { emit }) {
             const runDateRange = ref('Today')
             const drawerFilter = ref(false)
-            const packageId = ref(undefined)
-            const workflowId = ref(undefined)
+            const activeKey = ref([])
+            const { filters } = toRefs(props)
 
-            return { runDateRange, drawerFilter, packageId, workflowId }
+            const packageId = computed({
+                get: () => filters.value?.packageId,
+                set: (val) => {
+                    const tmpFilter = filters.value
+                    tmpFilter.packageId = val
+                    emit('update:filters', tmpFilter)
+                },
+            })
+
+            const workflowId = computed({
+                get: () => filters.value?.workflowId,
+                set: (val) => {
+                    const tmpFilter = filters.value
+                    tmpFilter.workflowId = val
+                    emit('update:filters', tmpFilter)
+                },
+            })
+
+            const drawerFilters = computed({
+                get: () => filters.value?.sidebar,
+                set: (val) => {
+                    const tmpFilter = filters.value
+                    tmpFilter.sidebar = val
+                    emit('update:filters', tmpFilter)
+                },
+            })
+
+            const handleResetEvent = () => {
+                drawerFilters.value = {}
+            }
+
+            const handleFilterChange = () => {}
+
+            return {
+                runDateRange,
+                drawerFilter,
+                packageId,
+                workflowId,
+                runFilter,
+                drawerFilters,
+                activeKey,
+                handleResetEvent,
+                handleFilterChange,
+            }
         },
     })
 </script>
@@ -72,6 +133,17 @@
     .button-close-drawer-run {
         left: 260px !important;
         top: 12px;
+    }
+    .drawer-request {
+        .ant-collapse-content {
+            background: none !important;
+        }
+        .ant-collapse-header {
+            @apply hover:bg-transparent !important;
+        }
+        .group {
+            background: none !important;
+        }
     }
 </style>
 

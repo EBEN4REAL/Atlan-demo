@@ -1,15 +1,15 @@
 <template>
     <div>
-        <FilterStrip />
+        <FilterStrip v-model:filters="filters" />
 
         <div class="flex flex-col m-5">
-            <RunHistoryTable />
+            <RunHistoryTable v-model:filters="filters" />
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, ref } from 'vue'
     import FilterStrip from './filterStrip.vue'
     import RunHistoryTable from './runHistoryTable.vue'
 
@@ -19,7 +19,8 @@
         props: {},
         emits: [],
         setup() {
-            return {}
+            const filters = ref({})
+            return { filters }
         },
     })
 </script>

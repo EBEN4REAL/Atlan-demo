@@ -55,7 +55,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref } from 'vue'
+    import { computed, defineComponent, ref, toRefs, watch } from 'vue'
     import { useRunDiscoverList } from '~/workflowsv2/composables/useRunDiscoverList'
     import RunListItem from '~/workflowsv2/components/monitor/runListItem.vue'
     import EmptyLogsIllustration from '~/assets/images/illustrations/empty_logs.svg'
@@ -63,13 +63,23 @@
     export default defineComponent({
         name: 'RunHistoryTable',
         components: { RunListItem },
-        props: {},
-        emits: [],
-        setup() {
-            const limit = ref(20)
+        props: {
+            filters: {
+                type: Object,
+                default: () => ({}),
+            },
+        },
+        emits: ['update:filters'],
+        setup(props) {
+            const { filters } = toRefs(props)
+            const limit = ref(30)
             const offset = ref(0)
             const queryText = ref('')
-            const facets = ref({})
+
+            const facets = computed(() => ({
+                workflowTemplate: filters.value?.workflowId,
+                ...filters.value?.sidebar,
+            }))
 
             const preference = ref({
                 sort: 'metadata.creationTimestamp-desc',
@@ -99,6 +109,9 @@
                 { title: 'Duration', style: 'grid-column: span 1 / span 1' },
                 { title: 'Output', style: 'grid-column: span 2 / span 2' },
             ]
+
+            watch(filters, () => quickChange(), { deep: true })
+
             return { runs, tableHeaders, isLoading, EmptyLogsIllustration }
         },
     })

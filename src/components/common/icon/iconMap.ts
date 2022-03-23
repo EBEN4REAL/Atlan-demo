@@ -427,6 +427,7 @@ import RunningQuery from '~/assets/images/icons/tabs/Running.svg'
 import FailedQuery from '~/assets/images/icons/tabs/Error.svg'
 import SuccessQuery from '~/assets/images/icons/tabs/success-check.svg'
 import QuestionRound from '~/assets/images/icons/question-round.svg'
+import QuestionRoundSmall from '~/assets/images/icons/question-round-small.svg'
 import Documentation from '~/assets/images/icons/documentation.svg'
 import Logout from '~/assets/images/icons/logout.svg'
 import TrendUp from '~/assets/images/icons/trendUp.svg'
@@ -840,6 +841,7 @@ export default {
     EmptyRequest,
     PlusWhite,
     QuestionRound,
+    QuestionRoundSmall,
     Documentation,
     Logout,
     ExplorerTriggerFilled,

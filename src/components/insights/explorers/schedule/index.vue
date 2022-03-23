@@ -40,8 +40,9 @@
                     @archive="onWorkflowArchive"
                 />
             </template>
+
             <div
-                v-if="list.length > 0"
+                v-if="list.length > 0 && list.length < totalWorkflows"
                 class="flex items-center justify-center mb-3"
             >
                 <button
@@ -148,11 +149,13 @@
                 sort: 'metadata.creationTimestamp-desc',
             })
             const dependentKey = ref('default_schedule_workflow')
+            const totalWorkflows = ref(0)
             const {
                 list,
                 quickChange,
                 isLoading,
                 refresh,
+                data,
                 error: fetchListError,
             } = useWorkflowDiscoverList({
                 isCache: false,
@@ -198,6 +201,7 @@
                 uniqueSavedQueryIds.value = Array.from(tempSavedQueries)
                 updatedSavedQueriesFetchRequestBody(uniqueSavedQueryIds.value)
                 savedQueryRefresh()
+                totalWorkflows.value = data?.value?.hits?.total?.value
 
                 facetRun.value = {
                     workflowTemplates: map,
@@ -256,6 +260,7 @@
                 list,
                 handleLoadMore,
                 onWorkflowArchive,
+                totalWorkflows,
             }
         },
     })

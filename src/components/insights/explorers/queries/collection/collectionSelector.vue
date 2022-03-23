@@ -97,14 +97,14 @@
                 <div class="flex w-full bg">
                     <div class="flex flex-col w-full">
                         <div class="flex items-center w-11/12">
-                            <div class="flex w-auto max-w-full">
+                            <div class="flex w-full">
                                 <Tooltip
                                     :tooltip-text="`${selectedCollection?.attributes?.name}`"
                                     classes="cursor-pointer text-base font-bold mr-1
                                 text-gray-700 w-full"
                                 >
                                 </Tooltip>
-                                <div style="width: 20px">
+                                <div class="flex-shrink-0 w-5">
                                     <AtlanIcon
                                         icon="ChevronDown"
                                         class="w-4 h-4 text-gray-500"

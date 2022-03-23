@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex justify-between w-full h-8 py-1 text-xs border-b"
+        class="flex justify-between w-full h-8 py-1 text-xs text-sm border-b"
         style="max-height: 8%; background: #f6f7f9"
         v-if="
             activeInlineTab.playground.editor.columnList.length > 0 &&
@@ -18,13 +18,16 @@
                 {{
                     activeInlineTab.playground.editor.columnList.length?.toLocaleString()
                 }}
-                cols in
+                cols
             </span>
 
             <!-- Execution Time will be shown when it is >0 -->
             <span v-if="queryExecutionTime > 0" class="flex items-center mr-1">
-                <span class="mr-1">
-                    {{ getFormattedTimeFromMilliSeconds(queryExecutionTime) }}
+                <span class="mr-1 text-gray-500">
+                    in
+                    <span class="font-mono">{{
+                        getFormattedTimeFromMilliSeconds(queryExecutionTime)
+                    }}</span>
                 </span>
             </span>
             <!-- -------------------------------------------- -->

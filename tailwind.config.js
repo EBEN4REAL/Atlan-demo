@@ -17,6 +17,7 @@ module.exports = {
             fontFamily: {
                 sans: ['Avenir'],
                 serif: ['Avenir'],
+                mono: ['Menlo'],
             },
             colors: {
                 primary: {

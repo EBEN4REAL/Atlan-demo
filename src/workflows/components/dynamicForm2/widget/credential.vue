@@ -38,7 +38,7 @@
                                 )
                             "
                         >
-                            using API key
+                            using <AtlanIcon icon="Key" class="h-3" /> API key
                         </template>
                         <template v-else>
                             by

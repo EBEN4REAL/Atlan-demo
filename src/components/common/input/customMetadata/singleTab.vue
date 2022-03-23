@@ -81,7 +81,20 @@
                     </div>
                 </template>
 
-                <div class="flex flex-col flex-grow pr-5 overflow-y-auto pl-9">
+                <div v-if="loading || isEvaluating" class="p-2">
+                    <a-skeleton
+                        :loading="true"
+                        active
+                        class="w-full"
+                        :title="false"
+                        :paragraph="{ rows: 2 }"
+                    />
+                </div>
+
+                <div
+                    v-else
+                    class="flex flex-col flex-grow pr-5 overflow-y-auto pl-9"
+                >
                     <!-- showing non empty starts here -->
                     <template v-for="(a, x) in applicableList" :key="x">
                         <div class="my-1.5">
@@ -174,7 +187,7 @@
 
             const loading = ref(false)
             const viewOnly = ref(data.value?.options?.isLocked === 'true')
-            const activeKey = ref(['0'])
+            const activeKey = ref(['1'])
             const guid = ref()
             const { checkAccess } = useAuth()
 
@@ -185,6 +198,7 @@
                     data.value?.id
                 )
             )
+            const isEvaluating = inject('isEvaluating')
 
             const {
                 asset,
@@ -326,6 +340,7 @@
                 loading,
                 selectedAssetUpdatePermission,
                 activeKey,
+                isEvaluating,
             }
         },
     })

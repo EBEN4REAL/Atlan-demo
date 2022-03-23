@@ -1112,7 +1112,8 @@
             }
             const { getEntityStatusIcon } = useGlossaryData()
             const { certificateStatus } = useAssetInfo()
-            const filterOption = (val, opt) => opt['display-text'].includes(val)
+            const filterOption = (val, opt) =>
+                opt['display-text'].toLowerCase().includes(val.toLowerCase())
             return {
                 certificateStatus,
                 getEntityStatusIcon,

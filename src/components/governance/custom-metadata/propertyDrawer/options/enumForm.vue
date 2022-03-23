@@ -102,15 +102,7 @@
                     class="flex items-center justify-center mb-1 bg-gray-200 border-0 rounded h-7"
                     style=""
                 >
-                    <a-typography-text
-                        :style="{ width: 'auto', 'max-width': '100px' }"
-                        :ellipsis="{
-                            tooltip: e.title,
-                            onEllipsis: () => (ellipsis = !ellipsis),
-                        }"
-                        :content="e.title"
-                    />
-                    <!-- {{ e.title }} -->
+                    <SimpleEllipsis :text="e.title" max-width="100px" />
                 </a-tag>
             </p>
         </div>
@@ -153,11 +145,12 @@
     import EnumDef from '@/governance/enums/enum.interface'
     import Search from '@/common/input/searchAdvanced.vue'
     import Truncate from '@/common/ellipsis/index.vue'
+    import SimpleEllipsis from '@/common/ellipsis/simpleEllipsis.vue'
 
     export default defineComponent({
         components: {
             Search,
-            Truncate,
+            SimpleEllipsis,
             CreateEnumForm,
             MultiInput,
             VNodes: (_, { attrs }) => attrs.vnodes,

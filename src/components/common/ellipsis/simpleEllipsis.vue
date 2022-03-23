@@ -1,6 +1,6 @@
 <template>
     <a-typography-text
-        :style="{ width: 'auto', 'max-width': maxWidth }"
+        :style="{ width: '100%', 'max-width': maxWidth }"
         :ellipsis="{
             tooltip: text,
             onEllipsis: () => (ellipsis = !ellipsis),
@@ -10,6 +10,10 @@
 </template>
 
 <script setup lang="ts">
+    /** ************************* */
+    // ! ~ this component is experimental, USE IT AT YOUR OWN RISK @SAMIRAN
+    /** ************************* */
+
     import { ref } from 'vue'
 
     const props = defineProps({

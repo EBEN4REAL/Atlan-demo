@@ -10,6 +10,8 @@ const MIRO_BOARD_REGEX =
     /^https:\/\/(realtimeboard|miro).com\/app\/board\/(.*)$/
 const FIGJAM_REGEX = /^https:\/\/(www\.)?figma.com\/file\/([^/]*)/
 const LUCID_CHART_REGEX = /^https?:\/\/(www\.)?lucid.app\/lucidchart\/([^/]*)/
+const GOOGLE_DATA_STUDIO_REGEX =
+    /^https?:\/\/(www\.)?datastudio.google.com(\/embed)?\/reporting\/([^/]*)/
 
 export const EMBED_EXTENSIONS = [
     Embed.extend({
@@ -190,6 +192,36 @@ export const EMBED_EXTENSIONS = [
         addCommands() {
             return {
                 insertLucidChart: this.parent?.().insertEmbed,
+            }
+        },
+    }),
+    Embed.extend({
+        name: 'googleDataStudio',
+        addOptions() {
+            return {
+                ...this.parent?.(),
+                title: 'Google Data Studio',
+                icon: 'GoogleDataStudio',
+                showFooter: false,
+                validateInput(input) {
+                    const res = GOOGLE_DATA_STUDIO_REGEX.exec(input)
+                    return (
+                        GOOGLE_DATA_STUDIO_REGEX.test(input) &&
+                        !!res &&
+                        res.length > 1
+                    )
+                },
+                getIframeLink(input) {
+                    const capturedParts =
+                        GOOGLE_DATA_STUDIO_REGEX.exec(input) || []
+                    const documentId = capturedParts[3]
+                    return `https://datastudio.google.com/embed/reporting/${documentId}`
+                },
+            }
+        },
+        addCommands() {
+            return {
+                insertGoogleDataStudioReport: this.parent?.().insertEmbed,
             }
         },
     }),

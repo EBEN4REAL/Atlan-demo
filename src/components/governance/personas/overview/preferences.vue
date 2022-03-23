@@ -37,7 +37,7 @@
                         </div>
                     </div>
                 </template>
-                <div class="p-4">
+                <div class="p-4 container-accordion">
                     <div
                         v-for="(meta, idx) in customMetadataList"
                         :key="meta.guid"
@@ -211,6 +211,10 @@
     })
 </script>
 <style lang="less">
+    .container-accordion {
+        max-height: 53vh;
+        overflow-y: scroll;
+    }
     .popover-cm {
         // transition: all ease 0.3s;
         // &:hover {

@@ -445,16 +445,16 @@
                     </div>
                     <div
                         v-if="rules.metadata.show"
-                        class="mt-2 text-xs text-red-500"
+                        class="pb-2 mx-2 text-xs text-red-500"
                         data-test-id="policy-validation-connector"
                     >
                         {{ rules.metadata.text }}
                     </div>
-                    <div
+                    <!-- <div
                         v-if="type !== 'glossaryPolicy'"
                         class="p-3 pt-2 bg-gray-100 rounded-lg rounded-t-none"
-                    >
-                        <div
+                    > -->
+                    <!-- <div
                             v-if="
                                 isEdit
                                     ? canEdit
@@ -463,8 +463,8 @@
                                           policy?.glossaryQualifiedNames
                                               ?.length)
                             "
-                        >
-                            <div class="flex mt-1">
+                        > -->
+                    <!-- <div class="flex mt-1">
                                 <div>
                                     <span>Deny</span>
                                     <a-tooltip placement="top" color="white">
@@ -492,10 +492,10 @@
                                     style="width: 40px !important"
                                     @update:checked="policy.allow = !$event"
                                 />
-                            </div>
-                        </div>
-                        <div
-                            v-else-if="!policy.allow"
+                            </div> -->
+                    <!-- </div> -->
+                    <!-- <div
+                            v-if="!policy.allow"
                             class="flex items-center justify-between"
                         >
                             <div class="mt-4">
@@ -515,8 +515,8 @@
                                     </template>
                                 </a-tooltip>
                             </div>
-                        </div>
-                    </div>
+                        </div> -->
+                    <!-- </div> -->
                 </div>
                 <div
                     v-if="policyType === 'data' && connectorData.attributeValue"
@@ -555,7 +555,7 @@
                             class="w-80"
                         />
                     </div>
-                    <div class="p-3 bg-gray-100">
+                    <div class="bg-gray-100">
                         <div
                             v-if="
                                 isEdit
@@ -665,31 +665,12 @@
                             />
                         </div>
                         <div class="flex-1 text-sm text-gray-700">
-                            This will deny the permissions you have selected
-                            above, for all the users in the persona, even if
-                            they had access to those permissions via some other
-                            persona or purpose
+                            {{
+                                type === 'meta'
+                                    ? 'The above permissions have been overidden for all the users in the persona, even if they have access to those permissions via some other persona or purpose'
+                                    : 'This will deny the permissions you have selected above, for all the users in the persona, even if they had access to those permissions via some other persona or purpose'
+                            }}
                         </div>
-                    </div>
-                </div>
-                <div
-                    v-else-if="!policy.allow"
-                    class="flex items-center justify-between"
-                >
-                    <div class="mt-4">
-                        <span class="text-error">Denied Permissions</span>
-                        <a-tooltip placement="top" color="white">
-                            <AtlanIcon icon="Overview" class="mx-2" />
-                            <template #title>
-                                <p class="m-3 text-gray">
-                                    {{
-                                        type === 'meta'
-                                            ? 'The above permissions have been overidden for all the users in the persona, even if they have access to those permissions via some other persona or purpose'
-                                            : 'This will deny the permissions you have selected above, for all the users in the persona, even if they had access to those permissions via some other persona or purpose'
-                                    }}
-                                </p>
-                            </template>
-                        </a-tooltip>
                     </div>
                 </div>
                 <AssetSelectorDrawer

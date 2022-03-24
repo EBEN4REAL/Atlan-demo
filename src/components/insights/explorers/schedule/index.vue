@@ -123,6 +123,7 @@
                 error: savedQueryFetchError,
                 updatedRequestBody: updatedSavedQueriesFetchRequestBody,
             } = useSavedQueriesMeta([])
+            savedQueryRefresh()
             const errorObjectForScheduleWorkflows = ref({
                 response: {
                     status: 400,

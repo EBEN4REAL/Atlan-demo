@@ -269,6 +269,7 @@
                 runs,
                 getEntityStatusIcon,
                 savedQueryMetData,
+                savedQueryMetaMap,
                 onSelectCard,
                 selectedCardKey,
                 dropdownOptions,

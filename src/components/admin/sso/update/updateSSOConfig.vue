@@ -96,7 +96,7 @@
                             />
                         </span>
                     </a-form-item>
-                    <a-form-item class="-mt-2.5">
+                    <a-form-item class="-mt-2.5" v-if="ssoForm.alias==='azure'">
                         <template #label>
                             <div class="">
                                 <div class="mb-2">

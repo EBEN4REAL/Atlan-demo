@@ -207,6 +207,21 @@ export function usePackageBody(
                     }
                     break
                 }
+                case 'creators': {
+                    if (filterObject?.ownerUsers) {
+                        base.andFilter('nested', {
+                            path: 'metadata',
+                            ...bodybuilder()
+                                .query(
+                                    'terms',
+                                    'metadata.labels.workflows.argoproj.io/creator-preferred-username',
+                                    filterObject.ownerUsers
+                                )
+                                .build(),
+                        })
+                    }
+                    break
+                }
             }
         })
     } catch (e) {

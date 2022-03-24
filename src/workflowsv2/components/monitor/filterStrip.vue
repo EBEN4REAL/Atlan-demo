@@ -26,7 +26,7 @@
                 :filter-list="runFilter"
                 :allow-custom-filters="false"
                 :no-filter-title="'No filters applied'"
-                class="bg-gray-100 drawer-request"
+                class="drawer-request"
                 @change="handleFilterChange"
                 @reset="handleResetEvent"
             />
@@ -35,7 +35,9 @@
     <div class="flex items-center w-full h-16 px-5 bg-white gap-x-4">
         <AtlanButton2
             color="secondary"
-            prefix-icon="FilterFunnel"
+            :prefix-icon="
+                drawerFiltersApplied ? 'FilterFunnelDot' : 'FilterFunnel'
+            "
             label="Filters"
             @click="isDrawerVisible = !isDrawerVisible"
         />
@@ -51,7 +53,6 @@
 
 <script lang="ts">
     import { computed, defineComponent, ref, toRefs } from 'vue'
-    import dayjs from 'dayjs'
     import AssetFilters from '@/common/assets/filters/index.vue'
     import PackageSelector from '~/workflowsv2/components/common/packageSelector.vue'
     import WorkflowSelector from '~/workflowsv2/components/common/workflowSelector.vue'
@@ -114,6 +115,17 @@
                 },
             })
 
+            const drawerFiltersApplied = computed(() => {
+                if (!drawerFilters.value) return false
+
+                // eslint-disable-next-line no-restricted-syntax
+                for (const value of Object.values(drawerFilters.value)) {
+                    if (value) return true
+                }
+
+                return false
+            })
+
             const handleResetEvent = () => {
                 drawerFilters.value = {}
             }
@@ -130,6 +142,7 @@
                 activeKey,
                 handleResetEvent,
                 handleFilterChange,
+                drawerFiltersApplied,
             }
         },
     })
@@ -145,6 +158,8 @@
         top: 12px;
     }
     .drawer-request {
+        @apply bg-gray-100;
+
         .ant-collapse-content {
             background: none !important;
         }

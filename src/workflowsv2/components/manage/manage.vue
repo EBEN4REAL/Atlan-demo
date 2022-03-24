@@ -1,6 +1,16 @@
 <template>
     <div class="flex w-full overflow-hidden">
-        <div class="flex flex-none w-64 h-full bg-white"></div>
+        <AssetFilters
+            v-model="wfFilters"
+            v-model:activeKey="activeKey"
+            :filter-list="workflowFilter"
+            :allow-custom-filters="false"
+            no-filter-title="Filters"
+            class="drawer-request"
+            @reset="handleResetEvent"
+            @change="refetch()"
+        />
+
         <div class="flex flex-col flex-1 h-full gap-y-4">
             <div class="flex items-center mx-4 mt-4 gap-x-4">
                 <div
@@ -55,6 +65,11 @@
 <script lang="ts">
     import { useDebounceFn, whenever } from '@vueuse/core'
     import { computed, defineComponent, ref } from 'vue'
+
+    import AssetFilters from '@/common/assets/filters/index.vue'
+
+    import { workflowFilter } from '~/workflowsv2/constants/filters'
+
     import WorkflowList from '~/workflowsv2/components/manage/workflowList.vue'
     import { useRunDiscoverList } from '~/workflowsv2/composables/useRunDiscoverList'
     import { useWorkflowDiscoverList } from '~/workflowsv2/composables/useWorkflowDiscoverList'
@@ -64,11 +79,19 @@
 
     export default defineComponent({
         name: 'ManageWorkflows',
-        components: { WorkflowList, SearchAndFilter, PackageSelector },
+        components: {
+            AssetFilters,
+            WorkflowList,
+            SearchAndFilter,
+            PackageSelector,
+        },
         props: {},
         emits: [],
         setup() {
             const { name } = useWorkflowInfo()
+            const isDrawerVisible = ref(false)
+            const activeKey = ref([])
+            const wfFilters = ref({})
             const packageId = ref(undefined)
 
             const preference = ref({
@@ -78,6 +101,7 @@
             const facets = computed(() => ({
                 ui: true,
                 packageName: packageId.value,
+                ...wfFilters.value,
             }))
 
             const queryText = ref(null)
@@ -117,6 +141,11 @@
 
             const refetch = useDebounceFn(quickChange, 250, { maxWait: 1000 })
 
+            const handleResetEvent = () => {
+                wfFilters.value = {}
+                quickChange()
+            }
+
             return {
                 list,
                 refetch,
@@ -124,7 +153,28 @@
                 runByWorkflowMap,
                 queryText,
                 packageId,
+                wfFilters,
+                isDrawerVisible,
+                activeKey,
+                workflowFilter,
+                handleResetEvent,
+                facets,
             }
         },
     })
 </script>
+
+<style lang="less" scoped>
+    .drawer-request {
+        @apply bg-gray-100 flex-none w-64;
+        .ant-collapse-content {
+            background: none !important;
+        }
+        .ant-collapse-header {
+            @apply hover:bg-transparent !important;
+        }
+        .group {
+            background: none !important;
+        }
+    }
+</style>

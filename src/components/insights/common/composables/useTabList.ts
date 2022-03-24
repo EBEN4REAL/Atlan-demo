@@ -42,7 +42,7 @@ export default function useInsightsTabList(): {
             id: 'schedule',
             name: 'Schedule',
             component: 'schedule',
-            icon: 'Clock',
+            icon: 'Schedule24',
             isVisible: true,
             title: 'Schedule',
         },

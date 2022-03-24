@@ -432,8 +432,10 @@ import NoAllow from '~/assets/images/icons/no-allow.svg'
 import ThreeDotsAlt from '~/assets/images/icons/3-dots-alt.svg'
 import NoProperty from '~/assets/images/admin/customMetadata/empty-property.svg'
 import TrashAlt from '~/assets/images/icons/Trash-alt.svg'
+import Schedule24 from '~/assets/images/icons/schedule-24.svg'
 
 export default {
+    Schedule24,
     Mail,
     TrashAlt,
     NoProperty,

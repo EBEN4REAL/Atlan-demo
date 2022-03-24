@@ -61,10 +61,11 @@
         <div class="flex items-center text-xs text-gray-500">
             <span class="capitalize">{{ frequency }}</span>
             <div class="w-1 h-1 bg-gray-300 mx-1.5 rounded-full"></div>
-            <span
-                >Next run at {{ _date?.format(format) }}
-                {{ _date?.format('DD MMMM') }}
-            </span>
+            <div>
+                <AtlanIcon icon="Clock" class="w-4 h-4 -mt-0.5 mr-1" />
+                <span> {{ _date?.format(format) }}&nbsp;</span>
+                <span>{{ _date?.format('DD MMMM') }}</span>
+            </div>
             <div
                 v-if="Object.keys(queryVariables).length"
                 class="w-1 h-1 bg-gray-300 mx-1.5 rounded-full"

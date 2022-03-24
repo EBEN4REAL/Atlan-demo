@@ -58,7 +58,14 @@ export function useSavedQueriesMeta(savedQueryIds: string[]) {
 
     const body = ref({
         dsl: generateBody(savedQueryIds),
-        attributes: ['name', 'isVisualQuery', 'certificateStatus'],
+        attributes: [
+            'name',
+            'isVisualQuery',
+            'certificateStatus',
+            'variablesSchemaBase64',
+            'connectionName',
+            'connectionQualifiedName',
+        ],
         suppressLogs: true,
     })
     const { mutate, isLoading, error } = fetchSavedQueryMeta({

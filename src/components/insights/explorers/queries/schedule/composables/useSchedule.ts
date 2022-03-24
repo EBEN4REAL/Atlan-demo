@@ -1,5 +1,6 @@
 import { message } from 'ant-design-vue'
 import { generateUUID } from '~/utils/helper/generator'
+import parser from 'cron-parser'
 
 import { Ref } from 'vue'
 export function useSchedule() {
@@ -126,4 +127,47 @@ export function useSchedule() {
     return {
         handleWorkflowSubmit,
     }
+}
+
+export const getCronFrequency = (cronString) => {
+    const interval = parser.parseExpression(cronString)
+
+    if (
+        interval.fields.hour.length === 24 &&
+        interval.fields.dayOfMonth.length === 31 &&
+        interval.fields.dayOfWeek.length === 8 &&
+        interval.fields.month.length === 12
+    ) {
+        return 'hourly'
+    }
+
+    if (
+        interval.fields.dayOfMonth.length === 31 &&
+        interval.fields.dayOfWeek.length === 8 &&
+        interval.fields.month.length === 12
+    ) {
+        return 'daily'
+    }
+    if (
+        interval.fields.dayOfMonth.length === 31 &&
+        interval.fields.dayOfWeek.join(',') === [1, 2, 3, 4, 5].join(',') &&
+        interval.fields.month.length === 12
+    ) {
+        return 'weekdays'
+    }
+    if (
+        interval.fields.dayOfMonth.length === 31 &&
+        interval.fields.dayOfWeek.join(',') === [0, 6].join(',') &&
+        interval.fields.month.length === 12
+    ) {
+        return 'weekend'
+    }
+    if (
+        interval.fields.dayOfMonth.length === 1 &&
+        interval.fields.dayOfWeek.length === 8 &&
+        interval.fields.month.length === 12
+    ) {
+        return 'monthly'
+    }
+    return ''
 }

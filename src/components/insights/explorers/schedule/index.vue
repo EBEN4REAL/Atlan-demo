@@ -34,7 +34,6 @@
         >
             <template v-for="item in list" :key="item.name">
                 <WorkflowCard
-                    class="mb-3"
                     :item="item"
                     v-model:selectedCardKey="selectedCardKey"
                     @archive="onWorkflowArchive"

@@ -5,7 +5,7 @@
     >
         <div>
             <p class="mb-1 text-lg font-bold text-gray-700">
-                New Schedule Query
+                {{ mode === 'update' ? 'Update' : 'New' }} Schedule Query
             </p>
             <div class="flex items-center text-gray-700">
                 <div class="flex items-center text-sm">
@@ -54,7 +54,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs } from 'vue'
+    import { defineComponent, PropType, toRefs, inject, Ref } from 'vue'
     import { useConnectionStore } from '~/store/connection'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -71,6 +71,7 @@
         },
         setup(props) {
             const { item } = toRefs(props)
+            const mode = inject('mode') as Ref<string>
             const { connectionName, certificateStatus } = useAssetInfo()
             const store = useConnectionStore()
 
@@ -84,6 +85,7 @@
                 getConnectorImage,
                 getEntityStatusIcon,
                 certificateStatus,
+                mode,
             }
         },
     })

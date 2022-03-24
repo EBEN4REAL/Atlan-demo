@@ -1,6 +1,6 @@
 <template>
     <div
-        class="w-full p-3 text-sm border border-gray-300 rounded-lg hover:border-primary group"
+        class="w-full p-3 mb-3 text-sm border border-gray-300 rounded-lg hover:border-primary group"
         :class="selectedCardKey === item.metadata.uid ? 'selected-card' : ''"
         @click="() => onSelectCard(item.metadata.uid)"
     >
@@ -88,6 +88,24 @@
             </div>
         </div>
     </div>
+    <a-modal
+        :visible="scheduleQueryModal"
+        :footer="null"
+        :closable="false"
+        width="700px"
+        :destroyOnClose="true"
+    >
+        <ScheduleQuery
+            v-if="savedQueryMetData"
+            :item="savedQueryMetData"
+            v-model:scheduleQueryModal="scheduleQueryModal"
+            style="min-height: 610px"
+            class="rounded-lg"
+            mode="update"
+            :cronModel="cronModel"
+            :workflowParameters="workflowParameters"
+        />
+    </a-modal>
 </template>
 
 <script lang="ts">
@@ -110,9 +128,18 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { useVModels } from '@vueuse/core'
     import ThreeDotMenu from './threeDotMenu.vue'
+    import ScheduleQuery from '~/components/insights/explorers/queries/schedule/index.vue'
+    import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
+    import { getCronFrequency } from '~/components/insights/explorers/queries/schedule/composables/useSchedule'
 
     export default defineComponent({
-        components: { Tooltip, RunWidget, Ellipsis, ThreeDotMenu },
+        components: {
+            Tooltip,
+            RunWidget,
+            Ellipsis,
+            ThreeDotMenu,
+            ScheduleQuery,
+        },
         props: {
             item: {
                 required: true,
@@ -123,11 +150,21 @@
                 type: String,
             },
         },
-        emits: ['archive'],
+        emits: ['archive', 'update'],
         setup(props, { emit }) {
             const { item } = toRefs(props)
-            const isCardHovered = ref(false)
+            const scheduleQueryModal = ref(false)
             const { title, certificateStatus } = useAssetInfo()
+            const {
+                name,
+                creationTimestamp,
+                creatorUsername,
+                displayName,
+                cronString,
+                cron,
+
+                cronObject,
+            } = useWorkflowInfo()
             const { selectedCardKey } = useVModels(props)
             const format = 'hh:MM A,'
             const runMap = inject('runMap') as Ref<any>
@@ -170,49 +207,7 @@
             )
 
             const _date = dayjs(interval.next().toString())
-            const getCronFrequency = (cronString) => {
-                const interval = parser.parseExpression(cronString)
 
-                if (
-                    interval.fields.hour.length === 24 &&
-                    interval.fields.dayOfMonth.length === 31 &&
-                    interval.fields.dayOfWeek.length === 8 &&
-                    interval.fields.month.length === 12
-                ) {
-                    return 'hourly'
-                }
-
-                if (
-                    interval.fields.dayOfMonth.length === 31 &&
-                    interval.fields.dayOfWeek.length === 8 &&
-                    interval.fields.month.length === 12
-                ) {
-                    return 'daily'
-                }
-                if (
-                    interval.fields.dayOfMonth.length === 31 &&
-                    interval.fields.dayOfWeek.join(',') ===
-                        [1, 2, 3, 4, 5].join(',') &&
-                    interval.fields.month.length === 12
-                ) {
-                    return 'weekdays'
-                }
-                if (
-                    interval.fields.dayOfMonth.length === 31 &&
-                    interval.fields.dayOfWeek.join(',') === [0, 6].join(',') &&
-                    interval.fields.month.length === 12
-                ) {
-                    return 'weekend'
-                }
-                if (
-                    interval.fields.dayOfMonth.length === 1 &&
-                    interval.fields.dayOfWeek.length === 8 &&
-                    interval.fields.month.length === 12
-                ) {
-                    return 'monthly'
-                }
-                return ''
-            }
             const frequency = computed(() =>
                 getCronFrequency(
                     item.value.metadata.annotations[
@@ -248,7 +243,17 @@
                         )
                     },
                 },
+                // {
+                //     title: 'Edit',
+                //     icon: 'Edit',
+                //     class: 'text-gray-700',
+                //     handleClick: () => {
+                //         scheduleQueryModal.value = !scheduleQueryModal.value
+                //     },
+                // },
             ]
+
+            const cronModel = ref(cronObject(item.value))
 
             return {
                 title,
@@ -266,6 +271,9 @@
                 onSelectCard,
                 selectedCardKey,
                 dropdownOptions,
+                scheduleQueryModal,
+                cronModel,
+                workflowParameters,
             }
         },
     })

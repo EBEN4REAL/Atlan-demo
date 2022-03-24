@@ -96,6 +96,7 @@
         watch,
         reactive,
         computed,
+        provide,
     } from 'vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import Header from './header.vue'
@@ -113,6 +114,8 @@
     import useWorkflowSubmit from '~/workflows/composables/package/useWorkflowSubmit'
     import { useTimeoutFn } from '@vueuse/core'
     import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
+    import { getCronFrequency } from './composables/useSchedule'
+    import parser from 'cron-parser'
 
     export default defineComponent({
         name: 'Schedule Query',
@@ -126,9 +129,23 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
             },
+            mode: {
+                type: String,
+                required: true,
+                default: () => 'new',
+            },
+            cronModel: {
+                type: Object as PropType<{ cron: string; timezone: string }>,
+                required: false,
+            },
+            workflowParameters: {
+                type: Object as PropType<Record<string, any>>,
+                required: false,
+            },
         },
         setup(props) {
-            const { scheduleQueryModal, item } = useVModels(props)
+            const { scheduleQueryModal, item, mode } = useVModels(props)
+            const { cronModel, workflowParameters } = toRefs(props)
             const { handleWorkflowSubmit } = useSchedule()
             const refreshSchedulesWorkflowTab = inject(
                 'refreshSchedulesWorkflowTab'
@@ -186,7 +203,14 @@
             })
 
             const usersParams = reactive({
-                limit: totalUsersCount.value,
+                limit:
+                    totalUsersCount.value ||
+                    (JSON.parse(
+                        workflowParameters.value.find(
+                            (e) => e.name === 'email-variables'
+                        ).value
+                    ) ??
+                        []),
                 offset: 0,
                 filter: {
                     $or: [],
@@ -222,10 +246,88 @@
                 date: '',
             })
 
+            if (workflowParameters.value) {
+                debugger
+                // query variables
+                const queryVariables =
+                    JSON.parse(
+                        workflowParameters.value.find(
+                            (e) => e.name === 'query-variables'
+                        ).value
+                    ) ?? []
+                variablesData.value = queryVariables
+
+                // report name
+                const scheduleQueryName =
+                    workflowParameters.value.find(
+                        (e) => e.name === 'report-name'
+                    ).value ?? '-'
+                infoTabeState.value.name = scheduleQueryName
+
+                const userEmails =
+                    JSON.parse(
+                        workflowParameters.value.find(
+                            (e) => e.name === 'email-variables'
+                        ).value
+                    ) ?? []
+
+                usersParams.filter.$or = userEmails.map((email) => {
+                    return {
+                        email: email,
+                    }
+                }) as any
+                //   getUserList();
+
+                //   try {
+                //     invoke(async () => {
+                //         await until(isUserLoading).toBe(true)
+                //         if (userError.value) {
+                //             console.error(
+                //                 userError.value,
+                //                 'Error in fetching users email'
+                //             )
+                //         } else if (userList.value) {
+                //             watch(userList, () => {
+                //                 if (userList.value?.length > 0) {
+                //                     let usernames: string[] = []
+                //                     userList.value.forEach((user) => {
+                //                         usernames.push(user.username);
+                //                     })
+                //                     // assiging owners
+                //                     usersData.value.ownerUsers = usernames as any;
+                //                 }
+                //             })
+                //         }
+                //     })
+                // } catch (e) {
+                //     console.error(e, 'Error in fetching users email')
+                // }
+            }
+
             const cronData = ref({
                 cron: '',
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
             })
+            // pre populating the data if it is passed
+            if (cronModel.value) {
+                cronData.value = {
+                    ...cronModel.value,
+                }
+                infoTabeState.value.frequency = getCronFrequency(
+                    cronModel.value.cron
+                )
+                const interval = parser.parseExpression(cronModel.value.cron)
+                infoTabeState.value.time = `${interval.fields.hour[0].toString()}:${interval.fields.minute[0].toString()}`
+                if (interval.fields.dayOfWeek.length === 1) {
+                    infoTabeState.value.dayOfWeek =
+                        interval.fields.dayOfWeek[0].toString()
+                }
+                if (interval.fields.dayOfMonth.length === 1) {
+                    infoTabeState.value.date =
+                        interval.fields.dayOfMonth[0].toString()
+                }
+            }
+
             const cronStringReadable = ref('')
 
             facetPackage.value = {
@@ -483,6 +585,9 @@
                     console.error(e)
                 }
             }
+
+            provide('mode', mode)
+
             // watch(activeTabIndex, (newActiveIndex) => {
             //     if (newActiveIndex === 0) {
             //         variablesData.value = JSON.parse(

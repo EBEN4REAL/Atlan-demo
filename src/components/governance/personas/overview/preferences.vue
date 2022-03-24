@@ -194,6 +194,11 @@
                 currentIdUpdated.value = guid
                 handleUpdateMeta(guid, isOnList)
             }
+
+            // useAddEvent('governance', 'persona', 'cm_preferences', {
+            //     state: true,
+            // })
+
             return {
                 activeKey,
                 finalBusinessMetadataList,

@@ -30,8 +30,20 @@
                         </div>
                     </div>
                     <div class="text-gray-500">
-                        last updated {{ updatedAt(credential, true) }} ago by
-                        {{ updatedBy(credential) }}
+                        last updated {{ updatedAt(credential, true) }} ago
+                        <template
+                            v-if="
+                                updatedBy(credential)?.startsWith(
+                                    'service-account-apikey-'
+                                )
+                            "
+                        >
+                            using <AtlanIcon icon="Key" class="h-3" /> API key
+                        </template>
+                        <template v-else>
+                            by
+                            {{ updatedBy(credential) }}
+                        </template>
                     </div>
                 </div>
                 <div class="flex gap-x-2">

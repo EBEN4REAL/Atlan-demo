@@ -59,6 +59,7 @@
                     placeholder=""
                     @change="buildCron"
                     :allowClear="false"
+                    style="max-width: 230px"
                 ></Timezone>
             </div>
             <div

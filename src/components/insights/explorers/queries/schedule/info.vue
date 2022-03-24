@@ -92,7 +92,7 @@
                 <p class="mb-1 font-bold text-gray-500 required">
                     Share Results
                 </p>
-                <p class="pb-2 text-gray-400 border-b border-gray-200">
+                <p class="pb-2 text-gray-400">
                     Data will be sent as an attachment email
                 </p>
             </div>

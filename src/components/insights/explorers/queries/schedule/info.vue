@@ -294,7 +294,6 @@
             }
 
             const buildCron = () => {
-                debugger
                 const interval = parser.parseExpression('* * * * *')
                 const fields = JSON.parse(JSON.stringify(interval.fields))
 

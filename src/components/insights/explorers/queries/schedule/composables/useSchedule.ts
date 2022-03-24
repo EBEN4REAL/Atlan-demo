@@ -150,6 +150,13 @@ export const getCronFrequency = (cronString) => {
     }
     if (
         interval.fields.dayOfMonth.length === 31 &&
+        interval.fields.dayOfWeek.length === 1 &&
+        interval.fields.month.length === 12
+    ) {
+        return 'weekly'
+    }
+    if (
+        interval.fields.dayOfMonth.length === 31 &&
         interval.fields.dayOfWeek.join(',') === [1, 2, 3, 4, 5].join(',') &&
         interval.fields.month.length === 12
     ) {

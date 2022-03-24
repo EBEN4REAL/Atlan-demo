@@ -235,7 +235,7 @@
                 frequency: 'daily',
                 time: '00:00',
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                dayOfWeek: 'Monday',
+                dayOfWeek: '1',
                 date: '',
             })
 

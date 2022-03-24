@@ -1,11 +1,11 @@
 <svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
         d="M4.429 6H1.57a.571.571 0 0 0-.57.571V9.43c0 .315.256.571.571.571H4.43A.571.571 0 0 0 5 9.429V6.57A.571.571 0 0 0 4.429 6ZM14.5 2h-3a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5Zm0 8h-3a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5Z"
-        fill="#6A7692"
+        fill="currentColor"
     />
     <path
         d="M5 8h3m3.5 4H10a1.5 1.5 0 0 1-1.5-1.5v-5A1.499 1.499 0 0 1 10 4h1.5"
-        stroke="#6A7692"
+        stroke="currentColor"
         stroke-linecap="round"
         stroke-linejoin="round"
     />

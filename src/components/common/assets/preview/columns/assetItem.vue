@@ -55,7 +55,7 @@
                                 ><template #title>Lineage Exists</template>
                                 <AtlanIcon
                                     icon="LineageSmall"
-                                    class="w-4 h-4 text-gray-500 cursor-pointer mb-0.5 ml-2"
+                                    class="w-4 h-4 cursor-pointer mb-0.5 ml-2 text-gray-400"
                                 ></AtlanIcon>
                             </a-tooltip>
                         </div>

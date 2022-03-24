@@ -1,5 +1,6 @@
 <template>
     <BaseSelector
+        :type="type"
         :value="value"
         :list="workflowList"
         :loading="isLoading"
@@ -11,7 +12,14 @@
 
 <script lang="ts">
     import { whenever } from '@vueuse/core'
-    import { computed, defineComponent, ref, toRefs, watch } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        PropType,
+        ref,
+        toRefs,
+        watch,
+    } from 'vue'
     import { useWorkflowDiscoverList } from '~/workflowsv2/composables/useWorkflowDiscoverList'
     import { useWorkflowStore } from '~/workflowsv2/store'
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
@@ -27,6 +35,10 @@
                 type: String,
                 required: false,
                 default: () => undefined,
+            },
+            type: {
+                type: String as PropType<'default' | 'minimal'>,
+                default: () => 'default',
             },
         },
         emits: ['update:value'],

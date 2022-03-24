@@ -12,7 +12,7 @@
                 <span
                     v-else
                     class="cursor-pointer hover:underline"
-                    @click="() => handleClickUser(updatedBy)"
+                    @click="() => openUserSidebar(updatedBy)"
                 >
                     <img
                         v-if="showUpdaterImage"
@@ -40,7 +40,7 @@
                 <span
                     v-else
                     class="cursor-pointer hover:underline"
-                    @click="() => handleClickUser(createdBy)"
+                    @click="() => openUserSidebar(createdBy)"
                 >
                     <img
                         v-if="showCreatorImage"
@@ -89,12 +89,8 @@
         },
         setup(props, context) {
             // user preview drawer
-            const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
-            // ? Methods
-            const handleClickUser = (username: string) => {
-                setUserUniqueAttribute(username, 'username')
-                showUserPreview({ allowed: ['about'] })
-            }
+            const { openUserSidebar } = useUserPreview()
+
             // ? computed
             const updatedAtString = computed(() => {
                 if (props.updatedAt) {
@@ -122,7 +118,7 @@
                 useTimeAgo,
                 updatedAtString,
                 createdAtString,
-                handleClickUser,
+                openUserSidebar,
             }
         },
     })

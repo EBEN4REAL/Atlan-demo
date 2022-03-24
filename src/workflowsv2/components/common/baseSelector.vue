@@ -1,9 +1,10 @@
 <template>
     <a-select
         class="w-52"
-        :value="value"
         allow-clear
         show-search
+        :bordered="type !== 'minimal'"
+        :value="value"
         :get-popup-container="(target) => target.parentNode"
         @update:value="$emit('update:value', $event)"
     >
@@ -42,6 +43,10 @@
                 default: () => [],
             },
             loading: { type: Boolean, default: () => false },
+            type: {
+                type: String as PropType<'default' | 'minimal'>,
+                default: () => 'default',
+            },
         },
         emits: ['update:value'],
     })

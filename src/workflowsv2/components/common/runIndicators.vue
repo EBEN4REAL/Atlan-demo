@@ -1,7 +1,7 @@
 <template>
     <div class="flex-col">
         <div class="flex items-center gap-x-1">
-            <template v-for="index in 3" :key="index">
+            <template v-for="index in 5" :key="index">
                 <template v-if="getRunStatus(index)">
                     <a-tooltip :title="tooltipContent(index)">
                         <div

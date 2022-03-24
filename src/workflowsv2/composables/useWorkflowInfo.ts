@@ -212,6 +212,23 @@ export default function useWorkflowInfo() {
         return 'border-gray-400'
     }
 
+    const getRunIconByPhase = (item) => {
+        switch (phase(item)) {
+            case 'Succeeded':
+                return 'RunSuccess'
+            case 'Running':
+                return 'RunProgress'
+            case 'Failed':
+            case 'Error':
+            case 'Stopped':
+                return 'RunFailed'
+            case 'Pending':
+                return 'Clock'
+            default:
+                return 'Retry'
+        }
+    }
+
     const getRunClass = (item) => getRunClassByPhase(phase(item))
 
     const getRunBorderClass = (item) => getRunBorderClassByPhase(phase(item))
@@ -336,5 +353,6 @@ export default function useWorkflowInfo() {
         getRunClassByPhase,
         getRunBorderClassByPhase,
         getRunTextClassByPhase,
+        getRunIconByPhase,
     }
 }

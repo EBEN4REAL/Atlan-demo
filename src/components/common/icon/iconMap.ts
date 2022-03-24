@@ -149,6 +149,7 @@ import OutputpaneTrigger from '~/assets/images/icons/output-pane-trigger.svg'
 import OutputpaneTriggerFilled from '~/assets/images/icons/output-pane-trigger-filled.svg'
 
 import RunSuccess from '~/assets/images/icons/run-success.svg'
+import RunProgress from '~/assets/images/icons/run-progress.svg'
 import RunFailed from '~/assets/images/icons/run-failed.svg'
 import WorkflowsActive from '~/assets/images/icons/workflows_active.svg'
 import WorkflowsInactive from '~/assets/images/icons/workflows_inactive.svg'
@@ -513,6 +514,7 @@ export default {
     AddQuery,
     RunHistory,
     RunSuccess,
+    RunProgress,
     RunFailed,
     Metadata,
     ColumnGray,

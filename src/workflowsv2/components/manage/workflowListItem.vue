@@ -1,24 +1,24 @@
 <template>
     <div class="wf-list-item">
         <div class="flex items-center text-sm gap-x-1">
-            <span
-                class="font-bold tracking-wide truncate cursor-pointer text-primary hover:underline"
-                >{{ dName }}</span
-            >
-            <!-- <span class="text-gray-500">({{ workflow?.metadata?.name }})</span> -->
-        </div>
-
-        <div class="flex items-center text-sm gap-x-1">
             <img
                 v-if="icon(workflow)"
                 :src="icon(workflow)"
                 class="w-4 h-auto"
             />
             <span v-else class="w-4 text-xs"> {{ emoji(workflow) }}</span>
-            <span class="truncate text-gray">{{ name(workflow) }}</span>
+            <span class="text-gray-500 truncate">{{ name(workflow) }}</span>
             <div v-if="type(workflow)" class="badge">
                 <span style="margin-top: 1px">{{ type(workflow) }}</span>
             </div>
+        </div>
+
+        <div class="flex items-center text-sm gap-x-1">
+            <span
+                class="font-bold tracking-wide truncate cursor-pointer text-primary hover:underline"
+                >{{ dName }}</span
+            >
+            <!-- <span class="text-gray-500">({{ workflow?.metadata?.name }})</span> -->
         </div>
 
         <div
@@ -37,7 +37,9 @@
                 :created-by="creatorUsername(workflow)"
             />
         </div>
-        <RunIndicators :workflow="workflow" :runs="runs" class="mt-2" />
+        <a-divider class="my-2" />
+        <RunIndicators :workflow="workflow" :runs="runs" />
+        <LastRunSummary :runs="runs" class="mt-2" />
     </div>
 </template>
 
@@ -45,6 +47,7 @@
     import { computed, defineComponent, toRefs } from 'vue'
     import CreateUpdateInfo from '@/common/info/createUpdateInfo.vue'
     import RunIndicators from '~/workflowsv2/components/common/runIndicators.vue'
+    import LastRunSummary from '~/workflowsv2/components/common/lastRunSummary.vue'
 
     import { usePackageInfo } from '~/workflowsv2/composables/usePackageInfo'
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
@@ -52,7 +55,7 @@
 
     export default defineComponent({
         name: 'WorkflowListItem',
-        components: { CreateUpdateInfo, RunIndicators },
+        components: { CreateUpdateInfo, RunIndicators, LastRunSummary },
         props: {
             workflow: {
                 type: Object,
@@ -99,7 +102,6 @@
 </script>
 <style lang="less" scoped>
     .wf-list-item {
-        height: 124px;
         @apply flex flex-col gap-y-1;
         @apply bg-white rounded-lg p-4;
         @apply cursor-default;

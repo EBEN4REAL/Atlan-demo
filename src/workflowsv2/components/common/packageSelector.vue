@@ -1,5 +1,6 @@
 <template>
     <BaseSelector
+        :type="type"
         :value="value"
         :list="packageList"
         placeholder="Select package"
@@ -9,7 +10,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref } from 'vue'
+    import { computed, defineComponent, PropType, ref } from 'vue'
     import BaseSelector from './baseSelector.vue'
     import { useWorkflowStore } from '~/workflowsv2/store/index'
     import { usePackageInfo } from '~/workflowsv2/composables/usePackageInfo'
@@ -19,6 +20,10 @@
         components: { BaseSelector },
         props: {
             value: { type: String, required: false, default: () => undefined },
+            type: {
+                type: String as PropType<'default' | 'minimal'>,
+                default: () => 'default',
+            },
         },
         emits: ['update:value'],
         setup() {

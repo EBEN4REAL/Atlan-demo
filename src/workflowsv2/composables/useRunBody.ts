@@ -166,7 +166,7 @@ export function useRunBody(
                                             aggs: {
                                                 top_hits_by_status: {
                                                     top_hits: {
-                                                        size: 3,
+                                                        size: 5,
                                                         sort: [
                                                             {
                                                                 'status.startedAt':
@@ -181,6 +181,7 @@ export function useRunBody(
                                                                 'status.startedAt',
                                                                 'status.finishedAt',
                                                                 'status.progress',
+                                                                'metadata.labels.workflows.argoproj.io/creator-preferred-username',
                                                             ],
                                                         },
                                                     },

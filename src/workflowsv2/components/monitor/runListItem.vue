@@ -14,11 +14,11 @@
                     <span class="pt-0.5">Manual Run by</span>
                     <span
                         class="cursor-pointer hover:underline"
-                        @click="() => handleClickUser(createdBy)"
+                        @click="() => openUserSidebar(creatorUsername(run))"
                     >
                         <img
                             v-if="showCreatorImage"
-                            :src="imageUrl(creatorUsername(run))"
+                            :src="avatarUrl(creatorUsername(run))"
                             class="flex-none inline-block h-4 rounded-full"
                             @error="showCreatorImage = false"
                         />
@@ -46,6 +46,7 @@
     import { LiveRun } from '~/types/workflow/runs.interface'
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
+    import { avatarUrl } from '~/composables/user/useUsers'
 
     export default defineComponent({
         name: 'RunListItem',
@@ -68,9 +69,9 @@
                 isCronRun,
             } = useWorkflowInfo()
 
+            const { openUserSidebar } = useUserPreview()
+
             const showCreatorImage = ref(true)
-            const imageUrl = (username: any) =>
-                `${window.location.origin}/api/service/avatars/${username}`
 
             return {
                 getRunTextClass,
@@ -81,7 +82,8 @@
                 cronString,
                 isCronRun,
                 useUserPreview,
-                imageUrl,
+                avatarUrl,
+                openUserSidebar,
                 showCreatorImage,
             }
         },

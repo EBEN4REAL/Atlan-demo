@@ -293,11 +293,13 @@
                             x.options.customApplicableEntityTypes
                         )
                     }
-                    // clean allowFiltering, allowSearch, allowMultiple
+                    // clean allowFiltering, allowSearch, allowMultiple, showInOverview
                     tempBM.attributeDefs[index].options.allowSearch =
                         x.options.allowSearch === 'true'
                     tempBM.attributeDefs[index].options.allowFiltering =
                         x.options.allowFiltering === 'true'
+                    tempBM.attributeDefs[index].options.showInOverview =
+                        x.options.showInOverview === 'true'
                     tempBM.attributeDefs[index].options.multiValueSelect =
                         x.options.multiValueSelect === 'true'
                 })

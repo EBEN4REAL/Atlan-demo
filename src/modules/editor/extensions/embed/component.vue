@@ -37,6 +37,7 @@
                     {{ error }}
                 </p>
             </div>
+            <slot name="customFooter"></slot>
         </div>
     </node-view-wrapper>
 </template>

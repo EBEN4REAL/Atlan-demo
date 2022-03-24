@@ -266,6 +266,10 @@ import Confluence from '~/assets/images/readme/confluence.svg'
 import Miro from '~/assets/images/readme/miro.svg'
 import Figma from '~/assets/images/readme/Figma.svg'
 import Lucid from '~/assets/images/readme/lucid.svg'
+import DBDiagram from '~/assets/images/readme/dbdiagram.svg'
+import MicrosoftWord from '~/assets/images/readme/microsoftWord.svg'
+import MicrosoftExcel from '~/assets/images/readme/microsoftExcel.svg'
+import MicrosoftPowerpoint from '~/assets/images/readme/microsoftPowerpoint.svg'
 
 import Running from '~/assets/images/icons/running.svg'
 import ExclaimCircle from '~/assets/images/icons/exclaimCircle.svg'
@@ -424,6 +428,7 @@ import RunningQuery from '~/assets/images/icons/tabs/Running.svg'
 import FailedQuery from '~/assets/images/icons/tabs/Error.svg'
 import SuccessQuery from '~/assets/images/icons/tabs/success-check.svg'
 import QuestionRound from '~/assets/images/icons/question-round.svg'
+import QuestionRoundSmall from '~/assets/images/icons/question-round-small.svg'
 import Documentation from '~/assets/images/icons/documentation.svg'
 import Logout from '~/assets/images/icons/logout.svg'
 import TrendUp from '~/assets/images/icons/trendUp.svg'
@@ -719,6 +724,10 @@ export default {
     Figma,
     Lucid,
     Miro,
+    DBDiagram,
+    MicrosoftWord,
+    MicrosoftExcel,
+    MicrosoftPowerpoint,
     Running,
     Refresh,
     ErrorLogs,
@@ -834,6 +843,7 @@ export default {
     EmptyRequest,
     PlusWhite,
     QuestionRound,
+    QuestionRoundSmall,
     Documentation,
     Logout,
     ExplorerTriggerFilled,

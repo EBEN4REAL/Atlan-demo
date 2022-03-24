@@ -255,35 +255,37 @@
                     <NoAccess
                         v-if="isScrubbed(selectedAsset) && tab.scrubbed"
                     />
-                </template>
-                <NoAccess v-if="isScrubbed(selectedAsset) && tab.scrubbed" />
-                <component
-                    :is="tab.component"
-                    v-else-if="tab.component"
-                    :key="selectedAsset.guid"
-                    :ref="
-                        (el) => {
-                            if (el) tabChildRef[index] = el
-                        }
-                    "
-                    :is-scrubbed="isScrubbed(selectedAsset)"
-                    :selected-asset="selectedAsset"
-                    :is-drawer="isDrawer"
-                    :read-permission="!isScrubbed(selectedAsset)"
-                    :edit-permission="
-                        selectedAssetUpdatePermission(selectedAsset, isDrawer)
-                    "
-                    :tab="tab"
-                    :data="tab.data"
-                    :read-only-in-cm="readOnlyInCm"
-                    :collection-data="{
-                        collectionInfo,
-                        hasCollectionReadPermission,
-                        hasCollectionWritePermission,
-                        isCollectionCreatedByCurrentUser,
-                    }"
-                ></component>
-            </a-tab-pane>
+                    <component
+                        :is="tab.component"
+                        v-else-if="tab.component"
+                        :key="selectedAsset.guid"
+                        :ref="
+                            (el) => {
+                                if (el) tabChildRef[index] = el
+                            }
+                        "
+                        :is-scrubbed="isScrubbed(selectedAsset)"
+                        :selected-asset="selectedAsset"
+                        :is-drawer="isDrawer"
+                        :read-permission="!isScrubbed(selectedAsset)"
+                        :edit-permission="
+                            selectedAssetUpdatePermission(
+                                selectedAsset,
+                                isDrawer
+                            )
+                        "
+                        :tab="tab"
+                        :data="tab.data"
+                        :read-only-in-cm="readOnlyInCm"
+                        :collection-data="{
+                            collectionInfo,
+                            hasCollectionReadPermission,
+                            hasCollectionWritePermission,
+                            isCollectionCreatedByCurrentUser,
+                        }"
+                    ></component>
+                </a-tab-pane>
+            </template>
             <template #moreIcon>
                 <div class="flex">
                     <AtlanIcon

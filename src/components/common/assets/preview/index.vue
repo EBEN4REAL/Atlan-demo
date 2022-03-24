@@ -273,6 +273,7 @@
                                 isDrawer
                             )
                         "
+                        :is-scrubbed="isScrubbed(selectedAsset)"
                         :tab="tab"
                         :data="tab.data"
                         :collection-data="{

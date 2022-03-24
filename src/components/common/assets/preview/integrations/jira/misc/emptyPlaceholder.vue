@@ -12,6 +12,7 @@
             Jira tickets linked to this assets will appear over here
         </span>
         <AddIssue
+            v-if="!isScrubbed"
             v-model:visible="addVisible"
             @create="$emit('create')"
             @link="$emit('link')"
@@ -31,6 +32,10 @@
 <script setup lang="ts">
     import { ref } from 'vue'
     import AddIssue from '@/common/assets/preview/integrations/jira/misc/addIssuePopover.vue'
+
+    const props = defineProps({
+        isScrubbed: { type: Boolean, required: true },
+    })
 
     const emit = defineEmits(['create', 'link'])
 

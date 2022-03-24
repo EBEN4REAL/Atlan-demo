@@ -16,7 +16,7 @@
             <div class="flex-grow"></div>
 
             <div
-                v-if="assetIssueCount"
+                v-if="assetIssueCount && !isScrubbed"
                 class="flex items-center px-2 py-1 rounded cursor-pointer hover:bg-gray-200 text-primary"
                 @click="() => (addVisible = !addVisible)"
             >
@@ -43,6 +43,7 @@
 
     const props = defineProps({
         assetIssueCount: { type: Number, required: true },
+        isScrubbed: { type: Boolean, required: true },
     })
 
     const addVisible = ref(false)

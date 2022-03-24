@@ -13,12 +13,14 @@
         @create="() => (createModal = true)"
     />
     <Header
+        :is-scrubbed="isScrubbed"
         :asset-issue-count="issues?.length || 0"
         @link="linkIssueVisible = true"
         @create="createModal = true"
     />
     <div v-if="!tenantJiraStatus.configured" class="flex items-center h-full">
         <EmptyPlaceholder
+            :is-scrubbed="isScrubbed"
             @create="createModal = true"
             @link="linkIssueVisible = true"
         />
@@ -34,6 +36,7 @@
     </div>
     <div v-else-if="!issues?.length" class="flex items-center h-full">
         <EmptyPlaceholder
+            :is-scrubbed="isScrubbed"
             @create="createModal = true"
             @link="linkIssueVisible = true"
         />
@@ -60,7 +63,7 @@
                             : ''
                     "
                 >
-                    <template #action>
+                    <template v-if="!isScrubbed" #action>
                         <div
                             class="p-2 bg-white w=full"
                             style="
@@ -122,6 +125,7 @@
             type: Object as PropType<assetInterface>,
             required: true,
         },
+        isScrubbed: { type: Boolean, required: true },
     })
 
     const { selectedAsset: asset } = toRefs(props)

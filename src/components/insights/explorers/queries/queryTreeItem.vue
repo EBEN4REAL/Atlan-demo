@@ -253,7 +253,7 @@
                             >
 
                             <div
-                                class="absolute flex items-center h-full text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
+                                class="absolute flex items-center text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
                                 :class="[
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '

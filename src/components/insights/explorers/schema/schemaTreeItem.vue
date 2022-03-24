@@ -68,7 +68,7 @@
                             </div>
                             <div
                                 v-if="hoverActions"
-                                class="absolute right-0 flex items-center h-full pr-2 text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
+                                class="absolute right-0 flex items-center pr-2 text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
                                 style="width: "
                                 :class="
                                     item?.selected
@@ -169,7 +169,7 @@
                             </div>
                         </div>
                         <!--For Others: Table Item -->
-                        <div v-else class="flex w-full h-8 m-0">
+                        <div v-else class="flex items-center w-full h-8 m-0">
                             <div
                                 class="flex items-center justify-between w-full h-8"
                             >
@@ -200,7 +200,7 @@
 
                             <div
                                 v-if="hoverActions"
-                                class="absolute right-0 flex items-center h-full pr-2 text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
+                                class="absolute right-0 flex items-center pr-2 text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
                                 @click.stop="() => {}"
                                 :class="
                                     item?.selected

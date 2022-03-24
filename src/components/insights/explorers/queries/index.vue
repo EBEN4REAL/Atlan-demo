@@ -110,7 +110,7 @@
                         v-model:value="searchQuery"
                         class="h-8 rounded"
                         :class="$style.inputSearch"
-                        placeholder="Search folders and queries"
+                        placeholder="Search queries"
                     >
                         <template #prefix>
                             <AtlanIcon icon="Search" color="#6A7692" />

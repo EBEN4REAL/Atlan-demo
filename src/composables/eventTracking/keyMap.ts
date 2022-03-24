@@ -464,6 +464,89 @@ const keyMap = {
                     ...props,
                 }),
             },
+
+        },
+        sso: {
+            added: {
+                action: 'admin_sso_added',
+                properties: (props: {
+                    alias: string
+                }) => ({
+                    ...props,
+                }),
+            },
+            updated: {
+                action: 'admin_sso_updated',
+                properties: (props: {
+                    enforced_sso: boolean
+                }) => ({
+                    ...props,
+                }),
+            },
+            removed: {
+                action: 'admin_sso_removed',
+                properties: (props: {
+                    alias: string
+                }) => ({
+                    ...props,
+                }),
+            }
+        },
+        user: {
+            added: { // add invitation
+                action: 'admin_user_added',
+                properties: (props: {
+                    total_user_count: number
+                }) => ({
+                    ...props,
+                }),
+            },
+            removed: { // revoke invitation
+                action: 'admin_user_removed',
+            },
+            updated: {
+                action: 'admin_user_updated',
+                properties: (props: {
+                    action: 'enabled' | 'disabled' | 'groups_updated',
+                    groups_count?: number
+                }) => ({
+                    ...props,
+                }),
+            },
+
+        },
+        group: {
+            created: { // create group
+                action: 'admin_group_created',
+                properties: (props: {
+                    total_members_count: number
+                    alias: string
+                    slack_channel_added: boolean
+                }) => ({=
+                    ...props,
+                }),
+            },
+            deleted: {
+                action: 'admin_group_deleted',
+                properties: (props: {
+                    alias: string
+                }) => ({
+                    ...props,
+                }),
+            },
+            updated: {
+                action: 'admin_group_updated',
+                properties: (props: {
+                    action: 'members_updated' | 'slack_channel_updated',
+                    alias: string
+                    total_members_count?: number,
+                    slack_channel_added?: boolean
+
+                }) => ({
+                    ...props,
+                }),
+            },
+
         },
     },
     integration: {

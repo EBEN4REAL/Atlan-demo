@@ -726,7 +726,9 @@
                         type !== 'glossaryPolicy') ||
                     !policy.name ||
                     (!policy?.assets?.length && type !== 'glossaryPolicy') ||
-                    (policyType === 'meta' && !selectedPermission.length) ||
+                    ((policyType === 'meta' ||
+                        policyType === 'glossaryPolicy') &&
+                        !selectedPermission.length) ||
                     (policyType === 'glossaryPolicy' &&
                         !policy?.glossaryQualifiedNames?.length)
                 "

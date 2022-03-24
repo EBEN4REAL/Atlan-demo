@@ -99,6 +99,7 @@
         <ScheduleQuery
             v-if="savedQueryMetData"
             :item="savedQueryMetData"
+            :workflowDataProp="item"
             v-model:scheduleQueryModal="scheduleQueryModal"
             style="min-height: 610px"
             class="rounded-lg"
@@ -188,7 +189,7 @@
                 return (
                     workflowParameters.value.find(
                         (e) => e.name === 'report-name'
-                    ).value ?? '-'
+                    )?.value ?? '-'
                 )
             })
             const queryVariables = computed(() => {
@@ -196,7 +197,7 @@
                     JSON.parse(
                         workflowParameters.value.find(
                             (e) => e.name === 'query-variables'
-                        ).value
+                        )?.value
                     ) ?? []
                 )
             })
@@ -244,14 +245,15 @@
                         )
                     },
                 },
-                // {
-                //     title: 'Edit',
-                //     icon: 'Edit',
-                //     class: 'text-gray-700',
-                //     handleClick: () => {
-                //         scheduleQueryModal.value = !scheduleQueryModal.value
-                //     },
-                // },
+                {
+                    title: 'Edit',
+                    icon: 'Edit',
+                    class: 'text-gray-700',
+                    handleClick: () => {
+                        debugger
+                        scheduleQueryModal.value = true
+                    },
+                },
             ]
 
             const cronModel = ref(cronObject(item.value))

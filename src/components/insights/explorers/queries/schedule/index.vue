@@ -65,14 +65,18 @@
                 </AtlanButton>
                 <AtlanButton
                     color="primary"
-                    @click="() => shiftIndex('next')"
+                    @click="() => shiftIndex('next', mode)"
                     class="h-8 px-5 py-0"
-                    :loading="isLoading"
+                    :loading="isLoading || updateWorkflowLoading"
                     :disabled="!isWorkflowTemplateFetched || isLoading"
                 >
                     <div class="flex items-center">
                         <span class="mr-1 text-sm">{{
-                            activeTabIndex === 2 ? 'Done' : 'Next'
+                            activeTabIndex === 2
+                                ? 'Done'
+                                : mode === 'update'
+                                ? 'Update'
+                                : 'Next'
                         }}</span>
                         <AtlanIcon
                             icon="ChevronRight"
@@ -116,6 +120,7 @@
     import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
     import { getCronFrequency } from './composables/useSchedule'
     import parser from 'cron-parser'
+    import useWorkflowUpdate from '~/workflows/composables/package/useWorkflowUpdate'
 
     export default defineComponent({
         name: 'Schedule Query',
@@ -142,10 +147,15 @@
                 type: Object as PropType<Record<string, any>>,
                 required: false,
             },
+            workflowDataProp: {
+                required: false,
+                type: Object as PropType<any>,
+            },
         },
         setup(props) {
-            const { scheduleQueryModal, item, mode } = useVModels(props)
-            const { cronModel, workflowParameters } = toRefs(props)
+            const { scheduleQueryModal, item } = useVModels(props)
+            const { cronModel, workflowParameters, mode, workflowDataProp } =
+                toRefs(props)
             const { handleWorkflowSubmit } = useSchedule()
             const refreshSchedulesWorkflowTab = inject(
                 'refreshSchedulesWorkflowTab'
@@ -222,6 +232,16 @@
             const { isLoading, execute, error, data, workflow } =
                 createWorkflow(body, { submit: false })
 
+            const updateWorkFlowPath = ref({})
+            const updateWorkflowBody = ref({})
+
+            const {
+                mutate: updateWorkflow,
+                isLoading: updateWorkflowLoading,
+                error: updateWorkflowErorr,
+                data: updateWorkflowData,
+            } = useWorkflowUpdate(updateWorkFlowPath, updateWorkflowBody, false)
+
             const {
                 usersListConcatenated: userList,
                 getUserList,
@@ -245,22 +265,33 @@
                     JSON.parse(
                         workflowParameters.value.find(
                             (e) => e.name === 'query-variables'
-                        ).value
-                    ) ?? []
-                variablesData.value = queryVariables
+                        )?.value
+                    ) ?? {}
+                if (variablesData.value.length > 0) {
+                    variablesData.value = variablesData.value.map(
+                        (variable) => {
+                            return {
+                                ...variable,
+                                value:
+                                    queryVariables[variable?.key] ??
+                                    variable.value,
+                            }
+                        }
+                    )
+                }
 
                 // report name
                 const scheduleQueryName =
                     workflowParameters.value.find(
                         (e) => e.name === 'report-name'
-                    ).value ?? '-'
+                    )?.value ?? '-'
                 infoTabeState.value.name = scheduleQueryName
 
                 const userEmails =
                     JSON.parse(
                         workflowParameters.value.find(
-                            (e) => e.name === 'email-variables'
-                        ).value
+                            (e) => e.name === 'recipients'
+                        )?.value
                     ) ?? []
 
                 usersParams.filter.$or = userEmails.map((email) => {
@@ -268,32 +299,33 @@
                         email: email,
                     }
                 }) as any
-                //   getUserList();
+                getUserList()
 
-                //   try {
-                //     invoke(async () => {
-                //         await until(isUserLoading).toBe(true)
-                //         if (userError.value) {
-                //             console.error(
-                //                 userError.value,
-                //                 'Error in fetching users email'
-                //             )
-                //         } else if (userList.value) {
-                //             watch(userList, () => {
-                //                 if (userList.value?.length > 0) {
-                //                     let usernames: string[] = []
-                //                     userList.value.forEach((user) => {
-                //                         usernames.push(user.username);
-                //                     })
-                //                     // assiging owners
-                //                     usersData.value.ownerUsers = usernames as any;
-                //                 }
-                //             })
-                //         }
-                //     })
-                // } catch (e) {
-                //     console.error(e, 'Error in fetching users email')
-                // }
+                try {
+                    invoke(async () => {
+                        await until(isUserLoading).toBe(true)
+                        if (userError.value) {
+                            console.error(
+                                userError.value,
+                                'Error in fetching users email'
+                            )
+                        } else if (userList.value) {
+                            watch(userList, () => {
+                                if (userList.value?.length > 0) {
+                                    let usernames: string[] = []
+                                    userList.value.forEach((user) => {
+                                        usernames.push(user.username)
+                                    })
+                                    // assiging owners
+                                    usersData.value.ownerUsers =
+                                        usernames as any
+                                }
+                            })
+                        }
+                    })
+                } catch (e) {
+                    console.error(e, 'Error in fetching users email')
+                }
             }
 
             const cronData = ref({
@@ -448,41 +480,24 @@
                 }
             }
 
-            const shiftIndex = (type: 'next' | 'back') => {
+            const shiftIndex = (
+                type: 'next' | 'back',
+                mode: 'update' | 'edit'
+            ) => {
                 if (activeTabIndex.value === 2) {
+                    if (mode === 'update') {
+                        // refetch schedule workflows
+                        refreshSchedulesWorkflowTab.value(true)
+                    }
                     closeModal()
                     return
                 }
                 if (type === 'next') {
-                    if (activeTabIndex.value < 2) {
-                        debugger
-                        if (variablesData.value.length === 0) {
-                            validateFileds()
-                                .then(() => {
-                                    scheduleWorkFlow()
-                                    ;(async () => {
-                                        await until(isLoading).toBe(true)
-                                        if (error.value) {
-                                            message.error(
-                                                'Failed to submit schedule query!'
-                                            )
-                                        }
-                                        if (data.value) {
-                                            activeTabIndex.value = 2
-                                            setTimeout(() => {
-                                                // refetch schedule workflows
-                                                refreshSchedulesWorkflowTab.value(
-                                                    true
-                                                )
-                                            }, 1000)
-                                        }
-                                    })()
-                                })
-                                .catch(() => {})
-                        } else {
-                            validateFileds()
-                                .then(() => {
-                                    if (activeTabIndex.value + 1 === 2) {
+                    if (mode !== 'update') {
+                        if (activeTabIndex.value < 2) {
+                            if (variablesData.value.length === 0) {
+                                validateFileds()
+                                    .then(() => {
                                         scheduleWorkFlow()
                                         ;(async () => {
                                             await until(isLoading).toBe(true)
@@ -492,8 +507,7 @@
                                                 )
                                             }
                                             if (data.value) {
-                                                activeTabIndex.value =
-                                                    activeTabIndex.value + 1
+                                                activeTabIndex.value = 2
                                                 setTimeout(() => {
                                                     // refetch schedule workflows
                                                     refreshSchedulesWorkflowTab.value(
@@ -502,12 +516,174 @@
                                                 }, 1000)
                                             }
                                         })()
-                                    } else {
-                                        activeTabIndex.value =
-                                            activeTabIndex.value + 1
-                                    }
+                                    })
+                                    .catch(() => {})
+                            } else {
+                                validateFileds()
+                                    .then(() => {
+                                        if (activeTabIndex.value + 1 === 2) {
+                                            scheduleWorkFlow()
+                                            ;(async () => {
+                                                await until(isLoading).toBe(
+                                                    true
+                                                )
+                                                if (error.value) {
+                                                    message.error(
+                                                        'Failed to submit schedule query!'
+                                                    )
+                                                }
+                                                if (data.value) {
+                                                    activeTabIndex.value =
+                                                        activeTabIndex.value + 1
+                                                    setTimeout(() => {
+                                                        // refetch schedule workflows
+                                                        refreshSchedulesWorkflowTab.value(
+                                                            true
+                                                        )
+                                                    }, 1000)
+                                                }
+                                            })()
+                                        } else {
+                                            activeTabIndex.value =
+                                                activeTabIndex.value + 1
+                                        }
+                                    })
+                                    .catch(() => {})
+                            }
+                        }
+                    } else {
+                        if (variablesData.value.length === 0) {
+                            activeTabIndex.value += 1
+                        }
+                        if (activeTabIndex.value + 1 === 2) {
+                            if (workflowDataProp.value) {
+                                updateWorkflowBody.value =
+                                    workflowDataProp.value
+
+                                // update part
+                                updateWorkFlowPath.value = {
+                                    name: workflowDataProp.value.metadata.name,
+                                }
+
+                                // update cron related data
+                                if (cronData.value) {
+                                    updateWorkflowBody.value.metadata.annotations[
+                                        'orchestration.atlan.com/schedule'
+                                    ] = cronData.value.cron
+                                    updateWorkflowBody.value.metadata.annotations[
+                                        'orchestration.atlan.com/timezone'
+                                    ] = cronData.value.timezone
+                                }
+
+                                let userEmails: string[] = []
+                                userList.value.forEach((user) => {
+                                    userEmails.push(user.email)
                                 })
-                                .catch(() => {})
+                                // setting up emails of selected user
+                                inputParameters.value.recipients =
+                                    userEmails as any
+
+                                // setting up the custom variables
+                                variablesData.value.forEach((variable) => {
+                                    inputParameters.value['query-variables'][
+                                        variable.name
+                                    ] =
+                                        typeof variable.value === 'object'
+                                            ? variable.value?.join(',')
+                                            : getValueByType(
+                                                  variable.value,
+                                                  variable.type
+                                              )
+                                })
+                                // setting up report name
+                                inputParameters.value['report-name'] =
+                                    infoTabeState.value.name
+                                const parameters: Array<{
+                                    [key: string]: string
+                                }> = []
+                                if (
+                                    workflowDataProp.value.spec.templates
+                                        .length > 0
+                                ) {
+                                    workflowDataProp.value.spec.templates[0].dag?.tasks[0]?.arguments?.parameters?.forEach(
+                                        (p) => {
+                                            if (
+                                                typeof inputParameters.value[
+                                                    p.name
+                                                ] === 'boolean'
+                                            ) {
+                                                parameters.push({
+                                                    name: p.name,
+                                                    value: inputParameters
+                                                        .value[p.name],
+                                                })
+                                            } else if (
+                                                inputParameters.value[p.name]
+                                            ) {
+                                                if (
+                                                    typeof inputParameters
+                                                        .value[p.name] ===
+                                                    'object'
+                                                ) {
+                                                    parameters.push({
+                                                        name: p.name,
+                                                        value: JSON.stringify(
+                                                            inputParameters
+                                                                .value[p.name]
+                                                        ),
+                                                    })
+                                                } else {
+                                                    parameters.push({
+                                                        name: p.name,
+                                                        value: inputParameters
+                                                            .value[p.name],
+                                                    })
+                                                }
+                                            }
+                                        }
+                                    )
+
+                                    updateWorkflowBody.value.spec = {
+                                        ...updateWorkflowBody.value.spec,
+                                        templates: [
+                                            {
+                                                ...updateWorkflowBody.value.spec
+                                                    .templates[0],
+                                                dag: {
+                                                    tasks: [
+                                                        {
+                                                            ...updateWorkflowBody
+                                                                .value.spec
+                                                                .templates[0]
+                                                                .dag.tasks[0],
+                                                            arguments: {
+                                                                parameters,
+                                                            },
+                                                        },
+                                                    ],
+                                                },
+                                            },
+                                        ],
+                                    }
+
+                                    updateWorkflow()
+                                }
+                            }
+
+                            ;(async () => {
+                                await until(updateWorkflowLoading).toBe(true)
+                                if (updateWorkflowErorr.value) {
+                                    message.error(
+                                        'Failed to submit schedule query!'
+                                    )
+                                }
+                                if (updateWorkflowData.value) {
+                                    activeTabIndex.value =
+                                        activeTabIndex.value + 1
+                                }
+                            })()
+                        } else {
+                            activeTabIndex.value = activeTabIndex.value + 1
                         }
                     }
                 } else if (type === 'back') {
@@ -591,6 +767,7 @@
             // })
 
             return {
+                mode,
                 rules,
                 item,
                 shiftIndex,
@@ -605,6 +782,7 @@
                 getValueByType,
                 isLoading,
                 runWorkFlow,
+                updateWorkflowLoading,
             }
         },
     })

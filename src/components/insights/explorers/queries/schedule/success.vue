@@ -5,7 +5,8 @@
         </div>
         <div class="mb-4">
             <p class="mb-1 text-xl font-bold text-gray-700">
-                Query successfully scheduled
+                Query successfully
+                {{ mode === 'update' ? 'updated' : 'scheduled' }}
             </p>
             <p class="text-gray-500" style="font-size: 16px">
                 The output will be shared as a CSV attachment
@@ -101,7 +102,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs } from 'vue'
+    import { defineComponent, PropType, toRefs, Ref, inject } from 'vue'
     import parser from 'cron-parser'
     import dayjs from 'dayjs'
 
@@ -156,7 +157,7 @@
                 isScheduleWorkFlowLoading,
                 isWorkflowTemplateFetched,
             } = toRefs(props)
-            debugger
+            const mode = inject('mode') as Ref<string>
             const interval = parser.parseExpression(cronData.value.cron)
 
             const _date = dayjs(interval.next().toString())
@@ -216,6 +217,7 @@
                 isWorkflowTemplateFetched,
                 runWorkFlow,
                 parsedDate,
+                mode,
             }
         },
     })

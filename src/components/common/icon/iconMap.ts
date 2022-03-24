@@ -1,3 +1,4 @@
+import Time from '~/assets/images/icons/time.svg'
 import BookmarkFilled from '~/assets/images/icons/bookmark-filled.svg'
 import Bookmark from '~/assets/images/icons/bookmark.svg'
 import BookmarkOutlined from '~/assets/images/icons/bookmark-outline.svg'
@@ -179,6 +180,9 @@ import queryErorrIllus from '~/assets/images/icons/queryError.svg'
 import NoSavedQueriesAll from '~/assets/images/icons/saved-queries-all.svg'
 import EmptyQueriesTab from '~/assets/images/illustrations/empty_queries_tab.svg'
 import Slack from '~/assets/images/admin/integrations/slack.svg'
+import Jira from '~/assets/images/admin/integrations/jira.svg'
+import EmptyResultJira from '~/assets/images/admin/integrations/emptyResultJira.svg'
+import EmptyJira from '~/assets/images/admin/integrations/emptyJira.svg'
 import Teams from '~/assets/images/admin/integrations/teams.svg'
 import ExplorerTrigger from '~/assets/images/icons/explorer-trigger.svg'
 import ExplorerTriggerFilled from '~/assets/images/icons/explorer-trigger-filled.svg'
@@ -437,16 +441,23 @@ import ThreeDotsAlt from '~/assets/images/icons/3-dots-alt.svg'
 import NoProperty from '~/assets/images/admin/customMetadata/empty-property.svg'
 import TrashAlt from '~/assets/images/icons/Trash-alt.svg'
 
+import Chat from '~/assets/images/icons/chat.svg'
+import NotificationNoDot from '~/assets/images/icons/notification-no-dot.svg'
+
 export default {
+    EmptyJira,
     TrashAlt,
     NoProperty,
     ThreeDotsAlt,
     Resources2,
     RunningQuery,
     FailedQuery,
+    Chat,
+    NotificationNoDot,
     SuccessQuery,
     IntegrationsActive,
     Integrations,
+    Jira,
     SlackToken,
     SafariLock,
     Gear,
@@ -547,6 +558,7 @@ export default {
     ChevronUp,
     AtlanIcon,
     CallIcon,
+    EmptyResultJira,
     FeedbackIcon,
     AdminCenterIcon,
     InsightsIcon,
@@ -829,6 +841,7 @@ export default {
     Message,
     MessageSuccess,
     CrossCircle,
+    Time,
     MessageCross,
     AddColumn,
     QueryTime,

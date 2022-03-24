@@ -1,6 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable arrow-body-style */
-import { computed } from 'vue'
+import { computed, toRefs } from 'vue'
 import { useTimeAgo } from '@vueuse/core'
 import { useConnectionStore } from '~/store/connection'
 import { assetInterface } from '~/types/assets/asset.interface'
@@ -9,7 +9,7 @@ import { getCountString, getSizeString } from '~/utils/number'
 import { SourceList } from '~/constant/source'
 import { assetTypeList } from '~/constant/assetType'
 import { dataTypeCategoryList } from '~/constant/dataType'
-import { previewTabs } from '~/constant/previewTabs'
+import { previewTabs, JiraPreviewTab } from '~/constant/previewTabs'
 import { profileTabs } from '~/constant/profileTabs'
 import { summaryVariants } from '~/constant/summaryVariants'
 import { formatDateTime } from '~/utils/date'
@@ -20,6 +20,7 @@ import { assetActions } from '~/constant/assetActions'
 import useGlossaryStore from '~/store/glossary'
 import useCustomMetadataFacet from '../custommetadata/useCustomMetadataFacet'
 import useConnectionData from '../connection/useConnectionData'
+import integrationStore from '~/store/integrations/index'
 
 // import { formatDateTime } from '~/utils/date'
 
@@ -279,6 +280,8 @@ export default function useAssetInfo() {
     const { getList: cmList } = useCustomMetadataFacet()
 
     const getPreviewTabs = (asset: assetInterface, inProfile: boolean) => {
+        const store = integrationStore()
+        const { tenantJiraStatus } = toRefs(store)
         let customTabList = []
         if (cmList(assetType(asset))?.length > 0) {
             customTabList = cmList(assetType(asset)).map((i) => {
@@ -299,6 +302,7 @@ export default function useAssetInfo() {
 
         let allTabs = [
             ...getTabs(previewTabs, assetType(asset)),
+            ...(tenantJiraStatus.value.configured ? getTabs([JiraPreviewTab], assetType(asset)) : []),
             ...getTabs(customTabList, assetType(asset)),
         ]
 

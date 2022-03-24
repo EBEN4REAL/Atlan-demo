@@ -97,7 +97,7 @@
                 >
                     <!-- showing non empty starts here -->
                     <template v-for="(a, x) in applicableList" :key="x">
-                        <div class="my-1.5">
+                        <div :class="hasValue(a) ? 'my-1.5' : 'mt-1.5'">
                             <div class="flex mb-1 font-normal text-gray-500">
                                 <Truncate
                                     :tooltip-text="a.displayName"

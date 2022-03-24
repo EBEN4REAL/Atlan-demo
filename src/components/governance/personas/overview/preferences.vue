@@ -5,6 +5,7 @@
             :bordered="false"
             expand-icon-position="right"
             class="bg-red"
+            @change="analyticEvent"
         >
             <template #expandIcon="props">
                 <AtlanIcon
@@ -127,6 +128,7 @@
         updatedSelectedData,
     } from '../composables/useEditPersona'
     import { assetSidebarList } from '../composables/usePreferences'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'Preferences',
@@ -194,10 +196,15 @@
                 currentIdUpdated.value = guid
                 handleUpdateMeta(guid, isOnList)
             }
-
-            // useAddEvent('governance', 'persona', 'cm_preferences', {
-            //     state: true,
-            // })
+            const analyticEvent = (accordionKey) => {
+                let state = false
+                if (accordionKey.includes('1')) {
+                    state = true
+                }
+                useAddEvent('governance', 'persona', 'cm_preferences', {
+                    state,
+                })
+            }
 
             return {
                 activeKey,
@@ -211,6 +218,7 @@
                 assetSidebarListComputed,
                 gifCM,
                 selectedPersonaDirty,
+                analyticEvent,
             }
         },
     })

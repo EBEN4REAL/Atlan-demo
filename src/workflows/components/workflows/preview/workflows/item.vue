@@ -19,9 +19,21 @@
         </div>
         <div class="mt-1 text-gray-500">
             <span
-                >created {{ creationTimestamp(item, true) }} ago by
-                {{ creatorUsername(item) }}</span
-            >
+                >created {{ creationTimestamp(item, true) }} ago
+                <template
+                    v-if="
+                        creatorUsername(item)?.startsWith(
+                            'service-account-apikey-'
+                        )
+                    "
+                >
+                    using <AtlanIcon icon="Key" class="h-3" /> API key
+                </template>
+                <template v-else>
+                    by
+                    {{ creatorUsername(item) }}
+                </template>
+            </span>
         </div>
     </div>
 </template>

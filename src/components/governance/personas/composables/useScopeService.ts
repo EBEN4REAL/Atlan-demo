@@ -9,6 +9,12 @@ import viewAssetGif from '~/assets/gifs/Permissions_Popover_Gifs/View_Assets_Met
 import addTermsGif from '~/assets/gifs/Permissions_Popover_Gifs/Add_Term_Metadata.gif'
 import deleteTermsGif from '~/assets/gifs/Permissions_Popover_Gifs/Delete_Term_Metadata.gif'
 // import scopeAPI from '../apis/scopes'
+import addClassificationGlossary from '~/assets/gifs/Permissions_Popover_Gifs/Add_Classification_Glossary.gif'
+import removeClassificationGlossary from '~/assets/gifs/Permissions_Popover_Gifs/Remove_Classification_Glossary.gif'
+import updateCustomMetadataGlossary from '~/assets/gifs/Permissions_Popover_Gifs/Update_CM_Glossary.gif'
+import createGlossary from '~/assets/gifs/Permissions_Popover_Gifs/Create_Glossary.gif'
+import deleteGlossary from '~/assets/gifs/Permissions_Popover_Gifs/Delete_Glossary.gif'
+import updateGlossary from '~/assets/gifs/Permissions_Popover_Gifs/Update_&_link_Glossary.gif'
 
 export const purposeScopeList = [
     {
@@ -151,20 +157,6 @@ export const personaScopeList = [
                 gif: updateAssetGif,
             },
             {
-                value: 'entity-create',
-                label: 'Create',
-                filterLabel: 'Create asset',
-                // desc: 'Create entities within selected assets',
-                desc: 'Gives ability to create new assets within the selected connection or specified database/schema',
-            },
-            {
-                value: 'entity-delete',
-                label: 'Delete',
-                filterLabel: 'Delete asset',
-                // desc: 'Permission to delete selected assets',
-                desc: 'Gives ability to delete assets within the selected connection or specified database/schema',
-            },
-            {
                 value: 'link-assets',
                 label: 'Link other assets',
                 desc: 'Permission to link assets like readme, resources to this asset',
@@ -228,6 +220,105 @@ export const personaScopeList = [
         type: 'Governance',
         label: 'Governance',
     },
+    {
+        type: 'API',
+        label: 'API',
+        scopes: [
+            {
+                value: 'entity-create',
+                label: 'Create',
+                filterLabel: 'Create asset',
+                // desc: 'Create entities within selected assets',
+                desc: 'Gives ability to create new assets within the selected connection or specified database/schema',
+            },
+            {
+                value: 'entity-delete',
+                label: 'Delete',
+                filterLabel: 'Delete asset',
+                // desc: 'Permission to delete selected assets',
+                desc: 'Gives ability to delete assets within the selected connection or specified database/schema',
+            },
+        ],
+    },
+]
+
+export const glossaryPolicyScopeList = [
+    {
+        scopes: [
+            {
+                value: 'entity-create',
+                label: 'Create',
+                filterLabel: 'Create asset',
+                desc: 'Permission to create term & categories inside the glossary',
+                gif: createGlossary,
+            },
+            {
+                value: 'entity-update',
+                label: 'Update',
+                filterLabel: 'Update asset',
+                desc: 'Permission to update metadata, resources, readme for glossary, terms & categories and to link those terms with all assets',
+                gif: updateGlossary,
+            },
+
+            {
+                value: 'entity-delete',
+                label: 'Delete',
+                filterLabel: 'Delete asset',
+                desc: 'Permission to delete terms and categories inside the glossary',
+                gif: deleteGlossary,
+            },
+        ],
+        type: 'Glossary, Terms and Categories',
+        label: 'Assets',
+    },
+    {
+        scopes: [
+            // {
+            //     value: 'entity-add-classification',
+            //     label: 'add: Classifications',
+            // },
+            // {
+            //     value: 'entity-remove-classification',
+            //     label: 'remove: Classifications',
+            // },
+            // {
+            //     value: 'entity-update-classification',
+            //     label: 'Update Classifications',
+            //     desc: 'Update classifications',
+            // },
+            {
+                value: 'entity-add-classification',
+                label: 'Add Classifications',
+                desc: 'Permission to add classifications to terms',
+                gif: addClassificationGlossary,
+            },
+            {
+                value: 'entity-remove-classification',
+                label: 'Remove Classifications',
+                desc: 'Permission to remove classifications from terms',
+                gif: removeClassificationGlossary,
+            },
+            {
+                value: 'entity-update-business-metadata',
+                label: 'Update Custom Metadata',
+                desc: 'Permission to update custom metadata attributes',
+                gif: updateCustomMetadataGlossary,
+            },
+
+            // {
+            //     value: 'add-terms',
+            //     label: 'Add Terms',
+            //     desc: 'Link terms',
+            // },
+            // {
+            //     value: 'remove-terms',
+            //     label: 'Remove Terms',
+            //     desc: 'Unlink terms',
+            // },
+        ],
+        type: 'Governance',
+        label: 'Governance',
+    },
 ]
 
 export default function scopeService() {
@@ -248,6 +339,13 @@ export default function scopeService() {
             return {
                 scopeList: purposeScopeList,
             }
+        if (type === 'glossaryPolicy')
+            return {
+                scopeList: glossaryPolicyScopeList,
+            }
+        return {
+            scopeList: [],
+        }
     }
     function findActions(actions: string[], type: string) {
         const scopeList =
@@ -255,7 +353,7 @@ export default function scopeService() {
         const res = [
             { label: 'Asset', action: [] },
             { label: 'Governance', action: [] },
-            // { label: 'Metadata', action: [] },
+            { label: 'API', action: [] },
         ]
         actions.forEach((action) => {
             scopeList.forEach((scope) => {
@@ -265,6 +363,8 @@ export default function scopeService() {
                             res[0].action.push(s.label)
                         } else if (scope.label === 'Governance') {
                             res[1].action.push(s.label)
+                        } else if (scope.label === 'API') {
+                            res[2].action.push(s.label)
                         }
                         // else if (scope.label === 'Metadata') {
                         //     res[2].action.push(s.label)

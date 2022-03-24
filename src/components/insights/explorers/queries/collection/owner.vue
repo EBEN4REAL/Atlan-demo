@@ -92,7 +92,7 @@
                             list-item-class="h-8 my-0.5"
                             :showLoggedInUser="true"
                             v-model:selectedRecords="selectedRecords"
-                            :excludeMe="true"
+                            :excludeMe="excludeMe"
                         ></Users>
 
                         <Groups
@@ -161,6 +161,10 @@
                 default: () => ({}),
             },
             showNone: {
+                type: Boolean,
+                default: true,
+            },
+            excludeMe: {
                 type: Boolean,
                 default: true,
             },

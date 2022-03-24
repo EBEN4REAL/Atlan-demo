@@ -843,14 +843,15 @@ export default function useAssetInfo() {
         }
 
         if (typeName) {
-            return evaluations.find(
+            const evaluationObject = evaluations.find(
                 (ev) =>
                     (ev?.entityGuidEnd1 === asset?.guid ||
                         ev?.entityGuidEnd2 === asset?.guid) &&
                     ev?.action === action &&
                     (ev?.entityTypeEnd1 === typeName ||
                         ev?.entityTypeEnd2 === typeName)
-            )?.allowed
+            )
+            return evaluationObject?.allowed
         }
 
         return evaluations.find(

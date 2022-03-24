@@ -203,14 +203,7 @@
             })
 
             const usersParams = reactive({
-                limit:
-                    totalUsersCount.value ||
-                    (JSON.parse(
-                        workflowParameters.value.find(
-                            (e) => e.name === 'email-variables'
-                        ).value
-                    ) ??
-                        []),
+                limit: totalUsersCount.value,
                 offset: 0,
                 filter: {
                     $or: [],
@@ -247,7 +240,6 @@
             })
 
             if (workflowParameters.value) {
-                debugger
                 // query variables
                 const queryVariables =
                     JSON.parse(

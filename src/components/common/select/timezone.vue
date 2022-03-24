@@ -6,6 +6,7 @@
         @change="handleChange"
         @dropdownVisibleChange="dropdownVisibleChange"
         :allowClear="allowClear"
+        :showSearch="true"
     >
         <template #suffixIcon>
             <AtlanIcon
@@ -54,10 +55,29 @@
             const localValue = ref(modelValue.value)
             const dropdownOpen = ref(false)
 
-            const list = ref(timezones)
+            const list = ref(
+                timezones.sort(function (a, b) {
+                    var re = /^.*\(GMT ([+-]\d{1,2}):(\d{1,2})\).*$/m
+                    var aOffset = parseFloat(a.label.replace(re, '$1.$2'))
+                    var bOffset = parseFloat(b.label.replace(re, '$1.$2'))
+                    return aOffset < bOffset ? -1 : aOffset > bOffset ? 1 : 0
+                })
+            )
+            const _index = list.value.findIndex(
+                (item) => item.value === localValue.value
+            )
+            const t = list.value[_index]
+            list.value.splice(_index, 1)
+            list.value.unshift(t)
 
             const handleChange = () => {
                 modelValue.value = localValue.value
+                const _index = list.value.findIndex(
+                    (item) => item.value === localValue.value
+                )
+                const t = list.value[_index]
+                list.value.splice(_index, 1)
+                list.value.unshift(t)
                 emit('change')
             }
             const dropdownVisibleChange = (open: boolean) => {

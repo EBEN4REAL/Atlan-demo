@@ -1,11 +1,12 @@
 <template>
     <a-drawer
-        :visible="isDrawerVisible"
-        :mask="false"
-        :placement="'left'"
+        v-model:visible="isDrawerVisible"
+        mask
+        mask-closable
+        placement="left"
+        class="drawer-filter-runs"
         :width="240"
         :closable="false"
-        :class="'drawer-filter-runs'"
     >
         <div
             class="relative h-full pb-10 overflow-scroll bg-gray-50"

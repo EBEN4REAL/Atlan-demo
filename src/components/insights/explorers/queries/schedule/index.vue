@@ -71,13 +71,7 @@
                     :disabled="!isWorkflowTemplateFetched || isLoading"
                 >
                     <div class="flex items-center">
-                        <span class="mr-1 text-sm">{{
-                            activeTabIndex === 2
-                                ? 'Done'
-                                : mode === 'update'
-                                ? 'Update'
-                                : 'Next'
-                        }}</span>
+                        <span class="mr-1 text-sm">{{ getButtonText() }}</span>
                         <AtlanIcon
                             icon="ChevronRight"
                             v-if="activeTabIndex !== 2"
@@ -755,6 +749,17 @@
             }
 
             provide('mode', mode)
+            function getButtonText() {
+                if (activeTabIndex.value === 2) return 'Finish'
+                if (activeTabIndex.value === 1)
+                    return mode.value ? 'Update' : 'Done'
+                if (
+                    activeTabIndex.value === 0 &&
+                    variablesData?.value?.length === 0
+                )
+                    return mode.value ? 'Update' : 'Done'
+                return 'Next'
+            }
 
             // watch(activeTabIndex, (newActiveIndex) => {
             //     if (newActiveIndex === 0) {
@@ -767,6 +772,7 @@
             // })
 
             return {
+                getButtonText,
                 mode,
                 rules,
                 item,

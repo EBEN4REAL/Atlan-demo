@@ -167,13 +167,27 @@
             <div class="mt-7">
                 <div class="mb-2.5 text-gray-500">Created by</div>
                 <div class="flex items-center">
-                    <Avatar
-                        :allow-upload="false"
-                        :avatar-size="16"
-                        :avatar-shape="'circle'"
-                        class="mr-2"
-                    />
-                    {{ item.createdBy }}
+                    <template
+                        v-if="
+                            item?.createdBy?.startsWith(
+                                'service-account-apikey-'
+                            )
+                        "
+                    >
+                        <span class="flex items-center gap-x-1">
+                            <AtlanIcon icon="Key" class="h-3" />
+                            <div class="">API key</div>
+                        </span>
+                    </template>
+                    <template v-else>
+                        <Avatar
+                            :allow-upload="false"
+                            :avatar-size="16"
+                            :avatar-shape="'circle'"
+                            class="mr-2"
+                        />
+                        {{ item.createdBy }}</template
+                    >
                     <div class="mx-1 mt-1 text-gray-300">•</div>
                     <div class="text-sm text-gray-500">
                         {{ timeStamp(item.createdAt) }}

@@ -40,6 +40,18 @@
                                 class="h-3.5 ml-1 mb-0.5"
                             ></AtlanIcon
                         ></a-tooltip>
+                        <div v-if="item?.attributes?.__hasLineage" class="ml-4">
+                            <a-tooltip placement="top"
+                                ><template #title
+                                    >View Lineage In Graph</template
+                                >
+                                <AtlanIcon
+                                    icon="Play"
+                                    class="w-4 h-4 my-auto text-gray-500 outline-none cursor-pointer"
+                                    @click="setColumnToSelect(item)"
+                                ></AtlanIcon>
+                            </a-tooltip>
+                        </div>
                     </div>
                     <div class="flex ml-1 gap-x-2">
                         <ColumnKeys
@@ -116,6 +128,7 @@
     import PopoverClassification from '@/common/popover/classification/index.vue'
     import ColumnKeys from '~/components/common/column/columnKeys.vue'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
+    import useLineageStore from '~/store/lineage'
 
     export default defineComponent({
         name: 'ColumnListItem',
@@ -141,6 +154,12 @@
         },
         emits: ['update'],
         setup(props, { emit }) {
+            const lineageStore = useLineageStore()
+
+            const setColumnToSelect = (item) => {
+                lineageStore.setColumnToSelect(item)
+            }
+
             const {
                 title,
                 getConnectorImage,
@@ -246,6 +265,7 @@
                 isIndexed,
                 mouseEnterDelay,
                 enteredPill,
+                setColumnToSelect,
             }
         },
     })

@@ -1,4 +1,14 @@
 export const actions = {
+    setCyclicRelation(relStr) {
+        if (this.cyclicRelations.includes(relStr)) return
+        this.cyclicRelations.push(relStr)
+    },
+    setColumnToSelect(column) {
+        this.columnToSelect = column
+    },
+    setMergedLineageData(lineage) {
+        this.mergedLineageData = lineage
+    },
     setNodesColumnList(nodeId, columns?, offset?, total?) {
         if (nodeId) {
             this.nodesColumnList[nodeId] = { columns, offset, total }

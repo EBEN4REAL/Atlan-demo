@@ -1,20 +1,24 @@
 <template>
-    <div class="mx-6 border rounded-lg meta-data-scope-container">
+    <div class="mx-6 meta-data-scope-container">
         <div v-for="(scope, idx) in scopeList" :key="scope.type">
-            <div>
+            <div class="mb-4 border rounded-lg">
                 <div class="flex px-4 py-3 bg-gray-100">
                     <a-checkbox
                         :indeterminate="
-                            groupedActions[idx].scopes.length ===
-                            scopeList[idx].scopes.length
+                            groupedActions[idx].scopes.filter(handleFilter)
+                                .length ===
+                            scopeList[idx].scopes.filter(handleFilterScope)
+                                .length
                                 ? false
                                 : Boolean(groupedActions[idx].scopes.length)
                         "
                         class="text-sm font-bold text-gray-700"
                         data-test-id="checkbox"
                         :checked="
-                            groupedActions[idx].scopes.length ===
-                            scopeList[idx].scopes.length
+                            groupedActions[idx].scopes.filter(handleFilter)
+                                .length ===
+                            scopeList[idx].scopes.filter(handleFilterScope)
+                                .length
                         "
                         @click.stop="toggleCheckAll(idx)"
                     >
@@ -32,8 +36,15 @@
                         <div
                             v-for="(check, i) in scope.scopes"
                             :key="i"
-                            class="w-full p-1 px-2 hover:bg-primary-light"
-                            :class="{ ' mt-4': i !== 0 }"
+                            class="w-full hover:bg-primary-light"
+                            :class="{
+                                'mt-4':
+                                    i !== 0 &&
+                                    check.value !== 'link-assets' &&
+                                    !hasLink,
+                                'p-1 px-2':
+                                    check.value !== 'link-assets' && !hasLink,
+                            }"
                         >
                             <a-popover
                                 v-if="
@@ -136,21 +147,35 @@
                 emit('update:actions', allScopes)
                 emit('change')
             }
-
+            const hasLink = ref(
+                actions.value?.includes('link-assets') &&
+                    !actions.value?.includes('entity-update')
+            )
+            const handleFilter = (el) => {
+                if (hasLink.value) {
+                    return true
+                }
+                return el !== 'link-assets'
+            }
+            const handleFilterScope = (el) => {
+                if (hasLink.value) {
+                    return true
+                }
+                return el.value !== 'link-assets'
+            }
             function toggleCheckAll(idx: number) {
                 if (
                     groupedActions.value[idx].scopes.length <
-                    scopeList[idx].scopes.length
+                    scopeList[idx].scopes.filter(handleFilterScope).length
                 )
                     updateSelection(
                         scopeList[idx].type,
-                        scopeList[idx].scopes.map((e) => e.value)
+                        scopeList[idx].scopes
+                            .map((e) => e.value)
+                            .filter(handleFilter)
                     )
                 else updateSelection(scopeList[idx].type, [])
             }
-            const hasLink = computed(() =>
-                actions.value?.includes('link-assets')
-            )
 
             return {
                 collapseRef,
@@ -160,6 +185,8 @@
                 toggleCheckAll,
                 defaultExpandedState,
                 hasLink,
+                handleFilter,
+                handleFilterScope,
             }
         },
     })
@@ -207,6 +234,6 @@
         gap: 15px !important;
     }
     .container-gif-permission {
-        min-height: 150px;
+        min-height: 200px;
     }
 </style>

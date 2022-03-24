@@ -255,36 +255,35 @@
                     <NoAccess
                         v-if="isScrubbed(selectedAsset) && tab.scrubbed"
                     />
-                    <component
-                        :is="tab.component"
-                        v-else-if="tab.component"
-                        :key="selectedAsset.guid"
-                        :ref="
-                            (el) => {
-                                if (el) tabChildRef[index] = el
-                            }
-                        "
-                        :selected-asset="selectedAsset"
-                        :is-drawer="isDrawer"
-                        :read-permission="!isScrubbed(selectedAsset)"
-                        :edit-permission="
-                            selectedAssetUpdatePermission(
-                                selectedAsset,
-                                isDrawer
-                            )
-                        "
-                        :is-scrubbed="isScrubbed(selectedAsset)"
-                        :tab="tab"
-                        :data="tab.data"
-                        :collection-data="{
-                            collectionInfo,
-                            hasCollectionReadPermission,
-                            hasCollectionWritePermission,
-                            isCollectionCreatedByCurrentUser,
-                        }"
-                    ></component>
-                </a-tab-pane>
-            </template>
+                </template>
+                <NoAccess v-if="isScrubbed(selectedAsset) && tab.scrubbed" />
+                <component
+                    :is="tab.component"
+                    v-else-if="tab.component"
+                    :key="selectedAsset.guid"
+                    :ref="
+                        (el) => {
+                            if (el) tabChildRef[index] = el
+                        }
+                    "
+                    :is-scrubbed="isScrubbed(selectedAsset)"
+                    :selected-asset="selectedAsset"
+                    :is-drawer="isDrawer"
+                    :read-permission="!isScrubbed(selectedAsset)"
+                    :edit-permission="
+                        selectedAssetUpdatePermission(selectedAsset, isDrawer)
+                    "
+                    :tab="tab"
+                    :data="tab.data"
+                    :read-only-in-cm="readOnlyInCm"
+                    :collection-data="{
+                        collectionInfo,
+                        hasCollectionReadPermission,
+                        hasCollectionWritePermission,
+                        isCollectionCreatedByCurrentUser,
+                    }"
+                ></component>
+            </a-tab-pane>
             <template #moreIcon>
                 <div class="flex">
                     <AtlanIcon
@@ -417,6 +416,8 @@
             const actions = computed(() =>
                 getAllowedActions(selectedAsset.value)
             )
+            const readOnlyInCm = ref(true)
+
             provide('actions', actions)
             provide('selectedAsset', selectedAsset)
             provide('sidebarPage', page)
@@ -513,11 +514,25 @@
                 { debounce: 100, immediate: true }
             )
 
-            const switchTab = (asset, tabName: string) => {
+            const switchTab = (
+                asset,
+                tabName: string,
+                enableEditinCM = false
+            ) => {
+                if (enableEditinCM) {
+                    readOnlyInCm.value = false
+                }
+
                 const idx = getPreviewTabs(asset, isProfile.value).findIndex(
                     (tl) => tl.name === tabName
                 )
                 if (idx > -1) activeKey.value = idx
+
+                // After a while change back to read state as the same component is being used for other CM tabs
+
+                setTimeout(() => {
+                    readOnlyInCm.value = true
+                }, 1000)
             }
 
             provide('switchTab', switchTab)
@@ -687,6 +702,7 @@
                 hasCollectionWritePermission,
                 isCollectionCreatedByCurrentUser,
                 handleQueryAction,
+                readOnlyInCm,
             }
         },
     })

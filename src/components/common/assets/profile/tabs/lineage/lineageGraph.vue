@@ -14,13 +14,6 @@
             <span class="mt-1 text-sm">Rendering graph...</span>
         </div>
 
-        <!-- Graph Process Loader -->
-        <AtlanLoader
-            v-if="loaderCords.x"
-            class="absolute h-5 opacity-70"
-            :style="`left: ${offsetLoaderCords.x}px; top: ${offsetLoaderCords.y}px; z-index: 999`"
-        />
-
         <!-- Graph Container -->
         <div style="display: flex">
             <div ref="graphContainer" style="flex: 1"></div>
@@ -50,8 +43,8 @@
 
         <!-- AssetDrawer -->
         <AssetDrawer
+            :watch-guid="true"
             :guid="selectedAsset?.guid || ''"
-            :show-drawer="!!selectedAsset?.guid"
             :show-mask="false"
             :drawer-active-key="drawerActiveKey"
             :show-close-btn="false"
@@ -90,7 +83,7 @@
             LineageFooter,
             AssetDrawer,
         },
-        setup(_, { emit }) {
+        setup() {
             /** INJECTIONS */
             const lineage = inject('lineage')
             const selectedAsset = inject('selectedAsset')
@@ -100,47 +93,33 @@
             /** DATA */
             const graphHeight = ref(0)
             const graphWidth = ref(0)
-            const resetSelections = ref(false)
             const graphContainer = ref(null)
             const minimapContainer = ref(null)
             const lineageContainer = ref({})
             const graph = ref({})
             const graphLayout = ref({})
             const showMinimap = ref(false)
-            const searchItems = ref([])
-            const loaderCords = ref({})
             const currZoom = ref('...')
             const isComputeDone = ref(false)
             const drawerActiveKey = ref('Overview')
             const guidToSelectOnGraph = ref('')
             const selectedTypeInRelationDrawer = ref('__all')
-            let removeListeners = () => {}
-
-            /** COMPUTED */
-            const offsetLoaderCords = computed(() => {
-                const isFullScr = !!document.fullscreenElement
-                return {
-                    x: isFullScr
-                        ? loaderCords.value.x
-                        : (loaderCords.value.x || 0) - 25,
-                    y: isFullScr
-                        ? loaderCords.value.y
-                        : (loaderCords.value.y || 0) - 148,
-                }
-            })
+            const removeAllListeners = ref(null)
 
             /** METHODS */
             // onSelectAsset
             const onSelectAsset = (item, selectOnGraph = false) => {
                 if (typeof control === 'function')
                     control('selectedAsset', item)
+
+                if (!item) return
+
                 if (selectOnGraph) guidToSelectOnGraph.value = item?.guid
             }
 
             // onCloseDrawer
             const onCloseDrawer = () => {
                 onSelectAsset(null)
-                resetSelections.value = true
             }
 
             // handleDrawerUpdate
@@ -174,18 +153,14 @@
                     graph,
                     graphLayout,
                     lineage,
-                    searchItems,
                     currZoom,
                     isComputeDone,
-                    emit,
                 })
 
                 // useEventGraph
-                const { registerAllListeners } = useEventGraph({
+                const { removeAllListeners: ral } = useEventGraph({
                     graph,
-                    loaderCords,
                     currZoom,
-                    searchItems,
                     preferences,
                     guidToSelectOnGraph,
                     mergedLineageData,
@@ -198,11 +173,10 @@
                     addSubGraph,
                     renderLayout,
                 })
-                removeListeners = registerAllListeners
+                removeAllListeners.value = ral
             }
 
             /** PROVIDERS */
-            provide('searchItems', searchItems)
             provide('onSelectAsset', onSelectAsset)
             provide('selectedTypeInRelation', selectedTypeInRelationDrawer)
 
@@ -217,10 +191,10 @@
 
             onUnmounted(() => {
                 isComputeDone.value = false
-                if (Object.keys(graph.value).length) {
-                    if (typeof removeListeners === 'function') removeListeners()
-                    graph.value.dispose()
-                }
+                if (Object.keys(graph.value).length) graph.value.dispose()
+
+                if (typeof removeAllListeners.value === 'function')
+                    removeAllListeners.value()
             })
 
             return {
@@ -228,11 +202,9 @@
                 graph,
                 graphHeight,
                 graphWidth,
-                offsetLoaderCords,
                 selectedAsset,
                 currZoom,
                 showMinimap,
-                loaderCords,
                 drawerActiveKey,
                 isComputeDone,
                 lineageContainer,
@@ -370,8 +342,8 @@
         &-node {
             padding: 10px 8px 0px 10px;
             font-size: 16px;
-            border: 1px solid #e6e6eb;
-            border-radius: 4px;
+            border: 1.5px solid #e0e4eb;
+            border-radius: 6px;
             background-color: #ffffff;
             width: 270px;
             height: 70px;
@@ -390,33 +362,31 @@
 
             &.isVpNode {
                 @apply rounded-full bg-white flex items-center justify-center gap-x-2;
-                height: 48px !important;
+                height: 40px !important;
                 padding: unset !important;
             }
 
             & .popover {
-                @apply invisible opacity-0 absolute bottom-16 left-0 py-1 px-2 text-sm;
-                @apply delay-75 transition-all;
-                @apply rounded-md shadow-md bg-black bg-opacity-70 text-white;
+                @apply opacity-0 absolute bottom-20 left-0 py-1 px-2 text-xs transition-opacity rounded-md shadow-md bg-black bg-opacity-70 text-white;
             }
 
             &.isBase {
                 border-top-left-radius: 0;
-                border: 1px solid #5277d7 !important;
+                border: 1.5px solid #3c71df !important;
                 background-color: #ffffff !important;
 
                 &.isSelectedNode {
-                    border: 1px solid #5277d7 !important;
+                    border: 1.5px solid #3c71df !important;
                 }
 
                 .inscr {
                     line-height: 22px;
                     background: #ffffff;
-                    color: #5277d7;
+                    color: #3c71df;
                     position: fixed;
-                    border: 1px solid #5277d7;
+                    border: 1.5px solid #3c71df;
                     border-bottom: 0;
-                    top: -26px;
+                    top: -27px;
                     padding: 3px 8px 0px 8px;
                     left: 0;
                     border-top-right-radius: 4px;
@@ -458,16 +428,15 @@
                 }
 
                 &__source {
-                    width: 1rem;
-                    height: 1rem;
-                    margin-bottom: 0.2rem;
-                    margin-right: 2px;
+                    width: 14px;
+                    height: 14px;
+                    margin-bottom: 2px;
                 }
             }
         }
 
         .isGrayed {
-            border: 1px solid #e6e6eb;
+            border: 1.5px solid #e0e4eb;
 
             .node-text {
                 color: #6f7590 !important;
@@ -479,24 +448,24 @@
         }
 
         .isSelectedNode {
-            border: 1px solid #5277d7 !important;
-            background-color: #f4f6fd !important;
-            @apply text-primary;
+            border: 1.5px solid #3c71df !important;
+            background-color: #f6f8fd !important;
+            color: #3c71df;
             & .node-title {
-                @apply text-primary;
+                color: #3c71df;
             }
             & .caret-bg {
                 background: linear-gradient(
                     270deg,
-                    #f4f6fd 0%,
-                    #f4f6fd 84.68%,
+                    #f6f8fd 0%,
+                    #f6f8fd 84.68%,
                     rgba(255, 255, 255, 0) 103.12%
                 ) !important;
             }
         }
 
         .isHighlightedNode {
-            border: 1px solid #5277d7;
+            border: 1.5px solid #3c71df;
             background-color: #ffffff;
         }
 
@@ -511,6 +480,29 @@
                 #ffffff 84.68%,
                 rgba(255, 255, 255, 0) 103.12%
             );
+        }
+
+        .node-hoPaCTA {
+            @apply h-7 w-7 rounded-full flex justify-center items-center flex-none cursor-pointer;
+            background-color: #eff1f5;
+            border: 1.5px solid #e0e4eb;
+            color: #34394b;
+            position: absolute;
+            z-index: 99;
+            &:hover {
+                color: #3c71df;
+            }
+            &.isSelected,
+            &.isHighlighted {
+                border-color: #3c71df;
+            }
+        }
+
+        .node-columnListLoader {
+            position: absolute;
+            z-index: 99;
+            left: 115px !important;
+            bottom: 11px !important;
         }
     }
 </style>

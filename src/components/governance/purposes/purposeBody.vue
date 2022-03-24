@@ -1,7 +1,11 @@
 <template>
     <template v-if="selectedPersonaDirty">
         <div class="px-3 bg-white">
-            <MinimalTab v-model:active="activeTabKey" :data="tabConfig">
+            <MinimalTab
+                v-model:active="activeTabKey"
+                class="minimal-tab"
+                :data="tabConfig"
+            >
                 <template #label="t">
                     <div class="flex items-center">
                         <div
@@ -43,10 +47,10 @@
         >
             <PurposeMeta
                 class="flex flex-col"
-                :persona="persona"
+                :persona="selectedPersonaDirty"
                 @editDetails="$emit('editDetails')"
             />
-            <PurposeReadme :purpose="selectedPersonaDirty" />
+            <!-- <PurposeReadme :purpose="selectedPersonaDirty" /> -->
             <div class="pb-3 mt-3 bg-white border border-gray-200 rounded">
                 <ResourcesWidget
                     placeholder="Resources is the place to document all knowledge around the purpose"
@@ -61,6 +65,7 @@
                     @remove="handleRemoveResource"
                 />
             </div>
+            <PurposeReadme :purpose="selectedPersonaDirty" />
         </div>
         <div
             v-else-if="activeTabKey === 'policies'"
@@ -676,6 +681,9 @@
     }
 </style>
 <style lang="less">
+    .minimal-tab{
+        margin-top: 0px !important
+    }
     .container-tabs {
            width: 200px
         // .assetbar {

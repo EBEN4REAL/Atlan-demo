@@ -16,7 +16,11 @@
             class="inline-flex self-center w-auto h-4 mb-1"
         /><b>{{ ' ' }}{{ newCertificate.label }}</b> -->
 
-        <Certificate :selected-asset="data.value" :showMessage="true" />
+        <Certificate
+            :selected-asset="data.value"
+            :showMessage="true"
+            :showPopover="false"
+        />
 
         <!-- <div v-if="data.value?.certificateStatusMessage" class="flex">
             <div class="w-1 mr-3 bg-gray-500 rounded-full min-h-6"></div>

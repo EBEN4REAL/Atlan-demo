@@ -1,11 +1,13 @@
 import { computed } from 'vue'
-import updateAssetGif from '~/assets/gifts/Permissions_Popover_Gifs/Update_Assets.gif'
-import updateBusinessMetaGif from '~/assets/gifts/Permissions_Popover_Gifs/Update_Business_Metadata.gif'
-import updateClassificationGif from '~/assets/gifts/Permissions_Popover_Gifs/Update_Classification.gif'
-import updateTermsGif from '~/assets/gifts/Permissions_Popover_Gifs/Update_Terms.gif'
-import viewAssetGif from '~/assets/gifts/Permissions_Popover_Gifs/View_Assets.gif'
-import addTermsGif from '~/assets/gifts/Permissions_Popover_Gifs/Add_Terms_Metadata.gif'
-import deleteTermsGif from '~/assets/gifts/Permissions_Popover_Gifs/Delete_Terms_Metadata.gif'
+import updateAssetGif from '~/assets/gifs/Permissions_Popover_Gifs/Update_Assets_Metadata.gif'
+import updateBusinessMetaGif from '~/assets/gifs/Permissions_Popover_Gifs/Update_CM_Metadata.gif'
+import addClassificationGif from '~/assets/gifs/Permissions_Popover_Gifs/Add_Classification_Metadata.gif'
+// import updateClassificationGif from '~/assets/gifs/Permissions_Popover_Gifs/Remove_Classification_Metadata.gif'
+import deleteClassificationGif from '~/assets/gifs/Permissions_Popover_Gifs/Remove_Classification_Metadata.gif'
+// import updateTermsGif from '~/assets/gifs/Permissions_Popover_Gifs/Update_Terms.gif'
+import viewAssetGif from '~/assets/gifs/Permissions_Popover_Gifs/View_Assets_Metadata.gif'
+import addTermsGif from '~/assets/gifs/Permissions_Popover_Gifs/Add_Term_Metadata.gif'
+import deleteTermsGif from '~/assets/gifs/Permissions_Popover_Gifs/Delete_Term_Metadata.gif'
 // import scopeAPI from '../apis/scopes'
 
 export const purposeScopeList = [
@@ -68,13 +70,13 @@ export const purposeScopeList = [
                 value: 'entity-add-classification',
                 label: 'Add Classifications',
                 desc: 'Permission to add classifications from assets',
-                gif: updateClassificationGif,
+                gif: addClassificationGif,
             },
             {
                 value: 'entity-remove-classification',
                 label: 'Remove Classifications',
                 desc: 'Permission to remove classifications from assets',
-                gif: updateClassificationGif,
+                gif: deleteClassificationGif,
             },
 
             // {
@@ -149,20 +151,6 @@ export const personaScopeList = [
                 gif: updateAssetGif,
             },
             {
-                value: 'entity-create',
-                label: 'Create',
-                filterLabel: 'Create asset',
-                // desc: 'Create entities within selected assets',
-                desc: 'Gives ability to create new assets within the selected connection or specified database/schema',
-            },
-            {
-                value: 'entity-delete',
-                label: 'Delete',
-                filterLabel: 'Delete asset',
-                // desc: 'Permission to delete selected assets',
-                desc: 'Gives ability to delete assets within the selected connection or specified database/schema',
-            },
-            {
                 value: 'link-assets',
                 label: 'Link other assets',
                 desc: 'Permission to link assets like readme, resources to this asset',
@@ -200,14 +188,14 @@ export const personaScopeList = [
                 label: 'Add Classifications',
                 // desc: 'Update classifications',
                 desc: 'Permission to add classifications from assets',
-                gif: updateClassificationGif,
+                gif: addClassificationGif,
             },
             {
                 value: 'entity-remove-classification',
                 label: 'Remove Classifications',
                 // desc: 'Update classifications',
                 desc: 'Permission to remove classifications from assets',
-                gif: updateClassificationGif,
+                gif: deleteClassificationGif,
             },
 
             {
@@ -225,6 +213,26 @@ export const personaScopeList = [
         ],
         type: 'Governance',
         label: 'Governance',
+    },
+    {
+        type: 'API',
+        label: 'API',
+        scopes: [
+            {
+                value: 'entity-create',
+                label: 'Create',
+                filterLabel: 'Create asset',
+                // desc: 'Create entities within selected assets',
+                desc: 'Gives ability to create new assets within the selected connection or specified database/schema',
+            },
+            {
+                value: 'entity-delete',
+                label: 'Delete',
+                filterLabel: 'Delete asset',
+                // desc: 'Permission to delete selected assets',
+                desc: 'Gives ability to delete assets within the selected connection or specified database/schema',
+            },
+        ],
     },
 ]
 
@@ -246,6 +254,9 @@ export default function scopeService() {
             return {
                 scopeList: purposeScopeList,
             }
+        return {
+            scopeList: [],
+        }
     }
     function findActions(actions: string[], type: string) {
         const scopeList =
@@ -253,7 +264,7 @@ export default function scopeService() {
         const res = [
             { label: 'Asset', action: [] },
             { label: 'Governance', action: [] },
-            // { label: 'Metadata', action: [] },
+            { label: 'API', action: [] },
         ]
         actions.forEach((action) => {
             scopeList.forEach((scope) => {
@@ -263,6 +274,8 @@ export default function scopeService() {
                             res[0].action.push(s.label)
                         } else if (scope.label === 'Governance') {
                             res[1].action.push(s.label)
+                        } else if (scope.label === 'API') {
+                            res[2].action.push(s.label)
                         }
                         // else if (scope.label === 'Metadata') {
                         //     res[2].action.push(s.label)

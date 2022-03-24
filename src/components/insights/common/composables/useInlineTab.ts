@@ -14,7 +14,8 @@ import {
 export function useInlineTab(
     treeSelectedKeys?: Ref<string[]>,
     shouldDefaultTabAdd?: boolean,
-    queryCollections?: Ref<QueryCollection[]>
+    queryCollections?: Ref<QueryCollection[]>,
+    initializeActiveInlineTabs?: Function
 ) {
     const {
         syncInlineTabsInLocalStorage,
@@ -41,7 +42,7 @@ export function useInlineTab(
         if (localStorageInlineTabs.length > 0) {
             return setInlineTabsVisibilityToNone(localStorageInlineTabs)
         }
-        if (shouldDefaultTabAdd) {
+        if (shouldDefaultTabAdd && localStorageInlineTabs.length === 0) {
             /* Set initial states for collections */
             let inlineTabsDemoDataCopy = JSON.parse(
                 JSON.stringify(inlineTabsDemoData)
@@ -263,6 +264,9 @@ export function useInlineTab(
             (tab) => tab.key === activeInlineTabKey.value
         )
     })
+    if (initializeActiveInlineTabs) {
+        initializeActiveInlineTabs()
+    }
 
     // const activeTabKey = computed(() => setActiveInlineTabKey())
 
@@ -298,6 +302,7 @@ export function useInlineTab(
         overwriteInlineTab,
         changeInlineTabeKey,
         setVQBInInlineTab,
+
         // activeTabKey,
     }
 }

@@ -398,6 +398,7 @@ const keyMap = {
                     data_type: props.data_type,
                     multi_value: !!props.multi_value,
                     allow_filtering: !!props.allow_filtering,
+                    show_in_overview: !!props.show_in_overview,
                 }),
             },
             property_updated: {
@@ -406,6 +407,7 @@ const keyMap = {
                     data_type: props.data_type,
                     multi_value: !!props.multi_value,
                     allow_filtering: !!props.allow_filtering,
+                    show_in_overview: !!props.show_in_overview,
                 }),
             },
             property_reordered: {

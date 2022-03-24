@@ -9,6 +9,7 @@
                 placement="right"
                 color="#2A2F45"
                 :mouse-enter-delay="0.5"
+                :mouse-leave-delay="0"
             >
                 <template #title
                     ><div class="text-sm font-semibold">Home</div></template
@@ -37,6 +38,7 @@
                 placement="right"
                 color="#2A2F45"
                 :mouse-enter-delay="0.5"
+                :mouse-leave-delay="0"
             >
                 <template #title
                     ><div class="text-sm font-semibold">Home</div>
@@ -64,6 +66,7 @@
                     placement="right"
                     color="#2A2F45"
                     :mouse-enter-delay="0.5"
+                    :mouse-leave-delay="0"
                 >
                     <template #title
                         ><div class="text-sm font-semibold">
@@ -122,6 +125,7 @@
                     placement="right"
                     color="#2A2F45"
                     :mouse-enter-delay="0.5"
+                    :mouse-leave-delay="0"
                 >
                     <template #title
                         ><div class="text-sm font-semibold">
@@ -187,6 +191,7 @@
                     placement="right"
                     color="#2A2F45"
                     :mouse-enter-delay="0.5"
+                    :mouse-leave-delay="0"
                 >
                     <template #title
                         ><div class="text-sm font-semibold">

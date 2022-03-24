@@ -13,19 +13,17 @@
                     <p class="p-0 m-0">Create more</p>
                 </div>
                 <div class="flex-grow"></div>
-                <a-button class="border-0" @click="visible = false"
-                    >Cancel</a-button
-                >
-                <AtlanButton
-                    color="primary"
-                    padding="compact"
-                    size="sm"
+                <AtlanButton2
+                    color="secondary"
+                    label="Cancel"
+                    @click="visible = false"
+                />
+                <AtlanButton2
+                    :label="isEdit ? 'Update' : 'Create'"
                     :loading="loading"
                     :disabled="!form.displayName"
                     @click="handleAddBusinessMetadata"
-                >
-                    {{ isEdit ? 'Update' : 'Create' }}
-                </AtlanButton>
+                />
             </div>
         </template>
         <div class="h-32 p-4 space-y-2">

@@ -738,7 +738,8 @@ export default function useAssetInfo() {
         return attributes(asset)?.certificateStatusMessage
     }
     const certificateUpdatedBy = (asset: assetInterface) => {
-        return attributes(asset)?.certificateUpdatedBy
+        const username = attributes(asset)?.certificateUpdatedBy
+        return username?.startsWith('service-account-apikey-') ? 'API key' : username
     }
 
     const certificateUpdatedAt = (

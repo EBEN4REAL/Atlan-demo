@@ -1,5 +1,11 @@
 <template>
     <div class="grid grid-cols-3 gap-3">
+        <Summary
+            :item="persona"
+            :is-loading="loadingLink"
+            @changeLink="changeLink"
+            @addPolicy="handleAddPolicy"
+        />
         <PersonaUsersGroups
             :key="persona.id"
             v-model:persona="persona"
@@ -7,12 +13,11 @@
             :cancel-token-for-groups="cancelTokenForGroups"
             :cancel-token-for-users="cancelTokenForUsers"
         />
-        <DetailsWidget
+        <!-- <DetailsWidget
             :item="persona"
             class="border border-gray-200"
             @editDetails="$emit('editDetails')"
-        >
-        </DetailsWidget>
+        /> -->
     </div>
 </template>
 
@@ -21,6 +26,7 @@
     import { useTimeAgo } from '@vueuse/core'
     import { message, Modal } from 'ant-design-vue'
     import axios from 'axios'
+    import { async } from '@antv/x6/lib/registry/marker/async'
     import { IPersona } from '~/types/accessPolicies/personas'
     import { setActiveTab } from '../composables/usePersonaTabs'
     import PopOverUser from '@/common/popover/user/user.vue'
@@ -28,13 +34,11 @@
     import { formatDateTime } from '~/utils/date'
     import DetailsWidget from '@/common/widgets/detailsWidget.vue'
     import PersonaUsersGroups from '@/governance/personas/users/personaUsersGroups.vue'
+    import Summary from '@/common/widgets/summaryWidget.vue'
     import {
         enablePersona,
-        isEditing,
         savePersona,
-        discardPersona,
-        selectedPersonaDirty,
-        deletePersonaById,
+        updatedSelectedData,
     } from '../composables/useEditPersona'
 
     export default defineComponent({
@@ -44,6 +48,7 @@
             UserPill,
             DetailsWidget,
             PersonaUsersGroups,
+            Summary,
         },
         props: {
             persona: {
@@ -51,9 +56,11 @@
                 required: true,
             },
         },
-        emits: ['update:persona', 'update:isEditMode'],
+        emits: ['update:persona', 'update:isEditMode', 'setActiveTab'],
         setup(props) {
             const { persona } = toRefs(props)
+
+            const loadingLink = ref(false)
             const cancelTokenForUsers = ref()
             const cancelTokenForGroups = ref()
             const enableDisableLoading = ref(false)
@@ -146,6 +153,39 @@
                     immediate: true,
                 }
             )
+            const changeLink = async (val) => {
+                try {
+                    loadingLink.value = true
+                    const payload = { ...persona.value }
+                    delete payload.dataPolicies
+                    delete payload.metadataPolicies
+                    delete payload.glossaryPolicies
+                    await savePersona({
+                        ...payload,
+                        attributes: {
+                            ...payload.attributes,
+                            channelLink: val,
+                        },
+                    })
+                    updatedSelectedData({
+                        id: payload.id,
+                        attributes: {
+                            ...payload.attributes,
+                            channelLink: val,
+                        },
+                    })
+                } catch (error) {
+                    message.error(
+                        error?.response?.data?.message ||
+                            'Some error occured...Please try again later.'
+                    )
+                } finally {
+                    loadingLink.value = false
+                }
+            }
+            const handleAddPolicy = () => {
+                setActiveTab('policies')
+            }
             return {
                 setActiveTab,
                 timeStamp,
@@ -153,6 +193,9 @@
                 enableDisableLoading,
                 cancelTokenForGroups,
                 cancelTokenForUsers,
+                changeLink,
+                loadingLink,
+                handleAddPolicy,
             }
         },
     })

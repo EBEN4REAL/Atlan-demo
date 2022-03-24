@@ -12,6 +12,7 @@
         computed,
         defineComponent,
         inject,
+        provide,
         ref,
         watch,
         nextTick,
@@ -20,12 +21,12 @@
     import { useHead } from '@vueuse/head'
     import { useRoute } from 'vue-router'
 
-    import WorkflowProfile from '@/workflows/profile/index.vue'
+    import WorkflowProfile from '~/workflows/components/workflows/profile/index.vue'
     import Loader from '@/common/loaders/page.vue'
 
-    import { useWorkflowDiscoverList } from '~/composables/package/useWorkflowDiscoverList'
-    import useWorkflowInfo from '~/composables/workflow/useWorkflowInfo'
-    import { usePackageByName } from '~/composables/package/usePackageByName'
+    import { useWorkflowDiscoverList } from '~/workflows/composables/package/useWorkflowDiscoverList'
+    import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
+    import { usePackageByName } from '~/workflows/composables/package/usePackageByName'
 
     export default defineComponent({
         components: {
@@ -45,15 +46,19 @@
             })
             const dependentKey = ref('workflow_profile')
 
-            const { isLoading, list, error } = useWorkflowDiscoverList({
-                isCache: false,
-                dependentKey,
-                facets,
-                limit,
-                offset,
-                queryText,
-                source: ref({}),
-            })
+            const { isLoading, list, error, refresh } = useWorkflowDiscoverList(
+                {
+                    isCache: false,
+                    dependentKey,
+                    facets,
+                    limit,
+                    offset,
+                    queryText,
+                    source: ref({}),
+                }
+            )
+
+            provide('refetchWorkflowObject', refresh)
 
             const workflowObject = computed(() => {
                 if (list.value?.length > 0) {

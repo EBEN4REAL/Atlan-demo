@@ -1,6 +1,6 @@
 <template>
-    <div class="px-4 py-2 mb-3 component-height">
-        <div class="py-1 mb-3 text-base font-semibold text-gray-500">
+    <div class="py-2 mb-3 component-height">
+        <div class="mx-5 mb-1 text-base font-semibold text-gray-500">
             Owned Assets
         </div>
         <div class="flex flex-col h-full rounded-lg">
@@ -18,6 +18,9 @@
                           } doesn't own any assets.`
                         : ''
                 "
+                aggregation-tab-class="px-5 my-1"
+                search-bar-class="px-5 mt-1"
+                asset-item-class="px-2"
             />
         </div>
     </div>

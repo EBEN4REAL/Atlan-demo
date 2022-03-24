@@ -122,15 +122,12 @@
                         </a-menu-item>
                     </a-menu></template
                 >
-                <AtlanButton
-                    size="sm"
+                <AtlanButton2
+                    color="secondary"
                     class="px-2 mx-1 text-gray-700 bg-transparent border-none"
-                    padding="compact"
                 >
-                    <div class="flex items-center">
-                        <AtlanIcon icon="QuestionRound" class="h-6" />
-                    </div>
-                </AtlanButton>
+                    <AtlanIcon icon="QuestionRound" class="h-6" />
+                </AtlanButton2>
             </a-dropdown>
             <!-- <atlan-icon icon="Search" class="h-5 mr-3" />
 

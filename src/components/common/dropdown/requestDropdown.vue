@@ -1,9 +1,7 @@
 <template>
-    <AtlanButton
-        class="flex items-center btn-actions"
+    <AtlanButton2
+        class="btn-actions"
         color="secondary"
-        padding="compact"
-        size="sm"
         :disabled="isLoading"
         @click.stop="$emit('submit', '')"
     >
@@ -70,16 +68,12 @@
                                             >
                                                 Cancel
                                             </a-button>
-                                            <AtlanButton
-                                                :padding="'compact'"
-                                                :size="'small'"
+                                            <AtlanButton2
                                                 class="py-1 ml-2 capitalize"
-                                                type="primary"
+                                                :label="type"
                                                 :disabled="!message"
                                                 @click="handleSubmitWithComment"
-                                            >
-                                                {{ type }}
-                                            </AtlanButton>
+                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -93,7 +87,7 @@
                 <AtlanIcon icon="ChevronDown" :class="'icon-drop'" />
             </div>
         </a-dropdown>
-    </AtlanButton>
+    </AtlanButton2>
 </template>
 
 <script lang="ts">

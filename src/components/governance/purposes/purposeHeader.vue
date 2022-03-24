@@ -1,5 +1,5 @@
 <template>
-    <div v-if="persona" class="flex flex-col px-5 bg-white">
+    <div v-if="persona" class="flex flex-col px-5 pb-2 bg-white">
         <CreationModal
             v-model:visible="isEditing"
             ok-text="Save"
@@ -107,9 +107,11 @@
         selectedPersonaDirty,
         deletePersonaById,
     } from './composables/useEditPurpose'
-
     import Dropdown from '@/UI/dropdown.vue'
-    import { handleUpdateList } from './composables/usePurposeList'
+    import {
+        handleUpdateList,
+        selectedPurposeId,
+    } from './composables/usePurposeList'
     import { formatDateTime } from '~/utils/date'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import map from '~/constant/accessControl/map'
@@ -166,8 +168,8 @@
                                 key: msgId,
                             })
                             useAddEvent('governance', 'purpose', 'deleted')
+                            selectedPurposeId.value = ''
                         } catch (error) {
-                            console.log({ error })
                             message.error({
                                 content: 'Failed to delete purpose',
                                 duration: 1.5,

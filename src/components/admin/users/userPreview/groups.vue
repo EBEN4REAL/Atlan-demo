@@ -32,7 +32,6 @@
                         </div>
                     </template>
                     <AtlanButton2
-                        size="sm"
                         color="secondary"
                         label="Add to groups"
                         prefixIcon="Add"

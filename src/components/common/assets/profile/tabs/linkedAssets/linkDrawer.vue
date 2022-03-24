@@ -39,7 +39,6 @@
                 :enableSidebarDrawer="false"
                 :selectable="true"
                 :openAssetProfileInNewTab="true"
-                :disableCheckboxForScrubbed="true"
                 :selectedItems="checkedGuids"
                 :filters="filters"
                 aggregation-tab-class="px-5 my-1"

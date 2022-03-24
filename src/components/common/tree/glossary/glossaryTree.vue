@@ -10,6 +10,7 @@
         class="flex items-center justify-center h-full"
     >
         <AddGtcModal
+            v-if="termAddPermission"
             entityType="AtlasGlossaryTerm"
             @add="reInitTree"
             :glossary-qualified-name="defaultGlossary"
@@ -25,6 +26,12 @@
                 </div>
             </template>
         </AddGtcModal>
+        <template v-else>
+            <EmptyView
+                empty-screen="EmptyGlossary"
+                desc="No terms found"
+            ></EmptyView>
+        </template>
     </div>
     <div v-else-if="treeData.length === 0 && !isLoading && checkable">
         <EmptyView
@@ -52,6 +59,8 @@
         @check="onCheck"
         :blockNode="true"
         @drop="dragAndDropNode"
+        @dragend="dragEnd"
+        @dragstart="dragStart"
         :multiple="true"
     >
         <template #switcherIcon>
@@ -128,6 +137,10 @@
                 required: false,
                 default: false,
             },
+            termAddPermission: {
+                type: Boolean,
+                required: true,
+            },
             checkedGuids: {
                 type: Object as PropType<string[]>,
                 required: false,
@@ -182,6 +195,7 @@
                 nodeToParentKeyMap,
                 allKeys,
                 checkDuplicateCategoryNames,
+                dragStart
             } = useGlossaryTree({
                 emit,
                 parentGlossaryQualifiedName: defaultGlossary,
@@ -207,7 +221,11 @@
             // }
 
             const addGTCNode = (asset, entity = {}) => {
-                console.log(asset?.typeName, asset?.attributes?.anchor?.guid, 'add')
+                console.log(
+                    asset?.typeName,
+                    asset?.attributes?.anchor?.guid,
+                    'add'
+                )
                 glossaryStore.updateAssetCount(
                     asset?.typeName,
                     asset?.attributes?.anchor?.guid,
@@ -304,7 +322,8 @@
             const handleChangeEditMode = (val) => {
                 isDraggable.value = !val
             }
-            provide('addGTCNode', addGTCNode)
+
+           provide('addGTCNode', addGTCNode)
             provide('deleteGTCNode', deleteGTCNode)
             provide('treeData', treeData)
             provide('checkDuplicateCategoryNames', checkDuplicateCategoryNames)
@@ -342,6 +361,7 @@
                 parentGlossary,
                 isDraggable,
                 handleChangeEditMode,
+                dragStart,
             }
         },
     })

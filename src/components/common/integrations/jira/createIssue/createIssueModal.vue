@@ -67,9 +67,15 @@
                     class="mb-6"
                     label="Description"
                 >
-                    <a-textarea v-model:value="form.description" />
+                    <a-textarea
+                        v-model:value="form.description"
+                        @change="
+                            (e) =>
+                                (staticFields.description.selectedValue =
+                                    form.description)
+                        "
+                    />
                 </a-form-item>
-
                 <div class="w-1/2">
                     <a-form-item
                         v-if="!configReady || staticFields.priority"
@@ -84,7 +90,7 @@
                             @change="
                                 (v, option) =>
                                     (staticFields.priority.selectedValue =
-                                        option)
+                                        option.meta)
                             "
                         />
                     </a-form-item>

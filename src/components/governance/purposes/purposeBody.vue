@@ -621,6 +621,7 @@
             watch(selectedPersonaDirty, () => {
                 if (isEmpty.value) activeTabFilter.value = 'all Persona'
             })
+
             onMounted(() => {
                 activeTabKey.value = 'details'
             })

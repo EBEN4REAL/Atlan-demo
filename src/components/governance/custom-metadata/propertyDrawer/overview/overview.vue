@@ -120,5 +120,3 @@
         else delete form.value.options.customType
     }
 </script>
-
-<style lang="less" module></style>

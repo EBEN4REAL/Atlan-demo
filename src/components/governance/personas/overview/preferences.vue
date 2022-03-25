@@ -1,7 +1,7 @@
 <template>
     <div class="p-6 overflow-y-scroll container-preferences">
         <a-collapse
-            v-model="activeKey"
+            default-active-key="1"
             :bordered="false"
             expand-icon-position="right"
             class="bg-red"
@@ -135,7 +135,6 @@
         props: {},
         emits: [],
         setup(props) {
-            const activeKey = ref('')
             const { finalBusinessMetadataList } = useBusinessMetadata()
             const isLoadingMeta = ref(false)
             const currentIdUpdated = ref('')
@@ -200,7 +199,6 @@
             }
 
             return {
-                activeKey,
                 finalBusinessMetadataList,
                 handleUpdateMeta,
                 handleSwitch,

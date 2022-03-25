@@ -426,6 +426,24 @@ export const blockMenu: CommandItem[] = [
                       .run()
                 : editor.chain().focus().insertMicrosoftPowerpoint().run(),
     },
+    {
+        title: 'Google Data Studio',
+        key: 'googleDataStudio',
+        helpText: 'Embed a Google Data Studio Report',
+        icon: 'GoogleDataStudio',
+        border: true,
+        searchKeys: ['google', 'data studio', 'data', 'studio'],
+        disabled: () => false,
+        command: ({ editor, range }) =>
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .insertGoogleDataStudioReport()
+                      .run()
+                : editor.chain().focus().insertGoogleDataStudioReport().run(),
+    },
 ]
 
 export const menuData: MenuItem[] = [

@@ -279,7 +279,9 @@
 
             <div
                 v-if="
-                    ['SalesforceField'].includes(selectedAsset?.typeName) &&
+                    ['SalesforceField', 'TableauCalculatedField'].includes(
+                        selectedAsset?.typeName
+                    ) &&
                     formula(selectedAsset) &&
                     formula(selectedAsset) !== ''
                 "

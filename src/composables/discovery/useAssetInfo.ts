@@ -887,6 +887,9 @@ export default function useAssetInfo() {
         return false
     }
 
+    const isPublished = (asset: assetInterface) =>
+        attributes(asset)?.isPublished
+
     const isGTC = (asset: assetInterface) => {
         if (isGTCByType(asset.typeName)) {
             return true
@@ -1339,5 +1342,6 @@ export default function useAssetInfo() {
         formula,
         getConnectorLabelByName,
         isIndexed,
+        isPublished,
     }
 }

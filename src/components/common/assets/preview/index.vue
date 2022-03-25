@@ -136,6 +136,22 @@
                             assetTypeLabel(selectedAsset) ||
                             selectedAsset.typeName
                         }}
+                        <span
+                            v-if="
+                                ['SalesforceObject'].includes(
+                                    selectedAsset.typeName
+                                ) && isCustom(selectedAsset)
+                            "
+                            >(custom)</span
+                        >
+                        <span
+                            v-if="
+                                ['TableauDatasource'].includes(
+                                    selectedAsset.typeName
+                                ) && isPublished(selectedAsset)
+                            "
+                            >(Published)</span
+                        >
                     </div>
                 </div>
                 <a-button-group>
@@ -438,6 +454,8 @@
                 isScrubbed,
                 assetTypeImage,
                 selectedAssetUpdatePermission,
+                isCustom,
+                isPublished,
             } = useAssetInfo()
 
             const activeKey = ref(0)
@@ -661,6 +679,8 @@
                 isCollectionCreatedByCurrentUser,
                 handleQueryAction,
                 readOnlyInCm,
+                isCustom,
+                isPublished,
             }
         },
     })

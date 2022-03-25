@@ -127,6 +127,7 @@ export const AssetAttributes = [
     'inlineHelpText',
     'picklistValues',
     'formula',
+    'isPublished',
 ]
 
 export const SQLAttributes = [
@@ -252,6 +253,7 @@ export const MinimalAttributes = [
     'isForeign',
     'isDist',
     'order',
+    'isPublished',
 ]
 
 export const BasicSearchAttributes = [

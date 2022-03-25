@@ -11,7 +11,7 @@ const MIRO_BOARD_REGEX =
 const FIGJAM_REGEX = /^https:\/\/(www\.)?figma.com\/file\/([^/]*)/
 const LUCID_CHART_REGEX = /^https?:\/\/(www\.)?lucid.app\/lucidchart\/([^/]*)/
 const GOOGLE_DATA_STUDIO_REGEX =
-    /^https?:\/\/(www\.)?datastudio.google.com(\/embed)?\/reporting\/([^/]*)/
+    /^https?:\/\/(www\.)?datastudio.google.com\/.+\/reporting\/([^/]*)/
 
 export const EMBED_EXTENSIONS = [
     Embed.extend({
@@ -214,7 +214,7 @@ export const EMBED_EXTENSIONS = [
                 getIframeLink(input) {
                     const capturedParts =
                         GOOGLE_DATA_STUDIO_REGEX.exec(input) || []
-                    const documentId = capturedParts[3]
+                    const documentId = capturedParts[2]
                     return `https://datastudio.google.com/embed/reporting/${documentId}`
                 },
             }

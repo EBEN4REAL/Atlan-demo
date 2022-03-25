@@ -76,6 +76,45 @@
                 />
             </div>
         </a-form-item>
+        <a-form-item class="mb-2">
+            <div class="flex justify-between">
+                <label :for="`${form.name}-isPresent`">
+                    <span class="flex items-center">
+                        Show in overview
+                        <a-popover>
+                            <template #content>
+                                <div class="px-4 py-2 w-60">
+                                    Users will be able to see
+                                    <b>
+                                        {{
+                                            form.displayName || 'this property '
+                                        }}
+                                    </b>
+                                    in the overview tab in the asset sidebar
+                                </div>
+                            </template>
+                            <AtlanIcon
+                                icon="Info"
+                                class="h-4 ml-1 text-gray-500"
+                            />
+                        </a-popover>
+                    </span>
+                </label>
+
+                <a-switch
+                    :id="`${form.name}-isPresent`"
+                    v-model:checked="form.options.showInOverview"
+                    class=""
+                    :name="`${form.name}-isPresent`"
+                    size="small"
+                    :class="
+                        form.options.showInOverview
+                            ? 'bg-primary'
+                            : 'bg-gray-300'
+                    "
+                />
+            </div>
+        </a-form-item>
     </CardWrapper>
 </template>
 

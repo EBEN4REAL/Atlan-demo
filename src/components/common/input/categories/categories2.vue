@@ -137,7 +137,7 @@
                     />
 
                     <div
-                        v-if="allowDelete"
+                        v-if="allowDelete && editPermission"
                         class="flex"
                         @click="() => handleDelete(category)"
                     >

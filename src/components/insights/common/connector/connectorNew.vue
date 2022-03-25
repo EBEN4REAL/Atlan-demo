@@ -1,6 +1,6 @@
 <template>
     <div
-        class="w-full pt-2 pb-2 pl-2 pr-2 rounded dropdown-schema-explorer hover:bg-gray-200"
+        class="w-full pt-2 pb-2 pl-2 pr-2 rounded dropdown-schema-explorer hover:bg-new-gray-200"
     >
         <!-- New Design using Popovers instead of menu items -->
         <a-dropdown
@@ -10,6 +10,8 @@
             }"
             overlayClassName="dropdown-overlay"
             :trigger="['click']"
+            destroyPopupOnHide="true"
+            @visibleChange="onDropdownIsVisibleChange($event)"
         >
             <div class="flex items-center w-full cursor-pointer">
                 <div
@@ -101,6 +103,7 @@
                         @visibleChange="
                             onConnectionPopoverVisibleChange($event)
                         "
+                        destroyTooltipOnHide="true"
                     >
                         <template #content>
                             <div
@@ -215,6 +218,7 @@
                         mouseLeaveDelay="0.1"
                         overlayClassName="overlay-class"
                         @visibleChange="onDBPopoverVisibleChange($event)"
+                        destroyTooltipOnHide="true"
                     >
                         <template #content>
                             <div
@@ -285,6 +289,7 @@
                             @visibleChange="
                                 onSchemaPopoverVisibleChange($event)
                             "
+                            destroyTooltipOnHide="true"
                         >
                             <template #content>
                                 <div
@@ -365,7 +370,15 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, PropType, ref, Ref, toRefs } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        PropType,
+        ref,
+        Ref,
+        toRefs,
+        watch,
+    } from 'vue'
     import { capitalizeFirstLetter } from '~/utils/string'
     import { List } from '~/constant/status'
     import { useConnectionStore } from '~/store/connection'
@@ -567,6 +580,14 @@
             const selectedKeys = ref<string[]>([
                 connection.value || connector.value || undefined,
             ])
+
+            // Watcher that resets the selected value of the connection in the tree when a tab is switched in the monaco editor
+            watch([connection, connector], () => {
+                selectedKeys.value = []
+                selectedKeys.value = [
+                    connection.value || connector.value || undefined,
+                ]
+            })
 
             const selectNodeTree = (selected, event: any) => {
                 console.log('selectNodeTree:', selected)
@@ -794,13 +815,23 @@
                 clearStateSchema.value = true
             }
 
+            // Resetting the expandedKeys array to close all the expanded tree nodes in connection selector
+            const onDropdownIsVisibleChange = (e) => {
+                dropdownIsVisible.value = e
+                if (!e) expandedKeys.value = []
+            }
+
+            // Does nothing at the moment but can be used for future enhancements
             const onConnectionPopoverVisibleChange = (e) => {
                 ConnectionPopoverVisible.value = e
             }
 
+            // Used to control the visibility of the DB popover for search field autofocus
             const onDBPopoverVisibleChange = (e) => {
                 DBPopoverVisible.value = e
             }
+
+            // Used to control the visibility of the schema popover for search field autofocus
             const onSchemaPopoverVisibleChange = (e) => {
                 SchemaPopoverVisible.value = e
             }
@@ -837,8 +868,9 @@
                 getConnectorImage,
                 iconName,
                 selectedKeys,
-                dropdownIsVisible,
 
+                dropdownIsVisible,
+                onDropdownIsVisibleChange,
                 ConnectionPopoverVisible,
                 onConnectionPopoverVisibleChange,
                 DBPopoverVisible,

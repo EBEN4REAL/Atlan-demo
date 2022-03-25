@@ -749,13 +749,15 @@
 <style lang="less" module>
     .splitpane_insights {
         :global(.splitpanes__splitter) {
-            background-color: #fff;
+            @apply bg-new-gray-100;
+            // background-color: #fff;
             -webkit-box-sizing: border-box;
             box-sizing: border-box;
             position: relative;
             -ms-flex-negative: 0;
             z-index: 3 !important;
             flex-shrink: 0;
+            @apply border-new-gray-300;
         }
         :global(.splitpanes--vertical .splitpanes__pane) {
             transition: none;
@@ -880,7 +882,7 @@
         width: calc(100vw - 3.75rem);
     }
     .explorer_splitpane {
-        background-color: white;
+        @apply bg-new-gray-100;
     }
     .sidebar-nav-icon {
         padding-top: 16px;

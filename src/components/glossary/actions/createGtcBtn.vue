@@ -16,16 +16,33 @@
                 <a-menu-item @click="closeMenu">
                     <AddGTCModal
                         :key="selectedGlossaryQf"
-                        entityType="AtlasGlossaryTerm"
-                        @add="handleAdd"
-                        :glossaryQualifiedName="selectedGlossaryQf"
-                        :glossaryName="selectedGlosaryName"
-                        :showGlossarySelect="
+                        entity-type="AtlasGlossaryTerm"
+                        :glossary-qualified-name="selectedGlossaryQf"
+                        :glossary-name="selectedGlosaryName"
+                        :show-glossary-select="
                             selectedGlossaryQf?.length ? false : true
                         "
+                        @add="handleAdd"
                     >
                         <template #trigger>
-                            <div class="flex items-center">
+                            <template v-if="!termAddPermission">
+                                <a-tooltip
+                                    title="You don't have permission to perform this action"
+                                >
+                                    <div
+                                        :class="'cursor-not-allowed text-gray-400'"
+                                        class="flex items-center"
+                                        @click="(e) => e.stopPropagation()"
+                                    >
+                                        <AtlanIcon
+                                            icon="Term"
+                                            class="m-0 mr-2"
+                                        />
+                                        <p class="p-0 m-0">Add Term</p>
+                                    </div>
+                                </a-tooltip>
+                            </template>
+                            <div v-else class="flex items-center">
                                 <AtlanIcon icon="Term" class="m-0 mr-2" />
                                 <p class="p-0 m-0">Add Term</p>
                             </div>
@@ -35,29 +52,54 @@
                 <a-menu-item @click="closeMenu">
                     <AddGTCModal
                         :key="selectedGlossaryQf"
-                        entityType="AtlasGlossaryCategory"
-                        @add="handleAdd"
-                        :glossaryQualifiedName="selectedGlossaryQf"
-                        :glossaryName="selectedGlosaryName"
-                        :showGlossarySelect="
+                        entity-type="AtlasGlossaryCategory"
+                        :glossary-qualified-name="selectedGlossaryQf"
+                        :glossary-name="selectedGlosaryName"
+                        :show-glossary-select="
                             selectedGlossaryQf?.length ? false : true
                         "
+                        @add="handleAdd"
                     >
                         <template #trigger>
-                            <div class="flex items-center">
-                                <AtlanIcon icon="Category" class="m-0 mr-2" />
-                                <p class="p-0 m-0">Add Category</p>
-                            </div>
+                            <template v-if="!categoryAddPermission">
+                                <a-tooltip
+                                    title="You don't have permission to perform this action"
+                                >
+                                    <div
+                                        :class="'cursor-not-allowed text-gray-400'"
+                                        class="flex items-center"
+                                        @click="(e) => e.stopPropagation()"
+                                    >
+                                        <AtlanIcon
+                                            icon="Term"
+                                            class="m-0 mr-2"
+                                        />
+                                        <p class="p-0 m-0">Add Category</p>
+                                    </div>
+                                </a-tooltip>
+                            </template>
+                            <template v-else>
+                                <div class="flex items-center">
+                                    <AtlanIcon
+                                        icon="Category"
+                                        class="m-0 mr-2"
+                                    />
+                                    <p class="p-0 m-0">Add Category</p>
+                                </div>
+                            </template>
                         </template>
                     </AddGTCModal>
                 </a-menu-item>
-                <a-menu-item @click="closeMenu">
+                <a-menu-item
+                    v-if="role.toLowerCase() === 'admin'"
+                    @click="closeMenu"
+                >
                     <AddGTCModal
                         :key="selectedGlossaryQf"
-                        entityType="AtlasGlossary"
+                        entity-type="AtlasGlossary"
+                        :glossary-qualified-name="selectedGlossaryQf"
+                        :glossary-name="selectedGlosaryName"
                         @add="handleAdd"
-                        :glossaryQualifiedName="selectedGlossaryQf"
-                        :glossaryName="selectedGlosaryName"
                     >
                         <template #trigger>
                             <div class="flex items-center">
@@ -80,6 +122,7 @@
     import useGlossaryStore from '~/store/glossary'
     // components
     import AddGTCModal from '@/glossary/modal/addGtcModal.vue'
+    import whoami from '~/composables/user/whoami'
 
     export default defineComponent({
         components: {
@@ -90,9 +133,18 @@
                 type: String,
                 required: true,
             },
+            termAddPermission: {
+                type: Boolean,
+                required: true,
+            },
+            categoryAddPermission: {
+                type: Boolean,
+                required: true,
+            },
         },
         emits: ['add'],
         setup(props, { emit }) {
+            const { role } = whoami()
             const glossaryStore = useGlossaryStore()
             const isVisible = ref(false)
             const closeMenu = () => {
@@ -118,6 +170,7 @@
                 emit('add', asset, entity)
             }
             return {
+                role,
                 defaultEntityType,
                 selectedGlosaryName,
                 handleAdd,

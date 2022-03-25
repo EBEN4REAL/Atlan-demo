@@ -67,8 +67,30 @@
                         v-model="formData.slack"
                         label="Slack member ID"
                         placeholder="Add your slack workspace's member ID"
-                        pop-over-content="Go to your slack profile, after clicking on more menu you'll see the member ID. Make sure you're in right slack workspace."
-                    />
+                    >
+                        <template #popupContent>
+                            <div
+                                class="flex flex-col w-64 p-2 bg-gray-700 rounded gap-y-3"
+                            >
+                                <div
+                                    class="p-3 overflow-y-hidden bg-gray-200 rounded"
+                                    style="height: 200px"
+                                >
+                                    <img
+                                        v-if="slackMemberGif"
+                                        :src="slackMemberGif"
+                                        class="bg-gray-200 rounded"
+                                    />
+                                </div>
+                                <span class="px-1 text-sm text-white"
+                                    >Go to your slack profile, after clicking on
+                                    "More" menu you'll see the member ID. Make
+                                    sure you're in the right slack
+                                    workspace.</span
+                                >
+                            </div>
+                        </template>
+                    </SlackInput>
                 </div>
             </div>
         </a-form>
@@ -100,6 +122,7 @@
     import { message } from 'ant-design-vue'
     import { Users } from '~/services/service/users'
     import SlackInput from '@/admin/common/slackInput.vue'
+    import slackMemberGif from '~/assets/gifs/userProfile/Slack_Member_Id.gif'
 
     export default {
         name: 'EditUser',
@@ -286,6 +309,7 @@
                     `${window.location.origin}/api/service/avatars/${selectedUser.value.username}`
             )
             return {
+                slackMemberGif,
                 updateSuccess,
                 onSubmit,
                 onCancel,

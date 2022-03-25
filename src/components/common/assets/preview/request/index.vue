@@ -25,6 +25,11 @@
                             <div
                                 class="flex items-center rounded hover:bg-primary-light menu-status"
                             >
+                                <AtlanIcon
+                                    :class="stat.class"
+                                    class="mr-1"
+                                    :icon="stat.icon"
+                                />
                                 <!-- <div
                                     class="mr-2 dot"
                                     :style="{
@@ -41,13 +46,18 @@
                         </a-menu-item>
                     </a-menu>
                 </template>
-                <AtlanButton2
-                    style="width: 120px"
-                    class="justify-between"
-                    color="secondary"
-                    suffixIcon="ChevronDown"
-                    :label="selectedFilter.name"
-                />
+
+                <div
+                    class="flex text-gray-700 text-xs items-center bg-white py-1.5 px-2 rounded border border-gray-300 cursor-pointer w-32"
+                >
+                    <AtlanIcon
+                        :class="selectedFilter.class"
+                        class="mr-2"
+                        :icon="selectedFilter.icon"
+                    />
+                    {{ selectedFilter.name }}
+                    <AtlanIcon class="ml-auto" icon="ChevronDown" />
+                </div>
             </a-dropdown>
         </div>
         <div
@@ -116,25 +126,30 @@
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
 
     const listStatus = [
-        {
-            name: 'All',
-            key: 'all',
-            color: '#6D6DDA',
-        },
+        // {
+        //     name: 'All',
+        //     key: 'all',
+        //     color: '#6D6DDA',
+        // },
         {
             name: 'Pending',
             key: 'active',
             color: '#FFB119',
+            icon: 'Clock',
+            class: 'icon-warning',
         },
         {
             name: 'Approved',
             key: 'approved',
             color: '#6D6DDA',
+            icon: 'Check',
+            class: 'text-success check-icon',
         },
         {
             name: 'Rejected',
             key: 'rejected',
             color: '#DC5252',
+            icon: 'CrossCircle',
         },
     ]
 
@@ -162,7 +177,9 @@
                 limit: 40,
                 offset: 0,
             })
-            const filterStatus = ref({})
+            const filterStatus = ref({
+                status: selectedFilter.value.key,
+            })
             const { data, isLoading, mutate } = useRequest(
                 selectedAsset.value.guid,
                 pagination,
@@ -210,11 +227,15 @@
 </script>
 
 <style lang="less">
+    .check-icon {
+        transform: scale(1.2) !important;
+    }
     .container-scroll-request {
         max-height: 655px;
+        padding: 12px;
     }
     .menu-status {
-        width: 100px;
+        width: 150px;
     }
 </style>
 <style lang="less" scoped>

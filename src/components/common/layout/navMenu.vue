@@ -253,27 +253,16 @@
             })
 
             const pageName = computed(() => {
-                if (currentRoute.path.startsWith('/assets')) {
-                    return 'Assets'
-                }
-                if (currentRoute.path.startsWith('/glossary')) {
-                    return 'Glossary'
-                }
-                if (currentRoute.path.startsWith('/insights')) {
-                    return 'Insights'
-                }
-                if (currentRoute.path.startsWith('/workflows')) {
+                if (currentRoute.path.startsWith('/assets')) return 'Assets'
+                if (currentRoute.path.startsWith('/glossary')) return 'Glossary'
+                if (currentRoute.path.startsWith('/insights')) return 'Insights'
+                if (currentRoute.path.startsWith('/workflows'))
                     return 'Workflow Center'
-                }
-                if (currentRoute.path.startsWith('/workflows')) {
-                    return 'Workflow Center'
-                }
-                if (currentRoute.path.startsWith('/governance')) {
+                if (currentRoute.path.startsWith('/governance'))
                     return 'Governance Center'
-                }
-                if (currentRoute.path.startsWith('/admin')) {
+                if (currentRoute.path.startsWith('/admin'))
                     return 'Admin Center'
-                }
+                return 'Atlan'
             })
 
             const handleGlobalStateChange = () => {

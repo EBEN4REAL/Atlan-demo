@@ -20,10 +20,18 @@
                     >
                         <AtlanIcon icon="QueryGrey" class="icon-blue-stroke" />
                     </div>
+                    <div
+                        v-if="type === 'glossaryPolicy'"
+                        class="flex items-center justify-center w-8 h-8 mr-2 rounded-full bg-primary-light"
+                    >
+                        <AtlanIcon icon="GlossaryGray" class="" />
+                    </div>
                     <span class="ml-1 text-base font-bold"
                         >{{
                             policyType === 'meta'
                                 ? 'Metadata Policy'
+                                : policyType === 'glossaryPolicy'
+                                ? 'Glossary Policy'
                                 : 'Data Policy'
                         }}
                     </span>
@@ -65,7 +73,7 @@
                     </span>
                 </div> -->
             </div>
-            <div class="px-4 my-20 bg-gray-100">
+            <div class="px-4 mb-20 bg-gray-100 mt-75">
                 <div class="relative mt-2 bg-white shadow-section">
                     <div class="p-3 text-sm font-bold text-gray-700 border-b">
                         Overview
@@ -102,13 +110,16 @@
                             <div v-else>{{ policy.name }}</div>
                             <div
                                 v-if="rules.policyName.show"
-                                class="absolute text-xs text-red-500 -bottom-5"
+                                class="mt-2 text-xs text-red-500"
                                 data-test-id="policy-validation-name"
                             >
                                 {{ rules.policyName.text }}
                             </div>
                         </div>
-                        <div class="relative mt-4">
+                        <div
+                            v-if="type !== 'glossaryPolicy'"
+                            class="relative mt-3"
+                        >
                             <div class="mb-2 text-sm text-gray-500 required">
                                 Select a connection
                                 <span class="text-red-500">*</span>
@@ -142,17 +153,68 @@
                             />
                             <div
                                 v-if="rules.connection.show"
-                                class="absolute text-xs text-red-500 -bottom-5"
+                                class="mt-3 text-xs text-red-500"
                                 data-test-id="policy-validation-connector"
                             >
                                 {{ rules.connection.text }}
+                            </div>
+                        </div>
+                        <div v-else class="mt-3">
+                            <div class="mb-2 text-sm text-gray-500 required">
+                                Select glossary
+                                <span class="text-red-500">*</span>
+                            </div>
+                            <a-select
+                                v-model:value="policy.glossaryQualifiedNames"
+                                mode="multiple"
+                                :size="size"
+                                placeholder="Please select"
+                                class="w-full"
+                                option-filter-prop="displayText"
+                                :filter-option="filterOption"
+                                @change="handleChangeGlossary"
+                                @blur="
+                                    () => {
+                                        if (
+                                            !policy.glossaryQualifiedNames
+                                                .length
+                                        )
+                                            rules.glossaryQualifiedNames.show = true
+                                        else
+                                            rules.glossaryQualifiedNames.show = false
+                                    }
+                                "
+                            >
+                                <a-select-option
+                                    v-for="el in glossaryComputed"
+                                    :key="el.id"
+                                    :display-text="el.displayText"
+                                >
+                                    <AtlanIcon
+                                        :icon="
+                                            getEntityStatusIcon(
+                                                el.typeName,
+                                                certificateStatus(el)
+                                            )
+                                        "
+                                        class="mr-1"
+                                    />
+                                    {{ el.displayText }}
+                                </a-select-option>
+                            </a-select>
+                            <div
+                                v-if="rules.glossaryQualifiedNames?.show"
+                                class="mt-3 text-xs text-red-500"
+                                data-test-id="policy-validation-connector"
+                            >
+                                {{ rules.glossaryQualifiedNames?.text }}
                             </div>
                         </div>
                     </div>
                 </div>
                 <div
                     v-if="connectorData.attributeValue"
-                    class="mt-4 bg-white shadow-section"
+                    class="mt-3 bg-white shadow-section"
                 >
                     <div class="flex items-center justify-between p-3 border-b">
                         <div class="text-sm font-bold text-gray-700">
@@ -304,7 +366,12 @@
                     </div>
                 </div>
                 <div
-                    v-if="policyType === 'meta' && connectorData.attributeValue"
+                    v-if="
+                        (policyType === 'meta' &&
+                            connectorData.attributeValue) ||
+                        (policyType === 'glossaryPolicy' &&
+                            policy?.glossaryQualifiedNames?.length)
+                    "
                     class="mt-4 bg-white shadow-section"
                 >
                     <div class="p-3 border-b">
@@ -321,7 +388,11 @@
                                 "
                                 size="small"
                                 class="border-none text-primary"
-                                :disabled="!connectorData.attributeValue"
+                                :disabled="
+                                    type === 'glossaryPolicy'
+                                        ? false
+                                        : !connectorData.attributeValue
+                                "
                                 @click="handleToggleManage"
                             >
                                 Edit
@@ -355,20 +426,13 @@
                                 class="flex flex-col h-auto mb-3 overflow-auto tag-permission max-h-32"
                                 :class="
                                     i !== selectedPermission.length - 1 &&
-                                    'mb-6'
+                                    'mb-4'
                                 "
                             >
                                 <div
                                     class="mb-2 text-sm text-gray-500 title-tag"
                                 >
-                                    <AtlanIcon
-                                        :icon="
-                                            el.title.toLowerCase() === 'assets'
-                                                ? 'AssetsInactiveLight'
-                                                : 'GovernanceCenter'
-                                        "
-                                        class="h-4"
-                                    />
+                                    <AtlanIcon :icon="el.icon" class="h-4" />
                                     {{ el.title }}
                                 </div>
                                 <div
@@ -381,20 +445,26 @@
                     </div>
                     <div
                         v-if="rules.metadata.show"
-                        class="mt-2 text-xs text-red-500"
+                        class="pb-2 mx-2 text-xs text-red-500"
                         data-test-id="policy-validation-connector"
                     >
                         {{ rules.metadata.text }}
                     </div>
-                    <div class="p-3 pt-2 bg-gray-100 rounded-lg rounded-t-none">
-                        <div
+                    <!-- <div
+                        v-if="type !== 'glossaryPolicy'"
+                        class="p-3 pt-2 bg-gray-100 rounded-lg rounded-t-none"
+                    > -->
+                    <!-- <div
                             v-if="
                                 isEdit
                                     ? canEdit
-                                    : true && connectorData.attributeValue
+                                    : true &&
+                                      (connectorData.attributeValue ||
+                                          policy?.glossaryQualifiedNames
+                                              ?.length)
                             "
-                        >
-                            <div class="flex mt-1">
+                        > -->
+                    <!-- <div class="flex mt-1">
                                 <div>
                                     <span>Deny</span>
                                     <a-tooltip placement="top" color="white">
@@ -422,10 +492,10 @@
                                     style="width: 40px !important"
                                     @update:checked="policy.allow = !$event"
                                 />
-                            </div>
-                        </div>
-                        <div
-                            v-else-if="!policy.allow"
+                            </div> -->
+                    <!-- </div> -->
+                    <!-- <div
+                            v-if="!policy.allow"
                             class="flex items-center justify-between"
                         >
                             <div class="mt-4">
@@ -445,8 +515,8 @@
                                     </template>
                                 </a-tooltip>
                             </div>
-                        </div>
-                    </div>
+                        </div> -->
+                    <!-- </div> -->
                 </div>
                 <div
                     v-if="policyType === 'data' && connectorData.attributeValue"
@@ -485,7 +555,7 @@
                             class="w-80"
                         />
                     </div>
-                    <div class="p-3 bg-gray-100">
+                    <div class="bg-gray-100">
                         <div
                             v-if="
                                 isEdit
@@ -493,7 +563,7 @@
                                     : true && connectorData.attributeValue
                             "
                         >
-                            <div class="flex mt-4">
+                            <!-- <div class="flex mt-4">
                                 <div>
                                     <span>Deny Query</span>
                                     <a-tooltip placement="top" color="white">
@@ -521,7 +591,7 @@
                                     style="width: 40px !important"
                                     @update:checked="policy.allow = !$event"
                                 />
-                            </div>
+                            </div> -->
                         </div>
                         <div
                             v-else-if="!policy.allow"
@@ -544,6 +614,62 @@
                                     </template>
                                 </a-tooltip>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    v-if="
+                        isEdit
+                            ? canEdit && (type === 'meta' || type === 'data')
+                            : true &&
+                              connectorData.attributeValue &&
+                              (type === 'meta' || type === 'data')
+                    "
+                    class="p-4 mt-3 bg-white shadow-section"
+                >
+                    <div class="flex">
+                        <span class="text-sm font-bold text-gray-700">{{
+                            type === 'meta'
+                                ? 'Deny selected permissions'
+                                : 'Deny Query'
+                        }}</span>
+                        <!-- <a-tooltip placement="top" color="white">
+                                    <AtlanIcon icon="Overview" class="mx-2" />
+                                    <template #title>
+                                        <p class="m-3 text-gray">
+                                            This will deny the permissions you
+                                            have selected above, for all the
+                                            users in the persona, even if they
+                                            had access to those permissions via
+                                            some other persona or purpose.
+                                        </p>
+                                    </template>
+                                </a-tooltip> -->
+                        <a-switch
+                            :class="policy.allow ? `bg-gray-300` : 'bg-red-600'"
+                            data-test-id="toggle-switch"
+                            class="ml-auto"
+                            :checked="!policy.allow"
+                            style="width: 40px !important"
+                            @update:checked="policy.allow = !$event"
+                        />
+                    </div>
+                    <div
+                        v-if="!policy.allow"
+                        class="flex p-3 mt-3 bg-red-100 rounded-lg"
+                    >
+                        <div class="w-4 mr-2">
+                            <AtlanIcon
+                                icon="IssuesAnnouncement"
+                                class="icon-annoucemnet"
+                            />
+                        </div>
+                        <div class="flex-1 text-sm text-gray-700">
+                            {{
+                                type === 'meta'
+                                    ? 'The above permissions have been overidden for all the users in the persona, even if they have access to those permissions via some other persona or purpose'
+                                    : 'This will deny the permissions you have selected above, for all the users in the persona, even if they had access to those permissions via some other persona or purpose'
+                            }}
                         </div>
                     </div>
                 </div>
@@ -570,6 +696,7 @@
                 >
                     <ManagePermission
                         v-model:actions="policy.actions"
+                        :type="type"
                         :visible-drawer="isShow"
                         @close="() => (isShow = false)"
                         @save="handleSavePermission"
@@ -595,10 +722,15 @@
                 padding="compact"
                 :disabled="
                     isLoading ||
-                    !connectorData.attributeValue ||
+                    (!connectorData.attributeValue &&
+                        type !== 'glossaryPolicy') ||
                     !policy.name ||
-                    !policy?.assets?.length ||
-                    (policyType === 'meta' && !selectedPermission.length)
+                    (!policy?.assets?.length && type !== 'glossaryPolicy') ||
+                    ((policyType === 'meta' ||
+                        policyType === 'glossaryPolicy') &&
+                        !selectedPermission.length) ||
+                    (policyType === 'glossaryPolicy' &&
+                        !policy?.glossaryQualifiedNames?.length)
                 "
                 class="px-6 min-w-20"
                 @click="handleSave"
@@ -639,6 +771,9 @@
     import { IPersona } from '~/types/accessPolicies/personas'
     import useScopeService from './composables/useScopeService'
     import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
+    import useGlossaryStore from '~/store/glossary'
+    import useGlossaryData from '~/composables/glossary2/useGlossaryData'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         name: 'AddPolicy',
@@ -696,7 +831,12 @@
         },
         emits: ['close'],
         setup(props, { emit }) {
-            const { scopeList } = useScopeService().listScopes('persona')
+            const glossaryStore = useGlossaryStore()
+            const glossaryComputed = computed(() => glossaryStore.list)
+            const { scopeList: scopeListPersona } =
+                useScopeService().listScopes('persona')
+            const { scopeList: scopeListGlossary } =
+                useScopeService().listScopes('glossaryPolicy')
             const policyType = ref('')
             const assetSelectorVisible = ref(false)
             const isShow = ref(false)
@@ -708,6 +848,10 @@
             const BItypes = getBISourceTypes()
 
             const rules = ref({
+                glossaryQualifiedNames: {
+                    text: 'Glossary is required!',
+                    show: false,
+                },
                 policyName: {
                     text: 'Enter a policy name to identify your policy',
                     show: false,
@@ -781,6 +925,10 @@
 
             const initPolicy = () => {
                 rules.value = {
+                    glossaryQualifiedNames: {
+                        text: 'Glossary is required!',
+                        show: false,
+                    },
                     policyName: {
                         text: 'Enter a policy name!',
                         show: false,
@@ -822,6 +970,23 @@
                             name: '',
                             description: '',
                             isNew: true,
+                        }
+                    }
+                    if (type.value === 'glossaryPolicy') {
+                        policy.value = {
+                            glossaryQualifiedNames: [],
+                            allow: true,
+                            name: '',
+                            description: '',
+                            isNew: true,
+                            actions: [
+                                'entity-create',
+                                'entity-update',
+                                'entity-delete',
+                                'entity-update-business-metadata',
+                                'entity-add-classification',
+                                'entity-remove-classification',
+                            ],
                         }
                     }
                 }
@@ -896,14 +1061,21 @@
                 if (!policy.value.name) {
                     policyNameRef.value?.focus()
                     rules.value.policyName.show = true
-                } else if (!connectorData.value.attributeValue) {
+                } else if (
+                    !connectorData.value?.attributeValue &&
+                    policyType.value !== 'glossaryPolicy'
+                ) {
                     connectorComponentRef.value?.treeSelectRef?.focus()
                     rules.value.connection.show = true
-                } else if (policy.value.assets.length < 1) {
+                } else if (
+                    policy.value.assets?.length < 1 &&
+                    policyType.value !== 'glossaryPolicy'
+                ) {
                     rules.value.assets.show = true
                 } else if (
-                    policy.value.actions.length === 0 &&
-                    policyType.value === 'meta'
+                    policy.value.actions?.length === 0 &&
+                    (policyType.value === 'meta' ||
+                        policyType.value === 'glossaryPolicy')
                 ) {
                     rules.value.metadata.show = true
                 } else {
@@ -911,11 +1083,17 @@
                 }
             }
             const selectedPermission = computed(() => {
+                const scopeList =
+                    policyType.value === 'glossaryPolicy'
+                        ? scopeListGlossary
+                        : scopeListPersona
                 const result = []
                 const assetsPermission = []
                 const governance = []
-                const assetsList = scopeList[0]
-                const governanceList = scopeList[1]
+                const api = []
+                const assetsList = scopeList[0] || []
+                const governanceList = scopeList[1] || []
+                const apiList = scopeList[2] || []
                 policy.value.actions.forEach((el) => {
                     const assetPermission = assetsList.scopes.find(
                         (elc) => elc.value === el
@@ -923,6 +1101,10 @@
                     const governancePermission = governanceList.scopes.find(
                         (elc) => elc.value === el
                     )
+                    const apiPermission = apiList.scopes?.find(
+                        (elc) => elc.value === el
+                    )
+
                     if (assetPermission) {
                         if (el === 'link-assets') {
                             if (
@@ -933,22 +1115,37 @@
                         } else {
                             assetsPermission.push(assetPermission.label)
                         }
-                        console.log(el, '<<<<')
                     }
                     if (governancePermission) {
                         governance.push(governancePermission.label)
                     }
+                    if (apiPermission) {
+                        api.push(apiPermission.label)
+                    }
                 })
                 if (assetsPermission.length > 0) {
                     result.push({
-                        title: `Assets`,
+                        title: `${
+                            policyType.value === 'glossaryPolicy'
+                                ? 'Glossary, Terms and Categories'
+                                : 'Assets'
+                        }`,
                         value: assetsPermission.join(', '),
+                        icon: 'AssetsInactiveLight',
                     })
                 }
                 if (governance.length > 0) {
                     result.push({
                         title: `Governance`,
                         value: governance.join(', '),
+                        icon: 'GovernanceCenter',
+                    })
+                }
+                if (api.length > 0) {
+                    result.push({
+                        title: `API`,
+                        value: api.join(', '),
+                        icon: 'APIKey',
                     })
                 }
                 return result
@@ -972,11 +1169,13 @@
                 const sliced = splited.slice(3, splited.length)
                 return sliced.join('/')
             }
-            const canEdit = computed(() =>
-                props.whitelistedConnectionIds.includes(
+            const canEdit = computed(() => {
+                // all admins can have edit n delete access to the glossary policy
+                if (policyType.value === 'glossaryPolicy') return true
+                return props.whitelistedConnectionIds.includes(
                     policy?.value?.connectionId
                 )
-            )
+            })
             onMounted(() => {
                 window.addEventListener('keydown', (keyDown) => {
                     if (keyDown.keyCode === 27) {
@@ -987,7 +1186,21 @@
             const disabledForm = computed(
                 () => !!(isEdit.value && !canEdit.value)
             )
+            const handleChangeGlossary = (glossaryIds) => {
+                policy.value.glossaryQualifiedNames = glossaryIds
+                if (policy.value?.glossaryQualifiedNames?.length) {
+                    rules.value.glossaryQualifiedNames.show = false
+                } else {
+                    rules.value.glossaryQualifiedNames.show = true
+                }
+            }
+            const { getEntityStatusIcon } = useGlossaryData()
+            const { certificateStatus } = useAssetInfo()
+            const filterOption = (val, opt) =>
+                opt['display-text'].toLowerCase().includes(val.toLowerCase())
             return {
+                certificateStatus,
+                getEntityStatusIcon,
                 selectedPersonaDirty,
                 rules,
                 policy,
@@ -1014,12 +1227,20 @@
                 canEdit,
                 disabledForm,
                 BItypes,
+                glossaryComputed,
+                handleChangeGlossary,
+                filterOption,
             }
         },
     })
 </script>
 
 <style lang="less">
+    .icon-annoucemnet {
+        circle {
+            fill: #3e4359;
+        }
+    }
     .shadow-section {
         box-shadow: 0px 1px 4px 0px #0000001f;
         border-radius: 8px !important;
@@ -1043,6 +1264,9 @@
             path {
                 stroke: #5277d7 !important;
             }
+        }
+        .mt-75 {
+            margin-top: 75px !important;
         }
         height: 100vh;
         display: flex;

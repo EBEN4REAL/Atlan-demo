@@ -14,6 +14,7 @@ TR
                     :auto-expand-parent="false"
                     @select="selectNode"
                     @expand="expandNode"
+                    class="bg-new-gray-100"
                 >
                     <template #switcherIcon>
                         <AtlanIcon icon="CaretRight" />
@@ -31,6 +32,7 @@ TR
                             :isNodeLoading="isNodeLoading"
                             :nodeError="nodeError"
                             :errorNode="errorNode"
+                            class="this-is-a-treenode"
                         />
                         <!-- <div v-else-if="isNodeLoading === false && nodeError">
                             {{ nodeError }}
@@ -382,6 +384,7 @@ TR
         }
         :global(.ant-tree .ant-tree-treenode) {
             @apply p-0 !important;
+            @apply px-2 !important;
         }
         :global(.ant-tree.ant-tree-block-node
                 li
@@ -390,7 +393,7 @@ TR
             transition: none !important;
         }
         :global(.ant-tree li .ant-tree-node-content-wrapper:hover) {
-            @apply bg-gray-light;
+            @apply bg-new-gray-200;
         }
         :global(.ant-tree-switcher) {
             width: 20px !important;
@@ -403,28 +406,36 @@ TR
 
         :global(.ant-tree-treenode) {
             padding-bottom: 0px !important;
-            @apply hover:bg-gray-light rounded !important;
+            @apply hover:bg-new-gray-200 rounded-lg !important;
             transition: none !important;
         }
         :global(.ant-tree-node-content-wrapper) {
-            @apply hover:bg-gray-light rounded !important;
+            @apply hover:bg-new-gray-200 rounded-lg !important;
             transition: none !important;
         }
 
         :global(.ant-tree-node-selected) {
-            @apply bg-primary-selected-focus !important;
-            @apply hover:bg-primary-selected-focus !important;
+            // @apply bg-new-gray-200 !important;
+            // @apply hover:bg-new-gray-200 !important;
+            @apply bg-transparent !important;
+            @apply hover:bg-transparent !important;
             // @apply hover:bg-gray-light !important;
         }
         :global(.ant-tree-treenode-selected) {
-            @apply bg-primary-selected-focus !important;
-            @apply hover:bg-primary-selected-focus !important;
+            // @apply border !important;
+            // @apply border-primary !important;
+            @apply bg-new-gray-200 !important;
+            @apply hover:bg-new-gray-200 !important;
+            box-shadow: inset 0px 0px 0px 1px #5277d7;
         }
 
         // fix tree width Jan,7 ,2021
         :global(.ant-tree-indent-unit) {
             width: 20px !important;
         }
+    }
+    .ant-tree-treenode {
+        @apply px-2 !important;
     }
 </style>
 <style lang="less" scoped>
@@ -471,5 +482,8 @@ TR
     }
     .max-width-text {
         max-width: 216px;
+    }
+    .ant-tree-treenode {
+        @apply px-2 !important;
     }
 </style>

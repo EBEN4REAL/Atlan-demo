@@ -31,7 +31,9 @@
                                 {{
                                     selectedPersonaDirty?.metadataPolicies
                                         ?.length +
-                                    selectedPersonaDirty?.dataPolicies?.length
+                                    selectedPersonaDirty?.dataPolicies?.length +
+                                    (selectedPersonaDirty?.glossaryPolicies
+                                        ?.length || 0)
                                 }}
                             </div>
                         </div>
@@ -63,10 +65,10 @@
         >
             <PersonaMeta
                 class="pb-0"
-                :persona="persona"
+                :persona="selectedPersonaDirty"
                 @editDetails="$emit('editDetails')"
             />
-            <Readme :persona="selectedPersonaDirty" />
+            <!-- <Readme :persona="selectedPersonaDirty" /> -->
             <div class="pb-3 mt-3 bg-white border border-gray-200 rounded">
                 <ResourcesWidget
                     placeholder="Resources is the place to document all knowledge around the persona"
@@ -81,6 +83,7 @@
                     @remove="handleRemoveResource"
                 />
             </div>
+            <Readme :persona="selectedPersonaDirty" />
         </div>
         <div
             v-if="activeTabKey === 'policies'"
@@ -89,12 +92,16 @@
         >
             <div
                 :class="
-                    metaDataComputed.length > 0 || dataPolicyComputed.length > 0
+                    metaDataComputed.length > 0 ||
+                    dataPolicyComputed.length > 0 ||
+                    glossaryPolicyComputed.length > 0
                         ? 'bg-white rounded-lg'
                         : (activeTabFilter === 'metaData' &&
                               metaDataComputed.length === 0) ||
                           (activeTabFilter === 'data' &&
-                              dataPolicyComputed.length === 0)
+                              dataPolicyComputed.length === 0) ||
+                          (activeTabFilter === 'glossaryPolicy' &&
+                              glossaryPolicyComputed.length === 0)
                         ? 'bg-white rounded-lg pb-14'
                         : ''
                 "
@@ -166,7 +173,8 @@
                 <div
                     v-if="
                         metaDataComputed.length > 0 ||
-                        dataPolicyComputed.length > 0
+                        dataPolicyComputed.length > 0 ||
+                        glossaryPolicyComputed.length > 0
                     "
                     class="flex flex-col flex-grow overflow-y-auto rounded-md container-card-policy"
                 >
@@ -204,13 +212,32 @@
                             @clickCard="handleSelectPolicy"
                         />
                     </template>
+                    <template
+                        v-for="(policy, idx) in glossaryPolicyComputed"
+                        :key="idx"
+                    >
+                        <PolicyCard
+                            :policy="policy"
+                            type="glossaryPolicy"
+                            :selected-policy="selectedPolicy"
+                            :whitelisted-connection-ids="
+                                whitelistedConnectionIds
+                            "
+                            @edit="setEditFlag('glossaryPolicy', policy.id!)"
+                            @delete="deletePolicyUI(policy.id)"
+                            @cancel="discardPolicy('glossaryPolicy', policy.id!)"
+                            @clickCard="handleSelectPolicy"
+                        />
+                    </template>
                 </div>
                 <div
                     v-if="
                         (activeTabFilter === 'metaData' &&
                             metaDataComputed.length === 0) ||
                         (activeTabFilter === 'data' &&
-                            dataPolicyComputed.length === 0)
+                            dataPolicyComputed.length === 0) ||
+                        (activeTabFilter === 'glossaryPolicy' &&
+                            glossaryPolicyComputed.length === 0)
                     "
                     class="flex flex-col items-center justify-center h-full"
                 >
@@ -218,7 +245,11 @@
                     <span class="mt-5 text-xl font-bold text-gray">
                         {{
                             `No ${
-                                activeTabFilter === 'data' ? 'data' : 'metadata'
+                                activeTabFilter === 'glossaryPolicy'
+                                    ? 'glossary'
+                                    : activeTabFilter === 'data'
+                                    ? 'data'
+                                    : 'metadata'
                             } policies added`
                         }}
                     </span>
@@ -339,7 +370,11 @@
     import Addpolicy from './addpolicy.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import NewPolicyIllustration from '~/assets/images/illustrations/new_policy.svg'
-    import { activeTabKey, tabConfig } from './composables/usePersonaTabs'
+    import {
+        activeTabKey,
+        tabConfig,
+        setActiveTab,
+    } from './composables/usePersonaTabs'
     import {
         newIdTag,
         selectedPersonaDirty,
@@ -410,6 +445,11 @@
                     icon: 'QueryGrey',
                     handleClick: () => handleAddPolicy('data'),
                 },
+                {
+                    title: 'Glossary Policy',
+                    icon: 'GlossaryGray',
+                    handleClick: () => handleAddPolicy('glossaryPolicy'),
+                },
             ]
 
             async function savePolicyUI(
@@ -450,7 +490,7 @@
                         type,
                         masking: dataPolicy.maskType ? dataPolicy.maskType : '',
                         denied: !dataPolicy.allow,
-                        asset_count: dataPolicy.assets.length,
+                        asset_count: dataPolicy?.assets?.length || 0,
                     }
                     useAddEvent(
                         'governance',
@@ -531,6 +571,25 @@
                 }
                 return []
             })
+            const glossaryPolicyComputed = computed(() => {
+                if (
+                    !activeTabFilter.value ||
+                    activeTabFilter.value === 'all Persona' ||
+                    activeTabFilter.value === 'glossaryPolicy'
+                ) {
+                    const dataPolicy = sortMethodArrOfObject(
+                        selectedPersonaDirty?.value?.glossaryPolicies || [],
+                        'name'
+                    )
+
+                    return filterMethod(
+                        dataPolicy,
+                        searchPersona.value || '',
+                        'name'
+                    )
+                }
+                return []
+            })
             const tabFilterList = computed(() => {
                 const dataMeta =
                     selectedPersonaDirty?.value?.metadataPolicies || []
@@ -594,6 +653,7 @@
                 () =>
                     !selectedPersonaDirty.value?.metadataPolicies?.length &&
                     !selectedPersonaDirty.value?.dataPolicies?.length &&
+                    !selectedPersonaDirty.value?.glossaryPolicies?.length &&
                     !searchPersona.value
             )
             const {
@@ -616,6 +676,10 @@
                 {
                     key: 'data',
                     label: 'Data',
+                },
+                {
+                    key: 'glossaryPolicy',
+                    label: 'Glossary',
                 },
             ])
             watch(selectedPersonaDirty, () => {
@@ -664,6 +728,7 @@
                 isEmpty,
                 streams,
                 NewPolicyIllustration,
+                glossaryPolicyComputed,
             }
         },
     })
@@ -685,7 +750,7 @@
         margin-top: 0px!important;
     }
     .container-tabs {
-        width: 200px
+        width: 250px
         // .ant-radio-button-wrapper {
         //     &::before {
         //         display: none !important;

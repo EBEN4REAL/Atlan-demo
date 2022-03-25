@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex flex-col items-center w-full h-full bg-white query-explorer"
+        class="flex flex-col items-center w-full h-full bg-new-gray-100 query-explorer"
     >
         <div
             v-if="
@@ -110,34 +110,37 @@
                         v-model:value="searchQuery"
                         class="h-8 rounded"
                         :class="$style.inputSearch"
-                        placeholder="Search Queries"
+                        placeholder="Search queries"
                     >
+                        <template #prefix>
+                            <AtlanIcon icon="Search" color="#6A7692" />
+                        </template>
                         <template #suffix>
-                            <AtlanIcon icon="Search" color="#6F7590" />
+                            <a-popover trigger="click" placement="bottomLeft">
+                                <a-button
+                                    class="flex items-center justify-center w-6 h-6 p-2 border-none shadow-none hover:bg-new-gray-100"
+                                >
+                                    <template #icon>
+                                        <AtlanIcon
+                                            v-if="totalFilteredCount === 0"
+                                            icon="Filter"
+                                            class="-ml-0.5"
+                                            color="#6A7692"
+                                        />
+                                        <AtlanIcon
+                                            v-else
+                                            icon="FilterDot"
+                                            class="-ml-0.5"
+                                            color="#6A7692"
+                                        />
+                                    </template>
+                                </a-button>
+                                <template #content>
+                                    <QueryFilter @change="onFilterChange" />
+                                </template>
+                            </a-popover>
                         </template>
                     </a-input>
-                    <a-popover trigger="click" placement="bottomLeft">
-                        <a-button
-                            class="flex items-center w-8 h-8 p-2"
-                            :class="$style.filterButton"
-                        >
-                            <template #icon>
-                                <AtlanIcon
-                                    v-if="totalFilteredCount === 0"
-                                    icon="Filter"
-                                    class="-ml-0.5"
-                                />
-                                <AtlanIcon
-                                    v-else
-                                    icon="FilterDot"
-                                    class="-ml-0.5"
-                                />
-                            </template>
-                        </a-button>
-                        <template #content>
-                            <QueryFilter @change="onFilterChange" />
-                        </template>
-                    </a-popover>
                 </div>
             </div>
             <!-- <div v-else style="height: 35%"></div> -->
@@ -145,14 +148,14 @@
             <div class="w-full h-full mt-2" v-if="queryCollections?.length > 0">
                 <div
                     v-if="!searchQuery?.length && !totalFilteredCount"
-                    class="relative w-full px-4 pt-0 pb-6 mt-2 overflow-y-auto"
+                    class="relative w-full px-2 pt-0 pb-6 mt-2 overflow-y-auto"
                     :style="
                         fullSreenState
                             ? 'height: calc( 100vh - 140px )'
                             : 'height: calc( 100vh - 120px )'
                     "
                 >
-                    <div class="w-full h-full bg-white">
+                    <div class="w-full h-full bg-new-gray-100">
                         <query-tree
                             v-if="!queryCollectionsLoading"
                             @toggleCreateQueryModal="toggleCreateQueryModal"
@@ -1209,14 +1212,15 @@
         border-radius: 8px !important;
     }
     :global(.ant-input) {
-        color: #6f7590 !important;
+        @apply text-gray-700 !important;
     }
     input::placeholder {
-        color: #6f7590 !important;
+        @apply text-new-gray-600 !important;
     }
     .filterButton {
         background: #ffffff;
-        border: 1px solid #e6e6eb;
+        border: 1px solid;
+        @apply border-new-gray-300 !important;
         box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
         border-radius: 8px;
     }

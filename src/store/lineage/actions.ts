@@ -1,4 +1,8 @@
 export const actions = {
+    setCyclicRelation(relStr) {
+        if (this.cyclicRelations.includes(relStr)) return
+        this.cyclicRelations.push(relStr)
+    },
     setColumnToSelect(column) {
         this.columnToSelect = column
     },

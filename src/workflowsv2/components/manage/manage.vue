@@ -3,7 +3,7 @@
         <AssetFilters
             v-model="wfFilters"
             v-model:activeKey="activeKey"
-            :filter-list="workflowFilter"
+            :filter-list="workflowFilterRef"
             :allow-custom-filters="false"
             no-filter-title="Filters"
             class="drawer-request"
@@ -63,8 +63,10 @@
 </template>
 
 <script lang="ts">
-    import { useDebounceFn, whenever } from '@vueuse/core'
+    import { useDebounceFn, watchOnce, whenever } from '@vueuse/core'
     import { computed, defineComponent, ref } from 'vue'
+
+    import { capitalizeFirstLetter } from '~/utils/string'
 
     import AssetFilters from '@/common/assets/filters/index.vue'
 
@@ -76,6 +78,7 @@
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
     import SearchAndFilter from '~/components/common/input/searchAndFilter.vue'
     import PackageSelector from '~/workflowsv2/components/common/packageSelector.vue'
+    import { useWorkflowTypes } from '~/workflowsv2/composables/useWorkflowTypes'
 
     export default defineComponent({
         name: 'ManageWorkflows',
@@ -146,6 +149,24 @@
                 quickChange()
             }
 
+            const workflowFilterRef = ref([...workflowFilter])
+
+            const { workflowTypeList } = useWorkflowTypes()
+
+            watchOnce(workflowTypeList, () => {
+                const idx = workflowFilterRef.value.findIndex(
+                    (li) => li.id === 'wfType'
+                )
+                if (idx > -1)
+                    workflowFilterRef.value[idx].data =
+                        workflowTypeList.value.map((agg) => ({
+                            id: agg.key,
+                            label: `${capitalizeFirstLetter(agg.key)} (${
+                                agg.doc_count
+                            })`,
+                        }))
+            })
+
             return {
                 list,
                 refetch,
@@ -156,9 +177,10 @@
                 wfFilters,
                 isDrawerVisible,
                 activeKey,
-                workflowFilter,
+                workflowFilterRef,
                 handleResetEvent,
                 facets,
+                workflowTypeList,
             }
         },
     })

@@ -24,7 +24,7 @@
         <div
             class="flex items-center mt-2 text-sm leading-none text-gray-500 gap-x-1"
         >
-            <template v-if="isCronRun(workflow)">
+            <template v-if="isCronWorkflow(workflow)">
                 <AtlanIcon icon="Schedule" class="text-success" />
                 <span class="ml-1 pt-0.5">{{ cronString(workflow) }}</span>
             </template>
@@ -71,7 +71,7 @@
             const { workflow } = toRefs(props)
             const workflowStore = useWorkflowStore()
 
-            const { displayName, isCronRun, cronString, creatorUsername } =
+            const { displayName, isCronWorkflow, cronString, creatorUsername } =
                 useWorkflowInfo()
 
             const { name, icon, emoji, type } = usePackageInfo()
@@ -93,7 +93,7 @@
                 icon,
                 emoji,
                 type,
-                isCronRun,
+                isCronWorkflow,
                 cronString,
                 creatorUsername,
             }

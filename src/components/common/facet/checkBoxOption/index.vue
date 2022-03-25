@@ -10,7 +10,7 @@
                     :value="el.id"
                     class="flex-row-reverse items-center w-full mb-1 atlan-reverse"
                 >
-                    <div class="flex items-center w-44">
+                    <div class="flex items-center w-48">
                         <div
                             v-if="el.colorDot"
                             :style="`background-color: ${el.colorDot}`"

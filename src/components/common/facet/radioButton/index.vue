@@ -10,12 +10,13 @@
                     :value="el.id"
                     class="inline-flex flex-row-reverse items-center w-full mb-1 atlan-reverse"
                 >
-                    <div class="flex items-center">
+                    <div class="flex items-center gap-x-2">
                         <div
+                            v-if="el.colorDot"
                             :style="`background-color: ${el.colorDot}`"
                             class="dot"
                         />
-                        <span class="mb-0 ml-3 text-gray">
+                        <span class="mb-0 text-gray">
                             {{ el.label }}
                         </span>
                     </div>

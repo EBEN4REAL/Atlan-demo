@@ -173,6 +173,9 @@ export default function useWorkflowInfo() {
         return false
     }
 
+    const isCronWorkflow = (workflow) =>
+        !!workflow?.metadata?.annotations?.['orchestration.atlan.com/schedule']
+
     const getRunClassByPhase = (tempStatus) => {
         switch (tempStatus) {
             case 'Succeeded':
@@ -331,6 +334,7 @@ export default function useWorkflowInfo() {
         cronString,
         cron,
         isCronRun,
+        isCronWorkflow,
         getRunClass,
         getRunTooltip,
         getRunBorderClass,

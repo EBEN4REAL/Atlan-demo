@@ -176,7 +176,8 @@
                         if (Object.keys(localValue.value[key]).length > 0) {
                             count += 1
                         }
-                    }
+                    } else if (typeof localValue.value[key] === 'string')
+                        count += 1
                 })
                 return count
             })

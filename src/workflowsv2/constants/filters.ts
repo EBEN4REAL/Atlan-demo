@@ -74,4 +74,37 @@ export const workflowFilter = [
         // selectUserKey: 'id',
         class: 'bg-transparent',
     },
+    {
+        id: 'wfType',
+        label: 'Workflow Type',
+        component: 'CheckBoxOption',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+        class: 'bg-transparent',
+        data: [],
+    },
+    {
+        id: 'schedule',
+        label: 'Schedule',
+        component: 'RadioButton',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+        class: 'bg-transparent',
+        data: [
+            {
+                id: 'scheduled',
+                label: 'Scheduled',
+            },
+            {
+                id: 'manual',
+                label: 'Unscheduled',
+            },
+        ],
+    },
 ]

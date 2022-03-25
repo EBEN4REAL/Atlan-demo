@@ -1,3 +1,6 @@
+enum CTAAction { 'open_asset' = 1, 'query', 'add_annoucement', 'copy_link' }
+enum AnnoucementType { 'information' = 1, 'issue', 'warning' }
+
 const keyMap = {
     discovery: {
         filter: {
@@ -7,6 +10,39 @@ const keyMap = {
                     type: props.type,
                 }),
             },
+        },
+        sort: {
+            changed: {
+                action: 'discovery_sort_changed',
+                properties: (props: {
+                    sort_type: string
+                }) => ({
+                    ...props,
+                }),
+            },
+        },
+        CTA: {
+            action: {
+                action: 'discovery_CTA_action',
+                properties: (props: {
+                    action: CTAAction,
+                    asset_type: string
+                    annoucement_type?: AnnoucementType
+                }) => ({
+                    ...props,
+                }),
+            },
+        },
+        view_preference: {
+            changed: {
+                action: 'discovery_view_preference_changed',
+                properties: (props: {
+                    visible: boolean
+                    preference: 'description' | 'terms' | 'classifications'
+                }) => ({
+                    ...props,
+                }),
+            }
         },
         global_context: {
             changed: {
@@ -127,6 +163,13 @@ const keyMap = {
             },
             updated: {
                 action: 'discovery_resource_updated',
+                properties: (props) => ({
+                    domain: props.domain,
+                    asset_type: props.asset_type,
+                }),
+            },
+            clicked: {
+                action: 'discovery_resource_clicked',
                 properties: (props) => ({
                     domain: props.domain,
                     asset_type: props.asset_type,
@@ -426,6 +469,21 @@ const keyMap = {
                 }),
             },
         },
+
+        options: {
+            created: {
+                action: 'governance_options_created',
+                properties: (props: { title: string }) => ({
+                    ...props,
+                }),
+            },
+            updated: {
+                action: 'governance_options_updated',
+                properties: (props: { title: string }) => ({
+                    ...props,
+                }),
+            },
+        }
     },
     admin: {
         api_key: {
@@ -496,7 +554,7 @@ const keyMap = {
             added: { // add invitation
                 action: 'admin_user_added',
                 properties: (props: {
-                    total_user_count: number
+                    count: number
                 }) => ({
                     ...props,
                 }),
@@ -504,25 +562,24 @@ const keyMap = {
             removed: { // revoke invitation
                 action: 'admin_user_removed',
             },
-            updated: {
-                action: 'admin_user_updated',
-                properties: (props: {
-                    action: 'enabled' | 'disabled' | 'groups_updated',
-                    groups_count?: number
-                }) => ({
-                    ...props,
-                }),
-            },
+            // updated: {
+            //     action: 'admin_user_updated',
+            //     properties: (props: {
+            //         action: 'enabled' | 'disabled' | 'groups_updated',
+            //         groups_count?: number
+            //     }) => ({
+            //         ...props,
+            //     }),
+            // },
 
         },
         group: {
             created: { // create group
                 action: 'admin_group_created',
                 properties: (props: {
-                    total_members_count: number
-                    alias: string
+                    users_count: number
                     slack_channel_added: boolean
-                }) => ({=
+                }) => ({
                     ...props,
                 }),
             },
@@ -538,8 +595,7 @@ const keyMap = {
                 action: 'admin_group_updated',
                 properties: (props: {
                     action: 'members_updated' | 'slack_channel_updated',
-                    alias: string
-                    total_members_count?: number,
+                    users_count: number,
                     slack_channel_added?: boolean
 
                 }) => ({
@@ -579,6 +635,6 @@ const keyMap = {
                 }),
             },
         },
-    },
+    }
 }
 export default keyMap

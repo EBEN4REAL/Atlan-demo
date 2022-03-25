@@ -293,6 +293,7 @@
     import { Tenant } from '~/services/service/tenant'
     import DefaultLayout from '@/admin/layout.vue'
     import AtlanBtn from '@/UI/button.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     interface FormState {
         alias: string
@@ -547,6 +548,7 @@
                     message.success({
                         content: 'SSO added!',
                     })
+                    useAddEvent('admin', 'sso', 'added', { alias: alias.value })
                 } catch (error) {
                     isLoading.value = false
                     console.error('Create IDP error::', error.message)

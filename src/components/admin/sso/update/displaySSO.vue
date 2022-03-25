@@ -106,6 +106,7 @@
 
     import { useTenantStore } from '~/store/tenant'
     import { Tenant } from '~/services/service/tenant'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         components: { AtlanBtn },
@@ -236,6 +237,9 @@
                                 ? 'Configured SSO as default mode'
                                 : 'Disabled SSO as default mode'
                         }`,
+                    })
+                    useAddEvent('admin', 'sso', 'updated', {
+                        enforced_sso: ssoForm.enforceSSO,
                     })
                 } catch (error) {
                     enforceSSOChanging.value = false

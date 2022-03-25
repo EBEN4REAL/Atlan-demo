@@ -17,7 +17,10 @@
                     <div class="px-3 py-1">
                         <div class="text-base font-bold text-gray-700">
                             Custom Metadata
-                            <a-popover placement="right">
+                            <a-popover
+                                v-if="customMetadataList.length"
+                                placement="right"
+                            >
                                 <template #content>
                                     <div
                                         class="p-2 bg-gray-700 rounded-lg popover-cm"
@@ -37,7 +40,10 @@
                         </div>
                     </div>
                 </template>
-                <div class="p-4 container-accordion">
+                <div
+                    v-if="customMetadataList.length"
+                    class="p-4 container-accordion"
+                >
                     <div
                         v-for="(meta, idx) in customMetadataList"
                         :key="meta.guid"
@@ -74,6 +80,20 @@
                                 )
                             "
                         />
+                    </div>
+                </div>
+                <div v-else class="mt-2">
+                    <div
+                        class="p-2 ml-auto mr-auto bg-gray-700 rounded-lg w-fit empty-state"
+                    >
+                        <img :src="EmptyStateImg" alt="preference" />
+                    </div>
+                    <div
+                        class="my-6 ml-auto mr-auto text-sm text-center text-gray-500 empty-text"
+                    >
+                        You can set preference for custom metadata that should
+                        show up for {{ selectedPersonaDirty.displayName }} in
+                        discovery
                     </div>
                 </div>
             </a-collapse-panel>
@@ -128,6 +148,7 @@
     } from '../composables/useEditPersona'
     import { assetSidebarList } from '../composables/usePreferences'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import EmptyStateImg from '~/assets/images/empty_state_preference.png'
 
     export default defineComponent({
         name: 'Preferences',
@@ -209,11 +230,19 @@
                 assetSidebarListComputed,
                 gifCM,
                 selectedPersonaDirty,
+                EmptyStateImg,
             }
         },
     })
 </script>
 <style lang="less">
+    .empty-text {
+        width: 368px;
+    }
+    .empty-state {
+        width: fit-content;
+        box-shadow: 0px 9px 32px 0px #0000001f;
+    }
     .container-accordion {
         max-height: 55vh;
         overflow-y: scroll;

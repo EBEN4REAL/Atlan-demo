@@ -68,7 +68,7 @@
                 ref="assetlistRef"
                 :list="list"
                 :is-load-more="isLoadMore"
-                :is-loading="isValidating"
+                :is-loading="isValidating || isQueriesRelationsLoading"
                 @loadMore="handleLoadMore"
                 class="mt-4"
             >
@@ -90,28 +90,30 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, PropType } from 'vue'
+    import { defineComponent, ref, toRefs, PropType, watch } from 'vue'
     import { debouncedWatch, useDebounceFn } from '@vueuse/core'
 
     import ErrorView from '@common/error/discover.vue'
     import EmptyView from '@common/empty/index.vue'
 
+    import AssetItem from '@common/assets/list/assetItem.vue'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import Sorting from '@/common/select/sorting.vue'
 
     import AssetList from '@/common/assets/list/index.vue'
-    import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
-    import AssetItem from '@common/assets/list/assetItem.vue'
 
     import {
         DefaultRelationAttributes,
         MinimalAttributes,
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
+    import { useAssetAttributes } from '~/composables/discovery/useCurrentUpdate'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import Popover from '@/common/popover/assets/index.vue'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
+
+    import { whenever } from '@vueuse/core'
 
     export default defineComponent({
         name: 'ColumnWidget',
@@ -139,6 +141,20 @@
             const { selectedAsset } = toRefs(props)
 
             const { queries, getAssetQueryPath } = useAssetInfo()
+
+            const guid = ref()
+            const queriesAttribute = ref(['queries'])
+
+            const {
+                asset,
+                mutate: mutateQueries,
+                isReady: isQueriesGuidReady,
+                isLoading: isQueriesRelationsLoading,
+            } = useAssetAttributes({
+                id: guid,
+                attributes: queriesAttribute,
+            })
+
             const limit = ref(20)
             const offset = ref(0)
             const queryText = ref('')
@@ -146,7 +162,7 @@
                 typeName: 'Query',
             })
             const postFacets = ref({})
-            const dependentKey = ref('DEFAULT_QUERIES')
+            const dependentKey = ref()
             const defaultAttributes = ref([...MinimalAttributes])
             const preference = ref({
                 sort: 'order-asc',
@@ -156,12 +172,10 @@
             const updateFacet = () => {
                 facets.value = {}
 
-                facets.value.guidList = queries(selectedAsset.value)?.map(
+                facets.value.guidList = queries(asset.value)?.map(
                     (query) => query.guid
                 )
             }
-
-            updateFacet()
 
             const {
                 list,
@@ -174,7 +188,7 @@
                 isValidating,
                 updateList,
             } = useDiscoverList({
-                isCache: true,
+                isCache: false,
                 dependentKey,
                 queryText,
                 facets,
@@ -190,17 +204,6 @@
             const handleListUpdate = (asset: any) => {
                 updateList(asset)
             }
-
-            debouncedWatch(
-                () => props.selectedAsset.attributes.qualifiedName,
-                (prev) => {
-                    if (prev) {
-                        updateFacet()
-                        quickChange()
-                    }
-                },
-                { debounce: 100 }
-            )
 
             const handleLoadMore = () => {
                 if (isLoadMore.value) {
@@ -218,6 +221,23 @@
                 window.open(getAssetQueryPath(selectedAsset.value))
             }
 
+            watch(
+                () => selectedAsset.value.guid,
+                () => {
+                    guid.value = selectedAsset.value?.guid
+                    mutateQueries()
+                },
+                {
+                    immediate: true,
+                }
+            )
+
+            whenever(isQueriesGuidReady, () => {
+                dependentKey.value = 'DEFAULT_QUERIES'
+                updateFacet()
+                quickChange()
+            })
+
             return {
                 isLoading,
                 queryText,
@@ -233,6 +253,7 @@
                 handleLoadMore,
                 error,
                 isValidating,
+                isQueriesRelationsLoading,
                 handleListUpdate,
                 handleCreateQuery,
             }

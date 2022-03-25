@@ -1,7 +1,7 @@
 <template>
     <div class="">
-        <h2 class="text-lg font-bold">Workflows alert channel</h2>
-        <span class="text-gray-500"> {{ workflow_description }} </span>
+        <h2 class="mb-1 font-bold">Workflows alert channel</h2>
+        <span class="text-sm text-gray-500"> {{ workflow_description }} </span>
     </div>
     <div v-if="workflowChannel" class="flex items-center h-12">
         <Chip
@@ -12,7 +12,10 @@
             @remove="remove"
         />
     </div>
-    <div v-else class="flex items-center w-1/2 h-12 p-1 border rounded">
+    <div
+        v-else
+        class="flex items-center h-10 col-span-2 p-1 border border-gray-300 rounded"
+    >
         <div class="flex-grow inline-block mx-3">
             <input
                 :value="workflowChannel"
@@ -34,7 +37,7 @@
 <script setup lang="ts">
     import { Ref, ref, toRefs, watch } from 'vue'
     import Chip from '@/UI/chip.vue'
-    import { integrations } from '~/constant/integrations'
+    import { integrations } from '~/constant/integrations/integrations'
     import { useVModels } from '@vueuse/core'
 
     const props = defineProps({

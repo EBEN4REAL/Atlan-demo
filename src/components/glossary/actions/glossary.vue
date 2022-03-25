@@ -49,19 +49,37 @@
                     class="text-red-700"
                     @click="closeMenu"
                 >
-                    <RemoveGTCModal :entity="entity" :redirect="true">
-                        <template #trigger>
-                            <div class="flex items-center">
+                    <template v-if="entityDeletePermission">
+                        <RemoveGTCModal :entity="entity" :redirect="true">
+                            <template #trigger>
+                                <div class="flex items-center">
+                                    <AtlanIcon
+                                        icon="Trash"
+                                        class="mr-2 text-red-700"
+                                    />
+                                    <p class="p-0 m-0 text-gray-700 capitalize">
+                                        Archive
+                                    </p>
+                                </div>
+                            </template>
+                        </RemoveGTCModal>
+                    </template>
+                    <template v-else>
+                        <a-tooltip
+                            placement="right"
+                            title="You don't have permission to perform this action"
+                        >
+                            <div class="flex items-center cursor-not-allowed">
                                 <AtlanIcon
                                     icon="Trash"
-                                    class="mr-2 text-red-700"
+                                    class="mr-2 text-red-100"
                                 />
-                                <p class="p-0 m-0 text-gray-700 capitalize">
+                                <p class="p-0 m-0 text-gray-400 capitalize">
                                     Archive
                                 </p>
                             </div>
-                        </template>
-                    </RemoveGTCModal>
+                        </a-tooltip>
+                    </template>
                 </a-menu-item>
             </a-menu>
         </template>
@@ -121,6 +139,7 @@
                 required: true,
                 default: () => {},
             },
+            entityDeletePermission: { type: Boolean, required: true },
             showLinks: {
                 type: Boolean,
                 required: false,

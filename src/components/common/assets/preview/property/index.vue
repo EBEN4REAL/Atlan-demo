@@ -180,7 +180,21 @@
                 >
                 <div class="flex flex-col">
                     <div class="flex">
-                        <PopOverUser :item="modifiedBy(selectedAsset)">
+                        <template
+                            v-if="
+                                modifiedBy(selectedAsset)?.startsWith(
+                                    'service-account-apikey-'
+                                )
+                            "
+                        >
+                            <div
+                                class="flex items-center py-1 pl-2 pr-2 text-sm text-gray-700 bg-white border rounded-full gap-x-1"
+                            >
+                                <AtlanIcon icon="Key" class="h-3" />
+                                <div class="">API key</div>
+                            </div>
+                        </template>
+                        <PopOverUser v-else :item="modifiedBy(selectedAsset)">
                             <UserPill
                                 :username="modifiedBy(selectedAsset)"
                                 @click="
@@ -247,7 +261,21 @@
 
                 <div class="flex flex-col">
                     <div class="flex">
-                        <PopOverUser :item="createdBy(selectedAsset)">
+                        <template
+                            v-if="
+                                createdBy(selectedAsset)?.startsWith(
+                                    'service-account-apikey-'
+                                )
+                            "
+                        >
+                            <div
+                                class="flex items-center py-1 pl-2 pr-2 text-sm text-gray-700 bg-white border rounded-full gap-x-1"
+                            >
+                                <AtlanIcon icon="Key" class="h-3" />
+                                <div class="">API key</div>
+                            </div>
+                        </template>
+                        <PopOverUser v-else :item="createdBy(selectedAsset)">
                             <UserPill
                                 :username="createdBy(selectedAsset)"
                                 @click="

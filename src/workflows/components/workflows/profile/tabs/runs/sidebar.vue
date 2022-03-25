@@ -112,7 +112,19 @@
                     v-else-if="creatorUsername(selectedRun)"
                 >
                     via
-                    {{ creatorUsername(selectedRun) }}
+
+                    <template
+                        v-if="
+                            creatorUsername(selectedRun)?.startsWith(
+                                'service-account-apikey-'
+                            )
+                        "
+                    >
+                        <AtlanIcon icon="Key" class="h-3" /> API key
+                    </template>
+                    <template v-else>
+                        {{ creatorUsername(selectedRun) }}
+                    </template>
                 </div>
 
                 <p class="text-gray-500">Reference</p>

@@ -9,7 +9,7 @@
         <!-- Main content: Use Label if present or use slot for custom stuff -->
         <span
             v-if="label"
-            class="text-sm leading-none"
+            class="text-sm leading-none mt-0.5"
             :class="{ 'font-bold': bold }"
             >{{ label }}</span
         >

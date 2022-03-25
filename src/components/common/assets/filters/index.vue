@@ -69,51 +69,40 @@
             filterList: {
                 type: Array,
                 required: false,
-                default() {
-                    return []
-                },
+                default: () => [],
             },
             modelValue: {
                 type: Object,
                 required: false,
-                default() {
-                    return {}
-                },
+                default: () => ({}),
             },
             isAccordion: {
                 type: Boolean,
                 required: false,
-                default() {
-                    return false
-                },
+                default: () => false,
             },
             typeName: {
                 type: String,
                 required: false,
-                default() {
-                    return '__all'
-                },
+                default: () => '__all',
             },
             activeKey: {
                 required: false,
             },
             allowCustomFilters: {
+                type: Boolean,
                 required: false,
-                default() {
-                    return true
-                },
+                default: () => true,
             },
             noFilterTitle: {
+                type: String,
                 required: false,
-                default() {
-                    return 'Filters'
-                },
+                default: () => 'Filters',
             },
             extraCountFilter: {
+                type: Number,
                 required: false,
-                default() {
-                    return 0
-                },
+                default: () => 0,
             },
         },
         emits: [

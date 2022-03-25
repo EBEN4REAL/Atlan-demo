@@ -1,11 +1,12 @@
 import { Editor } from '@tiptap/vue-3'
+import iconMap from '@common/icon/iconMap'
 
 export interface CommandItem {
     title: string
     key: string
     helpText: string
     searchKeys: string[]
-    icon?: string
+    icon?: keyof typeof iconMap
     level?: number
     border?: boolean
     disabled?: any
@@ -16,7 +17,7 @@ export interface MenuItem {
     title: string
     key: string
     helpText: string
-    icon?: string
+    icon?: keyof typeof iconMap
     level?: number
     border?: boolean
     disabled?: any
@@ -253,7 +254,7 @@ export const blockMenu: CommandItem[] = [
     {
         title: 'Google Slides',
         key: 'googleSlide',
-        helpText: 'Embed with a Google Presentation',
+        helpText: 'Embed a Google Presentation',
         icon: 'GoogleSlide',
         border: true,
         searchKeys: ['google', 'slide', 'presentation'],
@@ -334,6 +335,78 @@ export const blockMenu: CommandItem[] = [
                       .insertLucidChart()
                       .run()
                 : editor.chain().focus().insertLucidChart().run(),
+    },
+    {
+        title: 'DBDiagram',
+        key: 'dbdiagram',
+        helpText: 'Embed a DB Diagram',
+        icon: 'DBDiagram',
+        border: true,
+        searchKeys: ['dbdiagram', 'db'],
+        disabled: () => false,
+        command: ({ editor, range }) =>
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .insertDbDiagram()
+                      .run()
+                : editor.chain().focus().insertDbDiagram().run(),
+    },
+    {
+        title: 'Microsoft Word',
+        key: 'microsoftWord',
+        helpText: 'Embed a Microsoft Word Document.',
+        icon: 'MicrosoftWord',
+        border: true,
+        searchKeys: ['microsoft', 'word'],
+        disabled: () => false,
+        command: ({ editor, range }) =>
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .insertMicrosoftWord()
+                      .run()
+                : editor.chain().focus().insertMicrosoftWord().run(),
+    },
+    {
+        title: 'Microsoft Excel',
+        key: 'microsoftExcel',
+        helpText: 'Embed a Microsoft Excel sheet',
+        icon: 'MicrosoftExcel',
+        border: true,
+        searchKeys: ['microsoft', 'excel'],
+        disabled: () => false,
+        command: ({ editor, range }) =>
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .insertMicrosoftExcel()
+                      .run()
+                : editor.chain().focus().insertMicrosoftExcel().run(),
+    },
+    {
+        title: 'Microsoft PowerPoint',
+        key: 'microsoftPowerpoint',
+        helpText: 'Embed a Microsoft PowerPoint presentation.',
+        icon: 'MicrosoftPowerpoint',
+        border: true,
+        searchKeys: ['microsoft', 'powerpoint'],
+        disabled: () => false,
+        command: ({ editor, range }) =>
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .insertMicrosoftPowerpoint()
+                      .run()
+                : editor.chain().focus().insertMicrosoftPowerpoint().run(),
     },
     {
         title: 'Google Data Studio',

@@ -5,7 +5,6 @@
             :bordered="false"
             expand-icon-position="right"
             class="bg-red"
-            @change="analyticEvent"
         >
             <template #expandIcon="props">
                 <AtlanIcon
@@ -193,17 +192,11 @@
                 }
             }
             const handleSwitch = (guid, isOnList) => {
+                useAddEvent('governance', 'persona', 'cm_preferences', {
+                    state: isOnList,
+                })
                 currentIdUpdated.value = guid
                 handleUpdateMeta(guid, isOnList)
-            }
-            const analyticEvent = (accordionKey) => {
-                let state = false
-                if (accordionKey.includes('1')) {
-                    state = true
-                }
-                useAddEvent('governance', 'persona', 'cm_preferences', {
-                    state,
-                })
             }
 
             return {
@@ -218,7 +211,6 @@
                 assetSidebarListComputed,
                 gifCM,
                 selectedPersonaDirty,
-                analyticEvent,
             }
         },
     })

@@ -115,6 +115,7 @@
     import { getCronFrequency } from './composables/useSchedule'
     import parser from 'cron-parser'
     import useWorkflowUpdate from '~/workflows/composables/package/useWorkflowUpdate'
+    import { watchOnce } from '@vueuse/core'
 
     export default defineComponent({
         name: 'Schedule Query',
@@ -245,7 +246,7 @@
 
             // info tab state
             const infoTabeState = ref({
-                name: '',
+                name: item.value.attributes.displayName,
                 frequency: 'daily',
                 time: '00:00',
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -254,6 +255,7 @@
             })
 
             if (workflowParameters.value) {
+                debugger
                 // query variables
                 const queryVariables =
                     JSON.parse(
@@ -267,7 +269,7 @@
                             return {
                                 ...variable,
                                 value:
-                                    queryVariables[variable?.key] ??
+                                    queryVariables[variable?.name] ??
                                     variable.value,
                             }
                         }
@@ -304,7 +306,7 @@
                                 'Error in fetching users email'
                             )
                         } else if (userList.value) {
-                            watch(userList, () => {
+                            watchOnce(userList, () => {
                                 if (userList.value?.length > 0) {
                                     let usernames: string[] = []
                                     userList.value.forEach((user) => {
@@ -546,139 +548,192 @@
                             }
                         }
                     } else {
-                        if (variablesData.value.length === 0) {
-                            activeTabIndex.value += 1
-                        }
-                        if (activeTabIndex.value + 1 === 2) {
-                            if (workflowDataProp.value) {
-                                updateWorkflowBody.value =
-                                    workflowDataProp.value
+                        validateFileds().then(() => {
+                            if (
+                                activeTabIndex.value + 1 === 2 ||
+                                variablesData.value.length === 0
+                            ) {
+                                if (workflowDataProp.value) {
+                                    updateWorkflowBody.value =
+                                        workflowDataProp.value
 
-                                // update part
-                                updateWorkFlowPath.value = {
-                                    name: workflowDataProp.value.metadata.name,
-                                }
-
-                                // update cron related data
-                                if (cronData.value) {
-                                    updateWorkflowBody.value.metadata.annotations[
-                                        'orchestration.atlan.com/schedule'
-                                    ] = cronData.value.cron
-                                    updateWorkflowBody.value.metadata.annotations[
-                                        'orchestration.atlan.com/timezone'
-                                    ] = cronData.value.timezone
-                                }
-
-                                let userEmails: string[] = []
-                                userList.value.forEach((user) => {
-                                    userEmails.push(user.email)
-                                })
-                                // setting up emails of selected user
-                                inputParameters.value.recipients =
-                                    userEmails as any
-
-                                // setting up the custom variables
-                                variablesData.value.forEach((variable) => {
-                                    inputParameters.value['query-variables'][
-                                        variable.name
-                                    ] =
-                                        typeof variable.value === 'object'
-                                            ? variable.value?.join(',')
-                                            : getValueByType(
-                                                  variable.value,
-                                                  variable.type
-                                              )
-                                })
-                                // setting up report name
-                                inputParameters.value['report-name'] =
-                                    infoTabeState.value.name
-                                const parameters: Array<{
-                                    [key: string]: string
-                                }> = []
-                                if (
-                                    workflowDataProp.value.spec.templates
-                                        .length > 0
-                                ) {
-                                    workflowDataProp.value.spec.templates[0].dag?.tasks[0]?.arguments?.parameters?.forEach(
-                                        (p) => {
-                                            if (
-                                                typeof inputParameters.value[
-                                                    p.name
-                                                ] === 'boolean'
-                                            ) {
-                                                parameters.push({
-                                                    name: p.name,
-                                                    value: inputParameters
-                                                        .value[p.name],
-                                                })
-                                            } else if (
-                                                inputParameters.value[p.name]
-                                            ) {
-                                                if (
-                                                    typeof inputParameters
-                                                        .value[p.name] ===
-                                                    'object'
-                                                ) {
-                                                    parameters.push({
-                                                        name: p.name,
-                                                        value: JSON.stringify(
-                                                            inputParameters
-                                                                .value[p.name]
-                                                        ),
-                                                    })
-                                                } else {
-                                                    parameters.push({
-                                                        name: p.name,
-                                                        value: inputParameters
-                                                            .value[p.name],
-                                                    })
-                                                }
-                                            }
-                                        }
-                                    )
-
-                                    updateWorkflowBody.value.spec = {
-                                        ...updateWorkflowBody.value.spec,
-                                        templates: [
-                                            {
-                                                ...updateWorkflowBody.value.spec
-                                                    .templates[0],
-                                                dag: {
-                                                    tasks: [
-                                                        {
-                                                            ...updateWorkflowBody
-                                                                .value.spec
-                                                                .templates[0]
-                                                                .dag.tasks[0],
-                                                            arguments: {
-                                                                parameters,
-                                                            },
-                                                        },
-                                                    ],
-                                                },
-                                            },
-                                        ],
+                                    // update part
+                                    updateWorkFlowPath.value = {
+                                        name: workflowDataProp.value.metadata
+                                            .name,
                                     }
 
-                                    updateWorkflow()
-                                }
-                            }
+                                    // update cron related data
+                                    if (cronData.value) {
+                                        updateWorkflowBody.value.metadata.annotations[
+                                            'orchestration.atlan.com/schedule'
+                                        ] = cronData.value.cron
+                                        updateWorkflowBody.value.metadata.annotations[
+                                            'orchestration.atlan.com/timezone'
+                                        ] = cronData.value.timezone
+                                    }
+                                    usersParams.filter.$or =
+                                        usersData.value.ownerUsers.map(
+                                            (name) => {
+                                                return {
+                                                    username: name,
+                                                }
+                                            }
+                                        ) as any
+                                    usersParams.limit =
+                                        usersData.value.ownerUsers.length
+                                    usersParams.columns = [
+                                        'firstName',
+                                        'lastName',
+                                        'username',
+                                        'email',
+                                    ]
+                                    getUserList()
+                                    ;(async () => {
+                                        await until(isUserLoading).toBe(true)
+                                        watchOnce(userList, () => {
+                                            let userEmails: string[] = []
+                                            userList.value.forEach((user) => {
+                                                userEmails.push(user.email)
+                                            })
+                                            // setting up emails of selected user
+                                            inputParameters.value[
+                                                'recipients'
+                                            ] = userEmails as any
 
-                            ;(async () => {
-                                await until(updateWorkflowLoading).toBe(true)
-                                if (updateWorkflowErorr.value) {
-                                    message.error(
-                                        'Failed to submit schedule query!'
+                                            // setting up the custom variables
+                                            variablesData.value.forEach(
+                                                (variable) => {
+                                                    inputParameters.value[
+                                                        'query-variables'
+                                                    ][variable.name] =
+                                                        typeof variable.value ===
+                                                        'object'
+                                                            ? variable.value?.join(
+                                                                  ','
+                                                              )
+                                                            : getValueByType(
+                                                                  variable.value,
+                                                                  variable.type
+                                                              )
+                                                }
+                                            )
+                                            // setting up report name
+                                            inputParameters.value[
+                                                'report-name'
+                                            ] = infoTabeState.value.name
+                                            const parameters: Array<{
+                                                [key: string]: string
+                                            }> = []
+                                            if (
+                                                workflowDataProp.value.spec
+                                                    .templates.length > 0
+                                            ) {
+                                                workflowDataProp.value.spec.templates[0].dag?.tasks[0]?.arguments?.parameters?.forEach(
+                                                    (p) => {
+                                                        if (
+                                                            typeof inputParameters
+                                                                .value[
+                                                                p.name
+                                                            ] === 'boolean'
+                                                        ) {
+                                                            parameters.push({
+                                                                name: p.name,
+                                                                value: inputParameters
+                                                                    .value[
+                                                                    p.name
+                                                                ],
+                                                            })
+                                                        } else if (
+                                                            inputParameters
+                                                                .value[p.name]
+                                                        ) {
+                                                            if (
+                                                                typeof inputParameters
+                                                                    .value[
+                                                                    p.name
+                                                                ] === 'object'
+                                                            ) {
+                                                                parameters.push(
+                                                                    {
+                                                                        name: p.name,
+                                                                        value: JSON.stringify(
+                                                                            inputParameters
+                                                                                .value[
+                                                                                p
+                                                                                    .name
+                                                                            ]
+                                                                        ),
+                                                                    }
+                                                                )
+                                                            } else {
+                                                                parameters.push(
+                                                                    {
+                                                                        name: p.name,
+                                                                        value: inputParameters
+                                                                            .value[
+                                                                            p
+                                                                                .name
+                                                                        ],
+                                                                    }
+                                                                )
+                                                            }
+                                                        }
+                                                    }
+                                                )
+
+                                                updateWorkflowBody.value.spec =
+                                                    {
+                                                        ...updateWorkflowBody
+                                                            .value.spec,
+                                                        templates: [
+                                                            {
+                                                                ...updateWorkflowBody
+                                                                    .value.spec
+                                                                    .templates[0],
+                                                                dag: {
+                                                                    tasks: [
+                                                                        {
+                                                                            ...updateWorkflowBody
+                                                                                .value
+                                                                                .spec
+                                                                                .templates[0]
+                                                                                .dag
+                                                                                .tasks[0],
+                                                                            arguments:
+                                                                                {
+                                                                                    parameters,
+                                                                                },
+                                                                        },
+                                                                    ],
+                                                                },
+                                                            },
+                                                        ],
+                                                    }
+
+                                                updateWorkflow()
+                                            }
+                                        })
+                                    })()
+                                }
+
+                                ;(async () => {
+                                    await until(updateWorkflowLoading).toBe(
+                                        true
                                     )
-                                }
-                                if (updateWorkflowData.value) {
-                                    activeTabIndex.value =
-                                        activeTabIndex.value + 1
-                                }
-                            })()
-                        } else {
-                            activeTabIndex.value = activeTabIndex.value + 1
-                        }
+                                    if (updateWorkflowErorr.value) {
+                                        message.error(
+                                            'Failed to submit schedule query!'
+                                        )
+                                    }
+                                    if (updateWorkflowData.value) {
+                                        activeTabIndex.value = 2
+                                    }
+                                })()
+                            } else {
+                                activeTabIndex.value = activeTabIndex.value + 1
+                            }
+                        })
                     }
                 } else if (type === 'back') {
                     if (activeTabIndex.value > 0) {
@@ -705,12 +760,17 @@
 
             const runWorkFlow = () => {
                 const { name } = useWorkflowInfo()
-
                 const bodyArg = {
                     namespace: 'default',
                     resourceKind: 'WorkflowTemplate',
                     resourceName: name(body.value),
                 }
+                if (mode.value === 'update') {
+                    if (workflowDataProp.value) {
+                        bodyArg.resourceName = name(workflowDataProp.value)
+                    }
+                }
+
                 const {
                     data: workflowSubmitData,
                     error: workflowSubmitError,
@@ -733,6 +793,7 @@
                                     key: messageKey.value,
                                     duration: 4,
                                 })
+                                refreshSchedulesWorkflowTab.value(true)
                             }, 2000)
                         }
                         if (workflowSubmitError.value) {
@@ -752,12 +813,12 @@
             function getButtonText() {
                 if (activeTabIndex.value === 2) return 'Finish'
                 if (activeTabIndex.value === 1)
-                    return mode.value ? 'Update' : 'Done'
+                    return mode.value === 'update' ? 'Update' : 'Done'
                 if (
                     activeTabIndex.value === 0 &&
                     variablesData?.value?.length === 0
                 )
-                    return mode.value ? 'Update' : 'Done'
+                    return mode.value === 'update' ? 'Update' : 'Done'
                 return 'Next'
             }
 

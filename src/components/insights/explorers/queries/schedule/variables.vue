@@ -174,7 +174,7 @@
                         >{{ usersData?.ownerUsers?.length }} users</span
                     >
                     will be notified over email at
-                    {{ _date?.format('hh:MM A') }}
+                    {{ _date?.format('hh:mm A') }}
                     {{ getAbbreviation(timeZoneAbbreviation) }}
                     <span class="capitalize">{{
                         infoTabeState.frequency
@@ -186,7 +186,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, toRefs, ref, watch } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        toRefs,
+        ref,
+        watch,
+        computed,
+    } from 'vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import parser from 'cron-parser'
     import dayjs from 'dayjs'
@@ -234,19 +241,23 @@
             const { item, usersData, cronData, infoTabeState } = toRefs(props)
             const { variablesData } = useVModels(props)
 
-            const interval = parser.parseExpression(cronData.value.cron)
+            const interval = computed(() =>
+                parser.parseExpression(cronData.value.cron)
+            )
 
-            const _date = dayjs(interval.next().toString())
-            const parsedDate = new Date(_date.toString())
-            const timeZoneAbbreviation = String(
-                String(parsedDate).split('(')[1]
-            ).split(')')[0]
-
+            const _date = computed(() =>
+                dayjs(interval.value.next().toString())
+            )
+            const parsedDate = computed(() => new Date(_date.value.toString()))
+            const timeZoneAbbreviation = computed(
+                () =>
+                    String(String(parsedDate.value).split('(')[1]).split(')')[0]
+            )
             function getAbbreviation(str: string = '') {
                 return str.match(/\b([A-Z])/g).join('')
             }
 
-            const format = 'MMM DD, dddd, hh:MM A'
+            const format = 'MMM DD, dddd, hh:mm A'
 
             const getDaysJsWrappedValue = (value) => {
                 return dayjs(value)
@@ -276,14 +287,6 @@
                     variablesData.value[_index].value = allOptions
                 }
             }
-
-            watch(
-                variablesData,
-                (newData) => {
-                    console.log(newData, 'newData')
-                },
-                { deep: true }
-            )
 
             return {
                 variablesData,

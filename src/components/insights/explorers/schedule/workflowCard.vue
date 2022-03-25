@@ -168,7 +168,7 @@
                 cronObject,
             } = useWorkflowInfo()
             const { selectedCardKey } = useVModels(props)
-            const format = 'hh:MM A,'
+            const format = 'hh:mm A,'
             const runMap = inject('runMap') as Ref<any>
             const savedQueryMetaMap = inject('savedQueryMetaMap') as Ref<
                 Record<string, any>

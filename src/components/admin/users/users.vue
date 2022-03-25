@@ -167,6 +167,7 @@
     import Pagination from '@/common/list/pagination.vue'
     import useRoles from '~/composables/roles/useRoles'
     import useUserStore from '~/store/users'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'UsersView',
@@ -452,6 +453,7 @@
                         reloadTable()
                         // update user type aggregations in filter dropdown
                         userTypeAgg.value = getUserTypeAggregations().value
+                        useAddEvent('admin', 'user', 'removed')
                     } else if (error && error.value) {
                         message.error({
                             key: 'remoke_invite',

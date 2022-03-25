@@ -83,7 +83,6 @@ export const AssetAttributes = [
     'parentQualifiedName',
     'collectionQualifiedName',
     'parent',
-    'queries',
     'externalLocation',
     'externalLocationFormat',
     'sql',

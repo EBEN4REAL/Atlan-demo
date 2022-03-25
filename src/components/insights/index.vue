@@ -48,7 +48,7 @@
                     <!--explorer pane start -->
                     <div
                         :class="
-                            activeTab.component === 'schema' ? 'z-30' : 'z-10'
+                            activeTab?.component === 'schema' ? 'z-30' : 'z-10'
                         "
                         class="absolute h-full full-width"
                     >
@@ -56,7 +56,7 @@
                     </div>
                     <div
                         :class="
-                            activeTab.component === 'queries' ? 'z-30' : 'z-10'
+                            activeTab?.component === 'queries' ? 'z-30' : 'z-10'
                         "
                         class="absolute h-full full-width"
                     >
@@ -70,7 +70,7 @@
                     </div>
                     <div
                         :class="
-                            activeTab.component === 'variables'
+                            activeTab?.component === 'variables'
                                 ? 'z-30'
                                 : 'z-10'
                         "

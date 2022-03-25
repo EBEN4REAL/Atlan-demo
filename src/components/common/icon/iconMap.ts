@@ -267,10 +267,12 @@ import GoogleDoc from '~/assets/images/readme/googleDocs.svg'
 import GoogleSheet from '~/assets/images/readme/googleSheets.svg'
 import GoogleSlide from '~/assets/images/readme/googleSlides.svg'
 import GoogleDrive from '~/assets/images/readme/googleDrive.svg'
+import GoogleDataStudio from '~/assets/images/readme/googleDataStudio.svg'
 import Confluence from '~/assets/images/readme/confluence.svg'
 import Miro from '~/assets/images/readme/miro.svg'
 import Figma from '~/assets/images/readme/Figma.svg'
 import Lucid from '~/assets/images/readme/lucid.svg'
+import Mention from '~/assets/images/readme/mention.svg'
 import DBDiagram from '~/assets/images/readme/dbdiagram.svg'
 import MicrosoftWord from '~/assets/images/readme/microsoftWord.svg'
 import MicrosoftExcel from '~/assets/images/readme/microsoftExcel.svg'
@@ -734,9 +736,11 @@ export default {
     GoogleSheet,
     GoogleSlide,
     GoogleDrive,
+    GoogleDataStudio,
     Confluence,
     Figma,
     Lucid,
+    Mention,
     Miro,
     DBDiagram,
     MicrosoftWord,

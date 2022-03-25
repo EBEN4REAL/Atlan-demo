@@ -9,6 +9,7 @@ import BigQuery from '~/assets/images/source/svg/Bigquery.svg?url'
 import Looker from '~/assets/images/source/svg/Looker.svg?url'
 import Salesforce from '~/assets/images/source/svg/Salesforce.svg?url'
 import MySQL from '~/assets/images/source/svg/MySQL.svg?url'
+import MSSQL from '~/assets/images/source/svg/MSSQL.svg?url'
 // FIXME: Add an SVG for glue
 import Glue from '~/assets/images/source/glue.png'
 
@@ -179,6 +180,64 @@ export const SourceList = [
                 attribute: 'procedureQualifiedName',
                 level: 3,
             },
+        ],
+    },
+    {
+        id: 'mssql',
+        label: 'MSSQL',
+        image: MSSQL,
+        connectionCount: 0,
+        dialectConfig: {
+            abortQuery: true,
+        },
+        selectFirstAsDefault: true, // false by default
+        hierarchy: [
+            {
+                typeName: 'Database',
+                name: 'Database',
+                parent: '',
+                attribute: 'databaseQualifiedName',
+                level: 1,
+                image: 'Database',
+            },
+            {
+                typeName: 'Schema',
+                name: 'Schema',
+                parent: 'Database',
+                attribute: 'schemaQualifiedName',
+                level: 2,
+                image: 'Schema',
+            },
+            {
+                typeName: 'Table',
+                name: 'Table',
+                parent: 'Schema',
+                attribute: 'tableQualifiedName',
+                level: 3,
+            },
+            {
+                typeName: 'View',
+                name: 'View',
+                parent: 'Schema',
+                attribute: 'viewQualifiedName',
+                level: 3,
+            },
+            {
+                typeName: 'Procedure',
+                name: 'Procedure',
+                parent: 'Schema',
+                attribute: 'procedureQualifiedName',
+                level: 3,
+            },
+        ],
+        types: [
+            'Database',
+            'Schema',
+            'Table',
+            'Column',
+            'View',
+            'Query',
+            'Folder',
         ],
     },
     {

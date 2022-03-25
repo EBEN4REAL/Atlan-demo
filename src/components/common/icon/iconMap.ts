@@ -96,6 +96,7 @@ import KebabMenuHorizontal from '~/assets/images/icons/kebab-menu.svg'
 import Overview from '~/assets/images/icons/overview.svg'
 import OverviewActive from '~/assets/images/icons/overview_active.svg'
 import Lineage from '~/assets/images/icons/lineage.svg'
+import LineageSmall from '~/assets/images/icons/lineage-small.svg'
 import Activity from '~/assets/images/icons/activity.svg'
 import Columns from '~/assets/images/icons/columns.svg'
 import Relation from '~/assets/images/icons/relation.svg'
@@ -150,6 +151,7 @@ import OutputpaneTrigger from '~/assets/images/icons/output-pane-trigger.svg'
 import OutputpaneTriggerFilled from '~/assets/images/icons/output-pane-trigger-filled.svg'
 
 import RunSuccess from '~/assets/images/icons/run-success.svg'
+import RunProgress from '~/assets/images/icons/run-progress.svg'
 import RunFailed from '~/assets/images/icons/run-failed.svg'
 import WorkflowsActive from '~/assets/images/icons/workflows_active.svg'
 import WorkflowsInactive from '~/assets/images/icons/workflows_inactive.svg'
@@ -529,6 +531,7 @@ export default {
     AddQuery,
     RunHistory,
     RunSuccess,
+    RunProgress,
     RunFailed,
     Metadata,
     ColumnGray,
@@ -544,6 +547,7 @@ export default {
     Overview,
     Pin,
     Lineage,
+    LineageSmall,
     Activity,
     Columns,
     BookmarkFilled,

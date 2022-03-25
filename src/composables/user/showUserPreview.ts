@@ -13,7 +13,11 @@ const allowedTabs = ref([])
 const finalTabs = computed(() => {
     if (allowedTabs.value && allowedTabs.value.length) {
         if (blacklistedTabs.value.length)
-            return allTabs.filter((tab) => allowedTabs.value.includes(tab.key) && !blacklistedTabs.value.includes(tab.key))
+            return allTabs.filter(
+                (tab) =>
+                    allowedTabs.value.includes(tab.key) &&
+                    !blacklistedTabs.value.includes(tab.key)
+            )
         else return allTabs.filter((tab) => allowedTabs.value.includes(tab.key))
     }
     return allTabs.filter((tab) => !blacklistedTabs.value.includes(tab.key))
@@ -22,12 +26,16 @@ const userUpdated = ref(false)
 
 const isPreviewUserMyself = computed(() => {
     const authStore = useAuthStore()
-    return (userId.value === authStore.id) || (username.value === authStore.username)
+    return (
+        userId.value === authStore.id || username.value === authStore.username
+    )
 })
 
 export function useUserPreview() {
-
-    const showUserPreview = (config?: { allowed?: any; blacklisted?: any }, activeTab?: String) => {
+    const showUserPreview = (
+        config?: { allowed?: any; blacklisted?: any },
+        activeTab?: String
+    ) => {
         defaultTab.value = activeTab || 'about'
         blacklistedTabs.value = [...(config?.blacklisted || [])]
         //?  hide Integrations tab if preview user is not me
@@ -78,6 +86,11 @@ export function useUserPreview() {
         return profileObj
     }
 
+    const openUserSidebar = (usrname: string) => {
+        setUserUniqueAttribute(usrname, 'username')
+        showUserPreview({ allowed: ['about'] })
+    }
+
     const route = useRoute()
 
     watch(route, () => {
@@ -99,5 +112,6 @@ export function useUserPreview() {
         setDefaultTab,
         userUpdated,
         getUserProfiles,
+        openUserSidebar,
     }
 }

@@ -101,6 +101,14 @@
                                 "
                                 >(custom)</span
                             >
+                            <span
+                                v-if="
+                                    ['TableauDatasource'].includes(
+                                        item.typeName
+                                    ) && isPublished(item)
+                                "
+                                >(Published)</span
+                            >
                         </div>
                         <div
                             v-else
@@ -468,6 +476,7 @@
                 webURL,
                 sourceURL,
                 isCustom,
+                isPublished,
                 assetPermission,
             } = useAssetInfo()
 
@@ -609,6 +618,7 @@
                 isCustom,
                 handleNameUpdate,
                 entityTitle,
+                isPublished,
             }
         },
     })

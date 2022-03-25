@@ -3,6 +3,8 @@
         v-if="applicableList"
         ref="target"
         class="flex flex-col w-full mb-2 overflow-hidden border border-gray-300 rounded-lg"
+        @mouseenter="showEditButton = true"
+        @mouseleave="showEditButton = false"
     >
         <a-collapse v-model:activeKey="activeKey" ghost :class="$style.cmTab">
             <a-collapse-panel key="1" :show-arrow="false">
@@ -63,7 +65,9 @@
                                     selectedAsset,
                                     isDrawer,
                                     'ENTITY_UPDATE_BUSINESS_METADATA'
-                                ) && !viewOnly
+                                ) &&
+                                !viewOnly &&
+                                showEditButton
                             "
                             class="font-bold cursor-pointer hover:underline text-primary"
                             @click="switchTab(selectedAsset, data?.label, true)"
@@ -187,9 +191,11 @@
 
             const loading = ref(false)
             const viewOnly = ref(data.value?.options?.isLocked === 'true')
-            const activeKey = ref(['1'])
+            const activeKey = ref(['0'])
             const guid = ref()
             const { checkAccess } = useAuth()
+
+            const showEditButton = ref(false)
 
             const typedefStore = useTypedefStore()
 
@@ -273,24 +279,6 @@
                 }
             }
 
-            whenever(isCmReady, () => setAttributesList())
-
-            watch(isCmLoading, () => {
-                loading.value = isCmLoading.value
-            })
-
-            watch(
-                () => selectedAsset.value.guid,
-                () => {
-                    guid.value = selectedAsset.value?.guid
-                    mutateCM()
-                    initializeAttributesList()
-                },
-                {
-                    immediate: true,
-                }
-            )
-
             const hasValue = (a) => {
                 const isMultivalued =
                     a?.options?.multiValueSelect === 'true' ||
@@ -320,6 +308,31 @@
                     return !!a.value
                 return !!formatDisplayValue(a.value?.toString() || '', dataType)
             }
+
+            whenever(isCmReady, () => {
+                setAttributesList()
+
+                if (applicableList.value?.filter((i) => hasValue(i)).length) {
+                    activeKey.value = ['1']
+                }
+            })
+
+            watch(isCmLoading, () => {
+                loading.value = isCmLoading.value
+            })
+
+            watch(
+                () => selectedAsset.value.guid,
+                () => {
+                    guid.value = selectedAsset.value?.guid
+                    mutateCM()
+                    initializeAttributesList()
+                },
+                {
+                    immediate: true,
+                }
+            )
+
             const isProfile = inject('isProfile')
 
             const switchTab = inject('switchTab')
@@ -341,6 +354,7 @@
                 selectedAssetUpdatePermission,
                 activeKey,
                 isEvaluating,
+                showEditButton,
             }
         },
     })

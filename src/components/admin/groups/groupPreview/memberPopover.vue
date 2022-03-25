@@ -40,13 +40,14 @@
 </template>
 
 <script setup>
-    import { computed, ref, watch } from 'vue'
+    import { computed, ref, watch, toRefs } from 'vue'
     import { message } from 'ant-design-vue'
     import OwnerFacets from '~/components/common/facet/owners/index.vue'
     import { Groups } from '~/services/service/groups'
     import { pluralizeString } from '~/utils/string'
     import useGroupMembers from '~/composables/group/useGroupMembers'
     import AtlanButton from '@/UI/button.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     // Define props here.
     const props = defineProps({
@@ -55,6 +56,8 @@
             default: '',
         },
     })
+
+    const { selectedGroup } = toRefs(props)
 
     // Define emits here.
     const emit = defineEmits(['membersAdded'])
@@ -96,6 +99,15 @@
                     showPopover.value = false
                     selectedUserIds.value.ownerUsers = []
                     emit('membersAdded')
+                    useAddEvent('admin', 'group', 'updated', {
+                        action: 'members_updated',
+                        users_count:
+                            selectedGroup.value.memberCount + userIds.length,
+                        slack_channel_added:
+                            selectedGroup.value.attributes?.channels.some((c) =>
+                                c?.includes('slack')
+                            ),
+                    })
                 } else if (error && error.value) {
                     message.error('Unable to add members, please try again.')
                     showPopover.value = false

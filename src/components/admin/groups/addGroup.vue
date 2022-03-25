@@ -106,6 +106,7 @@
     import NoAcces from '@/common/secured/access.vue'
     import SlackInput from '@/admin/common/slackInput.vue'
     import UserSelector from '@/admin/groups/addGroup/userSelector.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     interface Group {
         name: String
@@ -200,6 +201,10 @@
                             router.push(`/admin/groups`)
                             emit('refresh')
                             emit('closeDrawer')
+                            useAddEvent('admin', 'group', 'created', {
+                                users_count: userIds.value?.length || 0,
+                                slack_channel_added: !!slackLink,
+                            })
                         } else if (error && error.value) {
                             if (
                                 error.value?.response?.data?.message.includes(

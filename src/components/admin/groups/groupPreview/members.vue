@@ -178,6 +178,7 @@
     import AtlanButton from '@/UI/button.vue'
     import EmptyState from '@/common/empty/index.vue'
     import MemberPopover from '@/admin/groups/groupPreview/memberPopover.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'GroupMembers',
@@ -344,6 +345,15 @@
                                     !error.value &&
                                     !isLoading.value
                                 ) {
+                                    useAddEvent('admin', 'group', 'updated', {
+                                        action: 'members_updated',
+                                        users_count:
+                                            selectedGroup.value.memberCount - 1,
+                                        slack_channel_added:
+                                            selectedGroup.value.attributes?.channels.some(
+                                                (c) => c?.includes('slack')
+                                            ),
+                                    })
                                     offset.value = 0
                                     getGroupMembersList()
                                     context.emit('refreshTable')

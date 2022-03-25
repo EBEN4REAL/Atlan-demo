@@ -585,18 +585,13 @@ const keyMap = {
             },
             deleted: {
                 action: 'admin_group_deleted',
-                properties: (props: {
-                    alias: string
-                }) => ({
-                    ...props,
-                }),
             },
             updated: {
                 action: 'admin_group_updated',
                 properties: (props: {
                     action: 'members_updated' | 'slack_channel_updated',
                     users_count: number,
-                    slack_channel_added?: boolean
+                    slack_channel_added: boolean
 
                 }) => ({
                     ...props,

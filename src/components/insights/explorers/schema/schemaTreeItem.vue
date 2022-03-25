@@ -2,9 +2,9 @@
     <div
         :data-test-id="item?.guid"
         class="flex items-center w-full group"
-        :style="{ height: assetType(item) == 'Column' ? '34px' : '32px' }"
+        :style="{ height: assetType(item) == 'Column' ? '32px' : '32px' }"
     >
-        <div class="flex justify-between w-full overflow-hidden">
+        <div class="flex justify-between w-full h-full overflow-hidden">
             <!-- Popover Allowed -->
             <div
                 class="flex w-full m-0"
@@ -31,14 +31,14 @@
                         </AtlanBtn>
                     </template>
                     <div
-                        class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700"
-                        style="height: 34px !important"
+                        class="relative flex items-center content-center w-full h-full my-auto overflow-hidden text-sm leading-5 text-gray-700"
+                        style=""
                     >
                         <!--For Column-->
                         <div
                             v-if="assetType(item) == 'Column'"
-                            class="relative flex items-center justify-between w-full"
-                            style="height: 34px !important"
+                            class="relative flex items-center justify-between w-full h-8 h-full"
+                            style=""
                         >
                             <div class="relative parent-ellipsis-container">
                                 <component
@@ -68,7 +68,7 @@
                             </div>
                             <div
                                 v-if="hoverActions"
-                                class="absolute right-0 flex items-center pr-2 text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
+                                class="absolute right-0 flex items-center pr-2 text-gray-500 transition duration-300 opacity-0 h-7 margin-align-top group-hover:opacity-100"
                                 style="width: "
                                 :class="
                                     item?.selected
@@ -87,10 +87,14 @@
                                         <template #title
                                             >Place name in editor</template
                                         >
-                                        <AtlanIcon
-                                            icon="AddAssetName"
-                                            class="w-4 h-4 my-auto focus:outline-none hover:bg-new-gray-300"
-                                        ></AtlanIcon>
+                                        <div
+                                            class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                        >
+                                            <AtlanIcon
+                                                icon="AddAssetName"
+                                                class="w-4 h-4 my-auto focus:outline-none"
+                                            ></AtlanIcon>
+                                        </div>
                                     </a-tooltip>
                                 </div>
                                 <!-- Add pr-2 for next icon -->
@@ -103,11 +107,14 @@
                                         <template #title
                                             >Open preview sidebar</template
                                         >
-
-                                        <AtlanIcon
-                                            icon="SidebarSwitch"
-                                            class="w-4 h-4 my-auto outline-none hover:bg-new-gray-300"
-                                        ></AtlanIcon>
+                                        <div
+                                            class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                        >
+                                            <AtlanIcon
+                                                icon="SidebarSwitch"
+                                                class="w-4 h-4 my-auto outline-none"
+                                            ></AtlanIcon>
+                                        </div>
                                     </a-tooltip>
                                 </div>
                                 <VQBThreeDotMenuForColumn
@@ -171,7 +178,7 @@
                         <!--For Others: Table Item -->
                         <div v-else class="flex items-center w-full h-8 m-0">
                             <div
-                                class="flex items-center justify-between w-full h-8"
+                                class="flex items-center justify-between w-full h-8 h-full"
                             >
                                 <div
                                     class="flex items-center parent-ellipsis-container"
@@ -200,7 +207,7 @@
 
                             <div
                                 v-if="hoverActions"
-                                class="absolute right-0 flex items-center pr-2 text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
+                                class="absolute right-0 flex items-center pr-2 text-gray-500 transition duration-300 opacity-0 h-7 margin-align-top group-hover:opacity-100"
                                 @click.stop="() => {}"
                                 :class="
                                     item?.selected
@@ -218,10 +225,14 @@
                                         <template #title
                                             >Place name in editor</template
                                         >
-                                        <AtlanIcon
-                                            icon="AddAssetName"
-                                            class="w-4 h-4 my-auto focus:outline-none hover:bg-new-gray-300"
-                                        ></AtlanIcon>
+                                        <div
+                                            class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                        >
+                                            <AtlanIcon
+                                                icon="AddAssetName"
+                                                class="w-4 h-4 my-auto focus:outline-none"
+                                            ></AtlanIcon>
+                                        </div>
                                     </a-tooltip>
                                 </div>
 
@@ -241,7 +252,7 @@
                                     />
                                 </div>
                                 <div
-                                    class="pl-2 pr-2"
+                                    class="pl-1 pr-1"
                                     :data-test-id="'preview'"
                                     @click="() => actionClick('info', item)"
                                 >
@@ -249,11 +260,14 @@
                                         <template #title
                                             >Open preview sidebar</template
                                         >
-
-                                        <AtlanIcon
-                                            icon="SidebarSwitch"
-                                            class="w-4 h-4 my-auto outline-none hover:bg-new-gray-300"
-                                        ></AtlanIcon>
+                                        <div
+                                            class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                        >
+                                            <AtlanIcon
+                                                icon="SidebarSwitch"
+                                                class="w-4 h-4 my-auto outline-none"
+                                            ></AtlanIcon>
+                                        </div>
                                     </a-tooltip>
                                 </div>
                                 <div
@@ -272,11 +286,14 @@
                                         <template #title>{{
                                             tooltipText
                                         }}</template>
-
-                                        <AtlanIcon
-                                            icon="Play"
-                                            class="w-4 h-4 my-auto outline-none hover:bg-new-gray-300"
-                                        ></AtlanIcon>
+                                        <div
+                                            class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                        >
+                                            <AtlanIcon
+                                                icon="Play"
+                                                class="w-4 h-4 my-auto outline-none"
+                                            ></AtlanIcon>
+                                        </div>
                                     </a-tooltip>
                                 </div>
 
@@ -296,11 +313,14 @@
                                         <template #title>{{
                                             tooltipText
                                         }}</template>
-
-                                        <AtlanIcon
-                                            icon="Play"
-                                            class="w-4 h-4 my-auto outline-none hover:bg-new-gray-300"
-                                        ></AtlanIcon>
+                                        <div
+                                            class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                        >
+                                            <AtlanIcon
+                                                icon="Play"
+                                                class="w-4 h-4 my-auto outline-none"
+                                            ></AtlanIcon>
+                                        </div>
                                     </a-tooltip>
                                 </div>
                                 <!-- <div
@@ -336,10 +356,12 @@
                 class="flex w-full m-0"
             >
                 <div
-                    class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700"
+                    class="relative flex items-center content-center w-full h-full my-auto overflow-hidden text-sm leading-5 text-gray-700"
                 >
                     <!-- <div class="parent-ellipsis-container"> -->
-                    <div class="flex items-center justify-between w-full">
+                    <div
+                        class="flex items-center justify-between w-full h-full"
+                    >
                         <div
                             class="flex items-center w-11/12 parent-ellipsis-container"
                         >
@@ -368,7 +390,7 @@
 
                     <div
                         v-if="hoverActions"
-                        class="absolute right-0 flex items-center h-full pr-2 text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
+                        class="absolute right-0 flex items-center pr-2 text-gray-500 transition duration-300 opacity-0 h-7 margin-align-top group-hover:opacity-100"
                         :class="
                             item?.selected
                                 ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
@@ -377,50 +399,63 @@
                         @click.stop="() => {}"
                     >
                         <div class="pl-2 ml-4">
-                            <a-dropdown :trigger="['click']">
-                                <AtlanIcon
-                                    icon="KebabMenuHorizontal"
-                                    class="w-4 h-4 my-auto -mr-1.5 outline-none"
-                                />
-                                <template #overlay>
-                                    <a-menu>
-                                        <a-menu-item
-                                            @click="setContextInEditor(item)"
-                                            :class="
-                                                readOnly
-                                                    ? ' bg-gray-100 cursor-not-allowed pointer-events-none'
-                                                    : ''
-                                            "
-                                        >
-                                            <div class="flex items-center h-8">
-                                                <AtlanIcon
-                                                    icon="Add"
-                                                    class="w-4 h-4 my-auto mr-1.5"
-                                                ></AtlanIcon>
-                                                <span
-                                                    >Set in editor context</span
+                            <div
+                                class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                            >
+                                <a-dropdown :trigger="['click']">
+                                    <AtlanIcon
+                                        icon="KebabMenuHorizontal"
+                                        class="w-4 h-4 my-auto -mr-1.5 outline-none"
+                                    />
+                                    <template #overlay>
+                                        <a-menu>
+                                            <a-menu-item
+                                                @click="
+                                                    setContextInEditor(item)
+                                                "
+                                                :class="
+                                                    readOnly
+                                                        ? ' bg-gray-100 cursor-not-allowed pointer-events-none'
+                                                        : ''
+                                                "
+                                            >
+                                                <div
+                                                    class="flex items-center h-8"
                                                 >
-                                            </div>
-                                        </a-menu-item>
-                                        <a-menu-item
-                                            v-if="!showVQB"
-                                            @click="
-                                                () => actionClick('add', item)
-                                            "
-                                        >
-                                            <div class="flex items-center h-8">
-                                                <AtlanIcon
-                                                    icon="AddAssetName"
-                                                    class="w-4 h-4 my-auto mr-1.5 focus:outline-none"
-                                                ></AtlanIcon>
-                                                <span
-                                                    >Place name in editor</span
+                                                    <AtlanIcon
+                                                        icon="Add"
+                                                        class="w-4 h-4 my-auto mr-1.5"
+                                                    ></AtlanIcon>
+                                                    <span
+                                                        >Set in editor
+                                                        context</span
+                                                    >
+                                                </div>
+                                            </a-menu-item>
+                                            <a-menu-item
+                                                v-if="!showVQB"
+                                                @click="
+                                                    () =>
+                                                        actionClick('add', item)
+                                                "
+                                            >
+                                                <div
+                                                    class="flex items-center h-8"
                                                 >
-                                            </div>
-                                        </a-menu-item>
-                                    </a-menu>
-                                </template>
-                            </a-dropdown>
+                                                    <AtlanIcon
+                                                        icon="AddAssetName"
+                                                        class="w-4 h-4 my-auto mr-1.5 focus:outline-none"
+                                                    ></AtlanIcon>
+                                                    <span
+                                                        >Place name in
+                                                        editor</span
+                                                    >
+                                                </div>
+                                            </a-menu-item>
+                                        </a-menu>
+                                    </template>
+                                </a-dropdown>
+                            </div>
                         </div>
                     </div>
                     <!-- </div> -->
@@ -431,11 +466,11 @@
             <!-- For others component which does not need hoverActions -->
             <div v-if="item?.typeName === 'Column' && !hoverActions">
                 <div
-                    class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700"
+                    class="relative flex items-center content-center w-full h-full my-auto overflow-hidden text-sm leading-5 text-gray-700"
                 >
                     <div
                         v-if="assetType(item) == 'Column'"
-                        class="relative flex items-center justify-between w-full"
+                        class="relative flex items-center justify-between w-full h-full"
                     >
                         <component
                             :is="dataTypeImage(item)"
@@ -472,7 +507,7 @@
                         </span>
                         <div
                             v-if="hoverActions"
-                            class="absolute right-0 flex items-center h-full text-gray-500 transition duration-300 opacity-0 margin-align-top group-hover:opacity-100"
+                            class="absolute right-0 flex items-center text-gray-500 transition duration-300 opacity-0 h-7 margin-align-top group-hover:opacity-100"
                             @click.stop="() => {}"
                             :class="
                                 item?.selected
@@ -489,14 +524,18 @@
                                     <template #title
                                         >Place name in editor</template
                                     >
-                                    <AtlanIcon
-                                        icon="AddAssetName"
-                                        class="w-4 h-4 my-auto focus:outline-none"
-                                    ></AtlanIcon>
+                                    <div
+                                        class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                    >
+                                        <AtlanIcon
+                                            icon="AddAssetName"
+                                            class="w-4 h-4 my-auto focus:outline-none"
+                                        ></AtlanIcon>
+                                    </div>
                                 </a-tooltip>
                             </div>
                             <div
-                                class="pl-2 pr-2"
+                                class="pl-1 pr-1"
                                 :data-test-id="'preview'"
                                 @click="() => actionClick('info', item)"
                             >
@@ -504,11 +543,14 @@
                                     <template #title
                                         >Open preview sidebar</template
                                     >
-
-                                    <AtlanIcon
-                                        icon="SidebarSwitch"
-                                        class="w-4 h-4 my-auto outline-none hover:bg-new-gray-300"
-                                    ></AtlanIcon>
+                                    <div
+                                        class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                    >
+                                        <AtlanIcon
+                                            icon="SidebarSwitch"
+                                            class="w-4 h-4 my-auto outline-none"
+                                        ></AtlanIcon>
+                                    </div>
                                 </a-tooltip>
                             </div>
                             <div
@@ -525,11 +567,14 @@
                                     <template #title>{{
                                         tooltipText
                                     }}</template>
-
-                                    <AtlanIcon
-                                        icon="Play"
-                                        class="w-4 h-4 my-auto outline-none hover:bg-new-gray-300"
-                                    ></AtlanIcon>
+                                    <div
+                                        class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                    >
+                                        <AtlanIcon
+                                            icon="Play"
+                                            class="w-4 h-4 my-auto outline-none"
+                                        ></AtlanIcon>
+                                    </div>
                                 </a-tooltip>
                             </div>
                         </div>
@@ -541,7 +586,7 @@
                 class="flex w-full m-0"
             >
                 <div
-                    class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700"
+                    class="relative flex items-center content-center w-full h-full my-auto overflow-hidden text-sm leading-5 text-gray-700"
                 >
                     <div class="parent-ellipsis-container">
                         <AtlanIcon
@@ -1465,7 +1510,7 @@
         min-height: 228px;
     }
     .margin-align-top {
-        margin-top: -1px;
+        // margin-top: -1px;
     }
     .primary-key-color {
         color: #3ca5bc;

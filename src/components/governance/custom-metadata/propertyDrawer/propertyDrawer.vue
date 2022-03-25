@@ -232,7 +232,6 @@
             const handleUpdateProperty = async () => {
                 // before create or update, check if is in createEnum, first create enum then enum will continue property flow if successful
                 // validate first
-
                 const isCreatingEnum =
                     [true, 'true'].includes(form.value.options.isEnum) &&
                     form.value.options.enumType === 'New Option'
@@ -242,7 +241,7 @@
                         formRef.value.validate(),
                         enumFormValidate(),
                     ]
-                    await Promise.allSettled(promises)
+                    await Promise.all(promises)
                     await executeCreateEnum()
                 } else await formRef.value.validate()
 

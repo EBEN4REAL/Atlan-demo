@@ -86,6 +86,7 @@
     import { useTypedefStore } from '~/store/typedef'
     import MultiInput from '@/common/input/customizedTagInput.vue'
     import SimpleEllipsis from '@/common/ellipsis/simpleEllipsis.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         components: {
@@ -142,6 +143,9 @@
                 const updatedEnum =
                     state?.value?.enumDefs?.length && state.value.enumDefs[0]
                 store.updateEnum(updatedEnum)
+                useAddEvent('governance', 'options', 'updated', {
+                    alias: updatedEnum.name,
+                })
             }
 
             // FIXME: May be simplified

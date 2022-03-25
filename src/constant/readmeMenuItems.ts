@@ -194,6 +194,24 @@ export const blockMenu: CommandItem[] = [
                 : editor.chain().focus().toggleImageBlock().run(),
     },
     {
+        title: 'Mention',
+        key: 'mention',
+        helpText: 'Mention a user or group',
+        icon: 'Mention',
+        border: true,
+        searchKeys: ['mention', 'user', 'group'],
+        disabled: () => false,
+        command: ({ editor, range }) =>
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .insertMention()
+                      .run()
+                : editor.chain().focus().insertMention().run(),
+    },
+    {
         title: 'Table',
         key: 'insertTable',
         helpText: 'Insert a table',

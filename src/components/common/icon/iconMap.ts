@@ -271,6 +271,7 @@ import Confluence from '~/assets/images/readme/confluence.svg'
 import Miro from '~/assets/images/readme/miro.svg'
 import Figma from '~/assets/images/readme/Figma.svg'
 import Lucid from '~/assets/images/readme/lucid.svg'
+import Mention from '~/assets/images/readme/mention.svg'
 import DBDiagram from '~/assets/images/readme/dbdiagram.svg'
 import MicrosoftWord from '~/assets/images/readme/microsoftWord.svg'
 import MicrosoftExcel from '~/assets/images/readme/microsoftExcel.svg'
@@ -737,6 +738,7 @@ export default {
     Confluence,
     Figma,
     Lucid,
+    Mention,
     Miro,
     DBDiagram,
     MicrosoftWord,

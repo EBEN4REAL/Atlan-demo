@@ -41,7 +41,7 @@
                     <div
                         v-for="(meta, idx) in customMetadataList"
                         :key="meta.guid"
-                        :class="`flex justify-between p-3 ${
+                        :class="`flex justify-between p-3 hover:bg-gray-100 ${
                             idx !== customMetadataList.length - 1 && 'border-b'
                         }  border-gray-200`"
                     >

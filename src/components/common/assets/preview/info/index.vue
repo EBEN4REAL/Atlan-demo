@@ -279,7 +279,9 @@
 
             <div
                 v-if="
-                    ['SalesforceField'].includes(selectedAsset?.typeName) &&
+                    ['SalesforceField', 'TableauCalculatedField'].includes(
+                        selectedAsset?.typeName
+                    ) &&
                     formula(selectedAsset) &&
                     formula(selectedAsset) !== ''
                 "
@@ -847,6 +849,18 @@
                 >
                 </RelatedTerms>
             </div>
+
+            <CustomMetadataPreview
+                v-if="readPermission"
+                :selected-asset="selectedAsset"
+                class="px-5"
+                :edit-permission="editPermission"
+                :allow-delete="editPermission"
+                :is-drawer="isDrawer"
+                :tab="tab"
+            >
+            </CustomMetadataPreview>
+
             <div
                 v-if="isBiAsset(selectedAsset) || isSaasAsset(selectedAsset)"
                 class="flex flex-col px-5 gap-y-4"
@@ -906,6 +920,7 @@
     import { copyToClipboard } from '~/utils/clipboard'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import ColumnKeys from '~/components/common/column/columnKeys.vue'
+    import CustomMetadataPreview from '@/common/input/customMetadata/index.vue'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -918,6 +933,7 @@
             Classification,
             SavedQuery,
             Certificate,
+            CustomMetadataPreview,
             RowInfoHoverCard,
             SQL,
             SQLSnippet,

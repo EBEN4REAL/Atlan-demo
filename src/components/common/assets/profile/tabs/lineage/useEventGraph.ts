@@ -564,7 +564,10 @@ export default function useEventGraph({
                 addSubGraph(data.value, registerAllListeners)
                 depthCounter.value += 1
             } else {
-                message.info('No assets fetched')
+                message.info('No lineage to show')
+                const hoPaCTAId = `node-${guid}-hoPaCTA`
+                const hoPaCTAEle = document.getElementById(hoPaCTAId)
+                hoPaCTAEle?.remove()
             }
 
             if (Object.keys(actions.value).length) {

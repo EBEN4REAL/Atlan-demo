@@ -964,7 +964,7 @@
         }
     }
     .list-wrapper {
-        height: 20rem;
+        max-height: 20rem;
     }
     .loading-view {
         min-height: 10rem;

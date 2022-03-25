@@ -1,11 +1,11 @@
 <template>
-    <div class="flex flex-col items-center w-full h-full bg-white">
+    <div class="flex flex-col items-center w-full h-full">
         <div
             class="flex items-center w-full p-4 pb-0 mb-4 text-lg font-bold text-gray-700"
         >
             <span class="mr-2"> Schedule Queries </span>
             <div
-                class="flex items-center justify-center px-1.5 py-1 text-sm font-bold rounded text-primary bg-primary-light"
+                class="flex items-center justify-center px-1.5 py-1 text-sm font-bold rounded text-primary bg-gray-200"
             >
                 <span class="mt-0.5"> {{ list.length ?? 0 }}</span>
             </div>

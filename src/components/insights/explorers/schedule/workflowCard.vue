@@ -1,7 +1,6 @@
 <template>
     <div
-        class="w-full p-3 mb-3 text-sm border border-gray-300 rounded-lg hover:border-primary group"
-        :class="selectedCardKey === item.metadata.uid ? 'selected-card' : ''"
+        class="w-full p-3 mb-3 text-sm bg-white border border-white rounded-lg shadow hover:border-primary group"
         @click="() => onSelectCard(item.metadata.uid)"
     >
         <div class="flex items-center justify-between">
@@ -234,6 +233,15 @@
 
             const dropdownOptions = [
                 {
+                    title: 'Edit',
+                    icon: 'Edit',
+                    class: 'text-gray-700',
+                    handleClick: () => {
+                        debugger
+                        scheduleQueryModal.value = true
+                    },
+                },
+                {
                     title: 'Delete',
                     icon: 'Trash',
                     class: 'text-red-700',
@@ -243,15 +251,6 @@
                             item.value?.metadata?.name,
                             scheduleQueryName.value
                         )
-                    },
-                },
-                {
-                    title: 'Edit',
-                    icon: 'Edit',
-                    class: 'text-gray-700',
-                    handleClick: () => {
-                        debugger
-                        scheduleQueryModal.value = true
                     },
                 },
             ]

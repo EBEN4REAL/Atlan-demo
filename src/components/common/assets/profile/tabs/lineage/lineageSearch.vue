@@ -2,7 +2,7 @@
     <div class="flex flex-col">
         <div class="flex items-center">
             <div class="control-item" @click="showSearch = !showSearch">
-                <a-tooltip placement="top" mouse-enter-delay="0.4">
+                <a-tooltip placement="top" :mouse-enter-delay="0.4">
                     <template #title>
                         <span>search graph</span>
                     </template>
@@ -57,7 +57,7 @@
 </template>
 
 <script lang="ts">
-    // Vue
+    /** Vue */
     import {
         defineComponent,
         Ref,
@@ -69,18 +69,24 @@
     } from 'vue'
     import { whenever } from '@vueuse/core'
 
-    // Utils
+    /** Utils */
     import { getNodeSourceImage, getSource } from './util'
 
-    // Components
+    /** Components */
     import AssetItem from '@/common/assets/preview/lineage/list/assetItem.vue'
     import NoResultIllustration from '~/assets/images/illustrations/Illustration_no_search_results.svg'
+
+    /** STORE */
+    import useLineageStore from '~/store/lineage'
 
     export default defineComponent({
         name: 'LineageSearch',
         components: { AssetItem, NoResultIllustration },
         emits: ['select'],
         setup(_, { emit }) {
+            /** INITIALIZE */
+            const lineageStore = useLineageStore()
+
             /** DATA */
             const query = ref('')
             const searchItem = ref('')
@@ -89,10 +95,16 @@
             const showSearch = ref(false)
 
             /** INJECTIONS */
-            const searchItems = inject('searchItems')
             const onSelectAsset = inject('onSelectAsset')
 
             /** COMPUTED */
+            const searchItems = computed(() => {
+                const d = lineageStore.getMergedLineageData()
+                const g = d.guidEntityMap
+                const v = Object.values(g)
+
+                return v
+            })
             const filteredItems = computed(() => {
                 if (!query.value) return []
                 return searchItems.value.filter((i) => {
@@ -142,6 +154,7 @@
                 const source = getSource(entity)
                 return getNodeSourceImage[source]
             }
+
             /** WATCHERS */
             watch(query, (val) => {
                 if (val) showResults.value = true

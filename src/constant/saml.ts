@@ -166,6 +166,10 @@ export const topSAMLProviders = [
                     '/broker/azure/endpoint',
                 ],
             },
+            {
+                label: 'Logout Url',
+                suffix: ['/broker/azure/endpoint']
+            }
         ],
     },
     {

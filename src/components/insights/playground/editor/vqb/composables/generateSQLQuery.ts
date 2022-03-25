@@ -118,7 +118,10 @@ export function generateSQLQuery(
         getConnectorName(context.attributeValue) ?? ''
     )
 
-    const select = squel.select()
+    let select = squel.select()
+    if (assetQuoteType)
+        select = squel.select({ fieldAliasQuoteCharacter: assetQuoteType })
+        
     const columnPanel = activeInlineTab.playground.vqb.panels.find(
         (panel) => panel.id.toLowerCase() === 'columns'
     )

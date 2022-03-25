@@ -16,19 +16,16 @@
             >
                 <slot name="extraFooterContent" />
                 <div class="flex items-center gap-x-4">
-                    <AtlanBtn
+                    <AtlanButton2
                         color="secondary"
-                        padding="compact"
-                        class="border-none"
+                        :label="cancelText"
                         @click="$emit('cancel')"
-                        >{{ cancelText }}</AtlanBtn
-                    >
-                    <AtlanBtn
+                    />
+                    <AtlanButton2
                         :disabled="!title ? true : false"
-                        padding="compact"
+                        :label="okText"
                         @click="$emit('ok')"
-                        >{{ okText }}</AtlanBtn
-                    >
+                    />
                 </div>
             </div>
         </div>

@@ -5,25 +5,21 @@
             class="flex flex-col items-center justify-center h-full"
         >
             <component :is="NewAPIKeyIllustration" class="mb-4"></component>
-            <div class="text-xl font-bold">Create API Keys</div>
-            <AtlanBtn
+            <span class="text-xl font-bold">Create API Keys</span>
+            <AtlanButton2
                 v-auth="[map.CREATE_APIKEY]"
-                padding="compact"
-                size="sm"
-                color="primary"
-                class="mt-6 px-7"
+                size="large"
+                class="mt-6"
+                label="Generate API Key"
+                prefixIcon="Add"
                 @click="handleGenerateKey"
-            >
-                <AtlanIcon icon="Add" class="ml-2" />Generate API Key
-            </AtlanBtn>
-            <AtlanBtn
-                padding="compact"
-                size="sm"
-                color="secondary"
-                class="hidden mt-3 bg-transparent border-none px-7 text-primary"
-            >
-                Learn more about API keys<AtlanIcon icon="ArrowRight" />
-            </AtlanBtn>
+            />
+
+            <AtlanButton2
+                color="link"
+                label="Learn more about API keys"
+                suffixIcon="ArrowRight"
+            />
         </div>
         <DefaultLayout v-else title="API Keys">
             <template #header>
@@ -39,16 +35,12 @@
                     </div>
 
                     <div class="flex-grow w-0"></div>
-                    <AtlanBtn
+
+                    <AtlanButton2
                         v-auth="[map.CREATE_APIKEY]"
-                        padding="compact"
-                        size="sm"
-                        color="primary"
-                        class="px-7"
+                        label="Generate API Key"
                         @click="handleGenerateKey"
-                    >
-                        <AtlanIcon icon="Add" />Generate API Key
-                    </AtlanBtn>
+                    />
                 </div>
             </template>
 
@@ -249,7 +241,8 @@
                 const localAPIKey = {
                     displayName: apikey?.displayName,
                     description: apikey?.attributes?.description,
-                    validitySeconds: apikey?.attributes?.['access.token.lifespan'],
+                    validitySeconds:
+                        apikey?.attributes?.['access.token.lifespan'],
                     personas: apikey?.attributes?.personas || [],
                     id: apikey?.id,
                     rawKey: { ...(apikey || {}) },

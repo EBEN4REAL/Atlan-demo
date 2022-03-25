@@ -181,6 +181,7 @@
                                 item.typeName?.toLowerCase() === 'column' &&
                                 item.attributes?.dataType
                             "
+                            class="pb-4"
                         >
                             <div class="text-gray-500">Data type</div>
                             <div class="flex items-center mt-1">
@@ -445,6 +446,7 @@
                 isPartition,
                 isSort,
                 isIndexed,
+                getProfilePath,
             } = useAssetInfo()
 
             const { showUserPreview: openPreview, setUserUniqueAttribute } =
@@ -486,7 +488,7 @@
             const schema = computed(() => schemaName(item.value))
             const title = computed(() => assetTypeLabel(item.value))
             const logoTitle = computed(() => getConnectorImage(item.value))
-            const path = computed(() => `/assets/${item.value.guid}`)
+            const path = computed(() => getProfilePath(item.value))
             const tableGuid = computed(
                 () => item?.value?.attributes?.table?.guid
             )

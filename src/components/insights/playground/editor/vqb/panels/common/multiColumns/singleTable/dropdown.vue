@@ -93,7 +93,7 @@
                                         </span>
                                     </div>
                                     <div
-                                        class="relative h-full w-14 parent-ellipsis-container-extension"
+                                        class="relative h-full parent-ellipsis-container-extension"
                                     >
                                         <ColumnKeys
                                             :isPrimary="item.isPrimary"

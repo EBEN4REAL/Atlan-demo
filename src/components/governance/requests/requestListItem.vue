@@ -12,17 +12,56 @@
         <div class="flex items-center col-span-4 overflow-hidden">
             <!-- TODO: Uncomment for bulk selection -->
             <!-- <a-checkbox :checked="selected" class="mr-4" /> -->
-            <Popover
+            <!-- <Popover
                 :item="item"
                 :show-preview-link="false"
                 @previewAsset="handleShowAssetSidebar(item.guid)"
             >
-                <div
-                    class="cursor-pointer"
+              
+            </Popover> -->
+              <div
+                    class="cursor-pointer flex items-center"
                     @mouseenter="$emit('mouseEnterAsset')"
                 >
+                    <div
+                        v-if="
+                            [
+                                'AtlasGlossaryTerm',
+                                'AtlasGlossaryCategory',
+                                'AtlasGlossary',
+                            ].includes(request?.entityType)
+                        "
+                        class="flex items-center"
+                    >
+                        <atlan-icon
+                            :icon="
+                                capitalizeFirstLetter(
+                                    glossaryLabel[request?.entityType]
+                                )
+                            "
+                            class="mr-1 mb-1"
+                        ></atlan-icon>
+                        <span class="text-primary">{{
+                            request?.destinationEntity?.attributes?.name
+                        }}</span>
+                        <CertificateBadge
+                            v-if="
+                                request?.destinationEntity?.attributes
+                                    ?.certificateStatus
+                            "
+                            :status="
+                                request?.destinationEntity?.attributes
+                                    ?.certificateStatus
+                            "
+                            class="mb-1 ml-1"
+                            :username="
+                                request?.destinationEntity?.attributes
+                                    ?.certificateUpdatedBy
+                            "
+                        />
+                    </div>
                     <AssetPiece
-                        v-if="request.destinationQualifiedName"
+                        v-else-if="request.destinationQualifiedName"
                         :asset-qf-name="request.destinationQualifiedName"
                         :entity-type="request?.entityType"
                         :destination-entity="request.destinationEntity"
@@ -35,7 +74,6 @@
                         }}
                     </span>
                 </div>
-            </Popover>
         </div>
         <div class="flex items-center col-span-3 ml-24">
             <ClassificationPiece
@@ -269,6 +307,9 @@
     import IconStatus from './iconStatus.vue'
     import Popover from '@/common/popover/assets/index.vue'
     import { RequestAttributes } from '~/types/atlas/requests'
+    import CertificateBadge from '@common/badge/certificate/index.vue'
+    import { default as glossaryLabel } from '@/glossary/constants/assetTypeLabel'
+    import { capitalizeFirstLetter } from '~/utils/string'
     import {
         approveRequest,
         declineRequest,
@@ -280,6 +321,7 @@
         name: 'RequestListItem',
         components: {
             VirtualList,
+            CertificateBadge,
             RequestActions,
             ClassificationPiece,
             AssetPiece,
@@ -478,6 +520,8 @@
                 assetGuid,
                 handleCloseAssetSidebar,
                 handleShowAssetSidebar,
+                glossaryLabel,
+                capitalizeFirstLetter,
             }
         },
     })

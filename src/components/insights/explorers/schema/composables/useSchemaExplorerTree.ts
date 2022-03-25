@@ -2,11 +2,12 @@ import { watch, ref, Ref, onMounted } from 'vue'
 
 // import { IndexSearchResponse } from '~/types/common/atlasSearch.interface'
 
-import store from '~/utils/storage'
 import { message } from 'ant-design-vue'
+import store from '~/utils/storage'
 
 // composables
 import useLoadTreeData from './useLoadTreeData'
+import { debounceFilter, watchWithFilter } from '@vueuse/core'
 
 type CustomTreeDataItem =
     | (Omit<TreeDataItem, 'children'> &
@@ -61,7 +62,6 @@ const useTree = ({
 }: useSchemaExplorerTreeProps) => {
     // A map of node guids to the guid of their parent. Used for traversing the tree while doing local update
     const nodeToParentKeyMap: Record<string, 'root' | string> = {}
-    console.log(initSelectedKeys, 'initial')
     const treeData = ref<CustomTreeDataItem[]>([])
 
     const isInitingTree = ref(false)
@@ -155,7 +155,7 @@ const useTree = ({
         databaseQualifiedName?: string,
         schemaQualifiedName?: string
     ) => {
-        // treeData.value = [];
+        treeData.value = []
         // console.log('query1: ', queryText)
         if (schemaQualifiedName) {
             const found = loadedKeys.value.find(
@@ -251,12 +251,14 @@ const useTree = ({
             treeData.value = []
         }
         /* removing duplicates */
-        treeData.value = removeDuplicates(
-            treeData,
-            connectionQualifiedName,
-            databaseQualifiedName,
-            schemaQualifiedName
-        )
+        if (!queryText.value?.length) {
+            treeData.value = removeDuplicates(
+                treeData,
+                connectionQualifiedName,
+                databaseQualifiedName,
+                schemaQualifiedName
+            )
+        }
 
         isInitingTree.value = false
     }
@@ -369,7 +371,7 @@ const useTree = ({
                             (limit ?? 0) + (responseOffset ?? 0)
                     ) {
                         newChildren?.push({
-                            key: parentQualifiedName + '_Load_More',
+                            key: `${parentQualifiedName  }_Load_More`,
                             title: 'Load more',
                             isLeaf: true,
                             click: () =>
@@ -519,7 +521,7 @@ const useTree = ({
             )
 
             loadedKeys.value.push(treeNode.dataRef.key)
-            return
+            
         }
     }
 
@@ -527,7 +529,7 @@ const useTree = ({
         console.log('expanded', expanded, expandedKeys.value)
 
         if (!event.node.dataRef.isLeaf) {
-            const key: string = event.node.dataRef.key
+            const {key} = event.node.dataRef
             const isExpanded = expandedKeys.value?.includes(key)
             if (!isExpanded) {
                 if (isAccordion && event.node.dataRef.isRoot) {
@@ -656,7 +658,7 @@ const useTree = ({
             classifications: item.classifications,
             ...item.attributes,
             meanings: item.meanings,
-            isLeaf: item.typeName === 'Column' ? true : false,
+            isLeaf: item.typeName === 'Column',
         }
     }
 
@@ -680,7 +682,7 @@ const useTree = ({
         ) {
             if (key === 'root') {
                 treeData.value.push({
-                    key: (key ?? parentQualifiedName) + '_Load_More',
+                    key: `${key ?? parentQualifiedName  }_Load_More`,
                     title: 'Load more',
                     isLeaf: true,
                     isLoading: false,
@@ -705,7 +707,7 @@ const useTree = ({
                         !currentPath
                     ) {
                         node.children?.push({
-                            key: (key ?? parentQualifiedName) + '_Load_More',
+                            key: `${key ?? parentQualifiedName  }_Load_More`,
                             title: 'Load more',
                             isLeaf: true,
                             isLoading: false,
@@ -756,7 +758,6 @@ const useTree = ({
             connectionQualifiedName,
             databaseQualifiedName,
             schemaQualifiedName,
-            queryText,
             facets,
             sortOrderTable,
             sortOrderColumn,
@@ -770,6 +771,21 @@ const useTree = ({
             })
             isInitingTree.value = true
             initTreeData(c, d, s)
+        }
+    )
+
+    watchWithFilter(
+        queryText,
+        () => {
+            isInitingTree.value = true
+            initTreeData(
+                connectionQualifiedName?.value,
+                databaseQualifiedName?.value,
+                schemaQualifiedName?.value
+            )
+        },
+        {
+            eventFilter: debounceFilter(400),
         }
     )
 

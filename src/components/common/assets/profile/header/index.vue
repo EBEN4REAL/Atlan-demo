@@ -1,6 +1,9 @@
 <template>
     <div class="flex items-center w-full px-6 pt-3">
-        <a-button class="px-1" @click="back">
+        <a-button
+            class="flex items-center justify-center px-1.5 py-1"
+            @click="back"
+        >
             <atlan-icon
                 icon="ArrowRight"
                 class="w-auto h-4 text-gray-500 transform rotate-180"
@@ -97,6 +100,14 @@
                                     ) && isCustom(item)
                                 "
                                 >(custom)</span
+                            >
+                            <span
+                                v-if="
+                                    ['TableauDatasource'].includes(
+                                        item.typeName
+                                    ) && isPublished(item)
+                                "
+                                >(Published)</span
                             >
                         </div>
                         <div
@@ -272,6 +283,7 @@
                         !isGTC(item) &&
                         !isBiAsset(item) &&
                         !isSaasAsset(item) &&
+                        assetType(item) !== 'Connection' &&
                         connectorName(item) !== 'glue'
                     "
                     title="Query"
@@ -286,8 +298,10 @@
                         @handleClick="goToInsights"
                     >
                         <template #button>
-                            <a-button class="flex items-center justify-center">
-                                <AtlanIcon icon="Query" class="mr-1 mb-0.5" />
+                            <a-button
+                                class="flex items-center justify-center p-2"
+                            >
+                                <AtlanIcon icon="Query" />
                             </a-button>
                         </template>
                     </QueryDropdown>
@@ -295,10 +309,10 @@
                     <a-button
                         v-else
                         block
-                        class="flex items-center justify-center"
+                        class="flex items-center justify-center p-2"
                         @click="handleClick"
                     >
-                        <AtlanIcon icon="Query" class="mr-1 mb-0.5" />
+                        <AtlanIcon icon="Query" />
                     </a-button>
                 </a-tooltip>
 
@@ -317,34 +331,43 @@
                 </a-button>
 
                 <ShareMenu :asset="item" :edit-permission="true">
-                    <a-button block class="flex items-center justify-center">
-                        <AtlanIcon icon="Share" class="mb-0.5" />
+                    <a-button
+                        block
+                        class="flex items-center justify-center p-2"
+                    >
+                        <AtlanIcon icon="Share" />
                     </a-button>
                 </ShareMenu>
-                <template v-if="!disableSlackAsk && linkEditPermission">
+                <template v-if="!disableSlackAsk">
                     <SlackAskButton :asset="item" />
                 </template>
+                <!--  3 dot menus for GTC -->
                 <AssetMenu
-                    @edit="handleEdit"
+                    :delete-permission="
+                        selectedAssetUpdatePermission(
+                            item,
+                            false,
+                            'ENTITY_DELETE'
+                        )
+                    "
                     :asset="item"
                     :edit-permission="selectedAssetUpdatePermission(item)"
+                    @edit="handleEdit"
                 >
                     <a-button
                         v-if="
                             isGTC(item) &&
-                            checkAccess(
-                                [
-                                    map.DELETE_TERM,
-                                    map.DELETE_GLOSSARY,
-                                    map.DELETE_CATEGORY,
-                                ],
-                                'or'
-                            )
+                            (selectedAssetUpdatePermission(item) ||
+                                selectedAssetUpdatePermission(
+                                    item,
+                                    false,
+                                    'ENTITY_DELETE'
+                                ))
                         "
                         block
-                        class="flex items-center justify-center"
+                        class="flex items-center justify-center p-2"
                     >
-                        <AtlanIcon icon="KebabMenu" class="mr-1 mb-0.5" />
+                        <AtlanIcon icon="KebabMenu" />
                     </a-button>
                 </AssetMenu>
                 <AssetMenu
@@ -356,9 +379,9 @@
                             !isGTC(item) && selectedAssetUpdatePermission(item)
                         "
                         block
-                        class="flex items-center justify-center"
+                        class="flex items-center justify-center p-2"
                     >
-                        <AtlanIcon icon="KebabMenu" class="mr-1 mb-0.5" />
+                        <AtlanIcon icon="KebabMenu" />
                     </a-button>
                 </AssetMenu>
             </a-button-group>
@@ -391,6 +414,9 @@
     import Name from '@/glossary/common/name.vue'
     import SlackAskButton from '~/components/common/assets/misc/slackAskButton.vue'
     import { disableSlackAsk } from '~/composables/integrations/slack/useAskAQuestion'
+    import useGTCPermissions, {
+        fetchGlossaryPermission,
+    } from '~/composables/glossary/useGTCPermissions'
 
     export default defineComponent({
         name: 'AssetHeader',
@@ -450,6 +476,7 @@
                 webURL,
                 sourceURL,
                 isCustom,
+                isPublished,
                 assetPermission,
             } = useAssetInfo()
 
@@ -522,18 +549,31 @@
                 console.log(val)
             }
 
-            const linkEditPermission = computed(
-                () =>
-                    selectedAssetUpdatePermission(
-                        item.value,
-                        false,
-                        'RELATIONSHIP_ADD',
-                        'Link'
-                    ) && assetPermission('CREATE_LINK')
-            )
+            // * permissions for glossary to check against the glossary and not category or term,
+            // * there providing the anchor (i.e glossary) to the fetchGlossaryPermission fn
+            // ! should we use entity update and remove permission of the term or category itself?
+            // const glossary = computed(() => {
+            //     if (item.value.typeName === 'AtlasGlossary') return item.value
+            //     if (
+            //         ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'].includes(
+            //             item.value.typeName
+            //         )
+            //     )
+            //         return item.value.attributes.anchor
+            //     return null
+            // })
+            // const {
+            //     entityUpdatePermission: glossaryUpdatePermission,
+            //     entityDeletePermission: glossaryDeletePermission,
+            //     fetch,
+            // } = fetchGlossaryPermission(glossary)
+            //  ANCHOR
+            // if (glossary.value) fetch()
 
             return {
-                linkEditPermission,
+                // glossary,
+                // glossaryUpdatePermission,
+                // glossaryDeletePermission,
                 disableSlackAsk,
                 title,
                 getConnectorImage,
@@ -578,6 +618,7 @@
                 isCustom,
                 handleNameUpdate,
                 entityTitle,
+                isPublished,
             }
         },
     })

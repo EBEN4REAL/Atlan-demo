@@ -3,7 +3,7 @@
         <template v-if="showGroupMembers">
             <div
                 v-auth="map.ADD_USER_GROUP"
-                class="flex items-center justify-between mb-3 px-4"
+                class="flex items-center justify-between px-4 mb-3"
             >
                 <div class="text-base font-bold text-gray-500">Members</div>
                 <MemberPopover
@@ -11,23 +11,17 @@
                     @members-added="addMembersToGroup"
                 >
                     <template #label>
-                        <AtlanButton
-                            size="sm"
-                            padding="compact"
-                            class="text-gray-700 bg-transparent border-gray-300 hover:bg-transparent hover:text-primary hover:border-primary"
-                        >
-                            <div class="flex items-center">
-                                <AtlanIcon
-                                    icon="Add"
-                                    class="h-3 mr-2"
-                                ></AtlanIcon>
-                                <div>Add Member</div>
-                            </div>
-                        </AtlanButton>
+                        <AtlanButton2
+                            color="secondary"
+                            prefixIcon="Add"
+                            label="Add Member"
+                        />
                     </template>
                 </MemberPopover>
             </div>
-            <div class="flex flex-row items-center justify-between gap-x-1 px-4">
+            <div
+                class="flex flex-row items-center justify-between px-4 gap-x-1"
+            >
                 <SearchAndFilter
                     v-if="totalMembersCount || isLoading"
                     v-model:value="searchText"
@@ -39,7 +33,7 @@
             </div>
             <div
                 v-if="!totalMembersCount && !isLoading"
-                class="flex flex-col items-center justify-center empty-state-wrapper px-4"
+                class="flex flex-col items-center justify-center px-4 empty-state-wrapper"
             >
                 <div class="flex items-center justify-center w-full">
                     <EmptyState
@@ -50,7 +44,7 @@
             </div>
             <div
                 v-if="error"
-                class="flex flex-col items-center justify-center mt-3 bg-white empty-state-wrapper px-4"
+                class="flex flex-col items-center justify-center px-4 mt-3 bg-white empty-state-wrapper"
             >
                 <ErrorView>
                     <div class="mt-3">
@@ -65,7 +59,7 @@
                             "
                         >
                             <AtlanIcon
-                                icon="Reload"
+                                icon="Retry"
                                 class="inline-block mb-1 mr-1"
                             />Try again
                         </a-button>
@@ -74,7 +68,7 @@
             </div>
             <div
                 v-else-if="searchText && !filteredMembersCount && !isLoading"
-                class="empty-state-wrapper px-4"
+                class="px-4 empty-state-wrapper"
             >
                 <EmptyState
                     image-class="h-36"
@@ -97,7 +91,7 @@
                         class="relative"
                     >
                         <div
-                            class="flex items-center justify-between  py-2  transition-all duration-300 rounded group hover:bg-primary-light"
+                            class="flex items-center justify-between py-2 transition-all duration-300 rounded group hover:bg-primary-light"
                         >
                             <UserCard
                                 :user="{ ...user, name: getUserName(user) }"
@@ -106,7 +100,7 @@
                             />
 
                             <div
-                                class="absolute right-2 flex justify-between mr-2 cursor-pointer top-3"
+                                class="absolute flex justify-between mr-2 cursor-pointer right-2 top-3"
                             >
                                 <div class="font-bold">
                                     <div
@@ -135,7 +129,10 @@
                     </div>
                 </div>
                 <div v-if="isLoading" class="flex justify-center mt-3">
-                    <AtlanIcon icon="CircleLoader" class="h-5 animate-spin text-primary" />
+                    <AtlanIcon
+                        icon="CircleLoader"
+                        class="h-5 animate-spin text-primary"
+                    />
                 </div>
                 <div v-else-if="showLoadMore" class="flex justify-center mt-3">
                     <a-button @click="handleLoadMore">load more</a-button>
@@ -160,14 +157,7 @@
 
 <script lang="ts">
     import { message, Modal } from 'ant-design-vue'
-    import {
-        ref,
-        defineComponent,
-        computed,
-        watch,
-        h,
-        toRefs,
-    } from 'vue'
+    import { ref, defineComponent, computed, watch, h, toRefs } from 'vue'
     import ErrorView from '@common/error/index.vue'
     import { useDebounceFn } from '@vueuse/core'
     import { Groups } from '~/services/service/groups'

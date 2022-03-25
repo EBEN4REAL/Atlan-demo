@@ -112,7 +112,7 @@
             // FIXME: May be simplified
             watch([updateError, isReady], () => {
                 if (isReady && state.value.enumDefs.length) {
-                    message.success('Enumeration added.')
+                    message.success('Options added.')
                     context.emit('add', state.value.enumDefs[0])
                     context.emit('close')
                 }

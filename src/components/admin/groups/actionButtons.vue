@@ -87,7 +87,7 @@
                                         markAsDefaultLoading ||
                                         deleteGroupLoading
                                     "
-                                    @click="$emit('toggleDefault')"
+                                    @change="$emit('toggleDefault')"
                                     >{{
                                         group.isDefault === 'true'
                                             ? 'Unmark'

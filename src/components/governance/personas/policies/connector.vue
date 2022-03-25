@@ -65,12 +65,14 @@
         Ref,
         toRefs,
         watch,
+        onMounted,
     } from 'vue'
     import { capitalizeFirstLetter } from '~/utils/string'
     import { Components } from '~/api/atlas/client'
     import { List } from '~/constant/status'
     import { useConnectionStore } from '~/store/connection'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import { useConnection } from '~/composables/connection/useConnection'
 
     export default defineComponent({
         components: {
@@ -145,7 +147,7 @@
             const store = useConnectionStore()
             // console.log(store.get(), 'sourceMap')
             /* Checking if filterSourceIds passed -> whitelist the sourcelist
-            else fetch all the sourcelist from store */
+                else fetch all the sourcelist from store */
             const filteredList = computed(() =>
                 filterSourceIds.value.length > 0
                     ? filterSourceList(filterSourceIds.value)
@@ -333,6 +335,10 @@
                     expandedKeys.value.push(name)
                 }
             }
+
+            onMounted(() => {
+                useConnection()
+            })
 
             return {
                 treeSelectRef,

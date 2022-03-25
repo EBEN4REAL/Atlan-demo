@@ -127,6 +127,7 @@ export const AssetAttributes = [
     'inlineHelpText',
     'picklistValues',
     'formula',
+    'isPublished',
 ]
 
 export const SQLAttributes = [
@@ -148,6 +149,8 @@ export const SQLAttributes = [
     'isDist',
     'table',
     'view',
+    'tablePartition',
+    'materialisedView',
     'database',
     'tableCount',
     'viewsCount',
@@ -188,6 +191,7 @@ export const MinimalAttributes = [
     'displayDescription',
     'userDescription',
     'certificateStatus',
+    'certificateUpdatedBy',
     'connectorName',
     'connectionName',
     'connectionQualifiedName',
@@ -236,6 +240,8 @@ export const MinimalAttributes = [
     'isPrimary',
     'table',
     'view',
+    'tablePartition',
+    'materialisedView',
     'database',
     'tableCount',
     'viewsCount',
@@ -247,6 +253,7 @@ export const MinimalAttributes = [
     'isForeign',
     'isDist',
     'order',
+    'isPublished',
 ]
 
 export const BasicSearchAttributes = [
@@ -330,6 +337,8 @@ export const LineageAttributes = [
     'certificateStatus',
     'link',
     'dataType',
+    'columnCount',
+    'rowCount',
     // BI Relationships
     'workspace',
     'report',

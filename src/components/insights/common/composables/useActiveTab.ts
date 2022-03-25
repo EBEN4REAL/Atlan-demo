@@ -14,6 +14,8 @@ export function useActiveTab() {
         schemaConnectors,
         queryConnectors,
         assetInfo,
+        savedVariables,
+        variables,
     }: {
         activeInlineTab: Ref<activeInlineTabInterface>
         label: string
@@ -24,14 +26,12 @@ export function useActiveTab() {
         schemaConnectors?: object
         queryConnectors?: object
         assetInfo?: object
+        savedVariables?: any[]
+        variables?: any[]
     }): activeInlineTabInterface {
         const activeInlineTabCopy: activeInlineTabInterface = JSON.parse(
             JSON.stringify(toRaw(activeInlineTab.value))
         )
-        let isTabVQB = activeInlineTabCopy.playground.isVQB
-        if (isVQB) {
-            isTabVQB = isVQB
-        }
 
         let vqbData = {
             panels: [
@@ -57,10 +57,6 @@ export function useActiveTab() {
             ],
         }
 
-        if (isTabVQB) {
-            vqbData = activeInlineTabCopy.playground.vqb
-        }
-
         if (vqb) {
             vqbData = vqb
         }
@@ -83,6 +79,14 @@ export function useActiveTab() {
         let assetInfoData = {}
         if (assetInfo) {
             assetInfoData = assetInfo
+        }
+        let savedVariablesData: any[] = []
+        if (savedVariables) {
+            savedVariablesData = savedVariables
+        }
+        let variablesData: any[] = []
+        if (variables) {
+            variablesData = variables
         }
 
         const key = generateUUID()
@@ -117,12 +121,14 @@ export function useActiveTab() {
             },
             playground: {
                 ...inlineTabData.playground,
-                isVQB: isTabVQB,
+                isVQB: isVQB,
                 vqb: vqbData,
                 editor: {
                     ...inlineTabData.playground.editor,
                     context: contextData,
                     text: editorText ?? '',
+                    savedVariables: savedVariablesData,
+                    variables: variablesData,
                 },
             },
             assetSidebar: {

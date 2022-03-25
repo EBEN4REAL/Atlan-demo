@@ -125,6 +125,8 @@
                                 v-model:visible="showQueryPreview"
                                 :overlayStyle="{ padding: '0px !important' }"
                                 :destroyTooltipOnHide="true"
+                                zIndex="999"
+                                style="z-index: 999 !important"
                                 @visibleChange="
                                     (visible) => {
                                         if (!visible) {
@@ -521,7 +523,9 @@
                 checked: boolean
                 rowsCount: number
             }>
-            const showcustomToolBar = ref(false)
+            const showcustomToolBar = inject(
+                'showcustomToolBar'
+            ) as Ref<boolean>
             const showQueryPreview = ref(false)
 
             const activeInlineTab = inject(
@@ -539,6 +543,9 @@
                 'editorConfig'
             ) as Ref<editorConfigInterface>
             const fullSreenState = inject('fullSreenState') as Ref<boolean>
+            const refetchQueryNode = inject('refetchQueryNode') as Ref<{
+                guid: string
+            }>
             const queryExecutionTime = inject(
                 'queryExecutionTime'
             ) as Ref<number>
@@ -760,7 +767,7 @@
                 setEditorInstanceFxn(editorInstanceParam, monacoInstanceParam)
             }
             const updateQuery = () => {
-                updateSavedQuery(
+                return updateSavedQuery(
                     editorInstance,
                     isUpdating,
                     activeInlineTab.value,
@@ -826,10 +833,13 @@
                     openAssetSidebar(activeInlineTabCopy, 'editor')
                 }
             }
-            const saveOrUpdate = () => {
+            const saveOrUpdate = async () => {
                 const queryId = activeInlineTab.value?.queryId
                 if (queryId) {
-                    updateQuery()
+                    await updateQuery()
+                    refetchQueryNode.value = {
+                        guid: queryId,
+                    }
                 } else {
                     openSaveQueryModal()
                 }

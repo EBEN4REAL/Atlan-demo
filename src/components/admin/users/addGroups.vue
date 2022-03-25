@@ -20,29 +20,19 @@
                     />
                 </div>
                 <div class="flex justify-end mr-3">
-                    <a-button
-                        :is-loading="addToGroupLoading"
-                        type="text"
-                        size="sm"
-                        padding="compact"
+                    <AtlanButton2
+                        color="secondary"
                         :disabled="addToGroupLoading"
+                        label="Cancel"
                         @click="handleCancel"
-                    >
-                        Cancel
-                    </a-button>
-                    <AtlanButton
-                        :is-loading="addToGroupLoading"
-                        type="primary"
-                        size="sm"
-                        padding="compact"
+                    />
+                    <AtlanButton2
+                        :loading="addToGroupLoading"
+                        color="primary"
                         :disabled="addToGroupLoading"
+                        :label="addToGroupLoading ? 'Adding' : 'Add'"
                         @click="addUserToGroups"
-                    >
-                        <div class="flex items-center">
-                            <div v-if="!addToGroupLoading">Add</div>
-                            <div v-else>Adding</div>
-                        </div>
-                    </AtlanButton>
+                    />
                 </div>
             </div>
         </template>

@@ -137,7 +137,7 @@
                     />
 
                     <div
-                        v-if="allowDelete"
+                        v-if="allowDelete && editPermission"
                         class="flex"
                         @click="() => handleDelete(category)"
                     >
@@ -254,6 +254,10 @@
             const hasBeenEdited = ref(false)
             const treeSelectRef = ref(null)
             const { categories } = useAssetInfo()
+            const selectedAssetCategories = computed(() =>
+                categories(selectedAsset.value)
+            )
+
             const getContainer = () => {
                 return document.getElementById('categoryWidget')
             }
@@ -400,7 +404,8 @@
             watch(checkedKeys, (newCheckedKeys) => {
                 updateLocalValue(newCheckedKeys)
             })
-            watch(selectedAsset, () => {
+            watch(selectedAssetCategories, () => {
+                console.log('selected asset updated')
                 localValue.value = categories(selectedAsset.value)
                 checkedKeys.value = localValue.value.map((category) => ({
                     label: category.attributes.name,

@@ -1,12 +1,10 @@
-
 import { defineComponent, PropType, ref, toRefs, h, watch } from 'vue'
-import { getDomain } from '~/utils/url';
+import { getDomain } from '~/utils/url'
 import { handleUpdateList } from '@/governance/personas/composables/usePersonaList'
 import { savePersona } from '@/governance/personas/composables/useEditPersona'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
 const usePersonaResources = (persona) => {
-
     // The `handleAddResource` function is a helper function that makes network request to store a resource link to the
     // persona.
     const addStatus = ref('')
@@ -22,19 +20,14 @@ const usePersonaResources = (persona) => {
             const personaRaw = JSON.parse(JSON.stringify(body))
             delete body.metadataPolicies
             delete body.dataPolicies
+            delete body.glossaryPolicies
             await savePersona(body)
             handleUpdateList(personaRaw) // updating list locally on sucess
-            useAddEvent(
-                'governance',
-                'persona',
-                'resource_created',
-                {
-                    domain: getDomain(r.attributes.link),
-                }
-            )
+            useAddEvent('governance', 'persona', 'resource_created', {
+                domain: getDomain(r.attributes.link),
+            })
             addStatus.value = 'success'
         } catch (e) {
-            console.log({ e })
             addStatus.value = 'error'
         }
     }
@@ -52,18 +45,13 @@ const usePersonaResources = (persona) => {
 
             delete body.metadataPolicies
             delete body.dataPolicies
-
+            delete body.glossaryPolicies
             await savePersona(body)
-            handleUpdateList(personaRaw)  // updating list locally on sucess
-            useAddEvent(
-                'governance',
-                'persona',
-                'resource_updated',
-                {
-                    domain: getDomain(r.attributes.link),
-                    asset_type: 'persona'
-                }
-            )
+            handleUpdateList(personaRaw) // updating list locally on sucess
+            useAddEvent('governance', 'persona', 'resource_updated', {
+                domain: getDomain(r.attributes.link),
+                asset_type: 'persona',
+            })
             updateStatus.value = 'success'
         } catch (error) {
             updateStatus.value = 'error'
@@ -81,18 +69,14 @@ const usePersonaResources = (persona) => {
             const personaRaw = JSON.parse(JSON.stringify(body))
             delete body.metadataPolicies
             delete body.dataPolicies
+            delete body.glossaryPolicies
             await savePersona(body)
-            handleUpdateList(personaRaw)  // updating list locally on sucess
+            handleUpdateList(personaRaw) // updating list locally on sucess
 
             removeStatus.value = 'success'
-            useAddEvent(
-                'governance',
-                'persona',
-                'resource_deleted',
-                {
-                    asset_type: 'persona'
-                }
-            )
+            useAddEvent('governance', 'persona', 'resource_deleted', {
+                asset_type: 'persona',
+            })
         } catch (e) {
             removeStatus.value = 'error'
         }
@@ -104,7 +88,7 @@ const usePersonaResources = (persona) => {
         removeStatus,
         handleAddResource,
         handleUpdateResource,
-        handleRemoveResource
+        handleRemoveResource,
     }
 }
 

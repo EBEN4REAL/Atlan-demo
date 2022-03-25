@@ -154,6 +154,7 @@
                 'displayDescription',
                 'userDescription',
                 'certificateStatus',
+                'certificateUpdatedBy',
                 'meanings',
                 'category',
                 'dataType',
@@ -165,6 +166,7 @@
                 'isForeign',
                 'isDist',
                 'order',
+                '__hasLineage',
             ])
             const defaultAttributes = ref([...columnAttributes.value])
             const preference = ref({

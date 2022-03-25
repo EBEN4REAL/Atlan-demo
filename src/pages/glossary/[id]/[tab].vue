@@ -23,7 +23,6 @@
         GlossaryAttributes,
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
-    import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { useTrackPage } from '~/composables/eventTracking/useAddEvent'
     import useGlossaryStore from '~/store/glossary'
 
@@ -52,7 +51,7 @@
             const offset = ref(0)
             const glossaryStore = useGlossaryStore()
             const handleSelectGlossary = inject('handleSelectGlossary')
-            console.log(handleSelectGlossary)
+
             const facets = ref({
                 guid: id.value,
             })
@@ -66,7 +65,6 @@
                 }
                 return id.value
             })
-            const { customMetadataProjections } = useTypedefData()
 
             const dependentKey = ref(fetchKey.value)
             const defaultAttributes = ref([
@@ -74,7 +72,6 @@
                 ...AssetAttributes,
                 ...SQLAttributes,
                 ...GlossaryAttributes,
-                ...customMetadataProjections,
             ])
             const relationAttributes = ref([
                 ...AssetRelationAttributes,
@@ -127,7 +124,10 @@
             watch(list, () => {
                 if (list.value.length > 0) {
                     localSelected.value = list.value[0]
-                    if (list.value[0] && list.value[0]?.typeName === 'AtlasGlossary') {
+                    if (
+                        list.value[0] &&
+                        list.value[0]?.typeName === 'AtlasGlossary'
+                    ) {
                         const found = glossaryStore.list?.find(
                             (el) => el?.guid === list.value[0]?.guid
                         )

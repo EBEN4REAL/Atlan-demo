@@ -205,13 +205,10 @@
                                 </div>
                                 <!-- learnMore component is failing import -->
                             </template>
-                            <AtlanButton
+                            <AtlanButton2
                                 color="secondary"
-                                size="sm"
-                                padding="compact"
-                            >
-                                Learn More
-                            </AtlanButton>
+                                label="Learn More"
+                            />
                         </a-popover>
                     </div>
                     <div class="">
@@ -255,19 +252,15 @@
                                         Are you sure you want to start over?
                                     </h1>
                                     <div class="flex justify-end space-x-2">
-                                        <AtlanButton
+                                        <AtlanButton2
+                                            label="Cancel"
+                                            color="secondary"
                                             @click="reconfigure = false"
-                                            padding="compact"
-                                            size="sm"
-                                            color="minimal"
-                                            >Cancel</AtlanButton
-                                        >
-                                        <AtlanButton
+                                        />
+                                        <AtlanButton2
+                                            label="Confirm"
                                             @click="handleReconfigure"
-                                            padding="compact"
-                                            size="sm"
-                                            >Confirm</AtlanButton
-                                        >
+                                        />
                                     </div>
                                 </div>
                             </template>
@@ -293,13 +286,14 @@
                             >
                                 Installed
                             </div>
-                            <AtlanButton
-                                v-auth="access.CREATE_INTEGRATION"
+                            <AtlanButton2
                                 v-else
+                                v-auth="access.CREATE_INTEGRATION"
                                 class="text-primary"
                                 color="secondary"
-                                size="lg"
-                                padding="compact"
+                                size="large"
+                                label="Install now"
+                                suffixIcon="ArrowRight"
                                 @click="
                                     () =>
                                         openSlackOAuth({
@@ -307,10 +301,7 @@
                                             emit: $emit,
                                         })
                                 "
-                            >
-                                Install now
-                                <AtlanIcon :icon="'ArrowRight'" />
-                            </AtlanButton>
+                            />
                         </div>
                     </div>
                 </template>
@@ -319,24 +310,27 @@
         <footer>
             <div class="flex justify-end px-6 py-6 border-t">
                 <div v-if="tenantSlackStatus.configured" class="">
-                    <AtlanButton color="secondary" @click="$emit('close')"
-                        >Close</AtlanButton
-                    >
+                    <AtlanButton2
+                        label="Close"
+                        color="secondary"
+                        @click="$emit('close')"
+                    />
                 </div>
-                <div v-else class="flex items-center">
-                    <a-button class="mr-3 border-0" @click="$emit('close')"
-                        >Cancel
-                    </a-button>
-                    <AtlanButton
+                <div v-else class="flex items-center gap-x-3">
+                    <AtlanButton2
+                        color="secondary"
+                        label="Cancel"
+                        @click="$emit('close')"
+                    />
+
+                    <AtlanButton2
                         v-auth="access.CREATE_INTEGRATION"
                         :disabled="buttonDisabled"
                         :loading="isLoading"
-                        type="primary"
                         html-type="submit"
+                        :label="buttonCopy"
                         @click="next"
-                    >
-                        {{ buttonCopy }}
-                    </AtlanButton>
+                    />
                 </div>
             </div>
         </footer>

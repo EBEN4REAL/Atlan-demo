@@ -1554,7 +1554,7 @@
         justify-content: center;
         align-items: center;
         display: inline-flex;
-        width: 18px;
+        min-width: 18px;
         height: 18px;
         font-weight: 400;
         font-size: 12px;

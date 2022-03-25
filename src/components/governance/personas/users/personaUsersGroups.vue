@@ -1,5 +1,5 @@
 <template>
-    <div class="py-6 bg-white rounded user-group-wrapper">
+    <div class="bg-white rounded user-group-wrapper">
         <!-- START Error State -->
         <div
             v-if="errorUsersGroups"
@@ -42,8 +42,13 @@
             v-else-if="!groupsError && !usersError"
             class="flex flex-col h-full overflow-y-hidden"
         >
-            <div class="flex items-center justify-between w-full px-6 mb-2">
-                <div class="flex mr-4 gap-x-2">
+            <div
+                class="flex items-center justify-between w-full px-4 py-2.5 border-b"
+            >
+                <!-- <div
+                    v-if="filteredList.length || queryText"
+                    class="flex mr-4 gap-x-2"
+                >
                     <a-radio-group
                         v-model:value="listType"
                         class="flex flex-grow"
@@ -52,32 +57,42 @@
                         <a-radio-button value="users">Users</a-radio-button>
                         <a-radio-button value="groups">Groups</a-radio-button>
                     </a-radio-group>
+                </div> -->
+                <div class="flex items-center text-sm font-bold text-gray-700">
+                    <AtlanIcon icon="Group" class="w-auto h-4 mr-2" />
+                    Users and groups
                 </div>
                 <div>
                     <a-popover
                         v-model:visible="popoverVisible"
-                        placement="left"
+                        placement="bottomRight"
                         trigger="click"
                         :destroy-tooltip-on-hide="true"
                     >
-                        <a-button
-                            type="primary"
+                        <!-- <div
+                            class="text-sm cursor-pointer text-primary"
                             @click="
                                 () => {
                                     setPopoverState(!popoverVisible)
                                 }
                             "
-                            >Add User/Group</a-button
                         >
-                        <!-- <AtlanBtn
+                            <AtlanIcon icon="Add" class="mr-2" />Add
+                        </div> -->
+                        <AtlanBtn
                             color="primary"
                             padding="compact"
                             :size="'sm'"
                             data-test-id="add-users"
-                            class="items-center px-6 ml-auto"
+                            class="items-center px-3 ml-auto"
+                            @click="
+                                () => {
+                                    setPopoverState(!popoverVisible)
+                                }
+                            "
                             ><AtlanIcon icon="Add"></AtlanIcon>
                             <span>Add </span></AtlanBtn
-                        > -->
+                        >
                         <template #content>
                             <div
                                 class="flex flex-col items-center px-1 py-4 bg-white rounded"
@@ -139,30 +154,92 @@
                     </a-popover>
                 </div>
             </div>
-            <div class="px-6">
-                <SearchAndFilter
+            <div class="flex items-center px-4 mt-3 mb-2">
+                <a-input
+                    v-if="
+                        filteredList.length || queryText || listType !== 'all'
+                    "
                     v-model:value="queryText"
-                    class="mt-3 mb-2 bg-white"
+                    class="mr-3 border-t-0 border-b border-l-0 border-r-0 border-gray-300 rounded-none shadow-none outline-none input-search-group-user"
+                    :placeholder="placeholder"
+                >
+                    <template #prefix>
+                        <AtlanIcon icon="Search" class="mr-1" />
+                    </template>
+                    <template #suffix>
+                        <!-- <a-dropdown placement="bottomRight" trigger="click">
+                            <template #overlay>
+                                <a-menu class="w-24">
+                                    <a-menu-item
+                                        class="p-2"
+                                        @click="listType = 'all'"
+                                        >All ({{
+                                            userList.length + groupList.length
+                                        }})
+                                    </a-menu-item>
+                                    <a-menu-item
+                                        v-if="userList.length"
+                                        class="p-2"
+                                        @click="listType = 'users'"
+                                        >Users ({{
+                                            userList.length
+                                        }})</a-menu-item
+                                    >
+                                    <a-menu-item
+                                        v-if="groupList.length"
+                                        class="p-2"
+                                        @click="listType = 'groups'"
+                                        >Groups ({{
+                                            groupList.length
+                                        }})</a-menu-item
+                                    >
+                                </a-menu>
+                            </template>
+                            <div
+                                class="px-2 py-1 capitalize bg-white rounded cursor-pointer"
+                            >
+                                {{ listType }}
+                                <AtlanIcon class="ml-2" icon="ChevronDown" />
+                            </div>
+                        </a-dropdown> -->
+                    </template>
+                </a-input>
+                <!-- <SearchAndFilter
+                    v-if="filteredList.length || queryText"
+                    v-model:value="queryText"
+                    class="mt-3 mb-2 bg-gray-100 border-none"
                     :placeholder="placeholder"
                     size="minimal"
+                >
+                 
+                </SearchAndFilter> -->
+                <RaisedTab
+                    v-if="
+                        filteredList.length || queryText || listType !== 'all'
+                    "
+                    v-model:active="listType"
+                    :data="streams"
+                    class="tab-filter"
                 />
             </div>
             <div
                 v-if="filteredList && filteredList.length"
-                class="flex-grow px-6 overflow-y-auto"
+                class="flex-grow overflow-y-auto"
             >
                 <div class="flex flex-col flex-grow mt-3 list-wrapper gap-y-2">
                     <div
                         v-for="item in filteredList"
                         :key="item.alias || item.username"
                     >
-                        <div class="py-2 rounded">
+                        <div
+                            class="px-6 py-2 rounded hover:bg-gray-100 card-container"
+                        >
                             <!--user-->
                             <div
                                 v-if="item.username"
-                                class="grid items-center w-full grid-cols-12"
+                                class="flex items-center justify-between w-full"
                             >
-                                <div class="col-span-6">
+                                <div>
                                     <div class="flex items-center align-middle">
                                         <avatar
                                             :image-url="imageUrl(item.username)"
@@ -204,7 +281,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-span-3">
+                                <div class="type-data">
                                     <span
                                         v-if="item?.role_object?.name"
                                         :data-test-id="item.role_object.name"
@@ -215,7 +292,7 @@
                                         </span>
                                     </span>
                                 </div>
-                                <div class="col-span-3">
+                                <div class="remove-data">
                                     <a-tooltip placement="bottom">
                                         <template #title>
                                             <span>Remove User</span>
@@ -300,9 +377,9 @@
                             <!--group-->
                             <div
                                 v-if="item.alias"
-                                class="grid items-center w-full grid-cols-12"
+                                class="flex items-center justify-between w-full"
                             >
-                                <div class="col-span-6">
+                                <div>
                                     <div
                                         class="flex items-center align-middle"
                                         :data-test-id="item.alias"
@@ -338,10 +415,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-span-3 text-gray-500">
-                                    Group
-                                </div>
-                                <div class="col-span-3">
+                                <div class="text-gray-500 type-data">Group</div>
+                                <div class="remove-data">
                                     <a-tooltip placement="bottom">
                                         <template #title>
                                             <span>Remove group</span>
@@ -428,10 +503,18 @@
                 </div>
             </div>
             <EmptyView
-                v-else-if="!filteredList.length && queryText"
+                v-else-if="
+                    !filteredList.length && (queryText || listType !== 'all')
+                "
                 class="mt-4"
-                empty-screen="NoResultIllustration"
-                :desc="`Whoops! couldn't find anyone with '${queryText}' in persona`"
+                :empty-screen="
+                    !queryText ? 'CreateGroups' : 'NoResultIllustration'
+                "
+                :desc="
+                    queryText
+                        ? `Whoops! couldn't find anyone with '${queryText}' in persona`
+                        : `No ${listType} added in the persona`
+                "
             >
             </EmptyView>
             <EmptyState
@@ -480,6 +563,7 @@
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import { selectedPersonaDirty } from '../composables/useEditPersona'
     import { IGroup, IUser } from '~/types/accessPolicies/personas'
+    import RaisedTab from '@/UI/raisedTab.vue'
 
     export default defineComponent({
         name: 'PersonaUsersGroups',
@@ -493,6 +577,7 @@
             AggregationTabs,
             Loader,
             EmptyState,
+            RaisedTab,
         },
         props: {
             persona: {
@@ -513,6 +598,20 @@
             const { persona, cancelTokenForUsers, cancelTokenForGroups } =
                 toRefs(props)
             const listType: Ref<'all' | 'users' | 'groups'> = ref('all')
+            const streams = computed(() => [
+                {
+                    key: 'all',
+                    label: 'All',
+                },
+                {
+                    key: 'users',
+                    label: 'Users',
+                },
+                {
+                    key: 'groups',
+                    label: 'Groups',
+                },
+            ])
             const enableTabs = computed(() => ['users', 'groups'])
 
             const queryText = ref('')
@@ -760,7 +859,6 @@
                         showRemoveUserPopover.value[userOrGroup.id] = false
                         addUsersLoading.value = false
                         message.error('Failed to add users')
-                        console.log('Failed to add users', e)
                     })
             }
 
@@ -831,13 +929,42 @@
                 groupsError,
                 showRemoveUserPopover,
                 errorUsersGroups,
+                streams,
             }
         },
     })
 </script>
+<style lang="less">
+    .tab-filter {
+        .tab-btn {
+            height: fit-content !important;
+            padding: 6px 10px !important;
+            @apply text-xs;
+        }
+    }
+    .input-search-group-user {
+        input {
+            background: none !important;
+            box-shadow: none !important;
+        }
+    }
+</style>
 <style lang="less" scoped>
+    .card-container {
+        :hover {
+            .type-data {
+                display: none;
+            }
+            .remove-data {
+                display: block;
+            }
+        }
+        .remove-data {
+            display: none;
+        }
+    }
     .list-wrapper {
-        height: 20rem;
+        max-height: 20rem;
     }
     .loading-view {
         min-height: 10rem;

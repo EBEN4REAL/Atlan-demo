@@ -93,13 +93,17 @@
                 </div>
 
                 <div
-                    v-if="!isLoading && error && !isValidating"
+                    v-if="
+                        error &&
+                        error?.message !== 'operation cancelled' &&
+                        !isValidating
+                    "
                     class="flex items-center justify-center flex-grow"
                 >
                     <ErrorView></ErrorView>
                 </div>
                 <div
-                    v-else-if="list.length === 0 && !isLoading && !isValidating"
+                    v-else-if="list.length === 0 && !isValidating"
                     class="flex-grow"
                 >
                     <EmptyView
@@ -226,7 +230,6 @@
     import AssetFilters from '@/common/assets/filters/index.vue'
     import AssetList from '@/common/assets/list/index.vue'
     import AssetItem from '@/common/assets/list/assetItem.vue'
-    import useTypedefData from '~/composables/typedefs/useTypedefData'
 
     import {
         AssetAttributes,
@@ -371,13 +374,11 @@
             })
             const dependentKey = ref(cacheKey.value || 'DEFAULT_ASSET_LIST')
 
-            const { customMetadataProjections } = useTypedefData()
             const defaultAttributes = ref([
                 ...InternalAttributes,
                 ...AssetAttributes,
                 ...SQLAttributes,
                 ...GlossaryAttributes,
-                ...customMetadataProjections,
             ])
 
             const relationAttributes = ref([...AssetRelationAttributes])
@@ -741,15 +742,14 @@
             }
 
             onMounted(() => {
-                watchOnce(isLoading, (v) => {
+                watchOnce(isValidating, (v) => {
                     if (!v && list.value?.length && page.value === 'assets') {
                         const isNone =
                             typeof selectedAsset.value === 'object' &&
                             Object.keys(selectedAsset.value).length === 0
                         if (isNone) handleClickAssetItem(list.value[0])
-                        else {
-                            handleClickAssetItem(selectedAsset.value)
-                        }
+                        else handleClickAssetItem(selectedAsset.value)
+
                         firstAssetAutoClicked.value = true
                     }
                 })

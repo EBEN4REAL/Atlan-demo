@@ -17,15 +17,23 @@
                 >
                 <span
                     v-if="!isCreate"
-                    class="flex-none text-base font-bold text-gray-700"
+                    class="flex-none w-full overflow-hidden text-base font-bold text-gray-700"
                     >{{ isShare ? 'Invite' : 'Edit collection' }}
                     <!-- <span
                         class="px-2 py-1 bg-gray-100 border border-gray-300 rounded-lg"
                         >{{ item?.attributes?.name }}</span
                     > -->
-                    <span class="block text-sm font-normal text-gray-500">{{
-                        item?.attributes?.name
-                    }}</span>
+                    <Tooltip
+                        :tooltip-text="item?.attributes?.name"
+                        placement="rightTop"
+                        clamp-percentage="99%"
+                        classes="block text-sm font-normal
+                    text-gray-500 truncate"
+                    />
+                    <!-- <span
+                        class="block text-sm font-normal text-gray-500 truncate"
+                        >{{ item?.attributes?.name }}</span
+                    > -->
                 </span>
             </div>
             <div class="px-4 mb-4" v-if="!isShare">
@@ -268,8 +276,10 @@
         PropType,
         watch,
         computed,
+        toRaw,
     } from 'vue'
     import { Picker, EmojiIndex } from 'emoji-mart-vue-fast/src'
+    import Tooltip from '@common/ellipsis/index.vue'
     import AtlanBtn from '~/components/UI/button.vue'
     import UserSelectWidget from '~/components/common/input/owner/index.vue'
     import 'emoji-mart-vue-fast/css/emoji-mart.css'
@@ -300,6 +310,7 @@
             UserItem,
             Owners,
             Avatar,
+            Tooltip,
         },
         props: {
             showCollectionModal: {
@@ -377,35 +388,48 @@
 
             const popOverVisible = ref(false)
 
-            const userData = ref({
-                edit: {
-                    ownerGroups: isCreate.value
-                        ? []
-                        : item?.value?.attributes?.adminGroups
-                        ? item?.value?.attributes?.adminGroups
-                        : [],
-                    ownerUsers: isCreate.value
-                        ? []
-                        : item?.value?.attributes?.adminUsers
-                        ? item?.value?.attributes?.adminUsers
-                        : [],
-                },
-                view: {
-                    ownerGroups: isCreate.value
-                        ? []
-                        : item?.value?.attributes?.viewerGroups
-                        ? item?.value?.attributes?.viewerGroups
-                        : [],
-                    ownerUsers: isCreate.value
-                        ? []
-                        : item?.value?.attributes?.viewerUsers
-                        ? item?.value?.attributes?.viewerUsers
-                        : [],
-                },
-            })
+            const getUserData = () => {
+                return {
+                    edit: {
+                        ownerGroups: isCreate.value
+                            ? []
+                            : JSON.parse(JSON.stringify(toRaw(item?.value)))
+                                  ?.attributes?.adminGroups
+                            ? JSON.parse(JSON.stringify(toRaw(item?.value)))
+                                  ?.attributes?.adminGroups
+                            : [],
+                        ownerUsers: isCreate.value
+                            ? []
+                            : JSON.parse(JSON.stringify(toRaw(item?.value)))
+                                  ?.attributes?.adminUsers
+                            ? JSON.parse(JSON.stringify(toRaw(item?.value)))
+                                  ?.attributes?.adminUsers
+                            : [],
+                    },
+                    view: {
+                        ownerGroups: isCreate.value
+                            ? []
+                            : JSON.parse(JSON.stringify(toRaw(item?.value)))
+                                  ?.attributes?.viewerGroups
+                            ? JSON.parse(JSON.stringify(toRaw(item?.value)))
+                                  ?.attributes?.viewerGroups
+                            : [],
+                        ownerUsers: isCreate.value
+                            ? []
+                            : JSON.parse(JSON.stringify(toRaw(item?.value)))
+                                  ?.attributes?.viewerUsers
+                            ? JSON.parse(JSON.stringify(toRaw(item?.value)))
+                                  ?.attributes?.viewerUsers
+                            : [],
+                    },
+                }
+            }
+
+            const userData = ref(getUserData())
 
             const closeModal = () => {
                 emit('update:showCollectionModal', false)
+                userData.value = getUserData()
             }
 
             const { createCollection, updateCollection } = useQueryCollection()

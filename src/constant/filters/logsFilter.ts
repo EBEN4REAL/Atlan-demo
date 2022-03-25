@@ -1,7 +1,12 @@
 // import { confidenceScore } from '~/constant/confidenceScore'
+import { computed } from 'vue'
 import { statusRequest, assetTypes } from '~/constant/statusRequest'
 import { statusPersona } from '~/constant/statusPersona'
 import { personaScopeList } from '~/components/governance/personas/composables/useScopeService'
+import useGlossaryStore from '~/store/glossary'
+
+const glossaryStore = useGlossaryStore()
+const glossaryComputed = computed(() => [...glossaryStore.list].map((el) => ({...el, label: el.displayText, value: el.id, icon: 'Glossary'})))
 
 const getPermissions = (permissionScopeList) => {
     const permissions = []
@@ -119,17 +124,17 @@ export const accessLogsFilter = [
 ]
 
 export const requestFilter = [
-    {
-        id: 'hierarchy',
-        label: 'Connection',
-        component: 'hierarchy',
-        overallCondition: 'OR',
-        attributes: [],
-        isDeleted: false,
-        isDisabled: false,
-        exclude: false,
-        analyticsKey: 'connection',
-    },
+    // {
+    //     id: 'hierarchy',
+    //     label: 'Connection',
+    //     component: 'hierarchy',
+    //     overallCondition: 'OR',
+    //     attributes: [],
+    //     isDeleted: false,
+    //     isDisabled: false,
+    //     exclude: false,
+    //     analyticsKey: 'connection',
+    // },
     //   {
     //     id: 'hierarchy',
     //     label: 'Connection',
@@ -227,6 +232,18 @@ export const personaFilter = [
         isDisabled: false,
         exclude: false,
         analyticsKey: 'connection',
+    },
+    {
+        id: 'glossaries',
+        label: 'Glossaries',
+        component: 'CheckBoxOption',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+        class: 'bg-transparent',
+        data: glossaryComputed.value,
     },
     {
         id: 'owners',

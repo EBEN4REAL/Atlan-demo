@@ -400,6 +400,7 @@
     import Name from '@/glossary/common/name.vue'
     import SlackAskButton from '~/components/common/assets/misc/slackAskButton.vue'
     import { disableSlackAsk } from '~/composables/integrations/slack/useAskAQuestion'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'AssetHeader',
@@ -467,7 +468,6 @@
 
             const goToInsights = (openVQB) => {
                 // router.push(getAssetQueryPath(asset))
-
                 const URL =
                     `http://` +
                     window.location.host +
@@ -479,7 +479,10 @@
 
             const handleClick = () => {
                 // router.push(getAssetQueryPath(asset))
-
+                useAddEvent('discovery', 'cta_action', 'clicked', {
+                    action: 2,
+                    asset_type: item.value.typeName,
+                })
                 const URL =
                     `http://` +
                     window.location.host +

@@ -1,5 +1,4 @@
 enum CTAAction { 'open_asset' = 1, 'query', 'add_annoucement', 'copy_link' }
-enum AnnoucementType { 'information' = 1, 'issue', 'warning' }
 
 const keyMap = {
     discovery: {
@@ -21,13 +20,12 @@ const keyMap = {
                 }),
             },
         },
-        CTA: {
-            action: {
-                action: 'discovery_CTA_action',
+        cta_action: {
+            clicked: {
+                action: 'discovery_cta_action_clicked',
                 properties: (props: {
                     action: CTAAction,
                     asset_type: string
-                    annoucement_type?: AnnoucementType
                 }) => ({
                     ...props,
                 }),

@@ -17,7 +17,10 @@
                         :asset="asset"
                         :edit-permission="editPermission"
                         ><template #trigger>
-                            <div class="flex items-center">
+                            <div
+                                class="flex items-center"
+                                @click="trackAnnoucementClick"
+                            >
                                 <AtlanIcon icon="Megaphone" />
                                 <span class="pl-2 text-sm"
                                     >{{
@@ -79,6 +82,7 @@
     import SlackModal from './slackModal.vue'
     import access from '~/constant/accessControl/map'
     import integrationStore from '~/store/integrations/index'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'KebabMenu',
@@ -113,11 +117,23 @@
             })
             async function handleCopyProfileLink() {
                 await copyToClipboard(link.value)
+                useAddEvent('discovery', 'cta_action', 'clicked', {
+                    action: 4,
+                    asset_type: asset.value.typeName,
+                })
                 message.success('Link copied!')
                 closeMenu()
             }
 
+            const trackAnnoucementClick = () => {
+                useAddEvent('discovery', 'cta_action', 'clicked', {
+                    action: 3,
+                    asset_type: asset.value.typeName,
+                })
+            }
+
             return {
+                trackAnnoucementClick,
                 announcementTitle,
                 isVisible,
                 closeMenu,

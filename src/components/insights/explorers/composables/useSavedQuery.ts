@@ -132,7 +132,6 @@ export function useSavedQuery(
             parentGuid: savedQuery.attributes?.parent?.guid,
             parentQualifiedName: savedQuery.attributes.parentQualifiedName,
             isSQLSnippet: savedQuery.attributes.isSnippet as boolean,
-            status: savedQuery.attributes.certificateStatus as string,
             savedQueryParentFolderTitle: savedQuery?.parentTitle,
             collectionQualifiedName:
                 savedQuery?.attributes?.collectionQualifiedName,

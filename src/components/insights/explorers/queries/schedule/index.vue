@@ -246,7 +246,7 @@
 
             // info tab state
             const infoTabeState = ref({
-                name: item.value.attributes.displayName,
+                name: item.value.attributes.name,
                 frequency: 'daily',
                 time: '00:00',
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,

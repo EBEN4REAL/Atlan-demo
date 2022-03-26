@@ -399,9 +399,12 @@
             if (discoveryStore.preferences && page.value !== 'admin') {
                 preference.value.sort =
                     discoveryStore.preferences.sort || preference.value.sort
-                preference.value.display =
-                    discoveryStore.preferences.display ||
-                    preference.value.display
+                preference.value.display = JSON.parse(
+                    JSON.stringify(
+                        discoveryStore.preferences.display ||
+                            preference.value.display
+                    )
+                )
             }
             if (discoveryStore.activeFacetTab?.length > 0) {
                 activeKey.value = discoveryStore.activeFacetTab
@@ -576,12 +579,54 @@
             }
 
             const handleChangePreference = () => {
+                useAddEvent('discovery', 'sort', 'changed', {
+                    sort_type: preference.value.sort,
+                })
                 quickChange()
-                discoveryStore.setPreferences(preference.value)
+                discoveryStore.setPreferences(
+                    JSON.parse(JSON.stringify(preference.value))
+                )
+            }
+
+            const trackDisplayChange = () => {
+                let displayVisible
+                let displayOption
+                const oldDisplay = JSON.parse(
+                    JSON.stringify(discoveryStore.preferences?.display || [])
+                )
+                const newDisplay = preference.value.display || []
+                const unionOfNewOldDisplay = [...newDisplay, ...oldDisplay]
+                let index = 0
+                for (index; index < unionOfNewOldDisplay.length; index += 1) {
+                    if (
+                        newDisplay.includes(unionOfNewOldDisplay[index]) &&
+                        !oldDisplay.includes(unionOfNewOldDisplay[index])
+                    ) {
+                        displayVisible = true
+                        displayOption = unionOfNewOldDisplay[index]
+                        break
+                    } else if (
+                        !newDisplay.includes(unionOfNewOldDisplay[index]) &&
+                        oldDisplay.includes(unionOfNewOldDisplay[index])
+                    ) {
+                        displayVisible = false
+                        displayOption = unionOfNewOldDisplay[index]
+                        break
+                    }
+                }
+                if (displayOption)
+                    useAddEvent('discovery', 'view_preference', 'changed', {
+                        visible: displayVisible,
+                        preference: displayOption,
+                    })
             }
 
             const handleDisplayChange = () => {
-                discoveryStore.setPreferences(preference.value)
+                trackDisplayChange()
+
+                discoveryStore.setPreferences(
+                    JSON.parse(JSON.stringify(preference.value))
+                )
             }
 
             const handleResetEvent = () => {

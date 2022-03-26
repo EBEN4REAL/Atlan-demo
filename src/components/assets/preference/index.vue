@@ -68,7 +68,7 @@
 
             const handleChangeSort = () => {
                 modelValue.value = localValue.value
-                emit('change')
+                emit('change', 'sort')
             }
 
             const handleChangeDisplay = () => {

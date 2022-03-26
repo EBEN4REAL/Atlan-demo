@@ -787,15 +787,14 @@
             }
 
             onMounted(() => {
-                watchOnce(isLoading, (v) => {
+                watchOnce(isValidating, (v) => {
                     if (!v && list.value?.length && page.value === 'assets') {
                         const isNone =
                             typeof selectedAsset.value === 'object' &&
                             Object.keys(selectedAsset.value).length === 0
                         if (isNone) handleClickAssetItem(list.value[0])
-                        else {
-                            handleClickAssetItem(selectedAsset.value)
-                        }
+                        else handleClickAssetItem(selectedAsset.value)
+
                         firstAssetAutoClicked.value = true
                     }
                 })

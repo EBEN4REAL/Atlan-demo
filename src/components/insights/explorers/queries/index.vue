@@ -960,6 +960,12 @@
                     // console.log('query saveQueryData: ', saveQueryData)
                     if (data) {
                         setTimeout(async () => {
+                            setCollectionsDataInInlineTab(
+                                activeInlineTab,
+                                inlineTabs,
+                                saveQueryData.collection,
+                                data?.mutatedEntities?.UPDATE[0]?.guid
+                            )
                             await refetchNode(
                                 saveQueryData.parentGuid ??
                                     getRelevantTreeData().parentGuid.value,

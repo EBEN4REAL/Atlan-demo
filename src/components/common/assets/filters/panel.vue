@@ -306,7 +306,7 @@
                         : `${facetMap.value[id]?.length} applied`
                 }
 
-                if (id === 'owners') {
+                if (id === 'owners' || id === 'creators') {
                     let usersLength = 0
                     let groupsLength = 0
 
@@ -347,6 +347,15 @@
                     }
 
                     return val
+                }
+
+                // Array of primitive objects
+                if (
+                    Array.isArray(facetMap.value[id]) &&
+                    facetMap.value[id]?.length &&
+                    typeof facetMap.value[id][0] !== 'object'
+                ) {
+                    return `${facetMap.value[id]?.length} selected`
                 }
 
                 let numOfAttributes = 0

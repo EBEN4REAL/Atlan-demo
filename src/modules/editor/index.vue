@@ -148,6 +148,8 @@
                                     return 'Type in a heading'
                                 case 'codeBlock':
                                     return 'Go ahead. Type some geek...'
+                                case 'mention':
+                                    return 'Mention a user or a group'
                                 default:
                                     return props.placeholder
                             }

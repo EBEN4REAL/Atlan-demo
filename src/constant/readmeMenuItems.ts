@@ -194,6 +194,24 @@ export const blockMenu: CommandItem[] = [
                 : editor.chain().focus().toggleImageBlock().run(),
     },
     {
+        title: 'Mention',
+        key: 'mention',
+        helpText: 'Mention a user or group',
+        icon: 'Mention',
+        border: true,
+        searchKeys: ['mention', 'user', 'group'],
+        disabled: () => false,
+        command: ({ editor, range }) =>
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .insertMention()
+                      .run()
+                : editor.chain().focus().insertMention().run(),
+    },
+    {
         title: 'Table',
         key: 'insertTable',
         helpText: 'Insert a table',
@@ -407,6 +425,24 @@ export const blockMenu: CommandItem[] = [
                       .insertMicrosoftPowerpoint()
                       .run()
                 : editor.chain().focus().insertMicrosoftPowerpoint().run(),
+    },
+    {
+        title: 'Google Data Studio',
+        key: 'googleDataStudio',
+        helpText: 'Embed a Google Data Studio Report',
+        icon: 'GoogleDataStudio',
+        border: true,
+        searchKeys: ['google', 'data studio', 'data', 'studio'],
+        disabled: () => false,
+        command: ({ editor, range }) =>
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .insertGoogleDataStudioReport()
+                      .run()
+                : editor.chain().focus().insertGoogleDataStudioReport().run(),
     },
 ]
 

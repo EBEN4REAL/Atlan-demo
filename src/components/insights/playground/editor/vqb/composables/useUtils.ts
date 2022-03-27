@@ -406,8 +406,10 @@ export function useUtils() {
                 openAssetSidebar(activeInlineTabCopy, 'not_editor')
             }
         }
-        event.stopPropagation()
-        event.preventDefault()
+        if (event) {
+            event.stopPropagation()
+            event.preventDefault()
+        }
         return false
     }
 

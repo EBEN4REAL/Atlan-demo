@@ -31,9 +31,17 @@ interface params {
     ownerGroups?: Array<any>
 }
 interface eventPayload {
-    request_type: String
+    request_type:
+        | 'term'
+        | 'userDescription'
+        | 'classification'
+        | 'certificate'
+        | 'ownerUser'
+        | 'ownerGroup'
+        | ''
     asset_type: String
     count: Number
+    action: 'add' | 'remove' | 'edit' | ''
 }
 export function useCreateRequests({
     assetGuid,
@@ -49,14 +57,16 @@ export function useCreateRequests({
 }: params) {
     const requests = ref<requestPayload[]>([])
     const eventPayload = ref<eventPayload>({
-        request_type: 'attribute',
+        request_type: '',
         asset_type: assetType,
         count: 0,
+        action: '',
     })
     const constructPayload = () => {
         if (terms?.length) {
-            eventPayload.value.request_type = 'term_link'
+            eventPayload.value.request_type = 'term'
             eventPayload.value.count = terms?.length ?? 0
+            eventPayload.value.action = 'add'
 
             terms?.forEach((element) => {
                 requests.value.push({
@@ -75,7 +85,8 @@ export function useCreateRequests({
             })
         }
         if (certificate !== '') {
-            eventPayload.value.request_type = 'certificate_update'
+            eventPayload.value.request_type = 'certificate'
+            eventPayload.value.action = 'edit'
             requests.value.push({
                 requestType: 'attribute',
                 approvalType: 'single',
@@ -89,7 +100,8 @@ export function useCreateRequests({
             })
         }
         if (classifications?.length) {
-            eventPayload.value.request_type = 'attach_classification'
+            eventPayload.value.request_type = 'classification'
+            eventPayload.value.action = 'add'
             eventPayload.value.count = classifications?.length
             classifications.forEach((classification) => {
                 requests.value.push({
@@ -110,7 +122,8 @@ export function useCreateRequests({
             })
         }
         if (requestType === 'userDescription') {
-            eventPayload.value.request_type = 'description_update'
+            eventPayload.value.request_type = 'userDescription'
+            eventPayload.value.action = 'edit'
             requests.value.push({
                 requestType: 'attribute',
                 approvalType: 'single',
@@ -124,8 +137,9 @@ export function useCreateRequests({
             })
         }
         if (requestType === 'ownerUsers') {
-            eventPayload.value.request_type = 'ownerUsers_update'
             if (ownerUsers?.length) {
+                eventPayload.value.request_type = 'ownerUsers'
+                eventPayload.value.action = 'add'
                 ownerUsers.forEach((el) => {
                     requests.value.push({
                         requestType: 'attribute',
@@ -141,7 +155,8 @@ export function useCreateRequests({
                 })
             }
             if (ownerGroups.length) {
-                eventPayload.value.request_type = 'ownerGroups_update'
+                eventPayload.value.request_type = 'ownerGroups'
+                eventPayload.value.action = 'add'
                 ownerGroups.forEach((el) => {
                     requests.value.push({
                         requestType: 'attribute',
@@ -171,7 +186,13 @@ export function useCreateRequests({
 
     watch(isReady, () => {
         if (isReady.value) {
-            useAddEvent('governance', 'requests', 'created', eventPayload.value)
+            if (eventPayload.value?.request_type)
+                useAddEvent(
+                    'governance',
+                    'requests',
+                    'created',
+                    eventPayload.value
+                )
         }
     })
     return { response: data, error, isLoading, mutate, isReady }

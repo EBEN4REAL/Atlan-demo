@@ -175,11 +175,23 @@ export function useEditor(
                     let match = toRaw(editorInstance)
                         ?.getModel()
                         ?.findMatches(`${q.replace(/^\s+|\s+$/g, '')}`)
-                    queryPositions.push({
-                        match: match,
-                        token: query.replace(/^\s+|\s+$/g, ''),
-                        rawQuery: query,
-                    })
+                    // removing the commented ones
+                    if (
+                        !query.includes('-- ') &&
+                        query.replace(/^\s+|\s+$/g, '').length > 0
+                    ) {
+                        queryPositions.push({
+                            match: match,
+                            token: query.replace(/^\s+|\s+$/g, ''),
+                            rawQuery: query,
+                        })
+                    } else {
+                        queryPositions.push({
+                            match: null,
+                            token: null,
+                            rawQuery: null,
+                        })
+                    }
                 })
             }
 
@@ -192,16 +204,17 @@ export function useEditor(
 
             let independentQueryMatches = semiColonMatchs.map(
                 (match, index) => {
-                    let data = queryPositions[index].match.map((m) => {
+                    let data = []
+                    queryPositions[index]?.match?.forEach((m) => {
                         if (
                             m.range.endLineNumber ===
                                 match.range.endLineNumber &&
                             m.range.endColumn === match.range.endColumn
                         ) {
-                            return {
+                            data.push({
                                 range: m.range,
                                 rawQuery: queryPositions[index].rawQuery,
-                            }
+                            })
                         }
                     })
                     for (var i = 0; i < data.length; i++) {
@@ -210,6 +223,10 @@ export function useEditor(
                         }
                     }
                 }
+            )
+            // for clearing up any unnecessary blank queries
+            independentQueryMatches = independentQueryMatches.filter(
+                (el) => el !== undefined || null
             )
 
             // console.log('position match final: ', independentQueryMatches)

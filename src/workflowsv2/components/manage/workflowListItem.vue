@@ -1,5 +1,5 @@
 <template>
-    <div class="wf-list-item">
+    <div class="wf-list-item" :class="{ selected }">
         <div class="flex items-center text-sm gap-x-1">
             <img
                 v-if="icon(workflow)"
@@ -65,6 +65,10 @@
                 type: Array,
                 default: () => [],
             },
+            selected: {
+                type: Boolean,
+                default: () => false,
+            },
         },
         emits: [],
         setup(props) {
@@ -110,12 +114,22 @@
     .wf-list-item {
         @apply flex flex-col gap-y-1;
         @apply bg-white rounded-lg p-4;
-        @apply cursor-default;
+        @apply cursor-pointer;
+        @apply transition-colors duration-300;
+        @apply border border-transparent;
 
         .badge {
             @apply flex items-center justify-center;
             @apply h-5 rounded uppercase px-2 mx-1;
             @apply text-xs tracking-wider bg-gray-200 text-gray;
+        }
+
+        &:hover {
+            @apply border-primary;
+        }
+
+        &.selected {
+            @apply bg-primary-menu border-primary;
         }
     }
 </style>

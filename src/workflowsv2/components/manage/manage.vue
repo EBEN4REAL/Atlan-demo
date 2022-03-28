@@ -36,6 +36,7 @@
 
             <WorkflowList
                 v-if="list.length"
+                v-model:selectedId="selectedId"
                 :loading="isLoading"
                 :workflows="list"
                 :is-load-more="isLoadMore"
@@ -100,6 +101,7 @@
             const packageId = ref(undefined)
             const offset = ref(0)
             const limit = ref(5)
+            const selectedId = ref('')
 
             const preference = ref({
                 sort: 'metadata.creationTimestamp-desc',
@@ -214,6 +216,7 @@
                 workflowTypeList,
                 isLoadMore,
                 loadMoreWorkflows,
+                selectedId,
             }
         },
     })

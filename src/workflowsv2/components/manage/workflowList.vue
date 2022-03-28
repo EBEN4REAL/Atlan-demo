@@ -5,9 +5,11 @@
     >
         <WorkflowListItem
             v-for="workflow in workflows"
-            :key="workflow?._id"
+            :key="workflow?.metadata?.uid"
+            :selected="selectedId === workflow?.metadata?.uid"
             :workflow="workflow"
             :runs="runs(workflow)"
+            @click="$emit('update:selectedId', workflow?.metadata?.uid)"
         />
         <div
             v-if="(isLoadMore || loading) && workflows.length > 0"
@@ -36,6 +38,7 @@
 <script lang="ts">
     import { defineComponent, toRefs } from 'vue'
     import WorkflowListItem from '~/workflowsv2/components/manage/workflowListItem.vue'
+
     import { useWorkflowStore } from '~/workflowsv2/store'
 
     export default defineComponent({
@@ -50,6 +53,10 @@
                 type: Object,
                 default: () => {},
             },
+            selectedId: {
+                type: String,
+                default: () => '',
+            },
             loading: {
                 type: Boolean,
                 default: () => false,
@@ -59,7 +66,7 @@
                 default: () => false,
             },
         },
-        emits: ['loadMore'],
+        emits: ['loadMore', 'update:selectedId'],
         setup(props) {
             const { lastRunsMap } = toRefs(props)
             const workflowStore = useWorkflowStore()

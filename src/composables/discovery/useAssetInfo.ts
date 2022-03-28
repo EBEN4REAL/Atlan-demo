@@ -279,6 +279,7 @@ export default function useAssetInfo() {
     }
 
     const { getList: cmList } = useCustomMetadataFacet()
+    const discoveryStore = useAssetStore()
 
     const getPreviewTabs = (asset: assetInterface, inProfile: boolean) => {
         const store = integrationStore()
@@ -303,7 +304,9 @@ export default function useAssetInfo() {
 
         let allTabs = [
             ...getTabs(previewTabs, assetType(asset)),
-            ...(tenantJiraStatus.value.configured ? getTabs([JiraPreviewTab], assetType(asset)) : []),
+            ...(tenantJiraStatus.value.configured
+                ? getTabs([JiraPreviewTab], assetType(asset))
+                : []),
             ...getTabs(customTabList, assetType(asset)),
         ]
 
@@ -316,8 +319,7 @@ export default function useAssetInfo() {
         }
 
         const personaStore = usePersonaStore()
-        const assetStore = useAssetStore()
-        const { globalState } = toRefs(assetStore)
+        const { globalState } = toRefs(discoveryStore)
 
         const currentPersona = computed(() => {
             return personaStore.list.filter(
@@ -841,8 +843,6 @@ export default function useAssetInfo() {
             assetType(asset) === 'Column'
         )
     }
-
-    const discoveryStore = useAssetStore()
 
     const selectedAsset = computed(() => {
         return discoveryStore.selectedAsset

@@ -81,7 +81,9 @@ export function useEditor(
     function semicolonSeparateQuery(query: string) {
         // check if it have semicolon
         let queryTextValues = query?.split(';')
-        queryTextValues = queryTextValues.filter((el) => el !== '')
+        queryTextValues = queryTextValues.filter(
+            (el) => el !== '' && el !== '\n'
+        )
         // always select the first one for now
 
         // check if it have commented one too
@@ -95,6 +97,7 @@ export function useEditor(
         variables: CustomVaribaleInterface[],
         query: string
     ) {
+        debugger
         if (
             variables.length > 0 &&
             query?.match(/{{\s*[\w\.]+\s*}}/g)?.length > 0
@@ -162,6 +165,7 @@ export function useEditor(
         monacoInstance: any
     ) {
         // console.log('cursor')
+        debugger
 
         // console.log('cursor')
         if (type === 'auto') {
@@ -186,15 +190,29 @@ export function useEditor(
                         ?.getModel()
                         ?.findMatches(`${q.replace(/^\s+|\s+$/g, '')}`)
                     // removing the commented ones
-                    if (
-                        !query.includes('-- ') &&
-                        query.replace(/^\s+|\s+$/g, '').length > 0
-                    ) {
-                        queryPositions.push({
-                            match: match,
-                            token: query.replace(/^\s+|\s+$/g, ''),
-                            rawQuery: query,
-                        })
+                    if (query.replace(/^\s+|\s+$/g, '').length > 0) {
+                        if (
+                            query.includes('-- ') &&
+                            query.includes('\nSELECT')
+                        ) {
+                            queryPositions.push({
+                                match: match,
+                                token: query.replace(/^\s+|\s+$/g, ''),
+                                rawQuery: query,
+                            })
+                        } else if (!query.includes('-- ')) {
+                            queryPositions.push({
+                                match: match,
+                                token: query.replace(/^\s+|\s+$/g, ''),
+                                rawQuery: query,
+                            })
+                        } else {
+                            queryPositions.push({
+                                match: null,
+                                token: null,
+                                rawQuery: null,
+                            })
+                        }
                     } else {
                         queryPositions.push({
                             match: null,
@@ -531,8 +549,8 @@ export function useEditor(
         if (activeInlineTab.value) {
             activeInlineTab.value.playground.resultsPane.result.errorDecorations =
                 editor?.deltaDecorations(
-                    activeInlineTab.value.playground.resultsPane.result
-                        .errorDecorations,
+                    activeInlineTab.value.playground?.resultsPane?.result
+                        ?.errorDecorations,
                     []
                 ) ?? []
         }

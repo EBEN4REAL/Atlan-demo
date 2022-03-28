@@ -231,29 +231,33 @@
                 selectedCardKey.value = key
             }
 
-            const dropdownOptions = [
-                {
-                    title: 'Edit',
-                    icon: 'Edit',
-                    class: 'text-gray-700',
-                    handleClick: () => {
-                        debugger
-                        scheduleQueryModal.value = true
+            const dropdownOptions = computed(() => {
+                return [
+                    {
+                        title: 'Edit',
+                        icon: 'Edit',
+                        class: 'text-gray-700',
+                        disabled: !savedQueryMetData.value?.attributes,
+                        handleClick: () => {
+                            debugger
+                            scheduleQueryModal.value = true
+                        },
                     },
-                },
-                {
-                    title: 'Delete',
-                    icon: 'Trash',
-                    class: 'text-red-700',
-                    handleClick: () => {
-                        emit(
-                            'archive',
-                            item.value?.metadata?.name,
-                            scheduleQueryName.value
-                        )
+                    {
+                        title: 'Delete',
+                        icon: 'Trash',
+                        class: 'text-red-700',
+
+                        handleClick: () => {
+                            emit(
+                                'archive',
+                                item.value?.metadata?.name,
+                                scheduleQueryName.value
+                            )
+                        },
                     },
-                },
-            ]
+                ]
+            })
 
             const cronModel = ref(cronObject(item.value))
 

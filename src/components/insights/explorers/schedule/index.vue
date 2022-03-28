@@ -113,7 +113,7 @@
     import Loader from '@common/loaders/page.vue'
     import ErrorView from '@common/error/index.vue'
     import { archiveWorkflow } from './composables/useScheduleQueryWorkflow'
-
+    import { message } from 'ant-design-vue'
     import WorkflowCard from './workflowCard.vue'
     export default defineComponent({
         components: { WorkflowCard, Loader, ErrorView },
@@ -195,26 +195,40 @@
                 })
 
             watch(list, () => {
-                const map = list.value.map((i) => i?.metadata?.name)
-                let tempSavedQueries: any[] =
-                    list.value.map(
-                        (workflow) =>
-                            workflow.spec?.templates[0]?.dag?.tasks[0]?.arguments?.parameters?.find(
-                                (e) => e?.name === 'saved-query-id'
-                            )?.value
-                    ) ?? []
-                // for removing duplicates saved query ids
-                tempSavedQueries = new Set(tempSavedQueries)
-                uniqueSavedQueryIds.value = Array.from(tempSavedQueries)
-                updatedSavedQueriesFetchRequestBody(uniqueSavedQueryIds.value)
-                savedQueryRefresh()
-                totalWorkflows.value = data?.value?.hits?.total?.value
+                try {
+                    const map = list.value.map((i) => i?.metadata?.name)
+                    let tempSavedQueries: any[] =
+                        list.value.map(
+                            (workflow) =>
+                                workflow.spec?.templates[0]?.dag?.tasks[0]?.arguments?.parameters?.find(
+                                    (e) => e?.name === 'saved-query-id'
+                                )?.value
+                        ) ?? []
+                    // for removing duplicates saved query ids
+                    tempSavedQueries = new Set(tempSavedQueries)
+                    uniqueSavedQueryIds.value = Array.from(tempSavedQueries)
+                    updatedSavedQueriesFetchRequestBody(
+                        uniqueSavedQueryIds.value
+                    )
+                    savedQueryRefresh()
+                    totalWorkflows.value = data?.value?.hits?.total?.value
 
-                facetRun.value = {
-                    workflowTemplates: map,
+                    facetRun.value = {
+                        workflowTemplates: map,
+                    }
+                    // Only get the run details when there are actually any workflows from the previous API call
+                    if (map.length) quickChangeRun()
+                } catch (e) {
+                    console.error(e)
                 }
-                // Only get the run details when there are actually any workflows from the previous API call
-                if (map.length) quickChangeRun()
+            })
+            watch(fetchListError, () => {
+                if (fetchListError.value) {
+                    message.error({
+                        content: `Failed to fetch scheduled workflows!`,
+                        duration: 3.5,
+                    })
+                }
             })
 
             debouncedWatch(
@@ -238,6 +252,10 @@
                             savedQueryFetchError.value,
                             'Error in fetching saved queries metadata'
                         )
+                        message.error({
+                            content: `Failed to fetch saved query!`,
+                            duration: 3.5,
+                        })
                     } else {
                         console.log(savedQueryMetaMap)
                     }

@@ -12,6 +12,7 @@
                     v-for="(option, index) in dropdownOptions"
                     :key="index"
                     @click="() => handleMenuItemClick({ index, ...option })"
+                    :disabled="option?.disabled"
                 >
                     <div
                         class="flex items-center h-8"

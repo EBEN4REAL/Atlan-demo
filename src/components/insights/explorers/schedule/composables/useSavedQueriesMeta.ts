@@ -1,4 +1,4 @@
-import { ref, watch, Ref, h } from 'vue'
+import { ref, watch, Ref, h, toRaw } from 'vue'
 import useIndexSearch from '~/composables/discovery/useIndexSearch'
 import bodybuilder from 'bodybuilder'
 
@@ -15,10 +15,9 @@ const fetchSavedQueryMeta = ({
         data: savedQueries,
         error,
         isLoading,
-    } = useIndexSearch(body, undefined, false, false)
-    watch([isLoading, error], () => {
-        if (!error.value && !isLoading.value) {
-            console.log(body, 'body')
+    } = useIndexSearch(body, ref(null), false, false)
+    watch([isLoading, savedQueries], () => {
+        if (savedQueries.value && !isLoading.value) {
             if (
                 savedQueries &&
                 savedQueries.value &&
@@ -31,7 +30,9 @@ const fetchSavedQueryMeta = ({
                     newSavedQueries[guid] = { ...savedQuery }
                 })
                 savedQueryMetaMap.value = {
-                    ...savedQueryMetaMap.value,
+                    ...JSON.parse(
+                        JSON.stringify(toRaw(savedQueryMetaMap.value))
+                    ),
                     ...newSavedQueries,
                 }
             }

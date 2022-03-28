@@ -71,13 +71,23 @@ export function useEditor(
         t = t.replaceAll(' } }', '}}')
         return t
     }
+
+    function getFirstValidQuery(queries: string[], index = 0) {
+        if (index >= queries.length) return queries[0]
+        if (queries[index].includes('-- ') || queries[index].includes('--')) {
+            return getFirstValidQuery(queries, index + 1)
+        } else return queries[index]
+    }
     function semicolonSeparateQuery(query: string) {
         // check if it have semicolon
-        const queryTextValues = query?.split(';')
+        let queryTextValues = query?.split(';')
+        queryTextValues = queryTextValues.filter((el) => el !== '')
         // always select the first one for now
+
+        // check if it have commented one too
         let queryText = ''
         if (queryTextValues && queryTextValues.length) {
-            queryText = queryTextValues[0]
+            queryText = getFirstValidQuery(queryTextValues)
         }
         return queryText
     }

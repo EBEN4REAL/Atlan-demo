@@ -9,9 +9,18 @@
         @click="handleChange(item.guid)"
     >
         <div class="flex items-center overflow-x-hidden">
-            <span class="w-5 h-5 mr-2 -mt-1 text-lg">{{
-                item?.attributes?.icon ? item?.attributes?.icon : '🗃'
-            }}</span>
+            <span
+                v-if="item?.attributes?.icon"
+                class="w-5 h-5 mr-2 -mt-1 text-lg"
+                >{{
+                    item?.attributes?.icon ? item?.attributes?.icon : '🗃'
+                }}</span
+            >
+            <AtlanIcon
+                v-else
+                icon="CollectionIconSmall"
+                class="w-5 h-4 my-auto mr-2"
+            ></AtlanIcon>
 
             <div class="truncate" style="max-width: 210px">
                 <span class="mr-1 text-sm text-gray-700">{{
@@ -28,7 +37,7 @@
         </div>
         <div class="absolute opacity-100 group right-3 y-center">
             <a-dropdown :trigger="['click']" @click.stop="() => {}">
-                <div class="pl-5" v-if="username === item?.createdBy">
+                <div v-if="username === item?.createdBy" class="pl-5">
                     <AtlanIcon
                         icon="KebabMenu"
                         class="w-4 h-4 my-auto"
@@ -46,10 +55,10 @@
                             >Edit collection</a-menu-item
                         >
                         <a-menu-item
+                            v-if="username === item?.createdBy"
                             key="delete"
                             class="text-red-600"
                             @click="toggleDeleteCollectionModal"
-                            v-if="username === item?.createdBy"
                             >Delete collection</a-menu-item
                         >
                     </a-menu>
@@ -78,10 +87,10 @@
         <!-- <template #content> -->
         <TreeDeletePopover
             :item="item"
+            :is-saving="isDeleteLoading"
+            :show-delete-popover="showDeletePopover"
             @cancel="showDeletePopover = false"
             @delete="() => delteItem()"
-            :isSaving="isDeleteLoading"
-            :showDeletePopover="showDeletePopover"
         />
         <!-- </template> -->
         <!-- </a-popover> -->
@@ -101,13 +110,13 @@
         ref,
         defineAsyncComponent,
     } from 'vue'
+    import { message } from 'ant-design-vue'
+    import { useVModels } from '@vueuse/core'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import whoami from '~/composables/user/whoami'
     import { isCollectionPrivate } from '~/components/insights/explorers/queries/composables/useQueryCollection'
     import TreeDeletePopover from '~/components/insights/common/treeDeletePopover.vue'
     import { Insights } from '~/services/meta/insights/index'
-    import { message } from 'ant-design-vue'
-    import { useVModels } from '@vueuse/core'
 
     export default defineComponent({
         components: {
@@ -185,7 +194,7 @@
                 'refetchQueryCollection'
             ) as Ref<Function>
 
-            let isDeleteLoading = ref(false)
+            const isDeleteLoading = ref(false)
 
             const delteItem = () => {
                 const { data, error, isLoading } = Insights.DeleteEntity(

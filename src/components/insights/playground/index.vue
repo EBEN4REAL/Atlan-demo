@@ -85,10 +85,10 @@
                                     @contextmenu.prevent="showContextMenu"
                                 >
                                     <div
-                                        class="flex items-center text-gray-700"
+                                        class="flex items-center text-gray-700 w-full"
                                     >
                                         <span
-                                            class="text-sm truncate inline_tab_label"
+                                            class="text-sm truncate inline_tab_label w-full"
                                             :class="[
                                                 tab.key !== activeInlineTabKey
                                                     ? tabHover === tab.key
@@ -96,7 +96,13 @@
                                                         : 'text-gray-500'
                                                     : '',
                                             ]"
-                                            >{{ tab.label }}</span
+                                            >
+                                            <Tooltip
+                                                clamp-percentage="99%"
+                                                :tooltip-text="tab.label"
+                                                :rows="1"
+                                                />
+                                                </span
                                         >
                                     </div>
                                 </div>
@@ -256,6 +262,7 @@
     import { useActiveTab } from '~/components/insights/common/composables/useActiveTab'
     import { useSpiltPanes } from '~/components/insights/common/composables/useSpiltPanes'
     import { useDebounceFn } from '@vueuse/core'
+    import Tooltip from '@/common/ellipsis/index.vue'
 
     // import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
 
@@ -267,6 +274,7 @@
             UnsavedPopover,
             SaveQueryModal,
             ResultPaneFooter,
+            Tooltip
         },
         props: {
             activeInlineTabKey: {

@@ -1,9 +1,9 @@
 <template>
     <div
+        :id="`${item.qualifiedName}`"
         class="h-8"
         :class="`w-full group ${item.qualifiedName}`"
         :data-test-id="item?.guid"
-        :id="`${item.qualifiedName}`"
     >
         <!-- {{ errorNode }} -->
 
@@ -29,15 +29,15 @@
                                 >{{ title(item) }}</span
                             >
                             <div
-                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
                                 :id="`${item.qualifiedName}-menu`"
+                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
                             >
                                 <a-dropdown
                                     :trigger="['click']"
                                     @click.stop="() => {}"
                                     @visibleChange="addBackground"
                                 >
-                                    <div class="px-2" v-if="hasWritePermission">
+                                    <div v-if="hasWritePermission" class="px-2">
                                         <AtlanIcon
                                             icon="KebabMenuHorizontal"
                                             class="w-4 h-4 my-auto"
@@ -96,140 +96,17 @@
                 </div>
                 <!------------------------------->
                 <!-- Popover Allowed -->
+
                 <PopoverAsset
+                    v-else-if="item.typeName === 'Query'"
                     :item="item"
                     placement="right"
-                    mouseEnterDelay="0.6"
-                    v-else-if="item.typeName === 'Query'"
+                    mouse-enter-delay="0.6"
+                    @previewAsset="openSidebar"
                 >
-                    <template #extraHeaders>
-                        <div
-                            class="flex w-full item-center"
-                            v-if="
-                                item?.attributes?.parent?.typeName ===
-                                'Collection'
-                            "
-                        >
-                            <div class="flex items-center w-full">
-                                <div
-                                    class="w-1 h-1 mx-2 rounded-full -mt-0.5"
-                                    style="background-color: #c4c4c4"
-                                ></div>
-                                <div class="flex items-center w-full h-full">
-                                    <div
-                                        class="relative w-4 h-4 mb-1 mr-1 overflow-hidden"
-                                    >
-                                        <AtlanIcon
-                                            v-if="
-                                                item?.attributes?.parent
-                                                    ?.typeName === 'Folder'
-                                            "
-                                            icon="FolderClosed"
-                                            class="w-4 h-4 mb-2"
-                                        />
-
-                                        <span
-                                            v-else
-                                            class="w-4 h-4 mr-1 -mt-1 text-sm"
-                                            >{{
-                                                item?.attributes?.parent
-                                                    ?.attributes?.icon
-                                                    ? item?.attributes?.parent
-                                                          ?.attributes?.icon
-                                                    : '🗃'
-                                            }}</span
-                                        >
-                                    </div>
-
-                                    <span class="w-11/12">
-                                        <Tooltip
-                                            clampPercentage="99%"
-                                            :tooltip-text="
-                                                item?.attributes?.parent
-                                                    ?.attributes?.name
-                                            "
-                                            :rows="1"
-                                        />
-                                    </span>
-
-                                    <!-- <span></span> -->
-                                </div>
-                            </div>
-                        </div>
-                        <div
-                            class="flex w-full item-center"
-                            v-if="
-                                item?.attributes?.parent?.typeName === 'Folder'
-                            "
-                        >
-                            <div class="flex items-center w-full">
-                                <div
-                                    class="w-1 h-1 mx-2 rounded-full -mt-0.5"
-                                    style="background-color: #c4c4c4"
-                                ></div>
-                                <div class="flex items-center w-full h-full">
-                                    <div
-                                        class="relative w-4 h-4 mb-0.5 mr-1 overflow-hidden"
-                                    >
-                                        <AtlanIcon
-                                            icon="CollectionIconSmall"
-                                            class="w-4 h-4 mb-2"
-                                        />
-                                    </div>
-
-                                    <!-- <span>{{ collectionName }}</span> -->
-
-                                    <span class="w-11/12">
-                                        <Tooltip
-                                            :tooltip-text="collectionName"
-                                            :rows="1"
-                                            clampPercentage="99%"
-                                        />
-                                    </span>
-                                </div>
-                            </div>
-                            <!-- <div class="flex items-center">
-                                <div
-                                    class="w-1 h-1 mx-2 rounded-full -mt-0.5"
-                                    style="background-color: #c4c4c4"
-                                ></div>
-                                <div class="flex items-center h-full">
-                                    <div
-                                        class="relative w-4 h-4 mb-0.5 mr-1 overflow-hidden"
-                                    >
-                                        <AtlanIcon
-                                            icon="FolderClosed"
-                                            class="h-4 mb-2"
-                                        />
-                                    </div>
-
-                                    <span>{{
-                                        item?.attributes?.parent?.attributes
-                                            ?.name
-                                    }}</span>
-                                </div>
-                            </div> -->
-                        </div>
-                    </template>
-
-                    <template #button>
-                        <AtlanBtn
-                            class="flex-none px-0"
-                            size="sm"
-                            color="minimal"
-                            padding="compact"
-                            style="height: fit-content"
-                            @click="openSidebar"
-                        >
-                            <span class="text-primary whitespace-nowrap">
-                                Show Preview</span
-                            >
-                            <AtlanIcon icon="ArrowRight" class="text-primary" />
-                        </AtlanBtn>
-                    </template>
                     <div
-                        class="relative flex content-center w-full h-8 my-auto overflow-hidden text-sm leading-5 text-gray-700"
                         :id="`${item.qualifiedName}`"
+                        class="relative flex content-center w-full h-8 my-auto overflow-hidden text-sm leading-5 text-gray-700"
                     >
                         <div class="parent-ellipsis-container py-1.5 w-11/12">
                             <AtlanIcon
@@ -283,10 +160,10 @@
 
                                 <div
                                     class="pl-2"
+                                    :data-test-id="'insert-in-editor'"
                                     @click.stop="
                                         () => actionClick('info', item)
                                     "
-                                    :data-test-id="'insert-in-editor'"
                                 >
                                     <a-tooltip color="#363636" placement="top">
                                         <template #title
@@ -305,15 +182,15 @@
                                 </div>
                             </div>
                             <div
-                                class="absolute top-0 flex items-center h-full text-gray-500 opacity-0 right-2 margin-align-top group-hover:opacity-100"
                                 :id="`${item.qualifiedName}-menu`"
+                                class="absolute top-0 flex items-center h-full text-gray-500 opacity-0 right-2 margin-align-top group-hover:opacity-100"
                             >
                                 <a-dropdown
                                     :trigger="['click']"
                                     @click.stop="() => {}"
                                     @visibleChange="addBackground"
                                 >
-                                    <div class="pl-2" v-if="hasWritePermission">
+                                    <div v-if="hasWritePermission" class="pl-2">
                                         <AtlanIcon
                                             icon="KebabMenuHorizontal"
                                             class="w-4 h-4 my-auto"
@@ -322,8 +199,8 @@
                                     <template #overlay>
                                         <a-menu class="py-2">
                                             <a-menu-item
-                                                class="px-4 py-2 text-sm"
                                                 key="rename"
+                                                class="px-4 py-2 text-sm"
                                                 @click="renameFolder"
                                                 >Rename query</a-menu-item
                                             >
@@ -399,10 +276,10 @@
         <template #content> -->
     <TreeDeletePopover
         :item="item"
+        :is-saving="isDeleteLoading"
+        :show-delete-popover="showDeletePopover"
         @cancel="showDeletePopover = false"
         @delete="() => delteItem(item?.typeName)"
-        :isSaving="isDeleteLoading"
-        :showDeletePopover="showDeletePopover"
     />
     <!-- </template>
     </a-popover> -->
@@ -441,9 +318,9 @@
             <div>
                 <QueryFolderSelector
                     :connector="currentConnector"
-                    :savedQueryType="savedQueryType"
+                    :saved-query-type="savedQueryType"
+                    :selected-new-folder="item"
                     @folderChange="getSelectedFolder"
-                    :selectedNewFolder="item"
                 />
 
                 <div class="flex justify-end w-full pt-1 pb-4 pr-4">
@@ -457,8 +334,8 @@
                     <a-button
                         class="px-5 text-sm rounded"
                         type="primary"
-                        @click="changeFolder(item)"
                         :loading="isUpdating"
+                        @click="changeFolder(item)"
                         >Move</a-button
                     >
                 </div>
@@ -481,11 +358,14 @@
         computed,
     } from 'vue'
 
+    import StatusBadge from '@common/badge/status/index.vue'
+    import { useRoute, useRouter } from 'vue-router'
+    import Tooltip from '@common/ellipsis/index.vue'
+    import { message } from 'ant-design-vue'
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import { useAccess } from '~/components/insights/common/composables/useAccess'
     import PopoverAsset from '~/components/common/popover/assets/index.vue'
-    import StatusBadge from '@common/badge/status/index.vue'
     import TreeDeletePopover from '~/components/insights/common/treeDeletePopover.vue'
     import QueryFolderSelector from './queryFolderSelector2.vue'
 
@@ -498,14 +378,12 @@
 
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
-    import { useRoute, useRouter } from 'vue-router'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import { useEditor } from '~/components/insights/common/composables/useEditor'
     import AtlanBtn from '@/UI/button.vue'
     import { copyToClipboard } from '~/utils/clipboard'
     import { QueryCollection } from '~/types/insights/savedQuery.interface'
     import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
-    import Tooltip from '@common/ellipsis/index.vue'
 
     // vqb icons
     import Vqb from '~/assets/images/icons/Vqb.svg?raw'
@@ -530,8 +408,6 @@
         resetErrorDecorations,
         setErrorDecorations,
     } = useEditor()
-
-    import { message } from 'ant-design-vue'
 
     export default defineComponent({
         components: {
@@ -635,7 +511,7 @@
             const updateAssetCheck = inject('updateAssetCheck') as Ref<Boolean>
 
             const collectionName = computed(() => {
-                let col = queryCollections.value?.find(
+                const col = queryCollections.value?.find(
                     (col) =>
                         col.attributes.qualifiedName ===
                         item.value.attributes.collectionQualifiedName
@@ -669,7 +545,7 @@
                 'activeInlineTabKey'
             ) as Ref<string>
 
-            //add comment
+            // add comment
             const { openSavedQueryInNewTabAndRun, duplicateSavedQuery } =
                 useSavedQuery(inlineTabs, activeInlineTab, activeInlineTabKey)
 
@@ -746,7 +622,7 @@
                             closeAssetSidebar(activeInlineTab.value)
                         } else {
                             const activeInlineTabCopy: activeInlineTabInterface =
-                                Object.assign({}, activeInlineTab.value)
+                                { ...activeInlineTab.value }
 
                             // console.log('query entity1: ', t)
                             activeInlineTabCopy.assetSidebar.assetInfo =
@@ -786,8 +662,8 @@
             const editorInstance = inject('editorInstance') as Ref<any>
             const monacoInstance = inject('monacoInstance') as Ref<any>
 
-            let el1 = document.getElementById(`${item.value.qualifiedName}`)
-            let el2 = document.getElementById(
+            const el1 = document.getElementById(`${item.value.qualifiedName}`)
+            const el2 = document.getElementById(
                 `${item.value.qualifiedName}-menu`
             )
 
@@ -825,8 +701,10 @@
 
             const addBackground = (visible) => {
                 console.log('element: ', visible)
-                let el1 = document.getElementById(`${item.value.qualifiedName}`)
-                let el2 = document.getElementById(
+                const el1 = document.getElementById(
+                    `${item.value.qualifiedName}`
+                )
+                const el2 = document.getElementById(
                     `${item.value.qualifiedName}-menu`
                 )
 
@@ -840,8 +718,10 @@
             }
 
             const removeBackground = () => {
-                let el1 = document.getElementById(`${item.value.qualifiedName}`)
-                let el2 = document.getElementById(
+                const el1 = document.getElementById(
+                    `${item.value.qualifiedName}`
+                )
+                const el2 = document.getElementById(
                     `${item.value.qualifiedName}-menu`
                 )
                 if (el1) {
@@ -868,21 +748,21 @@
                 )
                 input.classList.add(`${item.value.qualifiedName}-rename-input`)
 
-                let div = document.createElement('div')
+                const div = document.createElement('div')
                 div.classList.add('flex', 'items-center', 'active-input', 'h-8')
 
-                let folderCloseSvg =
+                const folderCloseSvg =
                     '<span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.49951 2H3.49951C2.94723 2 2.49951 2.44772 2.49951 3V11.5C2.49951 12.0523 2.94723 12.5 3.49951 12.5H11.4995C12.0518 12.5 12.4995 12.0523 12.4995 11.5V5C12.4995 4.44772 12.0518 4 11.4995 4H7.49951C6.94723 4 6.49951 3.55228 6.49951 3C6.49951 2.44772 6.0518 2 5.49951 2Z" fill="white" stroke="#5277D7"/><path d="M13.3266 6H2.61167C2.01741 6 1.55428 6.51516 1.61731 7.10607L2.20398 12.6061C2.2582 13.1144 2.68711 13.5 3.19833 13.5H12.4466C12.9379 13.5 13.3564 13.1431 13.4341 12.658L14.3141 7.15799C14.4113 6.55041 13.9419 6 13.3266 6Z" fill="white" stroke="#5277D7"/></svg></span>'
 
-                let folderOpenSvg =
+                const folderOpenSvg =
                     '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.49951 2H3.49951C2.94723 2 2.49951 2.44771 2.49951 3V12.3C2.49951 12.8523 2.94723 13.3 3.49951 13.3H11.4995C12.0518 13.3 12.4995 12.8523 12.4995 12.3V5C12.4995 4.44772 12.0518 4 11.4995 4H7.49951C6.94723 4 6.49951 3.55228 6.49951 3C6.49951 2.44772 6.0518 2 5.49951 2Z" fill="white" stroke="#5277D7"/><path d="M14.3433 7H5.48612C5.07234 7 4.7013 7.25483 4.55277 7.64102L2.822 12.141C2.57008 12.796 3.05357 13.5 3.75535 13.5H12.6125C13.0263 13.5 13.3973 13.2452 13.5459 12.859L15.2766 8.35898C15.5286 7.70398 15.0451 7 14.3433 7Z" fill="white" stroke="#5277D7"/></svg>'
 
-                let folderSvg = expandedKeys.value.find(
+                const folderSvg = expandedKeys.value.find(
                     (key) => key === item.value.key
                 )
                     ? folderOpenSvg
                     : folderCloseSvg
-                let querySvg =
+                const querySvg =
                     '<span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5" stroke="#5277D7"/><path d="M4 6L6 8L4 10" stroke="#5277D7" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 11H12" stroke="#5277D7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'
                 let iconName: string = getEntityStatusIcon(
                     assetType(item.value),
@@ -983,7 +863,7 @@
                                     activeInlineTab?.value.queryId ===
                                         item?.value.guid
                                 ) {
-                                    let activeInlineTabCopy: activeInlineTabInterface =
+                                    const activeInlineTabCopy: activeInlineTabInterface =
                                         JSON.parse(
                                             JSON.stringify(
                                                 toRaw(activeInlineTab.value)
@@ -1121,7 +1001,7 @@
                                     activeInlineTab?.value.queryId ===
                                         item?.value.guid
                                 ) {
-                                    let activeInlineTabCopy: activeInlineTabInterface =
+                                    const activeInlineTabCopy: activeInlineTabInterface =
                                         JSON.parse(
                                             JSON.stringify(
                                                 toRaw(activeInlineTab.value)
@@ -1206,7 +1086,7 @@
                 })
             }
 
-            let isDeleteLoading = ref(false)
+            const isDeleteLoading = ref(false)
 
             const pushGuidToURL = (guid: string | undefined) => {
                 const queryParams = {}
@@ -1220,8 +1100,8 @@
             }
 
             const delteItem = (type: 'Query' | 'Folder') => {
-                let key = item.value.guid
-                let parentGuid = item?.value?.attributes?.parent?.guid
+                const key = item.value.guid
+                const parentGuid = item?.value?.attributes?.parent?.guid
                 console.log('delete item: ', item)
                 const { data, error, isLoading } = Insights.DeleteEntity(
                     item.value.guid,
@@ -1353,7 +1233,7 @@
                 }
             }
 
-            let selectedFolder = ref(null)
+            const selectedFolder = ref(null)
 
             const getSelectedFolder = (folder) => {
                 if (folder) {
@@ -1369,8 +1249,8 @@
 
             const changeFolder = (item: any) => {
                 // console.log('item to move: ', item)
-                let previousParentGuId = item.attributes.parent.guid
-                let selectedParentGuid = selectedFolder?.value?.guid
+                const previousParentGuId = item.attributes.parent.guid
+                const selectedParentGuid = selectedFolder?.value?.guid
 
                 // console.log('entity item parent: ', previousParentGuId)
                 // console.log('entity selected folder: ', selectedParentGuid)
@@ -1508,8 +1388,9 @@
 
             const openSidebar = () => {
                 removeBackground()
-                const activeInlineTabCopy: activeInlineTabInterface =
-                    Object.assign({}, activeInlineTab.value)
+                const activeInlineTabCopy: activeInlineTabInterface = {
+                    ...activeInlineTab.value,
+                }
                 activeInlineTabCopy.assetSidebar.assetInfo = item.value
                 activeInlineTabCopy.assetSidebar.isVisible = true
                 openAssetSidebar(activeInlineTabCopy, 'not_editor')
@@ -1517,11 +1398,9 @@
 
             const copyURL = () => {
                 removeBackground()
-                const URL =
-                    window.location.host +
-                    window.location.pathname +
-                    `?id=` +
-                    item?.value?.guid
+                const URL = `${
+                    window.location.host + window.location.pathname
+                }?id=${item?.value?.guid}`
                 copyToClipboard(URL)
                 message.success('Link Copied!')
                 useAddEvent('insights', 'query', 'link_copied', undefined)

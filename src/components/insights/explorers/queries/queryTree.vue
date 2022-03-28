@@ -1,4 +1,3 @@
-TR
 <template>
     <div class="h-full max-h-screen" :class="$style.queryTreeStyles">
         <div class="h-full overflow-x-hidden query-tree-root-div">

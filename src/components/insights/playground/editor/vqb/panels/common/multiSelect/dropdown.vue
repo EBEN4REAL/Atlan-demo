@@ -65,8 +65,9 @@
                             :item="item.item"
                             placement="right"
                             :mouseEnterDelay="1"
+                            @previewAsset="() => actionClick(null, item.item)"
                         >
-                            <template #button>
+                            <!-- <template #button>
                                 <AtlanBtn
                                     class="flex-none px-0"
                                     size="sm"
@@ -85,7 +86,7 @@
                                         class="text-primary"
                                     />
                                 </AtlanBtn>
-                            </template>
+                            </template> -->
                             <div
                                 class="inline-flex items-center justify-between w-full px-4 rounded h-9 hover:bg-primary-light"
                                 @click="(e) => onSelectColumn(item, e)"
@@ -190,8 +191,9 @@
                             :item="item.item"
                             placement="right"
                             :mouseEnterDelay="1"
+                            @previewAsset="() => actionClick(null, item.item)"
                         >
-                            <template #button>
+                            <!-- <template #button>
                                 <AtlanBtn
                                     class="flex-none px-0"
                                     size="sm"
@@ -210,7 +212,7 @@
                                         class="text-primary"
                                     />
                                 </AtlanBtn>
-                            </template>
+                            </template> -->
 
                             <div
                                 class="flex items-center justify-between w-full px-4 cursor-pointer h-9 hover:bg-primary-light"
@@ -343,8 +345,9 @@
                                 :item="item.item"
                                 placement="right"
                                 :mouseEnterDelay="1"
+                                 @previewAsset="()=>actionClick(null, item.item)"
                             >
-                                <template #button>
+                                <!-- <template #button>
                                     <AtlanBtn
                                         class="flex-none px-0"
                                         size="sm"
@@ -365,7 +368,7 @@
                                             class="text-primary"
                                         />
                                     </AtlanBtn>
-                                </template>
+                                </template> -->
                                 <div
                                     class="inline-flex items-center justify-between w-full px-4 rounded h-9 hover:bg-primary-light"
                                     @click="(e) => onSelectColumn(item, e)"

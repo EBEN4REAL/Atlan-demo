@@ -5544,7 +5544,7 @@ packages:
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     dependencies:
       acorn: 8.7.0
-      eslint-visitor-keys: 3.2.0
+      eslint-visitor-keys: 3.3.0
       espree: 9.3.0
       semver: 7.3.5
     dev: true
@@ -8835,7 +8835,7 @@ packages:
     resolution: {integrity: sha512-nJeyLA3YHAzhBTZbRAbu3W6xrSCucyxExmA+ZDtEdUFpGllxAZpto2Zxo2IG0r0eiuEiBM4e+wiAdxTziTq94g==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     dependencies:
-      eslint-visitor-keys: 3.2.0
+      eslint-visitor-keys: 3.3.0
       lodash: 4.17.21
       yaml: 1.10.2
     dev: true

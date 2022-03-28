@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview --port 8080",
     "preview-https": "serve dist",
-    "lint": "npx eslint --fix --ext .js,.vue,.ts ",
+    "lint": "npx eslint --fix --ext .js,.vue,.ts,.json ",
     "prepare": "husky install"
   },
   "dependencies": {

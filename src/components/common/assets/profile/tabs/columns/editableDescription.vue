@@ -1,15 +1,15 @@
 <template>
-    <div v-if="!allowEditing"></div>
     <Tooltip
-        v-else-if="!isEditing && localDescription.length > 0"
+        v-if="!isEditing && localDescription.length > 0"
         :tooltip-text="localDescription"
-        classes="cursor-text"
-        @click.stop="handleEdit"
+        :classes="allowEditing ? 'cursor-text' : ''"
+        @click="handleEdit($event)"
     />
     <div
         v-else-if="!isEditing && localDescription.length === 0"
-        class="text-transparent cursor-text hover:text-gray-400"
-        @click.stop="handleEdit"
+        class="text-transparent hover:text-gray-400"
+        :class="{ 'cursor-text': allowEditing }"
+        @click="handleEdit($event)"
     >
         <p>{{ allowEditing ? 'Add a description' : '' }}</p>
     </div>
@@ -96,9 +96,12 @@
 
             /**
              * A utility function to toggle on and off editing of the field.
+             *
+             * @param event The click event
              */
-            const handleEdit = () => {
+            const handleEdit = (event: PointerEvent) => {
                 if (allowEditing.value) {
+                    event.stopPropagation()
                     isEditing.value = !isEditing.value
                 }
 

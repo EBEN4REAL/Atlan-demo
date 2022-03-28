@@ -62,6 +62,7 @@
                 phase,
                 getRunIconByPhase,
             } = useWorkflowInfo()
+
             const { openUserSidebar } = useUserPreview()
 
             return {

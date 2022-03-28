@@ -1,20 +1,20 @@
 <template>
     <div class="flex-col">
-        <div class="flex items-center gap-x-1">
+        <div class="pill-wrapper" :class="type">
             <template v-for="index in 5" :key="index">
                 <template v-if="getRunStatus(index)">
                     <a-tooltip :title="tooltipContent(index)">
                         <div
-                            class="w-6 h-1.5 bg-gray-200 rounded-full cursor-pointer"
-                            :class="getRunClass(index)"
+                            class="cursor-pointer status-pill"
+                            :class="[getRunClass(index), type]"
                             @click.stop.prevent="handleRunClick(index)"
                         ></div>
                     </a-tooltip>
                 </template>
                 <div
                     v-else
-                    class="w-6 h-1.5 bg-gray-200 rounded-full cursor-default"
-                    :class="getRunClass(index)"
+                    class="bg-gray-200 cursor-default status-pill"
+                    :class="[getRunClass(index), type]"
                 ></div>
             </template>
         </div>
@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, toRefs } from 'vue'
+    import { defineComponent, PropType, toRefs } from 'vue'
     import { useRouter } from 'vue-router'
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
 
@@ -37,6 +37,10 @@
                 type: String,
                 required: false,
                 default: () => {},
+            },
+            type: {
+                type: String as PropType<'horizontal' | 'vertical'>,
+                default: () => 'horizontal',
             },
         },
         setup(props) {
@@ -127,4 +131,29 @@
     })
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+    .status-pill {
+        @apply rounded-full;
+
+        &.horizontal {
+            width: 32px;
+            height: 6px;
+        }
+
+        &.vertical {
+            height: 32px;
+            width: 6px;
+        }
+    }
+    .pill-wrapper {
+        @apply flex items-center;
+
+        &.horizontal {
+            @apply gap-x-1;
+        }
+
+        &.vertical {
+            @apply gap-x-2;
+        }
+    }
+</style>

@@ -74,7 +74,6 @@ meta:
         }
 
         :global(.ant-tabs-nav) {
-            background-color: #f6f7f9;
             @apply mb-0 !important;
         }
 

@@ -11,7 +11,9 @@
             @change="refetch()"
         />
 
-        <div class="flex flex-col flex-1 h-full gap-y-4">
+        <div
+            class="flex flex-col flex-1 h-full border-l border-r border-gray-300 gap-y-4"
+        >
             <div class="flex items-center mx-4 mt-4 gap-x-4">
                 <div
                     class="flex items-center flex-1 transition-colors duration-300 bg-white border border-gray-300 divide-x rounded-md focus-within:border-primary-focus hover:border-primary"
@@ -43,6 +45,7 @@
                 :lastRunsMap="runByWorkflowMap"
                 @load-more="loadMoreWorkflows"
             />
+
             <div
                 v-else-if="!isLoading"
                 class="flex flex-col items-center justify-center h-full"
@@ -61,7 +64,14 @@
                 </div>
             </template>
         </div>
-        <div style="width: 420px" class="flex flex-none h-full bg-white"></div>
+
+        <div style="width: 420px">
+            <WorkflowPreview
+                v-if="selectedWorkflow"
+                :workflow="selectedWorkflow"
+                :runs="runs(selectedWorkflow)"
+            />
+        </div>
     </div>
 </template>
 
@@ -74,14 +84,15 @@
     import AssetFilters from '@/common/assets/filters/index.vue'
 
     import { workflowFilter } from '~/workflowsv2/constants/filters'
-
-    import WorkflowList from '~/workflowsv2/components/manage/workflowList.vue'
     import { useRunDiscoverList } from '~/workflowsv2/composables/useRunDiscoverList'
     import { useWorkflowDiscoverList } from '~/workflowsv2/composables/useWorkflowDiscoverList'
+    import { useWorkflowTypes } from '~/workflowsv2/composables/useWorkflowTypes'
+
+    import WorkflowList from '~/workflowsv2/components/manage/workflowList.vue'
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
     import SearchAndFilter from '~/components/common/input/searchAndFilter.vue'
     import PackageSelector from '~/workflowsv2/components/common/packageSelector.vue'
-    import { useWorkflowTypes } from '~/workflowsv2/composables/useWorkflowTypes'
+    import WorkflowPreview from '~/workflowsv2/components/common/workflowPreview.vue'
 
     export default defineComponent({
         name: 'ManageWorkflows',
@@ -90,6 +101,7 @@
             WorkflowList,
             SearchAndFilter,
             PackageSelector,
+            WorkflowPreview,
         },
         props: {},
         emits: [],
@@ -100,7 +112,7 @@
             const wfFilters = ref({})
             const packageId = ref(undefined)
             const offset = ref(0)
-            const limit = ref(5)
+            const limit = ref(20)
             const selectedId = ref('')
 
             const preference = ref({
@@ -127,6 +139,10 @@
                     preference,
                 })
 
+            const selectedWorkflow = computed(() =>
+                list.value?.find((li) => li?.metadata?.uid === selectedId.value)
+            )
+
             const runFacets = computed(() => ({
                 workflowTemplates: list.value
                     .map((wft) => name(wft))
@@ -147,6 +163,9 @@
                 preference,
                 immediate: false,
             })
+
+            const runs = (workflow) =>
+                runByWorkflowMap.value?.[workflow?.metadata?.name]
 
             whenever(
                 () => runFacets.value.workflowTemplates,
@@ -204,6 +223,7 @@
                 refetch,
                 isLoading,
                 runByWorkflowMap,
+                runs,
                 runFacets,
                 queryText,
                 packageId,
@@ -217,6 +237,7 @@
                 isLoadMore,
                 loadMoreWorkflows,
                 selectedId,
+                selectedWorkflow,
             }
         },
     })

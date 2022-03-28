@@ -22,6 +22,7 @@ import useCustomMetadataFacet from '../custommetadata/useCustomMetadataFacet'
 import useConnectionData from '../connection/useConnectionData'
 import integrationStore from '~/store/integrations/index'
 
+import { usePersonaStore } from '~/store/persona'
 // import { formatDateTime } from '~/utils/date'
 
 // import { getCountString, getSizeString } from '~/composables/asset/useFormat'
@@ -278,6 +279,7 @@ export default function useAssetInfo() {
     }
 
     const { getList: cmList } = useCustomMetadataFacet()
+    const discoveryStore = useAssetStore()
 
     const getPreviewTabs = (asset: assetInterface, inProfile: boolean) => {
         const store = integrationStore()
@@ -302,7 +304,9 @@ export default function useAssetInfo() {
 
         let allTabs = [
             ...getTabs(previewTabs, assetType(asset)),
-            ...(tenantJiraStatus.value.configured ? getTabs([JiraPreviewTab], assetType(asset)) : []),
+            ...(tenantJiraStatus.value.configured
+                ? getTabs([JiraPreviewTab], assetType(asset))
+                : []),
             ...getTabs(customTabList, assetType(asset)),
         ]
 
@@ -312,6 +316,26 @@ export default function useAssetInfo() {
 
         if (inProfile) {
             return allTabs.filter((tab) => tab.requiredInProfile === inProfile)
+        }
+
+        const personaStore = usePersonaStore()
+        const { globalState } = toRefs(discoveryStore)
+
+        const currentPersona = computed(() => {
+            return personaStore.list.filter(
+                (persona) => persona.id === globalState?.value[1]
+            )[0]
+        })
+
+        if (currentPersona?.value?.attributes?.preferences) {
+            const {
+                attributes: {
+                    preferences: { customMetadataDenyList },
+                },
+            } = currentPersona.value
+            allTabs = allTabs.filter(
+                (tab) => !customMetadataDenyList.includes(tab?.data?.guid)
+            )
         }
 
         return allTabs
@@ -820,8 +844,6 @@ export default function useAssetInfo() {
         )
     }
 
-    const discoveryStore = useAssetStore()
-
     const selectedAsset = computed(() => {
         return discoveryStore.selectedAsset
     })
@@ -867,9 +889,7 @@ export default function useAssetInfo() {
     }
 
     const assetPermission = (permission) => {
-        return authStore?.permissions.find((per) => per === permission)
-            ? true
-            : false
+        return !!authStore?.permissions.find((per) => per === permission)
     }
 
     const isGTCByType = (typeName) => {

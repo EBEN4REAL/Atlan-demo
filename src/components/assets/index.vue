@@ -11,6 +11,7 @@
                 v-model:activeKey="activeKey"
                 :filter-list="discoveryFilters"
                 :type-name="postFacets.typeName"
+                :deny-custom-metadata="denyCustomMetadata"
                 @change="handleFilterChange"
                 @reset="handleResetEvent"
                 @change-active-key="handleActiveKeyChange"
@@ -27,7 +28,7 @@
                         :connector-name="facets?.hierarchy?.connectorName"
                         :autofocus="true"
                         :allow-clear="true"
-                        :isLoading="isValidating"
+                        :is-loading="isValidating"
                         size="large"
                         :class="
                             ['admin', 'classifications'].includes(page)
@@ -147,15 +148,15 @@
                         :selected-asset="selectedAsset"
                         :is-load-more="isLoadMore"
                         :is-loading="isValidating"
-                        @loadMore="handleLoadMore"
                         class="bg-primary-light"
+                        @loadMore="handleLoadMore"
                     >
                         <template #default="{ item, itemIndex }">
                             <AssetItem
                                 :id="getAssetId(item)"
                                 :item="item"
                                 :item-index="itemIndex"
-                                :isLoading="isValidating"
+                                :is-loading="isValidating"
                                 :selected-guid="
                                     page === 'admin' || page === 'glossary'
                                         ? null
@@ -246,6 +247,7 @@
     import useBulkUpdateStore from '~/store/bulkUpdate'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import useShortcuts from '~/composables/shortcuts/useShortcuts'
+    import { usePersonaStore } from '~/store/persona'
 
     export default defineComponent({
         name: 'AssetDiscovery',
@@ -419,6 +421,15 @@
                     ...initialFilters.value,
                 }
             }
+
+            const personaStore = usePersonaStore()
+            const { globalState: stateAsset } = toRefs(discoveryStore)
+            const denyCustomMetadata = computed(
+                () =>
+                    personaStore.list.find(
+                        (persona) => persona.id === stateAsset?.value[1]
+                    )?.attributes?.preferences?.customMetadataDenyList || []
+            )
             /* Watcher for parent component changes initial filters otherwise req won't be triggered */
             watch(initialFilters, () => {
                 facets.value = {
@@ -623,13 +634,12 @@
             const getAssetId = (item) => item.guid
 
             const { allowedTabAndArrowShortcuts } = useShortcuts()
-            const listNavigationBlocked = computed(() => {
-                return (
+            const listNavigationBlocked = computed(
+                () =>
                     !allowedTabAndArrowShortcuts.value ||
                     isCmndKVisible.value ||
                     isAssetProfile.value
-                )
-            })
+            )
             const keys = useMagicKeys()
             const { tab, shift_tab } = keys
 
@@ -639,10 +649,6 @@
             }
 
             whenever(tab, () => {
-                console.log(
-                    'tab allowedTabAndArrowShortcuts',
-                    allowedTabAndArrowShortcuts.value
-                )
                 if (
                     shift_tab.value ||
                     isCmndKVisible.value ||
@@ -798,6 +804,7 @@
                 quickChange,
                 isAssetProfile,
                 listNavigationBlocked,
+                denyCustomMetadata,
             }
         },
     })

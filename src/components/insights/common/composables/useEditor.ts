@@ -73,12 +73,20 @@ export function useEditor(
     }
 
     function getFirstValidQuery(queries: string[], index = 0) {
+        debugger
         if (index >= queries.length) return queries[0]
+        if (
+            queries[index].includes('-- ') &&
+            queries[index].includes('\nSELECT')
+        ) {
+            return queries[index]
+        }
         if (queries[index].includes('-- ') || queries[index].includes('--')) {
             return getFirstValidQuery(queries, index + 1)
         } else return queries[index]
     }
     function semicolonSeparateQuery(query: string) {
+        debugger
         // check if it have semicolon
         let queryTextValues = query?.split(';')
         queryTextValues = queryTextValues.filter(

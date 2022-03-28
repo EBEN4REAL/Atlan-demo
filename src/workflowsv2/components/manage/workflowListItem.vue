@@ -38,7 +38,7 @@
             />
         </div>
         <a-divider class="my-2" />
-        <RunIndicators :workflow="workflow" :runs="runs" />
+        <RunIndicators :workflow="wfName(workflow)" :runs="runs" />
         <LastRunSummary :runs="runs" class="mt-2" />
     </div>
 </template>
@@ -71,8 +71,13 @@
             const { workflow } = toRefs(props)
             const workflowStore = useWorkflowStore()
 
-            const { displayName, isCronWorkflow, cronString, creatorUsername } =
-                useWorkflowInfo()
+            const {
+                displayName,
+                isCronWorkflow,
+                cronString,
+                creatorUsername,
+                name: wfName,
+            } = useWorkflowInfo()
 
             const { name, icon, emoji, type } = usePackageInfo()
 
@@ -90,6 +95,7 @@
             return {
                 dName,
                 name,
+                wfName,
                 icon,
                 emoji,
                 type,

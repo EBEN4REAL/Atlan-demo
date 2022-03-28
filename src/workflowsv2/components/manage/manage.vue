@@ -36,9 +36,11 @@
 
             <WorkflowList
                 v-if="list.length"
-                :class="{ 'animate-pulse': isLoading }"
+                :loading="isLoading"
                 :workflows="list"
+                :is-load-more="isLoadMore"
                 :lastRunsMap="runByWorkflowMap"
+                @load-more="loadMoreWorkflows"
             />
             <div
                 v-else-if="!isLoading"
@@ -96,6 +98,8 @@
             const activeKey = ref([])
             const wfFilters = ref({})
             const packageId = ref(undefined)
+            const offset = ref(0)
+            const limit = ref(5)
 
             const preference = ref({
                 sort: 'metadata.creationTimestamp-desc',
@@ -109,50 +113,76 @@
 
             const queryText = ref(null)
 
-            const { list, quickChange, isLoading } = useWorkflowDiscoverList({
-                facets,
-                queryText,
-                limit: ref(100),
-                source: ref({
-                    excludes: ['spec'],
-                }),
-                preference,
-            })
-
-            const runFacets = computed(() => ({
-                workflowTemplates: list.value.map((wft) => name(wft)),
-            }))
-
-            const { quickChange: quickChangeRun, runByWorkflowMap } =
-                useRunDiscoverList({
-                    facets: runFacets,
-                    limit: ref(0),
-                    aggregations: ref(['status']),
+            const { list, quickChange, isLoading, isLoadMore } =
+                useWorkflowDiscoverList({
+                    facets,
+                    queryText,
+                    limit,
+                    offset,
                     source: ref({
                         excludes: ['spec'],
                     }),
                     preference,
-                    immediate: false,
                 })
 
+            const runFacets = computed(() => ({
+                workflowTemplates: list.value
+                    .map((wft) => name(wft))
+                    .slice(offset.value),
+            }))
+
+            const {
+                quickChange: quickChangeRun,
+                runByWorkflowMap,
+                resetState: resetRunState,
+            } = useRunDiscoverList({
+                facets: runFacets,
+                limit: ref(0),
+                aggregations: ref(['status']),
+                source: ref({
+                    excludes: ['spec'],
+                }),
+                preference,
+                immediate: false,
+            })
+
             whenever(
-                () => runFacets.value.workflowTemplates.length,
+                () => runFacets.value.workflowTemplates,
                 () => {
+                    if (!offset.value) resetRunState()
                     quickChangeRun()
-                }
+                },
+                { deep: true }
             )
 
-            const refetch = useDebounceFn(quickChange, 250, { maxWait: 1000 })
+            const refetch = useDebounceFn(
+                () => {
+                    offset.value = 0
+                    quickChange()
+                },
+                250,
+                { maxWait: 1000 }
+            )
 
             const handleResetEvent = () => {
                 wfFilters.value = {}
+                refetch()
+            }
+
+            const loadMoreWorkflows = () => {
+                if (isLoadMore.value) offset.value += limit.value
                 quickChange()
             }
 
+            /**  Dynamically inject the workflow type filter after getting response from API */
+
+            // Existing filters
             const workflowFilterRef = ref([...workflowFilter])
 
+            // Fetch the workflow types from API
             const { workflowTypeList } = useWorkflowTypes()
 
+            // Once the data is received from API, transform and inject to the existing filters
             watchOnce(workflowTypeList, () => {
                 const idx = workflowFilterRef.value.findIndex(
                     (li) => li.id === 'wfType'
@@ -172,6 +202,7 @@
                 refetch,
                 isLoading,
                 runByWorkflowMap,
+                runFacets,
                 queryText,
                 packageId,
                 wfFilters,
@@ -181,6 +212,8 @@
                 handleResetEvent,
                 facets,
                 workflowTypeList,
+                isLoadMore,
+                loadMoreWorkflows,
             }
         },
     })

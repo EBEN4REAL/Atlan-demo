@@ -877,4 +877,5 @@ export default {
     Mysql: MySQL,
     NoAllow,
     Glue,
+    Bigquery: BigQuery
 }

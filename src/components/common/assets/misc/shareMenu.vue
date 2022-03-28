@@ -55,6 +55,7 @@
     import access from '~/constant/accessControl/map'
     import integrationStore from '~/store/integrations/index'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'ShareMenu',
@@ -89,6 +90,10 @@
             })
             async function handleCopyProfileLink() {
                 await copyToClipboard(link.value)
+                useAddEvent('discovery', 'cta_action', 'clicked', {
+                    action: 3,
+                    asset_type: asset.value.typeName,
+                })
                 message.success('Link copied!')
                 closeMenu()
             }

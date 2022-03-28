@@ -572,6 +572,10 @@
                 switch (key) {
                     case 'open':
                         router.push(getProfilePath(selectedAsset.value))
+                        useAddEvent('discovery', 'cta_action', 'clicked', {
+                            action: 1,
+                            asset_type: selectedAsset.value.typeName,
+                        })
                         break
                     case 'query':
                         // router.push(getAssetQueryPath(selectedAsset.value))
@@ -588,6 +592,10 @@
                         selectedAsset.value
                     )}&openVQB=${openVQB}`
                 )
+                useAddEvent('discovery', 'cta_action', 'clicked', {
+                    action: 2,
+                    asset_type: selectedAsset.value.typeName,
+                })
             }
 
             const showCTA = (action) =>

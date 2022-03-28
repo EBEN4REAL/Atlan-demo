@@ -493,6 +493,10 @@
                     `&openVQB=${openVQB}`
 
                 window.open(URL, '_blank')?.focus()
+                useAddEvent('discovery', 'cta_action', 'clicked', {
+                    action: 2,
+                    asset_type: item.value.typeName,
+                })
             }
 
             const handleClick = () => {

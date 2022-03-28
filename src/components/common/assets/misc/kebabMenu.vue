@@ -17,10 +17,7 @@
                         :asset="asset"
                         :edit-permission="editPermission"
                         ><template #trigger>
-                            <div
-                                class="flex items-center"
-                                @click="trackAnnoucementClick"
-                            >
+                            <div class="flex items-center">
                                 <AtlanIcon icon="Megaphone" />
                                 <span class="pl-2 text-sm"
                                     >{{
@@ -118,22 +115,14 @@
             async function handleCopyProfileLink() {
                 await copyToClipboard(link.value)
                 useAddEvent('discovery', 'cta_action', 'clicked', {
-                    action: 4,
+                    action: 3,
                     asset_type: asset.value.typeName,
                 })
                 message.success('Link copied!')
                 closeMenu()
             }
 
-            const trackAnnoucementClick = () => {
-                useAddEvent('discovery', 'cta_action', 'clicked', {
-                    action: 3,
-                    asset_type: asset.value.typeName,
-                })
-            }
-
             return {
-                trackAnnoucementClick,
                 announcementTitle,
                 isVisible,
                 closeMenu,

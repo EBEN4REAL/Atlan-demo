@@ -1,4 +1,4 @@
-enum CTAAction { 'open_asset' = 1, 'query', 'add_annoucement', 'copy_link' }
+enum CTAAction { 'open_asset' = 1, 'query', 'copy_link' }
 
 const keyMap = {
     discovery: {

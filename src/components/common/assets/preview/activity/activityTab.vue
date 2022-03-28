@@ -24,7 +24,7 @@
         <div class="px-5 pb-4 mt-3">
             <ActivityTypeSelect
                 v-model="activityType"
-                :typeName="selectedAsset.typeName"
+                :type-name="selectedAsset.typeName"
                 @change="handleActivityTypeChange"
             ></ActivityTypeSelect>
         </div>
@@ -40,7 +40,7 @@
             v-else-if="auditList.length > 0"
             class="flex-grow pt-3 overflow-y-auto"
         >
-            <a-timeline class="mx-5" :key="item.guid">
+            <a-timeline :key="item.guid" class="mx-5">
                 <a-timeline-item v-for="(log, index) in auditList" :key="index">
                     <template #dot>
                         <div v-if="log?.action === 'BUSINESS_ATTRIBUTE_UPDATE'">
@@ -205,7 +205,7 @@
                 empty-screen="NoAssetsFound"
                 image-class="h-44"
                 desc="No logs found"
-                descClass="text-center text-sm"
+                desc-class="text-sm text-center"
             />
         </div>
     </div>

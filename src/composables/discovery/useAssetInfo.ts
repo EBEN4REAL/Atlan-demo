@@ -22,6 +22,7 @@ import useCustomMetadataFacet from '../custommetadata/useCustomMetadataFacet'
 import useConnectionData from '../connection/useConnectionData'
 import integrationStore from '~/store/integrations/index'
 
+import { usePersonaStore } from '~/store/persona'
 // import { formatDateTime } from '~/utils/date'
 
 // import { getCountString, getSizeString } from '~/composables/asset/useFormat'
@@ -312,6 +313,27 @@ export default function useAssetInfo() {
 
         if (inProfile) {
             return allTabs.filter((tab) => tab.requiredInProfile === inProfile)
+        }
+
+        const personaStore = usePersonaStore()
+        const assetStore = useAssetStore()
+        const { globalState } = toRefs(assetStore)
+
+        const currentPersona = computed(() => {
+            return personaStore.list.filter(
+                (persona) => persona.id === globalState?.value[1]
+            )[0]
+        })
+
+        if (currentPersona?.value?.attributes?.preferences) {
+            const {
+                attributes: {
+                    preferences: { customMetadataDenyList },
+                },
+            } = currentPersona.value
+            allTabs = allTabs.filter(
+                (tab) => !customMetadataDenyList.includes(tab?.data?.guid)
+            )
         }
 
         return allTabs
@@ -867,9 +889,7 @@ export default function useAssetInfo() {
     }
 
     const assetPermission = (permission) => {
-        return authStore?.permissions.find((per) => per === permission)
-            ? true
-            : false
+        return !!authStore?.permissions.find((per) => per === permission)
     }
 
     const isGTCByType = (typeName) => {

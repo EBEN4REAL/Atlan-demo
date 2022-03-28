@@ -49,7 +49,15 @@
                 </div>
             </div>
 
-            <span>Pagination</span>
+            <div class="flex justify-end py-3">
+                <Pagination
+                    v-model:offset="offset"
+                    :total-pages="Math.ceil(totalRuns / limit)"
+                    :loading="isLoading"
+                    :page-size="limit"
+                    @mutate="quickChange"
+                />
+            </div>
         </div>
     </div>
 </template>
@@ -57,12 +65,15 @@
 <script lang="ts">
     import { computed, defineComponent, ref, toRefs, watch } from 'vue'
     import { useRunDiscoverList } from '~/workflowsv2/composables/useRunDiscoverList'
+
+    import Pagination from '@/common/list/pagination.vue'
     import RunListItem from '~/workflowsv2/components/monitor/runListItem.vue'
+
     import EmptyLogsIllustration from '~/assets/images/illustrations/empty_logs.svg'
 
     export default defineComponent({
         name: 'RunHistoryTable',
-        components: { RunListItem },
+        components: { RunListItem, Pagination },
         props: {
             filters: {
                 type: Object,
@@ -90,6 +101,7 @@
                 list: runs,
                 quickChange,
                 isLoading,
+                data,
             } = useRunDiscoverList({
                 facets,
                 limit,
@@ -98,6 +110,10 @@
                 preference,
                 source: ref({ excludes: ['spec'] }),
             })
+
+            const totalRuns = computed(
+                () => data.value?.hits?.total?.value || 0
+            )
 
             // If changed this should be manually synced with the flex-grow properties of <RunListItem/>
             const tableHeaders = [
@@ -119,6 +135,9 @@
                 isLoading,
                 EmptyLogsIllustration,
                 quickChange,
+                limit,
+                offset,
+                totalRuns,
             }
         },
     })

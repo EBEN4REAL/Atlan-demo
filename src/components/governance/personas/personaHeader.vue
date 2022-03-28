@@ -34,6 +34,8 @@
                 <div class="flex items-center mb-0 text-sm text-gray-500">
                     <div class="mb-0 text-xl text-gray-700 truncate">
                         <span
+                            :data-name="persona.displayName"
+                            id="personaDisplayName"
                             class="flex-shrink mb-0 overflow-hidden text-base font-bold text-gray-700 capitalize truncate"
                             data-test-id="header-name"
                         >
@@ -167,7 +169,7 @@
                             h(
                                 'span',
                                 {
-                                    class: ['font-bold'],
+                                    class: ['font-bold', 'persona-name'],
                                 },
                                 [`${persona.value.displayName}`]
                             ),

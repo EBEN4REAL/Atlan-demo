@@ -1,3 +1,48 @@
+import {
+    NAME_OF_EVENTS,
+    README_TRIGGERS,
+} from '~/modules/editor/analytics/useTrackEvent'
+
+interface BLOCK_README_EVENT_INTERFACE {
+    assetType: string
+    blockType: NAME_OF_EVENTS
+    trigger: README_TRIGGERS
+    embedService?: string
+}
+
+interface BLOCK_README_EVENT_RETURN_INTERFACE {
+    asset_type: string
+    block_type: NAME_OF_EVENTS
+    trigger: README_TRIGGERS
+    embed_service?: string
+}
+
+interface FORMATTING_README_EVENT_INTERFACE {
+    assetType: string
+    markType: NAME_OF_EVENTS
+    trigger: README_TRIGGERS
+    alignment?: string
+}
+
+interface FORMATTING_README_EVENT_RETURN_INTERFACE {
+    asset_type: string
+    mark_type: NAME_OF_EVENTS
+    trigger: README_TRIGGERS
+    alignment?: string
+}
+
+interface EMBED_README_EVENT_INTERFACE {
+    assetType: string
+    application: string
+    trigger: README_TRIGGERS
+}
+
+interface EMBED_README_EVENT_RETURN_INTERFACE {
+    asset_type: string
+    application: string
+    trigger: README_TRIGGERS
+}
+
 const keyMap = {
     discovery: {
         filter: {
@@ -498,7 +543,7 @@ const keyMap = {
             share_channels_updated: {
                 action: 'integration_slack_share_channels_updated',
                 properties: (props: {
-                    channel_count: string,
+                    channel_count: string
                     workflow_alert_channel_present: boolean
                 }) => ({
                     ...props,
@@ -518,7 +563,7 @@ const keyMap = {
             issue_linked: {
                 action: 'integration_jira_issue_linked',
                 properties: (props: {
-                    asset_type: string,
+                    asset_type: string
                     selected_issue_count: number
                     total_issue_count: number
                 }) => ({
@@ -530,29 +575,74 @@ const keyMap = {
             },
             issue_unlinked: {
                 action: 'integration_jira_issue_unlinked',
-                properties: (props: {
-                    asset_type: string,
-                }) => ({
+                properties: (props: { asset_type: string }) => ({
                     ...props,
                 }),
             },
             issue_searched: {
                 action: 'integration_jira_issue_searched',
-                properties: (props: {
-                    asset_type: string
-                }) => ({
+                properties: (props: { asset_type: string }) => ({
                     ...props,
                 }),
             },
             config_updated: {
                 action: 'integration_jira_config_updated',
-                properties: (props: {
-                    default_project_present: Boolean
-                }) => ({
+                properties: (props: { default_project_present: Boolean }) => ({
                     ...props,
                 }),
-            }
-
+            },
+        },
+    },
+    readme: {
+        block: {
+            added: {
+                action: 'block_added',
+                properties: ({
+                    assetType,
+                    blockType,
+                    trigger,
+                    embedService,
+                }: BLOCK_README_EVENT_INTERFACE): BLOCK_README_EVENT_RETURN_INTERFACE => ({
+                    asset_type: assetType,
+                    block_type: blockType,
+                    trigger,
+                    ...(embedService && {
+                        embed_service: embedService,
+                    }),
+                }),
+            },
+        },
+        formatting: {
+            added: {
+                action: 'formatting_added',
+                properties: ({
+                    assetType,
+                    markType,
+                    trigger,
+                    alignment,
+                }: FORMATTING_README_EVENT_INTERFACE): FORMATTING_README_EVENT_RETURN_INTERFACE => ({
+                    asset_type: assetType,
+                    mark_type: markType,
+                    trigger,
+                    ...(alignment && {
+                        alignment,
+                    }),
+                }),
+            },
+        },
+        embed: {
+            added: {
+                action: 'embed_added',
+                properties: ({
+                    assetType,
+                    application,
+                    trigger,
+                }: EMBED_README_EVENT_INTERFACE): EMBED_README_EVENT_RETURN_INTERFACE => ({
+                    asset_type: assetType,
+                    application,
+                    trigger,
+                }),
+            },
         },
     },
 }

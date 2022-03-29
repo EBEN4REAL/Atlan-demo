@@ -47,6 +47,11 @@
     import { NodeViewWrapper, nodeViewProps } from '@tiptap/vue-3'
     import AtlanIcon from '@common/icon/atlanIcon.vue'
     import AtlanButton from '@/UI/button.vue'
+    import {
+        useTrackEvent,
+        TYPE_OF_EVENTS,
+        README_TRIGGERS,
+    } from '~/modules/editor/analytics/useTrackEvent'
 
     export default defineComponent({
         components: {
@@ -85,6 +90,17 @@
                             embedicon: options.value?.icon,
                         })
                         .run()
+                    useTrackEvent({
+                        type: TYPE_OF_EVENTS.EMBED,
+                        name: options.value?.analyticsKey,
+                        trigger: README_TRIGGERS.SLASH_MENU,
+                        properties: {
+                            assetType:
+                                editor.value.options.editorProps.attributes[
+                                    'data-asset-type'
+                                ],
+                        },
+                    })
                 }
             }
 

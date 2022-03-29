@@ -14,6 +14,7 @@ interface GetIframeLinkFunc {
 
 interface EmbedOptions {
     title: string
+    analyticsKey: string
     icon: keyof typeof iconMap
     validateInput: ValidateInputFunc
     getIframeLink: GetIframeLinkFunc
@@ -38,6 +39,7 @@ export default IFrame.extend<EmbedOptions>({
             ...this.parent?.(),
             title: 'General Embed',
             icon: 'Documentation',
+            analyticsKey: 'General Embed',
             validateInput(input: string) {
                 return input.length > 0
             },

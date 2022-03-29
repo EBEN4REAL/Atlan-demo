@@ -567,7 +567,12 @@
 
             const handleFilterChange = (filterItem) => {
                 isConnectorChange.value = false
-                if (connector.value !== facets.value.hierarchy?.connectorName) {
+
+                if (!facets.value.hierarchy?.connectorName) {
+                    connector.value = ''
+                } else if (
+                    connector.value !== facets.value.hierarchy?.connectorName
+                ) {
                     isConnectorChange.value = true
                     connector.value = facets.value.hierarchy?.connectorName
                 }
@@ -816,7 +821,7 @@
                 listNavigationBlocked,
                 isConnectorChange,
                 connector,
-                denyCustomMetadata
+                denyCustomMetadata,
             }
         },
     })

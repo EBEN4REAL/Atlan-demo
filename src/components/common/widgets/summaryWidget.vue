@@ -300,10 +300,18 @@
                 const meta = countMeta.value
                     ? `${countMeta.value} metadata`
                     : ''
-                const data = countData.value ? `, ${countData.value} data` : ''
-                const glossary = countGlossary.value
-                    ? `, ${countGlossary.value} glossary `
-                    : ''
+                const data =
+                    countData.value && !countMeta.value
+                        ? `${countData.value} data`
+                        : countData.value
+                        ? `, ${countData.value} data`
+                        : ''
+                const glossary =
+                    countGlossary.value && !countMeta.value && !countData.value
+                        ? `${countGlossary.value} glossary`
+                        : countGlossary.value
+                        ? `, ${countGlossary.value} glossary `
+                        : ''
                 return `${meta}${data}${glossary}`
             })
             watch(showPopover, (newVal) => {

@@ -49,10 +49,15 @@
                         <a-button
                             class="flex items-center justify-between w-full bg-white border border-gray-300 outline-none"
                             style="width: 138px; height: 32px"
-                            ><span class="text-gray-500 truncate">{{
-                                item.value.length
-                                    ? item.value.join(', ')
-                                    : 'Select a value'
+                        >
+                            <span class="text-gray-500 truncate">{{
+                                item.allowMultiple
+                                    ? item.value.length
+                                        ? Array.isArray(item.value)
+                                            ? item?.value?.join(', ')
+                                            : item.value
+                                        : 'Select a value'
+                                    : item?.value ?? 'Select a value'
                             }}</span>
                         </a-button>
                         <template #overlay>
@@ -101,6 +106,14 @@
                                                 :value="item2.value"
                                                 :class="$style.checkbox_style"
                                                 class="inline-flex items-center"
+                                                @change="
+                                                    (checked) => {
+                                                        onCheckOption(
+                                                            item,
+                                                            checked
+                                                        )
+                                                    }
+                                                "
                                                 ><span
                                                     class="flex w-full h-full ml-1 -mb-1.5"
                                                 >
@@ -115,8 +128,15 @@
                                 </div>
                                 <div v-else class="overflow-y-scroll">
                                     <a-menu
-                                        v-model:selectedKeys="item.value"
+                                        v-model:value="item.value"
                                         class="w-full"
+                                        @select="
+                                            (e) =>
+                                                handleSelectVariable(
+                                                    e,
+                                                    item.key
+                                                )
+                                        "
                                     >
                                         <div
                                             v-for="item2 in item.options"
@@ -238,6 +258,7 @@
             },
         },
         setup(props) {
+            debugger
             const { item, usersData, cronData, infoTabeState } = toRefs(props)
             const { variablesData } = useVModels(props)
 
@@ -287,6 +308,28 @@
                     variablesData.value[_index].value = allOptions
                 }
             }
+            const onCheckOption = (item, e) => {
+                // debugger
+                // const _index = variablesData.value.findIndex(
+                //     (variable) => variable.key === item.key
+                // )
+                // if (!e?.target?.checked) {
+                //     variablesData.value[_index].value = []
+                // } else {
+                //     const allOptions = variablesData.value[_index].options.map(
+                //         (option) => option.value
+                //     )
+                //     variablesData.value[_index].value = allOptions
+                // }
+            }
+
+            const handleSelectVariable = ({ key }, itemKey) => {
+                // for single select dropdown
+                const _index = variablesData.value.findIndex(
+                    (variable) => variable.key === itemKey
+                )
+                variablesData.value[_index].value = key
+            }
 
             return {
                 variablesData,
@@ -300,6 +343,8 @@
                 hanldeActiveVariableDateChange,
                 handleSelectInputChange,
                 onCheckAllOptions,
+                handleSelectVariable,
+                onCheckOption,
             }
         },
     })

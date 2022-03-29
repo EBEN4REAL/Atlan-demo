@@ -180,7 +180,7 @@
         <div
             v-if="activeInlineTabKey"
             class="w-full"
-            style="max-height: 100%; height: 100%"
+            style="max-height: 100%; min-height: 70%; height: 100%"
             :class="$style.splitspane_playground"
         >
             <splitpanes

@@ -66,7 +66,6 @@ export const AssetAttributes = [
     'viewerGroups',
     'viewerUsers',
     'meanings',
-    'readme',
     'rawQuery',
     'compiledQuery',
     'links',
@@ -188,7 +187,6 @@ export const GlossaryRelationAttributes = ['name']
 
 export const AssetRelationAttributes = [
     'certificateStatus',
-    'readme',
     'displayText',
     'name',
     'description',
@@ -355,7 +353,6 @@ export const BasicSearchAttributes = [
     'databaseQualifiedName',
     'isPrimary',
     'isPartition',
-    'readme',
     'parent',
 ]
 

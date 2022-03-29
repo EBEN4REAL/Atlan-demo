@@ -13,7 +13,11 @@
                 :name="['displayName']"
                 class="mb-0 ant-form-undo-flex-direction"
             >
-                <a-input v-model:value="form.displayName" type="text" />
+                <a-input
+                    v-model:value="form.displayName"
+                    type="text"
+                    id="property_name"
+                />
             </a-form-item>
 
             <div v-if="editing" class="space-y-2">
@@ -39,6 +43,7 @@
                     :list-height="240"
                     :filter-option="customFilter"
                     @change="handleTypeNameChange"
+                    id="property_type"
                 >
                     <template #suffixIcon>
                         <AtlanIcon icon="CaretDown" class="text-gray-500" />

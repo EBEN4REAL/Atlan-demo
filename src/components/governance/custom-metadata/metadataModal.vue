@@ -149,7 +149,10 @@
                 if (props.isEdit) {
                     store.updateCustomMetadata(serviceResponse[0])
                     store.tickForceRevalidate()
-                    message.success('Metadata updated')
+                    message.success({
+                        content: 'Metadata updated',
+                        duration: 2,
+                    })
                 } else {
                     store.appendCustomMetadata(serviceResponse)
                     store.tickForceRevalidate()

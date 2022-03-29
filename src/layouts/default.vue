@@ -114,6 +114,7 @@
             const activeKey = ref('')
             // shortcuts for comand k
             const keys = useMagicKeys({
+                passive: false,
                 onEventFired(e) {
                     if (e.ctrlKey && e.key === 'k' && e.type === 'keydown') {
                         console.log('key pressed', e.key, e.ctrlKey)

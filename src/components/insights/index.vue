@@ -21,7 +21,7 @@
                         v-model:activeKey="activeTabId"
                         :class="$style.previewtab"
                         :style="'height: calc(100%)'"
-                        tab-position="right"
+                        tab-position="top"
                     >
                         <a-tab-pane
                             v-for="tab in tabsList"
@@ -32,17 +32,35 @@
                             "
                         >
                             <template #tab>
-                                <AtlanIcon
-                                    v-if="tab?.icon"
-                                    :icon="`${tab.icon}`"
-                                    class="w-6 h-6"
-                                    :color="
-                                        activeTabId === tab.id
-                                            ? '#5277D7'
-                                            : '#6f7590'
+                                <div
+                                    class="flex flex-row items-center px-3 py-1 flex-grow-1"
+                                    :class="
+                                        tab.id === activeTabId
+                                            ? 'active-tab-indicator'
+                                            : ''
                                     "
-                                    @click="() => changeTab(tab)"
-                                />
+                                >
+                                    <AtlanIcon
+                                        v-if="tab?.icon"
+                                        :icon="`${tab.icon}`"
+                                        class="w-4 h-4"
+                                        :color="
+                                            activeTabId === tab.id
+                                                ? '#225BD2'
+                                                : '#6A7692'
+                                        "
+                                        @click="() => changeTab(tab)"
+                                    />
+                                    <div
+                                        :class="
+                                            activeTabId === tab.id
+                                                ? 'active-tab'
+                                                : 'inactive-tab'
+                                        "
+                                    >
+                                        {{ tab.name }}
+                                    </div>
+                                </div>
                             </template>
                             <keep-alive>
                                 <component
@@ -819,51 +837,69 @@
         }
     }
     .previewtab {
-        &:global(.ant-tabs-right) {
-            :global(.ant-tabs-nav .ant-tabs-ink-bar) {
-                right: 0 !important;
-                left: unset !important;
-            }
+        // &:global(.ant-tabs-right) {
+        //     :global(.ant-tabs-nav .ant-tabs-ink-bar) {
+        //         right: 0 !important;
+        //         left: unset !important;
+        //     }
+        //     :global(.ant-tabs-nav) {
+        //         order: 0 !important;
+        //         min-width: 60px !important;
+        //         @apply border border-r border-gray-300  !important;
+        //     }
+        //     :global(.ant-tabs-nav-container) {
+        //         @apply ml-0 !important;
+        //     }
+        //     :global(.ant-tabs-tab) {
+        //         padding: 3px 8px !important;
+
+        //         @apply justify-center;
+        //     }
+
+        //     :global(.ant-tabs-tab:first-child) {
+        //         padding: 3px 8px !important;
+        //         @apply mt-3 !important;
+
+        //         @apply justify-center;
+        //     }
+
+        //     :global(.ant-tabs-content) {
+        //         @apply px-0 h-full !important;
+
+        //         :global(.ant-tabs-tab:first-child) {
+        //             @apply mt-0 !important;
+        //         }
+        //     }
+        //     :global(.ant-tabs-ink-bar) {
+        //         @apply rounded-t-sm;
+        //         margin-bottom: 1px;
+        //     }
+        //     :global(.ant-tabs-tabpane) {
+        //         @apply px-0 !important;
+        //         @apply pb-0 !important;
+        //         @apply h-full !important;
+        //     }
+
+        //     :global(.ant-tabs-content-holder) {
+        //         @apply h-full !important;
+        //     }
+        // }
+
+        &:global(.ant-tabs-top) {
             :global(.ant-tabs-nav) {
-                order: 0 !important;
-                min-width: 60px !important;
-                @apply border border-r border-gray-300  !important;
+                margin: 0 !important;
+                height: 40px !important;
             }
-            :global(.ant-tabs-nav-container) {
-                @apply ml-0 !important;
-            }
-            :global(.ant-tabs-tab) {
-                padding: 3px 8px !important;
-
-                @apply justify-center;
-            }
-
-            :global(.ant-tabs-tab:first-child) {
-                padding: 3px 8px !important;
-                @apply mt-3 !important;
-
-                @apply justify-center;
-            }
-
-            :global(.ant-tabs-content) {
-                @apply px-0 h-full !important;
-
-                :global(.ant-tabs-tab:first-child) {
-                    @apply mt-0 !important;
-                }
+            :global(.ant-tabs-nav-wrap) {
+                justify-content: space-evenly;
+                position: relative;
+                top: -1px;
             }
             :global(.ant-tabs-ink-bar) {
-                @apply rounded-t-sm;
-                margin-bottom: 1px;
+                display: none;
             }
-            :global(.ant-tabs-tabpane) {
-                @apply px-0 !important;
-                @apply pb-0 !important;
-                @apply h-full !important;
-            }
-
-            :global(.ant-tabs-content-holder) {
-                @apply h-full !important;
+            :global(.ant-tabs-nav::before) {
+                @apply border-new-gray-300 !important;
             }
         }
     }
@@ -903,6 +939,22 @@
     }
     .assetSidebar {
         z-index: 51 !important;
+    }
+    .active-tab-indicator {
+        @apply bg-white rounded-md;
+        box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.16);
+    }
+    .active-tab {
+        display: block;
+        margin-left: 6px;
+        position: relative;
+        // top: 0.5px !important;
+        color: #225bd2;
+        @apply h-5;
+    }
+    .inactive-tab {
+        display: none;
+        color: #6a7692;
     }
 </style>
 

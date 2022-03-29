@@ -86,13 +86,12 @@
                 name: wfName,
             } = useWorkflowInfo()
 
-            const { name, icon, emoji, type } = usePackageInfo()
+            const { name, icon, emoji, type, identifier } = usePackageInfo()
 
             const pkg = computed(
                 () =>
-                    workflowStore.packageMeta?.[
-                        workflow.value?.metadata?.['package.argoproj.io/name']
-                    ] || {}
+                    workflowStore.packageMeta?.[identifier(workflow.value)] ||
+                    {}
             )
 
             const dName = computed(() =>
@@ -110,6 +109,7 @@
                 cronString,
                 creatorUsername,
                 isRunLoading,
+                pkg,
             }
         },
     })

@@ -16,18 +16,19 @@
         >
             <div class="flex items-center mx-4 mt-4 gap-x-4">
                 <div
-                    class="flex items-center flex-1 transition-colors duration-300 bg-white border border-gray-300 divide-x rounded-md focus-within:border-primary-focus hover:border-primary"
+                    class="flex items-center flex-1 bg-white border border-gray-300 rounded-md"
                 >
                     <PackageSelector
                         v-model:value="packageId"
                         type="minimal"
                         @update:value="refetch()"
+                        class="w-64 border-r rounded-tl-md rounded-bl-md focus-within:ring-2"
                     />
 
                     <SearchAndFilter
                         v-model:value="queryText"
                         size="minimal"
-                        class="bg-white border-b-0 rounded-tr-md rounded-br-md"
+                        class="bg-white border-b-0 rounded-tr-md rounded-br-md focus-within:ring-2 ml-0.5"
                         placeholder="Search all Snowflake Assets workflows..."
                         @update:value="refetch()"
                         @select="$event.target.blur()"

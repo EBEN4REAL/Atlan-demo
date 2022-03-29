@@ -113,7 +113,14 @@
             const { currentRoute } = router
             const activeKey = ref('')
             // shortcuts for comand k
-            const keys = useMagicKeys()
+            const keys = useMagicKeys({
+                onEventFired(e) {
+                    if (e.ctrlKey && e.key === 'k' && e.type === 'keydown') {
+                        console.log('key pressed', e.key, e.ctrlKey)
+                        e.preventDefault()
+                    }
+                },
+            })
             const { control, meta, meta_K } = keys
             const keyK = keys.K
             const isCmndKVisible = ref<boolean>(false)

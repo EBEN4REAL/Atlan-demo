@@ -720,6 +720,30 @@
 
             <div
                 v-if="
+                    selectedAsset.guid &&
+                    selectedAsset.typeName == 'Collection' &&
+                    readPermission
+                "
+                class="flex flex-col"
+            >
+                <div
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+                >
+                    <span>Editors</span>
+                </div>
+
+                <Admins
+                    v-model="localAdmins"
+                    class="px-5"
+                    :selected-asset="selectedAsset"
+                    :edit-permission="false"
+                    :showAddButton="false"
+                    @change="handleChangeAdmins"
+                />
+            </div>
+
+            <div
+                v-if="
                     ![
                         'AtlasGlossary',
                         'AtlasGlossaryCategory',

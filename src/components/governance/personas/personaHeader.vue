@@ -66,25 +66,46 @@
             </div>
             <a-button-group>
                 <!-- Edit -->
-                <!-- <a-popover
+                <a-popover
+                    v-model:visible="visibleEnable"
                     :align="{ offset: [5, -10] }"
                     trigger="click"
                     placement="bottom"
                 >
                     <template #content>
                         <div
-                            class="flex p-2 text-sm font-bold text-gray-700 cursor-pointer btn-status hover:bg-gray-100"
+                            @click="
+                                () => {
+                                    visibleEnable = false
+                                    $emit('updateStatus', !persona.enabled)
+                                }
+                            "
+                            :class="`flex p-2 text-sm font-bold ${
+                                !persona.enabled
+                                    ? 'text-success'
+                                    : 'text-gray-700'
+                            } cursor-pointer btn-status hover:bg-gray-100`"
                         >
-                            <AtlanIcon icon="NoAllow" class="mr-1" />Disable
+                            <AtlanIcon
+                                :icon="!persona.enabled ? 'Check' : 'NoAllow'"
+                                class="mr-1"
+                            />{{
+                                !persona.enabled ? 'Enabled' : 'Disable'
+                            }}
                             persona
                         </div>
                     </template>
                     <div
-                        class="flex p-2 mr-3 text-sm font-bold cursor-pointer text-success btn-status hover:bg-gray-100"
+                        :class="`flex p-2 mr-3 text-sm font-bold cursor-pointer ${
+                            persona.enabled ? 'text-success' : 'text-gray-700'
+                        } btn-status hover:bg-gray-100`"
                     >
-                        <AtlanIcon icon="Check" class="mr-1" />Enabled
+                        <AtlanIcon
+                            :icon="persona.enabled ? 'Check' : 'NoAllow'"
+                            class="mr-1"
+                        />{{ persona.enabled ? 'Enabled' : 'Disable' }}
                     </div>
-                </a-popover> -->
+                </a-popover>
                 <a-tooltip v-auth="map.UPDATE_PERSONA" placement="bottom">
                     <template #title>
                         <span>Edit Persona</span>
@@ -117,7 +138,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, computed, toRefs, h, watch } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        computed,
+        toRefs,
+        h,
+        watch,
+        ref,
+    } from 'vue'
     import { message, Modal } from 'ant-design-vue'
     import { useTimeAgo, useVModels } from '@vueuse/core'
     import CreationModal from '@/admin/common/addModal.vue'
@@ -152,8 +181,10 @@
                 default: () => false,
             },
         },
+        emits: ['updateStatus'],
         setup(props, { emit }) {
             const { persona } = toRefs(props)
+            const visibleEnable = ref(false)
             // const { openEditModal } = toRefs(props)
             const { openEditModal } = useVModels(props, emit)
             const deletePersona = () => {
@@ -285,6 +316,7 @@
                 map,
                 deletePersona,
                 handleCancel,
+                visibleEnable,
             }
         },
     })

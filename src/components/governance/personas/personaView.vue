@@ -51,6 +51,7 @@
                 <PersonaHeader
                     v-model:openEditModal="openEditModal"
                     :persona="selectedPersona"
+                    @updateStatus="handleEnableDisablePersona"
                 />
             </template>
             <!-- <template #footer>
@@ -207,10 +208,11 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, onMounted, computed } from 'vue'
+    import { defineComponent, ref, watch, onMounted, h } from 'vue'
     import ErrorView from '@common/error/index.vue'
     import { storeToRefs } from 'pinia'
     import { useRoute, useRouter } from 'vue-router'
+    import { message, Modal } from 'ant-design-vue'
     import AtlanBtn from '@/UI/button.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ExplorerLayout from '@/admin/explorerLayout.vue'
@@ -230,7 +232,7 @@
         personaList,
         facets,
     } from './composables/usePersonaList'
-    import { isEditing } from './composables/useEditPersona'
+    import { isEditing, enablePersona } from './composables/useEditPersona'
     import AddPersonaIllustration from '~/assets/images/empty_state_personaV2.svg'
     import DetailPolicy from './overview/detailPolicy.vue'
     import usePermissions from '~/composables/auth/usePermissions'
@@ -364,6 +366,70 @@
                     deep: true,
                 }
             )
+            const enableDisablePersona = async (val) => {
+                const messageKey = Date.now()
+                // enableDisableLoading.value = true
+                message.loading({
+                    content: `${val ? 'Enabling' : 'Disabling'} persona ${
+                        selectedPersona.value.displayName
+                    }`,
+                    duration: 0,
+                    key: messageKey,
+                })
+                try {
+                    await enablePersona(selectedPersona.value.id, val)
+                    selectedPersona.value.enabled = val
+                    message.success({
+                        content: `${val ? 'Enabled' : 'Disabled'} persona ${
+                            selectedPersona.value.displayName
+                        }`,
+                        duration: 1.5,
+                        key: messageKey,
+                    })
+                    // enableDisableLoading.value = false
+                } catch (e) {
+                    message.error({
+                        content: `Failed to ${
+                            val ? 'enable' : 'disable'
+                        } persona ${selectedPersona.value.displayName}`,
+                        duration: 1.5,
+                        key,
+                    })
+                    // enableDisableLoading.value = false
+                }
+            }
+            const handleEnableDisablePersona = (val) => {
+                selectedPersona.value.enabled = !val
+                if (!selectedPersona.value.enabled) enableDisablePersona(val)
+                else
+                    Modal.confirm({
+                        title: 'Disable persona',
+                        class: 'disable-persona-modal',
+                        content: () =>
+                            h('div', [
+                                'Are you sure you want to disable persona',
+                                h('span', [' ']),
+                                h(
+                                    'span',
+                                    {
+                                        class: ['font-bold'],
+                                    },
+                                    [`${selectedPersona.value.displayName}`]
+                                ),
+                                h('span', '?'),
+                            ]),
+                        okType: 'danger',
+                        autoFocusButton: null,
+                        okButtonProps: {
+                            type: 'primary',
+                        },
+                        okText: 'Disable',
+                        cancelText: 'Cancel',
+                        async onOk() {
+                            enableDisablePersona(val)
+                        },
+                    })
+            }
             return {
                 reFetchList,
                 filteredPersonas,
@@ -394,6 +460,7 @@
                 handleResetEvent,
                 NewPolicyIllustration,
                 personaList,
+                handleEnableDisablePersona,
             }
         },
     })

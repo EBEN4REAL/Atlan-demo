@@ -467,7 +467,6 @@
                 try {
                     isLoading.value = true
                     const data: any = toRaw(ssoProvider.value)
-                    debugger
                     const config = {
                         ...data,
                         config: {

@@ -321,6 +321,12 @@ const keyMap = {
             resource_deleted: {
                 action: 'persona_resource_deleted',
             },
+            cm_preferences: {
+                action: 'persona_preferences_cm_toggled',
+                properties: (props) => ({
+                    state: props.state,
+                }),
+            },
         },
         purpose: {
             created: {

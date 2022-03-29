@@ -14,7 +14,7 @@ export const archiveWorkflow = (
             h('span', [
                 'Are you sure you want to delete ',
                 h('b', [reportName]),
-                ' workflow?',
+                ' scheduled query workflow?',
             ]),
         okType: 'danger',
         autoFocusButton: null,
@@ -26,7 +26,8 @@ export const archiveWorkflow = (
         async onOk() {
             const { error, isLoading } = deleteWorkflowByName(name, true)
             await until(isLoading).toBe(false)
-            if (error.value) message.error('Failed to delete workflow')
+            if (error.value)
+                message.error('Failed to delete scheduled query workflow')
             else {
                 message.success('Workflow deleted')
                 setTimeout(() => {

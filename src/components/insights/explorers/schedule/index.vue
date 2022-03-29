@@ -3,7 +3,7 @@
         <div
             class="flex items-center w-full p-4 pb-0 mb-4 text-lg font-bold text-gray-700"
         >
-            <span class="mr-2"> Schedule Queries </span>
+            <span class="mr-2"> Scheduled Queries </span>
             <div
                 class="flex items-center justify-center px-1.5 py-1 text-sm font-bold rounded text-primary bg-gray-200"
             >

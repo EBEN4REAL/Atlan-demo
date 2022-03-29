@@ -524,13 +524,24 @@ export default function useEventGraph({
 
             if (Object.keys(actions.value).length) {
                 Object.entries(actions.value).forEach(([k, v]) => {
-                    if (k === 'selectNode') selectNode(v)
+                    if (k === 'selectNode') {
+                        selectNode(v)
+                        delete actions.value[k]
+                    }
                     if (k === 'selectNodeEdge') {
                         const edge = getX6Edge(v)
                         controlEdgeAnimation(edge)
                         selectNodeEdge(v)
+                        delete actions.value[k]
                     }
-                    delete actions.value[k]
+                    if (k === 'selectPort') {
+                        const nodeId = v.nodeId
+                        const node = getX6Node(nodeId)
+                        const caretEle = getNodeCaretElement(nodeId)
+                        controlColumnListLoader(nodeId, true)
+                        controlCaretIcon(nodeId, caretEle)
+                        fetchNodeColumns(node)
+                    }
                 })
             }
             controlHoPaCTALoader(guid, false)
@@ -572,13 +583,24 @@ export default function useEventGraph({
 
             if (Object.keys(actions.value).length) {
                 Object.entries(actions.value).forEach(([k, v]) => {
-                    if (k === 'selectNode') selectNode(v)
+                    if (k === 'selectNode') {
+                        selectNode(v)
+                        delete actions.value[k]
+                    }
                     if (k === 'selectNodeEdge') {
                         const edge = getX6Edge(v)
                         controlEdgeAnimation(edge)
                         selectNodeEdge(v)
+                        delete actions.value[k]
                     }
-                    delete actions.value[k]
+                    if (k === 'selectPort') {
+                        const nodeId = v.nodeId
+                        const node = getX6Node(nodeId)
+                        const caretEle = getNodeCaretElement(nodeId)
+                        controlColumnListLoader(nodeId, true)
+                        controlCaretIcon(nodeId, caretEle)
+                        fetchNodeColumns(node)
+                    }
                 })
             }
             controlHoPaCTALoader(guid, false)
@@ -599,7 +621,7 @@ export default function useEventGraph({
 
             if (Object.keys(actions.value).length) {
                 Object.entries(actions.value).forEach(([k, v]) => {
-                    if (k === 'selectPort') selectPort(v)
+                    if (k === 'selectPort') selectPort(v.portId)
                     delete actions.value[k]
                 })
             } else {
@@ -630,7 +652,7 @@ export default function useEventGraph({
 
             if (Object.keys(actions.value).length) {
                 Object.entries(actions.value).forEach(([k, v]) => {
-                    if (k === 'selectPort') selectPort(v)
+                    if (k === 'selectPort') selectPort(v.portId)
                     delete actions.value[k]
                 })
             } else {
@@ -683,7 +705,7 @@ export default function useEventGraph({
 
                 if (Object.keys(actions.value).length) {
                     Object.entries(actions.value).forEach(([k, v]) => {
-                        if (k === 'selectPort') selectPort(v)
+                        if (k === 'selectPort') selectPort(v.portId)
                         delete actions.value[k]
                     })
                 } else {
@@ -725,12 +747,6 @@ export default function useEventGraph({
                 if (!itExists) nodesTranslated.value[node.id].push(ntt)
             } else nodesTranslated.value[node.id] = [ntt]
         })
-    }
-
-    // translateNodesToDefault
-    const translateNodesToDefault = (node) => {
-        const { nttXPos, newY } = getNodeToTranslatePos(node)
-        node.position(nttXPos, newY)
     }
 
     // fetchPortLineage
@@ -1054,7 +1070,7 @@ export default function useEventGraph({
         let node = n || ''
         let nodeId = n ? n.id : ''
 
-        if (!n) {
+        if (!n && e) {
             e.stopPropagation()
 
             caretEle = e.target
@@ -1083,7 +1099,7 @@ export default function useEventGraph({
 
             controlCaretIcon(nodeId, caretEle)
             removePorts(node)
-            resetTranslatedNodes(node)
+            resetNodeTranslatedNodes(node)
         } else {
             controlCaretIcon(nodeId, caretEle)
             fetchNodeColumns(node)
@@ -1137,12 +1153,13 @@ export default function useEventGraph({
         if (selectedNodeId.value) controlSelectedNodeAction(null, e)
         else if (selectedNodeEdgeId.value)
             controlSelectedNodeEdgeAction(null, e)
-        else {
+        else if (selectedPortId.value) {
+            controlSelectedPortAction(null, e)
+        } else {
             const gEle = getEventPath(e).find((x) =>
                 x.getAttribute('data-cell-id')
             )
             const nodeId = gEle.getAttribute('data-cell-id')
-
             resetState(true)
             controlHoPaCTALoader(nodeId, true)
             fetchNodeLineage(nodeId)
@@ -1198,7 +1215,7 @@ export default function useEventGraph({
             const caretElement = getNodeCaretElement(node.id)
             controlCaretIcon(node.id, caretElement)
             node.removePorts(ports)
-            resetTranslatedNodes(node)
+            resetNodeTranslatedNodes(node)
             return
         }
 
@@ -1363,6 +1380,19 @@ export default function useEventGraph({
             translateSubsequentNodes(parentNode)
 
             selectPort(_selectedPortId)
+        } else {
+            const gEle = getEventPath(e).find((x) =>
+                x.getAttribute('data-cell-id')
+            )
+            const nodeId = gEle.getAttribute('data-cell-id')
+            const newAction = {
+                selectPort: { nodeId, portId: _selectedPortId },
+            }
+            actions.value = { ...actions.value, ...newAction }
+
+            resetState(true)
+            controlHoPaCTALoader(nodeId, true)
+            fetchNodeLineage(nodeId)
         }
     }
 
@@ -1403,7 +1433,7 @@ export default function useEventGraph({
             const portEdges = graph.value
                 .getEdges()
                 .filter((x) => x.id.includes('port'))
-            portEdges.find((x) => {
+            portEdges.forEach((x) => {
                 const [sourceId, targetId] = x.id.split('/')[2].split('@')
 
                 if (sourceId === selectedPortId.value && targetId === nodeId)
@@ -1428,15 +1458,7 @@ export default function useEventGraph({
             }
 
             removePorts(x6Node, true)
-
-            const nodesToTranslateToDefault =
-                nodesTranslated.value[nodeId] || []
-
-            if (nodesToTranslateToDefault.length) {
-                nodesToTranslateToDefault.forEach((ntttd) => {
-                    translateNodesToDefault(ntttd)
-                })
-            }
+            resetNodeTranslatedNodes(x6Node)
         })
 
         resetPortStyle(parentNode, selectedPortId.value)
@@ -1490,23 +1512,15 @@ export default function useEventGraph({
             _expandedNodes.forEach((nodeId) => {
                 const x6Node = getX6Node(nodeId)
                 removePorts(x6Node, true)
-
-                const nodesToTranslateToDefault =
-                    nodesTranslated.value[nodeId] || []
-
-                if (nodesToTranslateToDefault.length) {
-                    nodesToTranslateToDefault.forEach((ntttd) => {
-                        translateNodesToDefault(ntttd)
-                    })
-                }
+                resetNodeTranslatedNodes(x6Node)
             })
             lineageStore.setNodesColumnList(null)
             lineageStore.setPortLineage(null)
         }
     }
 
-    //  resetTranslatedNodes
-    const resetTranslatedNodes = (x) => {
+    //  resetNodeTranslatedNodes
+    const resetNodeTranslatedNodes = (x) => {
         if (!nodesTranslated.value?.[x.id]) return
         const nodesToTranslate = nodesTranslated.value?.[x.id] || []
         nodesToTranslate.forEach((nodeToTranslate) => {

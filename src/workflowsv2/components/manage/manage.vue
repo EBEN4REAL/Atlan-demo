@@ -77,7 +77,7 @@
 
 <script lang="ts">
     import { useDebounceFn, watchOnce, whenever } from '@vueuse/core'
-    import { computed, defineComponent, ref } from 'vue'
+    import { computed, defineComponent, provide, ref } from 'vue'
 
     import { capitalizeFirstLetter } from '~/utils/string'
 
@@ -153,6 +153,7 @@
                 quickChange: quickChangeRun,
                 runByWorkflowMap,
                 resetState: resetRunState,
+                isLoading: isRunLoading,
             } = useRunDiscoverList({
                 facets: runFacets,
                 limit: ref(0),
@@ -195,6 +196,9 @@
                 quickChange()
             }
 
+            provide('isRunLoading', isRunLoading)
+
+            ///////////////////////////////////////////////////////////////////////////////////
             /**  Dynamically inject the workflow type filter after getting response from API */
 
             // Existing filters
@@ -217,6 +221,7 @@
                             })`,
                         }))
             })
+            ///////////////////////////////////////////////////////////////////////////////////
 
             return {
                 list,

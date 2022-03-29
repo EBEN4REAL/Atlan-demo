@@ -39,12 +39,12 @@
         </div>
         <a-divider class="my-2" />
         <RunIndicators :workflow="wfName(workflow)" :runs="runs" />
-        <LastRunSummary :runs="runs" class="mt-2" />
+        <LastRunSummary :runs="runs" :loading="isRunLoading" class="mt-1" />
     </div>
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, toRefs } from 'vue'
+    import { computed, defineComponent, inject, toRefs } from 'vue'
     import CreateUpdateInfo from '@/common/info/createUpdateInfo.vue'
     import RunIndicators from '~/workflowsv2/components/common/runIndicators.vue'
     import LastRunSummary from '~/workflowsv2/components/common/lastRunSummary.vue'
@@ -73,6 +73,9 @@
         emits: [],
         setup(props) {
             const { workflow } = toRefs(props)
+
+            const isRunLoading = inject<boolean>('isRunLoading')
+
             const workflowStore = useWorkflowStore()
 
             const {
@@ -106,6 +109,7 @@
                 isCronWorkflow,
                 cronString,
                 creatorUsername,
+                isRunLoading,
             }
         },
     })

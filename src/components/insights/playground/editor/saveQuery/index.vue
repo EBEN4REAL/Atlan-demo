@@ -1,20 +1,21 @@
 <template>
     <AtlanModal
-        :modal-visible="showSaveQueryModal"
         v-model:title="title"
         v-model:description="description"
-        :title-placeholder="`Name`"
-        description-placeholder="Add Description"
-        :descriptionWordLimit="140"
+        :modal-visible="showSaveQueryModal"
+        :title-placeholder="`Query name`"
+        description-placeholder="Query description..."
+        :description-word-limit="140"
         :show-description-limit="true"
-        :destroyOnClose="true"
+        :destroy-on-close="true"
     >
         <template #leftHeader>
             <div class="flex items-center mr-1 cursor-pointer">
                 <QueryFolderSelector
                     :connector="currentConnector"
-                    :savedQueryType="queryType"
-                    :parentFolder="parentFolder"
+                    :saved-query-type="queryType"
+                    :parent-folder="parentFolder"
+                    class=""
                     @folderChange="setSelectedFolder"
                 />
             </div>
@@ -22,7 +23,7 @@
 
         <template #rightHeader>
             <div class="text-xs">
-                <a-dropdown
+                <!-- <a-dropdown
                     placement="bottomLeft"
                     :trigger="['click']"
                     @click.stop="() => {}"
@@ -43,34 +44,86 @@
                                 </div>
                             </a-menu-item>
                         </a-menu>
-                    </template>
-                    <div class="flex flex-row-reverse" style="width: 140px">
-                        <AtlanIcon
+                    </template> -->
+                <div class="flex flex-row-reverse" style="width: 140px">
+                    <!-- <AtlanIcon
                             icon="CaretDown"
                             class="w-4 h-4 ml-1"
-                        ></AtlanIcon>
-                        <StatusBadge
+                        ></AtlanIcon> -->
+                    <!-- <StatusBadge
                             :status-id="currentStatus"
                             :show-chip-style-status="false"
                             :show-no-status="true"
                             :show-label="true"
                             :is-tree="false"
                             class="p-0 cursor-pointer"
-                        ></StatusBadge>
-                    </div>
-                </a-dropdown>
+                        ></StatusBadge> -->
+                </div>
+                <!-- </a-dropdown> -->
             </div>
         </template>
 
         <template #footerLeft>
-            <div class="flex items-center cursor-pointer gap-x-1">
+            <div class="flex items-center cursor-pointer gap-x-2">
                 <!-- <AddClassification
                     @save-classifications="saveClassifications"
                     :selectedClassifications="selectedClassifications"
                 /> -->
+                <a-dropdown
+                    placement="bottomLeft"
+                    :trigger="['click']"
+                    @click.stop="() => {}"
+                >
+                    <template #overlay>
+                        <a-menu class="w-48">
+                            <a-menu-item
+                                v-for="(item, index) in List"
+                                :key="item.id"
+                                class="w-full p-2"
+                                :class="[
+                                    currentStatus === item.id
+                                        ? 'bg-primary-light'
+                                        : '',
+                                    index === List.length - 1
+                                        ? 'rounded-b-lg'
+                                        : '',
+                                ]"
+                                @click="handleMenuClick(item)"
+                            >
+                                <div class="flex justify-between w-full">
+                                    <div class="flex justify-between w-full">
+                                        <div
+                                            class="flex items-center w-full space-x-2"
+                                        >
+                                            <component
+                                                :is="item.icon"
+                                                class="w-auto h-4 ml-1 mr-2 pushtop"
+                                            />
+                                            {{ item.label }}
+                                        </div>
+                                        <AtlanIcon
+                                            v-if="currentStatus === item.id"
+                                            icon="Check"
+                                            class="w-4 h-4 pr-4 mb-0.5 text-primary"
+                                        />
+                                    </div>
+                                </div>
+                            </a-menu-item>
+                        </a-menu>
+                    </template>
+                    <StatusBadge
+                        :status-id="currentStatus"
+                        :show-chip-style-status="false"
+                        :show-no-status="true"
+                        :show-label="true"
+                        :is-tree="false"
+                        class="px-2 py-1 leading-5 border rounded cursor-pointer btn-shadow min-w-max"
+                    ></StatusBadge>
+                </a-dropdown>
                 <AddTerms
+                    :selected-terms="selectedTerms"
+                    class="px-2 py-1 leading-5 border rounded cursor-pointer"
                     @save-terms="saveTerms"
-                    :selectedTerms="selectedTerms"
                 />
             </div>
         </template>
@@ -102,7 +155,7 @@
                         class="w-4 h-4 text-white animate-spin"
                     ></AtlanIcon>
 
-                    <span>Save</span>
+                    <span>Save Query</span>
                 </div>
             </AtlanBtn>
         </template>
@@ -125,12 +178,12 @@
         toRaw,
     } from 'vue'
     import StatusBadge from '@common/badge/status/index.vue'
+    import { message } from 'ant-design-vue'
     import { List } from '~/constant/status'
     import QueryFolderSelector from '@/insights/explorers/queries/queryFolderSelector.vue'
     import { Folder } from '~/types/insights/savedQuery.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import AtlanBtn from '~/components/UI/button.vue'
-    import { message } from 'ant-design-vue'
     import AtlanModal from '~/components/common/modal/modal.vue'
     import AddTerms from './addTerms.vue'
     import AddClassification from './addClassification.vue'
@@ -219,8 +272,8 @@
             }
 
             let assetTerms = []
-            let selectedTerms = ref([])
-            let selectedClassifications = ref([])
+            const selectedTerms = ref([])
+            const selectedClassifications = ref([])
             let assetClassification = []
 
             const saveTerms = (terms: any) => {
@@ -346,7 +399,10 @@
         border-radius: 4 px !important;
     }
 </style>
-<style lang="less" module>
+<style lang="less" scoped>
+    .btn-shadow {
+        box-shadow: 0px 1px 0px 0px rgba(0, 0, 0, 0.05);
+    }
     // .input {
     //     :global(.ant-input:focus
     //             .ant-input:hover

@@ -25,7 +25,7 @@
                             sharedCollections?.length +
                             privateCollections?.length
                         } Collections`"
-                        :allowClear="true"
+                        :allow-clear="true"
                     >
                         <template #prefix>
                             <AtlanIcon icon="Search" color="#6F7590" />
@@ -39,21 +39,21 @@
                         style="height: 242px"
                     >
                         <div
-                            v-if="
-                                [...sharedCollections, ...privateCollections]
-                                    ?.length !== 0
-                            "
                             v-for="collection in [
                                 ...sharedCollections,
                                 ...privateCollections,
                             ]"
+                            v-if="
+                                [...sharedCollections, ...privateCollections]
+                                    ?.length !== 0
+                            "
                             :key="collection.guid"
                         >
                             <CollectionItem
+                                v-model:collectionModalVisible="isVisible"
                                 :item="collection"
                                 :handle-change="handleChange"
-                                v-model:collectionModalVisible="isVisible"
-                                :selectedCollection="selectedCollection"
+                                :selected-collection="selectedCollection"
                             />
                         </div>
                         <div
@@ -72,9 +72,9 @@
                 </div>
 
                 <div
+                    v-auth="[map.CREATE_COLLECTION]"
                     class="flex flex-row-reverse items-center pr-4 mt-auto border-t border-gray-300 cursor-pointer h-9"
                     @click="createCollectionToggle"
-                    v-auth="[map.CREATE_COLLECTION]"
                 >
                     <AtlanIcon
                         icon="ArrowRight"
@@ -88,11 +88,23 @@
         </template>
         <div class="flex items-center w-full cursor-pointer hover:text-primary">
             <div class="flex items-center w-full">
-                <span class="mr-2 -mt-2 w-7 h-7" style="font-size: 28px">{{
-                    selectedCollection?.attributes?.icon
-                        ? selectedCollection?.attributes?.icon
-                        : '🗃'
-                }}</span>
+                <span
+                    v-if="selectedCollection?.attributes?.icon"
+                    class="mr-2 -mt-2 w-7 h-7"
+                >
+                    <span style="font-size: 28px">
+                        {{
+                            selectedCollection?.attributes?.icon
+                                ? selectedCollection?.attributes?.icon
+                                : '🗃'
+                        }}</span
+                    >
+                </span>
+                <AtlanIcon
+                    v-else
+                    icon="CollectionIconSmall"
+                    class="w-4 h-6 my-auto mr-2 parent-ellipsis-container-extension"
+                ></AtlanIcon>
 
                 <div class="flex w-full bg">
                     <div class="flex flex-col w-full">
@@ -150,8 +162,8 @@
 
     export default defineComponent({
         name: 'CollectionSelector',
-        emits: ['update:data', 'toggleCollectionModal'],
         components: { AtlanIcon, SearchAndFilter, CollectionItem, Tooltip },
+        emits: ['update:data', 'toggleCollectionModal'],
         setup(props, { emit }) {
             // store
             const authStore = useAuthStore()
@@ -165,7 +177,7 @@
             const queryCollectionsLoading: ComputedRef<boolean> = inject(
                 'queryCollectionsLoading'
             )
-            const username = authStore.username
+            const { username } = authStore
 
             const activeInlineTab = inject(
                 'activeInlineTab'

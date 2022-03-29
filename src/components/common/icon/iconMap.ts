@@ -1,3 +1,4 @@
+import Time from '~/assets/images/icons/time.svg'
 import BookmarkFilled from '~/assets/images/icons/bookmark-filled.svg'
 import Bookmark from '~/assets/images/icons/bookmark.svg'
 import BookmarkOutlined from '~/assets/images/icons/bookmark-outline.svg'
@@ -95,6 +96,7 @@ import KebabMenuHorizontal from '~/assets/images/icons/kebab-menu.svg'
 import Overview from '~/assets/images/icons/overview.svg'
 import OverviewActive from '~/assets/images/icons/overview_active.svg'
 import Lineage from '~/assets/images/icons/lineage.svg'
+import LineageSmall from '~/assets/images/icons/lineage-small.svg'
 import Activity from '~/assets/images/icons/activity.svg'
 import Columns from '~/assets/images/icons/columns.svg'
 import Relation from '~/assets/images/icons/relation.svg'
@@ -149,6 +151,7 @@ import OutputpaneTrigger from '~/assets/images/icons/output-pane-trigger.svg'
 import OutputpaneTriggerFilled from '~/assets/images/icons/output-pane-trigger-filled.svg'
 
 import RunSuccess from '~/assets/images/icons/run-success.svg'
+import RunProgress from '~/assets/images/icons/run-progress.svg'
 import RunFailed from '~/assets/images/icons/run-failed.svg'
 import WorkflowsActive from '~/assets/images/icons/workflows_active.svg'
 import WorkflowsInactive from '~/assets/images/icons/workflows_inactive.svg'
@@ -179,6 +182,9 @@ import queryErorrIllus from '~/assets/images/icons/queryError.svg'
 import NoSavedQueriesAll from '~/assets/images/icons/saved-queries-all.svg'
 import EmptyQueriesTab from '~/assets/images/illustrations/empty_queries_tab.svg'
 import Slack from '~/assets/images/admin/integrations/slack.svg'
+import Jira from '~/assets/images/admin/integrations/jira.svg'
+import EmptyResultJira from '~/assets/images/admin/integrations/emptyResultJira.svg'
+import EmptyJira from '~/assets/images/admin/integrations/emptyJira.svg'
 import Teams from '~/assets/images/admin/integrations/teams.svg'
 import ExplorerTrigger from '~/assets/images/icons/explorer-trigger.svg'
 import ExplorerTriggerFilled from '~/assets/images/icons/explorer-trigger-filled.svg'
@@ -261,10 +267,16 @@ import GoogleDoc from '~/assets/images/readme/googleDocs.svg'
 import GoogleSheet from '~/assets/images/readme/googleSheets.svg'
 import GoogleSlide from '~/assets/images/readme/googleSlides.svg'
 import GoogleDrive from '~/assets/images/readme/googleDrive.svg'
+import GoogleDataStudio from '~/assets/images/readme/googleDataStudio.svg'
 import Confluence from '~/assets/images/readme/confluence.svg'
 import Miro from '~/assets/images/readme/miro.svg'
 import Figma from '~/assets/images/readme/Figma.svg'
 import Lucid from '~/assets/images/readme/lucid.svg'
+import Mention from '~/assets/images/readme/mention.svg'
+import DBDiagram from '~/assets/images/readme/dbdiagram.svg'
+import MicrosoftWord from '~/assets/images/readme/microsoftWord.svg'
+import MicrosoftExcel from '~/assets/images/readme/microsoftExcel.svg'
+import MicrosoftPowerpoint from '~/assets/images/readme/microsoftPowerpoint.svg'
 
 import Running from '~/assets/images/icons/running.svg'
 import ExclaimCircle from '~/assets/images/icons/exclaimCircle.svg'
@@ -423,6 +435,7 @@ import RunningQuery from '~/assets/images/icons/tabs/Running.svg'
 import FailedQuery from '~/assets/images/icons/tabs/Error.svg'
 import SuccessQuery from '~/assets/images/icons/tabs/success-check.svg'
 import QuestionRound from '~/assets/images/icons/question-round.svg'
+import QuestionRoundSmall from '~/assets/images/icons/question-round-small.svg'
 import Documentation from '~/assets/images/icons/documentation.svg'
 import Logout from '~/assets/images/icons/logout.svg'
 import TrendUp from '~/assets/images/icons/trendUp.svg'
@@ -432,16 +445,23 @@ import ThreeDotsAlt from '~/assets/images/icons/3-dots-alt.svg'
 import NoProperty from '~/assets/images/admin/customMetadata/empty-property.svg'
 import TrashAlt from '~/assets/images/icons/Trash-alt.svg'
 
+import Chat from '~/assets/images/icons/chat.svg'
+import NotificationNoDot from '~/assets/images/icons/notification-no-dot.svg'
+
 export default {
+    EmptyJira,
     TrashAlt,
     NoProperty,
     ThreeDotsAlt,
     Resources2,
     RunningQuery,
     FailedQuery,
+    Chat,
+    NotificationNoDot,
     SuccessQuery,
     IntegrationsActive,
     Integrations,
+    Jira,
     SlackToken,
     SafariLock,
     Gear,
@@ -513,6 +533,7 @@ export default {
     AddQuery,
     RunHistory,
     RunSuccess,
+    RunProgress,
     RunFailed,
     Metadata,
     ColumnGray,
@@ -528,6 +549,7 @@ export default {
     Overview,
     Pin,
     Lineage,
+    LineageSmall,
     Activity,
     Columns,
     BookmarkFilled,
@@ -542,6 +564,7 @@ export default {
     ChevronUp,
     AtlanIcon,
     CallIcon,
+    EmptyResultJira,
     FeedbackIcon,
     AdminCenterIcon,
     InsightsIcon,
@@ -713,10 +736,16 @@ export default {
     GoogleSheet,
     GoogleSlide,
     GoogleDrive,
+    GoogleDataStudio,
     Confluence,
     Figma,
     Lucid,
+    Mention,
     Miro,
+    DBDiagram,
+    MicrosoftWord,
+    MicrosoftExcel,
+    MicrosoftPowerpoint,
     Running,
     Refresh,
     ErrorLogs,
@@ -820,6 +849,7 @@ export default {
     Message,
     MessageSuccess,
     CrossCircle,
+    Time,
     MessageCross,
     AddColumn,
     QueryTime,
@@ -832,6 +862,7 @@ export default {
     EmptyRequest,
     PlusWhite,
     QuestionRound,
+    QuestionRoundSmall,
     Documentation,
     Logout,
     ExplorerTriggerFilled,
@@ -846,4 +877,5 @@ export default {
     Mysql: MySQL,
     NoAllow,
     Glue,
+    Bigquery: BigQuery
 }

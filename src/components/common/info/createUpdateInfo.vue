@@ -2,26 +2,34 @@
     <p class="mb-0 text-sm text-gray-500" style="word-break: break-word">
         <span v-if="updatedBy || updatedAtString" class="space-x-1">
             <span v-if="updatedBy">
-                Last updated by
-                <template v-if="updatedBy === 'service-account-atlan-argo'">
-                    <span class="mr-1">
-                        <AtlanIcon icon="Atlan" class="rounded-full" />
-                        Atlan</span
-                    >
-                </template>
-                <span
-                    v-else
-                    class="cursor-pointer hover:underline"
-                    @click="() => handleClickUser(updatedBy)"
+                Last updated
+                <template
+                    v-if="updatedBy?.startsWith('service-account-apikey-')"
                 >
-                    <img
-                        v-if="showUpdaterImage"
-                        :src="imageUrl(updatedBy)"
-                        class="flex-none inline-block h-4 rounded-full"
-                        @error="showUpdaterImage = false"
-                    />
-                    {{ updatedBy }}
-                </span>
+                    via <AtlanIcon icon="Key" class="h-3" /> API key
+                </template>
+                <template v-else>
+                    by
+                    <template v-if="updatedBy === 'service-account-atlan-argo'">
+                        <span class="mr-1">
+                            <AtlanIcon icon="Atlan" class="rounded-full" />
+                            Atlan</span
+                        >
+                    </template>
+                    <span
+                        v-else
+                        class="cursor-pointer hover:underline"
+                        @click="() => openUserSidebar(updatedBy)"
+                    >
+                        <img
+                            v-if="showUpdaterImage"
+                            :src="imageUrl(updatedBy)"
+                            class="flex-none inline-block h-4 rounded-full"
+                            @error="showUpdaterImage = false"
+                        />
+                        {{ updatedBy }}
+                    </span>
+                </template>
             </span>
             <span v-if="updatedAtString">
                 {{ updatedAtString }}
@@ -30,26 +38,34 @@
         <span class="pl-2 pr-1 text-gray-300">•</span>
         <span v-if="createdAtString || createdBy" class="space-x-1">
             <span v-if="createdBy">
-                Created by
-                <template v-if="createdBy === 'service-account-atlan-argo'">
-                    <span class="mr-1">
-                        <AtlanIcon icon="Atlan" class="rounded-full" />
-                        Atlan</span
-                    >
-                </template>
-                <span
-                    v-else
-                    class="cursor-pointer hover:underline"
-                    @click="() => handleClickUser(createdBy)"
+                Created
+                <template
+                    v-if="createdBy?.startsWith('service-account-apikey-')"
                 >
-                    <img
-                        v-if="showCreatorImage"
-                        :src="imageUrl(createdBy)"
-                        class="flex-none inline-block h-4 rounded-full"
-                        @error="showCreatorImage = false"
-                    />
-                    {{ createdBy }}
-                </span>
+                    via <AtlanIcon icon="Key" class="h-3" /> API key
+                </template>
+                <template v-else>
+                    by
+                    <template v-if="createdBy === 'service-account-atlan-argo'">
+                        <span class="mr-1">
+                            <AtlanIcon icon="Atlan" class="rounded-full" />
+                            Atlan</span
+                        >
+                    </template>
+                    <span
+                        v-else
+                        class="cursor-pointer hover:underline"
+                        @click="() => openUserSidebar(createdBy)"
+                    >
+                        <img
+                            v-if="showCreatorImage"
+                            :src="imageUrl(createdBy)"
+                            class="flex-none inline-block h-4 rounded-full"
+                            @error="showCreatorImage = false"
+                        />
+                        {{ createdBy }}
+                    </span>
+                </template>
             </span>
             <span v-if="createdAtString">
                 {{ createdAtString }}
@@ -89,12 +105,8 @@
         },
         setup(props, context) {
             // user preview drawer
-            const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
-            // ? Methods
-            const handleClickUser = (username: string) => {
-                setUserUniqueAttribute(username, 'username')
-                showUserPreview({ allowed: ['about'] })
-            }
+            const { openUserSidebar } = useUserPreview()
+
             // ? computed
             const updatedAtString = computed(() => {
                 if (props.updatedAt) {
@@ -122,7 +134,7 @@
                 useTimeAgo,
                 updatedAtString,
                 createdAtString,
-                handleClickUser,
+                openUserSidebar,
             }
         },
     })

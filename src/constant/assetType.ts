@@ -270,7 +270,15 @@ export const assetTypeList: {
         categoryType: 'BI',
         image: 'Tableau',
         source: 'Tableau',
-        relationships: ['workbooks', 'site', 'datasources', 'flows', 'metrics'],
+        relationships: [
+            'workbooks',
+            'site',
+            'datasources',
+            'flows',
+            'metrics',
+            'parentProject',
+            'childProjects',
+        ],
         groupOrder: 3,
     },
     {
@@ -295,7 +303,12 @@ export const assetTypeList: {
         source: 'Tableau',
         parents: ['TableauWorkbook'],
         categoryType: 'BI',
-        relationships: ['workbook', 'dashboards'],
+        relationships: [
+            'workbook',
+            'dashboards',
+            'datasourceFields',
+            'calculatedFields',
+        ],
         groupOrder: 3,
     },
     {
@@ -331,7 +344,7 @@ export const assetTypeList: {
         isDiscoverable: true,
         image: 'Tableau',
         source: 'Tableau',
-        relationships: ['datasource'],
+        relationships: ['datasource', 'worksheets'],
         categoryType: 'BI',
         groupOrder: 3,
     },
@@ -344,7 +357,7 @@ export const assetTypeList: {
         source: 'Tableau',
         parents: ['TableauWorkbook'],
         categoryType: 'BI',
-        relationships: ['datasource'],
+        relationships: ['worksheets', 'datasource'],
         groupOrder: 3,
     },
     {

@@ -25,9 +25,13 @@
         </template>
         <component
             :is="icon"
-            class="inline-flex self-center"
+            class="inline-flex"
             style="min-width: 1rem"
-            :class="size == 'small' ? 'w-3 h-3' : 'w-4 h-4'"
+            :class="
+                size == 'small'
+                    ? `${iconClass} w-3 h-3`
+                    : `${iconClass} w-4 h-4`
+            "
         />
     </a-tooltip>
 </template>
@@ -70,6 +74,10 @@
                 type: String,
                 required: false,
                 default: () => 'default',
+            },
+            iconClass: {
+                type: String,
+                default: 'self-center',
             },
         },
         setup(props) {

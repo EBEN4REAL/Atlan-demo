@@ -38,7 +38,8 @@
                     ></AtlanIcon>
                     <span class="text-xs text-gray-500">{{
                         persona.metadataPolicies?.length +
-                        persona.dataPolicies?.length
+                        persona.dataPolicies?.length +
+                        (persona.glossaryPolicies?.length || 0)
                     }}</span>
                 </div>
                 <!-- <div class="mx-2 bg-gray-300 dot"></div>
@@ -53,6 +54,10 @@
                 </div> -->
             </div>
             <div class="flex gap-x-1">
+                <AtlanIcon
+                    v-if="persona.glossaryPolicies?.length || 0"
+                    icon="Glossary"
+                />
                 <img
                     v-for="imgPath in getUniqueTypeIcons().connectors"
                     :key="imgPath"
@@ -73,7 +78,6 @@
 
     export default defineComponent({
         name: 'PersonaCard',
-        emits: ['select'],
         components: { AtlanIcon },
         props: {
             persona: {
@@ -81,6 +85,7 @@
                 required: true,
             },
         },
+        emits: ['select'],
         setup(props) {
             const { persona } = toRefs(props)
             const { getConnectorImageMap } = useAssetInfo()

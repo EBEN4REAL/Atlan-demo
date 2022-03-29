@@ -348,25 +348,38 @@
                                 @click="togglePane"
                                 @mouseout="recordTooltipPresence"
                             >
-                                <div
-                                    class="p-1 rounded cursor-pointer hover:bg-gray-200 group text-primary"
-                                    :class="{
-                                        'bg-primary-light': resultPaneActive,
-                                    }"
-                                    @mouseout="recordTooltipPresence"
+                             <a-tooltip
+                                placement="topRight"
+                                color="#363636"
+                                :mouse-enter-delay="
+                                    lastTooltipPresence !== undefined
+                                        ? 0.1
+                                        : 0.5
+                                "
                                 >
-                                    <AtlanIcon
-                                        :icon="
-                                            resultPaneActive
-                                                ? 'OutputpaneTriggerFilled'
-                                                : 'OutputpaneTrigger'
-                                        "
-                                        class="w-4 h-4 text-gray-500 outline-none"
+                                    <template #title>Toggle output</template>
+                                    <div
+                                        class="p-1 rounded cursor-pointer hover:bg-gray-200 group text-primary"
                                         :class="{
-                                            'stroke-current': !resultPaneActive,
+                                            'bg-primary-light':
+                                                resultPaneActive,
                                         }"
-                                    />
-                                </div>
+                                        @mouseout="recordTooltipPresence"
+                                    >
+                                        <AtlanIcon
+                                            :icon="
+                                                resultPaneActive
+                                                    ? 'OutputpaneTriggerFilled'
+                                                    : 'OutputpaneTrigger'
+                                            "
+                                            class="w-4 h-4 text-gray-500 outline-none"
+                                            :class="{
+                                                'stroke-current':
+                                                    !resultPaneActive,
+                                            }"
+                                        />
+                                    </div>
+                                </a-tooltip>
                             </div>
                             <div
                                 class="ml-2"

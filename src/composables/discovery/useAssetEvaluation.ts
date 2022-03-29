@@ -26,11 +26,24 @@ export default function useAssetEvaluate() {
 
     const getAssetEvaluationsBody = (asset: assetInterface) => {
         if (isGTC(asset)) {
-            return [
+            const { typeName } = asset
+
+            const evaluateObject = [
                 {
                     typeName: asset?.typeName,
                     entityGuid: asset?.guid,
                     action: 'ENTITY_UPDATE',
+                },
+                {
+                    typeName: asset?.typeName,
+                    entityGuid: asset?.guid,
+                    action: 'ENTITY_CREATE',
+                },
+
+                {
+                    typeName: asset?.typeName,
+                    entityGuid: asset?.guid,
+                    action: 'ENTITY_DELETE',
                 },
                 {
                     typeName: asset?.typeName,
@@ -66,7 +79,51 @@ export default function useAssetEvaluate() {
                     entityIdEnd2: '*',
                     entityTypeEnd2: 'Link',
                 },
+                /** create and link term to a glossary check, if
+                 *  check passes for the glossary then
+                 * user can create & link term to any category
+                 * inside this glossary */
+                {
+                    action: 'RELATIONSHIP_ADD',
+                    relationShipTypeName: 'AtlasGlossaryTermAnchor',
+                    entityGuidEnd1: asset?.guid,
+                    entityTypeEnd1: asset?.typeName,
+                    entityIdEnd2: `*${
+                        asset?.attributes?.qualifiedName ??
+                        asset?.qualifiedName ??
+                        asset?.uniqueAttributes?.qualifiedName
+                    }*`,
+                    entityTypeEnd2: 'AtlasGlossaryTerm',
+                },
+                /** create and link category to a glossary check, if
+                 *  check passes for the glossary then
+                 * user can create & link category to any category
+                 * inside this glossary */
+                {
+                    action: 'RELATIONSHIP_ADD',
+                    relationShipTypeName: 'AtlasGlossaryCategoryAnchor',
+                    entityGuidEnd1: asset?.guid,
+                    entityTypeEnd1: asset?.typeName,
+                    entityIdEnd2: `*${
+                        asset?.attributes?.qualifiedName ??
+                        asset?.qualifiedName ??
+                        asset?.uniqueAttributes?.qualifiedName
+                    }*`,
+                    entityTypeEnd2: 'AtlasGlossaryCategory',
+                },
             ]
+
+            if (typeName === 'AtlasGlossaryTerm')
+                evaluateObject.push({
+                    action: 'RELATIONSHIP_ADD',
+                    relationShipTypeName: 'AtlasGlossarySemanticAssignment',
+                    entityGuidEnd1: asset?.guid,
+                    entityTypeEnd1: 'AtlasGlossaryTerm',
+                    entityIdEnd2: '*',
+                    entityTypeEnd2: '*',
+                })
+
+            return evaluateObject
         }
         return [
             {

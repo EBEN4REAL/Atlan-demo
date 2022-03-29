@@ -101,6 +101,14 @@
                                 "
                                 >(custom)</span
                             >
+                            <span
+                                v-if="
+                                    ['TableauDatasource'].includes(
+                                        item.typeName
+                                    ) && isPublished(item)
+                                "
+                                >(Published)</span
+                            >
                         </div>
                         <div
                             v-else
@@ -333,22 +341,28 @@
                 <template v-if="!disableSlackAsk">
                     <SlackAskButton :asset="item" />
                 </template>
+                <!--  3 dot menus for GTC -->
                 <AssetMenu
-                    @edit="handleEdit"
+                    :delete-permission="
+                        selectedAssetUpdatePermission(
+                            item,
+                            false,
+                            'ENTITY_DELETE'
+                        )
+                    "
                     :asset="item"
                     :edit-permission="selectedAssetUpdatePermission(item)"
+                    @edit="handleEdit"
                 >
                     <a-button
                         v-if="
                             isGTC(item) &&
-                            checkAccess(
-                                [
-                                    map.DELETE_TERM,
-                                    map.DELETE_GLOSSARY,
-                                    map.DELETE_CATEGORY,
-                                ],
-                                'or'
-                            )
+                            (selectedAssetUpdatePermission(item) ||
+                                selectedAssetUpdatePermission(
+                                    item,
+                                    false,
+                                    'ENTITY_DELETE'
+                                ))
                         "
                         block
                         class="flex items-center justify-center p-2"
@@ -400,6 +414,9 @@
     import Name from '@/glossary/common/name.vue'
     import SlackAskButton from '~/components/common/assets/misc/slackAskButton.vue'
     import { disableSlackAsk } from '~/composables/integrations/slack/useAskAQuestion'
+    import useGTCPermissions, {
+        fetchGlossaryPermission,
+    } from '~/composables/glossary/useGTCPermissions'
 
     export default defineComponent({
         name: 'AssetHeader',
@@ -459,6 +476,7 @@
                 webURL,
                 sourceURL,
                 isCustom,
+                isPublished,
                 assetPermission,
             } = useAssetInfo()
 
@@ -531,7 +549,31 @@
                 console.log(val)
             }
 
+            // * permissions for glossary to check against the glossary and not category or term,
+            // * there providing the anchor (i.e glossary) to the fetchGlossaryPermission fn
+            // ! should we use entity update and remove permission of the term or category itself?
+            // const glossary = computed(() => {
+            //     if (item.value.typeName === 'AtlasGlossary') return item.value
+            //     if (
+            //         ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'].includes(
+            //             item.value.typeName
+            //         )
+            //     )
+            //         return item.value.attributes.anchor
+            //     return null
+            // })
+            // const {
+            //     entityUpdatePermission: glossaryUpdatePermission,
+            //     entityDeletePermission: glossaryDeletePermission,
+            //     fetch,
+            // } = fetchGlossaryPermission(glossary)
+            //  ANCHOR
+            // if (glossary.value) fetch()
+
             return {
+                // glossary,
+                // glossaryUpdatePermission,
+                // glossaryDeletePermission,
                 disableSlackAsk,
                 title,
                 getConnectorImage,
@@ -576,6 +618,7 @@
                 isCustom,
                 handleNameUpdate,
                 entityTitle,
+                isPublished,
             }
         },
     })

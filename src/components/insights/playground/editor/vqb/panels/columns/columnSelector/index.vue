@@ -144,29 +144,6 @@
                                 placement="left"
                                 :mouseEnterDelay="1"
                             >
-                                <template #button>
-                                    <AtlanBtn
-                                        class="flex-none px-0"
-                                        size="sm"
-                                        color="minimal"
-                                        padding="compact"
-                                        style="height: fit-content"
-                                        @mousedown.stop="
-                                            (e) => actionClick(e, item.item)
-                                        "
-                                    >
-                                        <span
-                                            class="cursor-pointer text-primary whitespace-nowrap"
-                                        >
-                                            Show Preview</span
-                                        >
-                                        <AtlanIcon
-                                            icon="ArrowRight"
-                                            class="text-primary"
-                                        />
-                                    </AtlanBtn>
-                                </template>
-
                                 <a-checkbox
                                     :checked="map[item.value]"
                                     @mousedown.stop="cancelEventBlur"

@@ -202,6 +202,14 @@
                                     "
                                     >(custom)</span
                                 >
+                                <span
+                                    v-if="
+                                        ['TableauDatasource'].includes(
+                                            item.typeName
+                                        ) && isPublished(item)
+                                    "
+                                    >(Published)</span
+                                >
                             </div>
                         </div>
 
@@ -1301,6 +1309,7 @@
                 isCustom,
                 announcementType,
                 assetTypeImage,
+                isPublished,
             } = useAssetInfo()
 
             const icon = computed(() => {
@@ -1470,6 +1479,7 @@
                 announcementType,
                 mouseEnterDelay,
                 enteredPill,
+                isPublished,
             }
         },
     })

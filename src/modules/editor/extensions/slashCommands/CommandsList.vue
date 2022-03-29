@@ -3,7 +3,7 @@
         v-if="items.length"
         id="slash-command-menu"
         ref="menuRef"
-        class="flex flex-col py-1 bg-white border rounded shadow-xl border-gray-light max-h-72 overflow-y-auto w-44"
+        class="flex flex-col py-1 bg-white border rounded shadow-xl border-gray-light max-h-72 overflow-y-auto w-56"
     >
         <ul class="h-full">
             <li

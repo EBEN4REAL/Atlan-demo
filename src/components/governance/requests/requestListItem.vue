@@ -12,8 +12,14 @@
         <div class="flex items-center col-span-4 overflow-hidden">
             <!-- TODO: Uncomment for bulk selection -->
             <!-- <a-checkbox :checked="selected" class="mr-4" /> -->
-            <Popover :item="item">
-                <div
+            <!-- <Popover
+                :item="item"
+                :show-preview-link="false"
+                @previewAsset="handleShowAssetSidebar(item.guid)"
+            >
+              
+            </Popover> -->
+              <div
                     class="cursor-pointer flex items-center"
                     @mouseenter="$emit('mouseEnterAsset')"
                 >
@@ -68,7 +74,6 @@
                         }}
                     </span>
                 </div>
-            </Popover>
         </div>
         <div class="flex items-center col-span-3 ml-24">
             <ClassificationPiece
@@ -263,6 +268,12 @@
                 </div>
             </div>
         </div>
+        <AssetDrawer
+            key="asset-sidebar-asset-popover"
+            :guid="assetGuid"
+            :show-drawer="showAssetSidebar"
+            @closeDrawer="handleCloseAssetSidebar"
+        />
     </div>
 </template>
 
@@ -304,6 +315,7 @@
         declineRequest,
     } from '~/composables/requests/useRequests'
     import { primaryText, requestTypeIcon } from './requestType'
+    import AssetDrawer from '@/common/assets/preview/drawer.vue'
 
     export default defineComponent({
         name: 'RequestListItem',
@@ -320,6 +332,7 @@
             Avatar,
             IconStatus,
             Popover,
+            AssetDrawer,
         },
         props: {
             request: {
@@ -351,11 +364,20 @@
                 isApprovalLoading: false,
                 message: '',
             })
-
             function raiseErrorMessage(msg?: string) {
                 message.error(msg || 'Request modification failed, try again')
             }
 
+            const showAssetSidebar = ref(false)
+            const assetGuid = ref('false')
+            const handleCloseAssetSidebar = () => {
+                assetGuid.value = ''
+                showAssetSidebar.value = false
+            }
+            const handleShowAssetSidebar = (guid) => {
+                assetGuid.value = guid
+                showAssetSidebar.value = true
+            }
             async function handleApproval(messageProp = '') {
                 state.isApprovalLoading = true
                 try {
@@ -494,6 +516,10 @@
                 timeUpdated,
                 createdAt,
                 updatedAt,
+                showAssetSidebar,
+                assetGuid,
+                handleCloseAssetSidebar,
+                handleShowAssetSidebar,
                 glossaryLabel,
                 capitalizeFirstLetter,
             }

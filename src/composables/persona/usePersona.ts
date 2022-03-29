@@ -27,6 +27,7 @@ export default function usePersona(immediate = true) {
                 'attributes',
                 'glossaryPolicies'
             ],
+            apikeys: true
         },
         {
             immediate,

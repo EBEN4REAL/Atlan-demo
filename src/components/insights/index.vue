@@ -1,7 +1,7 @@
 <template>
     <div id="fullScreenId" class="flex h-full overflow-x-hidden">
         <!--Sidebar navigation pane start -->
-        <div class="bg-white border-r sidebar-nav">
+        <div class="border-r border-new-gray-300 bg-new-gray-100 sidebar-nav">
             <template v-for="tab in tabsList" :key="tab.id">
                 <a-tooltip placement="right" color="#363636">
                     <template #title> {{ tab.title }} </template>
@@ -763,13 +763,15 @@
 <style lang="less" module>
     .splitpane_insights {
         :global(.splitpanes__splitter) {
-            background-color: #fff;
+            @apply bg-new-gray-100;
+            // background-color: #fff;
             -webkit-box-sizing: border-box;
             box-sizing: border-box;
             position: relative;
             -ms-flex-negative: 0;
             z-index: 3 !important;
             flex-shrink: 0;
+            @apply border-new-gray-300;
         }
         :global(.splitpanes--vertical .splitpanes__pane) {
             transition: none;
@@ -845,7 +847,7 @@
         width: calc(100vw - 3.75rem - 60px);
     }
     .explorer_splitpane {
-        background-color: white;
+        @apply bg-new-gray-100;
     }
     .sidebar-nav-icon {
         padding-top: 16px;

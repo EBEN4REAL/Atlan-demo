@@ -1,6 +1,6 @@
 <template>
     <div
-        class="w-full pt-2 pb-2 pl-2 pr-2 rounded dropdown-schema-explorer hover:bg-gray-200"
+        class="w-full pt-2 pb-2 pl-2 pr-2 rounded dropdown-schema-explorer hover:bg-new-gray-200"
     >
         <!-- New Design using Popovers instead of menu items -->
         <a-dropdown

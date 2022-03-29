@@ -37,11 +37,15 @@
                                     @click.stop="() => {}"
                                     @visibleChange="addBackground"
                                 >
-                                    <div v-if="hasWritePermission" class="px-2">
-                                        <AtlanIcon
-                                            icon="KebabMenuHorizontal"
-                                            class="w-4 h-4 my-auto"
-                                        ></AtlanIcon>
+                                    <div class="px-2" v-if="hasWritePermission">
+                                        <div
+                                            class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                        >
+                                            <AtlanIcon
+                                                icon="KebabMenuHorizontal"
+                                                class="w-4 h-4 my-auto"
+                                            ></AtlanIcon>
+                                        </div>
                                     </div>
                                     <template #overlay>
                                         <a-menu>
@@ -130,11 +134,11 @@
                             >
 
                             <div
-                                class="absolute flex items-center h-full text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
+                                class="absolute flex items-center text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
                                 :class="[
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
-                                        : 'bg-gradient-to-l from-gray-light via-gray-light',
+                                        : 'bg-gradient-to-l from-tree-light-color via-tree-light-color',
                                     hasWritePermission ? 'right-8' : 'right-0',
                                 ]"
                             >
@@ -145,22 +149,19 @@
                                 >
                                     <a-tooltip color="#363636" placement="top">
                                         <template #title>Run Query</template>
-
-                                        <AtlanIcon
-                                            icon="Play"
-                                            :class="
-                                                item?.selected
-                                                    ? 'tree-light-color'
-                                                    : ''
-                                            "
-                                            class="w-4 h-4 my-auto outline-none"
-                                        ></AtlanIcon>
+                                        <div
+                                            class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                        >
+                                            <AtlanIcon
+                                                icon="Play"
+                                                class="w-4 h-4 my-auto outline-none"
+                                            ></AtlanIcon>
+                                        </div>
                                     </a-tooltip>
                                 </div>
 
                                 <div
-                                    class="pl-2"
-                                    :data-test-id="'insert-in-editor'"
+                                    class="pl-1"
                                     @click.stop="
                                         () => actionClick('info', item)
                                     "
@@ -169,15 +170,14 @@
                                         <template #title
                                             >Open preview sidebar</template
                                         >
-                                        <AtlanIcon
-                                            icon="SidebarSwitch"
-                                            :class="
-                                                item?.selected
-                                                    ? 'tree-light-color'
-                                                    : ''
-                                            "
-                                            class="w-4 h-4 my-auto outline-none"
-                                        ></AtlanIcon>
+                                        <div
+                                            class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                        >
+                                            <AtlanIcon
+                                                icon="SidebarSwitch"
+                                                class="w-4 h-4 my-auto outline-none"
+                                            ></AtlanIcon>
+                                        </div>
                                     </a-tooltip>
                                 </div>
                             </div>
@@ -190,11 +190,15 @@
                                     @click.stop="() => {}"
                                     @visibleChange="addBackground"
                                 >
-                                    <div v-if="hasWritePermission" class="pl-2">
-                                        <AtlanIcon
-                                            icon="KebabMenuHorizontal"
-                                            class="w-4 h-4 my-auto"
-                                        ></AtlanIcon>
+                                    <div class="pl-2" v-if="hasWritePermission">
+                                        <div
+                                            class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                        >
+                                            <AtlanIcon
+                                                icon="KebabMenuHorizontal"
+                                                class="w-4 h-4 my-auto"
+                                            ></AtlanIcon>
+                                        </div>
                                     </div>
                                     <template #overlay>
                                         <a-menu class="py-2">
@@ -1467,14 +1471,14 @@
     }
     /* Tree selection actions bg change */
     .tree-light-color {
-        background-color: #dbe9fe;
+        @apply bg-new-gray-300;
     }
     .via-tree-light-color {
-        --tw-gradient-stops: var(--tw-gradient-from), #dbe9fe,
+        --tw-gradient-stops: var(--tw-gradient-from), #eff1f5,
             var(--tw-gradient-to, rgba(244, 246, 253, 0)) !important;
     }
     .from-tree-light-color {
-        --tw-gradient-from: #dbe9fe !important;
+        --tw-gradient-from: #eff1f5 !important;
     }
     .parent-ellipsis-container {
         display: flex;

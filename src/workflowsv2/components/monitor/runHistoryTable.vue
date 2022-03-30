@@ -49,7 +49,12 @@
                 </div>
             </div>
 
-            <div class="flex justify-end py-3">
+            <div class="flex items-center justify-end py-3">
+                <span class="mr-auto"
+                    >Showing {{ offset + 1 }} -
+                    {{ offset + runs?.length || 0 }} out of
+                    {{ totalRuns }} runs</span
+                >
                 <Pagination
                     v-model:offset="offset"
                     :total-pages="Math.ceil(totalRuns / limit)"

@@ -104,34 +104,16 @@
                 emit('update:filters', tmpFilter)
             }
 
-            const packageId = computed({
-                get: () => filters.value?.packageId,
-                set: (val) => setFilter('packageId', val),
+            const computedFactory = (key: string) => ({
+                get: () => filters.value?.[key],
+                set: (val: any) => setFilter(key, val),
             })
 
-            const workflowId = computed({
-                get: () => filters.value?.workflowId,
-                set: (val) => setFilter('workflowId', val),
-            })
-
-            const status = computed({
-                get: () => filters.value?.status,
-                set: (val) => setFilter('status', val),
-            })
-
-            const drawerFilters = computed({
-                get: () => filters.value?.sidebar,
-                set: (val) => setFilter('sidebar', val),
-            })
-
-            const runDateRange = computed({
-                get: () => filters.value?.startDate,
-                set: (val) => {
-                    const tmpFilter = filters.value
-                    tmpFilter.startDate = val
-                    emit('update:filters', tmpFilter)
-                },
-            })
+            const packageId = computed(computedFactory('packageId'))
+            const workflowId = computed(computedFactory('workflowId'))
+            const status = computed(computedFactory('status'))
+            const runDateRange = computed(computedFactory('startDate'))
+            const drawerFilters = computed(computedFactory('sidebar'))
 
             const drawerFiltersApplied = computed(() => {
                 if (!drawerFilters.value) return false

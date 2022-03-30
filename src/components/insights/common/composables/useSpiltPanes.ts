@@ -15,7 +15,7 @@ export function useSpiltPanes(activeInlineTab?: activeInlineTabInterface) {
     const EXPLORER_WIDTH = 350 // in px
     const ASSET_SIDEBAR_WIDTH = 420 // in px
     const MIN_EXPLORER_WIDTH = 320 // in px
-    const MAX_EXPLORER_WIDTH = 410 // in px
+    const MAX_EXPLORER_WIDTH = 530 // in px
     const explorerThreshold = 10
     const explorerPaneCollapsed = ref(false)
     const assetSidebarThreshold = 10

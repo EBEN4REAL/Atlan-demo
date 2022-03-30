@@ -38,6 +38,9 @@
             Admins: defineAsyncComponent(
                 () => import('./types/admins/index.vue')
             ),
+            Viewers: defineAsyncComponent(
+                () => import('./types/viewers/index.vue')
+            ),
             BusinessMetadata: defineAsyncComponent(
                 () => import('./types/businessMetadata/index.vue')
             ),

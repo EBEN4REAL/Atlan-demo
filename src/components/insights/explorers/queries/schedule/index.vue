@@ -257,20 +257,18 @@
             if (workflowParameters.value) {
                 debugger
                 // query variables
-                const queryVariables =
+                let queryVariables =
                     JSON.parse(
                         workflowParameters.value.find(
                             (e) => e.name === 'query-variables'
                         )?.value
                     ) ?? {}
+
                 if (variablesData.value.length > 0) {
                     variablesData.value = variablesData.value.map(
                         (variable) => {
                             return {
-                                ...variable,
-                                value:
-                                    queryVariables[variable?.name] ??
-                                    variable.value,
+                                ...queryVariables[variable?.name],
                             }
                         }
                     )
@@ -443,13 +441,17 @@
                                     variablesData.value.forEach((variable) => {
                                         inputParameters.value[
                                             'query-variables'
-                                        ][variable.name] =
-                                            typeof variable.value === 'object'
-                                                ? variable.value?.join(',')
-                                                : getValueByType(
-                                                      variable.value,
-                                                      variable.type
-                                                  )
+                                        ][variable.name] = {
+                                            ...variable,
+                                            value:
+                                                typeof variable.value ===
+                                                'object'
+                                                    ? variable.value?.join(',')
+                                                    : getValueByType(
+                                                          variable.value,
+                                                          variable.type
+                                                      ),
+                                        }
                                     })
                                     // setting up report name
                                     inputParameters.value['report-name'] =
@@ -606,16 +608,19 @@
                                                 (variable) => {
                                                     inputParameters.value[
                                                         'query-variables'
-                                                    ][variable.name] =
-                                                        typeof variable.value ===
-                                                        'object'
-                                                            ? variable.value?.join(
-                                                                  ','
-                                                              )
-                                                            : getValueByType(
-                                                                  variable.value,
-                                                                  variable.type
-                                                              )
+                                                    ][variable.name] = {
+                                                        ...variable,
+                                                        value:
+                                                            typeof variable.value ===
+                                                            'object'
+                                                                ? variable.value?.join(
+                                                                      ','
+                                                                  )
+                                                                : getValueByType(
+                                                                      variable.value,
+                                                                      variable.type
+                                                                  ),
+                                                    }
                                                 }
                                             )
                                             // setting up report name

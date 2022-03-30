@@ -47,7 +47,7 @@ export function useSchedule() {
             const seconds = Math.round(new Date().getTime() / 1000)
             let workflowName = workflowTemplate.value.metadata.name
             if (savedQueryId) {
-                workflowName = `${workflowName}-${generateUUID().slice(0, 8)}`
+                workflowName = `asq-${savedQueryId}`
             } else {
                 workflowName = `${workflowName}-${seconds.toString()}`
             }

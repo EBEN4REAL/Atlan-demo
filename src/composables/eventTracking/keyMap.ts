@@ -424,7 +424,7 @@ const keyMap = {
                     request_type: props.request_type,
                     asset_type: props.asset_type,
                     count: props.count,
-                    actions:props.action
+                    actions: props.action,
                 }),
             },
             resolved: {
@@ -432,6 +432,7 @@ const keyMap = {
                 properties: (props) => ({
                     // approve/decline
                     action: props.action,
+                    widgetType: props.widgetType,
                 }),
             },
         },

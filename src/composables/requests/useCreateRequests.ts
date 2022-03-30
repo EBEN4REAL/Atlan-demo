@@ -35,7 +35,7 @@ interface eventPayload {
         | 'term'
         | 'userDescription'
         | 'classification'
-        | 'certificate'
+        | 'certificateStatus'
         | 'ownerUser'
         | 'ownerGroup'
         | ''
@@ -85,7 +85,7 @@ export function useCreateRequests({
             })
         }
         if (certificate !== '') {
-            eventPayload.value.request_type = 'certificate'
+            eventPayload.value.request_type = 'certificateStatus'
             eventPayload.value.action = 'edit'
             requests.value.push({
                 requestType: 'attribute',

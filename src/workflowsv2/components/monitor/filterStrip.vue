@@ -46,7 +46,11 @@
                 label="Filters"
                 @click="isDrawerVisible = !isDrawerVisible"
             />
-            <PackageSelector v-model:value="packageId" />
+
+            <PackageWorkflowSelector
+                v-model:packageId="packageId"
+                v-model:workflowId="workflowId"
+            />
             <StatusSelector v-model:value="status" />
 
             <TabbedDateRangePicker v-model:value="runDateRange" />
@@ -58,11 +62,12 @@
             />
         </div>
         <div class="flex items-center" :class="{ hidden: !isExpanded }">
-            <WorkflowSelector
+            <!-- FIXME: Deprecated component -->
+            <!-- <WorkflowSelector
                 v-model:value="workflowId"
                 :package-name="packageId"
                 :disabled="!packageId"
-            />
+            /> -->
         </div>
     </div>
 </template>
@@ -70,8 +75,8 @@
 <script lang="ts">
     import { computed, defineComponent, ref, toRefs } from 'vue'
     import AssetFilters from '@/common/assets/filters/index.vue'
-    import PackageSelector from '~/workflowsv2/components/common/packageSelector.vue'
     import WorkflowSelector from '~/workflowsv2/components/common/workflowSelector.vue'
+    import PackageWorkflowSelector from '~/workflowsv2/components/common/packageWorkflowSelector.vue'
     import StatusSelector from '~/workflowsv2/components/common/statusSelector.vue'
     import TabbedDateRangePicker from '~/workflowsv2/components/common/tabbedDateRangePicker.vue'
     import { runFilter } from '~/workflowsv2/constants/filters'
@@ -79,8 +84,8 @@
     export default defineComponent({
         name: 'FilterStrip',
         components: {
-            PackageSelector,
             WorkflowSelector,
+            PackageWorkflowSelector,
             StatusSelector,
             TabbedDateRangePicker,
             AssetFilters,

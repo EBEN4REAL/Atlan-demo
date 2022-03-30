@@ -447,6 +447,8 @@ import TrashAlt from '~/assets/images/icons/Trash-alt.svg'
 
 import Chat from '~/assets/images/icons/chat.svg'
 import NotificationNoDot from '~/assets/images/icons/notification-no-dot.svg'
+import Workflow from '~/assets/images/icons/workflows.svg'
+import Package from '~/assets/images/icons/package.svg'
 
 export default {
     EmptyJira,
@@ -877,5 +879,7 @@ export default {
     Mysql: MySQL,
     NoAllow,
     Glue,
-    Bigquery: BigQuery
+    Bigquery: BigQuery,
+    Workflow,
+    Package,
 }

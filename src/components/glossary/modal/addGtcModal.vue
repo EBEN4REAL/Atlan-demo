@@ -161,7 +161,7 @@
         >
             <div class="flex items-center spaxe-x-4">
                 <div
-                    v-if="entityType !== 'AtlasGlossary'"
+                    v-if="entityType !== 'AtlasGlossary' && createPermission"
                     class="flex items-center mr-2 space-x-2"
                 >
                     <a-switch size="small" v-model:checked="isCreateMore" />
@@ -172,11 +172,20 @@
                 </div>
             </div>
             <a-button
+                v-if="createPermission"
                 type="primary"
                 @click="handleSave"
                 :loading="isLoading"
                 class="self-end bg-primary"
                 >Create</a-button
+            >
+            <a-button
+                v-else
+                type="primary"
+                @click="handleRequest"
+                :loading="isLoading"
+                class="self-end bg-primary"
+                >Request</a-button
             >
         </div>
     </a-modal>
@@ -214,6 +223,7 @@
     import GTCSelect from '@/common/popover/gtcSelect/index.vue'
     import GlossarySelect from '@/common/popover/glossarySelect/index.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import { useCreateRequests } from '~/composables/requests/useCreateRequests'
 
     export default defineComponent({
         name: 'AddGtcModal',
@@ -266,6 +276,11 @@
                 type: Boolean,
                 required: false,
                 default: false,
+            },
+            createPermission: {
+                type: Boolean,
+                required: false,
+                default: true,
             },
         },
         emits: ['add', 'update:visible'],
@@ -500,8 +515,8 @@
                             getGlossaryByQF(anchorQf.value)
                         )
                     else emit('add', asset.value)
-                    if(asset?.value?.guid)
-                    router.push(`/glossary/${asset?.value?.guid}/overview`)
+                    if (asset?.value?.guid)
+                        router.push(`/glossary/${asset?.value?.guid}/overview`)
                 } else if (defaultRetry.value > 0) {
                     defaultRetry.value -= 1
                     mutateUpdate()
@@ -511,7 +526,9 @@
                 if (meta.value && Enter.value) {
                     Enter.value = false
                     meta.value = false
-                    if (entity.attributes.name) handleSave()
+                    if (entity.attributes.name && props.createPermission) {
+                        handleSave()
+                    }
                 }
             })
 
@@ -527,6 +544,50 @@
                         : parentGlossary.value
                 )
                 console.log(glossaryQualifiedName.value || parentGlossary.value)
+            }
+
+            const handleRequest = () => {
+                console.log('raising request')
+                let requestType, glossaryPayload
+                glossaryPayload = {
+                    name: entity.attributes.name,
+                    shortDescription: entity.attributes.userDescription,
+                    longDescription: entity.attributes.userDescription,
+                }
+
+                if (props.entityType === 'AtlasGlossary') {
+                    requestType = 'create_glossary'
+                } else {
+                    if (props.entityType === 'AtlasGlossaryCategory')
+                        requestType = 'create_category'
+                    else requestType = 'create_term'
+                    glossaryPayload.anchor = {
+                        glossaryGuid: getGlossaryByQF(
+                            props.glossaryQualifiedName
+                        )?.guid,
+                        displayText: props.glossaryName,
+                    }
+                }
+                console.log(requestType)
+                console.log(glossaryPayload)
+                const {
+                    error: requestError,
+                    isLoading: isRequestLoading,
+                    isReady: requestReady,
+                } = useCreateRequests({
+                    requestType,
+                    glossaryPayload,
+                })
+                whenever(requestError, () => {
+                    if (requestError.value) {
+                        message.error(`Request failed`)
+                    }
+                })
+                whenever(requestReady, () => {
+                    if (requestReady.value) {
+                        message.success(`Request raised`)
+                    }
+                })
             }
 
             return {
@@ -560,6 +621,7 @@
                 handleOwnersChange,
                 parentGlossary,
                 handleSelectGlossary,
+                handleRequest,
             }
         },
     })

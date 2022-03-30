@@ -44,6 +44,7 @@
         ref,
         toRefs,
         watchEffect,
+        watch
     } from 'vue'
     import {
         and,
@@ -54,6 +55,7 @@
         whenever,
     } from '@vueuse/core'
     import Shortcut from '@/common/popover/shortcut.vue'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         name: 'NameWidget',
@@ -68,14 +70,23 @@
                 required: false,
                 default: false,
             },
+            selectedAsset: {
+                type: Object ,
+                required: false,
+                default: () => {},
+            },
+ 
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-            const { editPermission } = toRefs(props)
+            const { editPermission,selectedAsset } = toRefs(props)
             const localValue = ref(modelValue.value)
             const isEdit = ref(false)
             const nameRef: Ref<null | HTMLInputElement> = ref(null)
+            const { title} =
+                useAssetInfo()
+
 
             const handleChange = () => {
                 modelValue.value = localValue.value
@@ -129,6 +140,9 @@
                 handleEdit()
             })
 
+            watch(selectedAsset,()=>{
+                localValue.value=title(selectedAsset.value)
+            })
             return {
                 localValue,
                 handleEdit,
@@ -138,6 +152,7 @@
                 start,
                 handleBlur,
                 handleCancel,
+                title
             }
         },
     })

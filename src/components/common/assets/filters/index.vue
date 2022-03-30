@@ -12,7 +12,10 @@
                     {{ totalFilteredCount > 1 ? 'filters' : 'filter' }}</span
                 >
                 <div class="flex font-medium text-gray-500">
-                    <span class="text-red-500 clear-filter-asset" @click="handleResetAll">
+                    <span
+                        class="text-red-500 clear-filter-asset"
+                        @click="handleResetAll"
+                    >
                         <span class="text-sm cursor-pointer">Clear All</span>
                     </span>
                 </div>
@@ -66,51 +69,40 @@
             filterList: {
                 type: Array,
                 required: false,
-                default() {
-                    return []
-                },
+                default: () => [],
             },
             modelValue: {
                 type: Object,
                 required: false,
-                default() {
-                    return {}
-                },
+                default: () => ({}),
             },
             isAccordion: {
                 type: Boolean,
                 required: false,
-                default() {
-                    return false
-                },
+                default: () => false,
             },
             typeName: {
                 type: String,
                 required: false,
-                default() {
-                    return '__all'
-                },
+                default: () => '__all',
             },
             activeKey: {
                 required: false,
             },
             allowCustomFilters: {
+                type: Boolean,
                 required: false,
-                default() {
-                    return true
-                },
+                default: () => true,
             },
             noFilterTitle: {
+                type: String,
                 required: false,
-                default() {
-                    return 'Filters'
-                },
+                default: () => 'Filters',
             },
             extraCountFilter: {
+                type: Number,
                 required: false,
-                default() {
-                    return 0
-                },
+                default: () => 0,
             },
         },
         emits: [
@@ -131,6 +123,10 @@
             } = toRefs(props)
             const localValue = ref(modelValue.value)
             const localActiveKeyValue = ref(activeKey.value)
+            watch(modelValue, (newModelValue) => {
+                localValue.value = newModelValue
+                localActiveKeyValue.value = activeKey.value
+            })
 
             const componentState = ref(0)
             const forceRender = () => {

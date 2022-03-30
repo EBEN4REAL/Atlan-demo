@@ -19,26 +19,21 @@
         </div>
 
         <div class="flex justify-end p-3 space-x-2 border-t border-gray-200">
-            <AtlanButton
-                color="minimal"
-                padding="compact"
-                size="sm"
+            <AtlanButton2
+                color="secondary"
+                label="Cancel"
                 @click="visible = false"
-            >
-                Cancel
-            </AtlanButton>
-            <AtlanButton
+            />
+
+            <AtlanButton2
                 color="danger"
-                padding="compact"
-                size="sm"
+                label="Delete"
                 :loading="removeStatus === 'loading'"
                 @click="
                     () =>
                         remove(link.guid || link.uniqueAttributes.qualifiedName)
                 "
-            >
-                Delete
-            </AtlanButton>
+            />
         </div>
     </a-modal>
 </template>

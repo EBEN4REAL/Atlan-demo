@@ -35,9 +35,9 @@
                                 {{ item?.options?.emoji }}
                             </span>
                             <span
-                                class="w-full text-xs text-gray hover:text-primary title"
+                                class="w-full text-xs tracking-widest text-gray hover:text-primary title"
                                 :class="{
-                                    'tracking uppercase':
+                                    'tracking-widest uppercase':
                                         item?.component !== 'properties',
                                 }"
                             >
@@ -95,6 +95,7 @@
 <script lang="ts">
     import { useVModels } from '@vueuse/core'
     import {
+        watch,
         computed,
         defineAsyncComponent,
         defineComponent,
@@ -186,6 +187,9 @@
             )
 
             const facetMap = ref(modelValue.value)
+            watch(modelValue, (newModelValue) => {
+                facetMap.value = newModelValue
+            })
             const isFiltered = computed(() => {
                 const id = item.value?.id
                 if (facetMap?.value) {
@@ -275,7 +279,12 @@
 
                 if (id === 'certificateStatus' && facetMap.value[id]) {
                     return facetMap.value[id]?.length < 3
-                        ? facetMap.value[id].join(',')
+                        ? facetMap.value[id]
+                              .map((el) => {
+                                  if (el === null) return 'NONE'
+                                  return el
+                              })
+                              .join(',')
                         : `${facetMap.value[id]?.length} applied`
                 }
 
@@ -297,7 +306,7 @@
                         : `${facetMap.value[id]?.length} applied`
                 }
 
-                if (id === 'owners') {
+                if (id === 'owners' || id === 'creators') {
                     let usersLength = 0
                     let groupsLength = 0
 
@@ -338,6 +347,15 @@
                     }
 
                     return val
+                }
+
+                // Array of primitive objects
+                if (
+                    Array.isArray(facetMap.value[id]) &&
+                    facetMap.value[id]?.length &&
+                    typeof facetMap.value[id][0] !== 'object'
+                ) {
+                    return `${facetMap.value[id]?.length} selected`
                 }
 
                 let numOfAttributes = 0

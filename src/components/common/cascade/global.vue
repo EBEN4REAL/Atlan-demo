@@ -53,7 +53,7 @@
                 </div>
                 <div
                     v-else
-                    class="text-base font-semibold cursor-pointer text-primary"
+                    class="text-sm font-semibold cursor-pointer text-primary"
                 >
                     All Assets
                 </div>

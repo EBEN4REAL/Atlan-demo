@@ -1,10 +1,23 @@
 import { Editor } from '@tiptap/vue-3'
+import iconMap from '@common/icon/iconMap'
 
 export interface CommandItem {
     title: string
     key: string
     helpText: string
-    icon?: string
+    searchKeys: string[]
+    icon?: keyof typeof iconMap
+    level?: number
+    border?: boolean
+    disabled?: any
+    command?: any
+}
+
+export interface MenuItem {
+    title: string
+    key: string
+    helpText: string
+    icon?: keyof typeof iconMap
     level?: number
     border?: boolean
     disabled?: any
@@ -16,8 +29,9 @@ export const blockMenu: CommandItem[] = [
         title: 'Heading 1',
         key: 'heading-1',
         level: 1,
-        helpText: '',
+        helpText: 'The biggest, boldest heading',
         icon: 'HOne',
+        searchKeys: ['h1', 'heading', 'heading1', 'heading 1'],
         disabled: () => false,
         command: ({ editor, range }) =>
             range
@@ -33,8 +47,9 @@ export const blockMenu: CommandItem[] = [
         title: 'Heading 2',
         key: 'heading-2',
         level: 2,
-        helpText: '',
+        helpText: 'The bigger, bolder heading',
         icon: 'HTwo',
+        searchKeys: ['h2', 'heading', 'heading2', 'heading 2'],
         disabled: () => false,
         command: ({ editor, range }) =>
             range
@@ -51,8 +66,9 @@ export const blockMenu: CommandItem[] = [
         key: 'heading-3',
         level: 3,
         icon: 'HThree',
+        searchKeys: ['h3', 'heading', 'heading3', 'heading 3'],
         border: true,
-        helpText: '',
+        helpText: 'The big, bold heading',
         disabled: () => false,
         command: ({ editor, range }) =>
             range
@@ -68,8 +84,9 @@ export const blockMenu: CommandItem[] = [
     {
         title: 'Bulleted List',
         key: 'bulletList',
-        helpText: '',
+        helpText: 'A simple, bulleted list',
         icon: 'BulletList',
+        searchKeys: ['ul', 'bullet', 'list', 'bulleted list'],
         disabled: (editor: Editor) =>
             !editor.can().toggleList('bulletList', 'listItem'),
         command: ({ editor, range }) =>
@@ -85,9 +102,10 @@ export const blockMenu: CommandItem[] = [
     {
         title: 'Numbered List',
         key: 'orderedList',
-        helpText: '',
+        helpText: 'A serialised list with numbers',
         icon: 'NumberedList',
         border: true,
+        searchKeys: ['ol', 'number', 'list', 'numbered list'],
         disabled: (editor: Editor) =>
             !editor.can().toggleList('orderedList', 'listItem'),
         command: ({ editor, range }) =>
@@ -104,8 +122,9 @@ export const blockMenu: CommandItem[] = [
     {
         title: 'Checklist',
         key: 'taskList',
-        helpText: '',
+        helpText: 'A to-do list with checkboxes',
         icon: 'TaskList',
+        searchKeys: ['checklist', 'check', 'list', 'task list', 'tasklist'],
         disabled: (editor: Editor) => !editor.can().toggleTaskList(),
         command: ({ editor, range }) =>
             range
@@ -120,8 +139,9 @@ export const blockMenu: CommandItem[] = [
     {
         title: 'Quote',
         key: 'blockquote',
-        helpText: '',
+        helpText: 'A quote to emphasise a segment',
         icon: 'Quotes',
+        searchKeys: ['quote', 'blockquote'],
         disabled: () => false,
         command: ({ editor, range }) =>
             range
@@ -136,9 +156,10 @@ export const blockMenu: CommandItem[] = [
     {
         title: 'Code',
         key: 'codeBlock',
-        helpText: '',
+        helpText: 'Highlight a chunk of code',
         icon: 'Code',
         border: true,
+        searchKeys: ['code', 'codeblock'],
         disabled: () => false,
         command: ({ editor, range }) =>
             range
@@ -148,15 +169,20 @@ export const blockMenu: CommandItem[] = [
                       .deleteRange(range)
                       .toggleCodeBlock({ language: 'json' })
                       .run()
-                : editor.chain().focus().toggleImageBlock().run(),
+                : editor
+                      .chain()
+                      .focus()
+                      .toggleCodeBlock({ language: 'json' })
+                      .run(),
     },
     {
         title: 'Image',
         key: 'uploadimage',
-        helpText: '',
+        helpText: 'Upload an image',
         icon: 'ReadmeImage',
         border: true,
-        disabled: (editor: Editor) => !editor.can().toggleImageBlock(),
+        searchKeys: ['image', 'images'],
+        disabled: () => false,
         command: ({ editor, range }) =>
             range
                 ? editor
@@ -173,6 +199,7 @@ export const blockMenu: CommandItem[] = [
         helpText: 'Insert a table',
         icon: 'TableBlack',
         border: true,
+        searchKeys: ['table'],
         disabled: () => false,
         command: ({ editor, range }) =>
             range
@@ -188,23 +215,208 @@ export const blockMenu: CommandItem[] = [
                       .run()
                 : editor.chain().focus().insertTable().run(),
     },
-    /*   {
-        title: 'Google doc',
+    {
+        title: 'Google Doc',
         key: 'googleDoc',
-        helpText: '',
-        icon: 'Gdoc',
+        helpText: 'Embed a Google Doc',
+        icon: 'GoogleDoc',
         border: true,
-        command: ({ editor, range }) => editor.chain().focus().toggleImageBlock().run(),
-    }, */
+        searchKeys: ['google', 'doc', 'embed', 'google doc'],
+        disabled: () => false,
+        command: ({ editor, range }) =>
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .insertGoogleDoc()
+                      .run()
+                : editor.chain().focus().insertGoogleDoc().run(),
+    },
+    {
+        title: 'Google Sheet',
+        key: 'googleSheet',
+        helpText: 'Embed a Google Sheet',
+        icon: 'GoogleSheet',
+        border: true,
+        searchKeys: ['google', 'sheet', 'excel'],
+        disabled: () => false,
+        command: ({ editor, range }) =>
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .insertGoogleSheet()
+                      .run()
+                : editor.chain().focus().insertGoogleSheet().run(),
+    },
+    {
+        title: 'Google Slides',
+        key: 'googleSlide',
+        helpText: 'Embed a Google Presentation',
+        icon: 'GoogleSlide',
+        border: true,
+        searchKeys: ['google', 'slide', 'presentation'],
+        disabled: () => false,
+        command: ({ editor, range }) =>
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .insertGoogleSlide()
+                      .run()
+                : editor.chain().focus().insertGoogleSlide().run(),
+    },
+    // {
+    //     title: 'Google Drive',
+    //     key: 'googleDrive',
+    //     helpText: '',
+    //     icon: 'GoogleDrive',
+    //     border: true,
+    //     searchKeys: ['google', 'drive'],
+    //     disabled: () => false,
+    //     command: ({ editor, range }) =>
+    //         range
+    //             ? editor
+    //                   .chain()
+    //                   .focus()
+    //                   .deleteRange(range)
+    //                   .insertGoogleDrive()
+    //                   .run()
+    //             : editor.chain().focus().insertGoogleDrive().run(),
+    // },
+    {
+        title: 'Miro Board',
+        key: 'miro',
+        helpText: 'Embed a Miro board',
+        icon: 'Miro',
+        border: true,
+        searchKeys: ['miro', 'board', 'drawing'],
+        disabled: () => false,
+        command: ({ editor, range }) =>
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .insertMiroBoard()
+                      .run()
+                : editor.chain().focus().insertMiroBoard().run(),
+    },
+    {
+        title: 'FigJam',
+        key: 'figjam',
+        helpText: 'Embed a FigJam',
+        icon: 'Figma',
+        border: true,
+        searchKeys: ['figma', 'fig', 'jam'],
+        disabled: () => false,
+        command: ({ editor, range }) =>
+            range
+                ? editor.chain().focus().deleteRange(range).insertFigjam().run()
+                : editor.chain().focus().insertFigjam().run(),
+    },
+    {
+        title: 'Lucidchart',
+        key: 'lucid',
+        helpText: 'Embed a Lucidchart Diagram',
+        icon: 'Lucid',
+        border: true,
+        searchKeys: ['lucid', 'chart'],
+        disabled: () => false,
+        command: ({ editor, range }) =>
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .insertLucidChart()
+                      .run()
+                : editor.chain().focus().insertLucidChart().run(),
+    },
+    {
+        title: 'DBDiagram',
+        key: 'dbdiagram',
+        helpText: 'Embed a DB Diagram',
+        icon: 'DBDiagram',
+        border: true,
+        searchKeys: ['dbdiagram', 'db'],
+        disabled: () => false,
+        command: ({ editor, range }) =>
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .insertDbDiagram()
+                      .run()
+                : editor.chain().focus().insertDbDiagram().run(),
+    },
+    {
+        title: 'Microsoft Word',
+        key: 'microsoftWord',
+        helpText: 'Embed a Microsoft Word Document.',
+        icon: 'MicrosoftWord',
+        border: true,
+        searchKeys: ['microsoft', 'word'],
+        disabled: () => false,
+        command: ({ editor, range }) =>
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .insertMicrosoftWord()
+                      .run()
+                : editor.chain().focus().insertMicrosoftWord().run(),
+    },
+    {
+        title: 'Microsoft Excel',
+        key: 'microsoftExcel',
+        helpText: 'Embed a Microsoft Excel sheet',
+        icon: 'MicrosoftExcel',
+        border: true,
+        searchKeys: ['microsoft', 'excel'],
+        disabled: () => false,
+        command: ({ editor, range }) =>
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .insertMicrosoftExcel()
+                      .run()
+                : editor.chain().focus().insertMicrosoftExcel().run(),
+    },
+    {
+        title: 'Microsoft PowerPoint',
+        key: 'microsoftPowerpoint',
+        helpText: 'Embed a Microsoft PowerPoint presentation.',
+        icon: 'MicrosoftPowerpoint',
+        border: true,
+        searchKeys: ['microsoft', 'powerpoint'],
+        disabled: () => false,
+        command: ({ editor, range }) =>
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .insertMicrosoftPowerpoint()
+                      .run()
+                : editor.chain().focus().insertMicrosoftPowerpoint().run(),
+    },
 ]
 
-export const menuData: CommandItem[] = [
+export const menuData: MenuItem[] = [
     {
         title: 'Bold',
         key: 'bold',
         helpText: '',
         icon: 'Bold',
-        command: ({ editor, range }) => {
+        command: ({ editor }) => {
             editor.chain().focus().toggleBold().run()
         },
     },
@@ -213,31 +425,35 @@ export const menuData: CommandItem[] = [
         key: 'italic',
         helpText: '',
         icon: 'Italic',
-        command: ({ editor, range }) =>
-            editor.chain().focus().toggleItalic().run(),
+        command: ({ editor }) => editor.chain().focus().toggleItalic().run(),
     },
     {
         title: 'Underline',
         key: 'underline',
         helpText: '',
         icon: 'Underline',
-        command: ({ editor, range }) =>
-            editor.chain().focus().toggleUnderline().run(),
+        command: ({ editor }) => editor.chain().focus().toggleUnderline().run(),
+    },
+    {
+        title: 'Code',
+        key: 'code',
+        helpText: '',
+        icon: 'Code',
+        command: ({ editor }) => editor.chain().focus().toggleCode().run(),
     },
     {
         title: 'Strikethrough',
         key: 'strike',
         helpText: '',
         icon: 'Strike',
-        command: ({ editor, range }) =>
-            editor.chain().focus().toggleStrike().run(),
+        command: ({ editor }) => editor.chain().focus().toggleStrike().run(),
     },
     {
         title: 'Align Center',
         key: 'align-center',
         helpText: '',
         icon: 'TextCenter',
-        command: ({ editor, range }) =>
+        command: ({ editor }) =>
             editor.chain().focus().setTextAlign('center').run(),
     },
 
@@ -246,7 +462,7 @@ export const menuData: CommandItem[] = [
         key: 'align-left',
         helpText: '',
         icon: 'TextLeft',
-        command: ({ editor, range }) =>
+        command: ({ editor }) =>
             editor.chain().focus().setTextAlign('left').run(),
     },
     {
@@ -254,7 +470,7 @@ export const menuData: CommandItem[] = [
         key: 'align-right',
         helpText: '',
         icon: 'TextRight',
-        command: ({ editor, range }) =>
+        command: ({ editor }) =>
             editor.chain().focus().setTextAlign('right').run(),
     },
     {
@@ -262,27 +478,12 @@ export const menuData: CommandItem[] = [
         key: 'align-justify',
         helpText: '',
         icon: 'JustifyText',
-        command: ({ editor, range }) =>
+        command: ({ editor }) =>
             editor.chain().focus().setTextAlign('justify').run(),
     },
-    {
-        title: 'Undo',
-        key: 'undo',
-        helpText: '',
-        icon: 'Undo',
-        command: ({ editor, range }) => editor.chain().focus().undo().run(),
-    },
-    {
-        title: 'Redo',
-        key: 'redo',
-        helpText: '',
-        icon: 'Redo',
-        command: ({ editor, range }) => editor.chain().focus().redo().run(),
-    },
-    // table
 ]
 
-export const menuDataTable: CommandItem[] = [
+export const menuDataTable: MenuItem[] = [
     {
         title: 'Add Column',
         key: 'insert-column-after',
@@ -319,4 +520,12 @@ export const menuDataTable: CommandItem[] = [
         command: ({ editor }) => editor.chain().focus().deleteTable().run(),
     },
     // table
+]
+
+export const BLOCK_TIPPY_MENU = [
+    'uploadimage',
+    'image',
+    'googleDoc',
+    'iframe',
+    'table',
 ]

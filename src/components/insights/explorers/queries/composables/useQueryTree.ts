@@ -13,6 +13,8 @@ import {
 } from '~/types/common/atlasSearch.interface'
 import { decodeQuery as decodeBase64Data } from '~/utils/helper/routerHelper'
 import { IndexSearchResponse } from '~/services/meta/search/index'
+import { Insights } from '~/services/meta/insights/index'
+import { invoke, until } from '@vueuse/core'
 
 import { Components } from '~/types/atlas/client'
 
@@ -598,34 +600,16 @@ const useQueryTree = ({
         }
     }
 
-    // watch(
-    //     () => loadedKeys.value.length,
-    //     () => {
-    //         console.log('loaded keys: ', loadedKeys.value)
-    //         console.log('loaded keys: exp:', expandedKeys.value)
-    //     },
-    //     { immediate: true }
-    // )
-    /**
-     * Locally updates the attributes of a node inside the tree
-     *
-     * @param qualifiedName  - guid/key of the node that needs to be updated
-     * @param entity - The entire updated entity
-     */
-    const updateNode = ({
-        guid,
-        entity,
-    }: {
-        guid: string
-        entity: SavedQuery
-    }) => {
+    const updateNodeUtil = ({ entity, guid }) => {
         const currentParents = nodeToParentNameMap[guid]
-
-        console.log('updated entity: ', entity)
-        if (currentParents === 'root') {
+        if (
+            currentParents === 'root' ||
+            (typeof currentParents !== 'string' &&
+                currentParents?.find((parent) => parent === 'root'))
+        ) {
             // if the node is at the root level, just loop through the treeData linearly
             treeData.value = treeData.value.map((treeNode) => {
-                if (treeNode.key === guid)
+                if (treeNode.key === guid) {
                     return {
                         ...treeNode,
                         entity: entity,
@@ -633,6 +617,8 @@ const useQueryTree = ({
                         classifications: entity.classifications,
                         meanings: entity.meanings,
                     }
+                }
+
                 return treeNode
             })
 
@@ -681,6 +667,46 @@ const useQueryTree = ({
                     return node
                 }
             )
+        }
+    }
+    /**
+     * Locally updates the attributes of a node inside the tree
+     *
+     * @param qualifiedName  - guid/key of the node that needs to be updated
+     * @param entity - The entire updated entity
+     */
+    const updateNode = ({
+        guid,
+        entity,
+        updateAttributesOnly = false,
+    }: {
+        guid: string
+        entity: SavedQuery
+        updateAttributesOnly?: boolean
+    }) => {
+        if (updateAttributesOnly) {
+            ;(async () => {
+                const {
+                    data: data2,
+                    error: error2,
+                    isLoading: isLoading2,
+                } = Insights.GetSavedQuery(guid, {})
+                await until(isLoading2).toBe(false)
+                if (error2.value) {
+                    console.error('Failed to update')
+                }
+                if (data2.value) {
+                    updateNodeUtil({
+                        entity: data2.value.entity,
+                        guid,
+                    })
+                }
+            })()
+        } else {
+            updateNodeUtil({
+                entity,
+                guid,
+            })
         }
     }
 

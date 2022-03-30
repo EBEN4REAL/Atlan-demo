@@ -25,25 +25,21 @@
 
         <template #footer>
             <div class="flex items-center justify-end w-full space-x-3">
-                <AtlanButton
-                    color="minimal"
-                    padding="compact"
+                <AtlanButton2
+                    color="secondary"
+                    label="Cancel"
                     @click="visible = false"
-                >
-                    Cancel
-                </AtlanButton>
-                <AtlanButton
-                    type="primary"
+                />
+
+                <AtlanButton2
                     :disabled="
                         (askQuestionModal ? !message : false) ||
                         !channel ||
                         loading
                     "
-                    size="sm"
+                    :label="ctaText"
                     @click="handleCtaClick"
-                >
-                    {{ ctaText }}
-                </AtlanButton>
+                />
             </div>
         </template>
     </a-modal>

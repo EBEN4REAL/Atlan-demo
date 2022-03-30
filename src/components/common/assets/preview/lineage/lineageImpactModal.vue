@@ -43,8 +43,8 @@
                                 <div
                                     class="flex items-center text-sm text-gray-500"
                                 >
-                                    <AtlanIcon
-                                        :icon="text.sourceImg"
+                                    <img
+                                        :src="text.sourceImg"
                                         class="h-4 mr-1 mb-0.5"
                                     />
                                     <span class="tracking-wider uppercase">
@@ -55,17 +55,6 @@
                                         text.qfPath
                                     }}</span>
                                 </div>
-                            </div>
-                        </template>
-
-                        <!-- Depth -->
-                        <!-- FIXME: This depth number is dummy for now, change it to use actual depth -->
-                        <template v-else-if="column.key === 'depth'">
-                            <div class="flex items-center gap-1">
-                                <AtlanIcon icon="Platform" />
-                                <span class="text-sm text-gray">{{
-                                    text
-                                }}</span>
                             </div>
                         </template>
 
@@ -164,24 +153,18 @@
 
             <!-- Footer CTA -->
             <div class="flex justify-end w-full gap-x-4">
-                <AtlanButton
-                    padding="compact"
-                    size="sm"
+                <AtlanButton2
+                    label="Close"
                     color="secondary"
                     @click="$emit('update:visible', false)"
-                >
-                    Close
-                </AtlanButton>
+                />
 
-                <AtlanButton
-                    padding="compact"
-                    size="sm"
+                <AtlanButton2
+                    label="Download"
                     :disabled="columnsData.length === 0 || !isReady"
                     :loading="isLoading"
                     @click="downloadImpactedAssets"
-                >
-                    Download
-                </AtlanButton>
+                />
             </div>
         </div>
     </a-modal>
@@ -331,7 +314,7 @@
                     },
                     db: getTable(entity),
                     schema: getSchema(entity),
-                    depth: 'N/A',
+
                     owners: [...ownerUsers(entity), ...ownerGroups(entity)],
                     classifications: entity.classificationNames,
                     terms: entity.meanings,
@@ -350,7 +333,7 @@
                     return {
                         Name: y.details.name,
                         Certification: y.details.certificateStatus,
-                        Depth: y.depth,
+
                         Source: y.details.source,
                         Type: y.details.typeName,
                         Database: y.db,
@@ -395,6 +378,8 @@
             const { mouseEnterDelay, enteredPill } = useMouseEnterDelay()
 
             return {
+                enteredPill,
+                mouseEnterDelay,
                 error,
                 downloadImpactedAssets,
                 getClassification,
@@ -411,12 +396,6 @@
                         dataIndex: 'details',
                         key: 'details',
                         fixed: 'left',
-                    },
-                    {
-                        width: 70,
-                        title: 'Depth',
-                        dataIndex: 'depth',
-                        key: 'depth',
                     },
                     {
                         width: 250,

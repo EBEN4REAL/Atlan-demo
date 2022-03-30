@@ -124,5 +124,16 @@ export const previewTabs = [
         scrubbed: false,
         requiredInProfile: true,
         analyticsKey: 'property',
-    },
+    }
 ]
+
+export const JiraPreviewTab = {
+    name: 'Jira',
+    component: 'Jira',
+    icon: 'Jira',
+    activeIcon: 'Jira',
+    tooltip: 'Jira',
+    scrubbed: false,
+    requiredInProfile: true,
+    analyticsKey: 'jira',
+}

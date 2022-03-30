@@ -1,7 +1,10 @@
 <template>
     <div class="w-full h-full bg-white editor">
         <bubble-menu
-            v-if="!editor?.isActive('uploadimage') && editor"
+            v-if="
+                editor &&
+                !BLOCK_TIPPY_MENU.some((item) => editor?.isActive(item))
+            "
             class="w-full bubble-menu"
             :tippy-options="{
                 duration: 100,
@@ -15,11 +18,7 @@
             <selection-menu :editor="editor" :editable="isEditMode" />
         </bubble-menu>
         <bubble-menu
-            v-if="
-                !editor?.isActive('uploadimage') &&
-                editor?.isActive('customTable') &&
-                editor
-            "
+            v-if="editor && editor?.isActive('customTable')"
             class="w-full bubble-menu"
             :tippy-options="{
                 duration: 100,
@@ -55,19 +54,22 @@
     import TableRow from '@tiptap/extension-table-row'
     import TableHeader from '@tiptap/extension-table-header'
     import TableCell from '@tiptap/extension-table-cell'
-    import { CustomTable } from '@common/editor/extensions/table/extension'
-    import { CustomMention } from '@common/editor/extensions/mentions/extension'
+    import { CustomTable } from './extensions/table/extension'
+    import { CustomMention } from './extensions/mentions/extension'
 
-    import { TrailingNode } from '@common/editor/extensions/trailingNode'
+    import { TrailingNode } from './extensions/trailingNode'
     import SelectionMenu from './selectionMenu.vue'
     import SelectionMenuTable from './selectionMenuTable.vue'
     import SlashCommands from './extensions/slashCommands/commands'
     import suggestion from './extensions/slashCommands/suggestion'
     import ImageUpload from './extensions/imageUpload/extension'
     import CustomImage from './extensions/image/extension'
+    import IFrame from './extensions/iframe/extension'
     import mentionSuggestion from './extensions/mentions/suggestion'
 
     import LinkPreview from './extensions/linkPreview/linkPreview'
+    import { BLOCK_TIPPY_MENU } from '~/constant/readmeMenuItems'
+    import { EMBED_EXTENSIONS } from '@common/editor/extensions/embeds'
 
     export default defineComponent({
         name: 'TiptapEditor',
@@ -105,10 +107,10 @@
             const { isEditMode, emptyText } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
 
-            const localModelValue = ref(decodeURIComponent(modelValue.value))
+            const localModelValue = ref(modelValue.value)
 
             const debouncedEmit = useDebounceFn((content: string) => {
-                modelValue.value = encodeURIComponent(content)
+                modelValue.value = content
                 emit('change')
             }, 500)
 
@@ -137,9 +139,9 @@
                     LinkPreview,
                     Highlight.configure({ multicolor: true }),
                     Placeholder.configure({
-                        placeholder: ({ node }) => {
+                        placeholder: ({ node, editor: currEditor }) => {
                             if (!isEditMode.value) {
-                                return emptyText.value
+                                return currEditor.isEmpty ? emptyText.value : ''
                             }
                             switch (node.type.name) {
                                 case 'heading':
@@ -174,6 +176,8 @@
                     }),
                     CustomImage,
                     ImageUpload,
+                    IFrame,
+                    ...EMBED_EXTENSIONS,
                     CustomMention.configure({
                         HTMLAttributes: {
                             class: 'mention',
@@ -218,6 +222,7 @@
                 getEditorContent,
                 shouldShowLegacyMenu,
                 shouldShowTableMenu,
+                BLOCK_TIPPY_MENU,
             }
         },
     })

@@ -3,7 +3,7 @@ export const assetActions = [
         id: 'open',
         label: 'Open',
         description: 'Open asset profile',
-        icon: 'Enter',
+        icon: 'EnterProfile',
     },
     {
         id: 'query',

@@ -8,19 +8,14 @@
                         :src="getConnectorImage(item)"
                         class="h-4 mr-1 mb-0.5"
                     />
-                    <router-link
-                        :to="getProfilePath(item)"
+
+                    <Tooltip
+                        :tooltip-text="title(item)"
+                        classes="mb-0 text-sm font-bold cursor-pointer text-primary hover:underline"
+                        :route-to="getProfilePath(item)"
+                        clamp-percentage="85%"
                         @click="stopPropagation"
-                    >
-                        <a-typography-paragraph
-                            class="mb-0 text-sm font-bold cursor-pointer text-primary hover:underline"
-                            :ellipsis="{
-                                rows: 1,
-                                onEllipsis: true,
-                            }"
-                            :content="title(item)"
-                        />
-                    </router-link>
+                    />
 
                     <CertificateBadge
                         v-if="certificateStatus(item)"
@@ -53,12 +48,14 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import AssetPopover from '@/common/popover/assets/index.vue'
+    import Tooltip from '@common/ellipsis/index.vue'
 
     export default defineComponent({
         name: 'AssetTitleCtx',
         components: {
             CertificateBadge,
             AssetPopover,
+            Tooltip,
         },
         props: {
             item: {

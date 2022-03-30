@@ -11,6 +11,7 @@
         </div>
 
         <div
+            v-if="userList.length > 0"
             class="flex flex-col w-full overflow-y-auto"
             :class="checkboxListClass ? checkboxListClass : 'h-40'"
         >
@@ -74,11 +75,21 @@
                         />
                     </div>
                     <div
+                        class="flex items-center ml-auto text-xs cursor-pointer text-primary"
                         v-else
-                        class="flex items-center ml-auto text-xs cursor-pointer text-primary hover:underline"
-                        @click="loadMore"
                     >
-                        load more...
+                        <div
+                            v-if="
+                                userList.length <
+                                (excludeMe
+                                    ? totalActiveUsers - 1
+                                    : totalActiveUsers)
+                            "
+                            class="flex items-center ml-auto text-xs cursor-pointer text-primary hover:underline"
+                            @click="loadMore"
+                        >
+                            load more...
+                        </div>
                     </div>
                 </template>
             </div>
@@ -95,7 +106,8 @@
         </div>
         <div class="pl-4" v-if="totalActiveUsers">
             <p class="text-xs text-gray-500">
-                {{ userList.length }} of {{ totalActiveUsers }} users
+                {{ userList.length }} of
+                {{ excludeMe ? totalActiveUsers - 1 : totalActiveUsers }} users
             </p>
         </div>
     </div>
@@ -334,6 +346,7 @@
             })
 
             return {
+                users,
                 loadMore,
                 isLoading,
                 map,

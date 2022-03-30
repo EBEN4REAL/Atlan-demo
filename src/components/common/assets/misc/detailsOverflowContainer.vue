@@ -1,10 +1,10 @@
 <template>
-    <div class="relative">
-        <div
-            class="max-w-full p-4 overflow-y-auto rounded"
-            :class="background === '' ? 'bg-gray-100' : background"
-            style="max-height: 220px"
-        >
+    <div
+        :class="background === '' ? 'bg-gray-100' : background"
+        class="flex justify-between max-w-full p-4 overflow-y-auto rounded"
+        style="max-height: 220px"
+    >
+        <div>
             <template v-if="text !== ''" class="text-gray-700">{{
                 text
             }}</template>
@@ -15,12 +15,13 @@
                 </span>
             </div>
         </div>
-        <div
-            class="absolute px-1 py-0.5 bg-white rounded shadow cursor-pointer top-3 right-3"
-            v-if="true"
-            @click="handleCopy"
-        >
-            <AtlanIcon icon="CopyOutlined" class="w-4 h-4 text-gray-500" />
+        <div v-if="enableCopy">
+            <span
+                class="p-1 bg-white rounded shadow cursor-pointer"
+                @click="handleCopy"
+            >
+                <AtlanIcon icon="CopyOutlined" class="w-4 h-4 text-gray-500"
+            /></span>
         </div>
     </div>
 </template>

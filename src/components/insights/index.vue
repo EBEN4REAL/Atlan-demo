@@ -1,7 +1,7 @@
 <template>
     <div id="fullScreenId" class="flex h-full overflow-x-hidden">
         <!--Sidebar navigation pane start -->
-        <div class="bg-white border-r sidebar-nav">
+        <div class="border-r border-new-gray-300 bg-new-gray-100 sidebar-nav">
             <template v-for="tab in tabsList" :key="tab.id">
                 <a-tooltip placement="right" color="#363636">
                     <template #title> {{ tab.title }} </template>
@@ -186,6 +186,9 @@
             const observer = ref()
             const splitpaneRef = ref()
             const showcustomToolBar = ref(false) // custom variables toolbar
+            const refetchQueryNode = ref({
+                guid: '',
+            }) // for triggering the refetch node function in query explorer from playground
 
             const savedQueryInfo = inject('savedQueryInfo') as Ref<
                 SavedQuery | undefined
@@ -237,6 +240,7 @@
             const schemaNameFromURL = inject('schemaNameFromURL')
             const tableNameFromURL = inject('tableNameFromURL')
             const columnNameFromURL = inject('columnNameFromURL')
+
             const openVQB = inject('openVQB')
 
             const collectionGuidFromURL = inject('collectionGuidFromURL')
@@ -264,7 +268,7 @@
                 activeInlineTab,
                 inlineTabAdd,
                 modifyActiveInlineTabEditor,
-            } = useInlineTab(undefined, !savedQueryGuidFromURL.value)
+            } = useInlineTab(undefined, true)
 
             const { openSavedQueryInNewTab } = useSavedQuery(
                 tabsArray,
@@ -386,6 +390,7 @@
                 limitRows: limitRows,
                 updateAssetCheck,
                 collectionSelectorChange,
+                refetchQueryNode,
             }
             useProvide(provideData)
             /*-------------------------------------*/
@@ -564,7 +569,11 @@
                 )
             }
 
-            const fetchQueryCollections = () => {
+            const fetchQueryCollections = ({
+                selectOneByDefault,
+            }: {
+                selectOneByDefault: boolean
+            }) => {
                 const { data, error, isLoading, mutate } = getQueryCollections()
                 refetchQueryCollection.value = mutate
                 queryCollectionsLoading.value = true
@@ -587,14 +596,16 @@
                                     path: `insights`,
                                 })
                             }
+                            if (selectOneByDefault) {
+                                selectFirstCollectionByDefault(
+                                    queryCollections.value,
+                                    activeInlineTab,
+                                    tabsArray,
+                                    isCollectionCreated,
+                                    collectionGuidFromURL
+                                )
+                            }
 
-                            selectFirstCollectionByDefault(
-                                queryCollections.value,
-                                activeInlineTab,
-                                tabsArray,
-                                isCollectionCreated,
-                                collectionGuidFromURL
-                            )
                             queryCollectionsError.value = undefined
                         } else {
                             queryCollectionsLoading.value = false
@@ -623,7 +634,7 @@
                         el.style.transition = 'width .2s ease-out'
                     })
                 }, 100)
-                fetchQueryCollections()
+                fetchQueryCollections({ selectOneByDefault: true })
                 window.addEventListener('keydown', _keyListener)
 
                 if (
@@ -752,13 +763,15 @@
 <style lang="less" module>
     .splitpane_insights {
         :global(.splitpanes__splitter) {
-            background-color: #fff;
+            @apply bg-new-gray-100;
+            // background-color: #fff;
             -webkit-box-sizing: border-box;
             box-sizing: border-box;
             position: relative;
             -ms-flex-negative: 0;
             z-index: 3 !important;
             flex-shrink: 0;
+            @apply border-new-gray-300;
         }
         :global(.splitpanes--vertical .splitpanes__pane) {
             transition: none;
@@ -831,10 +844,10 @@
         height: calc(100vh - 3rem);
     }
     .parent_splitpanes {
-        width: calc(100vw - 3.75rem);
+        width: calc(100vw - 3.75rem - 60px);
     }
     .explorer_splitpane {
-        background-color: white;
+        @apply bg-new-gray-100;
     }
     .sidebar-nav-icon {
         padding-top: 16px;

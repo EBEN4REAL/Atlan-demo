@@ -20,22 +20,32 @@
                 >
                     <AtlanIcon icon="QueryGrey" />
                 </div>
+                <div
+                    v-if="type === 'glossaryPolicy'"
+                    class="flex items-center justify-center mr-2 bg-gray-100 border border-gray-200 rounded-full w-9 h-9"
+                >
+                    <AtlanIcon icon="GlossaryGray" />
+                </div>
                 <div class="flex flex-col">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center">
                             <div class="flex items-center">
                                 <img
+                                    v-if="type !== 'glossaryPolicy'"
                                     :src="`${getImage(
                                         connectionQfName?.split('/')[1]
                                     )}`"
                                     class="w-auto h-4 pr-1 rounded-tl rounded-bl"
                                 />
 
-                                <span
+                                <span v-if="type !== 'glossaryPolicy'"
                                     >{{ connectorName }}/{{
                                         connectionName
                                     }}</span
                                 >
+                                <span v-else>
+                                    {{ policy?.name }}
+                                </span>
                             </div>
                             <!-- <div v-if="policy.assets.length > 0">
                             <span class="text-gray-300 mx-1.5">•</span>
@@ -92,13 +102,23 @@
                     </span> -->
                     </div>
                     <div class="flex items-center">
-                        <span class="text-gray-500">{{ policy?.name }}</span>
-                        <span class="text-gray-300 mx-1.5">•</span>
+                        <span
+                            v-if="type !== 'glossaryPolicy'"
+                            class="text-gray-500"
+                            >{{ policy?.name }}</span
+                        >
+                        <span
+                            v-if="type !== 'glossaryPolicy'"
+                            class="text-gray-300 mx-1.5"
+                            >•</span
+                        >
                         <span
                             class="ml-1 text-gray-500"
                             data-test-id="policy-type"
                             >{{
-                                type === 'meta'
+                                type === 'glossaryPolicy'
+                                    ? 'Glossary Policy'
+                                    : type === 'meta'
                                     ? 'Metadata Policy'
                                     : 'Data Policy'
                             }}</span
@@ -108,7 +128,25 @@
             </div>
             <div class="flex items-center flex-1 pl-5">
                 <div class="flex flex-1">
-                    <a-tooltip placement="top">
+                    <a-tooltip v-if="type === 'glossaryPolicy'" placement="top">
+                        <template #title>
+                            <div>
+                                {{ policy?.glossaryQualifiedNames.length }}
+                                {{
+                                    policy.glossaryQualifiedNames.length > 1
+                                        ? 'glossaries'
+                                        : 'glossary'
+                                }}
+                            </div>
+                        </template>
+                        <div class="flex items-center w-10">
+                            <AtlanIcon icon="GlossaryGray" class="-mt-1" />
+                            <div class="ml-1 font-semibold text-gray-500">
+                                {{ policy?.glossaryQualifiedNames.length }}
+                            </div>
+                        </div>
+                    </a-tooltip>
+                    <a-tooltip v-if="type !== 'glossaryPolicy'" placement="top">
                         <template #title>
                             <div
                                 v-if="
@@ -133,7 +171,10 @@
                                 class="-mt-1"
                             />
                             <div
-                                v-if="!isAllAssets(policy.assets[0])"
+                                v-if="
+                                    type !== 'glossaryPolicy' &&
+                                    !isAllAssets(policy.assets[0])
+                                "
                                 class="ml-1 font-semibold text-gray-500"
                             >
                                 {{ policy.assets.length }}
@@ -147,33 +188,38 @@
                         </div>
                     </a-tooltip>
                     <span
-                        v-if="permissions.length || maskComputed"
+                        v-if="computedActions || maskComputed"
                         class="text-gray-300 mx-1.5"
                         >•</span
                     >
-                    <a-tooltip v-if="permissions.length" placement="top">
+                    <a-tooltip v-if="computedActions" placement="top">
                         <template #title>
-                            <div v-if="permissions.length !== 9">
-                                {{ permissions.length }}
+                            <div
+                                v-if="
+                                    computedActions <
+                                    (type !== 'glossaryPolicy' ? 9 : 5)
+                                "
+                            >
+                                {{ computedActions }}
                                 {{
-                                    permissions.length > 1
+                                    computedActions > 1
                                         ? 'permissions'
                                         : 'permission'
                                 }}
                             </div>
-                            <div v-if="permissions.length === 9">
-                                All permissions
-                            </div>
+                            <div v-else>All permissions</div>
                         </template>
                         <div class="font-semibold text-gray-500">
                             <AtlanIcon
                                 icon="ShieldBlank"
                                 class="-mt-1 icon-gray"
                             />
+
                             {{
-                                permissions.length === 9
+                                computedActions >=
+                                (type !== 'glossaryPolicy' ? 9 : 5)
                                     ? 'All'
-                                    : permissions.length
+                                    : computedActions
                             }}
                         </div>
                     </a-tooltip>
@@ -205,9 +251,9 @@
                             v-if="!policy.allow"
                             class="text-sm text-red-500"
                             >{{
-                                type === 'meta'
-                                    ? 'Denied Permission'
-                                    : 'Denied Query'
+                                type === 'data'
+                                    ? 'Denied Query'
+                                    : 'Denied Permission'
                             }}</span
                         >
                     </div>
@@ -306,6 +352,7 @@
     import {
         DataPolicies,
         MetadataPolicies,
+        glossaryQualifiedNames,
     } from '~/types/accessPolicies/personas'
     import { useConnectionStore } from '~/store/connection'
     import { useUtils } from '../assets/useUtils'
@@ -321,11 +368,13 @@
         },
         props: {
             policy: {
-                type: Object as PropType<DataPolicies & MetadataPolicies>,
+                type: Object as PropType<
+                    DataPolicies & MetadataPolicies & glossaryQualifiedNames
+                >,
                 required: true,
             },
             type: {
-                type: String as PropType<'meta' | 'data'>,
+                type: String as PropType<'meta' | 'data' | 'glossaryPolicy'>,
                 required: true,
             },
             selectedPolicy: {
@@ -387,8 +436,8 @@
             })
 
             const isAddAll = computed(() => {
-                if (policy.value.assets.length === 1) {
-                    if (policy.value.assets[0] === connectionQfName.value) {
+                if (policy.value?.assets?.length === 1) {
+                    if (policy.value?.assets[0] === connectionQfName.value) {
                         return true
                     }
                 }
@@ -414,11 +463,13 @@
             const handleClickPlicyCard = () => {
                 emit('clickCard', { ...policy.value }, type.value)
             }
-            const canDelete = computed(() =>
-                props.whitelistedConnectionIds.includes(
+            const canDelete = computed(() => {
+                // all admins can have edit n delete access to the glossary policy
+                if (type.value === 'glossaryPolicy') return true
+                return props.whitelistedConnectionIds.includes(
                     policy?.value?.connectionId
                 )
-            )
+            })
             const maskComputed = computed(
                 () =>
                     maskPersona.find((el) => el.value === policy.value.type)
@@ -432,6 +483,15 @@
                 }
                 return false
             }
+            const computedActions = computed(() => {
+                const actionsPolicy = policy.value?.actions || []
+                const min =
+                    actionsPolicy.includes('link-assets') &&
+                    actionsPolicy.includes('entity-update')
+                        ? 1
+                        : 0
+                return actionsPolicy?.length - min || 0
+            })
             return {
                 getPopoverContent,
                 removePolicy,
@@ -452,6 +512,7 @@
                 permissions,
                 createdAtFormated,
                 isAllAssets,
+                computedActions,
             }
         },
     })

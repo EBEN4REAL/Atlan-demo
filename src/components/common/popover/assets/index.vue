@@ -287,6 +287,7 @@
                 sizeBytes,
                 connectionName,
                 connectorName,
+                getProfilePath,
             } = useAssetInfo()
 
             const { classificationList } = useTypedefData()
@@ -315,7 +316,7 @@
             const schema = computed(() => schemaName(item.value))
             const title = computed(() => assetTypeLabel(item.value))
             const logoTitle = computed(() => getConnectorImage(item.value))
-            const path = computed(() => `/assets/${item.value.guid}`)
+            const path = computed(() => getProfilePath(item.value))
 
             return {
                 certificateStatus,

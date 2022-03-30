@@ -38,7 +38,7 @@
     import useConnectionData from '~/composables/connection/useConnectionData'
     import { useConnection } from '~/composables/connection/useConnection'
     import { usePersonaStore } from '~/store/persona'
-    import AtlanIcon from '../icon/atlanIcon.vue'
+    import AtlanIcon from '@/common/icon/atlanIcon.vue'
 
     export default defineComponent({
         components: { AtlanIcon },

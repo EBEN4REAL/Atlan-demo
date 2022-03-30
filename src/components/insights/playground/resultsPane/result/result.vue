@@ -7,7 +7,7 @@
                     activeInlineTab.playground.editor.columnList.length > 0 &&
                     activeInlineTab.playground.editor.dataList.length > 0 &&
                     isQueryRunning === 'success'
-                        ? '#fbfbfb'
+                        ? '#f6f7f9'
                         : '#ffffff',
             }"
         >

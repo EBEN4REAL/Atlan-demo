@@ -23,7 +23,8 @@
             <img
                 v-else-if="image"
                 :src="imageUrl(image)"
-                :class="`${height}`"
+                :class="`${height} ${width}`"
+                style="min-width: 1rem"
             />
             <span
                 v-else-if="emoji"

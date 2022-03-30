@@ -1,6 +1,10 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
-    <div class="flex flex-col">
+    <div
+        class="flex flex-col"
+        @mouseenter="showLineageGraphButton = true"
+        @mouseleave="showLineageGraphButton = false"
+    >
         <div
             class="flex items-start flex-1 px-3 py-1 transition-all duration-300"
         >
@@ -40,6 +44,40 @@
                                 class="h-3.5 ml-1 mb-0.5"
                             ></AtlanIcon
                         ></a-tooltip>
+                        <div
+                            v-if="
+                                item?.attributes?.__hasLineage &&
+                                !isLineageRoute
+                            "
+                            class="ml-1"
+                        >
+                            <a-tooltip placement="top"
+                                ><template #title>Lineage Exists</template>
+                                <AtlanIcon
+                                    icon="LineageSmall"
+                                    class="w-4 h-4 cursor-pointer mb-0.5 ml-2 text-gray-400"
+                                ></AtlanIcon>
+                            </a-tooltip>
+                        </div>
+                        <div
+                            v-if="
+                                item?.attributes?.__hasLineage &&
+                                showLineageGraphButton &&
+                                isLineageRoute
+                            "
+                            class="ml-4"
+                        >
+                            <a-tooltip placement="top"
+                                ><template #title
+                                    >View Lineage In Graph</template
+                                >
+                                <AtlanIcon
+                                    icon="Play"
+                                    class="w-4 h-4 my-auto text-gray-500 outline-none cursor-pointer"
+                                    @click="setColumnToSelect(item)"
+                                ></AtlanIcon>
+                            </a-tooltip>
+                        </div>
                     </div>
                     <div class="flex ml-1 gap-x-2">
                         <ColumnKeys
@@ -116,6 +154,8 @@
     import PopoverClassification from '@/common/popover/classification/index.vue'
     import ColumnKeys from '~/components/common/column/columnKeys.vue'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
+    import useLineageStore from '~/store/lineage'
+    import { useRoute } from 'vue-router'
 
     export default defineComponent({
         name: 'ColumnListItem',
@@ -141,6 +181,20 @@
         },
         emits: ['update'],
         setup(props, { emit }) {
+            const lineageStore = useLineageStore()
+
+            const setColumnToSelect = (item) => {
+                lineageStore.setColumnToSelect(item)
+            }
+
+            const showLineageGraphButton = ref(false)
+
+            const route = useRoute()
+
+            const isLineageRoute = computed(
+                () => route.params.tab === 'lineage'
+            )
+
             const {
                 title,
                 getConnectorImage,
@@ -246,6 +300,9 @@
                 isIndexed,
                 mouseEnterDelay,
                 enteredPill,
+                setColumnToSelect,
+                showLineageGraphButton,
+                isLineageRoute,
             }
         },
     })

@@ -5,6 +5,18 @@
             class="flex flex-col px-4 py-4 border-b border-gray-200"
         >
             <div class="flex items-center mb-1">
+                <a-tooltip v-if="connectorName(selectedAsset)" placement="left">
+                    <template #title>
+                        <span>{{ connectorName(selectedAsset) }} </span>
+                        <span v-if="connectionName(selectedAsset)">{{
+                            `/${connectionName(selectedAsset)}`
+                        }}</span>
+                    </template>
+                    <img
+                        :src="getConnectorImage(selectedAsset)"
+                        class="h-4 mr-1 mb-0.5"
+                    />
+                </a-tooltip>
                 <div
                     v-if="
                         ['column'].includes(
@@ -50,8 +62,38 @@
             </div>
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
+                    <AtlanIcon
+                        v-if="
+                            [
+                                'table',
+                                'view',
+                                'tablepartition',
+                                'materialisedview',
+                                'column',
+                                'schema',
+                                'query',
+                            ].includes(selectedAsset.typeName?.toLowerCase())
+                        "
+                        :icon="
+                            assetTypeImage(selectedAsset) ||
+                            selectedAsset?.typeName
+                        "
+                        class="self-center mr-1 text-gray-500 mb-0.5"
+                    ></AtlanIcon>
                     <a-tooltip
-                        v-if="connectorName(selectedAsset)"
+                        class="flex items-center"
+                        v-if="
+                            connectorName(selectedAsset) &&
+                            ![
+                                'table',
+                                'view',
+                                'tablepartition',
+                                'materialisedview',
+                                'column',
+                                'schema',
+                                'query',
+                            ].includes(selectedAsset.typeName?.toLowerCase())
+                        "
                         placement="left"
                     >
                         <template #title>
@@ -60,10 +102,15 @@
                                 `/${connectionName(selectedAsset)}`
                             }}</span>
                         </template>
-                        <img
-                            :src="getConnectorImage(selectedAsset)"
-                            class="h-4 mr-1 mb-0.5"
-                        />
+                        <span
+                            class="mr-1 text-sm tracking-wider text-gray-500 capitalize"
+                            >{{ connectorName(selectedAsset) }}
+                        </span>
+                        <!-- <img
+                                    :src="getConnectorImage(item)"
+                                    class="h-4 mb-0.5"
+                                /> -->
+                        <!-- <span class=""></span> -->
                     </a-tooltip>
                     <AtlanIcon
                         v-if="
@@ -84,21 +131,44 @@
                         class="h-4 mb-0.5 mr-1"
                     ></AtlanIcon>
 
-                    <div class="text-sm tracking-wider text-gray-500 uppercase">
+                    <div class="text-sm text-gray-500">
                         {{
                             assetTypeLabel(selectedAsset) ||
                             selectedAsset.typeName
                         }}
+                        <span
+                            v-if="
+                                ['SalesforceObject'].includes(
+                                    selectedAsset.typeName
+                                ) && isCustom(selectedAsset)
+                            "
+                            >(custom)</span
+                        >
+                        <span
+                            v-if="
+                                ['TableauDatasource'].includes(
+                                    selectedAsset.typeName
+                                ) && isPublished(selectedAsset)
+                            "
+                            >(Published)</span
+                        >
                     </div>
                 </div>
                 <a-button-group>
                     <a-tooltip title="Open">
                         <a-button
-                            v-if="showCTA('open')"
+                            v-if="
+                                showCTA('open') &&
+                                !(
+                                    isDrawer &&
+                                    route?.params?.id &&
+                                    assetType(selectedAsset) === 'Column'
+                                )
+                            "
                             class="flex items-center justify-center p-2"
                             @click="handleAction('open')"
                         >
-                            <AtlanIcon icon="Enter" class="w-auto h-4" />
+                            <AtlanIcon icon="EnterProfile" class="w-auto h-4" />
                         </a-button>
                     </a-tooltip>
 
@@ -170,51 +240,68 @@
             tab-position="right"
             :destroy-inactive-tab-pane="true"
         >
-            <a-tab-pane
+            <template
                 v-for="(tab, index) in getPreviewTabs(selectedAsset, isProfile)"
-                :key="index"
-                :destroy-inactive-tab-pane="true"
-                :disabled="isScrubbed(selectedAsset) && tab.scrubbed"
-                :class="index === activeKey ? 'flex flex-col' : ''"
             >
-                <template #tab>
-                    <PreviewTabsIcon
-                        :title="tab.tooltip"
-                        :icon="tab.icon"
-                        :image="tab.image"
-                        :emoji="tab.emoji"
-                        :active-icon="tab.activeIcon"
-                        :is-active="activeKey === index"
-                        :is-scrubbed="isScrubbed(selectedAsset) && tab.scrubbed"
-                        @click="onClickTabIcon(tab)"
+                <a-tab-pane
+                    v-if="
+                        tab.component === 'Jira' && !jiraAppInstalled
+                            ? false
+                            : true
+                    "
+                    :key="index"
+                    :destroy-inactive-tab-pane="true"
+                    :disabled="isScrubbed(selectedAsset) && tab.scrubbed"
+                    :class="index === activeKey ? 'flex flex-col' : ''"
+                >
+                    <template #tab>
+                        <PreviewTabsIcon
+                            :title="tab.tooltip"
+                            :icon="tab.icon"
+                            :image="tab.image"
+                            :emoji="tab.emoji"
+                            :active-icon="tab.activeIcon"
+                            :is-active="activeKey === index"
+                            :is-scrubbed="
+                                isScrubbed(selectedAsset) && tab.scrubbed
+                            "
+                            @click="onClickTabIcon(tab)"
+                        />
+                    </template>
+                    <NoAccess
+                        v-if="isScrubbed(selectedAsset) && tab.scrubbed"
                     />
-                </template>
-                <NoAccess v-if="isScrubbed(selectedAsset) && tab.scrubbed" />
-                <component
-                    :is="tab.component"
-                    v-else-if="tab.component"
-                    :key="selectedAsset.guid"
-                    :ref="
-                        (el) => {
-                            if (el) tabChildRef[index] = el
-                        }
-                    "
-                    :selected-asset="selectedAsset"
-                    :is-drawer="isDrawer"
-                    :read-permission="!isScrubbed(selectedAsset)"
-                    :edit-permission="
-                        selectedAssetUpdatePermission(selectedAsset, isDrawer)
-                    "
-                    :tab="tab"
-                    :data="tab.data"
-                    :collection-data="{
-                        collectionInfo,
-                        hasCollectionReadPermission,
-                        hasCollectionWritePermission,
-                        isCollectionCreatedByCurrentUser,
-                    }"
-                ></component>
-            </a-tab-pane>
+                    <component
+                        :is="tab.component"
+                        v-else-if="tab.component"
+                        :key="selectedAsset.guid"
+                        :ref="
+                            (el) => {
+                                if (el) tabChildRef[index] = el
+                            }
+                        "
+                        :is-scrubbed="isScrubbed(selectedAsset)"
+                        :selected-asset="selectedAsset"
+                        :is-drawer="isDrawer"
+                        :read-permission="!isScrubbed(selectedAsset)"
+                        :edit-permission="
+                            selectedAssetUpdatePermission(
+                                selectedAsset,
+                                isDrawer
+                            )
+                        "
+                        :tab="tab"
+                        :data="tab.data"
+                        :read-only-in-cm="readOnlyInCm"
+                        :collection-data="{
+                            collectionInfo,
+                            hasCollectionReadPermission,
+                            hasCollectionWritePermission,
+                            isCollectionCreatedByCurrentUser,
+                        }"
+                    ></component>
+                </a-tab-pane>
+            </template>
             <template #moreIcon>
                 <div class="flex">
                     <AtlanIcon
@@ -263,6 +350,8 @@
         resourceId,
         disableSlackAsk,
     } from '~/composables/integrations/slack/useAskAQuestion'
+    import { issuesCount } from '~/composables/integrations/jira/useJiraTickets'
+    import integrationStore from '~/store/integrations/index'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -301,6 +390,10 @@
             ),
             linkedAssets: defineAsyncComponent(
                 () => import('./linkedAssets/linkedAssetsWrapper.vue')
+            ),
+            Jira: defineAsyncComponent(
+                () =>
+                    import('@/common/assets/preview/integrations/jira/jira.vue')
             ),
             SlackAskButton,
         },
@@ -341,6 +434,8 @@
             const actions = computed(() =>
                 getAllowedActions(selectedAsset.value)
             )
+            const readOnlyInCm = ref(true)
+
             provide('actions', actions)
             provide('selectedAsset', selectedAsset)
             provide('sidebarPage', page)
@@ -379,8 +474,10 @@
                 assetTypeLabel,
                 getProfilePath,
                 isScrubbed,
-                assetPermission,
+                assetTypeImage,
                 selectedAssetUpdatePermission,
+                isCustom,
+                isPublished,
             } = useAssetInfo()
 
             const activeKey = ref(0)
@@ -437,11 +534,25 @@
                 { debounce: 100, immediate: true }
             )
 
-            const switchTab = (asset, tabName: string) => {
+            const switchTab = (
+                asset,
+                tabName: string,
+                enableEditinCM = false
+            ) => {
+                if (enableEditinCM) {
+                    readOnlyInCm.value = false
+                }
+
                 const idx = getPreviewTabs(asset, isProfile.value).findIndex(
                     (tl) => tl.name === tabName
                 )
                 if (idx > -1) activeKey.value = idx
+
+                // After a while change back to read state as the same component is being used for other CM tabs
+
+                setTimeout(() => {
+                    readOnlyInCm.value = true
+                }, 1000)
             }
 
             provide('switchTab', switchTab)
@@ -542,7 +653,29 @@
                 })
             })
 
+            const {
+                count,
+                isReady: countReady,
+                mutate,
+            } = issuesCount(false, false)
+
+            const store = integrationStore()
+
+            const { tenantJiraStatus } = toRefs(store)
+            watch(
+                () => tenantJiraStatus.value.configured,
+                (v) => {
+                    if (v) mutate()
+                },
+                { immediate: true }
+            )
+
+            const jiraAppInstalled = computed(
+                () => countReady?.value && !!count.value
+            )
+
             return {
+                jiraAppInstalled,
                 disableSlackAsk,
                 tabChildRef,
                 activeKey,
@@ -581,13 +714,17 @@
                 selectedAssetUpdatePermission,
                 showCTA,
                 onClickTabIcon,
-
+                assetTypeImage,
+                route,
                 // for collection access
                 collectionInfo,
                 hasCollectionReadPermission,
                 hasCollectionWritePermission,
                 isCollectionCreatedByCurrentUser,
                 handleQueryAction,
+                readOnlyInCm,
+                isCustom,
+                isPublished,
             }
         },
     })

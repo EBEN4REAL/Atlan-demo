@@ -5,7 +5,7 @@
             fullSreenState ? 'height: calc( 100vh - 40px )' : 'height:100vh'
         "
     >
-        <div class="relative flex flex-col bg-gray-light">
+        <div class="relative flex flex-col bg-new-gray-100">
             <div class="flex w-full text-gray">
                 <a-tabs
                     v-model:activeKey="activeInlineTabKey"
@@ -174,7 +174,7 @@
         <div
             v-if="activeInlineTabKey"
             class="w-full"
-            style="max-height: 100%; min-height: 92%; height: 100%"
+            style="max-height: 100%; min-height: 70%; height: 100%"
             :class="$style.splitspane_playground"
         >
             <splitpanes

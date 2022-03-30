@@ -1,6 +1,6 @@
 <template>
-    <div class="flex flex-col items-center w-full h-full bg-white">
-        <div class="w-full p-4 pb-1">
+    <div class="flex flex-col items-center w-full h-full bg-new-gray-100">
+        <div class="w-full pt-2 pb-1 pl-2 pr-2">
             <Connector
                 v-model:data="connectorsData"
                 :bgGrayForSelector="true"
@@ -27,44 +27,46 @@
                 @update:data="setConnector"
             ></Connector>
 
-            <div class="flex flex-row space-x-2">
+            <div class="flex flex-row ml-2 mr-2 space-x-2">
                 <a-input
                     v-model:value="queryText"
                     class="h-8 mt-1 rounded"
                     :class="$style.inputSearch"
                     placeholder="Search tables and views"
                 >
-                    <template #suffix>
+                    <template #prefix>
                         <AtlanIcon icon="Search" color="#6F7590" />
                     </template>
-                </a-input>
-                <a-popover trigger="click" placement="bottomLeft">
-                    <a-button
-                        class="flex items-center w-8 h-8 p-2 mt-1"
-                        :class="$style.filterButton"
-                    >
-                        <template #icon>
-                            <AtlanIcon
-                                v-if="totalFilteredCount === 0"
-                                icon="Filter"
-                                class="-ml-0.5"
-                            />
-                            <AtlanIcon
-                                v-else
-                                icon="FilterDot"
-                                class="-ml-0.5"
-                            />
-                        </template>
-                    </a-button>
-                    <template #content>
-                        <SchemaFilter @change="onFilterChange" />
+                    <template #suffix>
+                        <a-popover trigger="click" placement="bottomLeft">
+                            <a-button
+                                class="flex items-center justify-center w-6 h-6 p-2 border-none shadow-none hover:bg-new-gray-100"
+                                :class="$style.filterButton"
+                            >
+                                <template #icon>
+                                    <AtlanIcon
+                                        v-if="totalFilteredCount === 0"
+                                        icon="Filter"
+                                        class="-ml-0.5"
+                                    />
+                                    <AtlanIcon
+                                        v-else
+                                        icon="FilterDot"
+                                        class="-ml-0.5"
+                                    />
+                                </template>
+                            </a-button>
+                            <template #content>
+                                <SchemaFilter @change="onFilterChange" />
+                            </template>
+                        </a-popover>
                     </template>
-                </a-popover>
+                </a-input>
             </div>
         </div>
 
         <div
-            class="w-full px-4 py-2 pt-1 overflow-x-hidden overflow-y-auto"
+            class="w-full px-2 py-2 pt-1 overflow-x-hidden overflow-y-auto"
             :style="
                 fullSreenState
                     ? 'height: calc( 100vh - 140px )'
@@ -116,7 +118,8 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { tablesData } from './tablesDemoData'
     import { connectorsWidgetInterface } from '~/types/insights/connectorWidget.interface'
-    import Connector from '~/components/insights/common/connector/connector.vue'
+    // import Connector from '~/components/insights/common/connector/connector.vue'
+    import Connector from '~/components/insights/common/connector/connectorNew.vue'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import { useUtils } from '~/components/insights/common/composables/useUtils'
@@ -141,6 +144,9 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+            const activeInlineTabKey = inject(
+                'activeInlineTabKey'
+            ) as Ref<string>
 
             const BItypes = getBISourceTypes()
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
@@ -247,7 +253,16 @@
             //     selectNode(selected, event)
             // }
 
-            const facets = ref({})
+            const facets = ref(
+                activeInlineTab.value.explorer.schema.facetsFilters ?? {}
+            )
+
+            watch(activeInlineTabKey, (newActiveInlineTabKey) => {
+                const _index = tabs.value.findIndex(
+                    (tab) => tab.key === newActiveInlineTabKey
+                )
+                facets.value = tabs.value[_index].explorer.schema.facetsFilters
+            })
             const sortOrderTable = ref('name.keyword-asc')
             const sortOrderColumn = ref('order-asc')
             const onFilterChange = (type, value) => {
@@ -264,20 +279,24 @@
 
             const totalFilteredCount = computed(() => {
                 let count = 0
-                Object.keys(facets.value).forEach((key) => {
-                    if (Array.isArray(facets.value[key])) {
-                        if (facets.value[key].length > 0) {
-                            count += 1
+                try {
+                    Object.keys(facets.value ?? {}).forEach((key) => {
+                        if (Array.isArray(facets.value[key])) {
+                            if (facets.value[key].length > 0) {
+                                count += 1
+                            }
+                        } else if (
+                            typeof facets.value[key] === 'object' &&
+                            facets.value[key] !== null
+                        ) {
+                            if (Object.keys(facets.value[key]).length > 0) {
+                                count += 1
+                            }
                         }
-                    } else if (
-                        typeof facets.value[key] === 'object' &&
-                        facets.value[key] !== null
-                    ) {
-                        if (Object.keys(facets.value[key]).length > 0) {
-                            count += 1
-                        }
-                    }
-                })
+                    })
+                } catch (e) {
+                    console.error(e)
+                }
                 return count
             })
 
@@ -482,7 +501,7 @@
         background: #ffffff;
         border: 1px solid #e9ebf1;
         box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
-        border-radius: 8px;
+        border-radius: 4px;
     }
 </style>
 

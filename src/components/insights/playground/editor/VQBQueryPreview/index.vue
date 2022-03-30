@@ -20,11 +20,11 @@
 
 <script lang="ts">
     import { defineComponent, inject, ComputedRef, Ref, toRaw } from 'vue'
+    import { format } from 'sql-formatter'
+    import { useVModels } from '@vueuse/core'
     import SQLSnippet from '~/components/common/sql/snippet.vue'
     import { generateSQLQuery } from '~/components/insights/playground/editor/vqb/composables/generateSQLQuery'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
-    import { format } from 'sql-formatter'
-    import { useVModels } from '@vueuse/core'
     import { useActiveTab } from '~/components/insights/common/composables/useActiveTab'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
 
@@ -65,6 +65,9 @@
                     indent: '    ', // Defaults to two spaces
                 }
             )
+                .replaceAll('` ', '`') // needed for backticks, as formatter put space by default between backticks
+                .replaceAll(' `', '`')
+                .replaceAll('AS`', 'AS `') // previous replace removes space bw AS and backtick - undoing that change with this replace
 
             const handleAddNewTab = () => {
                 const inlineTabData = generateNewActiveTab({

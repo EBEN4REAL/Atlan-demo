@@ -1,6 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable arrow-body-style */
-import { computed } from 'vue'
+import { computed, toRefs } from 'vue'
 import { useTimeAgo } from '@vueuse/core'
 import { useConnectionStore } from '~/store/connection'
 import { assetInterface } from '~/types/assets/asset.interface'
@@ -9,7 +9,7 @@ import { getCountString, getSizeString } from '~/utils/number'
 import { SourceList } from '~/constant/source'
 import { assetTypeList } from '~/constant/assetType'
 import { dataTypeCategoryList } from '~/constant/dataType'
-import { previewTabs } from '~/constant/previewTabs'
+import { previewTabs, JiraPreviewTab } from '~/constant/previewTabs'
 import { profileTabs } from '~/constant/profileTabs'
 import { summaryVariants } from '~/constant/summaryVariants'
 import { formatDateTime } from '~/utils/date'
@@ -20,6 +20,7 @@ import { assetActions } from '~/constant/assetActions'
 import useGlossaryStore from '~/store/glossary'
 import useCustomMetadataFacet from '../custommetadata/useCustomMetadataFacet'
 import useConnectionData from '../connection/useConnectionData'
+import integrationStore from '~/store/integrations/index'
 
 // import { formatDateTime } from '~/utils/date'
 
@@ -169,6 +170,10 @@ export default function useAssetInfo() {
         const found = assetTypeList.find((d) => d.id === assetType(asset))
         return found?.label
     }
+    const assetTypeImage = (asset: assetInterface) => {
+        const found = assetTypeList.find((d) => d.id === assetType(asset))
+        return found?.image
+    }
 
     const assetTypeRelations = (asset: assetInterface) => {
         const found = assetTypeList.find((d) => d.id === assetType(asset))
@@ -275,6 +280,8 @@ export default function useAssetInfo() {
     const { getList: cmList } = useCustomMetadataFacet()
 
     const getPreviewTabs = (asset: assetInterface, inProfile: boolean) => {
+        const store = integrationStore()
+        const { tenantJiraStatus } = toRefs(store)
         let customTabList = []
         if (cmList(assetType(asset))?.length > 0) {
             customTabList = cmList(assetType(asset)).map((i) => {
@@ -295,6 +302,7 @@ export default function useAssetInfo() {
 
         let allTabs = [
             ...getTabs(previewTabs, assetType(asset)),
+            ...(tenantJiraStatus.value.configured ? getTabs([JiraPreviewTab], assetType(asset)) : []),
             ...getTabs(customTabList, assetType(asset)),
         ]
 
@@ -360,11 +368,15 @@ export default function useAssetInfo() {
 
     const getProfilePath = (asset, appendOverview = false) => {
         if (assetType(asset) === 'Column') {
-            const tableGuid = asset?.attributes?.table?.guid
+            const tableGuid =
+                asset?.attributes?.table?.guid ||
+                asset?.attributes?.tablePartition?.guid
             if (tableGuid) {
                 return `/assets/${tableGuid}/overview?column=${asset?.guid}`
             }
-            const viewGuid = asset?.attributes?.view?.guid
+            const viewGuid =
+                asset?.attributes?.view?.guid ||
+                asset?.attributes?.materialisedView?.guid
             if (viewGuid) {
                 return `/assets/${viewGuid}/overview?column=${asset?.guid}`
             }
@@ -731,7 +743,10 @@ export default function useAssetInfo() {
         return attributes(asset)?.certificateStatusMessage
     }
     const certificateUpdatedBy = (asset: assetInterface) => {
-        return attributes(asset)?.certificateUpdatedBy
+        const username = attributes(asset)?.certificateUpdatedBy
+        return username?.startsWith('service-account-apikey-')
+            ? 'API key'
+            : username
     }
 
     const certificateUpdatedAt = (
@@ -835,14 +850,15 @@ export default function useAssetInfo() {
         }
 
         if (typeName) {
-            return evaluations.find(
+            const evaluationObject = evaluations.find(
                 (ev) =>
                     (ev?.entityGuidEnd1 === asset?.guid ||
                         ev?.entityGuidEnd2 === asset?.guid) &&
                     ev?.action === action &&
                     (ev?.entityTypeEnd1 === typeName ||
                         ev?.entityTypeEnd2 === typeName)
-            )?.allowed
+            )
+            return evaluationObject?.allowed
         }
 
         return evaluations.find(
@@ -875,6 +891,9 @@ export default function useAssetInfo() {
         }
         return false
     }
+
+    const isPublished = (asset: assetInterface) =>
+        attributes(asset)?.isPublished
 
     const isGTC = (asset: assetInterface) => {
         if (isGTCByType(asset.typeName)) {
@@ -1253,6 +1272,7 @@ export default function useAssetInfo() {
         dataTypeImage,
         dataTypeImageForColumn,
         assetTypeLabel,
+        assetTypeImage,
         getActions,
         getAssetQueryPath,
         link,
@@ -1327,5 +1347,6 @@ export default function useAssetInfo() {
         formula,
         getConnectorLabelByName,
         isIndexed,
+        isPublished,
     }
 }

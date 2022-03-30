@@ -393,7 +393,7 @@
                             val ? 'enable' : 'disable'
                         } persona ${selectedPersona.value.displayName}`,
                         duration: 1.5,
-                        key,
+                        key: messageKey,
                     })
                     // enableDisableLoading.value = false
                 }

@@ -419,7 +419,7 @@
                 useAddEvent('governance', 'requests', 'resolved', {
                     action,
                     request_type,
-                    widget_type:'asset sidebar'
+                    widget_type:'sidebar'
                 })
             }
             async function handleApproval(messageProp = '') {

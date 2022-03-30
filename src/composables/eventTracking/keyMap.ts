@@ -469,11 +469,22 @@ const keyMap = {
             searched: {
                 action: 'governance_requests_searched',
             },
+            created: {
+                action: 'governance_requests_created',
+                properties: (props) => ({
+                    request_type: props.request_type,
+                    asset_type: props.asset_type,
+                    count: props.count,
+                    actions: props.action,
+                }),
+            },
             resolved: {
                 action: 'governance_requests_resolved',
                 properties: (props) => ({
                     // approve/decline
                     action: props.action,
+                    request_type: props.request_type,
+                    widget_type:props.widget_type
                 }),
             },
         },

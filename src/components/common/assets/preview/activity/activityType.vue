@@ -70,8 +70,5 @@
                 default: () => '',
             },
         },
-        setup(props) {
-            console.log(props.data)
-        },
     })
 </script>

@@ -53,7 +53,7 @@
                 v-else-if="columnsList.length > 0 && !isLoading"
                 :columns="columns"
                 :data-source="columnsData.filteredList"
-                :scroll="{ y: 342, x: true }"
+                :scroll="{ y: 342, x: 850 }"
                 :pagination="false"
                 :custom-row="customRow"
                 :row-class-name="rowClassName"
@@ -598,6 +598,7 @@
                         key: 'data_type',
                     },
                     {
+                        width: 300,
                         title: 'Description',
                         dataIndex: 'description',
                         key: 'description',

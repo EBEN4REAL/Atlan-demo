@@ -8,7 +8,7 @@
         :mouse-leave-delay="mouseLeaveDelay"
     >
         <template v-if="truncated" #title>
-            <div v-linkified class="">
+            <div v-linkified class="whitespace-pre-wrap">
                 {{ tooltipText }}
             </div>
         </template>
@@ -62,11 +62,11 @@
             },
             width: {
                 type: String,
-                default: 'initial',
+                default: 'intial',
             },
             classes: {
                 type: String,
-                default: 'initial',
+                default: 'intial',
             },
             placement: {
                 type: String,

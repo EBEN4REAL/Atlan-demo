@@ -502,7 +502,7 @@
             position: absolute;
             z-index: 99;
             left: 115px !important;
-            bottom: 11px !important;
+            top: 15px !important;
         }
     }
 </style>

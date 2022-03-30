@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex flex-col justify-between px-4 py-3 border rounded cursor-pointer persona-card hover:bg-gray-100"
+        class="flex flex-col justify-between p-3 border rounded-lg cursor-pointer persona-card hover:border-primary"
         @click="$emit('select', persona)"
     >
         <div>
@@ -66,16 +66,28 @@
                 />
             </div>
         </div>
+        <div
+            class="flex items-center justify-between pt-2 mt-3 border-t border-gray-200"
+        >
+            <div class="text-xs text-gray500">Updated {{ lastUpdate }}</div>
+            <div
+                :class="`p-1 text-xs rounded tag ${
+                    persona.enabled
+                        ? 'enabled-tag'
+                        : 'disabled-tag text-gray-500'
+                } `"
+            >
+                {{ persona.enabled ? 'Enabled' : 'Disabled' }}
+            </div>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, onMounted, toRefs } from 'vue'
-    import { storeToRefs } from 'pinia'
-    import { useRoute, useRouter } from 'vue-router'
+    import { defineComponent, computed, toRefs } from 'vue'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-
+    import { useTimeAgo } from '@vueuse/core'
     export default defineComponent({
         name: 'PersonaCard',
         components: { AtlanIcon },
@@ -86,10 +98,13 @@
             },
         },
         emits: ['select'],
+
         setup(props) {
             const { persona } = toRefs(props)
             const { getConnectorImageMap } = useAssetInfo()
-
+            const lastUpdate = computed(() => {
+                return useTimeAgo(persona.value.updatedAt).value
+            })
             const getUniqueTypeIcons = () => {
                 const displayImages = {
                     connectors: new Set(),
@@ -113,17 +128,35 @@
             }
             return {
                 getUniqueTypeIcons,
+                lastUpdate,
             }
         },
     })
 </script>
 <style lang="less" scoped>
     .persona-card {
-        height: 120px;
+        // height: 120px;
+        &:hover {
+            box-shadow: 0px 2px 8px 0px #0000001a;
+        }
     }
     .dot {
         height: 4px;
         width: 4px;
         border-radius: 50%;
+    }
+    .enabled-tag {
+        border: 1px solid #0080624d;
+        background: #e3fdf7;
+        color: #008062;
+    }
+    .tag {
+        height: fit-content;
+        line-height: 10px !important;
+    }
+    .disabled-tag {
+        height: fit-content;
+        border: 1px solid #e0e4eb;
+        background: #f6f7f9;
     }
 </style>

@@ -68,7 +68,7 @@
                 <!-- Edit -->
                 <a-popover
                     v-model:visible="visibleEnable"
-                    :align="{ offset: [5, -10] }"
+                    :align="{ offset: [21, -10] }"
                     trigger="click"
                     placement="bottomRight"
                 >
@@ -80,38 +80,32 @@
                                     $emit('updateStatus', !persona.enabled)
                                 }
                             "
-                            :class="`flex p-2 text-sm font-bold ${
+                            :class="`flex p-2 py-2.5 text-sm font-bold ${
                                 !persona.enabled
                                     ? 'text-success'
                                     : 'text-gray-700'
-                            } cursor-pointer btn-status hover:bg-gray-100`"
+                            } cursor-pointer btn-status shadow-box  hover:bg-gray-100`"
                         >
                             <AtlanIcon
                                 :icon="!persona.enabled ? 'Check' : 'NoAllow'"
                                 class="mr-1"
-                            />{{ !persona.enabled ? 'Enabled' : 'Disabled' }}
+                            />{{ !persona.enabled ? 'Enable' : 'Disable' }}
                             persona
                         </div>
                     </template>
-                    <AtlanButton
-                        class="flex items-center justify-center h-8 px-2 mr-2 border rounded cursor-pointer customShadow"
-                        color="secondary"
+
+                    <div
+                        class="flex text-sm font-bold cursor-pointer btn-status hover:bg-gray-100 py-1.5 px-2.5 border-gray-300 border mr-3 rounded items-center"
+                        :class="`${
+                            persona.enabled ? 'text-success' : 'text-gray-700'
+                        } `"
                     >
-                        <div
-                            class=""
-                            :class="`flex text-sm font-bold cursor-pointer ${
-                                persona.enabled
-                                    ? 'text-success'
-                                    : 'text-gray-700'
-                            } btn-status hover:bg-gray-100`"
-                        >
-                            <AtlanIcon
-                                :icon="persona.enabled ? 'Check' : 'NoAllow'"
-                                class="mr-1"
-                            />{{ persona.enabled ? 'Enabled' : 'Disabled' }}
-                            <AtlanIcon icon="ChevronDown" class="ml-2" />
-                        </div>
-                    </AtlanButton>
+                        <AtlanIcon
+                            :icon="persona.enabled ? 'Check' : 'NoAllow'"
+                            class="mr-1.5"
+                        />{{ persona.enabled ? 'Enabled' : 'Disabled' }}
+                        <AtlanIcon icon="ChevronDown" class="ml-2" />
+                    </div>
                 </a-popover>
                 <a-tooltip v-auth="map.UPDATE_PERSONA" placement="bottom">
                     <template #title>
@@ -330,6 +324,10 @@
 </script>
 <style lang="less"></style>
 <style lang="less" scoped>
+    .shadow-box {
+        min-width: 145px;
+        box-shadow: 0px 9px 32px 0px #0000001f;
+    }
     .btn-status {
         height: fit-content !important;
     }

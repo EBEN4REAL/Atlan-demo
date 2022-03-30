@@ -901,6 +901,9 @@
             :global(.ant-tabs-nav::before) {
                 @apply border-new-gray-300 !important;
             }
+            :global(.ant-tabs-nav-list .ant-tabs-tab:not(:first-child)) {
+                margin-left: 16px !important;
+            }
         }
     }
 </style>

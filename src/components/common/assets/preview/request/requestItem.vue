@@ -162,9 +162,9 @@
                         >
                     </div>
                 </div>
-                <div class="ml-auto text-sm text-right text-gray-500">
+                <!-- <div class="ml-auto text-sm text-right text-gray-500">
                     {{ createdTime(item.createdAt) }}
-                </div>
+                </div> -->
             </div>
 
             <div v-else class="flex items-center justify-between mt-2">

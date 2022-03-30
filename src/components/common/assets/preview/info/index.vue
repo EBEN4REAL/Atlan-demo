@@ -699,6 +699,24 @@
 
             <div
                 v-if="
+                    selectedAsset.guid &&
+                    ['Collection'].includes(selectedAsset.typeName)
+                "
+                class="flex flex-col px-5"
+            >
+                <div class="mb-1 text-sm text-gray-500">Owner</div>
+                <div class="flex">
+                    <PopOverUser :item="createdBy(selectedAsset)">
+                        <UserPill
+                            :username="createdBy(selectedAsset)"
+                            @click="handleClickUser(createdBy(selectedAsset))"
+                        ></UserPill
+                    ></PopOverUser>
+                </div>
+            </div>
+
+            <div
+                v-if="
                     selectedAsset.guid && selectedAsset.typeName == 'Connection'
                 "
                 class="flex flex-col"
@@ -706,7 +724,7 @@
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
                 >
-                    <span> Admins</span>
+                    <span>Admins</span>
                 </div>
 
                 <Admins
@@ -722,7 +740,8 @@
                 v-if="
                     selectedAsset.guid &&
                     selectedAsset.typeName == 'Collection' &&
-                    readPermission
+                    (localAdmins?.adminUsers?.length > 0 ||
+                        localAdmins?.adminGroups?.length > 0)
                 "
                 class="flex flex-col"
             >
@@ -744,7 +763,10 @@
 
             <div
                 v-if="
-                    selectedAsset.guid && selectedAsset.typeName == 'Collection'
+                    selectedAsset.guid &&
+                    selectedAsset.typeName == 'Collection' &&
+                    (localViewers?.viewerUsers?.length > 0 ||
+                        localViewers?.viewerGroups?.length > 0)
                 "
                 class="flex flex-col"
             >
@@ -971,6 +993,9 @@
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import ColumnKeys from '~/components/common/column/columnKeys.vue'
     import CustomMetadataPreview from '@/common/input/customMetadata/index.vue'
+    import { useUserPreview } from '~/composables/user/showUserPreview'
+    import UserPill from '@/common/pills/user.vue'
+    import PopOverUser from '@/common/popover/user/user.vue'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -1002,6 +1027,8 @@
             FieldCount,
             DetailsContainer,
             PreviewTabsIcon,
+            UserPill,
+            PopOverUser,
             SampleDataTable: defineAsyncComponent(
                 () =>
                     import(
@@ -1086,6 +1113,7 @@
                 picklistValues,
                 sourceId,
                 formula,
+                createdBy,
             } = useAssetInfo()
 
             const {
@@ -1158,6 +1186,13 @@
             const handleCopyValue = async (value, type) => {
                 await copyToClipboard(value)
                 message.success(`${type} copied!`)
+            }
+
+            const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
+
+            const handleClickUser = (username: string) => {
+                setUserUniqueAttribute(username, 'username')
+                showUserPreview({ allowed: ['about', 'assets', 'groups'] })
             }
 
             return {
@@ -1238,6 +1273,8 @@
                 picklistValues,
                 sourceId,
                 formula,
+                handleClickUser,
+                createdBy,
             }
         },
     })

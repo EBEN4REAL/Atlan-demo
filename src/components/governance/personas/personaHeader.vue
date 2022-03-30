@@ -64,13 +64,13 @@
                     >
                 </div>
             </div>
-            <a-button-group>
+            <a-button-group class="flex items-center">
                 <!-- Edit -->
                 <a-popover
                     v-model:visible="visibleEnable"
                     :align="{ offset: [5, -10] }"
                     trigger="click"
-                    placement="bottom"
+                    placement="bottomRight"
                 >
                     <template #content>
                         <div
@@ -93,16 +93,25 @@
                             persona
                         </div>
                     </template>
-                    <div
-                        :class="`flex p-2 mr-3 text-sm font-bold cursor-pointer ${
-                            persona.enabled ? 'text-success' : 'text-gray-700'
-                        } btn-status hover:bg-gray-100`"
+                    <AtlanButton
+                        class="flex items-center justify-center h-8 px-2 mr-2 border rounded cursor-pointer customShadow"
+                        color="secondary"
                     >
-                        <AtlanIcon
-                            :icon="persona.enabled ? 'Check' : 'NoAllow'"
-                            class="mr-1"
-                        />{{ persona.enabled ? 'Enabled' : 'Disabled' }}
-                    </div>
+                        <div
+                            class=""
+                            :class="`flex text-sm font-bold cursor-pointer ${
+                                persona.enabled
+                                    ? 'text-success'
+                                    : 'text-gray-700'
+                            } btn-status hover:bg-gray-100`"
+                        >
+                            <AtlanIcon
+                                :icon="persona.enabled ? 'Check' : 'NoAllow'"
+                                class="mr-1"
+                            />{{ persona.enabled ? 'Enabled' : 'Disabled' }}
+                            <AtlanIcon icon="ChevronDown" class="ml-2" />
+                        </div>
+                    </AtlanButton>
                 </a-popover>
                 <a-tooltip v-auth="map.UPDATE_PERSONA" placement="bottom">
                     <template #title>

@@ -75,9 +75,9 @@
 <script lang="ts">
     import { computed, defineComponent, ref, toRefs } from 'vue'
     import AssetFilters from '@/common/assets/filters/index.vue'
-    import WorkflowSelector from '~/workflowsv2/components/common/workflowSelector.vue'
-    import PackageWorkflowSelector from '~/workflowsv2/components/common/packageWorkflowSelector.vue'
-    import StatusSelector from '~/workflowsv2/components/common/statusSelector.vue'
+    import WorkflowSelector from '~/workflowsv2/components/common/selectors/workflowSelector.vue'
+    import PackageWorkflowSelector from '~/workflowsv2/components/common/selectors/packageWorkflowSelector.vue'
+    import StatusSelector from '~/workflowsv2/components/common/selectors/statusSelector.vue'
     import TabbedDateRangePicker from '~/workflowsv2/components/common/tabbedDateRangePicker.vue'
     import { runFilter } from '~/workflowsv2/constants/filters'
 

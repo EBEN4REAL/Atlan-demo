@@ -80,7 +80,8 @@
         name: 'WorkflowPreview',
         components: {
             PreviewTabsIcon,
-            info: defineAsyncComponent(() => import('./previewTabs/info.vue')),
+            info: defineAsyncComponent(() => import('./tabs/info.vue')),
+            runs: defineAsyncComponent(() => import('./tabs/runs.vue')),
         },
         props: {
             workflow: {
@@ -104,7 +105,9 @@
             const pkg = computed(
                 () =>
                     workflowStore.packageMeta?.[
-                        workflow.value?.metadata?.['package.argoproj.io/name']
+                        workflow.value?.metadata?.annotations?.[
+                            'package.argoproj.io/name'
+                        ]
                     ] || {}
             )
 

@@ -1,7 +1,7 @@
 <template>
     <a-dropdown :trigger="['click']" v-model:visible="dropdownVisible">
         <div
-            class="flex items-center w-64 h-8 px-2 py-1 text-gray-500 border border-gray-300 rounded cursor-pointer gap-x-2"
+            class="flex items-center w-64 h-8 px-2 py-1 text-gray-500 transition-colors duration-300 border border-gray-300 rounded cursor-pointer gap-x-2 hover:border-primary-focus"
         >
             <img
                 v-if="packageId && icon(selectedPackage)"

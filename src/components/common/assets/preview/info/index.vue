@@ -36,7 +36,8 @@
                     isGTC(selectedAsset) ||
                     selectedAsset.typeName === 'Connection' ||
                     selectedAsset.typeName === 'Process' ||
-                    selectedAsset.typeName === 'Query'
+                    selectedAsset.typeName === 'Query' ||
+                    selectedAsset.typeName === 'Collection'
                 "
                 class="flex flex-col"
             >
@@ -674,7 +675,9 @@
             <div
                 v-if="
                     selectedAsset.guid &&
-                    !['Column', 'Connection'].includes(selectedAsset.typeName)
+                    !['Column', 'Connection', 'Collection'].includes(
+                        selectedAsset.typeName
+                    )
                 "
                 class="flex flex-col"
             >
@@ -696,6 +699,24 @@
 
             <div
                 v-if="
+                    selectedAsset.guid &&
+                    ['Collection'].includes(selectedAsset.typeName)
+                "
+                class="flex flex-col px-5"
+            >
+                <div class="mb-1 text-sm text-gray-500">Owner</div>
+                <div class="flex">
+                    <PopOverUser :item="createdBy(selectedAsset)">
+                        <UserPill
+                            :username="createdBy(selectedAsset)"
+                            @click="handleClickUser(createdBy(selectedAsset))"
+                        ></UserPill
+                    ></PopOverUser>
+                </div>
+            </div>
+
+            <div
+                v-if="
                     selectedAsset.guid && selectedAsset.typeName == 'Connection'
                 "
                 class="flex flex-col"
@@ -703,7 +724,7 @@
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
                 >
-                    <span> Admins</span>
+                    <span>Admins</span>
                 </div>
 
                 <Admins
@@ -712,6 +733,56 @@
                     :selected-asset="selectedAsset"
                     :edit-permission="editPermission"
                     @change="handleChangeAdmins"
+                />
+            </div>
+
+            <div
+                v-if="
+                    selectedAsset.guid &&
+                    selectedAsset.typeName == 'Collection' &&
+                    (localAdmins?.adminUsers?.length > 0 ||
+                        localAdmins?.adminGroups?.length > 0)
+                "
+                class="flex flex-col"
+            >
+                <div
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+                >
+                    <span>Editors</span>
+                </div>
+
+                <Admins
+                    v-model="localAdmins"
+                    class="px-5"
+                    :selected-asset="selectedAsset"
+                    :edit-permission="false"
+                    :showAddButton="false"
+                    @change="handleChangeAdmins"
+                />
+            </div>
+
+            <div
+                v-if="
+                    selectedAsset.guid &&
+                    selectedAsset.typeName == 'Collection' &&
+                    (localViewers?.viewerUsers?.length > 0 ||
+                        localViewers?.viewerGroups?.length > 0)
+                "
+                class="flex flex-col"
+            >
+                <div
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+                >
+                    <span>Viewers</span>
+                </div>
+
+                <Viewers
+                    v-model="localViewers"
+                    class="px-5"
+                    :selected-asset="selectedAsset"
+                    :edit-permission="false"
+                    :showAddButton="false"
+                    @change="handleChangeViewers"
                 />
             </div>
 
@@ -902,6 +973,7 @@
     import Name from '@/common/input/name/index.vue'
     import Owners from '@/common/input/owner/index.vue'
     import Admins from '@/common/input/admin/index.vue'
+    import Viewers from '@/common/input/viewer/index.vue'
     import Certificate from '@/common/input/certificate/index.vue'
     import Classification from '@/common/input/classification/index.vue'
     import TermsWidget from '@/common/input/terms/index.vue'
@@ -921,6 +993,9 @@
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import ColumnKeys from '~/components/common/column/columnKeys.vue'
     import CustomMetadataPreview from '@/common/input/customMetadata/index.vue'
+    import { useUserPreview } from '~/composables/user/showUserPreview'
+    import UserPill from '@/common/pills/user.vue'
+    import PopOverUser from '@/common/popover/user/user.vue'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -945,12 +1020,15 @@
             SourceCreated,
             SourceUpdated,
             Admins,
+            Viewers,
             SourceViewCount,
             SubFolderCount,
             ParentContext,
             FieldCount,
             DetailsContainer,
             PreviewTabsIcon,
+            UserPill,
+            PopOverUser,
             SampleDataTable: defineAsyncComponent(
                 () =>
                     import(
@@ -1035,6 +1113,7 @@
                 picklistValues,
                 sourceId,
                 formula,
+                createdBy,
             } = useAssetInfo()
 
             const {
@@ -1045,6 +1124,7 @@
                 localCertificate,
                 localOwners,
                 localAdmins,
+                localViewers,
                 localClassifications,
                 localMeanings,
                 localCategories,
@@ -1056,6 +1136,7 @@
                 handleChangeDescription,
                 handleOwnersChange,
                 handleChangeAdmins,
+                handleChangeViewers,
                 handleChangeCertificate,
                 handleClassificationChange,
                 isLoadingClassification,
@@ -1105,6 +1186,13 @@
             const handleCopyValue = async (value, type) => {
                 await copyToClipboard(value)
                 message.success(`${type} copied!`)
+            }
+
+            const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
+
+            const handleClickUser = (username: string) => {
+                setUserUniqueAttribute(username, 'username')
+                showUserPreview({ allowed: ['about', 'assets', 'groups'] })
             }
 
             return {
@@ -1162,6 +1250,8 @@
                 localSeeAlso,
                 handleChangeAdmins,
                 localAdmins,
+                localViewers,
+                handleChangeViewers,
                 selectedAssetUpdatePermission,
                 localSQLQuery,
                 handleSQLQueryUpdate,
@@ -1183,6 +1273,8 @@
                 picklistValues,
                 sourceId,
                 formula,
+                handleClickUser,
+                createdBy,
             }
         },
     })

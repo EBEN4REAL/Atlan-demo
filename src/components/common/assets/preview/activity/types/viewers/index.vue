@@ -1,40 +1,31 @@
 <template>
     <div
         v-if="
-            data.value.adminUsers?.length < 1 &&
-            data.value.adminGroups?.length < 1
+            data.value.viewerUsers?.length < 1 &&
+            data.value.viewerGroups?.length < 1
         "
         class="mb-3"
     >
-        All {{ typeName === 'Collection' ? 'Editors' : 'Admins' }} removed
+        All Viewers removed
     </div>
     <div>
-        <p v-if="typeName === 'Collection'">
+        <p>
             Say <span class="mr-2">👋</span>Hello, to the new
             <b>{{
-                data.value.adminUsers?.length > 1 ||
-                data.value.adminGroups?.length > 1
-                    ? 'Editors'
-                    : 'Editor'
-            }}</b>
-        </p>
-        <p v-else>
-            Say <span class="mr-2">👋</span>Hello, to the new
-            <b>{{
-                data.value.adminUsers?.length > 1 ||
-                data.value.adminGroups?.length > 1
-                    ? 'Admins'
-                    : 'Admin'
+                data.value.viewerUsers?.length > 1 ||
+                data.value.viewerGroups?.length > 1
+                    ? 'Viewers'
+                    : 'Viewer'
             }}</b>
         </p>
         <div class="flex flex-wrap gap-1 my-1">
-            <template v-for="user in data.value.adminUsers" :key="user">
+            <template v-for="user in data.value.viewerUsers" :key="user">
                 <UserPill
                     :username="user"
                     @click="handleClickUser(user)"
                 ></UserPill>
             </template>
-            <template v-for="group in data.value.adminGroups" :key="group">
+            <template v-for="group in data.value.viewerGroups" :key="group">
                 <GroupPill
                     :name="group"
                     @click="handleClickGroup(group)"
@@ -54,7 +45,7 @@
     import GroupPill from '~/components/common/pills/group.vue'
 
     export default defineComponent({
-        name: 'AdminsActivity',
+        name: 'ViewersActivity',
         components: {
             UserPill,
             GroupPill,
@@ -65,11 +56,6 @@
                 default() {
                     return { displayValue: '', value: [] }
                 },
-            },
-            typeName: {
-                type: String,
-                required: false,
-                default: () => '',
             },
         },
         setup() {

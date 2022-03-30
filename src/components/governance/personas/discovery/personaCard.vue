@@ -27,7 +27,7 @@
                         class="w-3 h-3 mr-1 text-gray-400 mb-0.5"
                     ></AtlanIcon>
                     <span class="text-xs text-gray-500">{{
-                        persona.users.length + persona.groups.length
+                        persona.users.length + persona.groups.length || '-'
                     }}</span>
                 </div>
                 <div class="mx-2 bg-gray-300 dot"></div>
@@ -38,8 +38,8 @@
                     ></AtlanIcon>
                     <span class="text-xs text-gray-500">{{
                         persona.metadataPolicies?.length +
-                        persona.dataPolicies?.length +
-                        (persona.glossaryPolicies?.length || 0)
+                            persona.dataPolicies?.length +
+                            (persona.glossaryPolicies?.length || 0) || '-'
                     }}</span>
                 </div>
                 <!-- <div class="mx-2 bg-gray-300 dot"></div>
@@ -166,6 +166,8 @@
 </style>
 <style lang="less" scoped>
     .persona-card {
+        box-shadow: 0px 1px 0px 0px #0000000d;
+
         // height: 120px;
         &:hover {
             box-shadow: 0px 2px 8px 0px #0000001a;

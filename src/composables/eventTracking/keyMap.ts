@@ -596,7 +596,7 @@ const keyMap = {
     readme: {
         block: {
             added: {
-                action: 'block_added',
+                action: 'readme_block_added',
                 properties: ({
                     assetType,
                     blockType,
@@ -614,7 +614,7 @@ const keyMap = {
         },
         formatting: {
             added: {
-                action: 'formatting_added',
+                action: 'readme_formatting_added',
                 properties: ({
                     assetType,
                     markType,
@@ -632,7 +632,7 @@ const keyMap = {
         },
         embed: {
             added: {
-                action: 'embed_added',
+                action: 'readme_embed_added',
                 properties: ({
                     assetType,
                     application,
@@ -644,7 +644,7 @@ const keyMap = {
                 }),
             },
             open_cta_clicked: {
-                action: 'open_cta_clicked',
+                action: 'readme_embed_open_cta_clicked',
                 properties: ({
                     assetType,
                     application,

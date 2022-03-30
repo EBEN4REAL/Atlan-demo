@@ -744,6 +744,30 @@
 
             <div
                 v-if="
+                    selectedAsset.guid &&
+                    selectedAsset.typeName == 'Collection' &&
+                    readPermission
+                "
+                class="flex flex-col"
+            >
+                <div
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+                >
+                    <span>Viewers</span>
+                </div>
+
+                <Viewers
+                    v-model="localAdmins"
+                    class="px-5"
+                    :selected-asset="selectedAsset"
+                    :edit-permission="false"
+                    :showAddButton="false"
+                    @change="handleChangeAdmins"
+                />
+            </div>
+
+            <div
+                v-if="
                     ![
                         'AtlasGlossary',
                         'AtlasGlossaryCategory',
@@ -929,6 +953,7 @@
     import Name from '@/common/input/name/index.vue'
     import Owners from '@/common/input/owner/index.vue'
     import Admins from '@/common/input/admin/index.vue'
+    import Viewers from '@/common/input/viewer/index.vue'
     import Certificate from '@/common/input/certificate/index.vue'
     import Classification from '@/common/input/classification/index.vue'
     import TermsWidget from '@/common/input/terms/index.vue'
@@ -972,6 +997,7 @@
             SourceCreated,
             SourceUpdated,
             Admins,
+            Viewers,
             SourceViewCount,
             SubFolderCount,
             ParentContext,

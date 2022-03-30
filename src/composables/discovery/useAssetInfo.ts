@@ -760,6 +760,12 @@ export default function useAssetInfo() {
     const adminUsers = (asset: assetInterface) =>
         attributes(asset)?.adminUsers || []
 
+    const viewerGroups = (asset: assetInterface) =>
+        attributes(asset)?.viewerGroups || []
+
+    const viewerUsers = (asset: assetInterface) =>
+        attributes(asset)?.viewerUsers || []
+
     const certificateStatus = (asset: assetInterface) => {
         return attributes(asset)?.certificateStatus
     }
@@ -1319,6 +1325,8 @@ export default function useAssetInfo() {
         assignedEntities,
         adminGroups,
         adminUsers,
+        viewerGroups,
+        viewerUsers,
         connectionRowLimit,
         allowQuery,
         allowQueryPreview,

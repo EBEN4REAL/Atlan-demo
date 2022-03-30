@@ -1,6 +1,6 @@
 <template>
     <template v-if="data?.component">
-        <component :is="data.component" :data="data" />
+        <component :is="data.component" :data="data" :typeName="typeName" />
     </template>
 </template>
 
@@ -63,6 +63,11 @@
                 default() {
                     return { displayValue: 'Event', value: [] }
                 },
+            },
+            typeName: {
+                type: String,
+                required: false,
+                default: () => '',
             },
         },
         setup(props) {

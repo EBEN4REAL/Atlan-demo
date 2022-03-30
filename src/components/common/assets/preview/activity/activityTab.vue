@@ -75,6 +75,7 @@
                         <ActivityType
                             v-if="getAuditEventComponent(log)?.component"
                             :data="getAuditEventComponent(log)"
+                            :type-name="selectedAsset.typeName"
                         />
                         <template v-else>
                             <span class="font-bold">Metadata</span> updated

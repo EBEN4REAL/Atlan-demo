@@ -6,10 +6,19 @@
         "
         class="mb-3"
     >
-        All Admins removed
+        All {{ typeName === 'Collection' ? 'Editors' : 'Admins' }} removed
     </div>
     <div>
-        <p>
+        <p v-if="typeName === 'Collection'">
+            Say <span class="mr-2">👋</span>Hello, to the new
+            <b>{{
+                data.value.adminUsers?.length > 1 ||
+                data.value.adminGroups?.length > 1
+                    ? 'Editors'
+                    : 'Editor'
+            }}</b>
+        </p>
+        <p v-else>
             Say <span class="mr-2">👋</span>Hello, to the new
             <b>{{
                 data.value.adminUsers?.length > 1 ||
@@ -56,6 +65,11 @@
                 default() {
                     return { displayValue: '', value: [] }
                 },
+            },
+            typeName: {
+                type: String,
+                required: false,
+                default: () => '',
             },
         },
         setup() {

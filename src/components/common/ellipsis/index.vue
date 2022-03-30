@@ -5,7 +5,7 @@
         :overlay-style="{ maxWidth: width }"
         :color="tooltipColor"
         :overlay-class-name="tooltipColor === 'white' ? 'tooltip-black' : ''"
-        :mouseLeaveDelay="mouseLeaveDelay"
+        :mouse-leave-delay="mouseLeaveDelay"
     >
         <template v-if="truncated" #title>
             <div v-linkified class="">
@@ -29,8 +29,9 @@
                             onEllipsis: () => (truncated = !truncated),
                         }"
                         :content="tooltipText"
-                    /> </router-link
-            ></template>
+                    />
+                </router-link>
+            </template>
             <template v-else>
                 <a-typography-paragraph
                     :class="classes"
@@ -61,11 +62,11 @@
             },
             width: {
                 type: String,
-                default: 'intial',
+                default: 'initial',
             },
             classes: {
                 type: String,
-                default: 'intial',
+                default: 'initial',
             },
             placement: {
                 type: String,

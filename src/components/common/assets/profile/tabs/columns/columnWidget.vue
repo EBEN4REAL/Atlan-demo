@@ -57,7 +57,7 @@
                 :pagination="false"
                 :custom-row="customRow"
                 :row-class-name="rowClassName"
-                class="self-start overflow-hidden column-table"
+                class="self-start column-table"
             >
                 <template #bodyCell="{ column, record, text }">
                     <template v-if="column.key === 'hash_index'">

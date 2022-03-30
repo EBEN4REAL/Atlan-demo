@@ -1,6 +1,8 @@
 <template>
     <Tooltip
         v-if="!isEditing && localDescription.length > 0"
+        :rows="3"
+        width="65%"
         :tooltip-text="localDescription"
         :classes="allowEditing ? 'cursor-text' : ''"
         @click="handleEdit($event)"
@@ -18,6 +20,7 @@
             ref="descriptionRef"
             v-model:value="localDescription"
             rows="1"
+            :autosize="{ minRows: 1, maxRows: 3 }"
             tabindex="0"
             @keydown.esc="
                 () => {

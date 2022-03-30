@@ -34,13 +34,16 @@
                 workflowStore.fetchActivePackageMeta()
             }
 
-            const { identifier, name, icon } = usePackageInfo()
+            const { identifier, name, icon, emoji } = usePackageInfo()
 
             const packageList = computed(() =>
                 Object.values(workflowStore.packageMeta).map((pkg) => ({
                     id: identifier(pkg),
-                    label: name(pkg),
                     icon: icon(pkg),
+                    label: `${name(pkg)} (${
+                        workflowStore.activePackageMap?.[identifier(pkg)]
+                    })`,
+                    emoji: emoji(pkg),
                 }))
             )
 

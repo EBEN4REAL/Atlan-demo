@@ -328,7 +328,7 @@
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import {
         typeCopyMapping,
-        destinationAttributeMapping,
+        destinationAttributeMapping,requestTypeEventMap
     } from '~/components/governance/requests/requestType'
     import {
         approveRequest,
@@ -401,14 +401,33 @@
             function raiseErrorMessage(msg?: string) {
                 message.error(msg || 'Request modification failed, try again')
             }
+
+
+            const handleEvent = (action) => {
+                console.log(item);
+                let request_type
+                if (item.value?.destinationAttribute)
+                    request_type =
+                        requestTypeEventMap[item.value?.destinationAttribute]
+                            .requestType
+                else
+                    request_type =
+                        requestTypeEventMap[item.value?.requestType]
+                            .requestType
+
+                console.log(request_type);
+                useAddEvent('governance', 'requests', 'resolved', {
+                    action,
+                    request_type,
+                    widget_type:'asset sidebar'
+                })
+            }
             async function handleApproval(messageProp = '') {
                 loadingApproval.value = true
                 try {
                     await approveRequest(item.value.id, messageProp)
                     message.success('Request approved')
-                    useAddEvent('governance', 'requests', 'resolved', {
-                        action: 'approve',
-                    })
+                    handleEvent('approve')
                     emit('handleUpdateData', item.value)
                 } catch (error) {
                     raiseErrorMessage(error.response.data.message)
@@ -422,9 +441,7 @@
                     await declineRequest(item.value.id, messageProp)
                     // emit('action', item.value)
                     message.success('Request declined')
-                    useAddEvent('governance', 'requests', 'resolved', {
-                        action: 'decline',
-                    })
+                    handleEvent('decline')
                     emit('handleUpdateData', item.value)
                 } catch (error) {
                     raiseErrorMessage(error.response.data.message)

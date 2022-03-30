@@ -384,19 +384,20 @@
             }
 
             const handleEvent = (action) => {
-                let widgetType
+                let request_type
                 if (request.value?.destinationAttribute)
-                    widgetType =
+                    request_type =
                         requestTypeEventMap[request.value?.destinationAttribute]
                             .requestType
                 else
-                    widgetType =
+                    request_type =
                         requestTypeEventMap[request.value?.requestType]
                             .requestType
 
                 useAddEvent('governance', 'requests', 'resolved', {
                     action,
-                    widgetType
+                    request_type,
+                    widget_type:'table'
                 })
             }
             async function handleApproval(messageProp = '') {

@@ -432,7 +432,8 @@ const keyMap = {
                 properties: (props) => ({
                     // approve/decline
                     action: props.action,
-                    widgetType: props.widgetType,
+                    request_type: props.request_type,
+                    widget_type:props.widget_type
                 }),
             },
         },

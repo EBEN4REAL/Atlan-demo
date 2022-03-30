@@ -424,11 +424,22 @@ const keyMap = {
             searched: {
                 action: 'governance_requests_searched',
             },
+            created: {
+                action: 'governance_requests_created',
+                properties: (props) => ({
+                    request_type: props.request_type,
+                    asset_type: props.asset_type,
+                    count: props.count,
+                    actions: props.action,
+                }),
+            },
             resolved: {
                 action: 'governance_requests_resolved',
                 properties: (props) => ({
                     // approve/decline
                     action: props.action,
+                    request_type: props.request_type,
+                    widget_type:props.widget_type
                 }),
             },
         },
@@ -498,7 +509,7 @@ const keyMap = {
             share_channels_updated: {
                 action: 'integration_slack_share_channels_updated',
                 properties: (props: {
-                    channel_count: string,
+                    channel_count: string
                     workflow_alert_channel_present: boolean
                 }) => ({
                     ...props,
@@ -518,7 +529,7 @@ const keyMap = {
             issue_linked: {
                 action: 'integration_jira_issue_linked',
                 properties: (props: {
-                    asset_type: string,
+                    asset_type: string
                     selected_issue_count: number
                     total_issue_count: number
                 }) => ({
@@ -530,29 +541,22 @@ const keyMap = {
             },
             issue_unlinked: {
                 action: 'integration_jira_issue_unlinked',
-                properties: (props: {
-                    asset_type: string,
-                }) => ({
+                properties: (props: { asset_type: string }) => ({
                     ...props,
                 }),
             },
             issue_searched: {
                 action: 'integration_jira_issue_searched',
-                properties: (props: {
-                    asset_type: string
-                }) => ({
+                properties: (props: { asset_type: string }) => ({
                     ...props,
                 }),
             },
             config_updated: {
                 action: 'integration_jira_config_updated',
-                properties: (props: {
-                    default_project_present: Boolean
-                }) => ({
+                properties: (props: { default_project_present: Boolean }) => ({
                     ...props,
                 }),
-            }
-
+            },
         },
     },
 }

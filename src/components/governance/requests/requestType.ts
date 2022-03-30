@@ -30,6 +30,33 @@ export const requestTypeIcon: Record<RequestType, keyof typeof iconMap> = {
     purpose_policy_access: 'Link',
     persona_access: 'Link',
 }
+export const requestTypeEventMap = {
+    attach_classification: {
+        requestType: 'classification',
+        action: 'add',
+    },
+    userDescription: {
+        requestType: 'userDescription',
+        action: 'edit',
+    },
+    certificateStatus: {
+        requestType: 'certificateStatus',
+        action: 'edit',
+    },
+    term_link:{
+        requestType:'term',
+        action:'add'
+    },
+    ownerUsers:{
+        requestType:'ownerUsers',
+        action:'add',
+    },
+    ownerGroups:{
+        requestType:'ownerGroups',
+        action:'add'
+    }
+
+}
 
 export const attributeCopyMapping: Record<string, string> = {
     certificateStatus: 'Certificate',
@@ -51,9 +78,9 @@ export const typeCopyMapping: Record<string, string> = {
 }
 
 export const destinationAttributeMapping: Record<string, string> = {
-    ownerUsers: "Owner",
-    userDescription: "Description",
-    certificateStatus: "Certificate"
+    ownerUsers: 'Owner',
+    userDescription: 'Description',
+    certificateStatus: 'Certificate',
 }
 
 export const requestTypeTabList: { id: string; value: RequestType[] }[] = [

@@ -413,6 +413,8 @@ export default function useAssetInfo() {
             return `/glossary/${asset?.guid}`
         } else if (assetType(asset) === 'Query') {
             return `/insights?id=${asset.guid}`
+        } else if (assetType(asset) === 'Collection') {
+            return `/insights?col_id=${asset.guid}`
         } else if (appendOverview) {
             return `/assets/${asset.guid}/overview`
         }

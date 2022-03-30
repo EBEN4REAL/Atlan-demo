@@ -12,14 +12,14 @@
                 >
             </div>
             <!-- body -->
-            <div>
+            <div class="h-8 mt-1">
                 <span class="text-gray-500 line-clamp-2">{{
                     persona?.description || 'No description'
                 }}</span>
             </div>
         </div>
         <!-- footer -->
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between mt-3">
             <div class="flex items-center">
                 <div class="flex items-center">
                     <AtlanIcon
@@ -53,17 +53,37 @@
                     }}</span>
                 </div> -->
             </div>
-            <div class="flex gap-x-1">
-                <AtlanIcon
+            <div class="flex items-center">
+                <div
                     v-if="persona.glossaryPolicies?.length || 0"
-                    icon="Glossary"
-                />
-                <img
-                    v-for="imgPath in getUniqueTypeIcons().connectors"
+                    class="px-1.5 py-1 rounded-full border border-gray-200 fit bg-white relative"
+                    :style="{
+                        'z-index': `${getUniqueTypeIcons().connectors.length}`,
+                        transform: `translateX(${
+                            getUniqueTypeIcons().connectors.length * 8
+                        }px)`,
+                    }"
+                >
+                    <AtlanIcon icon="Glossary" class="w-4 h-4" />
+                </div>
+                <div
+                    v-for="(imgPath, index) in getUniqueTypeIcons().connectors"
                     :key="imgPath"
-                    :src="imgPath"
-                    class="w-4 h-4"
-                />
+                    class="p-1.5 rounded-full border border-gray-200 fit bg-white relative"
+                    :style="{
+                        'z-index': `${
+                            getUniqueTypeIcons().connectors.length - 1 - index
+                        }`,
+                        transform: `translateX(${
+                            (getUniqueTypeIcons().connectors.length -
+                                1 -
+                                index) *
+                            8
+                        }px)`,
+                    }"
+                >
+                    <img class="w-4 h-4" :src="imgPath" />
+                </div>
             </div>
         </div>
         <div
@@ -103,12 +123,16 @@
             const { persona } = toRefs(props)
             const { getConnectorImageMap } = useAssetInfo()
             const lastUpdate = computed(() => {
-                return useTimeAgo(persona.value.updatedAt).value
+                return useTimeAgo(
+                    persona.value.updatedAt || persona.value.createdAt
+                ).value
             })
+
             const getUniqueTypeIcons = () => {
                 const displayImages = {
-                    connectors: new Set(),
+                    connectors: [],
                     icons: new Set(),
+                    count: 0,
                 }
                 const metadataPolicies = persona.value?.metadataPolicies || []
                 const dataPolicies = persona.value?.dataPolicies || []
@@ -116,15 +140,17 @@
                 policies
                     .map((policy) => policy.assets[0])
                     .forEach((asset) => {
-                        console.log('rohan', asset)
                         if (asset.startsWith('default')) {
                             const connectorName = asset.split('/')[1]
                             const imgPath =
                                 getConnectorImageMap.value[connectorName]
-                            displayImages.connectors.add(imgPath)
+                            displayImages.connectors.push(imgPath)
                         }
                     })
-                return displayImages
+                return {
+                    ...displayImages,
+                    connectors: [...new Set(displayImages.connectors)],
+                }
             }
             return {
                 getUniqueTypeIcons,
@@ -133,6 +159,11 @@
         },
     })
 </script>
+<style lang="less">
+    .fit {
+        height: fit-content;
+    }
+</style>
 <style lang="less" scoped>
     .persona-card {
         // height: 120px;

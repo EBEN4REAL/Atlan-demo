@@ -5,11 +5,7 @@
         >
             <div class="flex items-center">
                 <div
-                    v-if="
-                        selectedAsset.typeName === 'AtlasGlossaryTerm' &&
-                        item.requestType === 'term_link' &&
-                        isGlossary
-                    "
+                    v-if="item.requestType === 'term_link' && isGlossary"
                     class="text-sm font-bold text-gray-500"
                 >
                     Link Asset
@@ -112,13 +108,7 @@
                     <AtlanIcon v-else icon="Clock" class="icon-warning" />
                 </div>
             </div>
-            <div
-                v-if="
-                    selectedAsset.typeName === 'AtlasGlossaryTerm' &&
-                    item.requestType === 'term_link' &&
-                    isGlossary
-                "
-            >
+            <div v-if="item.requestType === 'term_link' && isGlossary">
                 <div
                     class="p-3 my-2 mr-1 text-xs bg-gray-100 rounded asset-term"
                 >
@@ -224,7 +214,9 @@
                     />
                     <!-- </PopOverUser> -->
                 </div>
-                <div v-else-if="item.requestType === 'term_link'">
+                <div
+                    v-else-if="item.requestType === 'term_link' && !isGlossary"
+                >
                     <TermPopover
                         :loading="termLoading"
                         :fetched-term="getFetchedTerm(item.sourceGuid)"

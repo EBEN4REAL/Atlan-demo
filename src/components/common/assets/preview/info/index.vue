@@ -922,7 +922,12 @@
             </div>
 
             <CustomMetadataPreview
-                v-if="readPermission"
+                v-if="
+                    readPermission &&
+                    !['Query', 'Folder', 'Collection'].includes(
+                        selectedAsset?.typeName
+                    )
+                "
                 :selected-asset="selectedAsset"
                 class="px-5"
                 :edit-permission="editPermission"

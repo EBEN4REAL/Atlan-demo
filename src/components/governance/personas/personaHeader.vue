@@ -89,9 +89,7 @@
                             <AtlanIcon
                                 :icon="!persona.enabled ? 'Check' : 'NoAllow'"
                                 class="mr-1"
-                            />{{
-                                !persona.enabled ? 'Enabled' : 'Disable'
-                            }}
+                            />{{ !persona.enabled ? 'Enabled' : 'Disabled' }}
                             persona
                         </div>
                     </template>
@@ -103,7 +101,7 @@
                         <AtlanIcon
                             :icon="persona.enabled ? 'Check' : 'NoAllow'"
                             class="mr-1"
-                        />{{ persona.enabled ? 'Enabled' : 'Disable' }}
+                        />{{ persona.enabled ? 'Enabled' : 'Disabled' }}
                     </div>
                 </a-popover>
                 <a-tooltip v-auth="map.UPDATE_PERSONA" placement="bottom">

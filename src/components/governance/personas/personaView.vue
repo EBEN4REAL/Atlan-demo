@@ -380,9 +380,9 @@
                     await enablePersona(selectedPersona.value.id, val)
                     selectedPersona.value.enabled = val
                     message.success({
-                        content: `${val ? 'Enabled' : 'Disabled'} persona ${
+                        content: `Persona ${
                             selectedPersona.value.displayName
-                        }`,
+                        } ${val ? 'Enabled' : 'Disabled'} `,
                         duration: 1.5,
                         key: messageKey,
                     })

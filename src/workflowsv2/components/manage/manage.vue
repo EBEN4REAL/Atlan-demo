@@ -92,8 +92,8 @@
     import WorkflowList from '~/workflowsv2/components/manage/workflowList.vue'
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
     import SearchAndFilter from '~/components/common/input/searchAndFilter.vue'
-    import PackageSelector from '~/workflowsv2/components/common/packageSelector.vue'
-    import WorkflowPreview from '~/workflowsv2/components/common/workflowPreview.vue'
+    import PackageSelector from '~/workflowsv2/components/common/selectors/packageSelector.vue'
+    import WorkflowPreview from '~/workflowsv2/components/common/preview/workflowPreview.vue'
 
     export default defineComponent({
         name: 'ManageWorkflows',

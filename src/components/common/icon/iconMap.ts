@@ -298,7 +298,7 @@ import Enum from '~/assets/images/icons/label.svg'
 import Boolean from '~/assets/images/dataType/boolean.svg'
 import String from '~/assets/images/dataType/string.svg'
 import MoveItem from '~/assets/images/icons/move-item.svg'
-import DateTime from '~/assets/images/dataType/date.svg'
+import DateTime from '~/assets/images/icons/datetime.svg'
 import Number from '~/assets/images/dataType/number.svg'
 import Struct from '~/assets/images/dataType/struct.svg'
 import Geography from '~/assets/images/dataType/geography.svg'
@@ -447,6 +447,8 @@ import TrashAlt from '~/assets/images/icons/Trash-alt.svg'
 
 import Chat from '~/assets/images/icons/chat.svg'
 import NotificationNoDot from '~/assets/images/icons/notification-no-dot.svg'
+import Workflow from '~/assets/images/icons/workflows.svg'
+import Package from '~/assets/images/icons/package.svg'
 
 export default {
     EmptyJira,
@@ -877,5 +879,7 @@ export default {
     Mysql: MySQL,
     NoAllow,
     Glue,
-    Bigquery: BigQuery
+    Bigquery: BigQuery,
+    Workflow,
+    Package,
 }

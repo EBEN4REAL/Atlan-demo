@@ -19,6 +19,8 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         ownerUsers,
         adminGroups,
         adminUsers,
+        viewerUsers,
+        viewerGroups,
         classifications,
         certificateStatus,
         certificateUpdatedAt,
@@ -114,6 +116,11 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     const localAdmins = ref({
         adminUsers: adminUsers(selectedAsset.value),
         adminGroups: adminGroups(selectedAsset.value),
+    })
+
+    const localViewers = ref({
+        viewerUsers: viewerUsers(selectedAsset.value),
+        viewerGroups: viewerGroups(selectedAsset.value),
     })
 
     const localAnnouncement = ref({
@@ -212,9 +219,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             (!localOwners.value?.ownerGroups ||
                 localOwners.value?.ownerGroups.length === 0) */
             ownerUsers(selectedAsset.value)?.sort().toString() ===
-            localOwners.value?.ownerUsers?.sort().toString() &&
+                localOwners.value?.ownerUsers?.sort().toString() &&
             ownerGroups(selectedAsset.value)?.sort().toString() ===
-            localOwners.value?.ownerGroups?.sort().toString()
+                localOwners.value?.ownerGroups?.sort().toString()
         ) {
             isChanged = false
         } else {
@@ -254,9 +261,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
         if (
             adminUsers(selectedAsset.value)?.sort().toString() ===
-            localAdmins.value?.adminUsers?.sort().toString() &&
+                localAdmins.value?.adminUsers?.sort().toString() &&
             adminGroups(selectedAsset.value)?.sort().toString() ===
-            localAdmins.value?.adminGroups?.sort().toString()
+                localAdmins.value?.adminGroups?.sort().toString()
         ) {
             isChanged = false
         } else {
@@ -290,13 +297,55 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         }
     }
 
+    // Viewers Change
+    const handleChangeViewers = () => {
+        let isChanged = false
+
+        if (
+            viewerUsers(selectedAsset.value)?.sort().toString() ===
+                localViewers.value?.viewerUsers?.sort().toString() &&
+            viewerGroups(selectedAsset.value)?.sort().toString() ===
+                localViewers.value?.viewerGroups?.sort().toString()
+        ) {
+            isChanged = false
+        } else {
+            // Users
+            if (
+                entity.value.attributes.viewerUsers?.sort().toString() !==
+                localViewers.value?.viewerUsers?.sort().toString()
+            ) {
+                entity.value.attributes.viewerUsers =
+                    localViewers.value?.viewerUsers
+                isChanged = true
+            }
+
+            // Groups
+            if (
+                entity.value.attributes.viewerGroups?.sort().toString() !==
+                localViewers.value?.viewerGroups?.sort().toString()
+            ) {
+                entity.value.attributes.viewerGroups =
+                    localViewers.value?.viewerGroups
+                isChanged = true
+            }
+        }
+
+        if (isChanged) {
+            body.value.entities = [entity.value]
+
+            currentMessage.value = 'Viewers have been updated'
+            mutate()
+            sendMetadataTrackEvent('viewers_updated')
+        }
+    }
+
     // Certificate Change
     const handleChangeCertificate = () => {
         if (
             localCertificate.value.certificateStatus !==
-            certificateStatus(selectedAsset.value) ||
+                certificateStatus(selectedAsset.value) ||
             localCertificate.value.certificateStatusMessage !==
-            certificateStatusMessage(selectedAsset.value)
+                certificateStatusMessage(selectedAsset.value)
         ) {
             if (localCertificate.value.certificateStatus === 'VERIFIED') {
                 isConfetti.value = true
@@ -393,8 +442,8 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         unlinkedAssets?: assetInterface[]
         term: assetInterface
     }) => {
-        console.log(linkedAssets);
-        console.log(unlinkedAssets);
+        console.log(linkedAssets)
+        console.log(unlinkedAssets)
         const linked = linkedAssets.map((assignedEntitiy) => {
             const meanings = assignedEntitiy.attributes.meanings ?? []
             if (!meanings.find((meaning) => meaning.guid === term.guid)) {
@@ -458,7 +507,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
                         unassignedEntity?.attributes?.collectionQualifiedName,
                     parent: unassignedEntity?.attributes?.parent,
                 }
-                console.log(payload);
+                console.log(payload)
             }
             return payload
         })
@@ -511,7 +560,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
                 anchor: selectedAsset?.value?.attributes?.anchor,
             },
         }
-        console.log(localParentCategory.value);
+        console.log(localParentCategory.value)
         if (localParentCategory.value?.guid) {
             entity.value.relationshipAttributes.parentCategory =
                 localParentCategory.value
@@ -541,7 +590,6 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             },
         })
         body.value.entities = [resourceEntity.value]
-
 
         await mutate()
         sendTrackEvent('resource', 'created', {
@@ -580,7 +628,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             sendTrackEvent('resource', 'deleted')
         })
         return {
-            error, isLoading, isReady
+            error,
+            isLoading,
+            isReady,
         }
     }
 
@@ -655,6 +705,17 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         ) {
             localAdmins.value.adminGroups = adminGroups(selectedAsset?.value)
         }
+        if (
+            viewerUsers(selectedAsset?.value) !== localViewers.value.viewerUsers
+        ) {
+            localViewers.value.viewerUsers = viewerUsers(selectedAsset?.value)
+        }
+        if (
+            viewerGroups(selectedAsset?.value) !==
+            localViewers.value.viewerGroups
+        ) {
+            localViewers.value.viewerGroups = viewerGroups(selectedAsset?.value)
+        }
         if (meanings(selectedAsset?.value) !== localMeanings.value) {
             localMeanings.value = meanings(selectedAsset.value)
         }
@@ -663,14 +724,14 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         }
 
         message.error(
-            `${error.value?.response?.data?.errorCode} ${error.value?.response?.data?.errorMessage.split(':')[0]
+            `${error.value?.response?.data?.errorCode} ${
+                error.value?.response?.data?.errorMessage.split(':')[0]
             }` ?? 'Something went wrong'
         )
     })
 
     whenever(isReady, () => {
-        if (currentMessage.value)
-            message.success(currentMessage.value)
+        if (currentMessage.value) message.success(currentMessage.value)
         guid.value = selectedAsset.value.guid
         rainConfettis()
         mutateUpdate()
@@ -742,7 +803,8 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     whenever(isErrorClassification, () => {
         localClassifications.value = classifications(selectedAsset.value)
         message.error(
-            `${error.value?.response?.data?.errorCode} ${error.value?.response?.data?.errorMessage.split(':')[0]
+            `${error.value?.response?.data?.errorCode} ${
+                error.value?.response?.data?.errorMessage.split(':')[0]
             }` ?? 'Something went wrong'
         )
     })
@@ -760,10 +822,12 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         localMeanings,
         localCategories,
         localSeeAlso,
+        localViewers,
         handleChangeName,
         handleChangeDescription,
         handleOwnersChange,
         handleChangeAdmins,
+        handleChangeViewers,
         handleChangeCertificate,
         handleClassificationChange,
         handleAnnouncementUpdate,

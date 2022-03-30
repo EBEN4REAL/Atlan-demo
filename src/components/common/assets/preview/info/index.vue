@@ -744,9 +744,7 @@
 
             <div
                 v-if="
-                    selectedAsset.guid &&
-                    selectedAsset.typeName == 'Collection' &&
-                    readPermission
+                    selectedAsset.guid && selectedAsset.typeName == 'Collection'
                 "
                 class="flex flex-col"
             >
@@ -757,12 +755,12 @@
                 </div>
 
                 <Viewers
-                    v-model="localAdmins"
+                    v-model="localViewers"
                     class="px-5"
                     :selected-asset="selectedAsset"
                     :edit-permission="false"
                     :showAddButton="false"
-                    @change="handleChangeAdmins"
+                    @change="handleChangeViewers"
                 />
             </div>
 
@@ -1098,6 +1096,7 @@
                 localCertificate,
                 localOwners,
                 localAdmins,
+                localViewers,
                 localClassifications,
                 localMeanings,
                 localCategories,
@@ -1109,6 +1108,7 @@
                 handleChangeDescription,
                 handleOwnersChange,
                 handleChangeAdmins,
+                handleChangeViewers,
                 handleChangeCertificate,
                 handleClassificationChange,
                 isLoadingClassification,
@@ -1215,6 +1215,8 @@
                 localSeeAlso,
                 handleChangeAdmins,
                 localAdmins,
+                localViewers,
+                handleChangeViewers,
                 selectedAssetUpdatePermission,
                 localSQLQuery,
                 handleSQLQueryUpdate,

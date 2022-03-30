@@ -738,7 +738,7 @@
 
                         input.setAttribute(
                             'class',
-                            `outline-none py-0 rounded my-1 w-full ${inputClassName}`
+                            `outline-none py-0 rounded my-1 w-full bg-new-gray-100 ${inputClassName}`
                         )
                         input.setAttribute('placeholder', 'Name your folder')
                         input.addEventListener('input', (e) => {

@@ -194,7 +194,7 @@
                     facets.value.collectionQualifiedName =
                         selectedAsset.value?.attributes?.qualifiedName
                 } else {
-                    facets.value.guidList = queries(selectedAsset.value)?.map(
+                    facets.value.guidList = queries(asset.value)?.map(
                         (query) => query.guid
                     )
                 }

@@ -32,22 +32,38 @@
             />
         </div>
     </a-drawer>
-    <div class="flex items-center w-full h-16 px-5 bg-white gap-x-4">
-        <AtlanButton2
-            color="secondary"
-            :prefix-icon="
-                drawerFiltersApplied ? 'FilterFunnelDot' : 'FilterFunnel'
-            "
-            label="Filters"
-            @click="isDrawerVisible = !isDrawerVisible"
-        />
-        <PackageSelector v-model:value="packageId" />
-        <WorkflowSelector
-            v-model:value="workflowId"
-            :package-name="packageId"
-            :disabled="!packageId"
-        />
-        <TabbedDateRangePicker v-model:value="runDateRange" />
+    <div
+        class="flex flex-col w-full px-5 py-4 bg-white gap-y-4"
+        style="transition: height 300ms"
+        :class="isExpanded ? 'h-28' : 'h-16'"
+    >
+        <div class="flex items-center w-full gap-x-4">
+            <AtlanButton2
+                color="secondary"
+                :prefix-icon="
+                    drawerFiltersApplied ? 'FilterFunnelDot' : 'FilterFunnel'
+                "
+                label="Filters"
+                @click="isDrawerVisible = !isDrawerVisible"
+            />
+            <PackageSelector v-model:value="packageId" />
+            <StatusSelector v-model:value="status" />
+
+            <TabbedDateRangePicker v-model:value="runDateRange" />
+            <IconButton
+                icon="ChevronDown"
+                class="ml-auto rounded-full shadow-none"
+                :class="{ '-rotate-180 transform': isExpanded }"
+                @click="isExpanded = !isExpanded"
+            />
+        </div>
+        <div class="flex items-center" :class="{ hidden: !isExpanded }">
+            <WorkflowSelector
+                v-model:value="workflowId"
+                :package-name="packageId"
+                :disabled="!packageId"
+            />
+        </div>
     </div>
 </template>
 
@@ -56,6 +72,7 @@
     import AssetFilters from '@/common/assets/filters/index.vue'
     import PackageSelector from '~/workflowsv2/components/common/packageSelector.vue'
     import WorkflowSelector from '~/workflowsv2/components/common/workflowSelector.vue'
+    import StatusSelector from '~/workflowsv2/components/common/statusSelector.vue'
     import TabbedDateRangePicker from '~/workflowsv2/components/common/tabbedDateRangePicker.vue'
     import { runFilter } from '~/workflowsv2/constants/filters'
 
@@ -64,6 +81,7 @@
         components: {
             PackageSelector,
             WorkflowSelector,
+            StatusSelector,
             TabbedDateRangePicker,
             AssetFilters,
         },
@@ -76,44 +94,26 @@
         emits: ['update:filters'],
         setup(props, { emit }) {
             const isDrawerVisible = ref(false)
+            const isExpanded = ref(false)
             const activeKey = ref([])
             const { filters } = toRefs(props)
 
-            const packageId = computed({
-                get: () => filters.value?.packageId,
-                set: (val) => {
-                    const tmpFilter = filters.value
-                    tmpFilter.packageId = val
-                    emit('update:filters', tmpFilter)
-                },
+            const setFilter = (key: string, value: any) => {
+                const tmpFilter = filters.value
+                tmpFilter[key] = value
+                emit('update:filters', tmpFilter)
+            }
+
+            const computedFactory = (key: string) => ({
+                get: () => filters.value?.[key],
+                set: (val: any) => setFilter(key, val),
             })
 
-            const workflowId = computed({
-                get: () => filters.value?.workflowId,
-                set: (val) => {
-                    const tmpFilter = filters.value
-                    tmpFilter.workflowId = val
-                    emit('update:filters', tmpFilter)
-                },
-            })
-
-            const drawerFilters = computed({
-                get: () => filters.value?.sidebar,
-                set: (val) => {
-                    const tmpFilter = filters.value
-                    tmpFilter.sidebar = val
-                    emit('update:filters', tmpFilter)
-                },
-            })
-
-            const runDateRange = computed({
-                get: () => filters.value?.startDate,
-                set: (val) => {
-                    const tmpFilter = filters.value
-                    tmpFilter.startDate = val
-                    emit('update:filters', tmpFilter)
-                },
-            })
+            const packageId = computed(computedFactory('packageId'))
+            const workflowId = computed(computedFactory('workflowId'))
+            const status = computed(computedFactory('status'))
+            const runDateRange = computed(computedFactory('startDate'))
+            const drawerFilters = computed(computedFactory('sidebar'))
 
             const drawerFiltersApplied = computed(() => {
                 if (!drawerFilters.value) return false
@@ -135,6 +135,7 @@
             return {
                 runDateRange,
                 isDrawerVisible,
+                isExpanded,
                 packageId,
                 workflowId,
                 runFilter,
@@ -143,6 +144,7 @@
                 handleResetEvent,
                 handleFilterChange,
                 drawerFiltersApplied,
+                status,
             }
         },
     })

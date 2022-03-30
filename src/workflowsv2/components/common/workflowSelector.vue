@@ -4,7 +4,9 @@
         :value="value"
         :list="workflowList"
         :loading="isLoading"
-        placeholder="Select workflow"
+        :placeholder="
+            $attrs.disabled ? 'Select a package first' : 'Select workflow'
+        "
         :not-found-content="isLoading ? 'Loading' : 'No workflow found'"
         @update:value="$emit('update:value', $event)"
     />

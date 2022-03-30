@@ -222,6 +222,49 @@ export function usePackageBody(
                     }
                     break
                 }
+                case 'wfType': {
+                    if (filterObject?.length) {
+                        base.andFilter('nested', {
+                            path: 'metadata',
+                            ...bodybuilder()
+                                .query(
+                                    'terms',
+                                    'metadata.labels.orchestration.atlan.com/type.keyword',
+                                    filterObject
+                                )
+                                .build(),
+                        })
+                    }
+                    break
+                }
+                case 'schedule': {
+                    if (filterObject) {
+                        let nestedQuery = {}
+
+                        if (filterObject === 'manual')
+                            nestedQuery = bodybuilder()
+                                .notFilter(
+                                    'exists',
+                                    'field',
+                                    'metadata.annotations.orchestration.atlan.com/schedule'
+                                )
+                                .build()
+                        else
+                            nestedQuery = bodybuilder()
+                                .filter(
+                                    'exists',
+                                    'field',
+                                    'metadata.annotations.orchestration.atlan.com/schedule'
+                                )
+                                .build()
+
+                        base.andFilter('nested', {
+                            path: 'metadata',
+                            ...nestedQuery,
+                        })
+                    }
+                    break
+                }
             }
         })
     } catch (e) {

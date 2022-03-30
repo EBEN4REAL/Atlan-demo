@@ -49,7 +49,20 @@
                 </div>
             </div>
 
-            <span>Pagination</span>
+            <div class="flex items-center justify-end py-3">
+                <span class="mr-auto"
+                    >Showing {{ offset + 1 }} -
+                    {{ offset + runs?.length || 0 }} out of
+                    {{ totalRuns }} runs</span
+                >
+                <Pagination
+                    v-model:offset="offset"
+                    :total-pages="Math.ceil(totalRuns / limit)"
+                    :loading="isLoading"
+                    :page-size="limit"
+                    @mutate="quickChange"
+                />
+            </div>
         </div>
     </div>
 </template>
@@ -57,12 +70,16 @@
 <script lang="ts">
     import { computed, defineComponent, ref, toRefs, watch } from 'vue'
     import { useRunDiscoverList } from '~/workflowsv2/composables/useRunDiscoverList'
+
+    import Pagination from '@/common/list/pagination.vue'
     import RunListItem from '~/workflowsv2/components/monitor/runListItem.vue'
+
     import EmptyLogsIllustration from '~/assets/images/illustrations/empty_logs.svg'
+    import { useWorkflowStore } from '~/workflowsv2/store'
 
     export default defineComponent({
         name: 'RunHistoryTable',
-        components: { RunListItem },
+        components: { RunListItem, Pagination },
         props: {
             filters: {
                 type: Object,
@@ -76,9 +93,14 @@
             const offset = ref(0)
             const queryText = ref('')
 
+            const workflowStore = useWorkflowStore()
+
             const facets = computed(() => ({
                 workflowTemplate: filters.value?.workflowId,
+                prefix: workflowStore.packageMeta?.[filters.value?.packageId]
+                    ?.metadata?.name,
                 startDate: filters.value?.startDate,
+                status: filters.value?.status,
                 ...filters.value?.sidebar,
             }))
 
@@ -90,6 +112,7 @@
                 list: runs,
                 quickChange,
                 isLoading,
+                data,
             } = useRunDiscoverList({
                 facets,
                 limit,
@@ -98,6 +121,10 @@
                 preference,
                 source: ref({ excludes: ['spec'] }),
             })
+
+            const totalRuns = computed(
+                () => data.value?.hits?.total?.value || 0
+            )
 
             // If changed this should be manually synced with the flex-grow properties of <RunListItem/>
             const tableHeaders = [
@@ -119,6 +146,9 @@
                 isLoading,
                 EmptyLogsIllustration,
                 quickChange,
+                limit,
+                offset,
+                totalRuns,
             }
         },
     })

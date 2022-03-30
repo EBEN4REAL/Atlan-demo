@@ -35,6 +35,7 @@ export enum NAME_OF_EVENTS {
     DELETE_COLUMN = 'Delete Column',
     DELETE_ROW = 'Delete Row',
     DELETE_TABLE = 'Delete Table',
+    OPEN_CTA_CLICKED = 'Open CTA Clicked',
 }
 
 export enum README_TRIGGERS {
@@ -55,14 +56,29 @@ export function useTrackEvent(options: {
 }) {
     console.log({ options })
     if (options.type === TYPE_OF_EVENTS.EMBED) {
-        useAddEvent('readme', 'embed', 'added', {
-            application: options.name,
-            trigger: options.trigger,
-            assetType:
-                options && options.properties && options.properties.assetType
-                    ? options.properties.assetType
-                    : 'DISCOVERY',
-        })
+        if (options.name === NAME_OF_EVENTS.OPEN_CTA_CLICKED) {
+            useAddEvent('readme', 'embed', 'open_cta_clicked', {
+                application: options.properties?.embedService,
+                trigger: options.trigger,
+                assetType:
+                    options &&
+                    options.properties &&
+                    options.properties.assetType
+                        ? options.properties.assetType
+                        : 'DISCOVERY',
+            })
+        } else {
+            useAddEvent('readme', 'embed', 'added', {
+                application: options.properties?.embedService,
+                trigger: options.trigger,
+                assetType:
+                    options &&
+                    options.properties &&
+                    options.properties.assetType
+                        ? options.properties.assetType
+                        : 'DISCOVERY',
+            })
+        }
     } else if (options.type === TYPE_OF_EVENTS.NODE) {
         useAddEvent('readme', 'block', 'added', {
             blockType: options.name,

@@ -74,6 +74,18 @@ export default IFrame.extend<EmbedOptions>({
                         tr.replaceRangeWith(selection.from, selection.to, node)
                     }
 
+                    // useTrackEvent({
+                    //     type: TYPE_OF_EVENTS.NODE,
+                    //     name: NAME_OF_EVENTS.EMBED_INSERTED,
+                    //     trigger: README_TRIGGERS.SLASH_MENU,
+                    //     properties: {
+                    //         assetType:
+                    //             this.editor.options.editorProps.attributes[
+                    //                 'data-asset-type'
+                    //             ],
+                    //         embedService: this.options.title,
+                    //     },
+                    // })
                     return true
                 },
         }

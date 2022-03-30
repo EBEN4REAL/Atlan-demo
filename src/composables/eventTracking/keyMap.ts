@@ -643,6 +643,18 @@ const keyMap = {
                     trigger,
                 }),
             },
+            open_cta_clicked: {
+                action: 'open_cta_clicked',
+                properties: ({
+                    assetType,
+                    application,
+                    trigger,
+                }: EMBED_README_EVENT_INTERFACE): EMBED_README_EVENT_RETURN_INTERFACE => ({
+                    asset_type: assetType,
+                    application,
+                    trigger,
+                }),
+            },
         },
     },
 }

@@ -88,17 +88,19 @@
                             redirectTo: linkInput.value,
                             embedtitle: options.value?.title,
                             embedicon: options.value?.icon,
+                            analyticskey: options.value?.analyticsKey,
                         })
                         .run()
                     useTrackEvent({
                         type: TYPE_OF_EVENTS.EMBED,
-                        name: options.value?.analyticsKey,
+                        name: NAME_OF_EVENTS.IFRAME_INSERTED,
                         trigger: README_TRIGGERS.SLASH_MENU,
                         properties: {
                             assetType:
                                 editor.value.options.editorProps.attributes[
                                     'data-asset-type'
                                 ],
+                            embedService: options.value?.analyticsKey,
                         },
                     })
                 }

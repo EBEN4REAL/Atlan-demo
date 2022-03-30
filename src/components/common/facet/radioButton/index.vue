@@ -16,7 +16,7 @@
                             :style="`background-color: ${el.colorDot}`"
                             class="dot"
                         />
-                        <span class="mb-0 text-gray">
+                        <span class="pt-1 mb-0 text-sm text-gray">
                             {{ el.label }}
                         </span>
                     </div>

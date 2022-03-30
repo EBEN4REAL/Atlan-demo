@@ -7,7 +7,7 @@ import { useConnectionStore } from '~/store/connection'
 dayjs.extend(relativeTime)
 
 export default function useWorkflowInfo() {
-    const name = (item: any): string => item.metadata?.name
+    const name = (item: any): string => item?.metadata?.name
 
     const creationTimestamp = (item: any, relative: any) => {
         if (relative) {

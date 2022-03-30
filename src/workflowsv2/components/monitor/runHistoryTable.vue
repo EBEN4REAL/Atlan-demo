@@ -70,6 +70,7 @@
     import RunListItem from '~/workflowsv2/components/monitor/runListItem.vue'
 
     import EmptyLogsIllustration from '~/assets/images/illustrations/empty_logs.svg'
+    import { useWorkflowStore } from '~/workflowsv2/store'
 
     export default defineComponent({
         name: 'RunHistoryTable',
@@ -87,9 +88,14 @@
             const offset = ref(0)
             const queryText = ref('')
 
+            const workflowStore = useWorkflowStore()
+
             const facets = computed(() => ({
                 workflowTemplate: filters.value?.workflowId,
+                prefix: workflowStore.packageMeta?.[filters.value?.packageId]
+                    ?.metadata?.name,
                 startDate: filters.value?.startDate,
+                status: filters.value?.status,
                 ...filters.value?.sidebar,
             }))
 

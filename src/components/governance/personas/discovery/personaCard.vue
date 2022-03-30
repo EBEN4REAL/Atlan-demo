@@ -89,7 +89,7 @@
         <div
             class="flex items-center justify-between pt-2 mt-3 border-t border-gray-200"
         >
-            <div class="text-xs text-gray500">Updated {{ lastUpdate }}</div>
+            <div class="text-xs text-gray-500">Updated {{ lastUpdate }}</div>
             <div
                 :class="`p-1 text-xs rounded tag ${
                     persona.enabled

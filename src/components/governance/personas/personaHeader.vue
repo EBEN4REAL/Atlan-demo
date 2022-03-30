@@ -54,13 +54,21 @@
                         ></span>
                     </a-tooltip>
                 </div>
-                <div v-if="persona.updatedBy" class="flex text-gray-500">
-                    last updated by {{ persona.updatedBy }},
+                <div class="flex text-gray-500">
+                    last updated by
+                    {{ persona.updatedBy || persona.createdBy }},
                     <a-tooltip
                         class="ml-1"
-                        :title="timeStamp(persona.updatedAt, true)"
+                        :title="
+                            timeStamp(
+                                persona.updatedAt || persona.createdAt,
+                                true
+                            )
+                        "
                         placement="right"
-                        >{{ timeStamp(persona.updatedAt) }}</a-tooltip
+                        >{{
+                            timeStamp(persona.updatedAt || persona.createdAt)
+                        }}</a-tooltip
                     >
                 </div>
             </div>
@@ -104,7 +112,10 @@
                             :icon="persona.enabled ? 'Check' : 'NoAllow'"
                             class="mr-1.5"
                         />{{ persona.enabled ? 'Enabled' : 'Disabled' }}
-                        <AtlanIcon icon="ChevronDown" class="ml-2" />
+                        <AtlanIcon
+                            icon="ChevronDown"
+                            class="ml-2 text-gray-500"
+                        />
                     </div>
                 </a-popover>
                 <a-tooltip v-auth="map.UPDATE_PERSONA" placement="bottom">

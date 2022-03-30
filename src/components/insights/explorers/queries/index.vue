@@ -20,87 +20,42 @@
                         @toggleCollectionModal="toggleCollectionModal"
                     ></CollectionSelector>
                     <!-- TODO:@rohan: disable items when its in search mode !searchQuery?.length && !totalFilteredCount -->
-                    <a-dropdown
-                        :trigger="['click']"
+                    <InsightsThreeDotMenu
+                        :options="dropdownOptions"
                         class="ml-auto shadow-none h-7"
                         placement="bottomLeft"
+                        :item="item"
                     >
-                        <div
-                            class="flex items-center h-8 px-3 rounded-lg cursor-pointer"
-                            :class="$style.filterButton"
-                            v-auth="[map.CREATE_COLLECTION]"
-                        >
-                            <span class="text-xs font-bold text-gray-700"
-                                >New</span
+                        <template #menuTrigger>
+                            <div
+                                class="flex items-center h-8 px-3 rounded-lg cursor-pointer"
+                                :class="$style.filterButton"
+                                v-auth="[map.CREATE_COLLECTION]"
                             >
-                        </div>
-                        <template #overlay>
-                            <a-menu class="py-1" :class="$style.ctaDropdown">
-                                <a-menu-item
-                                    key="0"
-                                    v-if="hasWritePermission"
-                                    @click="
-                                        () =>
-                                            toggleCreateQueryModal(
-                                                currentSelectedNode
-                                            )
-                                    "
+                                <span class="text-xs font-bold text-gray-700"
+                                    >New</span
                                 >
-                                    <div class="flex items-center px-4 h-9">
-                                        <!-- <AtlanIcon
-                                            icon="NewQuery"
-                                            color="#5277D7"
-                                            class="h-4 mr-2 outline-none hover:text-primary"
-                                        /> -->
-                                        <span>New Query</span>
-                                    </div>
-                                </a-menu-item>
-                                <a-menu-item
-                                    key="1"
-                                    @click="createFolderInput"
-                                    v-if="hasWritePermission"
-                                >
-                                    <div class="flex items-center px-4 h-9">
-                                        <!-- <AtlanIcon
-                                            color="#5277D7"
-                                            icon="NewFolder"
-                                            class="h-4 mr-2 outline-none hover:text-primary"
-                                        /> -->
-                                        <span>New Folder</span>
-                                    </div>
-                                </a-menu-item>
-                                <a-menu-item
-                                    key="1"
-                                    @click="toggleCollectionModal"
-                                >
-                                    <div class="flex items-center px-4 h-9">
-                                        <!-- <AtlanIcon
-                                            icon="CollectionIconSmall"
-                                            class="h-4 mr-2 outline-none hover:text-primary"
-                                        /> -->
-                                        <span>New Collection</span>
-                                    </div>
-                                </a-menu-item>
-
-                                <div
-                                    class="flex items-center m-1 mx-2 noAccess"
-                                    v-if="!hasWritePermission"
-                                >
-                                    <span>
-                                        <AtlanIcon
-                                            icon="WarningIcon"
-                                            class="h-4 mr-2 outline-none"
-                                        />
-                                    </span>
-
-                                    <span class="text-xs text-gray-500"
-                                        >You have view only access, cannot
-                                        create queries and folders.</span
-                                    >
-                                </div>
-                            </a-menu>
+                            </div>
                         </template>
-                    </a-dropdown>
+                        <template #menuFooter>
+                            <div
+                                class="flex items-center m-1 mx-2 noAccess"
+                                v-if="!hasWritePermission"
+                            >
+                                <span>
+                                    <AtlanIcon
+                                        icon="WarningIcon"
+                                        class="h-4 mr-2 outline-none"
+                                    />
+                                </span>
+
+                                <span class="text-xs text-gray-500"
+                                    >You have view only access, cannot create
+                                    queries and folders.</span
+                                >
+                            </div>
+                        </template>
+                    </InsightsThreeDotMenu>
                 </div>
                 <div
                     class="flex flex-row mt-4 space-x-2"
@@ -322,11 +277,9 @@
     // import SaveQueryModal from '~/components/insights/playground/editor/saveQuery/index.vue'
     import LoadingView from '@common/loaders/section.vue'
     import QueryTreeItem from './queryTreeItem.vue'
-    import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import useAssetStore from '~/store/asset'
     import { storeToRefs } from 'pinia'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
-    import { assetInterface } from '~/types/assets/asset.interface'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
     import QueryFilter from './queryFilter.vue'
@@ -336,6 +289,7 @@
     import ErrorView from '@common/error/index.vue'
     import { isValid } from '~/utils/isValid'
     import map from '~/constant/accessControl/map'
+    import InsightsThreeDotMenu from '~/components/insights/common/dropdown/index.vue'
 
     export default defineComponent({
         name: 'QueryExplorer',
@@ -350,6 +304,7 @@
             LoadingView,
             QueryTreeItem,
             CollectionSelector,
+            InsightsThreeDotMenu,
             SaveQueryModal: defineAsyncComponent(
                 () =>
                     import(
@@ -1120,6 +1075,38 @@
             })
             // console.log(queryCollectionsError.value, 'queryCollectionsError')
 
+            const dropdownOptions = computed(() => {
+                return [
+                    {
+                        title: 'New query',
+                        key: 'newQuery',
+                        class: '',
+                        disabled: false,
+                        hide: !hasWritePermission.value,
+                        handleClick: () => {
+                            toggleCreateQueryModal(currentSelectedNode)
+                        },
+                    },
+                    {
+                        title: 'New Folder',
+                        key: 'newFolder',
+                        class: '',
+                        disabled: false,
+                        hide: !hasWritePermission.value,
+                        handleClick: createFolderInput,
+                    },
+                    {
+                        title: 'New Collection',
+
+                        key: 'collection',
+                        class: '',
+                        disabled: false,
+                        hide: !hasWritePermission.value,
+                        handleClick: toggleCollectionModal,
+                    },
+                ]
+            })
+
             return {
                 isValid,
                 refreshQueryTree,
@@ -1180,6 +1167,7 @@
                 nodeError,
                 errorNode,
                 refetchNode,
+                dropdownOptions,
             }
         },
     })

@@ -10,9 +10,9 @@
         :destroy-on-close="true"
         :closable="false"
         :footer="null"
-        ref="modalContainer"
     >
         <div
+            v-if="!createPermission"
             class="px-3 py-2 mb-3 bg-gray-100 fixed top-14 rounded text-gray-500 text-xs"
             style="width: 40%"
         >
@@ -612,7 +612,6 @@
                     }
                 })
             }
-            const modalContainer = ref()
             return {
                 visible,
                 showModal,
@@ -645,7 +644,6 @@
                 parentGlossary,
                 handleSelectGlossary,
                 handleRequest,
-                modalContainer,
             }
         },
     })

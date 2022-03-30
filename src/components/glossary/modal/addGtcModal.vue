@@ -10,7 +10,24 @@
         :destroy-on-close="true"
         :closable="false"
         :footer="null"
+        ref="modalContainer"
     >
+        <div
+            class="px-3 py-2 mb-3 bg-gray-100 fixed top-14 rounded text-gray-500 text-xs"
+            style="width: 40%"
+        >
+            You don't have access to create {{ typeNameTitle }}, but you can
+            suggest them to your
+            <span class="text-primary cursor-pointer">
+                <a-popover placement="rightBottom">
+                    <template #content>
+                        <AdminList></AdminList>
+                    </template>
+                    <span>workspace admins</span>
+                </a-popover>
+            </span>
+        </div>
+
         <div class="px-5 py-3">
             <!-- header starts -->
             <div class="flex items-center justify-between mb-1">
@@ -194,6 +211,7 @@
 <script lang="ts">
     import {
         defineComponent,
+        defineAsyncComponent,
         ref,
         computed,
         onMounted,
@@ -234,6 +252,9 @@
             AddOwners,
             GlossarySelect,
             Tooltip,
+            AdminList: defineAsyncComponent(
+                () => import('@/common/info/adminList.vue')
+            ),
         },
         props: {
             entityType: {
@@ -581,15 +602,17 @@
                 whenever(requestError, () => {
                     if (requestError.value) {
                         message.error(`Request failed`)
+                        handleCancel()
                     }
                 })
                 whenever(requestReady, () => {
                     if (requestReady.value) {
                         message.success(`Request raised`)
+                        handleCancel()
                     }
                 })
             }
-
+            const modalContainer = ref()
             return {
                 visible,
                 showModal,
@@ -622,6 +645,7 @@
                 parentGlossary,
                 handleSelectGlossary,
                 handleRequest,
+                modalContainer,
             }
         },
     })

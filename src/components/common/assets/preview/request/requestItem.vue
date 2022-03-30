@@ -4,7 +4,13 @@
             class="relative p-3 mx-1 border border-gray-200 rounded-lg cursor-pointer hover:border-primary card-container"
         >
             <div class="flex items-center">
-                <div class="text-sm font-bold text-gray-500">
+                <div
+                    v-if="item.requestType === 'term_link' && isGlossary"
+                    class="text-sm font-bold text-gray-500"
+                >
+                    Link Asset
+                </div>
+                <div v-else class="text-sm font-bold text-gray-500">
                     {{ typeCopyMapping[item?.requestType] }}
                     {{ destinationAttributeMapping[item.destinationAttribute] }}
                 </div>
@@ -102,7 +108,7 @@
                     <AtlanIcon v-else icon="Clock" class="icon-warning" />
                 </div>
             </div>
-            <div v-if="selectedAsset.typeName === 'AtlasGlossaryTerm'">
+            <div v-if="item.requestType === 'term_link' && isGlossary">
                 <div
                     class="p-3 my-2 mr-1 text-xs bg-gray-100 rounded asset-term"
                 >
@@ -146,9 +152,9 @@
                         >
                     </div>
                 </div>
-                <div class="ml-auto text-sm text-right text-gray-500">
+                <!-- <div class="ml-auto text-sm text-right text-gray-500">
                     {{ createdTime(item.createdAt) }}
-                </div>
+                </div> -->
             </div>
 
             <div v-else class="flex items-center justify-between mt-2">
@@ -208,7 +214,9 @@
                     />
                     <!-- </PopOverUser> -->
                 </div>
-                <div v-else-if="item.requestType === 'term_link'">
+                <div
+                    v-else-if="item.requestType === 'term_link' && !isGlossary"
+                >
                     <TermPopover
                         :loading="termLoading"
                         :fetched-term="getFetchedTerm(item.sourceGuid)"
@@ -343,6 +351,7 @@
     import RequestDropdown from '~/components/common/dropdown/requestDropdown.vue'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
     import map from '~/constant/accessControl/map'
+    import { useRoute } from 'vue-router'
     // import PopOverUser from '@/common/popover/user/user.vue'
     // import PopOverGroup from '@/common/popover/user/groups.vue'
 
@@ -515,6 +524,10 @@
                 return ''
             })
             const { mouseEnterDelay, enteredPill } = useMouseEnterDelay()
+            const route = useRoute()
+            const isGlossary = computed(
+                () => route?.path?.includes('glossary') || null
+            )
             return {
                 createdTime,
                 localClassification,
@@ -538,6 +551,7 @@
                 typeCopyMapping,
                 map,
                 destinationAttributeMapping,
+                isGlossary,
             }
         },
     })

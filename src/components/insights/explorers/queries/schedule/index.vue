@@ -165,7 +165,7 @@
                     text: 'Connection is required!',
                     show: false,
                 },
-                users: { text: 'Select atleast 1 user!', show: false },
+                users: { text: 'No user selected', show: false },
             })
 
             const variablesData = ref(
@@ -391,7 +391,7 @@
             }
 
             const validateFileds = () => {
-                if (infoTabeState.value.name === '') {
+                if (infoTabeState.value.name.trim() === '') {
                     rules.value.users.show = true
                     return Promise.reject()
                 }

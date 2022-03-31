@@ -21,7 +21,7 @@
         <div class="p-6 overflow-auto custom-grid" style="height: 240px">
             <!-- {{ variablesData }} -->
             <template v-for="item in variablesData" :key="item.key">
-                <div class="w-full item">
+                <div class="w-full mb-3 item">
                     <p class="mb-1 font-bold text-gray-500 required">
                         {{ item.name }}
                     </p>
@@ -57,7 +57,9 @@
                                             ? item?.value?.join(', ')
                                             : item.value
                                         : 'Select a value'
-                                    : item?.value ?? 'Select a value'
+                                    : Array.isArray(item.value)
+                                    ? item?.value?.join(', ')
+                                    : item.value ?? 'Select a value'
                             }}</span>
                         </a-button>
                         <template #overlay>
@@ -362,11 +364,15 @@
             auto-fill,
             minmax(300px, 1fr)
         ); /* see notes below */
-        grid-gap: 40px;
-        grid-row-gap: 20px;
+        grid-auto-rows: minmax(auto, 5rem);
+        grid-column-gap: 40px;
+        // grid-row-gap: 20px;
     }
     .item {
         height: fit-content;
+    }
+    .ant-input {
+        @apply text-gray-700 !important;
     }
 </style>
 <style lang="less" module>

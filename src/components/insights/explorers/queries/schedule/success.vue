@@ -13,8 +13,8 @@
             </p>
         </div>
         <div class="p-3 mb-4 border border-gray-300 rounded light-shadow">
-            <div class="flex items-center justify-between mb-3">
-                <p class="font-bold text-gray-700" style="font-size: 16px">
+            <div class="flex items-center mb-3">
+                <p class="mr-3 font-bold text-gray-700" style="font-size: 16px">
                     Schedule
                 </p>
 
@@ -71,11 +71,11 @@
             </div>
             <div
                 class="flex flex-wrap items-center mb-2 overflow-y-auto text-gray-500 gap-y-2"
-                style="height: 52px"
+                style="max-height: 60px"
             >
                 <template v-for="item in variablesData" :key="item.key">
                     <div
-                        style="flex: 0.5; min-width: 280px"
+                        style="flex: 0.5; min-width: 280px; height: 25px"
                         class="flex items-center"
                     >
                         <AtlanIcon

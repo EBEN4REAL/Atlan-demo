@@ -1,14 +1,14 @@
 <template>
     <div
         :id="`${item.qualifiedName}`"
-        class="h-8"
+        class="h-auto"
         :class="`w-full group ${item.qualifiedName}`"
         :data-test-id="item?.guid"
     >
         <!-- {{ errorNode }} -->
 
         <div class="flex justify-between w-full overflow-hidden">
-            <div class="flex w-full m-0">
+            <div class="flex w-full">
                 <div
                     v-if="item.typeName === 'Folder'"
                     class="relative flex content-center w-full h-8 my-auto overflow-hidden text-sm leading-5 text-gray-700"
@@ -94,10 +94,31 @@
                 <!--Empty NODE -->
                 <div
                     v-else-if="item.typeName === 'Empty'"
-                    class="h-8 text-sm font-bold text-gray-500"
+                    class="relative flex content-center w-full h-10 my-auto overflow-hidden text-sm leading-5 text-gray-700"
                 >
-                    {{ item.title }}
+                    <div class="w-full">
+                        <div class="flex w-11/12">
+                            <span
+                                class="text-sm text-gray-700 text-new-gray-600"
+                                >empty folder, create a
+                                <span class="text-new-blue-400">query</span>,
+                                <span class="text-new-blue-400"
+                                    >visual query</span
+                                >
+                                or a
+                                <span class="text-new-blue-400"
+                                    >folder
+                                </span></span
+                            >
+                            <!-- <div
+                                :id="`${item.qualifiedName}-menu`"
+                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
+                            ></div> -->
+                        </div>
+                    </div>
+                    <!-- {{ item.title }} -->
                 </div>
+
                 <!------------------------------->
                 <!-- Popover Allowed -->
 

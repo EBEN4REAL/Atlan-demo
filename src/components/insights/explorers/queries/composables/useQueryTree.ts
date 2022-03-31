@@ -310,17 +310,19 @@ const useQueryTree = ({
                 !subFoldersResponse?.entities?.length
             ) {
                 // TODO: not push anything in array to avoid the empty expansion and title
-                // treeNode.dataRef.children.push({
-                //     attributes: {},
-                //     key: 'Empty',
-                //     qualifiedName: "Empty",
-                //     guid: 'Empty',
-                //     title: 'This Folder is Empty',
-                //     typeName: 'Empty',
-                //     // ...item.attributes,
-                //     isLeaf: true,
-                //     entity: {},
-                // } as any)
+                treeNode.dataRef.children.push({
+                    attributes: {},
+                    key: 'Empty',
+                    qualifiedName: "Empty",
+                    guid: 'Empty',
+                    title: 'This Folder is Empty',
+                    typeName: 'Empty',
+                    // ...item.attributes,
+                    isLeaf: true,
+                    entity: {},
+                    selectable: false,
+                    checkable: false,
+                } as any)
             }
 
             // checkAndAddLoadMoreNode(schemaResponse, 'Database', treeNode.dataRef.qualifiedName)

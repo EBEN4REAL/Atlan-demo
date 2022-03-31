@@ -9,12 +9,12 @@ export const archiveWorkflow = (
     reportName: string
 ) => {
     Modal.confirm({
-        title: 'Delete Workflow',
+        title: 'Delete Schedule',
         content: () =>
             h('span', [
                 'Are you sure you want to delete ',
                 h('b', [reportName]),
-                ' scheduled query workflow?',
+                ' scheduled query?',
             ]),
         okType: 'danger',
         autoFocusButton: null,

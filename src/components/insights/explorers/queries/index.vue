@@ -42,7 +42,8 @@
                                     @click="
                                         () =>
                                             toggleCreateQueryModal(
-                                                currentSelectedNode
+                                                currentSelectedNode,
+                                                false
                                             )
                                     "
                                 >
@@ -53,6 +54,26 @@
                                             class="h-4 mr-2 outline-none hover:text-primary"
                                         /> -->
                                         <span>New Query</span>
+                                    </div>
+                                </a-menu-item>
+                                <a-menu-item
+                                    key="0"
+                                    v-if="hasWritePermission"
+                                    @click="
+                                        () =>
+                                            toggleCreateQueryModal(
+                                                currentSelectedNode,
+                                                true
+                                            )
+                                    "
+                                >
+                                    <div class="flex items-center px-4 h-9">
+                                        <!-- <AtlanIcon
+                                            icon="NewQuery"
+                                            color="#5277D7"
+                                            class="h-4 mr-2 outline-none hover:text-primary"
+                                        /> -->
+                                        <span>New Visual Query</span>
                                     </div>
                                 </a-menu-item>
                                 <a-menu-item
@@ -557,10 +578,18 @@
             }
 
             let selectedFolder = ref({})
+            let isVisualQuery = ref(false)
 
-            const toggleCreateQueryModal = (item) => {
+            const toggleCreateQueryModal = (item, isVQB) => {
                 console.log('create query modal: ', item)
                 // console.log('selected Parent: ', item)
+
+                // Checking if query is visual query or not before saving it
+                if (isVQB) {
+                    isVisualQuery.value = true
+                } else {
+                    isVisualQuery.value = false
+                }
 
                 if (item?.typeName === 'QueryFolderNamespace') {
                     selectedFolder.value = item
@@ -937,6 +966,8 @@
                 assetClassification: any
             ) => {
                 // console.log('saving query: ', savedQueryType.value)
+                const isVQB = isVisualQuery.value
+
                 const { data } = saveQueryToDatabaseAndOpenInNewTab(
                     {
                         ...saveQueryData,
@@ -954,7 +985,8 @@
                         getRelevantTreeData().parentQualifiedName.value,
                     saveQueryData.parentGuid ??
                         getRelevantTreeData().parentGuid.value,
-                    limitRows
+                    limitRows,
+                    isVQB
                 )
                 focusEditor(toRaw(editorInstance.value))
 

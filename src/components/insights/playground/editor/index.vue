@@ -348,14 +348,14 @@
                                 @click="togglePane"
                                 @mouseout="recordTooltipPresence"
                             >
-                             <a-tooltip
-                                placement="topRight"
-                                color="#363636"
-                                :mouse-enter-delay="
-                                    lastTooltipPresence !== undefined
-                                        ? 0.1
-                                        : 0.5
-                                "
+                                <a-tooltip
+                                    placement="topRight"
+                                    color="#363636"
+                                    :mouse-enter-delay="
+                                        lastTooltipPresence !== undefined
+                                            ? 0.1
+                                            : 0.5
+                                    "
                                 >
                                     <template #title>Toggle output</template>
                                     <div

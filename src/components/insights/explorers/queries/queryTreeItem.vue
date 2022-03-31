@@ -49,6 +49,16 @@
                                     </div>
                                     <template #overlay>
                                         <a-menu>
+                                            <a-menu-item
+                                                key="newQuery"
+                                                @click="newQuery"
+                                                >New query</a-menu-item
+                                            >
+                                            <a-menu-item
+                                                key="newVisualQuery"
+                                                @click="newVisualQuery"
+                                                >New visual query</a-menu-item
+                                            >
                                             <!-- RENAME FOLDER PERMISSIONS -->
                                             <a-menu-item
                                                 key="rename"
@@ -59,11 +69,6 @@
                                                 key="newFolder"
                                                 @click="newFolder"
                                                 >New folder</a-menu-item
-                                            >
-                                            <a-menu-item
-                                                key="newQuery"
-                                                @click="newQuery"
-                                                >New query</a-menu-item
                                             >
 
                                             <a-menu-item
@@ -113,7 +118,9 @@
                                     class="text-new-blue-400 hover:underline"
                                     >query</span
                                 >,
-                                <span class="text-new-blue-400 hover:underline"
+                                <span
+                                    @click="newVisualQuery"
+                                    class="text-new-blue-400 hover:underline"
                                     >visual query</span
                                 >
                                 or a
@@ -527,11 +534,14 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
-            const toggleCreateQueryModal = inject<(guid: string) => void>(
-                'toggleCreateQueryModal'
-            )
+
             const createFolderInput =
                 inject<(guid: string) => void>('createFolderInput')
+
+            const toggleCreateQueryModal = inject<
+                (guid: string, isVQB: boolean) => void
+            >('toggleCreateQueryModal')
+
             const savedQueryType = inject('savedQueryType') as Ref<object>
             const permissions = inject('permissions') as ComputedRef<any>
 
@@ -735,8 +745,17 @@
 
             const newQuery = () => {
                 removeBackground()
+                const isVQB = false
                 if (toggleCreateQueryModal) {
-                    toggleCreateQueryModal(item)
+                    toggleCreateQueryModal(item, isVQB)
+                }
+            }
+
+            const newVisualQuery = () => {
+                removeBackground()
+                const isVQB = true
+                if (toggleCreateQueryModal) {
+                    toggleCreateQueryModal(item, isVQB)
                 }
             }
 
@@ -1459,6 +1478,7 @@
                 renameFolder,
                 delteItem,
                 newQuery,
+                newVisualQuery,
                 newFolder,
                 savedQueryType,
                 item,

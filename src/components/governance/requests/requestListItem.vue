@@ -68,8 +68,9 @@
                 />
                 <div
                     v-else-if="
-                        request?.requestType === 'create_term' &&
-                        request?.payload
+                        request?.requestType === 'create_term' ||
+                        (request?.requestType === 'create_category' &&
+                            request?.payload)
                     "
                 >
                     <span class="text-primary mb-1">{{
@@ -109,6 +110,14 @@
                 "
                 :data="request.payload"
                 requestType="create_term"
+            />
+            <CategoryPiece
+                v-else-if="
+                    request?.requestType === 'create_category' &&
+                    request?.payload
+                "
+                :data="request.payload"
+                requestType="create_category"
             />
 
             <TermPiece
@@ -319,6 +328,7 @@
     import UserPiece from './pieces/user.vue'
     import DatePiece from './pieces/date.vue'
     import TermPiece from './pieces/term.vue'
+    import CategoryPiece from './pieces/category.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import IconStatus from './iconStatus.vue'
     import Popover from '@/common/popover/assets/index.vue'
@@ -349,6 +359,7 @@
             IconStatus,
             Popover,
             AssetDrawer,
+            CategoryPiece,
         },
         props: {
             request: {

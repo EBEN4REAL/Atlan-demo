@@ -4,10 +4,10 @@ import IFrame from '../iframe/extension'
 import iconMap from '@common/icon/iconMap'
 import { defineComponent, h, VNode } from 'vue'
 import {
+    useTrackEvent,
+    TYPE_OF_EVENTS,
     NAME_OF_EVENTS,
     README_TRIGGERS,
-    TYPE_OF_EVENTS,
-    useTrackEvent,
 } from '~/modules/editor/analytics/useTrackEvent'
 
 interface ValidateInputFunc {
@@ -79,18 +79,17 @@ export default IFrame.extend<EmbedOptions>({
                     if (dispatch) {
                         tr.replaceRangeWith(selection.from, selection.to, node)
                     }
-                    // useTrackEvent({
-                    //     type: TYPE_OF_EVENTS.NODE,
-                    //     name: NAME_OF_EVENTS.EMBED_INSERTED,
-                    //     trigger: README_TRIGGERS.SLASH_MENU,
-                    //     properties: {
-                    //         assetType:
-                    //             this.editor.options.editorProps.attributes[
-                    //                 'data-asset-type'
-                    //             ],
-                    //         embedService: this.options.title,
-                    //     },
-                    // })
+                    useTrackEvent({
+                        type: TYPE_OF_EVENTS.NODE,
+                        name: this.options.analyticsKey,
+                        trigger: README_TRIGGERS.SLASH_MENU,
+                        properties: {
+                            assetType:
+                                this.editor.options.editorProps.attributes[
+                                    'data-asset-type'
+                                ],
+                        },
+                    })
                     return true
                 },
         }

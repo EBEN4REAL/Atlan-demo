@@ -28,7 +28,7 @@
                     Create schedule for queries from your collection
                 </p>
             </div>
-            <div class="relative px-8 mt-16 rounded-lg">
+            <div class="relative px-8 rounded-lg mt-14">
                 <div class="fader">
                     <img :src="ScheduleQueryGif2" class="rounded-lg" />
                 </div>

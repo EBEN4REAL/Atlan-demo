@@ -1,6 +1,7 @@
 <template>
     <div class="flex flex-col items-center w-full h-full">
         <div
+            v-if="list.length"
             class="flex items-center w-full p-4 pb-0 mb-4 text-lg font-bold text-gray-700"
         >
             <span class="mr-2"> Scheduled Queries </span>
@@ -8,6 +9,35 @@
                 class="flex items-center justify-center px-1.5 py-1 text-sm font-bold rounded text-primary bg-gray-200"
             >
                 <span class="mt-0.5"> {{ list.length ?? 0 }}</span>
+            </div>
+        </div>
+        <div v-if="!list.length && !isLoading && !fetchListError">
+            <div
+                class="flex flex-col items-center justify-center w-full px-8 pt-10 mb-4 text-2xl text-gray-700"
+            >
+                <span class="mb-4 font-bold"> Scheduled Queries </span>
+                <span
+                    class="text-center text-gray-700"
+                    style="font-size: 16px; line-height: 24px"
+                >
+                    Your scheduled queries will appear here
+                </span>
+            </div>
+            <div class="relative px-8 rounded-lg">
+                <div class="fader">
+                    <img :src="ScheduleQueryGif1" class="rounded-lg" />
+                </div>
+                <p class="mt-4 text-sm font-bold text-center">
+                    Create schedule for queries from your collection
+                </p>
+            </div>
+            <div class="relative px-8 mt-16 rounded-lg">
+                <div class="fader">
+                    <img :src="ScheduleQueryGif2" class="rounded-lg" />
+                </div>
+                <p class="mt-4 text-sm font-bold text-center">
+                    View and navigate all your scheduled queries
+                </p>
             </div>
         </div>
         <!-- <div class="flex flex-row w-full px-4 mt-3 mb-6">
@@ -71,12 +101,6 @@
         </div>
 
         <div
-            class="flex justify-center w-full h-full px-4"
-            v-else-if="list.length === 0 && !isLoading && !fetchListError"
-        >
-            <p class="text-gray-500">No scheduled workflows!</p>
-        </div>
-        <div
             class="flex items-center justify-center w-full h-full px-4"
             v-if="isLoading"
         >
@@ -115,6 +139,8 @@
     import { archiveWorkflow } from './composables/useScheduleQueryWorkflow'
     import { message } from 'ant-design-vue'
     import WorkflowCard from './workflowCard.vue'
+    import ScheduleQueryGif1 from '~/assets/gifs/scheduleQueries/schedule_query_1.gif'
+    import ScheduleQueryGif2 from '~/assets/gifs/scheduleQueries/schedule_query_2.gif'
     export default defineComponent({
         components: { WorkflowCard, Loader, ErrorView },
         props: {},
@@ -274,6 +300,8 @@
             refreshSchedulesWorkflowTab.value = quickChange
 
             return {
+                ScheduleQueryGif1,
+                ScheduleQueryGif2,
                 refreshSchedulesWorkflowTab,
                 selectedCardKey,
                 quickChangeRun,
@@ -314,6 +342,25 @@
     }
     .item-border {
         border-bottom: 1px solid #f3f3f3;
+    }
+    .fader {
+        position: relative;
+    }
+
+    .fader::after {
+        content: '';
+        position: absolute;
+        z-index: 1;
+        bottom: 0;
+        left: 0;
+        pointer-events: none;
+        background-image: linear-gradient(
+            to bottom,
+            rgba(255, 255, 255, 0),
+            #f8f9fb 100%
+        );
+        width: 100%;
+        height: 6em;
     }
 </style>
 

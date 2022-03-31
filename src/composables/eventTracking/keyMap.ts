@@ -1,3 +1,48 @@
+import {
+    NAME_OF_EVENTS,
+    README_TRIGGERS,
+} from '~/modules/editor/analytics/useTrackEvent'
+
+interface BLOCK_README_EVENT_INTERFACE {
+    assetType: string
+    blockType: NAME_OF_EVENTS
+    trigger: README_TRIGGERS
+    embedService?: string
+}
+
+interface BLOCK_README_EVENT_RETURN_INTERFACE {
+    asset_type: string
+    block_type: NAME_OF_EVENTS
+    trigger: README_TRIGGERS
+    embed_service?: string
+}
+
+interface FORMATTING_README_EVENT_INTERFACE {
+    assetType: string
+    markType: NAME_OF_EVENTS
+    trigger: README_TRIGGERS
+    alignment?: string
+}
+
+interface FORMATTING_README_EVENT_RETURN_INTERFACE {
+    asset_type: string
+    mark_type: NAME_OF_EVENTS
+    trigger: README_TRIGGERS
+    alignment?: string
+}
+
+interface EMBED_README_EVENT_INTERFACE {
+    assetType: string
+    application: string
+    trigger: README_TRIGGERS
+}
+
+interface EMBED_README_EVENT_RETURN_INTERFACE {
+    asset_type: string
+    application: string
+    trigger: README_TRIGGERS
+}
+
 const keyMap = {
     discovery: {
         filter: {
@@ -555,6 +600,70 @@ const keyMap = {
                 action: 'integration_jira_config_updated',
                 properties: (props: { default_project_present: Boolean }) => ({
                     ...props,
+                }),
+            },
+        },
+    },
+    readme: {
+        block: {
+            added: {
+                action: 'readme_block_added',
+                properties: ({
+                    assetType,
+                    blockType,
+                    trigger,
+                    embedService,
+                }: BLOCK_README_EVENT_INTERFACE): BLOCK_README_EVENT_RETURN_INTERFACE => ({
+                    asset_type: assetType,
+                    block_type: blockType,
+                    trigger,
+                    ...(embedService && {
+                        embed_service: embedService,
+                    }),
+                }),
+            },
+        },
+        formatting: {
+            added: {
+                action: 'readme_formatting_added',
+                properties: ({
+                    assetType,
+                    markType,
+                    trigger,
+                    alignment,
+                }: FORMATTING_README_EVENT_INTERFACE): FORMATTING_README_EVENT_RETURN_INTERFACE => ({
+                    asset_type: assetType,
+                    mark_type: markType,
+                    trigger,
+                    ...(alignment && {
+                        alignment,
+                    }),
+                }),
+            },
+        },
+        embed: {
+            added: {
+                action: 'readme_embed_added',
+                properties: ({
+                    assetType,
+                    application,
+                    trigger,
+                }: EMBED_README_EVENT_INTERFACE): EMBED_README_EVENT_RETURN_INTERFACE => ({
+                    asset_type: assetType,
+                    application,
+                    trigger,
+                }),
+            },
+            open_cta_clicked: {
+                action: 'readme_embed_open_cta_clicked',
+                properties: ({
+                    assetType,
+                    application,
+                    trigger,
+                }: EMBED_README_EVENT_INTERFACE): EMBED_README_EVENT_RETURN_INTERFACE => ({
+                    asset_type: assetType,
+                    application,
+                    trigger,
                 }),
             },
         },

@@ -372,6 +372,12 @@ const keyMap = {
                     state: props.state,
                 }),
             },
+            persona_enable: {
+                action: 'governance_persona_enabled',
+            },
+            persona_disable: {
+                action: 'governance_persona_disabled',
+            },
         },
         purpose: {
             created: {

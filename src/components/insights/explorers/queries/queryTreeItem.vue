@@ -56,6 +56,11 @@
                                                 >Rename folder</a-menu-item
                                             >
                                             <a-menu-item
+                                                key="newFolder"
+                                                @click="newFolder"
+                                                >New folder</a-menu-item
+                                            >
+                                            <a-menu-item
                                                 key="newQuery"
                                                 @click="newQuery"
                                                 >New query</a-menu-item
@@ -451,6 +456,7 @@
             AtlanBtn,
             Tooltip,
         },
+
         props: {
             item: {
                 type: Object as PropType<assetInterface>,
@@ -493,7 +499,7 @@
             //     default: () => {},
             // },
         },
-        setup(props) {
+        setup(props, { emit }) {
             const { canUserDeleteFolder } = useAccess()
             const {
                 expandedKeys,
@@ -1484,6 +1490,7 @@
                 collectionName,
                 addBackground,
                 removeBackground,
+                createFolderInput,
                 // input,
                 // newFolderName,
             }

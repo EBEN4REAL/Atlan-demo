@@ -334,6 +334,7 @@
                 infoTabeState.value.frequency = getCronFrequency(
                     cronModel.value.cron
                 )
+                infoTabeState.value.timezone = cronData.value.timezone
                 const interval = parser.parseExpression(cronModel.value.cron)
                 infoTabeState.value.time = `${interval.fields.hour[0].toString()}:${interval.fields.minute[0].toString()}`
                 if (interval.fields.dayOfWeek.length === 1) {

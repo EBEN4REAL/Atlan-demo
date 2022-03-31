@@ -64,6 +64,8 @@ export const AssetAttributes = [
     'ownerGroups',
     'adminUsers',
     'adminGroups',
+    'viewerGroups',
+    'viewerUsers',
     'meanings',
     'readme',
     'rawQuery',

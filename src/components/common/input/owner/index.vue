@@ -18,7 +18,7 @@
                     <!--     class="px-3 py-2 mx-4 mb-3 bg-gray-100" -->
                     <!-- > -->
                     <!--     You don't have edit access. Suggest owners and -->
-                    <!--     <span class="text-primary cursor-pointer"> -->
+                    <!--     <span class="cursor-pointer text-primary"> -->
                     <!--         <a-popover placement="rightBottom"> -->
                     <!--             <template #content> -->
                     <!--                 <AdminList></AdminList> -->
@@ -67,6 +67,7 @@
             :class="{ '-ml-1': !showAddBtn }"
         >
             <a-tooltip
+                v-if="showAddBtn"
                 placement="left"
                 :title="
                     !editPermission

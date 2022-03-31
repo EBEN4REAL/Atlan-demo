@@ -100,7 +100,9 @@ export function useRunBody(
                             path: 'metadata',
                             ...bodybuilder()
                                 .query(
-                                    'terms',
+                                    Array.isArray(filterObject)
+                                        ? 'terms'
+                                        : 'term',
                                     'metadata.labels.workflows.argoproj.io/phase.keyword',
                                     filterObject
                                 )

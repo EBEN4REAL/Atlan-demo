@@ -1,10 +1,10 @@
 <template>
-    <div data-test-id="admins-popover">
+    <div data-test-id="viewers-popover">
         <a-popover
             v-if="editPermission"
             v-model:visible="isEdit"
             :placement="placementPos"
-            :overlay-class-name="$style.adminPopover"
+            :overlay-class-name="$style.viewerPopover"
             :trigger="['click']"
             :destroy-tooltip-on-hide="destroyTooltipOnHide"
             @visibleChange="handleVisibleChange"
@@ -26,7 +26,7 @@
                 placement="left"
                 :title="
                     !editPermission
-                        ? `You don't have permission to add admins to this asset`
+                        ? `You don't have permission to add viewers to this asset`
                         : ''
                 "
                 :mouse-enter-delay="0.5"
@@ -50,7 +50,7 @@
                         ></AtlanIcon></span></a-button
             ></a-tooltip>
             <template
-                v-for="username in localValue?.adminUsers"
+                v-for="username in localValue?.viewerUsers"
                 :key="username"
             >
                 <PopOverUser :item="username">
@@ -64,7 +64,7 @@
                 </PopOverUser>
             </template>
 
-            <template v-for="name in localValue?.adminGroups" :key="name">
+            <template v-for="name in localValue?.viewerGroups" :key="name">
                 <PopOverGroup :item="name">
                     <GroupPill
                         :name="name"
@@ -173,7 +173,7 @@
 
             const localValue = ref(modelValue.value)
 
-            const { adminGroups, adminUsers } = useAssetInfo()
+            const { viewerGroups, viewerUsers } = useAssetInfo()
 
             const isEdit = ref(false)
 
@@ -199,16 +199,16 @@
             }
 
             const handleDeleteUser = (username) => {
-                localValue.value.adminUsers =
-                    localValue.value?.adminUsers.filter(
+                localValue.value.viewerUsers =
+                    localValue.value?.viewerUsers.filter(
                         (item) => item !== username
                     )
 
                 handleChange()
             }
             const handleDeleteGroup = (name) => {
-                localValue.value.adminGroups =
-                    localValue.value?.adminGroups.filter(
+                localValue.value.viewerGroups =
+                    localValue.value?.viewerGroups.filter(
                         (item) => item !== name
                     )
 
@@ -254,14 +254,16 @@
             }
 
             watch(selectedAsset, () => {
-                console.log(adminGroups(selectedAsset.value))
-                localValue.value.adminUsers = adminUsers(selectedAsset.value)
-                localValue.value.adminGroups = adminGroups(selectedAsset.value)
+                console.log(viewerGroups(selectedAsset.value))
+                localValue.value.viewerUsers = viewerUsers(selectedAsset.value)
+                localValue.value.viewerGroups = viewerGroups(
+                    selectedAsset.value
+                )
             })
 
             return {
-                adminGroups,
-                adminUsers,
+                viewerGroups,
+                viewerUsers,
                 handleClickUser,
                 handleClickGroup,
                 localValue,
@@ -277,7 +279,7 @@
     })
 </script>
 <style lang="less" module>
-    .adminPopover {
+    .viewerPopover {
         :global(.ant-popover-inner-content) {
             @apply px-0 py-3 !important;
             width: 250px !important;

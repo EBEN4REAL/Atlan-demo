@@ -381,6 +381,12 @@ export function useBody(
                 }
                 break
             }
+            case 'collectionQualifiedName': {
+                if (filterObject) {
+                    base.filter('term', 'collectionQualifiedName', filterObject)
+                }
+                break
+            }
             case 'glossary': {
                 if (filterObject) {
                     base.filter('term', '__glossary', filterObject)
@@ -743,6 +749,7 @@ export function useBody(
         ])
         base.orFilter('terms', '__typeName.keyword', [
             'Query',
+            'Collection',
             'AtlasGlossaryCategory',
             'AtlasGlossaryTerm',
             'Connection',

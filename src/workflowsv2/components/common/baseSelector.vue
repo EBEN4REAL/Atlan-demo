@@ -15,7 +15,15 @@
         <template v-for="item in list" :key="item.id">
             <a-select-option :value="item.id">
                 <div class="flex items-center truncate gap-x-2">
+                    <div
+                        v-if="item.colorDot"
+                        :style="`background-color: ${item.colorDot}`"
+                        class="dot"
+                    />
                     <img v-if="item.icon" :src="item.icon" class="w-4 h-auto" />
+                    <span v-else-if="item.emoji" class="text-xs">{{
+                        item.emoji
+                    }}</span>
                     {{ item.label }}
                 </div>
             </a-select-option>
@@ -30,6 +38,8 @@
         id: string
         label: string
         icon?: string
+        colorDot?: string
+        emoji?: string
     }
 
     export default defineComponent({
@@ -51,3 +61,11 @@
         emits: ['update:value'],
     })
 </script>
+
+<style scoped>
+    .dot {
+        height: 6px;
+        width: 6px;
+        border-radius: 50%;
+    }
+</style>

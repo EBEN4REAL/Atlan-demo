@@ -53,7 +53,7 @@
                 v-else-if="columnsList.length > 0 && !isLoading"
                 :columns="columns"
                 :data-source="columnsData.filteredList"
-                :scroll="{ y: 342, x: 850 }"
+                :scroll="{ y: 342, x: 780 }"
                 :pagination="false"
                 :custom-row="customRow"
                 :row-class-name="rowClassName"

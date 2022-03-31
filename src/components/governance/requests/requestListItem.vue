@@ -19,61 +19,76 @@
             >
               
             </Popover> -->
-              <div
-                    class="cursor-pointer flex items-center"
-                    @mouseenter="$emit('mouseEnterAsset')"
+            <div
+                class="cursor-pointer flex items-center"
+                @mouseenter="$emit('mouseEnterAsset')"
+            >
+                <div
+                    v-if="
+                        [
+                            'AtlasGlossaryTerm',
+                            'AtlasGlossaryCategory',
+                            'AtlasGlossary',
+                        ].includes(request?.entityType)
+                    "
+                    class="flex items-center"
                 >
-                    <div
-                        v-if="
-                            [
-                                'AtlasGlossaryTerm',
-                                'AtlasGlossaryCategory',
-                                'AtlasGlossary',
-                            ].includes(request?.entityType)
+                    <atlan-icon
+                        :icon="
+                            capitalizeFirstLetter(
+                                glossaryLabel[request?.entityType]
+                            )
                         "
-                        class="flex items-center"
-                    >
-                        <atlan-icon
-                            :icon="
-                                capitalizeFirstLetter(
-                                    glossaryLabel[request?.entityType]
-                                )
-                            "
-                            class="mr-1 mb-1"
-                        ></atlan-icon>
-                        <span class="text-primary">{{
-                            request?.destinationEntity?.attributes?.name
-                        }}</span>
-                        <CertificateBadge
-                            v-if="
-                                request?.destinationEntity?.attributes
-                                    ?.certificateStatus
-                            "
-                            :status="
-                                request?.destinationEntity?.attributes
-                                    ?.certificateStatus
-                            "
-                            class="mb-1 ml-1"
-                            :username="
-                                request?.destinationEntity?.attributes
-                                    ?.certificateUpdatedBy
-                            "
-                        />
-                    </div>
-                    <AssetPiece
-                        v-else-if="request.destinationQualifiedName"
-                        :asset-qf-name="request.destinationQualifiedName"
-                        :entity-type="request?.entityType"
-                        :destination-entity="request.destinationEntity"
+                        class="mr-1 mb-1"
+                    ></atlan-icon>
+                    <span class="text-primary">{{
+                        request?.destinationEntity?.attributes?.name
+                    }}</span>
+                    <CertificateBadge
+                        v-if="
+                            request?.destinationEntity?.attributes
+                                ?.certificateStatus
+                        "
+                        :status="
+                            request?.destinationEntity?.attributes
+                                ?.certificateStatus
+                        "
+                        class="mb-1 ml-1"
+                        :username="
+                            request?.destinationEntity?.attributes
+                                ?.certificateUpdatedBy
+                        "
                     />
-                    <span v-else class="text-sm overflow-ellipsis">
-                        {{
-                            primaryText[request.requestType]
-                                ? primaryText[request.requestType](request)
-                                : ''
-                        }}
-                    </span>
                 </div>
+                <AssetPiece
+                    v-else-if="request.destinationQualifiedName"
+                    :asset-qf-name="request.destinationQualifiedName"
+                    :entity-type="request?.entityType"
+                    :destination-entity="request.destinationEntity"
+                />
+                <div
+                    v-else-if="
+                        request?.requestType === 'create_term' &&
+                        request?.payload
+                    "
+                >
+                    <span class="text-primary mb-1">{{
+                        request.payload?.anchor?.displayText
+                    }}</span>
+                    <div class="flex items-center text-gray-500">
+                        <atlan-icon icon="Glossary" class="mr-1 w-4" />
+                        <span>Glossary</span>
+                    </div>
+                </div>
+
+                <span v-else class="text-sm overflow-ellipsis">
+                    {{
+                        primaryText[request.requestType]
+                            ? primaryText[request.requestType](request)
+                            : ''
+                    }}
+                </span>
+            </div>
         </div>
         <div class="flex items-center col-span-3 ml-24">
             <ClassificationPiece
@@ -93,6 +108,7 @@
                     request?.requestType === 'create_term' && request?.payload
                 "
                 :data="request.payload"
+                requestType="create_term"
             />
 
             <TermPiece

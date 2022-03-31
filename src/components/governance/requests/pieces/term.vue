@@ -1,6 +1,7 @@
 <template>
     <div class="term-request">
         <TermPopover
+            v-if="requestType !== 'create_term'"
             :loading="termLoading"
             :fetched-term="getFetchedTerm(request.sourceGuid)"
             :error="termError"
@@ -15,6 +16,12 @@
                 </template>
             </Pill>
         </TermPopover>
+        <Pill v-else class="term-pill" :label="data?.name" :has-action="false">
+            <template #prefix>
+                <AtlanIcon icon="Term"></AtlanIcon>
+            </template>
+        </Pill>
+
         <!-- <a-popover :mouse-enter-delay="0.3" placement="leftTop" trigger="hover">
             <template #content>
                 <div class="flex flex-col w-56 p-4">
@@ -58,7 +65,13 @@
                 </template>
             </Pill>
         </a-popover> -->
-        <div class="pr-2 mt-1 text-gray-500">Link Term</div>
+        <div
+            v-if="requestType !== 'create_term'"
+            class="pr-2 mt-1 text-gray-500"
+        >
+            Link Term
+        </div>
+        <div v-else class="pr-2  text-gray-500">Create Term</div>
     </div>
 </template>
 
@@ -79,6 +92,10 @@
             request: {
                 required: true,
                 default: () => ({}),
+            },
+            requestType: {
+                required: false,
+                default: () => 'link_term',
             },
         },
         setup(props) {

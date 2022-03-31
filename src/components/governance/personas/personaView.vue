@@ -241,6 +241,7 @@
     import AssetFilters from '@/common/assets/filters/index.vue'
     import { personaFilter } from '~/constant/filters/logsFilter'
     import NewPolicyIllustration from '~/assets/images/illustrations/new_policy.svg'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'PersonaView',
@@ -386,6 +387,8 @@
                         duration: 1.5,
                         key: messageKey,
                     })
+                    const keyObj = val ? 'persona_enable' : 'persona_disable'
+                    useAddEvent('governance', 'persona', keyObj)
                     // enableDisableLoading.value = false
                 } catch (e) {
                     message.error({

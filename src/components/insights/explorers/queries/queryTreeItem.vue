@@ -10,7 +10,7 @@
         <div class="flex justify-between w-full overflow-hidden">
             <div class="flex w-full">
                 <div
-                    v-if="item.typeName === 'Folder'"
+                    v-if="item.typeName === 'Folder' && item.isCta !== 'cta'"
                     class="relative flex content-center w-full h-8 my-auto overflow-hidden text-sm leading-5 text-gray-700"
                 >
                     <div class="py-1.5 w-full">
@@ -93,7 +93,9 @@
                 </div>
                 <!--Empty NODE -->
                 <div
-                    v-else-if="item.typeName === 'Empty'"
+                    v-else-if="
+                        item.typeName === 'Folder' && item.isCta === 'cta'
+                    "
                     class="relative flex content-center w-full h-10 my-auto overflow-hidden text-sm leading-5 text-gray-700"
                 >
                     <div class="w-full">
@@ -101,12 +103,18 @@
                             <span
                                 class="text-sm text-gray-700 text-new-gray-600"
                                 >empty folder, create a
-                                <span class="text-new-blue-400">query</span>,
-                                <span class="text-new-blue-400"
+                                <span
+                                    @click="newQuery"
+                                    class="text-new-blue-400 hover:underline"
+                                    >query</span
+                                >,
+                                <span class="text-new-blue-400 hover:underline"
                                     >visual query</span
                                 >
                                 or a
-                                <span class="text-new-blue-400"
+                                <span
+                                    @click="newFolder"
+                                    class="text-new-blue-400 hover:underline"
                                     >folder
                                 </span></span
                             >
@@ -516,6 +524,8 @@
             const toggleCreateQueryModal = inject<(guid: string) => void>(
                 'toggleCreateQueryModal'
             )
+            const createFolderInput =
+                inject<(guid: string) => void>('createFolderInput')
             const savedQueryType = inject('savedQueryType') as Ref<object>
             const permissions = inject('permissions') as ComputedRef<any>
 
@@ -722,6 +732,10 @@
                 if (toggleCreateQueryModal) {
                     toggleCreateQueryModal(item)
                 }
+            }
+
+            const newFolder = () => {
+                if (createFolderInput) createFolderInput()
             }
 
             const addBackground = (visible) => {
@@ -1439,6 +1453,7 @@
                 renameFolder,
                 delteItem,
                 newQuery,
+                newFolder,
                 savedQueryType,
                 item,
                 expandedKeys,

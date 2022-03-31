@@ -310,18 +310,18 @@ const useQueryTree = ({
                 !subFoldersResponse?.entities?.length
             ) {
                 // TODO: not push anything in array to avoid the empty expansion and title
+                
+                // Checking for isCta in queryTreeItem to check for whether to display empty item CTA or not. 
+                // All other properties of folders are inherited to Cta's as well.
                 treeNode.dataRef.children.push({
-                    attributes: {},
-                    key: 'Empty',
-                    qualifiedName: "Empty",
-                    guid: 'Empty',
-                    title: 'This Folder is Empty',
-                    typeName: 'Empty',
-                    // ...item.attributes,
+                    ...treeNode,
+                    key: 'cta',
                     isLeaf: true,
-                    entity: {},
+                    selected: 'false',
+                    // typeName: 'cta',
                     selectable: false,
                     checkable: false,
+                    isCta: 'cta',
                 } as any)
             }
 
@@ -781,6 +781,7 @@ const useQueryTree = ({
         [key: string]: any
         dataRef: CustomTreeDataItem
     }) => {
+        // debugger
         if (!treeNode.dataRef.children) {
             treeNode.dataRef.children = []
         }

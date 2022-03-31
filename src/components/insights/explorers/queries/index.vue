@@ -1015,6 +1015,7 @@
             // provide('savedQueryType', savedQueryType)
             provide('refetchParentNode', refetchParentNode)
             provide('refetchNode', refetchNode)
+            provide('createFolderInput', createFolderInput)
             // refecthing node on updating the query
             watch(refetchQueryNode, (newRefetchQueryNode) => {
                 updateNode({

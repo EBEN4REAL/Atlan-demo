@@ -20,7 +20,7 @@
             >
                 <span class="mb-0 font-bold"> Scheduled Queries </span>
             </div>
-            <div class="relative px-8 rounded-lg">
+            <div class="relative px-10 rounded-lg">
                 <div class="fader">
                     <img :src="ScheduleQueryGif1" class="rounded-lg" />
                 </div>
@@ -28,7 +28,7 @@
                     Create schedule for queries from your collection
                 </p>
             </div>
-            <div class="relative px-8 rounded-lg mt-14">
+            <div class="relative px-10 rounded-lg mt-14">
                 <div class="fader">
                     <img :src="ScheduleQueryGif2" class="rounded-lg" />
                 </div>

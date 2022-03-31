@@ -57,7 +57,9 @@
                                             ? item?.value?.join(', ')
                                             : item.value
                                         : 'Select a value'
-                                    : item?.value ?? 'Select a value'
+                                    : Array.isArray(item.value)
+                                    ? item?.value?.join(', ')
+                                    : item.value ?? 'Select a value'
                             }}</span>
                         </a-button>
                         <template #overlay>

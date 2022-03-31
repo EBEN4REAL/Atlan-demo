@@ -76,7 +76,7 @@
             </div>
             <a-button-group class="flex items-center">
                 <!-- Edit -->
-                <a-popover
+                <!-- <a-popover
                     v-model:visible="visibleEnable"
                     :align="{ offset: [21, -10] }"
                     trigger="click"
@@ -119,7 +119,7 @@
                             class="ml-2 text-gray-500"
                         />
                     </div>
-                </a-popover>
+                </a-popover> -->
                 <a-tooltip v-auth="map.UPDATE_PERSONA" placement="bottom">
                     <template #title>
                         <span>Edit Persona</span>

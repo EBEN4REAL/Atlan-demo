@@ -11,17 +11,14 @@
                 <span class="mt-0.5"> {{ list.length ?? 0 }}</span>
             </div>
         </div>
-        <div v-if="!list.length && !isLoading && !fetchListError">
+        <div
+            v-if="!list.length && !isLoading && !fetchListError"
+            class="overflow-y-scroll"
+        >
             <div
-                class="flex flex-col items-center justify-center w-full px-8 pt-10 mb-4 text-2xl text-gray-700"
+                class="flex flex-col items-center justify-center w-full px-8 pt-6 mb-6 text-2xl text-gray-700"
             >
-                <span class="mb-4 font-bold"> Scheduled Queries </span>
-                <span
-                    class="text-center text-gray-700"
-                    style="font-size: 16px; line-height: 24px"
-                >
-                    Your scheduled queries will appear here
-                </span>
+                <span class="mb-0 font-bold"> Scheduled Queries </span>
             </div>
             <div class="relative px-8 rounded-lg">
                 <div class="fader">
@@ -36,7 +33,7 @@
                     <img :src="ScheduleQueryGif2" class="rounded-lg" />
                 </div>
                 <p class="mt-4 text-sm font-bold text-center">
-                    View and navigate all your scheduled queries
+                    View and navigate all your scheduled queries here.
                 </p>
             </div>
         </div>

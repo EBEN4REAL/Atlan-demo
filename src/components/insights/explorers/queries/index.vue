@@ -42,7 +42,8 @@
                                     @click="
                                         () =>
                                             toggleCreateQueryModal(
-                                                currentSelectedNode
+                                                currentSelectedNode,
+                                                false
                                             )
                                     "
                                 >
@@ -61,7 +62,8 @@
                                     @click="
                                         () =>
                                             toggleCreateQueryModal(
-                                                currentSelectedNode
+                                                currentSelectedNode,
+                                                true
                                             )
                                     "
                                 >
@@ -573,10 +575,18 @@
             }
 
             let selectedFolder = ref({})
+            let isVisualQuery = ref(false)
 
-            const toggleCreateQueryModal = (item) => {
+            const toggleCreateQueryModal = (item, isVQB) => {
                 console.log('create query modal: ', item)
                 // console.log('selected Parent: ', item)
+
+                // Checking if query is visual query or not before saving it
+                if (isVQB) {
+                    isVisualQuery.value = true
+                } else {
+                    isVisualQuery.value = false
+                }
 
                 if (item?.typeName === 'QueryFolderNamespace') {
                     selectedFolder.value = item
@@ -953,6 +963,8 @@
                 assetClassification: any
             ) => {
                 // console.log('saving query: ', savedQueryType.value)
+                const isVQB = isVisualQuery.value
+
                 const { data } = saveQueryToDatabaseAndOpenInNewTab(
                     {
                         ...saveQueryData,
@@ -970,7 +982,8 @@
                         getRelevantTreeData().parentQualifiedName.value,
                     saveQueryData.parentGuid ??
                         getRelevantTreeData().parentGuid.value,
-                    limitRows
+                    limitRows,
+                    isVQB
                 )
                 focusEditor(toRaw(editorInstance.value))
 

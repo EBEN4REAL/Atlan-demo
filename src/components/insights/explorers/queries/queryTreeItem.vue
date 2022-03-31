@@ -492,9 +492,11 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
-            const toggleCreateQueryModal = inject<(guid: string) => void>(
-                'toggleCreateQueryModal'
-            )
+
+            const toggleCreateQueryModal = inject<
+                (guid: string, isVQB: boolean) => void
+            >('toggleCreateQueryModal')
+
             const savedQueryType = inject('savedQueryType') as Ref<object>
             const permissions = inject('permissions') as ComputedRef<any>
 
@@ -698,15 +700,17 @@
 
             const newQuery = () => {
                 removeBackground()
+                const isVQB = false
                 if (toggleCreateQueryModal) {
-                    toggleCreateQueryModal(item)
+                    toggleCreateQueryModal(item, isVQB)
                 }
             }
 
             const newVisualQuery = () => {
                 removeBackground()
+                const isVQB = true
                 if (toggleCreateQueryModal) {
-                    toggleCreateQueryModal(item)
+                    toggleCreateQueryModal(item, isVQB)
                 }
             }
 

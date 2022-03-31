@@ -57,7 +57,7 @@
             <div class="item-3">
                 <p class="mb-1 font-bold text-gray-500 required">Timezone</p>
                 <Timezone
-                    v-model="infoTabeState.timezone"
+                    v-model:modelValue="infoTabeState.timezone"
                     placeholder=""
                     @change="buildCron"
                     :allowClear="false"
@@ -358,6 +358,7 @@
                 cronStringReadable.value = cronstrue.toString(
                     cronData.value.cron
                 )
+                cronData.value.timezone = infoTabeState.value.timezone
                 console.log(cronData.value.cron, cronStringReadable.value)
             }
 

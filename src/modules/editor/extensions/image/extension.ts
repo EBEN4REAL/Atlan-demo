@@ -22,8 +22,8 @@ export default Image.extend({
                     return upload(file).then(() => {
                         useTrackEvent({
                             type: TYPE_OF_EVENTS.NODE,
-                            name: NAME_OF_EVENTS.IMAGE_PASTED,
-                            trigger: README_TRIGGERS.SLASH_MENU,
+                            name: NAME_OF_EVENTS.IMAGE,
+                            trigger: README_TRIGGERS.PASTED,
                             properties: {
                                 assetType,
                             },

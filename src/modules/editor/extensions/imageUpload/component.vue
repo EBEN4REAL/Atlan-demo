@@ -115,8 +115,8 @@
                     isEditMode.value = false
                     useTrackEvent({
                         type: TYPE_OF_EVENTS.NODE,
-                        name: NAME_OF_EVENTS.IMAGE_UPLOADED,
-                        trigger: README_TRIGGERS.SLASH_MENU,
+                        name: NAME_OF_EVENTS.IMAGE,
+                        trigger: README_TRIGGERS.UPLOADED,
                         properties: {
                             assetType:
                                 editor.value.options.editorProps.attributes[
@@ -158,8 +158,8 @@
                         editor.value.commands.focus()
                         useTrackEvent({
                             type: TYPE_OF_EVENTS.NODE,
-                            name: NAME_OF_EVENTS.IMAGE_LINKED,
-                            trigger: README_TRIGGERS.SLASH_MENU,
+                            name: NAME_OF_EVENTS.IMAGE,
+                            trigger: README_TRIGGERS.LINKED,
                             properties: {
                                 assetType:
                                     editor.value.options.editorProps.attributes[

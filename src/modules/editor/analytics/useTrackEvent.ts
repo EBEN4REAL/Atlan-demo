@@ -18,6 +18,7 @@ export enum NAME_OF_EVENTS {
     IMAGE_NODE_INSERTED = 'Image',
     IMAGE_LINKED = 'Image Linked',
     IMAGE_PASTED = 'Image Pasted',
+    IMAGE = 'Image',
     MENTION_INSERTED = 'Mention',
     TASK_LIST_INSERTED = 'Task List',
     QUOTE_INSERTED = 'Quote',
@@ -41,6 +42,9 @@ export enum README_TRIGGERS {
     SLASH_MENU = 'Slash Menu',
     TIPPY_MENU = 'Tippy Menu',
     MARKDOWN_SHORTCUT = 'Markdown Shortcut',
+    LINKED = 'Linked',
+    PASTED = 'Pasted',
+    UPLOADED = 'Uploaded',
 }
 
 export function useTrackEvent(options: {

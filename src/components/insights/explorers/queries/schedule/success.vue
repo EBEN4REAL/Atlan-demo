@@ -37,8 +37,9 @@
                 <p class="text-sm text-gray-500">
                     Next run
                     <span class="font-bold"
-                        >{{ _date?.format(format) }}&nbsp;
-                        {{ getAbbreviation(timeZoneAbbreviation) }}</span
+                        >{{ _date?.format(format) }}&nbsp; ({{
+                            infoTabeState.timezone
+                        }})</span
                     >
                 </p>
             </div>
@@ -53,7 +54,7 @@
                     >
                     will be notified over email at
                     {{ _date?.format('hh:mm A') }}
-                    {{ getAbbreviation(timeZoneAbbreviation) }}
+                    ({{ infoTabeState.timezone }})
                     <span class="capitalize">{{
                         infoTabeState.frequency
                     }}</span>

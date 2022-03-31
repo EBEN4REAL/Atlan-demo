@@ -176,6 +176,7 @@
         "dayjs",
         "dayjs/plugin/advancedFormat",
         "dayjs/plugin/relativeTime",
+        "dayjs/plugin/timezone",
         "dayjs/plugin/utc",
         "emoji-mart-vue-fast/src",
         "event-source-polyfill",

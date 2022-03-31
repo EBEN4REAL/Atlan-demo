@@ -78,11 +78,17 @@
 </template>
 
 <script lang="ts">
-    import { ref, watch, toRefs, defineComponent } from 'vue'
-    import { NodeViewWrapper, nodeViewProps } from '@tiptap/vue-3'
+    import { defineComponent, ref, toRefs, watch } from 'vue'
+    import { nodeViewProps, NodeViewWrapper } from '@tiptap/vue-3'
     import { getNameInitials, getNameInTitleCase } from '~/utils/string'
     import SectionLoader from '@common/loaders/section.vue'
     import useUploadImage from '~/composables/image/uploadImage'
+    import {
+        NAME_OF_EVENTS,
+        README_TRIGGERS,
+        TYPE_OF_EVENTS,
+        useTrackEvent,
+    } from '~/modules/editor/analytics/useTrackEvent'
 
     export default defineComponent({
         components: {
@@ -107,6 +113,17 @@
                     const url = `/api/service/images/${data.value?.id}?ContentDisposition=inline&name=image`
                     imageSrc.value = url
                     isEditMode.value = false
+                    useTrackEvent({
+                        type: TYPE_OF_EVENTS.NODE,
+                        name: NAME_OF_EVENTS.IMAGE,
+                        trigger: README_TRIGGERS.UPLOADED,
+                        properties: {
+                            assetType:
+                                editor.value.options.editorProps.attributes[
+                                    'data-asset-type'
+                                ],
+                        },
+                    })
                     if (props?.editor) {
                         props.editor
                             .chain()
@@ -139,6 +156,17 @@
                     ) {
                         deleteNode.value()
                         editor.value.commands.focus()
+                        useTrackEvent({
+                            type: TYPE_OF_EVENTS.NODE,
+                            name: NAME_OF_EVENTS.IMAGE,
+                            trigger: README_TRIGGERS.LINKED,
+                            properties: {
+                                assetType:
+                                    editor.value.options.editorProps.attributes[
+                                        'data-asset-type'
+                                    ],
+                            },
+                        })
                         editor.value.commands.setImage({
                             src: imageLinkInput.value,
                         })

@@ -116,7 +116,7 @@
                                 text-gray-700 w-full"
                                 >
                                 </Tooltip>
-                                <div style="width: 20px">
+                                <div class="flex-shrink-0 w-5">
                                     <AtlanIcon
                                         icon="ChevronDown"
                                         class="w-4 h-4 text-gray-500"

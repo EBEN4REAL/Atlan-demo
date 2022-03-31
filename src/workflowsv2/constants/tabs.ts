@@ -26,7 +26,14 @@ export const workflowPreviewTabs = [
         icon: 'Overview',
         activeIcon: 'OverviewActive',
         tooltip: 'Overview',
-        scrubbed: false,
         analyticsKey: 'info',
+    },
+    {
+        name: 'Runs',
+        component: 'runs',
+        icon: 'Workflow',
+        activeIcon: 'Workflow',
+        tooltip: 'Workflow runs',
+        analyticsKey: 'runs',
     },
 ]

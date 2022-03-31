@@ -11,7 +11,8 @@
             v-for="(tab, index) in cmList(
                 assetType(selectedAsset),
                 false,
-                true
+                true,
+                denyCustomMetadata
             )"
             :key="index"
         >
@@ -48,6 +49,8 @@
     import SingleTab from './singleTab.vue'
     import { useTypedefStore } from '~/store/typedef'
     import { useAssetAttributes } from '~/composables/discovery/useCurrentUpdate'
+    import { usePersonaStore } from '~/store/persona'
+    import useAssetStore from '~/store/asset'
 
     export default defineComponent({
         name: 'CustomMetadata',
@@ -70,10 +73,27 @@
 
             const { getList: cmList } = useCustomMetadataFacet()
 
+            const discoveryStore = useAssetStore()
+
             const typedefStore = useTypedefStore()
 
+            const personaStore = usePersonaStore()
+            const { globalState } = toRefs(discoveryStore)
+
+            const denyCustomMetadata = computed(
+                () =>
+                    personaStore.list.find(
+                        (persona) => persona.id === globalState?.value[1]
+                    )?.attributes?.preferences?.customMetadataDenyList || []
+            )
+
             const tabList = computed(() =>
-                cmList(assetType(selectedAsset.value), false, true)
+                cmList(
+                    assetType(selectedAsset.value),
+                    false,
+                    true,
+                    denyCustomMetadata.value
+                )
             )
 
             const customMetadataListProjections = computed(() => {
@@ -111,7 +131,14 @@
                 }
             )
 
-            return { cmList, assetType, isCmLoading, isCmReady, asset }
+            return {
+                cmList,
+                assetType,
+                isCmLoading,
+                isCmReady,
+                asset,
+                denyCustomMetadata,
+            }
         },
     })
 </script>

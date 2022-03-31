@@ -91,6 +91,7 @@
                 ref="editor"
                 v-model="localReadmeContent"
                 placeholder="Type '/' for commands"
+                :asset-type="assetType"
                 :is-edit-mode="isEditing"
                 :empty-text="
                     isEditingAllowed
@@ -153,6 +154,11 @@
                 type: Function,
                 required: false,
                 default: () => {},
+            },
+            assetType: {
+                type: String,
+                default: 'DISCOVERY',
+                required: false,
             },
         },
         emits: ['savedChanges', 'editing', 'update:modelValue'],

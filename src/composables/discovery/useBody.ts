@@ -286,24 +286,39 @@ export function useBody(
             case 'owners': {
                 if (filterObject) {
                     base.filter('bool', (q) => {
-                        if (filterObject.ownerUsers?.length > 0)
+                        if (filterObject.ownerUsers?.length > 0) {
                             q.orFilter(
                                 'terms',
                                 'ownerUsers',
                                 filterObject.ownerUsers
                             )
+                            q.orFilter(
+                                'terms',
+                                'adminUsers',
+                                filterObject.ownerUsers
+                            )
+                        }
 
-                        if (filterObject.ownerGroups?.length > 0)
+                        if (filterObject.ownerGroups?.length > 0) {
                             q.orFilter(
                                 'terms',
                                 'ownerGroups',
                                 filterObject.ownerGroups
                             )
+                            q.orFilter(
+                                'terms',
+                                'adminGroups',
+                                filterObject.ownerGroups
+                            )
+                        }
+
                         if (filterObject.empty === true) {
                             q.orFilter('bool', (query) =>
                                 query.filter('bool', (query2) => {
                                     query2.notFilter('exists', 'ownerUsers')
                                     query2.notFilter('exists', 'ownerGroups')
+                                    query2.notFilter('exists', 'adminUsers')
+                                    query2.notFilter('exists', 'adminGroups')
                                     return query2
                                 })
                             )

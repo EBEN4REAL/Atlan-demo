@@ -186,7 +186,7 @@ import Jira from '~/assets/images/admin/integrations/jira.svg'
 import EmptyResultJira from '~/assets/images/admin/integrations/emptyResultJira.svg'
 import EmptyJira from '~/assets/images/admin/integrations/emptyJira.svg'
 import Teams from '~/assets/images/admin/integrations/teams.svg'
-import ExplorerTrigger from '~/assets/images/icons/explorer-trigger.svg'
+import ExplorerTrigger from '~/assets/images/icons/explorer-panel-trigger-outline.svg'
 import ExplorerTriggerFilled from '~/assets/images/icons/explorer-trigger-filled.svg'
 import EmptySearchQuery from '~/assets/images/icons/empty_search_query.svg'
 import EmptyResult from '~/assets/images/icons/empty_result.svg'
@@ -298,7 +298,7 @@ import Enum from '~/assets/images/icons/label.svg'
 import Boolean from '~/assets/images/dataType/boolean.svg'
 import String from '~/assets/images/dataType/string.svg'
 import MoveItem from '~/assets/images/icons/move-item.svg'
-import DateTime from '~/assets/images/dataType/date.svg'
+import DateTime from '~/assets/images/icons/datetime.svg'
 import Number from '~/assets/images/dataType/number.svg'
 import Struct from '~/assets/images/dataType/struct.svg'
 import Geography from '~/assets/images/dataType/geography.svg'
@@ -404,6 +404,7 @@ import VqbVerified from '~/assets/images/icons/VqbVerified.svg'
 import VqbDeprecated from '~/assets/images/icons/VqbDeprecated.svg'
 import VqbDraft from '~/assets/images/icons/VqbDraft.svg'
 import Clock from '~/assets/images/icons/clock.svg'
+import Mail from '~/assets/images/icons/mail.svg'
 import Collapsed from '~/assets/images/icons/Collapsed.svg'
 
 import InnerJoinInfo from '~/assets/images/illustrations/InnerJoinInfo.svg'
@@ -444,11 +445,16 @@ import NoAllow from '~/assets/images/icons/no-allow.svg'
 import ThreeDotsAlt from '~/assets/images/icons/3-dots-alt.svg'
 import NoProperty from '~/assets/images/admin/customMetadata/empty-property.svg'
 import TrashAlt from '~/assets/images/icons/Trash-alt.svg'
+import Schedule24 from '~/assets/images/icons/schedule-24.svg'
 
 import Chat from '~/assets/images/icons/chat.svg'
 import NotificationNoDot from '~/assets/images/icons/notification-no-dot.svg'
+import Workflow from '~/assets/images/icons/workflows.svg'
+import Package from '~/assets/images/icons/package.svg'
 
 export default {
+    Schedule24,
+    Mail,
     EmptyJira,
     TrashAlt,
     NoProperty,
@@ -877,5 +883,7 @@ export default {
     Mysql: MySQL,
     NoAllow,
     Glue,
-    Bigquery: BigQuery
+    Bigquery: BigQuery,
+    Workflow,
+    Package,
 }

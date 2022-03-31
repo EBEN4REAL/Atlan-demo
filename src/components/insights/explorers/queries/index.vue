@@ -56,6 +56,25 @@
                                     </div>
                                 </a-menu-item>
                                 <a-menu-item
+                                    key="0"
+                                    v-if="hasWritePermission"
+                                    @click="
+                                        () =>
+                                            toggleCreateQueryModal(
+                                                currentSelectedNode
+                                            )
+                                    "
+                                >
+                                    <div class="flex items-center px-4 h-9">
+                                        <!-- <AtlanIcon
+                                            icon="NewQuery"
+                                            color="#5277D7"
+                                            class="h-4 mr-2 outline-none hover:text-primary"
+                                        /> -->
+                                        <span>New Visual Query</span>
+                                    </div>
+                                </a-menu-item>
+                                <a-menu-item
                                     key="1"
                                     @click="createFolderInput"
                                     v-if="hasWritePermission"

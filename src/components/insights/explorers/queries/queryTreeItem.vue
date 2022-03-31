@@ -45,18 +45,22 @@
                                     </div>
                                     <template #overlay>
                                         <a-menu>
+                                            <a-menu-item
+                                                key="newQuery"
+                                                @click="newQuery"
+                                                >New query</a-menu-item
+                                            >
+                                            <a-menu-item
+                                                key="newVisualQuery"
+                                                @click="newVisualQuery"
+                                                >New visual query</a-menu-item
+                                            >
                                             <!-- RENAME FOLDER PERMISSIONS -->
                                             <a-menu-item
                                                 key="rename"
                                                 @click="renameFolder"
                                                 >Rename folder</a-menu-item
                                             >
-                                            <a-menu-item
-                                                key="newQuery"
-                                                @click="newQuery"
-                                                >New query</a-menu-item
-                                            >
-
                                             <a-menu-item
                                                 key="ChangeFolder"
                                                 @click="
@@ -693,6 +697,13 @@
             }
 
             const newQuery = () => {
+                removeBackground()
+                if (toggleCreateQueryModal) {
+                    toggleCreateQueryModal(item)
+                }
+            }
+
+            const newVisualQuery = () => {
                 removeBackground()
                 if (toggleCreateQueryModal) {
                     toggleCreateQueryModal(item)
@@ -1414,6 +1425,7 @@
                 renameFolder,
                 delteItem,
                 newQuery,
+                newVisualQuery,
                 savedQueryType,
                 item,
                 expandedKeys,

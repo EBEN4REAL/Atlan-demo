@@ -33,6 +33,7 @@
                                 class="absolute top-0 right-0 flex items-center h-full text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
                             >
                                 <InsightsThreeDotMenu
+                                    @click.stop="() => {}"
                                     :options="dropdownFolderOptions"
                                     :item="item"
                                 >

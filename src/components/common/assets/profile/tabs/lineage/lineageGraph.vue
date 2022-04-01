@@ -63,7 +63,6 @@
         onUnmounted,
         provide,
         inject,
-        computed,
     } from 'vue'
 
     /** COMPONENTS */
@@ -480,22 +479,6 @@
                 #ffffff 84.68%,
                 rgba(255, 255, 255, 0) 103.12%
             );
-        }
-
-        .node-hoPaCTA {
-            @apply h-7 w-7 rounded-full flex justify-center items-center flex-none cursor-pointer;
-            background-color: #eff1f5;
-            border: 1.5px solid #e0e4eb;
-            color: #34394b;
-            position: absolute;
-            z-index: 99;
-            &:hover {
-                color: #3c71df;
-            }
-            &.isSelected,
-            &.isHighlighted {
-                border-color: #3c71df;
-            }
         }
 
         .node-columnListLoader {

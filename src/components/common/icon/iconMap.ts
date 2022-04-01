@@ -315,6 +315,7 @@ import SSO from '~/assets/images/icons/sso.svg'
 import SMTP from '~/assets/images/icons/smtp.svg'
 import APIKey from '~/assets/images/icons/apikey.svg'
 import Camera from '~/assets/images/icons/camera.svg'
+import Image from '~/assets/images/icons/image.svg'
 import FormatText from '~/assets/images/icons/formatText.svg'
 import BeautifySql from '~/assets/images/icons/beautifySql.svg'
 import NoUsers from '~/assets/images/illustrations/no-users.svg'
@@ -783,6 +784,7 @@ export default {
     SMTP,
     APIKey,
     Camera,
+    Image,
     CustomSaml,
     Struct,
     Geography,

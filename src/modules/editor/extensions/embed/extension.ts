@@ -3,6 +3,12 @@ import Component from './component.vue'
 import IFrame from '../iframe/extension'
 import iconMap from '@common/icon/iconMap'
 import { defineComponent, h, VNode } from 'vue'
+import {
+    useTrackEvent,
+    TYPE_OF_EVENTS,
+    NAME_OF_EVENTS,
+    README_TRIGGERS,
+} from '~/modules/editor/analytics/useTrackEvent'
 
 interface ValidateInputFunc {
     (input: string): boolean
@@ -14,6 +20,7 @@ interface GetIframeLinkFunc {
 
 interface EmbedOptions {
     title: string
+    analyticsKey: string
     icon: keyof typeof iconMap
     validateInput: ValidateInputFunc
     getIframeLink: GetIframeLinkFunc
@@ -38,6 +45,7 @@ export default IFrame.extend<EmbedOptions>({
             ...this.parent?.(),
             title: 'General Embed',
             icon: 'Documentation',
+            analyticsKey: 'General Embed',
             validateInput(input: string) {
                 return input.length > 0
             },
@@ -71,7 +79,17 @@ export default IFrame.extend<EmbedOptions>({
                     if (dispatch) {
                         tr.replaceRangeWith(selection.from, selection.to, node)
                     }
-
+                    useTrackEvent({
+                        type: TYPE_OF_EVENTS.NODE,
+                        name: this.options.analyticsKey,
+                        trigger: README_TRIGGERS.SLASH_MENU,
+                        properties: {
+                            assetType:
+                                this.editor.options.editorProps.attributes[
+                                    'data-asset-type'
+                                ],
+                        },
+                    })
                     return true
                 },
         }

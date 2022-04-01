@@ -18,7 +18,9 @@
                 class="font-bold tracking-wide truncate cursor-pointer text-primary hover:underline"
                 >{{ dName }}</span
             >
-            <!-- <span class="text-gray-500">({{ workflow?.metadata?.name }})</span> -->
+            <span class="italic truncate text-grey-500">
+                ({{ wfName(workflow) }})
+            </span>
         </div>
 
         <div

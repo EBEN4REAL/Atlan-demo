@@ -597,6 +597,10 @@
                 'activeTabCollection'
             ) as ComputedRef
 
+            const refreshSchedulesWorkflowTab = inject(
+                'refreshSchedulesWorkflowTab'
+            ) as Ref<Function>
+
             // toRaw(editorInstance.value).updateOptions({
             //     readOnly: hasQueryWritePermission ? false : true,
             // })
@@ -850,6 +854,10 @@
                 const queryId = activeInlineTab.value?.queryId
                 if (queryId) {
                     await updateQuery()
+                    debugger
+                    // for updating the schedule query tab
+                    if (refreshSchedulesWorkflowTab.value)
+                        refreshSchedulesWorkflowTab.value(true)
                     refetchQueryNode.value = {
                         guid: queryId,
                     }

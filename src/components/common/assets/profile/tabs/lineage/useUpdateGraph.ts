@@ -1,7 +1,22 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-nested-ternary */
 export default function useUpdateGraph(graph) {
+    const updateIconStroke = (node, color) => {
+        const hoPaCTAIdRight = `${node.id}-ctaPortRight-hoPa`
+        const hoPaCTAIdLeft = `${node.id}-ctaPortLeft-hoPa`
+        const colCTAIdRight = `${node.id}-ctaPortRight-col`
+        const colCTAIdLeft = `${node.id}-ctaPortLeft-col`
+        const arr = [hoPaCTAIdRight, hoPaCTAIdLeft, colCTAIdRight, colCTAIdLeft]
+
+        arr.forEach((portId) => {
+            if (node.hasPort(portId))
+                node.setPortProp(portId, 'attrs/portBody/stroke', color)
+        })
+    }
+
     const highlightNode = (nodeId, state: string) => {
+        const node = graph.value.getNodes().find((x) => x.id === nodeId)
+        const isBase = node.store.data?.isBase
         const graphNodeElement = document.querySelectorAll(
             `[data-cell-id="${nodeId}"]`
         )[0]
@@ -15,10 +30,16 @@ export default function useUpdateGraph(graph) {
             'isGrayed'
         )
 
-        if (state === 'highlight')
+        if (!isBase) updateIconStroke(node, '#B2B8C7')
+
+        if (state === 'highlight') {
             lineageNodeElement?.classList.add('isHighlightedNode')
-        if (state === 'select')
+            if (!isBase) updateIconStroke(node, '#3c71df')
+        }
+        if (state === 'select') {
             lineageNodeElement?.classList.add('isSelectedNode')
+            updateIconStroke(node, '#3c71df')
+        }
     }
 
     const highlightNodes = (selectedNodeId, nodesToHighlight) => {
@@ -26,6 +47,7 @@ export default function useUpdateGraph(graph) {
 
         graph.value.freeze('highlightNodes')
         graphNodes.forEach((x) => {
+            const isBase = x.store.data?.isBase
             const graphNodeElement = document.querySelectorAll(
                 `[data-cell-id="${x.id}"]`
             )[0]
@@ -34,6 +56,7 @@ export default function useUpdateGraph(graph) {
             ).find((y) => y.classList.contains('lineage-node'))
 
             const itExists = nodesToHighlight.includes(x.id)
+            const cell = graph.value.getCellById(x.id)
 
             const isSelectedNode = selectedNodeId?.value === x.id ? x.id : null
             const isHighlightedNode = itExists ? x.id : null
@@ -45,13 +68,25 @@ export default function useUpdateGraph(graph) {
                 'isGrayed'
             )
 
+            if (!isBase) updateIconStroke(x, '#B2B8C7')
             if (!selectedNodeId?.value && !nodesToHighlight.length) return
+            cell.setZIndex(0)
 
-            if (isSelectedNode)
+            if (isSelectedNode) {
                 lineageNodeElement?.classList.add('isSelectedNode')
-            if (isHighlightedNode && !isSelectedNode)
+                cell.setZIndex(10)
+                updateIconStroke(x, '#3c71df')
+            }
+            if (isHighlightedNode && !isSelectedNode) {
                 lineageNodeElement?.classList.add('isHighlightedNode')
-            if (isGrayed) lineageNodeElement?.classList.add('isGrayed')
+                cell.setZIndex(10)
+                if (!isBase) updateIconStroke(x, '#3c71df')
+            }
+            if (isGrayed) {
+                lineageNodeElement?.classList.add('isGrayed')
+                cell.setZIndex(0)
+                if (!isBase) updateIconStroke(x, '#e0e4eb')
+            }
         })
         graph.value.unfreeze('highlightNodes')
     }
@@ -80,11 +115,10 @@ export default function useUpdateGraph(graph) {
                 itExists ? highlightStateColor : gray
             )
 
-            if (itExists) cell.setZIndex(50)
-            else {
-                cell.setZIndex(15)
-                cell.attr('line/strokeWidth', 1.6)
-            }
+            cell.setZIndex(0)
+
+            if (itExists) cell.setZIndex(10)
+            else cell.setZIndex(0)
         })
         graph.value.unfreeze('highlightEdges')
 

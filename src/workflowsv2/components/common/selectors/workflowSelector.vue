@@ -1,3 +1,4 @@
+<!-- FIXME: Deprecated component -->
 <template>
     <BaseSelector
         :type="type"
@@ -28,6 +29,7 @@
 
     import BaseSelector from './baseSelector.vue'
 
+    /** @deprecated - Remove this component*/
     export default defineComponent({
         name: 'WorkflowSelector',
         components: { BaseSelector },

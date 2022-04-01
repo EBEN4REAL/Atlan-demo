@@ -1,16 +1,16 @@
 <template>
     <div
         :id="`${item.qualifiedName}`"
-        class="h-8"
+        class="h-auto"
         :class="`w-full group ${item.qualifiedName}`"
         :data-test-id="item?.guid"
     >
         <!-- {{ errorNode }} -->
 
         <div class="flex justify-between w-full overflow-hidden">
-            <div class="flex w-full m-0">
+            <div class="flex w-full">
                 <div
-                    v-if="item.typeName === 'Folder'"
+                    v-if="item.typeName === 'Folder' && item.isCta !== 'cta'"
                     class="relative flex content-center w-full h-8 my-auto overflow-hidden text-sm leading-5 text-gray-700"
                 >
                     <div class="py-1.5 w-full">
@@ -58,11 +58,42 @@
                 </div>
                 <!--Empty NODE -->
                 <div
-                    v-else-if="item.typeName === 'Empty'"
-                    class="h-8 text-sm font-bold text-gray-500"
+                    v-else-if="
+                        item.typeName === 'Folder' && item.isCta === 'cta'
+                    "
+                    class="relative flex content-center w-full h-10 my-auto overflow-hidden text-sm leading-5 text-gray-700"
                 >
-                    {{ item.title }}
+                    <div class="w-full">
+                        <div class="flex w-11/12">
+                            <span
+                                class="text-sm text-gray-700 text-new-gray-600"
+                                >empty folder, create a
+                                <span
+                                    @click="newQuery"
+                                    class="cursor-pointer text-new-blue-400 hover:underline"
+                                    >query</span
+                                >,
+                                <span
+                                    @click="newVisualQuery"
+                                    class="cursor-pointer text-new-blue-400 hover:underline"
+                                    >visual query</span
+                                >
+                                or a
+                                <span
+                                    @click="newFolder"
+                                    class="cursor-pointer text-new-blue-400 hover:underline"
+                                    >folder
+                                </span></span
+                            >
+                            <!-- <div
+                                :id="`${item.qualifiedName}-menu`"
+                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
+                            ></div> -->
+                        </div>
+                    </div>
+                    <!-- {{ item.title }} -->
                 </div>
+
                 <!------------------------------->
                 <!-- Popover Allowed -->
 
@@ -219,6 +250,21 @@
         </template>
     </a-popover> -->
 
+    <a-modal
+        :visible="scheduleQueryModal"
+        :footer="null"
+        :closable="false"
+        width="700px"
+        :destroyOnClose="true"
+    >
+        <ScheduleQuery
+            :item="item"
+            v-model:scheduleQueryModal="scheduleQueryModal"
+            style="min-height: 610px"
+            class="rounded-lg"
+        />
+    </a-modal>
+
     <a-popover :visible="showFolderPopover" placement="rightTop">
         <template #content>
             <div>
@@ -290,6 +336,8 @@
     import { copyToClipboard } from '~/utils/clipboard'
     import { QueryCollection } from '~/types/insights/savedQuery.interface'
     import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
+    import Tooltip from '@common/ellipsis/index.vue'
+    import ScheduleQuery from '~/components/insights/explorers/queries/schedule/index.vue'
 
     // vqb icons
     import Vqb from '~/assets/images/icons/Vqb.svg?raw'
@@ -326,7 +374,9 @@
             AtlanBtn,
             Tooltip,
             InsightsThreeDotMenu,
+            ScheduleQuery,
         },
+
         props: {
             item: {
                 type: Object as PropType<assetInterface>,
@@ -369,7 +419,7 @@
             //     default: () => {},
             // },
         },
-        setup(props) {
+        setup(props, { emit }) {
             const { canUserDeleteFolder } = useAccess()
             const {
                 expandedKeys,
@@ -398,6 +448,9 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+
+            const createFolderInput =
+                inject<(guid: string) => void>('createFolderInput')
 
             const toggleCreateQueryModal = inject<
                 (guid: string, isVQB: boolean) => void
@@ -618,6 +671,10 @@
                 if (toggleCreateQueryModal) {
                     toggleCreateQueryModal(item, isVQB)
                 }
+            }
+
+            const newFolder = () => {
+                if (createFolderInput) createFolderInput()
             }
 
             const addBackground = (visible) => {
@@ -1399,6 +1456,14 @@
             ]
             const dropdownFolderOptions = [
                 {
+                    title: 'New folder',
+                    key: 'new',
+                    class: '',
+                    disabled: false,
+                    component: MenuItem,
+                    handleClick: newFolder,
+                },
+                {
                     title: 'Rename folder',
                     key: 'rename',
                     class: '',
@@ -1448,6 +1513,8 @@
             return {
                 dropdownFolderOptions,
                 dropdownQueryOptions,
+                scheduleQueryModal,
+                toggleScheduleQueryModal,
                 evaluatePermisson,
                 permissions,
                 canUserDeleteFolder,
@@ -1456,6 +1523,7 @@
                 delteItem,
                 newQuery,
                 newVisualQuery,
+                newFolder,
                 savedQueryType,
                 item,
                 expandedKeys,
@@ -1486,6 +1554,7 @@
                 collectionName,
                 addBackground,
                 removeBackground,
+                createFolderInput,
                 // input,
                 // newFolderName,
             }
@@ -1531,7 +1600,6 @@
     .parent-ellipsis-container-extension {
         flex-shrink: 0;
     }
-
     /* ------------------------------- */
 </style>
 <style lang="less" module>

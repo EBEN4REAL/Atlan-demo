@@ -26,6 +26,7 @@ declare module '@tiptap/core' {
                 width?: string
                 height?: string
                 redirectTo?: string
+                analyticskey: string
             }) => ReturnType
         }
     }
@@ -84,6 +85,9 @@ export default Node.create<IframeOptions>({
                 default: '',
             },
             embedicon: {
+                default: '',
+            },
+            analyticskey: {
                 default: '',
             },
         }

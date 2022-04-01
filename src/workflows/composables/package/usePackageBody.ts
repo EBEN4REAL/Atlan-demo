@@ -113,6 +113,7 @@ export function usePackageBody(
 
         base.queryMinimumShouldMatch(1, true)
     }
+
     base.from(offset || 0)
     base.size(limit || 0)
 
@@ -206,6 +207,21 @@ export function usePackageBody(
                                 .query(
                                     'term',
                                     'metadata.labels.orchestration.atlan.com/atlan-ui.keyword',
+                                    filterObject
+                                )
+                                .build(),
+                        })
+                    }
+                    break
+                }
+                case 'user': {
+                    if (filterObject) {
+                        base.filter('nested', {
+                            path: 'metadata',
+                            ...bodybuilder()
+                                .query(
+                                    'term',
+                                    'metadata.labels.workflows.argoproj.io/creator-preferred-username',
                                     filterObject
                                 )
                                 .build(),

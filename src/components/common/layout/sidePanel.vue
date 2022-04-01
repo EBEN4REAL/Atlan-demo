@@ -60,7 +60,7 @@
             </a-tooltip>
         </div>
 
-        <div class="px-2">
+        <div class="px-0">
             <template v-for="nav in workspaceList" :key="nav.label">
                 <a-tooltip
                     placement="right"
@@ -87,7 +87,7 @@
                             class="flex items-center w-full mx-0 menu-item"
                             :class="[
                                 isCollapsed
-                                    ? 'p-2 justify-center my-1'
+                                    ? 'px-2 py-1 justify-center my-3  '
                                     : 'mt-1',
                                 isActive || isHovering === nav.path
                                     ? bgClass(nav.path)
@@ -96,7 +96,7 @@
                             @mouseover="isHovering = nav.path"
                             @mouseout="isHovering = ''"
                         >
-                            <span class="flex items-center">
+                            <span class="flex flex-col items-center">
                                 <atlan-icon
                                     :icon="
                                         isActive ? nav?.icon : nav?.inactiveIcon
@@ -108,8 +108,10 @@
                                             : 'text-gray-500',
                                     ]"
                                 />
-
-                                <span v-if="!isCollapsed">
+                                <span
+                                    class="mt-1 leading-none tracking-tight text-gray-500"
+                                    style="font-size: 11px"
+                                >
                                     {{ nav.label }}</span
                                 >
                             </span>
@@ -119,7 +121,7 @@
             </template>
         </div>
         <div class="p-2"><hr /></div>
-        <div class="px-2">
+        <div class="px-0">
             <template v-for="nav in workspaceCentreList" :key="nav.label">
                 <a-tooltip
                     placement="right"
@@ -159,7 +161,7 @@
                             @mouseover="isHovering = nav.path"
                             @mouseout="isHovering = ''"
                         >
-                            <span class="flex items-center">
+                            <span class="flex flex-col items-center">
                                 <atlan-icon
                                     :icon="
                                         isActive
@@ -174,7 +176,10 @@
                                     ]"
                                 />
 
-                                <span v-if="!isCollapsed">
+                                <span
+                                    class="mt-1 leading-none tracking-tight text-gray-500"
+                                    style="font-size: 11px"
+                                >
                                     {{ nav.label }}</span
                                 >
                             </span>
@@ -342,7 +347,7 @@
     .menu-item {
         @apply flex items-center px-3  self-stretch mx-1 py-2;
         @apply text-sm text-gray;
-        @apply rounded;
+
         @apply transition duration-300;
         @apply outline-none;
         @apply border border-transparent;

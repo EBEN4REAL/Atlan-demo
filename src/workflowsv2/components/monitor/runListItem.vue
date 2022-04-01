@@ -36,7 +36,7 @@
             </span>
         </div>
         <a-tooltip :title="startedAt(run, false)">
-            <div class="col-span-1">{{ startedAt(run, true) }} ago</div>
+            <div class="col-span-1">{{ startedAt(run, true) }}</div>
         </a-tooltip>
 
         <div class="col-span-1">{{ duration(run) }}</div>

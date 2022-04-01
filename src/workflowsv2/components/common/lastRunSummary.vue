@@ -11,7 +11,7 @@
             <span>
                 <AtlanIcon :icon="getRunIconByPhase(run)" class="mb-0.5" />
                 Last run
-                <span class="text-gray"> {{ startedAt(run, true) }} ago </span>
+                <span class="text-gray"> {{ startedAt(run, true) }} </span>
                 by
                 <span
                     class="cursor-pointer hover:underline"

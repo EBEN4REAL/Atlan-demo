@@ -28,7 +28,7 @@
 
             <div v-if="creatorUsername(workflow)">
                 <p class="info-title">Created</p>
-                <span>{{ creationTimestamp(workflow, true) }} ago by </span>
+                <span>{{ creationTimestamp(workflow, true) }} by </span>
                 <span
                     class="cursor-pointer hover:underline"
                     @click="() => openUserSidebar(creatorUsername(workflow))"

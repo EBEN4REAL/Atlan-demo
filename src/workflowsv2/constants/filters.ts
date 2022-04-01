@@ -90,11 +90,11 @@ export const runStatuses = [
     {
         id: 'Error',
         label: 'Errored',
-        colorDot: '#E48A8A',
+        colorDot: '#FF751f',
     },
     {
         id: 'Pending',
         label: 'Pending',
-        colorDot: '#225BD2',
+        colorDot: '#6F7950',
     },
 ]

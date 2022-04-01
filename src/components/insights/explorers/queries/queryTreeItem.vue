@@ -303,6 +303,7 @@
     import QueryDeprecated from '~/assets/images/icons/query-deprecated.svg?raw'
     import QueryDraft from '~/assets/images/icons/query-draft.svg?raw'
     import InsightsThreeDotMenu from '~/components/insights/common/dropdown/index.vue'
+    import { MenuItem, SubMenu } from 'ant-design-vue'
 
     const {
         inlineTabRemove,
@@ -1328,6 +1329,7 @@
                     title: 'Copy link',
                     key: 'copyLink',
                     class: 'border-b border-gray-300',
+                    component: MenuItem,
                     disabled: false,
                     handleClick: copyURL,
                 },
@@ -1336,6 +1338,7 @@
                     key: 'duplicate',
                     class: '',
                     disabled: false,
+                    component: MenuItem,
                     handleClick: ({ item }) => {
                         actionClick('duplicate', item)
                     },
@@ -1345,6 +1348,7 @@
 
                     key: 'move',
                     class: 'border-b border-gray-300',
+                    component: MenuItem,
                     disabled: false,
                     handleClick: () => {
                         showFolderPopover.value = true
@@ -1355,6 +1359,7 @@
 
                     key: 'rename',
                     class: '',
+                    component: MenuItem,
                     disabled: false,
                     handleClick: renameFolder,
                 },
@@ -1363,6 +1368,7 @@
 
                     key: 'edit',
                     class: 'border-b border-gray-300',
+                    component: MenuItem,
                     disabled: false,
                     handleClick: ({ item }) => {
                         actionClick('info', item)
@@ -1373,6 +1379,7 @@
 
                     key: 'delete',
                     class: 'text-red-600',
+                    component: MenuItem,
                     disabled: false,
                     handleClick: () => {
                         showDeletePopover.value = true
@@ -1385,11 +1392,13 @@
                     key: 'rename',
                     class: '',
                     disabled: false,
+                    component: MenuItem,
                     handleClick: renameFolder,
                 },
                 {
                     title: 'New query',
                     key: 'newQuery',
+                    component: MenuItem,
                     class: '',
                     disabled: false,
                     handleClick: newQuery,
@@ -1397,6 +1406,7 @@
                 {
                     title: 'Move folder',
                     key: 'moveFolder',
+                    component: MenuItem,
                     class: 'border-b border-gray-300',
                     disabled: false,
                     handleClick: () => {
@@ -1408,6 +1418,7 @@
 
                     key: 'delete',
                     class: 'text-red-600',
+                    component: MenuItem,
                     disabled: false,
                     handleClick: () => {
                         showDeletePopover.value = true

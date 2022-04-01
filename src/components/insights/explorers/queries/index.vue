@@ -290,6 +290,7 @@
     import { isValid } from '~/utils/isValid'
     import map from '~/constant/accessControl/map'
     import InsightsThreeDotMenu from '~/components/insights/common/dropdown/index.vue'
+    import { MenuItem, SubMenu } from 'ant-design-vue'
 
     export default defineComponent({
         name: 'QueryExplorer',
@@ -1082,6 +1083,7 @@
                         key: 'newQuery',
                         class: '',
                         disabled: false,
+                        component: MenuItem,
                         hide: !hasWritePermission.value,
                         handleClick: () => {
                             toggleCreateQueryModal(currentSelectedNode)
@@ -1090,6 +1092,7 @@
                     {
                         title: 'New Folder',
                         key: 'newFolder',
+                        component: MenuItem,
                         class: '',
                         disabled: false,
                         hide: !hasWritePermission.value,
@@ -1099,6 +1102,7 @@
                         title: 'New Collection',
 
                         key: 'collection',
+                        component: MenuItem,
                         class: '',
                         disabled: false,
                         hide: !hasWritePermission.value,

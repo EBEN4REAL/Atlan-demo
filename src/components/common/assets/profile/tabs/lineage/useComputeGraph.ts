@@ -294,6 +294,7 @@ export default async function useComputeGraph({
             !!relations.find((x) => x.fromEntityId === id) &&
             !!relations.find((x) => x.toEntityId === id)
 
+        graph.value.freeze('createColCTAPorts')
         graph.value.getNodes().forEach((node) => {
             const isColNode = isCollapsible(node.id)
             const { portData } = createCTAPortData()
@@ -328,6 +329,7 @@ export default async function useComputeGraph({
                 node.addPort(portData)
             }
         })
+        graph.value.unfreeze('createColCTAPorts')
     }
 
     /* createHoPaCTAPorts */
@@ -352,6 +354,7 @@ export default async function useComputeGraph({
             return res
         }
 
+        graph.value.freeze('createHoPaCTAPorts')
         graph.value.getNodes().forEach((node) => {
             const isHoPaNode = hasHoPa(node.id)
             const isRootNode = checkNode(node.id, 'toEntityId')
@@ -374,6 +377,7 @@ export default async function useComputeGraph({
                 node.addPort(portData)
             }
         })
+        graph.value.unfreeze('createHoPaCTAPorts')
     }
 
     /* Render */

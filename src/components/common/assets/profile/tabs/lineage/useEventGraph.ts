@@ -1161,12 +1161,14 @@ export default function useEventGraph({
                 : predecessors.includes(node.id)
         })
 
+        graph.value.freeze('controlColCTAPort')
         nodes.forEach((node) => {
             const cell = graph.value.getCellById(node.id)
             if (!state && cell.isVisible()) state = 'exp'
             if (!state && !cell.isVisible()) state = 'col'
             cell.toggleVisible()
         })
+        graph.value.unfreeze('controlColCTAPort')
 
         const icon = state === 'exp' ? iconPlusB64 : iconMinusB64
 

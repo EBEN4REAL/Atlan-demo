@@ -322,6 +322,7 @@ const useQueryTree = ({
                     selectable: false,
                     checkable: false,
                     isCta: 'cta',
+                    class: 'no-hover', // Added to manipulate hover and cursor states
                 } as any)
             }
 

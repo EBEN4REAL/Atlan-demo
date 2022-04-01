@@ -115,18 +115,18 @@
                                 >empty folder, create a
                                 <span
                                     @click="newQuery"
-                                    class="text-new-blue-400 hover:underline"
+                                    class="cursor-pointer text-new-blue-400 hover:underline"
                                     >query</span
                                 >,
                                 <span
                                     @click="newVisualQuery"
-                                    class="text-new-blue-400 hover:underline"
+                                    class="cursor-pointer text-new-blue-400 hover:underline"
                                     >visual query</span
                                 >
                                 or a
                                 <span
                                     @click="newFolder"
-                                    class="text-new-blue-400 hover:underline"
+                                    class="cursor-pointer text-new-blue-400 hover:underline"
                                     >folder
                                 </span></span
                             >
@@ -1556,7 +1556,6 @@
     .parent-ellipsis-container-extension {
         flex-shrink: 0;
     }
-
     /* ------------------------------- */
 </style>
 <style lang="less" module>

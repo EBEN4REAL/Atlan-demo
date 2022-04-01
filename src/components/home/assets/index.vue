@@ -2,10 +2,7 @@
     <div class="flex w-full h-full">
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
             <div class="flex flex-col">
-                <div
-                    v-if="showAggrs && !isValidating && list.length > 0"
-                    class="w-full"
-                >
+                <div v-if="showAggrs && list.length > 0" class="w-full">
                     <AggregationTabs
                         v-model="postFacets.typeName"
                         class="mt-3"
@@ -15,12 +12,7 @@
                     </AggregationTabs>
                 </div>
             </div>
-            <div
-                v-if="isValidating"
-                class="flex items-center justify-center flex-grow"
-            >
-                <AtlanLoader class="h-10" />
-            </div>
+
             <div
                 v-if="!isValidating && error"
                 class="flex items-center justify-center flex-grow"
@@ -37,10 +29,12 @@
                     :desc="emptyText"
                 />
             </div>
-
-            <!--                             :show-check-box="
-                                preference?.display?.includes('enableCheckbox')
-                            " -->
+            <div
+                v-else-if="list.length === 0 && isValidating"
+                class="flex items-center justify-center flex-grow"
+            >
+                <AtlanLoader class="h-10" />
+            </div>
             <AssetList
                 v-else
                 ref="assetlistRef"
@@ -54,6 +48,7 @@
                     <AssetItem
                         :item="item"
                         :preference="preference"
+                        :is-loading="isValidating"
                         class="hover:bg-primary-menu"
                         :enable-sidebar-drawer="true"
                         @updateDrawer="updateCurrentList"

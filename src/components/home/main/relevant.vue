@@ -21,6 +21,7 @@
             force-render
         >
             <component
+                :key="tab.dependentKey"
                 :is="tab.component"
                 :username="myUsername"
                 :type-names="tab.typeName"
@@ -59,22 +60,6 @@
             const { username: myUsername } = whoami()
             const assetCounts = ref({})
             const relevantTabList = ref([
-                // {
-                //     id: '2',
-                //     name: 'My Assets',
-                //     component: 'AssetList',
-                //     typeName: ['Table'],
-                //     icon: 'NoRelevantAsset',
-                //     filter: {
-                //         owners: {
-                //             ownerUsers: [myUsername.value],
-                //         },
-                //     },
-                //     emptyText: 'All your assets will appear here.',
-                //     preference: undefined,
-                //     dependentKey: 'DEFAULT_ASSET_LIST_HOME',
-                //     assetCount: 0,
-                // },
                 {
                     id: '4',
                     name: 'My Drafts',

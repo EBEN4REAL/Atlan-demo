@@ -183,6 +183,7 @@ export function useRunBody(
                                                                 'status.startedAt',
                                                                 'status.finishedAt',
                                                                 'status.progress',
+                                                                'status.estimatedDuration',
                                                                 'metadata.labels.workflows.argoproj.io/creator-preferred-username',
                                                             ],
                                                         },

@@ -147,12 +147,16 @@
                 }
 
                 purposeStore.list?.forEach((item) => {
-                    purpose.children.push({
-                        value: item.id,
-                        label: capitalizeFirstLetter(item.displayName),
-                    })
+                    if (item.enabled) {
+                        purpose.children.push({
+                            value: item.id,
+                            label: capitalizeFirstLetter(item.displayName),
+                        })
+                    }
                 })
-                temp.push(purpose)
+                if (purpose.children.length) {
+                    temp.push(purpose)
+                }
 
                 const all = {
                     value: 'all',

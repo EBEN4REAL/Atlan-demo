@@ -249,6 +249,7 @@
     import AssetFilters from '@/common/assets/filters/index.vue'
     import { message, Modal } from 'ant-design-vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import useAssetStore from '~/store/asset'
     export default defineComponent({
         name: 'PurposeView',
         components: {
@@ -264,6 +265,7 @@
             AssetFilters,
         },
         setup() {
+            const assetStore = useAssetStore()
             const router = useRouter()
             const route = useRoute()
             const modalVisible = ref(false)
@@ -387,6 +389,14 @@
                     const keyObj = val ? 'purpose_enable' : 'purpose_disable'
                     updateSelectedPersona()
                     useAddEvent('governance', 'purpose', keyObj)
+                    if (
+                        assetStore.globalState[0] === 'purpose' &&
+                        selectedPurpose.value.id ===
+                            assetStore.globalState[1] &&
+                        !val
+                    ) {
+                        assetStore.setGlobalState(['all'])
+                    }
                 } catch (e) {
                     message.error({
                         content: `Failed to ${

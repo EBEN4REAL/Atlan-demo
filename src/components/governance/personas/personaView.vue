@@ -213,7 +213,6 @@
     import { storeToRefs } from 'pinia'
     import { useRoute, useRouter } from 'vue-router'
     import { message, Modal } from 'ant-design-vue'
-    import AtlanBtn from '@/UI/button.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ExplorerLayout from '@/admin/explorerLayout.vue'
     import PersonaBody from './personaBody.vue'

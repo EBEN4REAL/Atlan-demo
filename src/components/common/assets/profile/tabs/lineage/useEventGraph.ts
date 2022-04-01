@@ -67,6 +67,7 @@ export default function useEventGraph({
     const columnToSelect = computed(() => lineageStore.getColumnToSelect())
     const depthCounter = ref(1)
     const isGraphLoading = ref(false)
+    const colToggledNodes = ref({})
 
     /** METHODS */
     /** Utils */
@@ -498,7 +499,7 @@ export default function useEventGraph({
         })
 
         const { y: y2 } = nodePrev.position()
-        const nodePrevPortsLength = nodePrev.getPorts().length - 1
+        const nodePrevPortsLength = getNodeColumnOnlyPorts(nodePrev).length
         const portsLengthTotal = nodePrevPortsLength * 40
         const newY = y2 + 130.5 + portsLengthTotal
 
@@ -750,7 +751,7 @@ export default function useEventGraph({
 
             if (nodesTranslated.value[node.id]) {
                 const itExists = nodesTranslated.value[node.id].some(
-                    (x) => x.id === ntt.id
+                    (y) => y.id === ntt.id
                 )
                 if (!itExists) nodesTranslated.value[node.id].push(ntt)
             } else nodesTranslated.value[node.id] = [ntt]
@@ -1155,20 +1156,39 @@ export default function useEventGraph({
         let state = ''
         const path = portId.includes('ctaPortRight') ? 'right' : 'left'
         const { predecessors, successors } = useGetNodes(graph, node.id)
-        const nodes = graph.value.getNodes().filter((node) => {
-            return path === 'right'
-                ? successors.includes(node.id)
-                : predecessors.includes(node.id)
-        })
+        const nodesToToggle = graph.value
+            .getNodes()
+            .filter((n) =>
+                path === 'right'
+                    ? successors.includes(n.id)
+                    : predecessors.includes(n.id)
+            )
 
         graph.value.freeze('controlColCTAPort')
-        nodes.forEach((node) => {
-            const cell = graph.value.getCellById(node.id)
+        nodesToToggle.forEach((n) => {
+            const cell = graph.value.getCellById(n.id)
+            let shouldToggle = true
+
+            Object.entries(colToggledNodes.value).forEach(([k, v]) => {
+                if (v.includes(n.id) && k !== node.id) shouldToggle = false
+            })
+
+            if (!shouldToggle) return
+
             if (!state && cell.isVisible()) state = 'exp'
             if (!state && !cell.isVisible()) state = 'col'
             cell.toggleVisible()
         })
         graph.value.unfreeze('controlColCTAPort')
+
+        if (state === 'exp') {
+            colToggledNodes.value = {
+                ...colToggledNodes.value,
+                [node.id]: nodesToToggle.map((x) => x.id),
+            }
+        } else {
+            delete colToggledNodes.value[node.id]
+        }
 
         const icon = state === 'exp' ? iconPlusB64 : iconMinusB64
 
@@ -1452,9 +1472,7 @@ export default function useEventGraph({
 
         _expandedNodes.forEach((nodeId) => {
             const x6Node = getX6Node(nodeId)
-            const ports = x6Node
-                .getPorts()
-                .filter((x) => x.attrs?.portBody?.stroke)
+            const ports = getNodeColumnOnlyPorts(x6Node)
 
             if (parentNode?.id === nodeId || ports.length > 0) {
                 ports.forEach((x) => {
@@ -1569,10 +1587,10 @@ export default function useEventGraph({
         if (isGraphLoading.value) return
 
         if (node.id.includes('vpNode')) {
-            if (selectedNodeId.value) controlSelectedNodeAction(node)
+            if (selectedNodeId.value) controlSelectedNodeAction(node, null)
             else if (selectedNodeEdgeId.value)
-                controlSelectedNodeEdgeAction(node)
-            else if (selectedPortId.value) controlSelectedPortAction(node)
+                controlSelectedNodeEdgeAction(node, null)
+            else if (selectedPortId.value) controlSelectedPortAction(node, null)
             else {
                 selectVpNode(node)
                 resetState(true)
@@ -1592,7 +1610,7 @@ export default function useEventGraph({
     })
 
     // Edge - Click
-    graph.value.on('edge:click', ({ e, edge }) => {
+    graph.value.on('edge:click', ({ edge }) => {
         if (isGraphLoading.value) return
 
         if (!isEdgeClickable(edge)) return

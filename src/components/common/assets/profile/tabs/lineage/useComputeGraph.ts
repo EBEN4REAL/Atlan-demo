@@ -10,7 +10,10 @@ import useLineageStore from '~/store/lineage'
 /** COMPOSABLES */
 import useGraph from './useGraph'
 
+/** UTILS */
 import { isCyclicEdge, getFilteredRelations } from './util.js'
+import { iconMinusB64, iconPlusB64 } from './iconsBase64'
+import useGetNodes from './useGetNodes'
 
 export default async function useComputeGraph({
     graph,
@@ -19,7 +22,6 @@ export default async function useComputeGraph({
     currZoom,
     isComputeDone,
 }) {
-    // const { DagreLayout } = window.layout
     const lineageStore = useLineageStore()
     lineageStore.cyclicRelations = []
     lineageStore.columnToSelect = {}
@@ -32,7 +34,8 @@ export default async function useComputeGraph({
     const nodes = ref([])
     const mergedLineageData = ref({})
 
-    const { createNodeData, createEdgeData } = useGraph(graph)
+    const { createNodeData, createEdgeData, createCTAPortData } =
+        useGraph(graph)
 
     mergedLineageData.value = { ...lineage.value }
     lineageStore.setMergedLineageData(mergedLineageData.value)
@@ -65,7 +68,7 @@ export default async function useComputeGraph({
     const createNodesFromEntityMap = (data, hasBase = true) => {
         const lineageData = { ...data }
 
-        const { relations, childrenCounts, baseEntityGuid } = lineageData
+        const { relations, baseEntityGuid } = lineageData
 
         const getAsset = (id) => lineageData.guidEntityMap[id]
 
@@ -200,8 +203,6 @@ export default async function useComputeGraph({
 
             const { nodeData } = createNodeData(
                 ent,
-                relations,
-                childrenCounts,
                 hasBase ? baseEntityGuid : null
             )
 
@@ -283,6 +284,98 @@ export default async function useComputeGraph({
 
     createNodeEdges(lineage.value)
 
+    /* createColCTAPorts */
+    const createColCTAPorts = () => {
+        const { relations, baseEntityGuid } = mergedLineageData.value
+
+        const { predecessors, successors } = useGetNodes(graph, baseEntityGuid)
+
+        const isCollapsible = (id) =>
+            !!relations.find((x) => x.fromEntityId === id) &&
+            !!relations.find((x) => x.toEntityId === id)
+
+        graph.value.getNodes().forEach((node) => {
+            const isColNode = isCollapsible(node.id)
+            const { portData } = createCTAPortData()
+            if (node.id === baseEntityGuid)
+                portData.attrs.portBody.stroke = '#3c71df'
+
+            if (
+                (isColNode && successors.includes(node.id)) ||
+                (baseEntityGuid === node.id && successors.length)
+            ) {
+                portData.group = 'ctaPortRight'
+                portData.id = `${node.id}-ctaPortRight-col`
+                portData.attrs.portImage = {
+                    href: iconMinusB64,
+                    width: 20,
+                    height: 20,
+                }
+                node.addPort(portData)
+            }
+
+            if (
+                (isColNode && predecessors.includes(node.id)) ||
+                (baseEntityGuid === node.id && predecessors.length)
+            ) {
+                portData.group = 'ctaPortLeft'
+                portData.id = `${node.id}-ctaPortLeft-col`
+                portData.attrs.portImage = {
+                    href: iconMinusB64,
+                    width: 18,
+                    height: 18,
+                }
+                node.addPort(portData)
+            }
+        })
+    }
+
+    /* createHoPaCTAPorts */
+    const createHoPaCTAPorts = () => {
+        const { relations, childrenCounts, baseEntityGuid } =
+            mergedLineageData.value
+
+        const checkNode = (id, prop) => {
+            let res = true
+            relations.forEach((x) => {
+                if (x[prop] === id) res = false
+            })
+            return res
+        }
+
+        const hasHoPa = (id) => {
+            let res = false
+            const isRootNode = checkNode(id, 'toEntityId')
+            const isLeafNode = checkNode(id, 'fromEntityId')
+            if (isRootNode) res = !!childrenCounts?.[id]?.INPUT
+            if (isLeafNode) res = !!childrenCounts?.[id]?.OUTPUT
+            return res
+        }
+
+        graph.value.getNodes().forEach((node) => {
+            const isHoPaNode = hasHoPa(node.id)
+            const isRootNode = checkNode(node.id, 'toEntityId')
+            const isLeafNode = checkNode(node.id, 'fromEntityId')
+
+            if ((isRootNode || isLeafNode) && isHoPaNode) {
+                const { portData } = createCTAPortData()
+                if (node.id === baseEntityGuid)
+                    portData.attrs.portBody.stroke = '#3c71df'
+
+                const pos = isLeafNode ? 'ctaPortRight' : 'ctaPortLeft'
+
+                portData.group = pos
+                portData.id = `${node.id}-${pos}-hoPa`
+                portData.attrs.portImage = {
+                    href: iconPlusB64,
+                    width: 20,
+                    height: 20,
+                }
+                node.addPort(portData)
+            }
+        })
+    }
+
     /* Render */
     const renderLayout = (registerAllListeners) => {
         model.value = graphLayout.value?.layout({
@@ -309,14 +402,8 @@ export default async function useComputeGraph({
             },
         })
 
-        graph.value.getNodes().forEach((n) => {
-            const ctaEle = document.getElementById(`node-${n.id}-hoPaCTA`)
-            const cell = graph.value.getCellById(n.id)
-            const isRootNode = graph.value.isRootNode(cell)
-            const isLeafNode = graph.value.isLeafNode(cell)
-            if (isRootNode || isLeafNode) return
-            ctaEle?.remove()
-        })
+        createColCTAPorts()
+        createHoPaCTAPorts()
 
         if (typeof registerAllListeners === 'function') registerAllListeners()
     }

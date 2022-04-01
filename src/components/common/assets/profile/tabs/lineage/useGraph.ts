@@ -45,7 +45,7 @@ export default function useGraph(graph) {
             id: guid,
             isSelectedNode: null,
             isHighlightedNode: null,
-            isGrayed: false,
+            isGrayed: null,
             hiddenCount: 0,
             ...dataObj,
         }
@@ -73,9 +73,15 @@ export default function useGraph(graph) {
                     <div id="node-${guid}" class="lineage-node group ${
                         isVpNode ? 'isVpNode' : ''
                     }   
+                    ${isBase ? 'isBase' : ''} 
+                    ${data?.isSelectedNode === data?.id ? 'isSelectedNode' : ''}
                     ${
-                        isBase ? 'isBase' : ''
-                    }">
+                        data?.isHighlightedNode === data?.id
+                            ? 'isHighlightedNode'
+                            : ''
+                    }
+                    ${data?.isGrayed === data?.id ? 'isGrayed' : ''} 
+                    ">
                         <div class=" ${isBase ? 'inscr' : 'hidden'}">BASE</div>
                         ${
                             isVpNode
@@ -135,6 +141,10 @@ export default function useGraph(graph) {
                 </div>`
                 },
                 shouldComponentUpdate(node) {
+                    graph.value.freeze('shouldComponentUpdate')
+                    graph.value.getEdges().forEach((edge) => edge.setZIndex(0))
+                    graph.value.unfreeze('shouldComponentUpdate')
+
                     return node.hasChanged('data')
                 },
             },
@@ -236,7 +246,7 @@ export default function useGraph(graph) {
                                 width: 268,
                                 height: 40,
                                 strokeWidth: 1,
-                                stroke: '#E0E4EB',
+                                stroke: isBase ? '#3c71df' : '#E0E4EB',
                                 fill: '#ffffff',
                                 event: 'port:click',
                                 y: -11,

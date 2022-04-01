@@ -19,7 +19,9 @@ import fetchColumns from './fetchColumns'
 /** CONSTANTS */
 import { LineageAttributes } from '~/constant/projection'
 
+/** UTILS */
 import { isCyclicEdge, getFilteredRelations } from './util.js'
+import { iconMinusB64, iconPlusB64, iconLoaderB64 } from './iconsBase64'
 
 export default function useEventGraph({
     graph,
@@ -228,6 +230,18 @@ export default function useEventGraph({
         return res
     }
 
+    // getNodeColumnOnlyPorts
+    const getNodeColumnOnlyPorts = (node) => {
+        const ports = node.getPorts()
+        const res = ports.filter(
+            (port) =>
+                !port.id.includes('invisiblePort') &&
+                !port.id.includes('ctaPortLeft') &&
+                !port.id.includes('ctaPortRight')
+        )
+        return res
+    }
+
     // selectNode
     const selectNode = (guid) => {
         const cyclicRelations = lineageStore.getCyclicRelations()
@@ -245,10 +259,11 @@ export default function useEventGraph({
 
         const nodesToHighlight = getNodesToHighlight(selectedNodeId)
 
-        nodesEdgesHighlighted.value = highlightEdges(nodesToHighlight)
         highlightNodes(selectedNodeId, nodesToHighlight)
+        nodesEdgesHighlighted.value = highlightEdges(nodesToHighlight)
     }
 
+    // selectNodeEdge
     const selectNodeEdge = (edgeId) => {
         const processId = edgeId.split('/')[0]
         onSelectAsset({ guid: processId })
@@ -313,18 +328,13 @@ export default function useEventGraph({
         if (mode === 'sameTarget')
             sameTargetCount.value[id].sourcesHidden = entitiesHidden
 
-        const { relations, childrenCounts } = mergedLineageData.value
+        const { relations } = mergedLineageData.value
 
         graph.value.freeze('selectVpNode-entitiesToAdd')
         entitiesToAdd.forEach((ent) => {
-            const { nodeData } = createNodeData(
-                ent,
-                relations,
-                childrenCounts,
-                true
-            )
+            const { nodeData } = createNodeData(ent, null)
             nodes.value.push(nodeData)
-            addNode(relations, childrenCounts, ent)
+            addNode(ent)
         })
         graph.value.unfreeze('selectVpNode-entitiesToAdd')
 
@@ -393,7 +403,7 @@ export default function useEventGraph({
                 )
                 edges.value.push(edgeData)
                 const edge = addEdge(newRelation)
-                edge.toFront()
+                edge.setZIndex(0)
 
                 lineageStore.setCyclicRelation(`${from}@${to}`)
             }
@@ -401,7 +411,7 @@ export default function useEventGraph({
             const { edgeData } = createEdgeData(relation, edgeExtraData, styles)
             edges.value.push(edgeData)
             const edge = addEdge(relation)
-            edge.toFront()
+            edge.setZIndex(0)
         })
         graph.value.unfreeze('selectVpNode-relsToAdd')
 
@@ -418,16 +428,11 @@ export default function useEventGraph({
 
         // add back vp node
         const entity = node?.store?.data?.entity || node.entity
-        const { nodeData } = createNodeData(
-            entity,
-            relations,
-            childrenCounts,
-            true
-        )
+        const { nodeData } = createNodeData(entity, null)
         nodeData.data.hiddenCount = entitiesHidden.length
         nodes.value.push(nodeData)
         graph.value.freeze('selectVpNode-addVpNode')
-        addNode(relations, childrenCounts, nodeData.entity)
+        addNode(nodeData.entity)
         graph.value.unfreeze('selectVpNode-addVpNode')
 
         // add back vp edge
@@ -544,12 +549,11 @@ export default function useEventGraph({
                     }
                 })
             }
-            controlHoPaCTALoader(guid, false)
         })
 
         watchOnce(data, () => {
             const { guidEntityMap: gem1 } = mergedLineageData.value
-            const { guidEntityMap: gem2 } = data.value
+            const { guidEntityMap: gem2, lineageDirection } = data.value
             const keys1 = Object.keys(gem1)
             const keys2 = Object.keys(gem2)
 
@@ -576,9 +580,14 @@ export default function useEventGraph({
                 depthCounter.value += 1
             } else {
                 message.info('No lineage to show')
-                const hoPaCTAId = `node-${guid}-hoPaCTA`
-                const hoPaCTAEle = document.getElementById(hoPaCTAId)
-                hoPaCTAEle?.remove()
+
+                const dirId =
+                    lineageDirection === 'OUTPUT'
+                        ? 'ctaPortRight'
+                        : 'ctaPortLeft'
+                const hoPaCTAId = `${guid}-${dirId}-hoPa`
+                const node = getPortNode(hoPaCTAId)
+                node.removePort(hoPaCTAId)
             }
 
             if (Object.keys(actions.value).length) {
@@ -603,7 +612,6 @@ export default function useEventGraph({
                     }
                 })
             }
-            controlHoPaCTALoader(guid, false)
             controlEdgesArrow()
         })
     }
@@ -803,8 +811,7 @@ export default function useEventGraph({
 
     // removePorts
     const removePorts = (node, handleCaretIcon = false) => {
-        const ports = node.getPorts()
-        ports.shift()
+        const ports = getNodeColumnOnlyPorts(node)
         node.removePorts(ports)
 
         if (handleCaretIcon) {
@@ -922,9 +929,6 @@ export default function useEventGraph({
                 translateSubsequentNodes(parentNode)
             }
 
-            // TODO: check for duplicate from@to
-            // port/processId/source@target
-            // label them as grouped processes
             const rels = relations.filter((rel) =>
                 [rel.fromEntityId, rel.toEntityId].includes(k)
             )
@@ -1042,7 +1046,7 @@ export default function useEventGraph({
             },
             edgeExtraData
         )
-        edge.toFront()
+        edge.setZIndex(0)
     }
 
     /** Controls */
@@ -1122,55 +1126,70 @@ export default function useEventGraph({
     }
 
     // controlHoPaCTALoader
-    const controlHoPaCTALoader = (nodeId, show) => {
-        const hoPaCTAIconId = `node-${nodeId}-hoPaCTAIcon`
-        const hoPaCTAIconEle = document.getElementById(hoPaCTAIconId)
-        const hoPaLoaderId = `node-${nodeId}-hoPaLoader`
-        const hoPaLoaderEle = document.getElementById(hoPaLoaderId)
-        if (show) {
-            isGraphLoading.value = true
-            hoPaLoaderEle?.classList.remove('hidden')
-            hoPaLoaderEle?.classList.add('inline')
+    const controlHoPaCTALoader = (node, portId) => {
+        node.setPortProp(portId, 'attrs/portImage/href', iconLoaderB64)
+        node.setPortProp(portId, 'attrs/portImage/width', 35)
+        node.setPortProp(portId, 'attrs/portImage/height', 35)
+        node.setPortProp(portId, 'attrs/portImage/refX', -4)
+        node.setPortProp(portId, 'attrs/portImage/refY', -4)
+    }
 
-            hoPaCTAIconEle?.classList.remove('inline')
-            hoPaCTAIconEle?.classList.add('hidden')
+    // controlHoPaCTAPort
+    const controlHoPaCTAPort = (node, portId) => {
+        if (isGraphLoading.value) return
+
+        if (selectedNodeId.value) controlSelectedNodeAction(node, portId)
+        else if (selectedNodeEdgeId.value)
+            controlSelectedNodeEdgeAction(node, portId)
+        else if (selectedPortId.value) {
+            controlSelectedPortAction(node, portId)
         } else {
-            isGraphLoading.value = false
-            hoPaLoaderEle?.classList.remove('inline')
-            hoPaLoaderEle?.classList.add('hidden')
-
-            hoPaCTAIconEle?.classList.remove('hidden')
-            hoPaCTAIconEle?.classList.add('inline')
+            resetState(true)
+            controlHoPaCTALoader(node, portId)
+            fetchNodeLineage(node.id)
         }
     }
 
-    // controlHoPaCTA
-    const controlHoPaCTA = (e) => {
-        e.stopPropagation()
+    // controlColCTAPort
+    const controlColCTAPort = (node, portId) => {
+        let state = ''
+        const path = portId.includes('ctaPortRight') ? 'right' : 'left'
+        const { predecessors, successors } = useGetNodes(graph, node.id)
+        const nodes = graph.value.getNodes().filter((node) => {
+            return path === 'right'
+                ? successors.includes(node.id)
+                : predecessors.includes(node.id)
+        })
 
-        if (isGraphLoading.value) return
+        graph.value.freeze('controlColCTAPort')
+        nodes.forEach((node) => {
+            const cell = graph.value.getCellById(node.id)
+            if (!state && cell.isVisible()) state = 'exp'
+            if (!state && !cell.isVisible()) state = 'col'
+            cell.toggleVisible()
+        })
+        graph.value.unfreeze('controlColCTAPort')
 
-        if (selectedNodeId.value) controlSelectedNodeAction(null, e)
-        else if (selectedNodeEdgeId.value)
-            controlSelectedNodeEdgeAction(null, e)
-        else if (selectedPortId.value) {
-            controlSelectedPortAction(null, e)
-        } else {
-            const gEle = getEventPath(e).find((x) =>
-                x.getAttribute('data-cell-id')
-            )
-            const nodeId = gEle.getAttribute('data-cell-id')
-            resetState(true)
-            controlHoPaCTALoader(nodeId, true)
-            fetchNodeLineage(nodeId)
-        }
+        const icon = state === 'exp' ? iconPlusB64 : iconMinusB64
+
+        node.setPortProp(portId, 'attrs/portImage/href', icon)
+
+        graph.value.getEdges().forEach((edge) => {
+            if (
+                edge.getSourceNode().id === node.id ||
+                edge.getTargetNode().id === node.id
+            ) {
+                const cell = graph.value.getCellById(edge.id)
+                cell.toBack()
+            }
+        })
     }
 
     // controlToggleOfActiveNode
     const controlToggleOfActiveNode = (node) => {
         if (!activeNodesToggled.value[node.id]) {
-            const ports = node.getPorts()
-            ports.shift()
+            const ports = getNodeColumnOnlyPorts(node)
+
             activeNodesToggled.value[node.id] = {
                 ports,
                 newEdgesId: [],
@@ -1214,7 +1233,7 @@ export default function useEventGraph({
 
             const caretElement = getNodeCaretElement(node.id)
             controlCaretIcon(node.id, caretElement)
-            node.removePorts(ports)
+            removePorts(node)
             resetNodeTranslatedNodes(node)
             return
         }
@@ -1284,7 +1303,7 @@ export default function useEventGraph({
             animate ? highlightStateColor : edgeDefaultStroke
         )
 
-        if (animate || isHighlightedEdge(edge.id)) edge.toFront()
+        if (animate || isHighlightedEdge(edge.id)) edge.setZIndex(0)
         else if (
             !animate &&
             !(selectedPortId.value || selectedPortEdgeId.value)
@@ -1308,58 +1327,49 @@ export default function useEventGraph({
     }
 
     // controlSelectedNodeAction
-    const controlSelectedNodeAction = (node, e) => {
+    const controlSelectedNodeAction = (node, portId) => {
         const _selectedNodeId = selectedNodeId.value
 
-        if (node) {
+        if (!portId) {
             selectVpNode(node)
             resetState(true)
             selectNode(_selectedNodeId)
         } else {
-            const gEle = getEventPath(e).find((x) =>
-                x.getAttribute('data-cell-id')
-            )
-            const nodeId = gEle.getAttribute('data-cell-id')
-
             const newAction = { selectNode: _selectedNodeId }
             actions.value = { ...actions.value, ...newAction }
 
             resetState(true)
-            controlHoPaCTALoader(nodeId, true)
-            fetchNodeLineage(nodeId)
+            controlHoPaCTALoader(node, portId)
+            fetchNodeLineage(node.id)
         }
     }
 
     // controlSelectedNodeEdgeAction
-    const controlSelectedNodeEdgeAction = (node, e) => {
+    const controlSelectedNodeEdgeAction = (node, portId) => {
         const _selectedNodeEdgeId = selectedNodeEdgeId.value
 
-        if (node) {
+        if (!portId) {
             selectVpNode(node)
             resetState(true)
             const edge = getX6Edge(_selectedNodeEdgeId)
             controlEdgeAnimation(edge)
             selectNodeEdge(_selectedNodeEdgeId)
         } else {
-            const gEle = getEventPath(e).find((x) =>
-                x.getAttribute('data-cell-id')
-            )
-            const nodeId = gEle.getAttribute('data-cell-id')
             const newAction = { selectNodeEdge: _selectedNodeEdgeId }
             actions.value = { ...actions.value, ...newAction }
 
             resetState(true)
-            controlHoPaCTALoader(nodeId, true)
-            fetchNodeLineage(nodeId)
+            controlHoPaCTALoader(node, portId)
+            fetchNodeLineage(node.id)
         }
     }
 
     // controlSelectedPortAction
-    const controlSelectedPortAction = (node, e) => {
+    const controlSelectedPortAction = (node, portId) => {
         const _selectedPortId = selectedPortId.value
         const _parentNodeId = getPortNode(_selectedPortId)?.id
 
-        if (node) {
+        if (!portId) {
             selectVpNode(node)
 
             resetState()
@@ -1381,18 +1391,14 @@ export default function useEventGraph({
 
             selectPort(_selectedPortId)
         } else {
-            const gEle = getEventPath(e).find((x) =>
-                x.getAttribute('data-cell-id')
-            )
-            const nodeId = gEle.getAttribute('data-cell-id')
             const newAction = {
-                selectPort: { nodeId, portId: _selectedPortId },
+                selectPort: { nodeId: node.id, portId: _selectedPortId },
             }
             actions.value = { ...actions.value, ...newAction }
 
             resetState(true)
-            controlHoPaCTALoader(nodeId, true)
-            fetchNodeLineage(nodeId)
+            controlHoPaCTALoader(node, portId)
+            fetchNodeLineage(node.id)
         }
     }
 
@@ -1542,27 +1548,15 @@ export default function useEventGraph({
         })
     }
 
-    // registerHoriPagiListeners - Horizontal Pagination
-    const registerHoPaCTAListeners = (remove = false) => {
-        const hoPaCTAs = document.getElementsByClassName('node-hoPaCTA')
-        const hoPaCTAsArray = Array.from(hoPaCTAs)
-        hoPaCTAsArray.forEach((x) => {
-            if (remove) x.removeEventListener('mousedown', controlHoPaCTA)
-            else x.addEventListener('mousedown', controlHoPaCTA)
-        })
-    }
-
     // registerAllListeners
     const registerAllListeners = () => {
         registerCaretListeners()
-        registerHoPaCTAListeners()
     }
     registerAllListeners()
 
     // removeAllListeners
     const removeAllListeners = () => {
         registerCaretListeners(true)
-        registerHoPaCTAListeners(true)
     }
 
     // Cell - Mousewheel
@@ -1575,10 +1569,10 @@ export default function useEventGraph({
         if (isGraphLoading.value) return
 
         if (node.id.includes('vpNode')) {
-            if (selectedNodeId.value) controlSelectedNodeAction(node, e)
+            if (selectedNodeId.value) controlSelectedNodeAction(node)
             else if (selectedNodeEdgeId.value)
-                controlSelectedNodeEdgeAction(node, e)
-            else if (selectedPortId.value) controlSelectedPortAction(node, e)
+                controlSelectedNodeEdgeAction(node)
+            else if (selectedPortId.value) controlSelectedPortAction(node)
             else {
                 selectVpNode(node)
                 resetState(true)
@@ -1644,6 +1638,16 @@ export default function useEventGraph({
 
         const gEle = getEventPath(e).find((x) => x.getAttribute('port'))
         const portId = gEle.getAttribute('port')
+
+        if (portId.includes('-col')) {
+            controlColCTAPort(node, portId)
+            return
+        }
+
+        if (portId.includes('-hoPa')) {
+            controlHoPaCTAPort(node, portId)
+            return
+        }
 
         if (portId === selectedPortId.value) {
             resetState()

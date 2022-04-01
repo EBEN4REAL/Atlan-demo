@@ -75,7 +75,7 @@ export const runStatuses = [
     {
         id: 'Running',
         label: 'Running',
-        colorDot: '#225BD2',
+        colorDot: '#FFBA52',
     },
     {
         id: 'Succeeded',
@@ -95,6 +95,6 @@ export const runStatuses = [
     {
         id: 'Pending',
         label: 'Pending',
-        colorDot: '#FFBA52',
+        colorDot: '#225BD2',
     },
 ]

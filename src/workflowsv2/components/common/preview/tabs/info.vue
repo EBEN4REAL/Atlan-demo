@@ -14,9 +14,9 @@
                     <p class="info-title">Run Count</p>
                     <p class="font-bold text-primary">N</p>
                 </div>
-                <div class="col-span-2">
-                    <p class="info-title">Average Runtime</p>
-                    <p class="italic text-gray">X min Y seconds</p>
+                <div v-if="estimatedRuntime" class="col-span-2">
+                    <p class="info-title">Estimated Runtime</p>
+                    <p class="italic text-gray">{{ estimatedRuntime }}</p>
                 </div>
             </div>
             <div v-if="isCronWorkflow(workflow)">
@@ -96,7 +96,8 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, watch } from 'vue'
+    import { computed, defineComponent, ref, toRefs, watch } from 'vue'
+    import { getDurationStringFromSec } from '~/utils/time'
 
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import { useUserPreview } from '~/composables/user/showUserPreview'
@@ -125,7 +126,7 @@
         },
         emits: [],
         setup(props) {
-            const { workflow } = toRefs(props)
+            const { workflow, runs } = toRefs(props)
             const {
                 isCronWorkflow,
                 cronString,
@@ -148,6 +149,16 @@
                 showModifierImage.value = true
             })
 
+            const estimatedRuntime = computed(() => {
+                const secs = runs.value.reduce((acc: number[], run: any) => {
+                    if (run?._source?.status?.estimatedDuration)
+                        acc.push(run?._source?.status?.estimatedDuration)
+                    return acc
+                }, [] as number[])
+                if (secs[0]) return getDurationStringFromSec(secs[0])
+                return undefined
+            })
+
             return {
                 wfName,
                 avatarUrl,
@@ -162,6 +173,7 @@
                 packageType,
                 name,
                 version,
+                estimatedRuntime,
             }
         },
     })

@@ -3,6 +3,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import parser from 'cron-parser'
 import cronstrue from 'cronstrue'
 import { useConnectionStore } from '~/store/connection'
+import { getDurationStringFromSec } from '~/utils/time'
 
 dayjs.extend(relativeTime)
 
@@ -111,7 +112,7 @@ export default function useWorkflowInfo() {
                 item.status.startedAt,
                 'second'
             )
-            return `${Math.floor(sec / 60)} mins, ${sec % 60} secs`
+            return getDurationStringFromSec(sec)
         }
         return ''
     }

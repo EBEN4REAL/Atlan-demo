@@ -9,15 +9,15 @@
         <div
             class="flex flex-col overflow-hidden divide-y divide-gray-300 rounded-lg"
         >
-            <div class="grid items-center h-10 grid-cols-10 px-3 bg-gray-100">
-                <span
+            <div class="grid items-center h-10 grid-cols-8 px-3 bg-gray-100">
+                <div
                     v-for="head in tableHeaders"
                     :key="head.title"
                     class="text-xs tracking-wider uppercase"
                     :style="head.style"
                 >
-                    {{ head.title }}
-                </span>
+                    <span>{{ head.title }}</span>
+                </div>
             </div>
             <div class="flex overflow-y-scroll" style="height: 45vh">
                 <AtlanLoader
@@ -132,10 +132,13 @@
                     title: 'Workflow Run',
                     style: 'grid-column: span 5 / span 5',
                 },
-                { title: 'Status', style: 'grid-column: span 1 / span 1' },
+                {
+                    title: 'Status',
+                    style: 'grid-column: span 1 / span 1; justify-content: center; display:flex',
+                },
                 { title: 'Started', style: 'grid-column: span 1 / span 1' },
                 { title: 'Duration', style: 'grid-column: span 1 / span 1' },
-                { title: 'Output', style: 'grid-column: span 2 / span 2' },
+                // { title: 'Output', style: 'grid-column: span 2 / span 2' },
             ]
 
             watch(filters, () => quickChange(), { deep: true })

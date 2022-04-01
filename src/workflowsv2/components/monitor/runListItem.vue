@@ -1,17 +1,17 @@
 <template>
     <div class="run-list-item">
         <div class="flex flex-col items-start col-span-5 text-gray-500 gap-y-1">
-            <span>{{ run.metadata.name }}</span>
+            <span class="text-xs">{{ run.metadata.name }}</span>
             <div class="flex items-center gap-x-2">
                 <span class="font-medium text-primary">{{
                     startedAt(run, false)
                 }}</span>
                 <template v-if="isCronRun(run)">
-                    <AtlanIcon icon="Schedule" class="text-success" />
-                    <span class="pt-0.5">Scheduled Run</span>
+                    <AtlanIcon icon="Schedule" class="ml-1 text-success" />
+                    <span>Scheduled Run</span>
                 </template>
                 <template v-else>
-                    <span class="pt-0.5">Manual Run by</span>
+                    <span>Manual Run by</span>
                     <span
                         class="cursor-pointer hover:underline"
                         @click="() => openUserSidebar(creatorUsername(run))"
@@ -27,7 +27,7 @@
                 </template>
             </div>
         </div>
-        <div class="flex items-center col-span-1">
+        <div class="flex items-center justify-center col-span-1">
             <span
                 class="text-xs font-bold tracking-wider uppercase rounded"
                 style="padding: 3px 8px 1px"
@@ -35,9 +35,12 @@
                 >{{ run.status.phase }}
             </span>
         </div>
-        <div class="col-span-1">{{ startedAt(run, true) }} ago</div>
+        <a-tooltip :title="startedAt(run, false)">
+            <div class="col-span-1">{{ startedAt(run, true) }} ago</div>
+        </a-tooltip>
+
         <div class="col-span-1">{{ duration(run) }}</div>
-        <div class="col-span-2">Output</div>
+        <!-- <div class="col-span-2">Output</div> -->
     </div>
 </template>
 
@@ -93,7 +96,7 @@
     .run-list-item {
         height: 70px;
         @apply px-3;
-        @apply grid grid-cols-10 items-center;
+        @apply grid grid-cols-8 items-center;
         @apply text-sm;
     }
 </style>

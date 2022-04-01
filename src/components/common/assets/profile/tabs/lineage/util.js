@@ -1,14 +1,16 @@
-import snowflake from '~/assets/images/source/snowflake.png'
-import tableau from '~/assets/images/source/tableau.png'
-import redshift from '~/assets/images/source/redshift.png'
-import postgres from '~/assets/images/source/postgres.png'
-import athena from '~/assets/images/source/athena.png'
-import databricks from '~/assets/images/source/databricks.png'
-import powerbi from '~/assets/images/source/powerbi.png'
-import bigquery from '~/assets/images/source/bigquery.png'
-import looker from '~/assets/images/source/looker.png'
-import mysql from '~/assets/images/source/mysql.png'
-import glue from '~/assets/images/source/glue.png'
+import {
+    snowflake,
+    tableau,
+    redshift,
+    postgres,
+    athena,
+    databricks,
+    powerbi,
+    bigquery,
+    looker,
+    mysql,
+    glue,
+} from './icons'
 
 /* This is a mapping of the asset types. */
 export const getNodeTypeText = {

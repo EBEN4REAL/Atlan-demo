@@ -152,6 +152,7 @@ export const EMBED_EXTENSIONS = [
             return {
                 ...this.parent?.(),
                 title: 'Google Docs',
+                analyticsKey: 'Google Docs',
                 icon: 'GoogleDoc',
                 validateInput(input) {
                     const res = GOOGLE_DOC_REGEX.exec(input)
@@ -178,6 +179,7 @@ export const EMBED_EXTENSIONS = [
             return {
                 ...this.parent?.(),
                 title: 'Google Sheets',
+                analyticsKey: 'Google Sheets',
                 icon: 'GoogleSheet',
                 validateInput(input) {
                     const res = GOOGLE_SHEETS_REGEX.exec(input)
@@ -206,6 +208,7 @@ export const EMBED_EXTENSIONS = [
             return {
                 ...this.parent?.(),
                 title: 'Google Slides',
+                analyticsKey: 'Google Slides',
                 icon: 'GoogleSlide',
                 validateInput(input) {
                     const res = GOOGLE_SLIDES_REGEX.exec(input)
@@ -234,6 +237,7 @@ export const EMBED_EXTENSIONS = [
             return {
                 ...this.parent?.(),
                 title: 'Google Drive',
+                analyticsKey: 'Google Drive',
                 icon: 'GoogleDrive',
                 validateInput(input) {
                     return GOOGLE_DRIVE_REGEX.test(input)
@@ -255,6 +259,7 @@ export const EMBED_EXTENSIONS = [
             return {
                 ...this.parent?.(),
                 title: 'Miro Board',
+                analyticsKey: 'Miro',
                 icon: 'Miro',
                 showFooter: false,
                 validateInput(input) {
@@ -284,6 +289,7 @@ export const EMBED_EXTENSIONS = [
             return {
                 ...this.parent?.(),
                 title: 'FigJam',
+                analyticsKey: 'Figma',
                 icon: 'Figma',
                 showFooter: false,
                 validateInput(input) {
@@ -306,6 +312,7 @@ export const EMBED_EXTENSIONS = [
             return {
                 ...this.parent?.(),
                 title: 'Lucidchart',
+                analyticsKey: 'Lucid',
                 icon: 'Lucid',
                 showFooter: false,
                 validateInput(input) {
@@ -333,6 +340,7 @@ export const EMBED_EXTENSIONS = [
             return {
                 ...this.parent?.(),
                 title: 'DBDiagram',
+                analyticsKey: 'DBDiagram',
                 icon: 'DBDiagram',
                 showFooter: false,
                 validateInput(input) {
@@ -362,6 +370,7 @@ export const EMBED_EXTENSIONS = [
             return {
                 ...this.parent?.(),
                 title: 'Microsoft Word',
+                analyticsKey: 'MS Word',
                 icon: 'MicrosoftWord',
                 showFooter: false,
                 validateInput(input: string): boolean {
@@ -385,6 +394,7 @@ export const EMBED_EXTENSIONS = [
             return {
                 ...this.parent?.(),
                 title: 'Microsoft Excel',
+                analyticsKey: 'MS Excel',
                 icon: 'MicrosoftExcel',
                 showFooter: false,
                 validateInput(input: string): boolean {
@@ -408,6 +418,7 @@ export const EMBED_EXTENSIONS = [
             return {
                 ...this.parent?.(),
                 title: 'Microsoft PowerPoint',
+                analyticsKey: 'MS PowerPoint',
                 icon: 'MicrosoftPowerpoint',
                 showFooter: false,
                 validateInput(input: string): boolean {
@@ -433,6 +444,7 @@ export const EMBED_EXTENSIONS = [
             return {
                 ...this.parent?.(),
                 title: 'Google Data Studio',
+                analyticsKey: 'Google Data Studio',
                 icon: 'GoogleDataStudio',
                 showFooter: false,
                 validateInput(input) {

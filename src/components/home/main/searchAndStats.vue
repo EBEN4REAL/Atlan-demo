@@ -71,7 +71,7 @@
 
             const logoName = computed(() => tenantStore.displayName)
 
-            const metadata = ref([
+            /*    const metadata = ref([
                 {
                     id: 'connections',
                     label: 'CONNECTIONS',
@@ -122,14 +122,13 @@
                         })
                     }
                 })
-            })
+            }) */
             const onLogoNotFound = () => {
                 logoNotFound.value = true
             }
 
             return {
                 logoUrl,
-                metadata,
                 showModal,
                 defaultLogo,
                 onLogoNotFound,

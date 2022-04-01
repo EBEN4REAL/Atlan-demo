@@ -4,7 +4,13 @@
             class="relative p-3 mx-1 border border-gray-200 rounded-lg cursor-pointer hover:border-primary card-container"
         >
             <div class="flex items-center">
-                <div class="text-sm font-bold text-gray-500">
+                <div
+                    v-if="item.requestType === 'term_link' && isGlossary"
+                    class="text-sm font-bold text-gray-500"
+                >
+                    Link Asset
+                </div>
+                <div v-else class="text-sm font-bold text-gray-500">
                     {{ typeCopyMapping[item?.requestType] }}
                     {{ destinationAttributeMapping[item.destinationAttribute] }}
                 </div>
@@ -102,7 +108,7 @@
                     <AtlanIcon v-else icon="Clock" class="icon-warning" />
                 </div>
             </div>
-            <div v-if="selectedAsset.typeName === 'AtlasGlossaryTerm'">
+            <div v-if="item.requestType === 'term_link' && isGlossary">
                 <div
                     class="p-3 my-2 mr-1 text-xs bg-gray-100 rounded asset-term"
                 >
@@ -146,9 +152,9 @@
                         >
                     </div>
                 </div>
-                <div class="ml-auto text-sm text-right text-gray-500">
+                <!-- <div class="ml-auto text-sm text-right text-gray-500">
                     {{ createdTime(item.createdAt) }}
-                </div>
+                </div> -->
             </div>
 
             <div v-else class="flex items-center justify-between mt-2">
@@ -208,7 +214,9 @@
                     />
                     <!-- </PopOverUser> -->
                 </div>
-                <div v-else-if="item.requestType === 'term_link'">
+                <div
+                    v-else-if="item.requestType === 'term_link' && !isGlossary"
+                >
                     <TermPopover
                         :loading="termLoading"
                         :fetched-term="getFetchedTerm(item.sourceGuid)"
@@ -328,7 +336,7 @@
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import {
         typeCopyMapping,
-        destinationAttributeMapping,
+        destinationAttributeMapping,requestTypeEventMap
     } from '~/components/governance/requests/requestType'
     import {
         approveRequest,
@@ -343,6 +351,7 @@
     import RequestDropdown from '~/components/common/dropdown/requestDropdown.vue'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
     import map from '~/constant/accessControl/map'
+    import { useRoute } from 'vue-router'
     // import PopOverUser from '@/common/popover/user/user.vue'
     // import PopOverGroup from '@/common/popover/user/groups.vue'
 
@@ -401,14 +410,33 @@
             function raiseErrorMessage(msg?: string) {
                 message.error(msg || 'Request modification failed, try again')
             }
+
+
+            const handleEvent = (action) => {
+                console.log(item);
+                let request_type
+                if (item.value?.destinationAttribute)
+                    request_type =
+                        requestTypeEventMap[item.value?.destinationAttribute]
+                            .requestType
+                else
+                    request_type =
+                        requestTypeEventMap[item.value?.requestType]
+                            .requestType
+
+                console.log(request_type);
+                useAddEvent('governance', 'requests', 'resolved', {
+                    action,
+                    request_type,
+                    widget_type:'sidebar'
+                })
+            }
             async function handleApproval(messageProp = '') {
                 loadingApproval.value = true
                 try {
                     await approveRequest(item.value.id, messageProp)
                     message.success('Request approved')
-                    useAddEvent('governance', 'requests', 'resolved', {
-                        action: 'approve',
-                    })
+                    handleEvent('approve')
                     emit('handleUpdateData', item.value)
                 } catch (error) {
                     raiseErrorMessage(error.response.data.message)
@@ -422,9 +450,7 @@
                     await declineRequest(item.value.id, messageProp)
                     // emit('action', item.value)
                     message.success('Request declined')
-                    useAddEvent('governance', 'requests', 'resolved', {
-                        action: 'decline',
-                    })
+                    handleEvent('decline')
                     emit('handleUpdateData', item.value)
                 } catch (error) {
                     raiseErrorMessage(error.response.data.message)
@@ -515,6 +541,10 @@
                 return ''
             })
             const { mouseEnterDelay, enteredPill } = useMouseEnterDelay()
+            const route = useRoute()
+            const isGlossary = computed(
+                () => route?.path?.includes('glossary') || null
+            )
             return {
                 createdTime,
                 localClassification,
@@ -538,6 +568,7 @@
                 typeCopyMapping,
                 map,
                 destinationAttributeMapping,
+                isGlossary,
             }
         },
     })

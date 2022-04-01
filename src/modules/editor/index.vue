@@ -38,7 +38,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, toRefs } from 'vue'
+    import { defineComponent, ref, watch, toRefs, provide } from 'vue'
     import { useDebounceFn, useVModels } from '@vueuse/core'
 
     import { useEditor, EditorContent, BubbleMenu } from '@tiptap/vue-3'
@@ -97,6 +97,11 @@
                 required: false,
                 default: ``,
             },
+            assetType: {
+                type: String,
+                required: false,
+                default: 'DISCOVERY',
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
@@ -104,7 +109,7 @@
             const widthOption = ref(1)
             const customWidth = ref(100)
 
-            const { isEditMode, emptyText } = toRefs(props)
+            const { isEditMode, emptyText, assetType } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
 
             const localModelValue = ref(modelValue.value)
@@ -120,6 +125,7 @@
                 editorProps: {
                     attributes: {
                         class: 'prose prose-sm w-full h-full',
+                        'data-asset-type': assetType.value,
                     },
                 },
                 autofocus: true,

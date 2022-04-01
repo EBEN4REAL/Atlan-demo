@@ -109,8 +109,8 @@
                                     ]"
                                 />
                                 <span
-                                    class="mt-1 leading-none text-gray-500"
-                                    style="font-size: 12px"
+                                    class="mt-1 leading-none tracking-tight text-gray-500"
+                                    style="font-size: 11px"
                                 >
                                     {{ nav.label }}</span
                                 >
@@ -177,8 +177,8 @@
                                 />
 
                                 <span
-                                    class="mt-1 leading-none text-gray-500"
-                                    style="font-size: 10px"
+                                    class="mt-1 leading-none tracking-tight text-gray-500"
+                                    style="font-size: 11px"
                                 >
                                     {{ nav.label }}</span
                                 >

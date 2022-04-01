@@ -827,7 +827,7 @@
             :global(.ant-tabs-nav) {
                 order: 0 !important;
                 min-width: 60px !important;
-                @apply border border-r border-gray-300  !important;
+                @apply border-r border-b border-gray-300  !important;
             }
             :global(.ant-tabs-nav-container) {
                 @apply ml-0 !important;

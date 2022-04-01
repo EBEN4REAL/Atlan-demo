@@ -68,23 +68,37 @@ export default function useUpdateGraph(graph) {
                 'isGrayed'
             )
 
-            if (!isBase) updateIconStroke(x, '#B2B8C7')
+            if (!isBase) {
+                updateIconStroke(x, '#B2B8C7')
+                cell.updateData({ isSelectedNode: null })
+                cell.updateData({ isHighlightedNode: null })
+                cell.updateData({ isGrayed: null })
+            }
             if (!selectedNodeId?.value && !nodesToHighlight.length) return
             cell.setZIndex(0)
 
             if (isSelectedNode) {
                 lineageNodeElement?.classList.add('isSelectedNode')
                 cell.setZIndex(10)
+                cell.updateData({ isSelectedNode: x.id })
+                cell.updateData({ isHighlightedNode: null })
+                cell.updateData({ isGrayed: null })
                 updateIconStroke(x, '#3c71df')
             }
             if (isHighlightedNode && !isSelectedNode) {
                 lineageNodeElement?.classList.add('isHighlightedNode')
                 cell.setZIndex(10)
+                cell.updateData({ isSelectedNode: null })
+                cell.updateData({ isHighlightedNode: x.id })
+                cell.updateData({ isGrayed: null })
                 if (!isBase) updateIconStroke(x, '#3c71df')
             }
             if (isGrayed) {
                 lineageNodeElement?.classList.add('isGrayed')
                 cell.setZIndex(0)
+                cell.updateData({ isSelectedNode: null })
+                cell.updateData({ isHighlightedNode: null })
+                cell.updateData({ isGrayed: x.id })
                 if (!isBase) updateIconStroke(x, '#e0e4eb')
             }
         })

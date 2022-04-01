@@ -40,9 +40,23 @@
                         }
                     "
                 >
-                    <span v-if="!option?.submenu?.length">
+                    <span
+                        v-if="!option?.submenu?.length && !option?.wrapperClass"
+                    >
                         {{ option.title }}
                     </span>
+                    <div
+                        :class="option.wrapperClass"
+                        v-if="!option?.submenu?.length && option?.wrapperClass"
+                    >
+                        <AtlanIcon
+                            :icon="option.icon"
+                            :class="option.iconClass"
+                        ></AtlanIcon>
+                        <span>
+                            {{ option.title }}
+                        </span>
+                    </div>
 
                     <template #title v-if="option?.submenu?.length">
                         <div
@@ -118,7 +132,7 @@
             const { options, item, placement } = props
 
             const handleMenuItemClick = (option: any) => {
-                option.handleClick()
+                option.handleClick(option)
             }
             const addBackground = () => {
                 emit('addBackground')

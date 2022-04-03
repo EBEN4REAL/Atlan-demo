@@ -81,6 +81,21 @@
             </div>
 
             <div
+                v-if="
+                    [
+                        'Table',
+                        'View',
+                        'MaterialisedView',
+                        'TablePartition',
+                        'Schema',
+                    ].includes(selectedAsset?.typeName)
+                "
+                class="flex px-5"
+            >
+                <ParentContext :asset="selectedAsset" />
+            </div>
+
+            <div
                 v-if="isSelectedAssetHaveRowsAndColumns(selectedAsset)"
                 class="flex flex-wrap items-center w-full px-5 gap-x-8"
             >

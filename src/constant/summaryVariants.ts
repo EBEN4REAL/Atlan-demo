@@ -8,13 +8,13 @@ export const summaryVariants = [
     {
         id: 'table',
         label: 'Table',
-        components: ['Rows', 'Columns', 'Connection'],
+        components: ['ParentContext', 'Rows', 'Columns', 'Connection'],
         includes: ['Table', 'PartitionTable'],
     },
     {
         id: 'view',
         label: 'View',
-        components: ['Definition', 'Columns', 'Connection'],
+        components: ['ParentContext', 'Definition', 'Columns', 'Connection'],
         includes: ['View', 'MaterialisedView'],
     },
     {

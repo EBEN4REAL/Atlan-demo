@@ -1,5 +1,7 @@
 <template>
-    <div class="flex flex-col border border-gray-200 rounded requests-container">
+    <div
+        class="flex flex-col border border-gray-200 rounded requests-container"
+    >
         <div
             class="flex items-baseline py-2 pl-6 pr-5 mb-1 bg-gray-100 border-b"
         >
@@ -7,7 +9,7 @@
                 My Requests
             </span>
         </div>
-        <div class="p-4 overflow-x-hidden overflow-y-auto">
+        <div v-if="requestList?.length" class="p-4 overflow-x-hidden overflow-y-auto">
             <template
                 v-for="(request, index) in requestList"
                 :key="request?.id"
@@ -19,6 +21,17 @@
                     :active-hover="activeHover"
                 />
             </template>
+        </div>
+        <div v-else class="flex flex-col items-center mt-6">
+            <AtlanIcon icon="EmptyRequest" style="height: 165px" />
+            <div
+                class="px-10 mx-10 mt-2 text-xl font-bold text-center text-gray-700"
+            >
+                All caught up!!
+            </div>
+            <div class="px-10 mx-10 mt-2 text-center text-gray-400">
+                There are no requests at this time
+            </div>
         </div>
     </div>
 </template>
@@ -34,6 +47,7 @@
     } from 'vue'
     // composables
     import { useRequestList } from '~/composables/requests/useRequests'
+    import whoami from '~/composables/user/whoami'
 
     // typescript
     import { RequestAttributes, RequestStatus } from '~/types/atlas/requests'
@@ -47,16 +61,17 @@
         setup() {
             // data
 
+            const { username } = whoami()
+            const activeHover = ref('')
             // My requests will be showing active requests which the logged in user has raised
             const facets = ref({
                 statusRequest: ['active'],
             })
             const requestList = ref([])
-            const activeHover = ref('')
             const filters = ref({
                 status: 'active' as RequestStatus,
                 request_type: [],
-                createdBy: 'member_user',
+                createdBy: username.value,
             })
             const searchTerm = ref('')
             const pagination = ref({
@@ -96,7 +111,7 @@
     })
 </script>
 <style lang="less" scoped>
-    .requests-container{
+    .requests-container {
         height: 390px;
     }
 </style>

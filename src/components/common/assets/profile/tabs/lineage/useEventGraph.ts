@@ -913,18 +913,24 @@ export default function useEventGraph({
 
                     if (!parentNode.hasPort(k)) {
                         addPorts(parentNode, [v])
-                        controlNodeWithColumnsHeight(parentNode, 1)
+                        const ports = getNodeColumnOnlyPorts(parentNode)
+                        controlNodeWithColumnsHeight(parentNode, ports.length)
                     }
 
                     const { columns: c, total: t } =
                         lineageStore.getNodesColumnList(parentNode.id)
                     if (c.length < t) {
                         addPorts(parentNode, ['showMorePort'], true)
-                        controlNodeWithColumnsHeight(parentNode, 2)
+                        const ports = getNodeColumnOnlyPorts(parentNode)
+                        controlNodeWithColumnsHeight(
+                            parentNode,
+                            ports.length + 1
+                        )
                     }
                 } else if (!parentNode.hasPort(k)) {
                     addPorts(parentNode, [v])
-                    controlNodeWithColumnsHeight(parentNode, 1)
+                    const ports = getNodeColumnOnlyPorts(parentNode)
+                    controlNodeWithColumnsHeight(parentNode, ports.length)
                 }
 
                 setPortStyle(parentNode, k, 'highlight')
@@ -960,21 +966,20 @@ export default function useEventGraph({
                 }
             })
 
-            if (!newRels.length) {
-                const parentNode = getPortNode(portId)
-                controlColumnListLoader(parentNode.id, false)
-                message.info(
-                    'There are no related assets present on the graph for the selected column'
-                )
-                return
-            }
-
             graph.value.freeze('rels-addPortEdge')
             newRels.forEach((r) => {
                 addPortEdge(r, _guidEntityMap)
             })
             graph.value.unfreeze('rels-addPortEdge')
         })
+        const portEdges = graph.value
+            .getEdges()
+            .filter((x) => x.id.includes('port'))
+
+        if (!portEdges.length)
+            message.info(
+                'There are no related assets present on the graph for the selected column'
+            )
     }
 
     // addPortEdge

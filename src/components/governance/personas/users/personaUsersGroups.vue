@@ -791,7 +791,6 @@
                         .catch((e) => {
                             addUsersLoading.value = false
                             message.error('Failed to add users')
-                            console.log('Failed to add users', e)
                         })
                 }
             }
@@ -833,14 +832,14 @@
                         (groupId) => groupId !== userOrGroup.id
                     )
                 }
-                selectedPersonaDirty.value.users = updatedUsersIds
-                selectedPersonaDirty.value.groups = updatedGroupIds
                 updateUsers({
                     id: persona.value.id,
                     users: updatedUsersIds,
                     groups: updatedGroupIds,
                 })
                     .then(() => {
+                        selectedPersonaDirty.value.users = updatedUsersIds
+                        selectedPersonaDirty.value.groups = updatedGroupIds
                         showRemoveUserPopover.value[userOrGroup.id] = false
                         addUsersLoading.value = false
                         userGroupData.value.ownerUsers = updatedUsersIds
@@ -863,7 +862,7 @@
                         }
                         showRemoveUserPopover.value[userOrGroup.id] = false
                         addUsersLoading.value = false
-                        message.error('Failed to add users')
+                        message.error('Failed to remove user')
                     })
             }
 

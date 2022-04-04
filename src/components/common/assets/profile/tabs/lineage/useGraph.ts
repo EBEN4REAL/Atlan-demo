@@ -4,7 +4,7 @@ import {
     getSchema,
     getNodeTypeText,
 } from './util.js'
-import { iconVerified, iconDraft, iconDeprecated, iconLoader } from './icons'
+import { iconVerified, iconDraft, iconDeprecated } from './icons'
 import { iconCaretDownB64 } from './iconsBase64'
 import { dataTypeCategoryList } from '~/constant/dataType'
 import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -18,7 +18,6 @@ export default function useGraph(graph) {
     const createNodeData = (entity, baseEntityGuid, dataObj = {}) => {
         const { title } = useAssetInfo()
         const { guid, typeName, attributes } = entity
-        const columnCount = attributes?.columnCount
         const typeNameComputed = getNodeTypeText[typeName] || typeName
         const certificateStatus = attributes?.certificateStatus
         let status = ''
@@ -45,19 +44,14 @@ export default function useGraph(graph) {
 
         const computedData = {
             id: guid,
+            columnLineageCount: 0,
             isSelectedNode: null,
             isHighlightedNode: null,
             isGrayed: null,
             hiddenCount: 0,
-            nodeHeight: isNodeWithColumns ? 114 : 70,
+            nodeHeight: isNodeWithColumns ? 121 : 70,
             ...dataObj,
         }
-
-        let caretIconRefX = 97
-        if (columnCount >= 10 && columnCount < 100) caretIconRefX = 107
-        if (columnCount >= 100 && columnCount < 1000) caretIconRefX = 117
-        if (columnCount >= 1000 && columnCount < 10000) caretIconRefX = 127
-        if (columnCount >= 10000 && columnCount < 100000) caretIconRefX = 137
 
         const nodeData = {
             id: guid,
@@ -136,10 +130,6 @@ export default function useGraph(graph) {
                         }
 
                     </div>
-                    <div id="node-${guid}-columnListLoader" class="node-columnListLoader hidden">
-                        <span class="absolute w-9 h-9">${iconLoader}</span>
-                    </div>
-                    
                 </div>`
                 },
                 shouldComponentUpdate(node) {
@@ -242,22 +232,25 @@ export default function useGraph(graph) {
                                 tagName: 'image',
                                 selector: 'portImage',
                             },
+                            {
+                                tagName: 'image',
+                                selector: 'portImageLoader',
+                            },
                         ],
                         attrs: {
                             portBody: {
-                                width: 250,
+                                width: 247,
                                 height: 40,
                                 strokeWidth: 1,
                                 stroke: '#E0E4EB',
                                 fill: '#ffffff',
                                 event: 'port:click',
-                                y: -11,
-                                x: 9,
+                                x: 10,
                             },
                             portNameLabel: {
                                 ref: 'portBody',
                                 refX: 44,
-                                refY: 12,
+                                refY: 13,
                                 fontSize: 16,
                                 fill: '#374151',
                                 event: 'port:click',
@@ -267,6 +260,15 @@ export default function useGraph(graph) {
                                 refX: 20,
                                 refY: 12,
                                 event: 'port:click',
+                            },
+                            portImageLoader: {
+                                ref: 'portBody',
+                                refX: 220,
+                                refY: 10,
+                                event: 'port:click',
+                                href: '',
+                                width: 22,
+                                height: 22,
                             },
                         },
                         position: 'erPortPosition',
@@ -290,12 +292,13 @@ export default function useGraph(graph) {
                                 stroke: '#f9fafb00',
                             },
                             portNameLabel: {
-                                text: `${columnCount} columns`,
+                                text: `view columns`,
                                 refX: 22,
                                 fill: '#3c71df',
+                                refY: 12,
                             },
                             portImage: {
-                                refX: caretIconRefX,
+                                refX: 120,
                                 refY: 10,
                                 href: iconCaretDownB64,
                             },

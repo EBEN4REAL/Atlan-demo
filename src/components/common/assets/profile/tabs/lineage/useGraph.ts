@@ -257,7 +257,7 @@ export default function useGraph(graph) {
                             portNameLabel: {
                                 ref: 'portBody',
                                 refX: 44,
-                                refY: 12,
+                                refY: 13,
                                 fontSize: 16,
                                 fill: '#374151',
                                 event: 'port:click',
@@ -293,6 +293,7 @@ export default function useGraph(graph) {
                                 text: `${columnCount} columns`,
                                 refX: 22,
                                 fill: '#3c71df',
+                                refY: 12,
                             },
                             portImage: {
                                 refX: caretIconRefX,

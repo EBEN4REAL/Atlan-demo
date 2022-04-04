@@ -12,11 +12,16 @@
             </div>
 
             <div class="flex items-center justify-between">
-                <span
+                <router-link
+                    :to="`/workflowsv2/profile/${wfName(workflow)}`"
                     class="font-bold tracking-wide truncate cursor-pointer text-primary hover:underline"
-                    >{{ dName }}</span
                 >
-                <IconButton icon="EnterProfile" />
+                    {{ dName }}
+                </router-link>
+
+                <router-link :to="`/workflowsv2/profile/${wfName(workflow)}`">
+                    <IconButton icon="EnterProfile" />
+                </router-link>
             </div>
         </div>
         <a-tabs
@@ -100,7 +105,7 @@
             const activeKey = ref(0)
 
             const { name, icon, emoji, type } = usePackageInfo()
-            const { displayName } = useWorkflowInfo()
+            const { displayName, name: wfName } = useWorkflowInfo()
 
             const pkg = computed(
                 () =>
@@ -125,6 +130,7 @@
                 emoji,
                 type,
                 dName,
+                wfName,
             }
         },
     })

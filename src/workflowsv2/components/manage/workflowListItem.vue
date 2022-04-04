@@ -1,32 +1,47 @@
 <template>
     <div class="wf-list-item" :class="{ selected }">
-        <div class="flex items-center text-sm gap-x-1">
-            <img
-                v-if="icon(workflow)"
-                :src="icon(workflow)"
-                class="w-4 h-auto"
-            />
-            <span v-else class="w-4 text-xs"> {{ emoji(workflow) }}</span>
-            <span class="text-gray-500 truncate">{{ name(workflow) }}</span>
-            <div v-if="type(workflow)" class="badge">
-                <span style="margin-top: 1px">{{ type(workflow) }}</span>
+        <div class="flex items-start gap-x-2">
+            <div class="package-icon p-1.5">
+                <img
+                    v-if="icon(workflow)"
+                    :src="icon(workflow)"
+                    class="w-6 h-6"
+                />
+                <div v-else class="w-6 text-xl leading-6 text-center">
+                    {{ emoji(workflow) }}
+                </div>
+            </div>
+
+            <div class="truncate">
+                <div class="flex items-center gap-x-1">
+                    <span class="text-gray-500 truncate">{{
+                        name(workflow)
+                    }}</span>
+                    <div v-if="type(workflow)" class="badge">
+                        <span style="margin-top: 1px">{{
+                            type(workflow)
+                        }}</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center mt-1 gap-x-1">
+                    <router-link
+                        :to="`/workflowsv2/profile/${wfName(workflow)}`"
+                    >
+                        <span
+                            class="font-bold tracking-wide truncate cursor-pointer text-primary hover:underline"
+                            >{{ dName }}</span
+                        >
+                    </router-link>
+                    <span class="italic truncate text-grey-500">
+                        ({{ wfName(workflow) }})
+                    </span>
+                </div>
             </div>
         </div>
 
-        <div class="flex items-center text-sm gap-x-1">
-            <router-link :to="`/workflowsv2/profile/${wfName(workflow)}`">
-                <span
-                    class="font-bold tracking-wide truncate cursor-pointer text-primary hover:underline"
-                    >{{ dName }}</span
-                >
-            </router-link>
-            <span class="italic truncate text-grey-500">
-                ({{ wfName(workflow) }})
-            </span>
-        </div>
-
         <div
-            class="flex items-center mt-2 text-sm leading-none text-gray-500 gap-x-1"
+            class="flex items-center mt-3 text-sm leading-none text-gray-500 gap-x-1"
         >
             <template v-if="isCronWorkflow(workflow)">
                 <AtlanIcon icon="Schedule" class="text-success" />
@@ -41,9 +56,9 @@
                 :created-by="creatorUsername(workflow)"
             />
         </div>
-        <a-divider class="my-2" />
+        <a-divider class="my-3" />
         <RunIndicators :workflow="wfName(workflow)" :runs="runs" />
-        <LastRunSummary :runs="runs" :loading="isRunLoading" class="mt-1" />
+        <LastRunSummary :runs="runs" :loading="isRunLoading" class="mt-2" />
     </div>
 </template>
 
@@ -120,7 +135,6 @@
 </script>
 <style lang="less" scoped>
     .wf-list-item {
-        @apply flex flex-col gap-y-1;
         @apply bg-white rounded-lg p-4;
         @apply cursor-pointer;
         @apply transition-colors duration-300;
@@ -132,12 +146,24 @@
             @apply text-xs tracking-wider bg-gray-200 text-gray;
         }
 
+        .package-icon {
+            @apply rounded-lg border bg-white;
+        }
+
         &:hover {
             @apply border-primary;
         }
 
         &.selected {
             @apply bg-primary-menu border-primary;
+
+            .package-icon {
+                @apply border-gray-300;
+            }
+
+            .badge {
+                @apply bg-white;
+            }
         }
     }
 </style>

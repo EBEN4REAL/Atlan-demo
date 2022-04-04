@@ -120,12 +120,13 @@
                 if (!personaStore.list || personaStore.list?.length == 0) {
                     persona.disabled = true
                 }
-
                 personaStore.list?.forEach((item) => {
-                    persona.children.push({
-                        value: item.id,
-                        label: capitalizeFirstLetter(item.displayName),
-                    })
+                    if (item.enabled) {
+                        persona.children.push({
+                            value: item.id,
+                            label: capitalizeFirstLetter(item.displayName),
+                        })
+                    }
                 })
 
                 persona.children = persona.children.sort(

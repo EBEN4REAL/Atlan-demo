@@ -1,7 +1,7 @@
 <template>
     <div class="wf-list-item" :class="{ selected }">
-        <div class="flex items-start gap-x-2">
-            <div class="package-icon p-1.5">
+        <div class="flex items-center gap-x-2">
+            <div class="p-2 package-icon">
                 <img
                     v-if="icon(workflow)"
                     :src="icon(workflow)"

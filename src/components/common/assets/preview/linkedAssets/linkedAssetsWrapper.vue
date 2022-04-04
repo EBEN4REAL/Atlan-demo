@@ -10,9 +10,7 @@
                     :display-mode="true"
                     class="mb-0.5"
                 />
-                <span class="ml-1 font-semibold text-gray-500"
-                    >Linked Assets</span
-                >
+                <span class="ml-1 font-semibold text-gray-500">Assets</span>
             </span>
         </div>
 

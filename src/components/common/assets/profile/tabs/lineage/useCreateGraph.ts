@@ -131,7 +131,7 @@ export default function useCreateGraph({
                     y:
                         index === 0
                             ? (index + 1) * 41 + 40
-                            : (index + 1) * 41 + 46,
+                            : (index + 1) * 40 + 50,
                 },
                 angle: 0,
             })),

@@ -840,6 +840,7 @@ export default function useEventGraph({
             fill,
             stroke: '#3c71df',
         })
+        node.setPortProp(portId, 'zIndex', 99)
     }
 
     // selectPort
@@ -1529,6 +1530,7 @@ export default function useEventGraph({
             fill: '#ffffff',
             stroke: '#E0E4EB',
         })
+        node.setPortProp(portId, 'zIndex', 'auto')
     }
 
     // resetState

@@ -75,11 +75,11 @@
             }
 
             const handleRunClick = (index) => {
-                const run = getRun(index)
-
-                router.push(
-                    `/workflows/${workflow.value}/runs?name=${run['_id']}`
-                )
+                const runId = runs.value?.[index - 1]?._id
+                if (runId)
+                    router.push(
+                        `/workflowsv2/profile/${workflow.value}/runs?name=${runId}`
+                    )
             }
 
             const tooltipContent = (index) => {

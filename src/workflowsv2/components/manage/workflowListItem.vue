@@ -14,10 +14,12 @@
         </div>
 
         <div class="flex items-center text-sm gap-x-1">
-            <span
-                class="font-bold tracking-wide truncate cursor-pointer text-primary hover:underline"
-                >{{ dName }}</span
-            >
+            <router-link :to="`/workflowsv2/profile/${wfName(workflow)}`">
+                <span
+                    class="font-bold tracking-wide truncate cursor-pointer text-primary hover:underline"
+                    >{{ dName }}</span
+                >
+            </router-link>
             <span class="italic truncate text-grey-500">
                 ({{ wfName(workflow) }})
             </span>

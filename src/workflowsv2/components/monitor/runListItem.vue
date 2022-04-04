@@ -1,7 +1,17 @@
 <template>
-    <div class="run-list-item">
-        <div class="flex flex-col items-start col-span-5 text-gray-500 gap-y-1">
-            <span class="text-xs">{{ run.metadata.name }}</span>
+    <div class="run-list-item hover:bg-primary-menu">
+        <div
+            class="flex flex-col items-start col-span-5 text-gray-500 cursor-pointer gap-y-1"
+        >
+            <router-link
+                :to="`/workflowsv2/profile/${workflowTemplateName(
+                    run
+                )}/runs?name=${run.metadata.name}`"
+            >
+                <span class="text-xs hover:underline">{{
+                    run.metadata.name
+                }}</span>
+            </router-link>
             <div class="flex items-center gap-x-2">
                 <span class="font-medium text-primary">{{
                     startedAt(run, false)
@@ -27,6 +37,7 @@
                 </template>
             </div>
         </div>
+
         <div class="flex items-center justify-center col-span-1">
             <span
                 class="text-xs font-bold tracking-wider uppercase rounded"
@@ -70,6 +81,7 @@
                 creatorUsername,
                 cronString,
                 isCronRun,
+                workflowTemplateName,
             } = useWorkflowInfo()
 
             const { openUserSidebar } = useUserPreview()
@@ -84,6 +96,7 @@
                 creatorUsername,
                 cronString,
                 isCronRun,
+                workflowTemplateName,
                 useUserPreview,
                 avatarUrl,
                 openUserSidebar,

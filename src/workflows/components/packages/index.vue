@@ -138,9 +138,7 @@
             }
 
             const router = useRouter()
-            const handleBack = () => {
-                router.push('/workflows')
-            }
+            const handleBack = router.back
 
             // const { refresh, isLoading, list, error } = usePackageList({
             //     isCache: true,

@@ -134,7 +134,7 @@
                 </template>
                 <template #extra>
                     <div class="flex items-center justify-center">
-                        <router-link to="/workflows">
+                        <router-link to="/workflowsv2">
                             <AtlanButton2
                                 v-if="updateStatus.status === 'success'"
                                 color="secondary"
@@ -178,7 +178,10 @@
 
                     <div class="flex justify-center mt-6 gap-x-6">
                         <router-link v-if="status === 'success'" to="/assets">
-                            <AtlanButton2 label="Back to Assets" />
+                            <AtlanButton2
+                                color="secondary"
+                                label="Back to Assets"
+                            />
                         </router-link>
 
                         <AtlanButton2
@@ -446,7 +449,7 @@
             const handleTrackLink = () => {
                 if (run.value?.metadata?.name) {
                     router.push(
-                        `/workflows/${
+                        `/workflowsv2/profile/${
                             data.value?.metadata?.name ||
                             run.value?.metadata?.labels[
                                 'workflows.argoproj.io/workflow-template'
@@ -703,7 +706,7 @@
             }
 
             const handleExit = () => {
-                router.replace(`/workflows/setup`)
+                router.replace(`/workflowsv2/marketplace`)
             }
 
             const handleStepClick = (step) => {

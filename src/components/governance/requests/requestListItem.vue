@@ -75,7 +75,7 @@
                 </span>
             </div>
         </div>
-        <div class="flex items-center col-span-3 ml-24">
+        <div class="flex items-center col-span-3 ml-24" :class="showActions?'':''">
             <ClassificationPiece
                 v-if="
                     request?.requestType === 'create_typedef' &&
@@ -114,7 +114,7 @@
             />
         </div>
 
-        <div class="flex items-center justify-end col-span-3">
+        <div v-if="showActions" class="flex items-center justify-end col-span-3">
             <!-- <AtlanIcon
                 v-if="state.isLoading"
                 icon="CircleLoader"
@@ -358,6 +358,11 @@
                 default: () => '',
                 required: false,
             },
+            showActions:{
+                type:Boolean,
+                required:false,
+                default:true
+            }
         },
         emits: ['select', 'action'],
         setup(props, { emit }) {

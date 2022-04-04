@@ -75,7 +75,7 @@
                 </span>
             </div>
         </div>
-        <div class="flex items-center col-span-3 ml-24" :class="showActions?'':''">
+        <div class="flex items-center col-span-3 ml-24  " :class="showActions?'':'w-full'">
             <ClassificationPiece
                 v-if="
                     request?.requestType === 'create_typedef' &&

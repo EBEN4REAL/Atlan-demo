@@ -18,6 +18,7 @@
     >
         <!-- <template #suffix>X</template> -->
         <template #prefix>
+            <slot name="connector"></slot>
             <a-tooltip
                 :title="capitalizeFirstLetter(connectorName)"
                 placement="left"
@@ -64,7 +65,6 @@
                 </button>
             </a-popover>
         </template>
-        -->
     </a-input>
 </template>
 

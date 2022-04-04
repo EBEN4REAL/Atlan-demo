@@ -118,6 +118,7 @@ export function useBody(
     if (typeName === 'Table' || Array.isArray(typeName)) {
         Object.keys(facets ?? {}).forEach((mkey) => {
             let filterObject = facets[mkey]
+
             switch (mkey) {
                 case 'hierarchy': {
                     if (filterObject.connectorName) {
@@ -339,9 +340,9 @@ export function useBody(
                 case 'table':
                 case 'properties': {
                     if (filterObject) {
-                        console.log(filterObject)
+                        console.log('filter', filterObject)
                         Object.keys(filterObject).forEach((key) => {
-                            filterObject[key].forEach((element) => {
+                            filterObject[key]?.forEach((element) => {
                                 if (element.value) {
                                     if (element.operator === 'equals') {
                                         base.filter(

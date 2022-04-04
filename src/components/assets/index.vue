@@ -20,12 +20,20 @@
 
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
             <div class="flex flex-col h-full bg-primary-light">
-                <div class="flex">
+                <div class="flex items-center">
+                    <ConnectorSelect
+                        class="mt-3 ml-4"
+                        style="min-width: 150px"
+                        v-model="facets.connector"
+                        :persona="persona"
+                        @change="handleConnectorChange"
+                        :key="`${dirtyTimestamp}_${persona}`"
+                    ></ConnectorSelect>
                     <SearchAdvanced
                         :key="searchDirtyTimestamp"
                         ref="searchBox"
                         v-model="queryText"
-                        :connector-name="facets?.hierarchy?.connectorName"
+                        :connector-name="facets.connector"
                         :autofocus="true"
                         :allow-clear="true"
                         :is-loading="isValidating"
@@ -33,7 +41,7 @@
                         :class="
                             ['admin', 'classifications'].includes(page)
                                 ? ''
-                                : 'px-3 bg-white border-b mt-3 mx-4 rounded-lg'
+                                : 'px-3 bg-white border-b mt-3 ml-3 mr-4 rounded-lg'
                         "
                         :placeholder="placeholder"
                         @change="handleSearchChange"
@@ -77,11 +85,19 @@
                     </SearchAdvanced>
                     <slot name="searchAction"></slot>
                 </div>
+                <Heirarchy
+                    :connector="facets.connector"
+                    v-model="facets.hierarchy"
+                    class="mt-2"
+                    @change="handleFilterChange"
+                    :persona="persona"
+                    :key="facets.connector"
+                ></Heirarchy>
 
                 <div
                     v-if="showAggrs"
                     class="w-full"
-                    :class="page === 'admin' ? '' : 'px-4 mt-3 mb-1'"
+                    :class="page === 'admin' ? '' : 'px-4 mt-2 mb-1'"
                 >
                     <AggregationTabs
                         v-model="postFacets.typeName"
@@ -250,6 +266,10 @@
     import useShortcuts from '~/composables/shortcuts/useShortcuts'
     import { usePersonaStore } from '~/store/persona'
 
+    import ConnectorSelect from './connector.vue'
+
+    import Heirarchy from './hierarchy/index.vue'
+
     export default defineComponent({
         name: 'AssetDiscovery',
         components: {
@@ -263,6 +283,8 @@
             AtlanIcon,
             AssetItem,
             ListNavigator,
+            Heirarchy,
+            ConnectorSelect,
             // PopOverAsset,
         },
         props: {
@@ -440,6 +462,15 @@
                 quickChange()
             })
 
+            const persona = computed(() => {
+                if (discoveryStore.globalState.length === 2) {
+                    if (discoveryStore.globalState[0] === 'persona') {
+                        return discoveryStore.globalState[1]
+                    }
+                }
+                return ''
+            })
+
             watch(
                 () => discoveryStore.globalState,
                 () => {
@@ -566,17 +597,24 @@
             const connector = ref('')
 
             const handleFilterChange = (filterItem) => {
+                console.log('change Filter')
                 isConnectorChange.value = false
 
-                if (!facets.value.hierarchy?.connectorName) {
-                    connector.value = ''
-                } else if (
-                    connector.value !== facets.value.hierarchy?.connectorName
-                ) {
-                    isConnectorChange.value = true
-                    connector.value = facets.value.hierarchy?.connectorName
-                }
+                offset.value = 0
+                quickChange()
+                discoveryStore.setActiveFacet(facets.value)
+                sendFilterEvent(filterItem)
+            }
 
+            const handleConnectorChange = (filterItem) => {
+                console.log('change Connector')
+                facets.value.hierarchy = {}
+                if (!facets.value.connector) {
+                    connector.value = ''
+                } else if (connector.value !== facets.value.connector) {
+                    isConnectorChange.value = true
+                    connector.value = facets.value.connector
+                }
                 offset.value = 0
                 quickChange()
                 discoveryStore.setActiveFacet(facets.value)
@@ -822,6 +860,8 @@
                 isConnectorChange,
                 connector,
                 denyCustomMetadata,
+                persona,
+                handleConnectorChange,
             }
         },
     })

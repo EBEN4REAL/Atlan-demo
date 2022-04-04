@@ -1,12 +1,13 @@
 <template>
     <a-select
-        placeholder="Select a connector"
+        placeholder="All connectors"
         v-model:value="localValue"
         :allowClear="true"
         :showSearch="true"
+        size="large"
         notFoundContent="No connector found"
         :get-popup-container="(target) => target.parentNode"
-        class="bg-white border-0 selector"
+        class="search-select"
     >
         <template #suffixIcon>
             <AtlanIcon icon="CaretDown" />
@@ -104,4 +105,23 @@
     })
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less">
+    .search-select {
+        .ant-select-selector {
+            @apply border-0 rounded-lg !important;
+            border-top-width: 0px !important;
+            border-right-width: 0px !important;
+            border-bottom-width: 1px !important;
+            border-left-width: 0px !important;
+            border-color: rgba(
+                243,
+                243,
+                243,
+                var(--tw-border-opacity)
+            ) !important;
+            box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
+                var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow) !important;
+            height: 39px !important;
+        }
+    }
+</style>

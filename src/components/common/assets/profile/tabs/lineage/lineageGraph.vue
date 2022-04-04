@@ -103,7 +103,6 @@
             const drawerActiveKey = ref('Overview')
             const guidToSelectOnGraph = ref('')
             const selectedTypeInRelationDrawer = ref('__all')
-            const removeAllListeners = ref(null)
 
             /** METHODS */
             // onSelectAsset
@@ -157,7 +156,7 @@
                 })
 
                 // useEventGraph
-                const { removeAllListeners: ral } = useEventGraph({
+                useEventGraph({
                     graph,
                     currZoom,
                     preferences,
@@ -172,7 +171,6 @@
                     addSubGraph,
                     renderLayout,
                 })
-                removeAllListeners.value = ral
             }
 
             /** PROVIDERS */
@@ -191,9 +189,6 @@
             onUnmounted(() => {
                 isComputeDone.value = false
                 if (Object.keys(graph.value).length) graph.value.dispose()
-
-                if (typeof removeAllListeners.value === 'function')
-                    removeAllListeners.value()
             })
 
             return {
@@ -223,14 +218,6 @@
 </style>
 
 <style lang="less">
-    .l-m20px {
-        left: -20px;
-    }
-
-    .r-m20px {
-        right: -20px;
-    }
-
     @keyframes ant-line {
         to {
             stroke-dashoffset: -1000;
@@ -339,7 +326,7 @@
 
         // Non-Process Nodes
         &-node {
-            padding: 10px 8px 0px 10px;
+            padding: 10px 8px 10px 20px;
             font-size: 16px;
             border: 1.5px solid #e0e4eb;
             border-radius: 6px;
@@ -348,7 +335,7 @@
             height: 70px;
             cursor: pointer;
             outline: 0 !important;
-            @apply transition-all duration-300;
+            @apply transition-all duration-100;
 
             &:hover {
                 @apply shadow-lg;
@@ -357,6 +344,10 @@
             &__content {
                 display: flex;
                 align-items: center;
+            }
+
+            &.isNodeWithColumns {
+                height: 114px;
             }
 
             &.isVpNode {
@@ -448,7 +439,7 @@
 
         .isSelectedNode {
             border: 1.5px solid #3c71df !important;
-            background-color: #f6f8fd !important;
+            background-color: #ebf1ff !important;
             color: #3c71df;
             & .node-title {
                 color: #3c71df;

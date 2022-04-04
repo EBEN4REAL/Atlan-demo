@@ -155,7 +155,7 @@
     /** COMPOSABLES */
     import useTransformGraph from './useTransformGraph'
 
-    import { exportStyles } from './styles'
+    import { exportStyles } from './stylesTwo'
 
     export default defineComponent({
         name: 'LineageFooter',
@@ -224,7 +224,7 @@
                         )
                     },
                     {
-                        copyStyles: true,
+                        copyStyles: false,
                         stylesheet: exportStyles,
                         serializeImages: true,
                     }

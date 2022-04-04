@@ -4,8 +4,8 @@ import {
     getSchema,
     getNodeTypeText,
 } from './util.js'
-import { iconVerified, iconDraft, iconDeprecated, iconLoader } from './icons'
-import CaretDown from '~/assets/images/icons/caret-down.svg?url'
+import { iconVerified, iconDraft, iconDeprecated } from './icons'
+import { iconCaretDownB64 } from './iconsBase64'
 import { dataTypeCategoryList } from '~/constant/dataType'
 import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
@@ -27,6 +27,7 @@ export default function useGraph(graph) {
         const img = getNodeSourceImage[source]
         const isBase = guid === baseEntityGuid
         const isVpNode = typeName === 'vpNode'
+        const isNodeWithColumns = ['Table', 'View'].includes(typeName)
 
         if (certificateStatus) {
             switch (certificateStatus) {
@@ -43,10 +44,12 @@ export default function useGraph(graph) {
 
         const computedData = {
             id: guid,
+            columnLineageCount: 0,
             isSelectedNode: null,
             isHighlightedNode: null,
-            isGrayed: false,
+            isGrayed: null,
             hiddenCount: 0,
+            nodeHeight: isNodeWithColumns ? 121 : 70,
             ...dataObj,
         }
 
@@ -70,12 +73,21 @@ export default function useGraph(graph) {
                     // prettier-ignore
                     return `
                 <div class="flex items-center">
-                    <div id="node-${guid}" class="lineage-node group ${
+                    <div style="height: ${
+                        data?.nodeHeight
+                    }px" id="node-${guid}" class="lineage-node group ${
                         isVpNode ? 'isVpNode' : ''
                     }   
+                    ${isNodeWithColumns ? 'isNodeWithColumns' : ''}
+                    ${isBase ? 'isBase' : ''} 
+                    ${data?.isSelectedNode === data?.id ? 'isSelectedNode' : ''}
                     ${
-                        isBase ? 'isBase' : ''
-                    }">
+                        data?.isHighlightedNode === data?.id
+                            ? 'isHighlightedNode'
+                            : ''
+                    }
+                    ${data?.isGrayed === data?.id ? 'isGrayed' : ''} 
+                    ">
                         <div class=" ${isBase ? 'inscr' : 'hidden'}">BASE</div>
                         ${
                             isVpNode
@@ -91,14 +103,6 @@ export default function useGraph(graph) {
                             </div>
                             <div>
                                 <div class="node-text">
-                                    <span class="relative z-50 block ">
-                                        <div class="absolute right-0 justify-end hidden w-6 group-hover:flex caret-bg">${
-                                            ['Table', 'View'].includes(typeName)
-                                                ? `<img class="node-caret h-6 w-6" src="${CaretDown}">`
-                                                : ''
-                                        }
-                                        </div>
-                                    </span>
                                     <div class="flex items-center gap-x-1">
                                         <span class="truncate node-title">${displayText}</span>
                                         <span class="flex-none mr-1">${status}</span>
@@ -117,9 +121,7 @@ export default function useGraph(graph) {
                                         }
                                     </div>
                                     <div class="node-meta__text text-gray  truncate ${
-                                        ['Table', 'View'].includes(typeName)
-                                            ? ''
-                                            : 'hidden'
+                                        isNodeWithColumns ? '' : 'hidden'
                                     }">
                                         ${schemaName || ''}
                                     </div>
@@ -128,13 +130,13 @@ export default function useGraph(graph) {
                         }
 
                     </div>
-                    <div id="node-${guid}-columnListLoader" class="node-columnListLoader hidden">
-                        <span class="absolute w-9 h-9">${iconLoader}</span>
-                    </div>
-                    
                 </div>`
                 },
                 shouldComponentUpdate(node) {
+                    graph.value.freeze('shouldComponentUpdate')
+                    graph.value.getEdges().forEach((edge) => edge.setZIndex(0))
+                    graph.value.unfreeze('shouldComponentUpdate')
+
                     return node.hasChanged('data')
                 },
             },
@@ -230,30 +232,43 @@ export default function useGraph(graph) {
                                 tagName: 'image',
                                 selector: 'portImage',
                             },
+                            {
+                                tagName: 'image',
+                                selector: 'portImageLoader',
+                            },
                         ],
                         attrs: {
                             portBody: {
-                                width: 268,
+                                width: 247,
                                 height: 40,
                                 strokeWidth: 1,
                                 stroke: '#E0E4EB',
                                 fill: '#ffffff',
                                 event: 'port:click',
-                                y: -11,
+                                x: 10,
                             },
                             portNameLabel: {
                                 ref: 'portBody',
-                                refX: 36,
-                                refY: 12,
+                                refX: 44,
+                                refY: 13,
                                 fontSize: 16,
                                 fill: '#374151',
                                 event: 'port:click',
                             },
                             portImage: {
                                 ref: 'portBody',
-                                refX: 12,
+                                refX: 20,
                                 refY: 12,
                                 event: 'port:click',
+                            },
+                            portImageLoader: {
+                                ref: 'portBody',
+                                refX: 220,
+                                refY: 10,
+                                event: 'port:click',
+                                href: '',
+                                width: 22,
+                                height: 22,
                             },
                         },
                         position: 'erPortPosition',
@@ -265,9 +280,35 @@ export default function useGraph(graph) {
                         group: 'invisiblePort',
                         zIndex: 0,
                     },
+                    {
+                        id: `${guid}-viewPort`,
+                        group: 'columnList',
+                        attrs: {
+                            portBody: {
+                                x: 1,
+                                width: 266,
+                                height: 38,
+                                fill: '#F9FAFB',
+                                stroke: '#f9fafb00',
+                            },
+                            portNameLabel: {
+                                text: `view columns`,
+                                refX: 22,
+                                fill: '#3c71df',
+                                refY: 12,
+                            },
+                            portImage: {
+                                refX: 120,
+                                refY: 10,
+                                href: iconCaretDownB64,
+                            },
+                        },
+                    },
                 ],
             },
         }
+
+        if (!isNodeWithColumns) nodeData.ports.items = [nodeData.ports.items[0]]
 
         return { nodeData }
     }

@@ -26,6 +26,14 @@ export const iconMinus = `<svg width="18" height="18" viewBox="0 0 16 16" fill="
 </svg>
 `
 
+export const iconCaretUp = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M4 10L7.64645 6.35355C7.84171 6.15829 8.15829 6.15829 8.35355 6.35355L12 10" stroke="#6A7692" stroke-linecap="round"/>
+</svg>
+`
+export const iconCaretDown = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 6L8.35355 9.64645C8.15829 9.84171 7.84171 9.84171 7.64645 9.64645L4 6" stroke="#6A7692" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`
+
 export const iconLoader = `<svg id="e6op8Zzqnet1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 16 16" shape-rendering="geometricPrecision" text-rendering="geometricPrecision"><style><![CDATA[#e6op8Zzqnet2_tr {animation: e6op8Zzqnet2_tr__tr 3000ms linear infinite normal forwards}@keyframes e6op8Zzqnet2_tr__tr { 0% {transform: translate(8px,8px) rotate(0deg)} 100% {transform: translate(8px,8px) rotate(-720deg)}} #e6op8Zzqnet3_tr {animation: e6op8Zzqnet3_tr__tr 3000ms linear infinite normal forwards}@keyframes e6op8Zzqnet3_tr__tr { 0% {transform: translate(8px,8px) rotate(20deg)} 50% {transform: translate(8px,8px) rotate(720deg)} 100% {transform: translate(8px,8px) rotate(1440deg)}}]]></style><g id="e6op8Zzqnet2_tr" transform="translate(8,8) rotate(0)"><path id="e6op8Zzqnet2" d="M8,2C4.68629,2,2,4.68629,2,8C2,11.3137,4.68629,14,8,14C11.3137,14,14,11.3137,14,8C14,7.3836,13.9072,6.7898,13.7352,6.2313C13.6539,5.96739,13.802,5.68756,14.0659,5.60627C14.3298,5.52499,14.6096,5.67303,14.6909,5.93694C14.8919,6.58973,15,7.28271,15,8C15,11.866,11.866,15,8,15C4.13401,15,1,11.866,1,8C1,4.13401,4.13401,1,8,1C8.97404,1,9.90284,1.19923,10.7469,1.55965C11.0008,1.66809,11.1188,1.96188,11.0103,2.21583C10.9019,2.46979,10.6081,2.58775,10.3541,2.47931C9.63199,2.17093,8.8366,2,8,2Z" transform="translate(-8,-8)" clip-rule="evenodd" fill="rgb(82,119,215)" fill-rule="evenodd" stroke="none" stroke-width="1"/></g><g id="e6op8Zzqnet3_tr" transform="translate(8,8) rotate(20)"><path id="e6op8Zzqnet3" d="M8,4C5.79086,4,4,5.79086,4,8C4,10.2091,5.79086,12,8,12C8.27614,12,8.5,12.2239,8.5,12.5C8.5,12.7761,8.27614,13,8,13C5.23858,13,3,10.7614,3,8C3,5.23858,5.23858,3,8,3C8.27614,3,8.5,3.22386,8.5,3.5C8.5,3.77614,8.27614,4,8,4Z" transform="translate(-8,-8)" clip-rule="evenodd" fill="rgb(98,225,252)" fill-rule="evenodd" stroke="none" stroke-width="1"/></g></svg>`
 
 export const snowflake = `<svg width="17" height="17" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">

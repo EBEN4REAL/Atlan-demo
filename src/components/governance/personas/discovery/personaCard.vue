@@ -159,7 +159,7 @@
             }
             const connection = computed(() => {
                 const glossary = persona.value?.glossaryPolicies?.length || 0
-                const lengthCoonection = glossary ? 5 : 6
+                const lengthCoonection = glossary ? 4 : 5
                 return getUniqueTypeIcons().connectors.slice(
                     0,
                     lengthCoonection

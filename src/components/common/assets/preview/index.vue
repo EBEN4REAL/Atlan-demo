@@ -262,6 +262,7 @@
                                 :image="tab.image"
                                 :emoji="tab.emoji"
                                 height="h-5"
+                                width="w-5"
                                 :active-icon="tab.activeIcon"
                                 :is-active="activeKey === index"
                                 :is-scrubbed="

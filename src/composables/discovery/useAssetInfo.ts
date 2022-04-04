@@ -190,6 +190,9 @@ export default function useAssetInfo() {
     const schemaName = (asset: assetInterface) =>
         attributes(asset)?.schemaName ?? ''
 
+    const parentSchema = (asset: assetInterface) =>
+        attributes(asset)?.atlanSchema
+
     const tableName = (asset: assetInterface) =>
         attributes(asset)?.tableName ?? ''
 
@@ -1362,6 +1365,7 @@ export default function useAssetInfo() {
         parentFolder,
         parentModel,
         parentDatabase,
+        parentSchema,
         sourceChildCount,
         tableCount,
         viewCount,

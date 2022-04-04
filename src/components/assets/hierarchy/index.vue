@@ -26,8 +26,8 @@
     import { defineComponent, ref, watch, computed } from 'vue'
 
     import { useVModels } from '@vueuse/core'
-    import ConnectorSelect from '@/common/select/connector.vue'
-    import ConnectionSelect from '@/common/select/connection.vue'
+
+    import ConnectionSelect from './connection.vue'
     import AssetDropdown from './assetDropdown.vue'
 
     import useAssetStore from '~/store/asset'
@@ -36,7 +36,6 @@
     export default defineComponent({
         name: 'ConnectionFilter',
         components: {
-            ConnectorSelect,
             ConnectionSelect,
             AssetDropdown,
         },

@@ -6,7 +6,7 @@
             :allowClear="true"
             :showSearch="true"
             :options="dropdownOption"
-            class="w-full"
+            class="w-full asset-select"
             :dropdownMatchSelectWidth="true"
             @change="handleChange"
             :disabled="disabled"
@@ -180,3 +180,23 @@
         },
     })
 </script>
+
+<style lang="less">
+    .asset-select {
+        .ant-select-selector {
+            @apply border-0 rounded-lg !important;
+            border-top-width: 0px !important;
+            border-right-width: 0px !important;
+            border-bottom-width: 1px !important;
+            border-left-width: 0px !important;
+            border-color: rgba(
+                243,
+                243,
+                243,
+                var(--tw-border-opacity)
+            ) !important;
+            box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
+                var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow) !important;
+        }
+    }
+</style>

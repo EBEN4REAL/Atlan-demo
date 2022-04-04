@@ -49,7 +49,7 @@ export default function useGraph(graph) {
             isHighlightedNode: null,
             isGrayed: null,
             hiddenCount: 0,
-            nodeHeight: isNodeWithColumns ? 114 : 70,
+            nodeHeight: isNodeWithColumns ? 121 : 70,
             ...dataObj,
         }
 
@@ -239,14 +239,13 @@ export default function useGraph(graph) {
                         ],
                         attrs: {
                             portBody: {
-                                width: 250,
+                                width: 247,
                                 height: 40,
                                 strokeWidth: 1,
                                 stroke: '#E0E4EB',
                                 fill: '#ffffff',
                                 event: 'port:click',
-                                y: -11,
-                                x: 9,
+                                x: 10,
                             },
                             portNameLabel: {
                                 ref: 'portBody',

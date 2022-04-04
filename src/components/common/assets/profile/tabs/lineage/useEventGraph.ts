@@ -1089,7 +1089,7 @@ export default function useEventGraph({
     /** Controls */
     // controlNodeWithColumnsHeight
     const controlNodeWithColumnsHeight = (node, columnsLength = 0) => {
-        const height = columnsLength ? columnsLength * 41 + 114 + 12 : 114
+        const height = columnsLength ? columnsLength * 40 + 121 + 20 : 121
         const nodeEle = document.getElementById(`node-${node.id}`)
         if (nodeEle) {
             nodeEle.style.height = `${height}px`

@@ -255,18 +255,26 @@
                     :class="index === activeKey ? 'flex flex-col' : ''"
                 >
                     <template #tab>
-                        <PreviewTabsIcon
-                            :title="tab.tooltip"
-                            :icon="tab.icon"
-                            :image="tab.image"
-                            :emoji="tab.emoji"
-                            :active-icon="tab.activeIcon"
-                            :is-active="activeKey === index"
-                            :is-scrubbed="
-                                isScrubbed(selectedAsset) && tab.scrubbed
-                            "
-                            @click="onClickTabIcon(tab)"
-                        />
+                        <div class="flex flex-col">
+                            <PreviewTabsIcon
+                                :title="tab.tooltip"
+                                :icon="tab.icon"
+                                :image="tab.image"
+                                :emoji="tab.emoji"
+                                height="h-5"
+                                :active-icon="tab.activeIcon"
+                                :is-active="activeKey === index"
+                                :is-scrubbed="
+                                    isScrubbed(selectedAsset) && tab.scrubbed
+                                "
+                                @click="onClickTabIcon(tab)"
+                            />
+                            <span
+                                class="tracking-tight text-gray-500 leading-none mt-0.5"
+                                style="font-size: 11px"
+                                >{{ trimText(tab.name) }}
+                            </span>
+                        </div>
                     </template>
                     <NoAccess
                         v-if="isScrubbed(selectedAsset) && tab.scrubbed"
@@ -303,7 +311,7 @@
                 </a-tab-pane>
             </template>
             <template #moreIcon>
-                <div class="flex">
+                <div class="flex justify-center">
                     <AtlanIcon
                         icon="KebabMenuHorizontal"
                         class="text-primary"
@@ -652,6 +660,12 @@
                         switchTab(selectedAsset.value, 'Resources')
                 })
             })
+            const trimText = (text) => {
+                if (text?.length > 8) {
+                    return `${text?.substring(0, 6)}...`
+                }
+                return text
+            }
 
             const {
                 count,
@@ -725,11 +739,11 @@
                 readOnlyInCm,
                 isCustom,
                 isPublished,
+                trimText,
             }
         },
     })
 </script>
-
 <style lang="less" module>
     .previewtab {
         &:global(.ant-tabs-right) {
@@ -737,22 +751,24 @@
                 width: 48px !important;
                 @apply ml-0 !important;
             }
-            :global(.ant-tabs-tab) {
-                padding: 3px 8px !important;
 
+            :global(> .ant-tabs-nav .ant-tabs-tab) {
+                padding: 6px 8px !important;
                 @apply justify-center;
+                @apply mt-2 !important;
+                &:global(.ant-tabs-tab-active) {
+                    @apply bg-primary-menu;
+                }
             }
 
-            :global(.ant-tabs-tab:first-child) {
-                padding: 3px 8px !important;
-                @apply mt-3 !important;
-
+            :global(> .ant-tabs-nav .ant-tabs-tab:first-child) {
+                padding: 6px 8px !important;
+                @apply mt-1 !important;
                 @apply justify-center;
             }
 
             :global(.ant-tabs-content) {
                 @apply px-0 h-full !important;
-
                 :global(.ant-tabs-tab:first-child) {
                     @apply mt-0 !important;
                 }
@@ -766,7 +782,6 @@
                 @apply pb-0 !important;
                 @apply h-full !important;
             }
-
             :global(.ant-tabs-content-holder) {
                 @apply h-full !important;
             }

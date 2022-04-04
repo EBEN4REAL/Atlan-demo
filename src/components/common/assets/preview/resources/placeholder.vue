@@ -1,7 +1,5 @@
 <template>
-    <div
-        class="flex flex-col items-center justify-center h-full my-2 text-center text-gray-700"
-    >
+    <div class="flex items-center justify-between px-5 py-4">
         <p class="mb-2 text-xl font-bold">Resources</p>
         <p class="text-sm">
             Resources is the place to document all <br />knowledge around the

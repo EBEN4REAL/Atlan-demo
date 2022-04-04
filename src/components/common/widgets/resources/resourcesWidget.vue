@@ -33,7 +33,7 @@
         </template>
 
         <template v-else>
-            <div class="flex justify-between p-4 border-b gap-x-6">
+            <div class="flex flex-col justify-between p-4 border-b gap-x-6">
                 <div>
                     <AtlanIcon icon="Link" class="w-auto h-4 mr-3" />
                     <span class="text-base font-bold text-gray">

@@ -268,12 +268,15 @@
                                     isScrubbed(selectedAsset) && tab.scrubbed
                                 "
                                 @click="onClickTabIcon(tab)"
-                            />
-                            <span
-                                class="tracking-tight text-gray-500 leading-none mt-0.5"
-                                style="font-size: 11px"
-                                >{{ trimText(tab.name) }}
-                            </span>
+                            >
+                                <template #label>
+                                    <span
+                                        class="tracking-tight text-gray-500 leading-none mt-0.5"
+                                        style="font-size: 11px"
+                                        >{{ trimText(tab.name) }}
+                                    </span></template
+                                ></PreviewTabsIcon
+                            >
                         </div>
                     </template>
                     <NoAccess
@@ -661,7 +664,7 @@
                 })
             })
             const trimText = (text) => {
-                if (text?.length > 8) {
+                if (text?.length > 9) {
                     return `${text?.substring(0, 6)}...`
                 }
                 return text

@@ -52,18 +52,14 @@
                         </div>
                     </template>
                     <template v-else>
-                        <a-tooltip
-                            placement="right"
-                            title="You don't have permission to perform this action"
-                        >
-                            <div
-                                :class="'cursor-not-allowed text-gray-500'"
-                                class="flex items-center"
-                            >
-                                <AtlanIcon icon="Pencil" class="m-0 mr-2" />
-                                <p class="p-0 m-0">Rename</p>
-                            </div>
-                        </a-tooltip>
+                        <RenameModal :entityType="entity?.typeName" :entityTitle="entity?.attributes?.name">
+                            <template #trigger>
+                                <div class="flex items-center">
+                                    <AtlanIcon icon="Pencil" class="m-0 mr-2" />
+                                    <p class="p-0 m-0">Rename</p>
+                                </div>
+                            </template>
+                        </RenameModal>
                     </template>
                 </a-menu-item>
                 <!-- entity create -->
@@ -239,6 +235,7 @@
     // import Categories from '@/glossary/common/categories.vue'
     import ModalHeader from '@/glossary/modal/modalHeader.vue'
     import BulkUploadModal from '@/glossary/modal/bulkUploadModal.vue'
+    import RenameModal from '@/glossary/modal/renameModal.vue'
 
     // utils
     import { copyToClipboard } from '~/utils/clipboard'
@@ -264,6 +261,7 @@
             RemoveGTCModal,
             ModalHeader,
             BulkUploadModal,
+            RenameModal,
         },
         props: {
             entity: {
@@ -326,6 +324,7 @@
             } = toRefs(props)
             const isVisible = ref(false)
             const isModalVisible = ref<boolean>(false)
+            const isRenameModalOpen = ref<boolean>(false)
             const route = useRoute()
             const shouldRedirect = computed(
                 () => route?.params?.id === props?.entity?.guid

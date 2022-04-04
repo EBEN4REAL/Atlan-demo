@@ -12,11 +12,12 @@
         />
 
         <div
-            class="flex flex-col flex-1 h-full border-l border-r border-gray-300 gap-y-4"
+            class="flex flex-col flex-1 h-full overflow-x-hidden border-l border-r border-gray-300 gap-y-4"
         >
             <div class="flex items-center mx-4 mt-4 gap-x-4">
                 <div
                     class="flex items-center flex-1 bg-white border border-gray-300 rounded-md"
+                    style="width: calc(100% - 150px)"
                 >
                     <PackageSelector
                         v-model:value="packageId"
@@ -34,7 +35,7 @@
                         @select="$event.target.blur()"
                     />
                 </div>
-                <AtlanButton2 label="New workflow" />
+                <AtlanButton2 label="New workflow" class="flex-none" />
             </div>
 
             <WorkflowList
@@ -66,7 +67,7 @@
             </template>
         </div>
 
-        <div style="width: 420px">
+        <div style="width: 420px" class="flex-none">
             <WorkflowPreview
                 v-if="selectedWorkflow"
                 :workflow="selectedWorkflow"

@@ -45,38 +45,35 @@
         },
         setup(props) {
             const { runs, workflow } = toRefs(props)
-            const { phase, finishedAt, startedAt, duration } = useWorkflowInfo()
+            const { phase, finishedAt, startedAt, duration, getRunTooltip } =
+                useWorkflowInfo()
             const router = useRouter()
 
             const getRun = (index) => {
                 if (runs.value.length >= index) {
-                    return runs.value[index - 1]
+                    return runs.value[index - 1]?._source
                 }
                 return {}
             }
 
-            const getRunStatus = (index) => {
-                const tempPhase = getRun(index)
-                return tempPhase?._source?.status.phase
-            }
+            const getRunStatus = (index) => phase(getRun(index))
 
             const getRunClass = (index) => {
-                const tempStatus = getRunStatus(index)
-                if (tempStatus === 'Succeeded') return 'bg-green-500 opacity-75'
-                if (tempStatus === 'Failed' || tempStatus === 'Error')
-                    return 'bg-red-500 opacity-75'
-                if (tempStatus === 'Running')
-                    return 'bg-primary opacity-75 animate-pulse'
-                return 'bg-gray-200'
+                const tempStatus = phase(getRun(index))
+                switch (tempStatus) {
+                    case 'Succeeded':
+                        return 'bg-green-500 bg-opacity-75'
+                    case 'Running':
+                        return 'bg-yellow-300 bg-opacity-75'
+                    case 'Failed':
+                    case 'Error':
+                    case 'Stopped':
+                        return 'bg-red-500 bg-opacity-75'
+                    default:
+                        return 'bg-gray-200'
+                }
             }
 
-            const getRunTime = (index, relative) => {
-                const tempStatus = getRunStatus(index)
-
-                return tempStatus === 'Running'
-                    ? startedAt(getRun(index)?._source, true)
-                    : finishedAt(getRun(index)?._source, true)
-            }
             const handleRunClick = (index) => {
                 const run = getRun(index)
 
@@ -86,32 +83,8 @@
             }
 
             const tooltipContent = (index) => {
-                const tempStatus = getRunStatus(index)
-
-                if (!tempStatus) return ''
-
-                if (tempStatus === 'Succeeded')
-                    return `${tempStatus}, ${getRunTime(
-                        index,
-                        true
-                    )} ago (${duration(getRun(index)._source)})`
-
-                if (tempStatus === 'Failed' || tempStatus === 'Error')
-                    return `${tempStatus}, ${getRunTime(
-                        index,
-                        true
-                    )} ago (${duration(getRun(index)._source)})`
-
-                if (tempStatus === 'Running')
-                    return `${tempStatus}, started ${getRunTime(
-                        index,
-                        true
-                    )} ago`
-
-                return `${tempStatus}, ${getRunTime(
-                    index,
-                    true
-                )} ago (${duration(getRun(index)._source)})`
+                const tRun = getRun(index)
+                return getRunTooltip(tRun)
             }
 
             return {
@@ -119,7 +92,6 @@
                 getRunStatus,
                 getRunClass,
                 tooltipContent,
-                getRunTime,
                 finishedAt,
                 startedAt,
                 getRun,

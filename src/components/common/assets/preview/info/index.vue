@@ -362,15 +362,16 @@
 
             <div
                 v-if="
-                    (isBiAsset(selectedAsset) || isSaasAsset(selectedAsset)) &&
-                    ![
-                        'PowerBIWorkspace',
-                        'TableauSite',
-                        'LookerFolder',
-                        'LookerProject',
-                        'LookerQuery',
-                        'SalesforceOrganization',
-                    ].includes(selectedAsset?.typeName)
+                    ((isBiAsset(selectedAsset) || isSaasAsset(selectedAsset)) &&
+                        ![
+                            'PowerBIWorkspace',
+                            'TableauSite',
+                            'LookerFolder',
+                            'LookerProject',
+                            'LookerQuery',
+                            'SalesforceOrganization',
+                        ].includes(selectedAsset?.typeName)) ||
+                    ['Schema'].includes(selectedAsset?.typeName)
                 "
                 class="flex px-5"
             >
@@ -847,7 +848,7 @@
                             isDrawer,
                             'RELATIONSHIP_ADD',
                             'AtlasGlossaryTerm'
-                        ) || editPermission
+                        )
                     "
                     :allow-delete="
                         selectedAssetUpdatePermission(
@@ -855,7 +856,7 @@
                             isDrawer,
                             'RELATIONSHIP_REMOVE',
                             'AtlasGlossaryTerm'
-                        ) || editPermission
+                        )
                     "
                     @change="handleMeaningsUpdate"
                 >

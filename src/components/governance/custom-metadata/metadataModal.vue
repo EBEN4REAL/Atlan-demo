@@ -158,7 +158,9 @@
                 }
                 console.log('analytics props.isEdit', props.isEdit)
                 const eventName = props.isEdit ? 'updated' : 'created'
-                useAddEvent('governance', 'custom_metadata', eventName)
+                useAddEvent('governance', 'custom_metadata', eventName, {
+                    title: serviceResponse[0].displayName,
+                })
             }
 
             const handleUpdateBMResponse = (apiResponse: Ref) => {

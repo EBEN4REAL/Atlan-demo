@@ -319,9 +319,15 @@ const keyMap = {
         persona: {
             created: {
                 action: 'governance_persona_created',
+                properties: (props) => ({
+                    title: props.title
+                })
             },
             deleted: {
                 action: 'governance_persona_deleted',
+                properties: (props) => ({
+                    title: props.title
+                })
             },
             policy_added: {
                 action: 'governance_persona_policy_added',
@@ -366,9 +372,15 @@ const keyMap = {
         purpose: {
             created: {
                 action: 'governance_purpose_created',
+                properties: (props) => ({
+                    title: props.title
+                })
             },
             deleted: {
                 action: 'governance_purpose_deleted',
+                properties: (props) => ({
+                    title: props.title
+                })
             },
             policy_added: {
                 action: 'governance_purpose_policy_added',
@@ -426,16 +438,26 @@ const keyMap = {
         custom_metadata: {
             created: {
                 action: 'governance_custom_metadata_created',
+                properties: (props) => ({
+                    title: props.title
+                })
             },
             updated: {
                 action: 'governance_custom_metadata_updated',
+                properties: (props) => ({
+                    title: props.title
+                })
             },
             deleted: {
                 action: 'governance_custom_metadata_deleted',
+                properties: (props) => ({
+                    title: props.title
+                })
             },
             property_added: {
                 action: 'governance_custom_metadata_property_added',
                 properties: (props) => ({
+                    title: props.title,
                     data_type: props.data_type,
                     multi_value: !!props.multi_value,
                     allow_filtering: !!props.allow_filtering,
@@ -445,6 +467,7 @@ const keyMap = {
             property_updated: {
                 action: 'governance_custom_metadata_property_updated',
                 properties: (props) => ({
+                    title: props.title,
                     data_type: props.data_type,
                     multi_value: !!props.multi_value,
                     allow_filtering: !!props.allow_filtering,

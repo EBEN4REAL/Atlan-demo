@@ -144,7 +144,7 @@
                     state?.value?.enumDefs?.length && state.value.enumDefs[0]
                 store.updateEnum(updatedEnum)
                 useAddEvent('governance', 'options', 'updated', {
-                    alias: updatedEnum.name,
+                    title: updatedEnum.name,
                 })
             }
 

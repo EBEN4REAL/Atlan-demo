@@ -117,7 +117,7 @@
                     context.emit('add', state.value.enumDefs[0])
                     context.emit('close')
                     useAddEvent('governance', 'options', 'created', {
-                        alias: form.value.name,
+                        title: form.value.name,
                     })
                 }
                 if (updateError.value) {

@@ -221,6 +221,7 @@
                     dataType = tempForm?.options.customType
                 }
                 const properties = {
+                    title: tempForm.displayName,
                     data_type: dataType,
                     multi_value: tempForm?.options.multiValueSelect,
                     allow_filtering: tempForm?.options.allowFiltering,

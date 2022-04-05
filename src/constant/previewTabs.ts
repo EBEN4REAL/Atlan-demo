@@ -66,7 +66,7 @@ export const previewTabs = [
         analyticsKey: 'relations',
     },
     {
-        name: 'Linked Assets',
+        name: 'Assets',
         component: 'linkedAssets',
         icon: 'AssetsInactiveLight',
         activeIcon: 'AssetsActiveLight',
@@ -126,7 +126,7 @@ export const previewTabs = [
         scrubbed: false,
         requiredInProfile: true,
         analyticsKey: 'property',
-    }
+    },
 ]
 
 export const JiraPreviewTab = {

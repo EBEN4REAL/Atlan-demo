@@ -286,7 +286,7 @@
                         assetType(item) !== 'Connection' &&
                         connectorName(item) !== 'glue'
                     "
-                    title="Query"
+                    title=""
                 >
                     <QueryDropdown
                         v-if="

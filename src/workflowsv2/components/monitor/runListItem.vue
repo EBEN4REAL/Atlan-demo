@@ -1,17 +1,7 @@
 <template>
-    <div
-        class="run-list-item hover:bg-primary-menu"
-        @click="
-            $router.push(
-                `/workflows/profile/${workflowTemplateName(run)}/runs?name=${
-                    run.metadata.name
-                }`
-            )
-        "
-    >
+    <div class="run-list-item">
         <div class="flex flex-col items-start col-span-5 text-gray-500 gap-y-1">
             <span class="text-xs">{{ run.metadata.name }}</span>
-
             <div class="flex items-center gap-x-2">
                 <span class="font-medium text-primary">{{
                     startedAt(run, false)
@@ -21,12 +11,22 @@
                     <span>Scheduled Run</span>
                 </template>
                 <template v-else>
-                    <span>Manually Run by</span>
-                    <UserWrapper :username="creatorUsername(run)" @click.stop />
+                    <span>Manual Run by</span>
+                    <span
+                        class="cursor-pointer hover:underline"
+                        @click="() => openUserSidebar(creatorUsername(run))"
+                    >
+                        <img
+                            v-if="showCreatorImage"
+                            :src="avatarUrl(creatorUsername(run))"
+                            class="flex-none inline-block h-4 rounded-full"
+                            @error="showCreatorImage = false"
+                        />
+                        {{ creatorUsername(run) }}
+                    </span>
                 </template>
             </div>
         </div>
-
         <div class="flex items-center justify-center col-span-1">
             <span
                 class="text-xs font-bold tracking-wider uppercase rounded"
@@ -47,13 +47,13 @@
 <script lang="ts">
     import { defineComponent, PropType, ref } from 'vue'
     import { LiveRun } from '~/types/workflow/runs.interface'
+    import { useUserPreview } from '~/composables/user/showUserPreview'
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
-
-    import UserWrapper from '~/workflowsv2/components/common/user.vue'
+    import { avatarUrl } from '~/composables/user/useUsers'
 
     export default defineComponent({
         name: 'RunListItem',
-        components: { UserWrapper },
+        components: {},
         props: {
             run: {
                 type: Object as PropType<LiveRun>,
@@ -70,8 +70,11 @@
                 creatorUsername,
                 cronString,
                 isCronRun,
-                workflowTemplateName,
             } = useWorkflowInfo()
+
+            const { openUserSidebar } = useUserPreview()
+
+            const showCreatorImage = ref(true)
 
             return {
                 getRunTextClass,
@@ -81,7 +84,10 @@
                 creatorUsername,
                 cronString,
                 isCronRun,
-                workflowTemplateName,
+                useUserPreview,
+                avatarUrl,
+                openUserSidebar,
+                showCreatorImage,
             }
         },
     })
@@ -89,7 +95,6 @@
 <style lang="less" scoped>
     .run-list-item {
         height: 70px;
-        @apply cursor-pointer;
         @apply px-3;
         @apply grid grid-cols-8 items-center;
         @apply text-sm;

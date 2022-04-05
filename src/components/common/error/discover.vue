@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex flex-col items-center justify-center w-full h-full text-center"
+        class="flex flex-col items-center justify-center w-full h-full text-center "
     >
         <AtlanIcon icon="SomethingWrong" class="w-auto h-32"></AtlanIcon>
         <p class="mt-2 mb-2 text-gray-500">Oops! Something went wrong.</p>
@@ -16,20 +16,24 @@
             empty: {
                 type: String,
                 required: false,
-                default: () => '',
+                default() {
+                    return ''
+                },
             },
             type: {
                 type: String,
-                default: () => 'Assets',
+                default: 'Assets',
             },
             buttonText: {
                 type: String,
                 required: false,
-                default: () => '',
+                default() {
+                    return ''
+                },
             },
             showClearFiltersCTA: {
                 type: Boolean,
-                default: () => true,
+                default: true,
             },
         },
         emits: ['event'],

@@ -12,15 +12,7 @@
             <div class="grid grid-cols-3">
                 <div>
                     <p class="info-title">Run Count</p>
-                    <p v-if="runCount" class="font-bold text-primary">
-                        {{ runCount }}
-                    </p>
-                    <p
-                        v-else-if="runCountLoading"
-                        class="text-gray-500 animate-pulse"
-                    >
-                        Loading
-                    </p>
+                    <p class="font-bold text-primary">N</p>
                 </div>
                 <div v-if="estimatedRuntime" class="col-span-2">
                     <p class="info-title">Estimated Runtime</p>
@@ -37,19 +29,35 @@
             <div v-if="creatorUsername(workflow)">
                 <p class="info-title">Created</p>
                 <span>{{ creationTimestamp(workflow, true) }} by </span>
-                <UserWrapper
-                    :key="creatorUsername(workflow)"
-                    :username="creatorUsername(workflow)"
-                />
+                <span
+                    class="cursor-pointer hover:underline"
+                    @click="() => openUserSidebar(creatorUsername(workflow))"
+                >
+                    <img
+                        v-if="showCreatorImage"
+                        :src="avatarUrl(creatorUsername(workflow))"
+                        class="flex-none inline-block h-4 rounded-full"
+                        @error="showCreatorImage = false"
+                    />
+                    {{ creatorUsername(workflow) }}
+                </span>
             </div>
 
-            <div v-if="modifierUsername(workflow)">
+            <div v-if="creatorUsername(workflow)">
                 <p class="info-title">Modified</p>
                 <span>By </span>
-                <UserWrapper
-                    :key="modifierUsername(workflow)"
-                    :username="modifierUsername(workflow)"
-                />
+                <span
+                    class="cursor-pointer hover:underline"
+                    @click="() => openUserSidebar(creatorUsername(workflow))"
+                >
+                    <img
+                        v-if="showModifierImage"
+                        :src="avatarUrl(creatorUsername(workflow))"
+                        class="flex-none inline-block h-4 rounded-full"
+                        @error="showModifierImage = false"
+                    />
+                    {{ creatorUsername(workflow) }}
+                </span>
             </div>
 
             <div>
@@ -89,20 +97,19 @@
 
 <script lang="ts">
     import { computed, defineComponent, ref, toRefs, watch } from 'vue'
-    import { whenever } from '@vueuse/core'
     import { getDurationStringFromSec } from '~/utils/time'
 
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
+    import { useUserPreview } from '~/composables/user/showUserPreview'
+    import { avatarUrl } from '~/composables/user/useUsers'
 
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
-    import { usePackageInfo } from '~/workflowsv2/composables/usePackageInfo'
     import RunIndicators from '~/workflowsv2/components/common/runIndicators.vue'
-    import UserWrapper from '~/workflowsv2/components/common/user.vue'
-    import { useRunDiscoverList } from '~/workflowsv2/composables/useRunDiscoverList'
+    import { usePackageInfo } from '~/workflowsv2/composables/usePackageInfo'
 
     export default defineComponent({
         name: 'WorkflowInfo',
-        components: { PreviewTabsIcon, RunIndicators, UserWrapper },
+        components: { PreviewTabsIcon, RunIndicators },
         props: {
             tab: {
                 type: Object,
@@ -119,7 +126,7 @@
         },
         emits: [],
         setup(props) {
-            const { runs, workflow } = toRefs(props)
+            const { workflow, runs } = toRefs(props)
             const {
                 isCronWorkflow,
                 cronString,
@@ -132,6 +139,16 @@
 
             const { name, version } = usePackageInfo()
 
+            const showCreatorImage = ref(true)
+            const showModifierImage = ref(true)
+
+            const { openUserSidebar } = useUserPreview()
+
+            watch(workflow, () => {
+                showCreatorImage.value = true
+                showModifierImage.value = true
+            })
+
             const estimatedRuntime = computed(() => {
                 const secs = runs.value.reduce((acc: number[], run: any) => {
                     if (run?._source?.status?.estimatedDuration)
@@ -142,30 +159,12 @@
                 return undefined
             })
 
-            const {
-                data,
-                isLoading: runCountLoading,
-                quickChange,
-            } = useRunDiscoverList({
-                facets: computed(() => ({
-                    workflowTemplate: workflow.value?.metadata.name,
-                })),
-                limit: ref(0),
-                immediate: false,
-            })
-
-            whenever(workflow, () => {
-                if (runs.value.length >= 5) quickChange()
-            })
-
-            const runCount = computed(() =>
-                runs.value.length >= 5
-                    ? data.value?.hits?.total?.value
-                    : runs.value.length
-            )
-
             return {
                 wfName,
+                avatarUrl,
+                openUserSidebar,
+                showCreatorImage,
+                showModifierImage,
                 isCronWorkflow,
                 cronString,
                 creatorUsername,
@@ -175,9 +174,6 @@
                 name,
                 version,
                 estimatedRuntime,
-                data,
-                runCountLoading,
-                runCount,
             }
         },
     })

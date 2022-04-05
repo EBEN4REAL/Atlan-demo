@@ -12,8 +12,19 @@
                 <span class="pt-0.5">Scheduled Run</span>
             </template>
             <template v-else>
-                <span>Manually Run by</span>
-                <UserWrapper :username="creatorUsername(run)" />
+                <span>Manual Run by</span>
+                <span
+                    class="hover:underline"
+                    @click="() => openUserSidebar(creatorUsername(run))"
+                >
+                    <img
+                        v-if="showCreatorImage"
+                        :src="avatarUrl(creatorUsername(run))"
+                        class="flex-none inline-block h-4 rounded-full"
+                        @error="showCreatorImage = false"
+                    />
+                    {{ creatorUsername(run) }}
+                </span>
             </template>
         </div>
         <div class="flex items-center text-sm text-gray gap-x-1 mt-1.5">
@@ -33,12 +44,13 @@
 <script lang="ts">
     import { defineComponent, PropType, ref } from 'vue'
     import { LiveRun } from '~/types/workflow/runs.interface'
+    import { useUserPreview } from '~/composables/user/showUserPreview'
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
-    import UserWrapper from '~/workflowsv2/components/common/user.vue'
+    import { avatarUrl } from '~/composables/user/useUsers'
 
     export default defineComponent({
         name: 'SidebarRunItem',
-        components: { UserWrapper },
+        components: {},
         props: {
             run: {
                 type: Object as PropType<LiveRun>,
@@ -58,6 +70,10 @@
                 getRunIconByPhase,
             } = useWorkflowInfo()
 
+            const { openUserSidebar } = useUserPreview()
+
+            const showCreatorImage = ref(true)
+
             return {
                 getRunClass,
                 phase,
@@ -66,6 +82,10 @@
                 creatorUsername,
                 cronString,
                 isCronRun,
+                useUserPreview,
+                avatarUrl,
+                openUserSidebar,
+                showCreatorImage,
                 getRunIconByPhase,
             }
         },

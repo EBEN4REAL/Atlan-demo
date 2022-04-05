@@ -3,10 +3,10 @@
     import { useRouter } from 'vue-router'
 
     export default defineComponent({
+        name: 'WorkflowV2Wrapper',
         setup() {
             const router = useRouter()
-            // url -> workflowsv2/profile redirects to 👇
-            router.replace('/workflows/monitor')
+            router.replace('/workflowsv2/monitor')
         },
     })
 </script>

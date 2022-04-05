@@ -36,6 +36,7 @@
                                     @click.stop="() => {}"
                                     :options="dropdownFolderOptions"
                                     :item="item"
+                                    minWidth="150"
                                 >
                                     <template #menuTrigger>
                                         <div
@@ -186,6 +187,7 @@
                                 <InsightsThreeDotMenu
                                     :options="dropdownQueryOptions"
                                     :item="item"
+                                    minWidth="150"
                                 >
                                     <template #menuTrigger>
                                         <div
@@ -1412,6 +1414,14 @@
             }
 
             const dropdownQueryOptions = [
+                {
+                    title: 'Schedule',
+                    key: 'schedule',
+                    class: '',
+                    component: MenuItem,
+                    disabled: false,
+                    handleClick: toggleScheduleQueryModal,
+                },
                 {
                     title: 'Copy link',
                     key: 'copyLink',

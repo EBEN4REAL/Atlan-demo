@@ -1,8 +1,9 @@
 <template>
     <div
-        class="flex flex-col w-full h-full overflow-hidden bg-white border rounded-lg"
+        class="flex flex-col w-full h-full overflow-hidden bg-white"
+        :class="{ 'border rounded-lg': !isEdit }"
     >
-        <div class="flex items-center px-5 py-4 border-b">
+        <div v-if="!isEdit" class="flex items-center px-5 py-4 border-b">
             <a-tooltip
                 :mouseEnterDelay="1"
                 placement="bottomLeft"
@@ -29,26 +30,30 @@
                 packageName(workflowTemplate)
             }}</span>
         </div>
-        <div class="flex h-full">
+
+        <div class="flex h-full overflow-hidden">
+            <div v-if="!status" class="flex-1 px-6 py-8">
+                <a-steps
+                    v-if="steps.length > 0"
+                    direction="vertical"
+                    :current="currentStep"
+                    class="w-44"
+                >
+                    <template v-for="(step, index) in steps" :key="step.id">
+                        <a-step class="h-16" @click="handleStepClick(index)">
+                            <template #title>{{ step.title }}</template>
+                        </a-step>
+                    </template>
+                </a-steps>
+            </div>
+
             <div
                 class="flex flex-col flex-grow h-full border-r"
                 :class="{ 'items-center justify-center': status }"
             >
                 <template v-if="!status">
-                    <div class="p-6">
-                        <a-steps v-if="steps.length > 0" :current="currentStep">
-                            <template
-                                v-for="(step, index) in steps"
-                                :key="step.id"
-                            >
-                                <a-step @click="handleStepClick(index)">
-                                    <template #title>{{ step.title }}</template>
-                                </a-step>
-                            </template>
-                        </a-steps>
-                    </div>
                     <div
-                        class="flex-1 px-6 py-8 overflow-y-auto"
+                        class="flex-1 px-6 py-8 overflow-y-scroll"
                         v-if="workflowTemplate && currentStep < steps.length"
                     >
                         <DynamicForm
@@ -73,14 +78,6 @@
                             color="secondary"
                             prefixIcon="CaretLeft"
                             @click="handlePrevious"
-                        />
-
-                        <AtlanButton2
-                            v-else-if="currentStep === 0 && !isEdit"
-                            label="Back to Marketplace"
-                            color="secondary"
-                            prefixIcon="CaretLeft"
-                            @click="handleExit"
                         />
 
                         <AtlanButton2
@@ -275,6 +272,8 @@
                 v-if="workflowTemplate"
                 :item="workflowTemplate"
                 mode="package"
+                style="width: 360px"
+                class="flex-none"
             ></WorkflowPreview>
         </div>
     </div>

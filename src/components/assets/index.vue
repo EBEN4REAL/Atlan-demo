@@ -72,16 +72,33 @@
                                 ></AtlanIcon>
                             </a-popover>
                         </template>
-                        <template #postFilter>
-                            <div style="max-width: 330px">
-                                <PreferenceSelector
-                                    v-model="preference"
-                                    @change="handleChangePreference"
-                                    @display="handleDisplayChange"
-                                />
-                            </div>
-                        </template>
                         <template #display>
+                            <a-popover
+                                trigger="click"
+                                placement="bottomRight"
+                                :overlay-class-name="$style.search"
+                            >
+                                <template #content>
+                                    <div class="p-3" style="max-width: 250px">
+                                        <PreferenceSelector
+                                            v-model="preference"
+                                            @change="handleChangePreference"
+                                            @display="handleDisplayChange"
+                                        />
+                                    </div>
+                                </template>
+
+                                <button
+                                    class="transition-colors rounded hover:bg-gray-100"
+                                >
+                                    <AtlanIcon
+                                        icon="Display"
+                                        class="w-4 h-4 px-1"
+                                    />
+                                </button>
+                            </a-popover>
+                        </template>
+                        <template #sort>
                             <Sorting
                                 v-model="preference"
                                 @change="handleChangePreference"
@@ -93,14 +110,16 @@
                     <slot name="searchAction"></slot>
                 </div>
 
-                <div class="flex items-center w-full mt-2">
+                <div
+                    class="flex items-center w-full mt-2"
+                    v-if="facets.connector"
+                >
                     <Heirarchy
                         :connector="facets.connector"
                         v-model="facets.hierarchy"
                         @change="handleFilterChange"
                         :persona="persona"
                         :key="facets.connector"
-                        class
                     ></Heirarchy>
                 </div>
                 <div
@@ -157,9 +176,6 @@
                     <AtlanLoader class="h-10" />
                 </div>
 
-                <!--                             :show-check-box="
-                                preference?.display?.includes('enableCheckbox')
-                            " -->
                 <ListNavigator
                     v-else
                     :list="list"
@@ -259,6 +275,7 @@
     import AssetFilters from '@/common/assets/filters/index.vue'
     import AssetList from '@/common/assets/list/index.vue'
     import AssetItem from '@/common/assets/list/assetItem.vue'
+    import SchemaTree from './schema/index.vue'
 
     import {
         AssetAttributes,
@@ -297,6 +314,7 @@
             Heirarchy,
             ConnectorSelect,
             Sorting,
+            SchemaTree,
             // PopOverAsset,
         },
         props: {

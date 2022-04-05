@@ -1,14 +1,5 @@
 <template>
     <div class="flex flex-col py-1 rounded gap-y-3">
-        <div class="flex items-center justify-between">
-            <p class="mb-1 text-sm text-gray-500">Sort By</p>
-
-            <Sorting
-                v-model="localValue.sort"
-                @change="handleChangeSort"
-                :assetType="assetType"
-            ></Sorting>
-        </div>
         <div class="">
             <p class="mb-2 text-sm text-gray-500">Show/Hide</p>
             <div class="flex flex-wrap">

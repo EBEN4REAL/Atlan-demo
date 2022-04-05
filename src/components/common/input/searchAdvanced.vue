@@ -65,6 +65,7 @@
                 </button>
             </a-popover>
             <slot name="display" />
+            <slot name="sort" />
         </template>
     </a-input>
 </template>

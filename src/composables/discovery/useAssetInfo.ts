@@ -455,13 +455,13 @@ export default function useAssetInfo() {
                     : viewName(asset)
             const columnName = attributes(asset).name
 
-            queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${name}&columnNameFromURL=${columnName}`
+            queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${name}&columnNameFromURL=${columnName}&guid=${asset.guid}`
         } else if (
             assetType(asset) === 'Table' ||
             assetType(asset) === 'View'
         ) {
             const tableName = attributes(asset).name
-            queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}`
+            queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}&guid=${asset.guid}`
         } else if (assetType(asset) === 'Query') {
             queryPath = `/insights?id=${asset.guid}`
         } else if (assetType(asset) === 'Collection') {

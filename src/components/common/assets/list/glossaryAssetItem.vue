@@ -68,7 +68,7 @@
                                 ></CertificateBadge>
                             </div>
                         </div>
-                        <div style="max-width: 80%">
+                        <div style="max-width: 95%">
                             <Tooltip
                                 :tooltip-text="`${getAnchorName(item)}`"
                                 :classes="`flex items-center text-xs text-gray-500 w-full`"

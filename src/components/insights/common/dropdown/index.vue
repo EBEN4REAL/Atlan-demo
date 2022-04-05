@@ -4,7 +4,7 @@
 
         <template #overlay>
             <a-menu
-                class="py-2 text-gray-700"
+                class="py-1 text-gray-700"
                 :style="`min-width: ${minWidth}px`"
                 @visibleChange="addBackground"
             >

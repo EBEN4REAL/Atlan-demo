@@ -164,6 +164,48 @@
                     {{ titlePolices }}
                 </span>
             </div>
+            <div class="mt-7" v-if="item.apikeys && item.apikeys.length">
+                <div class="mb-2.5 text-gray-500">API Keys</div>
+                <div class="flex items-center">
+                    <a-popover trigger="click" placement="bottom">
+                        <template #content>
+                            <div class="px-4 py-1">
+                                <div
+                                    v-for="(apiKey, index) in item.apikeys"
+                                    class="py-3"
+                                    :key="index"
+                                >
+                                    <div>
+                                        <div
+                                            class="text-sm font-bold text-gray-700"
+                                        >
+                                            {{ apiKey.displayName }}
+                                        </div>
+                                    </div>
+                                    <div class="flex mt-2">
+                                        <Avatar
+                                            :allow-upload="false"
+                                            :avatar-size="14"
+                                            :avatar-shape="'circle'"
+                                            class="mr-1"
+                                        />
+                                        <div class="text-xs text-gray-500">
+                                            {{ apiKey.displayName }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                        <div class="text-sm cursor-pointer text-primary">
+                            {{
+                                `${item.apikeys.length} ${
+                                    item.apikeys.length > 1 ? 'keys' : 'key'
+                                } linked`
+                            }}
+                        </div>
+                    </a-popover>
+                </div>
+            </div>
             <div class="mt-7">
                 <div class="mb-2.5 text-gray-500">Created by</div>
                 <div class="flex items-center">
@@ -243,6 +285,7 @@
         emits: ['changeLink'],
         setup(props, { emit }) {
             const { item } = toRefs(props)
+            console.log(item.value, 'sdkjhsdkjhsjdhjskdhkshdkh')
             const link = ref('')
             const showPopover = ref(false)
             const imageUrl = (username: any) =>

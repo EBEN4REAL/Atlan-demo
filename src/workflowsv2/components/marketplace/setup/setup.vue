@@ -2,6 +2,9 @@
     <div
         class="flex flex-col w-full h-full overflow-hidden bg-white"
         :class="{ 'border rounded-lg': !isEdit }"
+        :style="
+            isEdit ? '' : 'box-shadow: 0px 9px 32px 0px hsla(0, 0%, 0%, 0.12);'
+        "
     >
         <div v-if="!isEdit" class="flex items-center px-5 py-4 border-b">
             <a-tooltip
@@ -53,7 +56,7 @@
             >
                 <template v-if="!status">
                     <div
-                        class="flex-1 px-6 py-8 overflow-y-scroll"
+                        class="flex-1 px-6 py-8 overflow-y-auto"
                         v-if="workflowTemplate && currentStep < steps.length"
                     >
                         <DynamicForm

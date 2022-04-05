@@ -1,17 +1,17 @@
 <template>
-    <div class="run-list-item hover:bg-primary-menu">
-        <div
-            class="flex flex-col items-start col-span-5 text-gray-500 cursor-pointer gap-y-1"
-        >
-            <router-link
-                :to="`/workflows/profile/${workflowTemplateName(
-                    run
-                )}/runs?name=${run.metadata.name}`"
-            >
-                <span class="text-xs hover:underline">{{
+    <div
+        class="run-list-item hover:bg-primary-menu"
+        @click="
+            $router.push(
+                `/workflows/profile/${workflowTemplateName(run)}/runs?name=${
                     run.metadata.name
-                }}</span>
-            </router-link>
+                }`
+            )
+        "
+    >
+        <div class="flex flex-col items-start col-span-5 text-gray-500 gap-y-1">
+            <span class="text-xs">{{ run.metadata.name }}</span>
+
             <div class="flex items-center gap-x-2">
                 <span class="font-medium text-primary">{{
                     startedAt(run, false)
@@ -22,7 +22,7 @@
                 </template>
                 <template v-else>
                     <span>Manually Run by</span>
-                    <UserWrapper :username="creatorUsername(run)" />
+                    <UserWrapper :username="creatorUsername(run)" @click.stop />
                 </template>
             </div>
         </div>
@@ -89,6 +89,7 @@
 <style lang="less" scoped>
     .run-list-item {
         height: 70px;
+        @apply cursor-pointer;
         @apply px-3;
         @apply grid grid-cols-8 items-center;
         @apply text-sm;

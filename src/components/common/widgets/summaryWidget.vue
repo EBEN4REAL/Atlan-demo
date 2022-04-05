@@ -178,7 +178,7 @@
                     overlayClassName="popover-api-keys"
                 >
                     <template #content>
-                        <div class="px-4 rounded-xl">
+                        <div class="px-4 rounded-xl container-api">
                             <div
                                 v-for="(apiKey, index) in item.apikeys"
                                 class="w-56 py-4"
@@ -186,7 +186,7 @@
                             >
                                 <div class="flex items-center justify-between">
                                     <div
-                                        class="text-sm font-bold text-gray-700"
+                                        class="text-sm font-bold text-gray-700 truncate title-api"
                                     >
                                         {{ apiKey.displayName }}
                                     </div>
@@ -208,7 +208,9 @@
                                         :avatar-shape="'circle'"
                                         class="mr-1"
                                     />
-                                    <div class="text-xs text-gray-500">
+                                    <div
+                                        class="text-xs text-gray-500 truncate title-api"
+                                    >
                                         {{ apiKey.createdBy || '' }}
                                     </div>
                                     <div
@@ -421,6 +423,13 @@
     })
 </script>
 <style lang="less">
+    .container-api {
+        max-height: 160px !important;
+        overflow-y: scroll;
+    }
+    .title-api {
+        max-width: 140px;
+    }
     .popover-api-keys {
         .ant-popover-inner {
             border-radius: 8px !important;

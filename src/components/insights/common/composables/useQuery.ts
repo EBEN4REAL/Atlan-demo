@@ -1,7 +1,18 @@
+import { ref, Ref, watch } from 'vue'
 import { getDialectInfo } from '~/components/insights/common/composables/getDialectInfo'
 import { useConnector } from '~/components/insights/common/composables/useConnector'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useActiveTab } from '~/components/insights/common/composables/useActiveTab'
+import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
+import { invoke, until, watchOnce } from '@vueuse/core'
+import { message } from 'ant-design-vue'
+
+import {
+    AssetAttributes,
+    SavedQueryAttributes,
+    InternalAttributes,
+    AssetRelationAttributes,
+} from '~/constant/projection'
 
 export function useQuery() {
     function getDetectQueryTab({
@@ -116,7 +127,62 @@ export function useQuery() {
 
         return queryTab
     }
+    function getAssetInfo({
+        assetGuidFromURL,
+        tabsArray,
+        key,
+    }: {
+        assetGuidFromURL: any
+        tabsArray: Ref<activeInlineTabInterface[]>
+        key: string
+    }) {
+        if (!assetGuidFromURL) return
+        const defaultAttributes = ref([
+            ...InternalAttributes,
+            ...AssetAttributes,
+            ...SavedQueryAttributes,
+        ])
+
+        const facets = ref({
+            guid: assetGuidFromURL,
+        })
+
+        // fetching asset info
+        const { list, error, isLoading } = useDiscoverList({
+            facets,
+            dependentKey: ref('insights_saved_query'),
+            relationAttributes: ref(AssetRelationAttributes),
+            attributes: defaultAttributes,
+            limit: ref(1),
+        })
+
+        try {
+            invoke(async () => {
+                await until(isLoading).toBe(true)
+                watchOnce(list, () => {
+                    // debugger
+                    if (list.value.length) {
+                        const _index = tabsArray.value.findIndex(
+                            (tab) => tab.key === key
+                        )
+                        tabsArray.value[_index].assetSidebar.assetInfo = list
+                            .value[0] as any
+                        tabsArray.value[_index].assetSidebar.isVisible = true
+                        console.log(list.value)
+                    }
+                })
+                watchOnce(error, () => {
+                    if (error.value) {
+                        message.error('Failed to fetch asset info!')
+                    }
+                })
+            })
+        } catch (e) {
+            console.error(e)
+        }
+    }
     return {
         getDetectQueryTab,
+        getAssetInfo,
     }
 }

@@ -13,7 +13,7 @@
     >
         <ErrorView :error="error"></ErrorView>
     </div>
-    <div v-else-if="isCredential && credential" class="flex flex-col w-2/3">
+    <div v-else-if="isCredential && credential" class="flex flex-col max-w-2xl">
         <div class="flex flex-col px-3 py-2 border rounded gap-y-2">
             <div class="flex items-center justify-between">
                 <div class="flex flex-col">

@@ -1,9 +1,12 @@
 <template>
     <div
-        class="flex flex-col flex-grow w-full h-full overflow-hidden bg-white border rounded-lg"
-        :class="{ 'items-center justify-center': status }"
+        class="flex flex-col w-full h-full overflow-hidden bg-white"
+        :class="{ 'border rounded-lg': !isEdit }"
+        :style="
+            isEdit ? '' : 'box-shadow: 0px 9px 32px 0px hsla(0, 0%, 0%, 0.12);'
+        "
     >
-        <div class="flex items-center px-5 py-4">
+        <div v-if="!isEdit" class="flex items-center px-5 py-4 border-b">
             <a-tooltip
                 :mouseEnterDelay="1"
                 placement="bottomLeft"
@@ -30,218 +33,252 @@
                 packageName(workflowTemplate)
             }}</span>
         </div>
-        <template v-if="!status">
-            <div class="p-6">
-                <a-steps v-if="steps.length > 0" :current="currentStep">
+
+        <div class="flex h-full overflow-hidden">
+            <div v-if="!status" class="flex-grow-0 px-6 py-8">
+                <a-steps
+                    v-if="steps.length > 0"
+                    direction="vertical"
+                    :current="currentStep"
+                    class="w-44"
+                >
                     <template v-for="(step, index) in steps" :key="step.id">
-                        <a-step @click="handleStepClick(index)">
+                        <a-step class="h-16" @click="handleStepClick(index)">
                             <template #title>{{ step.title }}</template>
                         </a-step>
                     </template>
                 </a-steps>
             </div>
-            <div
-                class="flex-1 px-6 py-8 overflow-y-auto"
-                v-if="workflowTemplate && currentStep < steps.length"
-            >
-                <DynamicForm
-                    :key="`form_${currentStep}`"
-                    ref="stepForm"
-                    :config="localConfigMap"
-                    :currentStep="currentStepConfig"
-                    :workflowTemplate="workflowTemplate"
-                    v-model="modelValue"
-                    labelAlign="left"
-                    :isEdit="isEdit"
-                ></DynamicForm>
-            </div>
 
             <div
-                class="flex justify-between px-6 py-3 border-t"
-                v-if="currentStep < steps.length"
+                class="flex flex-col flex-grow h-full border-r"
+                :class="{ 'items-center justify-center': status }"
             >
-                <AtlanButton2
-                    v-if="currentStep !== 0"
-                    label="Back"
-                    color="secondary"
-                    prefixIcon="CaretLeft"
-                    @click="handlePrevious"
-                />
-
-                <AtlanButton2
-                    v-else-if="currentStep === 0 && !isEdit"
-                    label="Back to Marketplace"
-                    color="secondary"
-                    prefixIcon="CaretLeft"
-                    @click="handleExit"
-                />
-
-                <AtlanButton2
-                    v-if="currentStep < steps.length - 1"
-                    label="Next"
-                    class="ml-auto"
-                    suffixIcon="ChevronRight"
-                    @click="handleNext"
-                />
-
-                <a-popconfirm
-                    v-else-if="currentStep === steps.length - 1 && isEdit"
-                    ok-text="Yes"
-                    :overlay-class-name="$style.popConfirm"
-                    cancel-text="Cancel"
-                    placement="topRight"
-                    :ok-button-props="{ size: 'default' }"
-                    :cancel-button-props="{ size: 'default' }"
-                    @confirm="handleSubmit"
-                >
-                    <template #icon> </template>
-                    <template #title>
-                        <p class="font-bold">
-                            Are you sure you want to update the configuration
-                            for this workflow?
-                        </p>
-                        <p class="text-gray-500">
-                            All future runs will use this new configuration
-                        </p>
-                        <a-checkbox v-model:checked="runOnUpdate" class="mt-3"
-                            >Start a new run</a-checkbox
-                        >
-                    </template>
-                    <AtlanButton2 class="ml-auto" label="Update" />
-                </a-popconfirm>
-
-                <div
-                    v-else-if="currentStep === steps.length - 1 && !isEdit"
-                    class="flex gap-x-2"
-                >
-                    <AtlanButton2
-                        :color="allowSchedule ? 'secondary' : 'primary'"
-                        label="Run"
-                        @click="handleSubmit"
-                    />
-
-                    <a-popconfirm
-                        v-if="allowSchedule"
-                        ok-text="Confirm"
-                        :overlay-class-name="$style.popConfirm"
-                        cancel-text="Cancel"
-                        placement="topRight"
-                        :ok-button-props="{ size: 'default' }"
-                        :cancel-button-props="{ size: 'default' }"
-                        @confirm="handleSubmit"
+                <template v-if="!status">
+                    <div
+                        class="flex-1 px-6 py-8 overflow-y-auto"
+                        v-if="workflowTemplate && currentStep < steps.length"
                     >
-                        <template #icon> </template>
-                        <template #title>
-                            <Schedule class="mb-3" v-model="cron"></Schedule>
-                        </template>
-
-                        <AtlanButton2
-                            v-if="allowSchedule"
-                            suffixIcon="ChevronRight"
-                            label="Schedule & Run"
-                        />
-                    </a-popconfirm>
-                </div></div
-        ></template>
-
-        <!-- Finish Page -->
-        <template v-else>
-            <div
-                v-if="isLoading || (!run?.status && runLoading)"
-                class="flex flex-col justify-center"
-            >
-                <AtlanLoader class="h-10 mb-2" />
-                <div>Setting up your workflow</div>
-            </div>
-
-            <!-- Update details, but don't run now -->
-            <template v-else-if="isEdit && !runOnUpdate">
-                <a-result
-                    :status="updateStatus.status"
-                    :title="updateStatus.title"
-                >
-                    <template v-if="updateStatus.status === 'loading'" #icon>
-                        <AtlanLoader class="h-14" />
-                    </template>
-                    <template #extra>
-                        <div class="flex items-center justify-center">
-                            <router-link to="/workflows">
-                                <AtlanButton2
-                                    v-if="updateStatus.status === 'success'"
-                                    color="secondary"
-                                >
-                                    Back to Workflows
-                                </AtlanButton2>
-                            </router-link>
-                        </div>
-
-                        <div
-                            v-if="isUpdateError"
-                            class="flex flex-col items-center justify-center p-2 bg-gray-100 rounded gap-y-2"
-                        >
-                            <span>{{ isUpdateError }}</span>
-
-                            <AtlanButton2
-                                v-if="updateStatus.status === 'error'"
-                                prefixIcon="ChevronLeft"
-                                color="secondary"
-                                @click="handleBackToSetup"
-                                label="Back to setup"
-                            />
-                        </div>
-                    </template>
-                </a-result>
-            </template>
-
-            <a-result
-                v-else-if="run"
-                :status="status"
-                :title="title"
-                :sub-title="subTitle"
-            >
-                <template #extra>
-                    <div>
-                        <Run
-                            v-if="run && !errorMesssage"
-                            :run="run"
-                            :is-loading="runLoading || !run?.status?.progress"
-                        ></Run>
-
-                        <div class="flex justify-center mt-6 gap-x-6">
-                            <router-link
-                                v-if="status === 'success'"
-                                to="/assets"
-                            >
-                                <AtlanButton2
-                                    color="secondary"
-                                    label="Back to Assets"
-                                />
-                            </router-link>
-
-                            <AtlanButton2
-                                v-if="run?.metadata"
-                                label="Monitor Run"
-                                @click="handleTrackLink"
-                            />
-                        </div>
+                        <DynamicForm
+                            :key="`form_${currentStep}`"
+                            ref="stepForm"
+                            :config="localConfigMap"
+                            :currentStep="currentStepConfig"
+                            :workflowTemplate="workflowTemplate"
+                            v-model="modelValue"
+                            labelAlign="left"
+                            :isEdit="isEdit"
+                        ></DynamicForm>
                     </div>
 
                     <div
-                        v-if="errorMesssage"
-                        class="flex flex-col items-center justify-center p-2 bg-gray-100 rounded gap-y-2"
+                        class="flex justify-between px-6 py-3 border-t"
+                        v-if="currentStep < steps.length"
                     >
-                        <span class="text-error">{{ errorMesssage }}</span>
                         <AtlanButton2
-                            v-if="status === 'error'"
-                            label="Back to setup"
+                            v-if="currentStep !== 0"
+                            label="Back"
                             color="secondary"
-                            prefixIcon="ChevronLeft"
-                            @click="handleBackToSetup"
+                            prefixIcon="CaretLeft"
+                            @click="handlePrevious"
                         />
+
+                        <AtlanButton2
+                            v-if="currentStep < steps.length - 1"
+                            label="Next"
+                            class="ml-auto"
+                            suffixIcon="ChevronRight"
+                            @click="handleNext"
+                        />
+
+                        <a-popconfirm
+                            v-else-if="
+                                currentStep === steps.length - 1 && isEdit
+                            "
+                            ok-text="Yes"
+                            :overlay-class-name="$style.popConfirm"
+                            cancel-text="Cancel"
+                            placement="topRight"
+                            :ok-button-props="{ size: 'default' }"
+                            :cancel-button-props="{ size: 'default' }"
+                            @confirm="handleSubmit"
+                        >
+                            <template #icon> </template>
+                            <template #title>
+                                <p class="font-bold">
+                                    Are you sure you want to update the
+                                    configuration for this workflow?
+                                </p>
+                                <p class="text-gray-500">
+                                    All future runs will use this new
+                                    configuration
+                                </p>
+                                <a-checkbox
+                                    v-model:checked="runOnUpdate"
+                                    class="mt-3"
+                                    >Start a new run</a-checkbox
+                                >
+                            </template>
+                            <AtlanButton2 class="ml-auto" label="Update" />
+                        </a-popconfirm>
+
+                        <div
+                            v-else-if="
+                                currentStep === steps.length - 1 && !isEdit
+                            "
+                            class="flex gap-x-2"
+                        >
+                            <AtlanButton2
+                                :color="allowSchedule ? 'secondary' : 'primary'"
+                                label="Run"
+                                @click="handleSubmit"
+                            />
+
+                            <a-popconfirm
+                                v-if="allowSchedule"
+                                ok-text="Confirm"
+                                :overlay-class-name="$style.popConfirm"
+                                cancel-text="Cancel"
+                                placement="topRight"
+                                :ok-button-props="{ size: 'default' }"
+                                :cancel-button-props="{ size: 'default' }"
+                                @confirm="handleSubmit"
+                            >
+                                <template #icon> </template>
+                                <template #title>
+                                    <Schedule
+                                        class="mb-3"
+                                        v-model="cron"
+                                    ></Schedule>
+                                </template>
+
+                                <AtlanButton2
+                                    v-if="allowSchedule"
+                                    suffixIcon="ChevronRight"
+                                    label="Schedule & Run"
+                                />
+                            </a-popconfirm>
+                        </div></div
+                ></template>
+
+                <!-- Finish Page -->
+                <template v-else>
+                    <div
+                        v-if="isLoading || (!run?.status && runLoading)"
+                        class="flex flex-col justify-center"
+                    >
+                        <AtlanLoader class="h-10 mb-2" />
+                        <div>Setting up your workflow</div>
                     </div>
+
+                    <!-- Update details, but don't run now -->
+                    <template v-else-if="isEdit && !runOnUpdate">
+                        <a-result
+                            :status="updateStatus.status"
+                            :title="updateStatus.title"
+                        >
+                            <template
+                                v-if="updateStatus.status === 'loading'"
+                                #icon
+                            >
+                                <AtlanLoader class="h-14" />
+                            </template>
+                            <template #extra>
+                                <div class="flex items-center justify-center">
+                                    <router-link to="/workflows">
+                                        <AtlanButton2
+                                            v-if="
+                                                updateStatus.status ===
+                                                'success'
+                                            "
+                                            color="secondary"
+                                        >
+                                            Back to Workflows
+                                        </AtlanButton2>
+                                    </router-link>
+                                </div>
+
+                                <div
+                                    v-if="isUpdateError"
+                                    class="flex flex-col items-center justify-center p-2 bg-gray-100 rounded gap-y-2"
+                                >
+                                    <span>{{ isUpdateError }}</span>
+
+                                    <AtlanButton2
+                                        v-if="updateStatus.status === 'error'"
+                                        prefixIcon="ChevronLeft"
+                                        color="secondary"
+                                        @click="handleBackToSetup"
+                                        label="Back to setup"
+                                    />
+                                </div>
+                            </template>
+                        </a-result>
+                    </template>
+
+                    <a-result
+                        v-else-if="run"
+                        :status="status"
+                        :title="title"
+                        :sub-title="subTitle"
+                    >
+                        <template #extra>
+                            <div>
+                                <Run
+                                    v-if="run && !errorMesssage"
+                                    :run="run"
+                                    :is-loading="
+                                        runLoading || !run?.status?.progress
+                                    "
+                                ></Run>
+
+                                <div class="flex justify-center mt-6 gap-x-6">
+                                    <router-link
+                                        v-if="status === 'success'"
+                                        to="/assets"
+                                    >
+                                        <AtlanButton2
+                                            color="secondary"
+                                            label="Back to Assets"
+                                        />
+                                    </router-link>
+
+                                    <AtlanButton2
+                                        v-if="run?.metadata"
+                                        label="Monitor Run"
+                                        @click="handleTrackLink"
+                                    />
+                                </div>
+                            </div>
+
+                            <div
+                                v-if="errorMesssage"
+                                class="flex flex-col items-center justify-center p-2 bg-gray-100 rounded gap-y-2"
+                            >
+                                <span class="text-error">{{
+                                    errorMesssage
+                                }}</span>
+                                <AtlanButton2
+                                    v-if="status === 'error'"
+                                    label="Back to setup"
+                                    color="secondary"
+                                    prefixIcon="ChevronLeft"
+                                    @click="handleBackToSetup"
+                                />
+                            </div>
+                        </template>
+                    </a-result>
                 </template>
-            </a-result>
-        </template>
+            </div>
+
+            <WorkflowPreview
+                v-if="workflowTemplate"
+                :item="workflowTemplate"
+                mode="package"
+                style="width: 360px"
+                class="flex-none"
+            ></WorkflowPreview>
+        </div>
     </div>
 </template>
 
@@ -269,18 +306,18 @@
 
     // Components
     import DynamicForm from '~/workflows/components/dynamicForm2/index.vue'
+    import WorkflowPreview from '~/workflows/components/workflows/preview/index.vue'
     import Schedule from './schedule.vue'
     import Run from './run.vue'
 
     import { createWorkflow } from '~/workflows/composables/package/useWorkflow'
     import { useWorkflowHelper } from '~/workflows/composables/package/useWorkflowHelper'
-    import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
     import useWorkflowSubmit from '~/workflows/composables/package/useWorkflowSubmit'
     import useWorkflowUpdate from '~/workflows/composables/package/useWorkflowUpdate'
 
     import { useRunDiscoverList } from '~/workflows/composables/package/useRunDiscoverList'
 
-    import { getEnv } from '~/modules/__env'
+    import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
     import { usePackageInfo } from '~/workflowsv2/composables/usePackageInfo'
 
     // Composables
@@ -291,6 +328,7 @@
             Run,
             DynamicForm,
             Schedule,
+            WorkflowPreview,
         },
         props: {
             workflowTemplate: {
@@ -494,22 +532,6 @@
                         }/runs?name=${run.value?.metadata?.name}`
                     )
                 }
-
-                // if (import.meta.env.DEV) {
-                //     window.open(
-                //         `${
-                //             getEnv().DEV_API_BASE_URL
-                //         }/api/orchestration/workflows/default/${
-                //             run.value?.metadata.name
-                //         }`,
-                //         '_blank'
-                //     )
-                // } else {
-                //     window.open(
-                //         `${window.location.origin}/api/orchestration/workflows/default/${run.value.metadata.name}`,
-                //         '_blank'
-                //     )
-                // }
             }
 
             const status: Ref<undefined | string> = ref(undefined)

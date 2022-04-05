@@ -301,7 +301,18 @@
                             <a-button
                                 class="flex items-center justify-center p-2"
                             >
-                                <AtlanIcon icon="Query" />
+                                <div class="flex items-center">
+                                    <AtlanIcon
+                                        icon="Query"
+                                        class="mr-1 -mt-0.5 text-primary"
+                                    />
+                                    <span class=""
+                                        >Query this
+                                        <span class="lowercase">{{
+                                            assetType(item)
+                                        }}</span>
+                                    </span>
+                                </div>
                             </a-button>
                         </template>
                     </QueryDropdown>
@@ -312,7 +323,18 @@
                         class="flex items-center justify-center p-2"
                         @click="handleClick"
                     >
-                        <AtlanIcon icon="Query" />
+                        <div class="flex items-center">
+                            <AtlanIcon
+                                icon="Query"
+                                class="mr-1 -mt-0.5 text-primary"
+                            />
+                            <span class=""
+                                >Query this
+                                <span class="lowercase">{{
+                                    assetType(item)
+                                }}</span>
+                            </span>
+                        </div>
                     </a-button>
                 </a-tooltip>
 

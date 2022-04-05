@@ -381,7 +381,7 @@ export default async function useComputeGraph({
     }
 
     /* Render */
-    const renderLayout = (registerAllListeners) => {
+    const renderLayout = () => {
         model.value = graphLayout.value?.layout({
             edges: edges.value,
             nodes: nodes.value,
@@ -393,7 +393,7 @@ export default async function useComputeGraph({
             rankdir: 'LR',
             controlPoints: true,
             nodesepFunc() {
-                return 20
+                return 40
             },
             ranksepFunc() {
                 return 250
@@ -408,10 +408,8 @@ export default async function useComputeGraph({
 
         createColCTAPorts()
         createHoPaCTAPorts()
-
-        if (typeof registerAllListeners === 'function') registerAllListeners()
     }
-    renderLayout(null)
+    renderLayout()
     isComputeDone.value = true
 
     /* Transformations */
@@ -422,7 +420,7 @@ export default async function useComputeGraph({
     currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
 
     /* addSubGraph */
-    const addSubGraph = (data, registerAllListeners) => {
+    const addSubGraph = (data) => {
         if (!Object.keys(mergedLineageData.value).length)
             mergedLineageData.value = lineage.value
 
@@ -473,7 +471,7 @@ export default async function useComputeGraph({
 
         createNodesFromEntityMap(newData, false)
         createNodeEdges(newData)
-        renderLayout(registerAllListeners)
+        renderLayout()
 
         const assetGuidToFit = Object.keys(newData.guidEntityMap).find(
             (x) =>

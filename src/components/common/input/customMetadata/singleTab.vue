@@ -25,25 +25,27 @@
                                 height="h-4"
                                 width="w-4"
                                 class="mr-1"
+                                :class="{
+                                    'mb-0.5': tab.icon || tab.image,
+                                    'mr-1': tab.emoji,
+                                }"
                                 :display-mode="true"
-                                emoji-size="text-md"
+                                emoji-size="text-base"
                             />
                             <Truncate
                                 :tooltip-text="data.label"
                                 placement="left"
                                 :should-open-in-new-tab="true"
                                 :classes="
-                                    checkAccess(page.PAGE_GOVERNANCE)
+                                    selectedAssetUpdatePermission(
+                                        selectedAsset,
+                                        isDrawer,
+                                        'ENTITY_UPDATE_BUSINESS_METADATA'
+                                    )
                                         ? 'text-primary hover:underline mr-1 font-semibold'
                                         : 'mr-1 line-clamp-1'
                                 "
-                                v-bind="
-                                    checkAccess(page.PAGE_GOVERNANCE)
-                                        ? {
-                                              routeTo: `/governance/custom-metadata/${data.guid}`,
-                                          }
-                                        : {}
-                                "
+                                @click="switchTab(selectedAsset, data?.label)"
                                 clamp-percentage="75%"
                             />
                             <a-tooltip>

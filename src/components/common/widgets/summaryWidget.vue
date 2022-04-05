@@ -167,22 +167,37 @@
             <div class="mt-7" v-if="item.apikeys && item.apikeys.length">
                 <div class="mb-2.5 text-gray-500">API Keys</div>
                 <div class="flex items-center">
-                    <a-popover trigger="click" placement="bottom">
+                    <a-popover
+                        :align="{ offset: [88, -6] }"
+                        trigger="click"
+                        placement="bottom"
+                    >
                         <template #content>
-                            <div class="px-4 py-1">
+                            <div class="px-4">
                                 <div
                                     v-for="(apiKey, index) in item.apikeys"
-                                    class="py-3"
+                                    class="w-56 py-4"
                                     :key="index"
                                 >
-                                    <div>
+                                    <div
+                                        class="flex items-center justify-between"
+                                    >
                                         <div
                                             class="text-sm font-bold text-gray-700"
                                         >
                                             {{ apiKey.displayName }}
                                         </div>
+                                        <div
+                                            class="flex items-center text-xs text-gray-400"
+                                        >
+                                            <AtlanIcon
+                                                icon="Clock"
+                                                class="mr-1 text-gray-400"
+                                            />
+                                            {{ convertExpited(apiKey) }}
+                                        </div>
                                     </div>
-                                    <div class="flex mt-2">
+                                    <div class="flex items-center mt-2">
                                         <Avatar
                                             :allow-upload="false"
                                             :avatar-size="14"
@@ -191,6 +206,12 @@
                                         />
                                         <div class="text-xs text-gray-500">
                                             {{ apiKey.displayName }}
+                                        </div>
+                                        <div class="mx-1 mt-1 text-gray-300">
+                                            •
+                                        </div>
+                                        <div class="text-xs text-gray-500">
+                                            {{ timeStamp(apiKey.createdAt) }}
                                         </div>
                                     </div>
                                 </div>
@@ -257,7 +278,11 @@
     import { formatDateTime } from '~/utils/date'
     import AtlanBtn from '@/UI/button.vue'
     import { checkLink } from '~/utils/helper/checkLink'
-
+    import {
+        getAPIKeyValidityStringRelative,
+        getAPIKeyValidity,
+    } from '~/components/admin/apikeys/composables/useAPIKeysList'
+    import dayjs from 'dayjs'
     interface IItem {
         createdAt?: string
         createdBy?: string
@@ -285,7 +310,6 @@
         emits: ['changeLink'],
         setup(props, { emit }) {
             const { item } = toRefs(props)
-            console.log(item.value, 'sdkjhsdkjhsjdhjskdhkshdkh')
             const link = ref('')
             const showPopover = ref(false)
             const imageUrl = (username: any) =>
@@ -362,6 +386,13 @@
                     link.value = item?.value?.attributes?.channelLink
                 }
             })
+
+            const convertExpited = (prna) => {
+                const validity = getAPIKeyValidity({ attributes: prna })
+                return validity.$y > new Date().getFullYear() + 5
+                    ? 'never'
+                    : getAPIKeyValidityStringRelative({ attributes: prna })
+            }
             return {
                 imageUrl,
                 timeStamp,
@@ -374,6 +405,9 @@
                 total,
                 titlePolices,
                 validUrl,
+                convertExpited,
+                useTimeAgo,
+                dayjs,
             }
         },
     })

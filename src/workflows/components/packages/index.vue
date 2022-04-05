@@ -1,12 +1,17 @@
 <template>
     <div class="flex flex-col flex-1 h-full bg-primary-menu">
-        <div class="flex flex-col px-6 py-3">
-            <span class="text-xl font-semibold text-gray-700">
-                Metadata Marketplace</span
-            >
-            <span class="text-sm text-gray-500">
-                Home for all your meta needs</span
-            >
+        <div class="flex items-center px-6 py-3 gap-x-2">
+            <a-tooltip title="Back to Workflow Center">
+                <IconButton icon="ChevronLeft" @click="handleBack" />
+            </a-tooltip>
+            <div class="flex flex-col">
+                <span class="text-xl font-semibold text-gray-700">
+                    Metadata Marketplace</span
+                >
+                <span class="text-sm text-gray-500">
+                    Home for all your meta needs</span
+                >
+            </div>
         </div>
 
         <div class="flex items-center justify-between w-full px-6 pb-3">
@@ -71,6 +76,7 @@
 <script lang="ts">
     import { defineComponent, ref, computed } from 'vue'
     import { useDebounceFn } from '@vueuse/core'
+    import { useRouter } from 'vue-router'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import EmptyView from '@/common/empty/index.vue'
     import ErrorView from '@/common/error/discover.vue'
@@ -129,6 +135,11 @@
             }
             const handleSetupSandbox = (item) => {
                 emit('sandbox', selectedPackage.value)
+            }
+
+            const router = useRouter()
+            const handleBack = () => {
+                router.push('/workflows')
             }
 
             // const { refresh, isLoading, list, error } = usePackageList({
@@ -219,6 +230,8 @@
                 activeKey,
                 handleResetEvent,
                 handleDoubleClick,
+                handleBack,
+                router,
                 postFacets,
                 aggregationPackage,
                 getAggregationByType,

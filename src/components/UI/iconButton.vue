@@ -9,7 +9,7 @@
     import iconMap from '@/common/icon/iconMap'
 
     export default defineComponent({
-        name: 'IconButton',
+        name: 'AtlanButtonNew',
         props: {
             icon: {
                 type: String as PropType<keyof typeof iconMap>,

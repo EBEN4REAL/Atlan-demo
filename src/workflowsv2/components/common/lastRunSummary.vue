@@ -13,7 +13,18 @@
                 Last run
                 <span class="text-gray"> {{ startedAt(run, true) }} </span>
                 by
-                <UserWrapper :username="creatorUsername(run)" />
+                <span
+                    class="cursor-pointer hover:underline"
+                    @click="() => openUserSidebar(creatorUsername(run))"
+                >
+                    <img
+                        v-if="showCreatorImage"
+                        :src="avatarUrl(creatorUsername(run))"
+                        class="flex-none inline-block h-4 rounded-full"
+                        @error="showCreatorImage = false"
+                    />
+                    {{ creatorUsername(run) }}
+                </span>
             </span>
 
             <div class="flex items-center text-sm text-gray gap-x-1">
@@ -29,9 +40,10 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, toRefs } from 'vue'
+    import { computed, defineComponent, ref, toRefs } from 'vue'
+    import { useUserPreview } from '~/composables/user/showUserPreview'
+    import { avatarUrl } from '~/composables/user/useUsers'
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
-    import UserWrapper from '~/workflowsv2/components/common/user.vue'
 
     export default defineComponent({
         props: {
@@ -45,10 +57,10 @@
                 default: () => false,
             },
         },
-        components: { UserWrapper },
         setup(props) {
             const { runs } = toRefs(props)
             const run = computed(() => runs.value?.[0]?._source || undefined)
+            const showCreatorImage = ref(true)
 
             const {
                 startedAt,
@@ -58,11 +70,16 @@
                 getRunIconByPhase,
             } = useWorkflowInfo()
 
+            const { openUserSidebar } = useUserPreview()
+
             return {
                 run,
                 startedAt,
                 creatorUsername,
+                openUserSidebar,
                 phase,
+                showCreatorImage,
+                avatarUrl,
                 duration,
                 getRunIconByPhase,
             }

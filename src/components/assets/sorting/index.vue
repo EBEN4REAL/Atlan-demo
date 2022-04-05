@@ -1,26 +1,9 @@
 <template>
-    <div class="flex flex-col py-1 rounded gap-y-3">
-        <div class="flex items-center justify-between">
-            <p class="mb-1 text-sm text-gray-500">Sort By</p>
-
-            <Sorting
-                v-model="localValue.sort"
-                @change="handleChangeSort"
-                :assetType="assetType"
-            ></Sorting>
-        </div>
-        <div class="">
-            <p class="mb-2 text-sm text-gray-500">Show/Hide</p>
-            <div class="flex flex-wrap">
-                <CustomRadioButton
-                    :list="displayProperties"
-                    :isMultiple="true"
-                    v-model="localValue.display"
-                    @change="handleChangeDisplay"
-                ></CustomRadioButton>
-            </div>
-        </div>
-    </div>
+    <Sorting
+        v-model="localValue.sort"
+        @change="handleChangeSort"
+        :assetType="assetType"
+    ></Sorting>
 </template>
 
 <script lang="ts">
@@ -29,6 +12,7 @@
     import Sorting from '@/common/dropdown/sorting.vue'
 
     import { displayProperties } from '~/constant/displayProperties'
+    import { searchMode } from '~/constant/searchMode'
     import CustomRadioButton from '@common/radio/customRadioButton.vue'
 
     export default defineComponent({
@@ -60,7 +44,7 @@
                 },
             },
         },
-        emits: ['change', 'update:modelValue', 'display'],
+        emits: ['change', 'update:modelValue', 'display', 'mode'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
@@ -68,12 +52,17 @@
 
             const handleChangeSort = () => {
                 modelValue.value = localValue.value
-                emit('change')
+                emit('change', 'sort')
             }
 
             const handleChangeDisplay = () => {
                 modelValue.value = localValue.value
                 emit('display')
+            }
+
+            const handleChangeMode = () => {
+                modelValue.value = localValue.value
+                emit('mode')
             }
 
             return {
@@ -82,6 +71,8 @@
                 assetType,
                 displayProperties,
                 handleChangeDisplay,
+                handleChangeMode,
+                searchMode,
             }
         },
     })

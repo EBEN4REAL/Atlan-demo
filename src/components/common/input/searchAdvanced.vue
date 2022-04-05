@@ -19,7 +19,7 @@
         <!-- <template #suffix>X</template> -->
         <template #prefix>
             <slot name="connector"></slot>
-            <a-tooltip
+            <!-- <a-tooltip
                 :title="capitalizeFirstLetter(connectorName)"
                 placement="left"
             >
@@ -28,7 +28,7 @@
                     :src="getConnectorImageMap[connectorName.toLowerCase()]"
                     class="w-auto h-4 pr-2 mr-2 border-r"
                 />
-            </a-tooltip>
+            </a-tooltip> -->
 
             <AtlanLoader v-if="isLoading" class="mb-0.5 h-4" />
             <AtlanIcon
@@ -64,6 +64,7 @@
                     <slot name="buttonAggregation" />
                 </button>
             </a-popover>
+            <slot name="display" />
         </template>
     </a-input>
 </template>
@@ -219,13 +220,14 @@
         -moz-transition: border 500ms ease-out;
         -o-transition: border 500ms ease-out;
         transition: border 500ms ease-out;
+        height: 40px;
         &:global(.ant-input:focus) {
             @apply border-0 shadow-none  !important;
             outline: 0 !important;
         }
 
         &:global(.ant-input-affix-wrapper) {
-            @apply border-gray-200 border-b shadow-none border-solid border-t-0 border-l-0 border-r-0 !important;
+            @apply border-gray-200 border-b-0 shadow-none border-solid border-t-0 border-l-0 border-r-0 !important;
 
             &:global(.ant-input-affix-wrapper-focused) {
                 :global(.focusIcon h-5) {

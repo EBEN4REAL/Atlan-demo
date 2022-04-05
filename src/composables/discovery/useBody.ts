@@ -239,7 +239,12 @@ export function useBody(
                 break
             }
             case 'connector': {
-                if (filterObject) {
+                if (filterObject == '__glossary') {
+                    base.filter('terms', '__typeName.keyword', [
+                        'AtlasGlossaryTerm',
+                        'AtlasGlossaryCategory',
+                    ])
+                } else if (filterObject && filterObject !== '__glossary') {
                     base.filter('term', 'connectorName', filterObject)
                     connectorName = filterObject.connectorName
                 }

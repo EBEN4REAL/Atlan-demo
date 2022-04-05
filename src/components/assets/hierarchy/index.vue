@@ -1,6 +1,15 @@
 <template>
     <div class="flex w-full px-4 gap-x-3">
-        <div v-if="connector" class="flex items-center">
+        <div v-if="connector === '__glossary'" class="flex items-center">
+            <GlossarySelect
+                :key="connector"
+                v-model="localValue.glossaryQualifiedName"
+                placeholder="All Glossary"
+                class="w-full"
+                :persona="persona"
+            ></GlossarySelect>
+        </div>
+        <div v-else class="flex items-center">
             <ConnectionSelect
                 :key="connector"
                 v-model="localValue.connectionQualifiedName"
@@ -28,6 +37,7 @@
     import { useVModels } from '@vueuse/core'
 
     import ConnectionSelect from './connection.vue'
+    import GlossarySelect from './glossary.vue'
     import AssetDropdown from './assetDropdown.vue'
 
     import useAssetStore from '~/store/asset'
@@ -38,6 +48,7 @@
         components: {
             ConnectionSelect,
             AssetDropdown,
+            GlossarySelect,
         },
         props: {
             modelValue: {

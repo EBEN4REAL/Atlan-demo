@@ -20,9 +20,8 @@
 
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
             <div class="flex flex-col h-full bg-primary-light">
-                <div class="flex items-center">
+                <div class="flex items-center px-3 bg-white shadow-sm">
                     <ConnectorSelect
-                        class="mt-3 ml-4"
                         style="min-width: 150px"
                         v-model="facets.connector"
                         :persona="persona"
@@ -41,7 +40,7 @@
                         :class="
                             ['admin', 'classifications'].includes(page)
                                 ? ''
-                                : 'px-3 bg-white border-b mt-3 ml-3 mr-4 rounded-lg'
+                                : 'px-3 bg-white  border-none'
                         "
                         :placeholder="placeholder"
                         @change="handleSearchChange"
@@ -82,18 +81,28 @@
                                 />
                             </div>
                         </template>
+                        <template #display>
+                            <Sorting
+                                v-model="preference"
+                                @change="handleChangePreference"
+                                @display="handleDisplayChange"
+                                @mode="handleModeChange"
+                            />
+                        </template>
                     </SearchAdvanced>
                     <slot name="searchAction"></slot>
                 </div>
-                <Heirarchy
-                    :connector="facets.connector"
-                    v-model="facets.hierarchy"
-                    class="mt-2"
-                    @change="handleFilterChange"
-                    :persona="persona"
-                    :key="facets.connector"
-                ></Heirarchy>
 
+                <div class="flex items-center w-full mt-2">
+                    <Heirarchy
+                        :connector="facets.connector"
+                        v-model="facets.hierarchy"
+                        @change="handleFilterChange"
+                        :persona="persona"
+                        :key="facets.connector"
+                        class
+                    ></Heirarchy>
+                </div>
                 <div
                     v-if="showAggrs"
                     class="w-full"
@@ -245,6 +254,8 @@
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import PreferenceSelector from '@/assets/preference/index.vue'
 
+    import Sorting from '@/common/dropdown/sorting.vue'
+
     import AssetFilters from '@/common/assets/filters/index.vue'
     import AssetList from '@/common/assets/list/index.vue'
     import AssetItem from '@/common/assets/list/assetItem.vue'
@@ -285,6 +296,7 @@
             ListNavigator,
             Heirarchy,
             ConnectorSelect,
+            Sorting,
             // PopOverAsset,
         },
         props: {
@@ -594,12 +606,12 @@
             }, 100)
 
             const isConnectorChange = ref(false)
+            const isGlossaryChange = ref(false)
             const connector = ref('')
 
             const handleFilterChange = (filterItem) => {
-                console.log('change Filter')
                 isConnectorChange.value = false
-
+                isGlossaryChange.value = false
                 offset.value = 0
                 quickChange()
                 discoveryStore.setActiveFacet(facets.value)
@@ -607,10 +619,17 @@
             }
 
             const handleConnectorChange = (filterItem) => {
-                console.log('change Connector')
                 facets.value.hierarchy = {}
+
                 if (!facets.value.connector) {
                     connector.value = ''
+                    facets.value.glossary = ''
+                    isGlossaryChange.value = false
+                    isConnectorChange.value = false
+                } else if (facets.value.connector == '__glossary') {
+                    connector.value = ''
+                    isConnectorChange.value = false
+                    isGlossaryChange.value = true
                 } else if (connector.value !== facets.value.connector) {
                     isConnectorChange.value = true
                     connector.value = facets.value.connector
@@ -619,6 +638,21 @@
                 quickChange()
                 discoveryStore.setActiveFacet(facets.value)
                 sendFilterEvent(filterItem)
+            }
+
+            const handleGlossaryChange = (filterItem) => {
+                // console.log('changed glossary')
+                // isConnectorChange.value = false
+                // isGlossaryChange.value = true
+                // connector.value = ''
+                // facets.value.hierarchy = {}
+                // facets.value.glossary = facets.value.connector
+                // facets.value.connector = ''
+                // console.log('changed glossary', facets.value)
+                // offset.value = 0
+                // quickChange()
+                // discoveryStore.setActiveFacet(facets.value)
+                // sendFilterEvent(filterItem)
             }
 
             const handleAssetTypeChange = (tabName) => {
@@ -862,6 +896,8 @@
                 denyCustomMetadata,
                 persona,
                 handleConnectorChange,
+                handleGlossaryChange,
+                isGlossaryChange,
             }
         },
     })

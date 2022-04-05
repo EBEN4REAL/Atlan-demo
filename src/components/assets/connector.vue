@@ -7,7 +7,7 @@
         size="large"
         notFoundContent="No connector found"
         :get-popup-container="(target) => target.parentNode"
-        class="search-select"
+        class="connector-select"
     >
         <template #suffixIcon>
             <AtlanIcon icon="CaretDown" />
@@ -15,7 +15,12 @@
         <template v-for="item in list" :key="item.id">
             <a-select-option :value="item.id" class="flex">
                 <div class="flex items-center">
-                    <img :src="item.image" class="w-auto h-4 mr-1" />
+                    <AtlanIcon
+                        icon="Glossary"
+                        v-if="item.typeName == 'AtlasGlossary'"
+                        class="mr-1"
+                    ></AtlanIcon>
+                    <img :src="item.image" class="w-auto h-4 mr-1" v-else />
                     {{ item.label }}
                     <span v-if="showCount" class="ml-1"
                         >({{ item.count }})</span
@@ -39,10 +44,10 @@
     import useConnectionData from '~/composables/connection/useConnectionData'
     import { useConnection } from '~/composables/connection/useConnection'
     import { usePersonaStore } from '~/store/persona'
-    import AtlanIcon from '@/common/icon/atlanIcon.vue'
+    import GlossaryIcon from '~/assets/images/home/Glossary.svg'
+    import useGlossaryStore from '~/store/glossary'
 
     export default defineComponent({
-        components: { AtlanIcon },
         props: {
             modelValue: {
                 type: String,
@@ -72,6 +77,9 @@
             const personaStore = usePersonaStore()
             const { sourceList, sourceFilteredList } = useConnectionData()
             const { modelValue } = useVModels(props, emit)
+
+            const glossaryStore = useGlossaryStore()
+
             const localValue = ref(modelValue.value)
             const applicableConnectionArray = computed(() => {
                 const found = personaStore.list.find(
@@ -80,13 +88,30 @@
                 return found?.metadataPolicies.map((i) => i.connectionId)
             })
             const list = computed(() => {
+                let coreList = []
+
                 if (persona.value) {
-                    return sourceFilteredList(applicableConnectionArray.value)
+                    coreList = sourceFilteredList(
+                        applicableConnectionArray.value
+                    )
+                } else {
+                    coreList = sourceList
                 }
-                return sourceList
+
+                let temp = coreList
+
+                temp = temp.concat({
+                    id: '__glossary',
+                    label: 'Glossary',
+                    count: 0,
+                    typeName: 'AtlasGlossary',
+                })
+
+                return temp
             })
             watch(localValue, () => {
                 modelValue.value = localValue.value
+
                 emit('change')
             })
 
@@ -100,18 +125,19 @@
                 list,
                 sourceFilteredList,
                 applicableConnectionArray,
+                glossaryStore,
             }
         },
     })
 </script>
 
 <style lang="less">
-    .search-select {
+    .connector-select {
         .ant-select-selector {
-            @apply border-0 rounded-lg !important;
+            @apply border-0 rounded-none !important;
             border-top-width: 0px !important;
             border-right-width: 0px !important;
-            border-bottom-width: 1px !important;
+            border-bottom-width: 0px !important;
             border-left-width: 0px !important;
             border-color: rgba(
                 243,
@@ -121,7 +147,6 @@
             ) !important;
             box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
                 var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow) !important;
-            height: 39px !important;
         }
     }
 </style>

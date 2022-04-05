@@ -194,7 +194,7 @@
                                                 icon="Clock"
                                                 class="mr-1 text-gray-400"
                                             />
-                                            {{ convertExpited(apiKey) }}
+                                            {{ convertExpired(apiKey) }}
                                         </div>
                                     </div>
                                     <div class="flex items-center mt-2">
@@ -253,7 +253,7 @@
                     >
                     <div class="mx-1 mt-1 text-gray-300">•</div>
                     <div class="text-sm text-gray-500">
-                        {{ timeStamp(item.createdAt) }}
+                        {{ item.createdAt ? timeStamp(item.createdAt) : '' }}
                     </div>
                 </div>
             </div>
@@ -387,7 +387,7 @@
                 }
             })
 
-            const convertExpited = (prna) => {
+            const convertExpired = (prna) => {
                 const validity = getAPIKeyValidity({ attributes: prna })
                 return validity.$y > new Date().getFullYear() + 5
                     ? 'never'
@@ -405,7 +405,7 @@
                 total,
                 titlePolices,
                 validUrl,
-                convertExpited,
+                convertExpired,
                 useTimeAgo,
                 dayjs,
             }

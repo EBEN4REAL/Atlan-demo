@@ -1475,20 +1475,22 @@
             ]
             const dropdownFolderOptions = [
                 {
-                    title: 'New folder',
-                    key: 'new',
-                    class: '',
-                    disabled: false,
-                    component: MenuItem,
-                    handleClick: newFolder,
-                },
-                {
                     title: 'Rename',
                     key: 'rename',
                     class: '',
                     disabled: false,
                     component: MenuItem,
                     handleClick: renameFolder,
+                },
+                {
+                    title: 'Move folder',
+                    key: 'moveFolder',
+                    component: MenuItem,
+                    class: 'border-b border-gray-300',
+                    disabled: false,
+                    handleClick: () => {
+                        showFolderPopover.value = true
+                    },
                 },
                 {
                     title: 'New query',
@@ -1507,18 +1509,15 @@
                     handleClick: newVisualQuery,
                 },
                 {
-                    title: 'Move folder',
-                    key: 'moveFolder',
-                    component: MenuItem,
+                    title: 'New folder',
+                    key: 'new',
                     class: 'border-b border-gray-300',
                     disabled: false,
-                    handleClick: () => {
-                        showFolderPopover.value = true
-                    },
+                    component: MenuItem,
+                    handleClick: newFolder,
                 },
                 {
                     title: 'Delete',
-
                     key: 'delete',
                     class: 'text-red-600',
                     component: MenuItem,

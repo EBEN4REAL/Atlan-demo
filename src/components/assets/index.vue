@@ -18,11 +18,11 @@
             ></AssetFilters>
         </div>
 
-        <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
-            <div class="flex flex-col h-full bg-primary-light">
+        <div class="flex flex-col items-stretch flex-1 w-80 bg-primary-light">
+            <div class="flex flex-col h-full">
                 <div class="flex items-center px-3 bg-white shadow-sm">
                     <ConnectorSelect
-                        style="min-width: 150px"
+                        style="min-width: 130px"
                         v-model="facets.connector"
                         :persona="persona"
                         @change="handleConnectorChange"
@@ -32,7 +32,6 @@
                         :key="searchDirtyTimestamp"
                         ref="searchBox"
                         v-model="queryText"
-                        :connector-name="facets.connector"
                         :autofocus="true"
                         :allow-clear="true"
                         :is-loading="isValidating"
@@ -72,6 +71,13 @@
                                 ></AtlanIcon>
                             </a-popover>
                         </template>
+
+                        <template #sort>
+                            <Sorting
+                                v-model="preference.sort"
+                                @change="handleChangePreference"
+                            />
+                        </template>
                         <template #display>
                             <a-popover
                                 trigger="click"
@@ -81,30 +87,30 @@
                                 <template #content>
                                     <div class="p-3" style="max-width: 250px">
                                         <PreferenceSelector
-                                            v-model="preference"
+                                            v-model="preference.display"
                                             @change="handleChangePreference"
                                             @display="handleDisplayChange"
                                         />
                                     </div>
                                 </template>
 
-                                <button
-                                    class="transition-colors rounded hover:bg-gray-100"
+                                <a-badge
+                                    :color="
+                                        preference.display?.length > 0
+                                            ? '#5278d7'
+                                            : null
+                                    "
                                 >
-                                    <AtlanIcon
-                                        icon="Display"
-                                        class="w-4 h-4 px-1"
-                                    />
-                                </button>
+                                    <button
+                                        class="transition-colors rounded hover:bg-gray-100"
+                                    >
+                                        <AtlanIcon
+                                            icon="Display"
+                                            class="w-4 h-4 px-1"
+                                        />
+                                    </button>
+                                </a-badge>
                             </a-popover>
-                        </template>
-                        <template #sort>
-                            <Sorting
-                                v-model="preference"
-                                @change="handleChangePreference"
-                                @display="handleDisplayChange"
-                                @mode="handleModeChange"
-                            />
                         </template>
                     </SearchAdvanced>
                     <slot name="searchAction"></slot>
@@ -423,6 +429,7 @@
             const selectedAssetId = ref('')
             /* Assiging prefrence props if any from props */
             const preference = ref(toRaw(preferenceProp.value))
+
             const aggregations = ref(['typeName'])
             const postFacets = ref({
                 typeName: '__all',
@@ -641,7 +648,7 @@
 
                 if (!facets.value.connector) {
                     connector.value = ''
-                    facets.value.glossary = ''
+                    // facets.value.glossary = ''
                     isGlossaryChange.value = false
                     isConnectorChange.value = false
                 } else if (facets.value.connector == '__glossary') {

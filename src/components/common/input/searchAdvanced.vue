@@ -64,8 +64,8 @@
                     <slot name="buttonAggregation" />
                 </button>
             </a-popover>
-            <slot name="display" />
             <slot name="sort" />
+            <slot name="display" />
         </template>
     </a-input>
 </template>

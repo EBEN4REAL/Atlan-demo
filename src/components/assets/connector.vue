@@ -1,6 +1,6 @@
 <template>
     <a-select
-        placeholder="All connectors"
+        placeholder="Connector"
         v-model:value="localValue"
         :allowClear="true"
         :showSearch="true"
@@ -100,12 +100,12 @@
 
                 let temp = coreList
 
-                temp = temp.concat({
-                    id: '__glossary',
-                    label: 'Glossary',
-                    count: 0,
-                    typeName: 'AtlasGlossary',
-                })
+                // temp = temp.concat({
+                //     id: '__glossary',
+                //     label: 'Glossary',
+                //     count: 0,
+                //     typeName: 'AtlasGlossary',
+                // })
 
                 return temp
             })

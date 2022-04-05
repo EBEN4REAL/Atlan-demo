@@ -1,20 +1,27 @@
 <template>
     <a-dropdown>
         <a class="ant-dropdown-link" @click.prevent>
-            <AtlanIcon
-                :icon="dot ? 'FilterDot' : 'Filter'"
-                class="w-4 h-4 px-1"
-            />
-            <DownOutlined />
+            <a-badge :color="modelValue !== 'default' ? '#5278d7' : null">
+                <AtlanIcon icon="Filter" class="w-4 h-4 px-1" />
+                <DownOutlined />
+            </a-badge>
         </a>
         <template #overlay>
-            <a-menu>
+            <a-menu @click="handleChange">
                 <a-menu-item
                     :value="item.id"
                     v-for="item in sortList"
                     :key="item.id"
+                    :class="isActive(item.id) ? 'bg-primary-menu' : ''"
                 >
-                    <a href="javascript:;"> {{ item.label }}</a>
+                    <div class="flex items-center justify-between">
+                        {{ item.label }}
+                        <AtlanIcon
+                            icon="RunSuccess"
+                            class="w-3 h-3 pl-3"
+                            v-if="isActive(item.id)"
+                        />
+                    </div>
                 </a-menu-item>
             </a-menu>
         </template>
@@ -57,8 +64,15 @@
             // }
 
             const handleChange = (value) => {
-                modelValue.value = value
+                modelValue.value = value.key
                 emit('change')
+            }
+
+            const isActive = (value) => {
+                if (modelValue.value === value) {
+                    return true
+                }
+                return false
             }
 
             const sortList = computed(() =>
@@ -95,6 +109,7 @@
                 localValue,
                 sortList,
                 defaultValue,
+                isActive,
             }
         },
     })

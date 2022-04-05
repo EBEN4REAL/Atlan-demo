@@ -35,7 +35,7 @@
             <span v-else>{{ duration(run) }}</span>
 
             <AtlanIcon icon="DateTime" class="mb-0.5 ml-3" />
-            <span>{{ startedAt(run, true) }} ago</span>
+            <span>{{ startedAt(run, true) }}</span>
         </div>
         <div class="w-full h-0 mt-3 border-b" />
     </div>

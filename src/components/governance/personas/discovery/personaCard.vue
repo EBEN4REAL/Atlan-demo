@@ -58,31 +58,36 @@
                     v-if="persona.glossaryPolicies?.length || 0"
                     class="px-1.5 py-1 rounded-full border border-gray-200 fit bg-white relative"
                     :style="{
-                        'z-index': `${getUniqueTypeIcons().connectors.length}`,
-                        transform: `translateX(${
-                            getUniqueTypeIcons().connectors.length * 8
-                        }px)`,
+                        'z-index': `${connection.length}`,
+                        transform: `translateX(${connection.length * 8}px)`,
                     }"
                 >
                     <AtlanIcon icon="Glossary" class="w-4 h-4" />
                 </div>
                 <div
-                    v-for="(imgPath, index) in getUniqueTypeIcons().connectors"
+                    v-for="(imgPath, index) in connection"
                     :key="imgPath"
                     class="p-1.5 rounded-full border border-gray-200 fit bg-white relative"
                     :style="{
-                        'z-index': `${
-                            getUniqueTypeIcons().connectors.length - 1 - index
-                        }`,
+                        'z-index': `${connection.length - 1 - index}`,
                         transform: `translateX(${
-                            (getUniqueTypeIcons().connectors.length -
-                                1 -
-                                index) *
-                            8
+                            (connection.length - 1 - index) * 8
                         }px)`,
                     }"
                 >
                     <img class="w-4 h-4" :src="imgPath" />
+                </div>
+                <div
+                    v-if="
+                        getUniqueTypeIcons().connectors.length >
+                        connection.length
+                    "
+                    class="mt-1 text-xs text-gray-500"
+                >
+                    +{{
+                        getUniqueTypeIcons().connectors.length -
+                        connection.length
+                    }}
                 </div>
             </div>
         </div>
@@ -152,9 +157,18 @@
                     connectors: [...new Set(displayImages.connectors)],
                 }
             }
+            const connection = computed(() => {
+                const glossary = persona.value?.glossaryPolicies?.length || 0
+                const lengthCoonection = glossary ? 4 : 5
+                return getUniqueTypeIcons().connectors.slice(
+                    0,
+                    lengthCoonection
+                )
+            })
             return {
                 getUniqueTypeIcons,
                 lastUpdate,
+                connection,
             }
         },
     })

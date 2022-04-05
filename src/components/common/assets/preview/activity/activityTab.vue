@@ -1,8 +1,6 @@
 <template>
     <div class="flex flex-col h-full overflow-y-hidden">
-        <div
-            class="flex items-center justify-between px-5 py-2 border-b border-gray-200 bg-gray-50"
-        >
+        <div class="flex items-center justify-between px-5 py-4">
             <span class="flex items-center">
                 <PreviewTabsIcon
                     :icon="tab.icon"
@@ -21,7 +19,7 @@
             />
         </div>
 
-        <div class="px-5 pb-4 mt-3">
+        <div class="px-5 pb-4 mt-0">
             <ActivityTypeSelect
                 v-model="activityType"
                 :type-name="selectedAsset.typeName"

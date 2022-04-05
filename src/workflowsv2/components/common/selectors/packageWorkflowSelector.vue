@@ -31,7 +31,7 @@
             />
         </div>
         <template #overlay>
-            <div class="py-2 bg-white rounded-lg shadow-md">
+            <div class="overflow-hidden bg-white rounded-lg shadow-md">
                 <!-- Package selector -->
                 <a-popover
                     :trigger="['click']"
@@ -48,7 +48,7 @@
                             class="focus-within:border-primary-focus"
                         />
                         <!-- Package list -->
-                        <div class="w-64 overflow-y-auto h-44">
+                        <div class="h-56 overflow-y-auto w-80">
                             <div
                                 v-for="item in packageList"
                                 class="package-list-item"
@@ -123,25 +123,30 @@
                             class="focus-within:border-primary-focus"
                         />
                         <!-- Workflow list -->
-                        <div class="w-64 overflow-y-auto h-44">
+                        <div
+                            class="overflow-y-auto w-80 h-44"
+                            :class="{
+                                'flex flex-col items-center justify-center':
+                                    isWfLoading || !wfListFiltered.length,
+                            }"
+                        >
                             <div
                                 v-for="item in wfListFiltered"
                                 class="package-list-item"
                                 :class="{ selected: item.id === workflowId }"
                                 @click="$emit('update:workflowId', item.id)"
                             >
-                                {{ item.label }}
+                                <span class="truncate">{{ item.label }}</span>
                             </div>
 
-                            <div
-                                v-if="!wfListFiltered.length"
-                                class="flex flex-col items-center pt-4"
-                            >
+                            <AtlanLoader v-if="isWfLoading" class="h-10" />
+
+                            <template v-else-if="!wfListFiltered.length">
                                 <AtlanIcon icon="NoResultsFound" class="h-28" />
                                 <span class="text-gray-500"
                                     >No result found</span
                                 >
-                            </div>
+                            </template>
                         </div>
                     </template>
                     <!-- Main Workflow selector -->
@@ -357,6 +362,7 @@
 <style lang="less" scoped>
     .combo-menu-item {
         @apply flex items-center px-4 py-2 w-64 gap-x-3;
+        @apply cursor-pointer select-none;
 
         &:hover {
             @apply bg-primary-menu;
@@ -369,7 +375,7 @@
     }
     .package-list-item {
         @apply flex items-center truncate gap-x-2 text-sm cursor-pointer select-none;
-        padding: 6px 16px;
+        padding: 8px 16px;
         &:hover {
             @apply bg-primary-menu;
         }

@@ -3,7 +3,7 @@
         <template v-if="minimal">
             <template v-if="resources?.length">
                 <div
-                    class="flex justify-between px-5 py-2 border-b border-gray-200 gap-x-6 bg-gray-50"
+                    class="flex items-center justify-between px-5 pt-4 gap-x-6"
                 >
                     <span class="flex items-center">
                         <PreviewTabsIcon
@@ -33,7 +33,7 @@
         </template>
 
         <template v-else>
-            <div class="flex justify-between p-4 border-b gap-x-6">
+            <div class="flex flex-col justify-between p-4 border-b gap-x-6">
                 <div>
                     <AtlanIcon icon="Link" class="w-auto h-4 mr-3" />
                     <span class="text-base font-bold text-gray">

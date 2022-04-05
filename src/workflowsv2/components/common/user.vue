@@ -12,7 +12,7 @@
         <AtlanIcon
             v-else
             icon="User"
-            class="mb-0.5 rounded-full overflow-hidden"
+            class="mb-0.5 rounded-full overflow-hidden text-gray-500"
         />
         {{ username }}
     </span>

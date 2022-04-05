@@ -21,7 +21,7 @@
                     <span>Scheduled Run</span>
                 </template>
                 <template v-else>
-                    <span>Manual Run by</span>
+                    <span>Manually Run by</span>
                     <UserWrapper :username="creatorUsername(run)" />
                 </template>
             </div>

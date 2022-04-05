@@ -49,7 +49,7 @@
             </template>
             <template v-else>
                 <AtlanIcon icon="User" />
-                <span class="ml-1 pt-0.5">Manual Run</span>
+                <span class="ml-1 pt-0.5">Manually Run</span>
             </template>
             <CreateUpdateInfo
                 :created-at="workflow.metadata?.creationTimestamp"

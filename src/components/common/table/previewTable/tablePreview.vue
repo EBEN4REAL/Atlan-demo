@@ -32,6 +32,7 @@
     import {
         setRowHeaderStyle,
         setCellTextStyle,
+        setVariantCellStyle,
     } from './regulartable-utils.js'
 
     export default defineComponent({
@@ -89,12 +90,9 @@
             }
 
             watch([tableRef, dataList], () => {
-                // init()
-
                 const tbody = document.getElementsByTagName('tbody')[0]
 
                 tbody.onclick = function (e) {
-                    debugger
                     const td = e.target.closest('td')
                     if (!td) return
                     if (!tbody.contains(td)) return
@@ -107,7 +105,6 @@
                     }
                 }
                 tbody.onmouseover = function (e) {
-                    debugger
                     const td = e.target.closest('td')
                     if (!td) return
                     if (!tbody.contains(td)) return
@@ -153,7 +150,6 @@
                     )
                     td.classList.remove('pr-10')
                     td.classList.add('pr-4')
-
                     hoverTD?.value?.childNodes[1]?.childNodes[0]?.classList?.add(
                         'hidden'
                     )
@@ -172,12 +168,27 @@
                     const tooltipContent = img.dataset.tooltip
                     if (!tooltipContent) return
 
+                    // create tooltip and set it's  style and content
                     hoverTH.value = document.createElement('div')
                     hoverTH.value.className =
-                        'fixed bg-black text-white px-3 py-1 rounded opacity-80 mx-auto'
+                        'absolute bg-black text-white px-3 py-1 rounded opacity-80'
+                    hoverTH.value.style.maxWidth = `fit-content`
+                    hoverTH.value.style.maxHeight = `fit-content`
                     hoverTH.value.innerHTML = tooltipContent
 
-                    img.parentElement.append(hoverTH.value)
+                    // calculate tooltip position
+                    const table = document.getElementById('regularTable')
+                    const tableRect = table.getBoundingClientRect()
+                    const elemRect = img.parentElement.getBoundingClientRect()
+                    const offsetTop = elemRect.top - tableRect.top
+                    const offsetLeft = elemRect.left - tableRect.left
+
+                    // set tooltip position
+                    hoverTH.value.style.top = `${offsetTop + 17}px`
+                    hoverTH.value.style.left = `${offsetLeft}px`
+
+                    // tooltip has to be a direct child of table to prevent it being hidden under table data. z-index doesn't work. //TODO: find out why
+                    table?.appendChild(hoverTH.value)
                 }
 
                 thead.onmouseout = function (e) {
@@ -185,7 +196,7 @@
                     if (!img) return
                     if (!thead.contains(img)) return
 
-                    hoverTH.value.remove()
+                    hoverTH?.value?.remove()
                     hoverTH.value = null
                 }
             })
@@ -244,46 +255,6 @@
                 return [`${title}`]
             }
 
-            function styleListener() {
-                const headers = window.regularTable
-                    .querySelectorAll('thead tr th')
-                    .entries()
-
-                for (const [i, th] of headers) {
-                    if (
-                        column?.data_type?.toLowerCase() === 'any' ||
-                        column?.data_type?.toLowerCase() === 'variant' ||
-                        column?.data_type?.toLowerCase() === 'object' ||
-                        column?.data_type?.toLowerCase() === 'struct' ||
-                        column?.data_type?.toLowerCase() === 'json'
-                    ) {
-                        rows.forEach((element, i) => {
-                            if (element?.children?.length - 1 > x) {
-                                element?.children[x + 1]?.setAttribute(
-                                    'key',
-                                    column.dataIndex.toString()
-                                )
-                                element?.children[x + 1]?.setAttribute(
-                                    'data-key',
-                                    column.dataIndex.toString()
-                                )
-                                const span = document.createElement('span')
-                                span.setAttribute('id', 'expandIcon')
-                                span.innerHTML = `<img  class="inline-flex w-4 h-4 mr-4 mb-0.5 absolute top-1.5 hidden right-0" src=${Expand}>`
-
-                                if (
-                                    !element.children[x + 1]?.querySelector(
-                                        '#expandIcon > img'
-                                    )
-                                ) {
-                                    element.children[x + 1]?.append(span)
-                                }
-                            }
-                        })
-                    }
-                }
-            }
-
             function row_header(i) {
                 return [`${i + 1}`]
             }
@@ -302,33 +273,48 @@
                 const rows = dataList.value
 
                 table?.setDataListener(dataHere(rows))
-                //table?.addStyleListener(styleListener)
 
                 table?.addStyleListener(() => {
                     // style all the table column headers
-                    for (const th of window.regularTable.querySelectorAll(
-                        'thead th'
-                    )) {
-                        setRowHeaderStyle(th, columns)
-                    }
+                    window?.regularTable
+                        .querySelectorAll('thead th')
+                        .forEach((th) => {
+                            setRowHeaderStyle(th, columns)
+                        })
 
                     // style all the column cells
-                    for (const rows of window.regularTable.querySelectorAll(
-                        'tbody tr'
-                    )) {
-                        setCellTextStyle(rows, columns)
-                    }
+                    window?.regularTable
+                        .querySelectorAll('tbody tr')
+                        .forEach((row) => {
+                            setCellTextStyle(row, columns)
+                        })
+
+                    // style all variant type cells
+                    window?.regularTable
+                        .querySelectorAll('thead tr th')
+                        .forEach((th) => {
+                            setVariantCellStyle(
+                                th,
+                                columns,
+                                window.regularTable.querySelectorAll(
+                                    'tbody tr'
+                                ),
+                                variantTypeIndexes.value
+                            )
+                        })
+                })
+                // hide tooltips (if visible) on hover
+                table?.addEventListener('scroll', () => {
+                    hoverTH?.value?.remove()
+                    hoverTH.value = null
                 })
 
                 table?.draw()
             }
 
-            // const tableHeight = document.getElementsByClassName('table_height')[0]
-
             const observer = ref()
 
             const onResize = () => {
-                console.log('resize')
                 init()
             }
 
@@ -405,6 +391,8 @@
             color: #a0a4b6 !important;
             font-weight: 400 !important;
             @apply bg-white border;
+            padding: 0 !important;
+            text-align: center !important;
         }
 
         tr th {

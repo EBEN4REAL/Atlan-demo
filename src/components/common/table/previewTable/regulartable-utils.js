@@ -8,6 +8,7 @@ import array from '~/assets/images/dataType/array.svg?url'
 import struct from '~/assets/images/dataType/struct.svg?url'
 import geography from '~/assets/images/dataType/geography.svg?url'
 import variant from '~/assets/images/dataType/variant.svg?url'
+import Expand from '~/assets/images/icons/expand.svg?url'
 
 const imageMap = {
     Number: number,
@@ -36,7 +37,7 @@ export const getColumnAlignment = (data_type) => {
         case 'Geography':
         case 'Decimal':
         case 'Boolean':
-           return 'right'
+            return 'right'
         default:
             return 'left'
     }
@@ -44,8 +45,8 @@ export const getColumnAlignment = (data_type) => {
 
 export const setRowHeaderStyle = (th, columns) => {
     // add default # to first row as default symbol
-    if(th.classList.contains('rt-group-corner')) {
-        th.innerText = "#";
+    if (th.classList.contains('rt-group-corner')) {
+        th.innerText = '#'
     }
 
     // get column data type for reach column and figure out the alignment style based on data type
@@ -78,21 +79,45 @@ export const setRowHeaderStyle = (th, columns) => {
     }
 }
 
-
 export const setCellTextStyle = (rows, columns) => {
-        rows.childNodes.forEach((td, i) => {
-            if (i !== 0) {
-                const { x } = window.regularTable.getMeta(td)
-                if (columns.value[x]?.data_type) {
-                    td.style.setProperty(
-                        'text-align',
-                        getColumnAlignment(
-                            getDataType(columns.value[x].data_type)
-                        ),
-                        'important'
-                    )
+    rows.childNodes.forEach((td, i) => {
+        if (i !== 0) {
+            const { x } = window.regularTable.getMeta(td)
+            if (columns?.value[x]?.data_type) {
+                td.style.setProperty(
+                    'text-align',
+                    getColumnAlignment(getDataType(columns.value[x].data_type)),
+                    'important'
+                )
+            }
+        }
+    })
+}
+
+export const setVariantCellStyle = (th, columns, rows, variantTypeIndexes) => {
+    const { x } = window.regularTable.getMeta(th)
+    const column = columns.value[x]
+    if (variantTypeIndexes.includes(column?.dataIndex)) {
+        rows.forEach((element, i) => {
+            if (element?.children?.length - 1 > x) {
+                element?.children[x + 1]?.setAttribute(
+                    'key',
+                    column.dataIndex.toString()
+                )
+                element?.children[x + 1]?.setAttribute(
+                    'data-key',
+                    column.dataIndex.toString()
+                )
+                const span = document.createElement('span')
+                span.setAttribute('id', 'expandIcon')
+                span.innerHTML = `<img  class="inline-flex w-4 h-4 mr-4 mb-0.5 absolute top-1.5 hidden right-0" src=${Expand}>`
+
+                if (
+                    !element.children[x + 1]?.querySelector('#expandIcon > img')
+                ) {
+                    element.children[x + 1]?.append(span)
                 }
             }
         })
-    
+    }
 }

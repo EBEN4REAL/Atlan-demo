@@ -209,13 +209,16 @@
                                             {{ apiKey.createdBy || '' }}
                                         </div>
                                         <div
-                                            v-if="apiKey.createdAt"
+                                            v-if="
+                                                apiKey.createdAt &&
+                                                apiKey.createdBy
+                                            "
                                             class="mx-1 mt-1 text-gray-300"
                                         >
                                             •
                                         </div>
                                         <div class="text-xs text-gray-500">
-                                            {{ timeStamp(apiKey.createdAt) }}
+                                            {{ timeStamp(+apiKey.createdAt) }}
                                         </div>
                                     </div>
                                 </div>

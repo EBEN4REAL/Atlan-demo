@@ -10,7 +10,7 @@
         class="connector-select"
     >
         <template #suffixIcon>
-            <AtlanIcon icon="CaretDown" />
+            <AtlanIcon icon="CaretDown" class="ml-1" />
         </template>
         <template v-for="item in list" :key="item.id">
             <a-select-option :value="item.id" class="flex">

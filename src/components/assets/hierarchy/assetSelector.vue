@@ -34,9 +34,13 @@
     import { message } from 'ant-design-vue'
     import { useDebounceFn } from '@vueuse/core'
     import bodybuilder from 'bodybuilder'
+    import Tooltip from '@common/ellipsis/index.vue'
 
     export default defineComponent({
         name: 'AssetSelector',
+        components: {
+            Tooltip,
+        },
         props: {
             modelValue: {
                 type: String,

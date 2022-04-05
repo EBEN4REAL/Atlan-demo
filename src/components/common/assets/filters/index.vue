@@ -180,19 +180,21 @@
             const totalFilteredCount = computed(() => {
                 let count = 0 + extraCountFilter.value
                 Object.keys(localValue.value).forEach((key) => {
-                    if (Array.isArray(localValue.value[key])) {
-                        if (localValue.value[key].length > 0) {
+                    if (key !== 'hierarchy' && key !== 'connector') {
+                        if (Array.isArray(localValue.value[key])) {
+                            if (localValue.value[key].length > 0) {
+                                count += 1
+                            }
+                        } else if (
+                            typeof localValue.value[key] === 'object' &&
+                            localValue.value[key] !== null
+                        ) {
+                            if (Object.keys(localValue.value[key]).length > 0) {
+                                count += 1
+                            }
+                        } else if (typeof localValue.value[key] === 'string')
                             count += 1
-                        }
-                    } else if (
-                        typeof localValue.value[key] === 'object' &&
-                        localValue.value[key] !== null
-                    ) {
-                        if (Object.keys(localValue.value[key]).length > 0) {
-                            count += 1
-                        }
-                    } else if (typeof localValue.value[key] === 'string')
-                        count += 1
+                    }
                 })
                 return count
             })

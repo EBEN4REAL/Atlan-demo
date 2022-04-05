@@ -22,7 +22,7 @@
             <div class="flex flex-col h-full">
                 <div class="flex items-center px-3 bg-white shadow-sm">
                     <ConnectorSelect
-                        style="min-width: 130px"
+                        style="width: 130px"
                         v-model="facets.connector"
                         :persona="persona"
                         @change="handleConnectorChange"
@@ -708,7 +708,11 @@
             }
 
             const handleResetEvent = () => {
-                facets.value = { ...initialFilters.value }
+                facets.value = {
+                    ...initialFilters.value,
+                    connector: facets.value.connector,
+                    hierarchy: facets.value.hierarchy,
+                }
                 queryText.value = ''
                 handleFilterChange(facets.value)
                 dirtyTimestamp.value = `dirty_${Date.now().toString()}`

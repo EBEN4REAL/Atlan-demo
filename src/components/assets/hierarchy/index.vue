@@ -9,7 +9,7 @@
                 :persona="persona"
             ></GlossarySelect>
         </div>
-        <div v-else class="flex items-center">
+        <div v-else class="flex items-center" style="min-width: 150px">
             <ConnectionSelect
                 :key="connector"
                 v-model="localValue.connectionQualifiedName"

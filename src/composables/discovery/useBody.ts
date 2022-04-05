@@ -185,14 +185,15 @@ export function useBody(
 
         switch (mkey) {
             case 'hierarchy': {
-                if (filterObject.connectorName) {
-                    base.filter(
-                        'term',
-                        'connectorName',
-                        filterObject.connectorName
-                    )
-                    connectorName = filterObject.connectorName
-                }
+                // compatibility fix
+                // if (filterObject.connectorName) {
+                //     base.filter(
+                //         'term',
+                //         'connectorName',
+                //         filterObject.connectorName
+                //     )
+                //     connectorName = filterObject.connectorName
+                // }
                 if (filterObject.connectionQualifiedName) {
                     base.filter('bool', (q) => {
                         q.orFilter(

@@ -25,6 +25,7 @@
                         class="ml-auto shadow-none h-7"
                         placement="bottomLeft"
                         :item="item"
+                        minWidth="150"
                     >
                         <template #menuTrigger>
                             <div
@@ -1097,7 +1098,7 @@
             const dropdownOptions = computed(() => {
                 return [
                     {
-                        title: 'New Query',
+                        title: 'New query',
                         key: 'newQuery',
                         class: '',
                         disabled: false,
@@ -1108,9 +1109,9 @@
                         },
                     },
                     {
-                        title: 'New Visual Query',
+                        title: 'New visual query',
                         key: 'newVisualQuery',
-                        class: '',
+                        class: 'border-b border-gray-300',
                         disabled: false,
                         component: MenuItem,
                         hide: !hasWritePermission.value,
@@ -1119,7 +1120,7 @@
                         },
                     },
                     {
-                        title: 'New Folder',
+                        title: 'New folder',
                         key: 'newFolder',
                         component: MenuItem,
                         class: '',
@@ -1128,7 +1129,7 @@
                         handleClick: createFolderInput,
                     },
                     {
-                        title: 'New Collection',
+                        title: 'New collection',
 
                         key: 'collection',
                         component: MenuItem,

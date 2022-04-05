@@ -199,15 +199,19 @@
                                     </div>
                                     <div class="flex items-center mt-2">
                                         <Avatar
+                                            v-if="apiKey.createdBy"
                                             :allow-upload="false"
                                             :avatar-size="14"
                                             :avatar-shape="'circle'"
                                             class="mr-1"
                                         />
                                         <div class="text-xs text-gray-500">
-                                            {{ apiKey.displayName }}
+                                            {{ apiKey.createdBy || '' }}
                                         </div>
-                                        <div class="mx-1 mt-1 text-gray-300">
+                                        <div
+                                            v-if="apiKey.createdAt"
+                                            class="mx-1 mt-1 text-gray-300"
+                                        >
                                             •
                                         </div>
                                         <div class="text-xs text-gray-500">

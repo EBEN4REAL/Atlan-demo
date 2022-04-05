@@ -209,6 +209,7 @@ const useQueryTree = ({
         [key: string]: any
         dataRef: CustomTreeDataItem
     }) => {
+        // debugger
         // console.log('expand node: ', treeNode)
 
         if (!treeNode.dataRef.children) {
@@ -310,12 +311,12 @@ const useQueryTree = ({
                 !subFoldersResponse?.entities?.length
             ) {
                 // TODO: not push anything in array to avoid the empty expansion and title
-                
-                // Checking for isCta in queryTreeItem to check for whether to display empty item CTA or not. 
+
+                // Checking for isCta in queryTreeItem to check for whether to display empty item CTA or not.
                 // All other properties of folders are inherited to Cta's as well.
                 treeNode.dataRef.children.push({
                     ...treeNode,
-                    key: 'cta',
+                    key: `cta-${treeNode.dataRef.key}`,
                     isLeaf: true,
                     selected: 'false',
                     // typeName: 'cta',
@@ -446,6 +447,7 @@ const useQueryTree = ({
         guid: string,
         refetchEntityType?: 'query' | 'Folder'
     ) => {
+        // debugger
         // if the root level of the tree needs a refetch
         console.log('new refetch: ', {
             guid,
@@ -495,6 +497,7 @@ const useQueryTree = ({
             let parentStack: string[]
 
             const updateNodeNested = async (node: CustomTreeDataItem) => {
+                // debugger
                 const currentPath = parentStack.pop()
 
                 // if the target node is reached
@@ -534,6 +537,12 @@ const useQueryTree = ({
                         false,
                         node
                     )
+
+                    // If the first item in the updatedFolder list is CTA, remove the CTA node
+                    if (updatedFolders[0]?.isCta === 'cta') {
+                        updatedFolders.shift()
+                        console.log('updatedFolders: ', updatedFolders)
+                    }
 
                     const updatedChildren: CustomTreeDataItem[] = [
                         ...updatedFolders,
@@ -582,6 +591,205 @@ const useQueryTree = ({
                     // console.log('loaded keys: ', loadedKeys.value)
                     const updatedNode = await updateNodeNested(node)
                     // console.log('parent updated new nodes: ', updatedNode)
+
+                    updatedTreeData.push(updatedNode)
+                    const isExpanded = expandedKeys.value?.includes(guid)
+                    if (!isExpanded) {
+                        expandedKeys.value?.push(guid)
+                        expandedKeys.value = [...expandedKeys.value]
+                        store.set(expandedCacheKey, expandedKeys.value)
+                    }
+                    const isLoaded = loadedKeys.value?.includes(guid)
+                    if (!isLoaded) {
+                        loadedKeys.value.push(guid)
+                    }
+                } else {
+                    updatedTreeData.push(node)
+                }
+            }
+            console.log('parent update final: ', { guid, updatedTreeData })
+
+            treeData.value = [...updatedTreeData]
+        }
+    }
+
+    const refetchNodeLocally = async (
+        guid: string,
+        refetchEntityType?: 'query' | 'Folder'
+    ) => {
+        // debugger
+        // if the root level of the tree needs a refetch
+        console.log('new refetch: ', {
+            guid,
+            refetchEntityType,
+        })
+        if (guid === collection?.value?.guid) {
+            let folderResponse: IndexSearchResponse<Folder> | null = null
+            let queryResponse: IndexSearchResponse<SavedQuery> | null = null
+
+            if (refetchEntityType === 'Folder' || !refetchEntityType) {
+                folderResponse = await getQueryFolders()
+            }
+
+            if (refetchEntityType === 'query' || !refetchEntityType) {
+                queryResponse = await getQueries()
+            }
+
+            console.log('collection parent update final api: ', {
+                guid,
+                folderResponse,
+                queryResponse,
+            })
+
+            const updatedFolders = checkAndAppendNewNodes(
+                folderResponse,
+                'Folder',
+                true
+            )
+            const updatedQueries = checkAndAppendNewNodes(
+                queryResponse,
+                'Query',
+                true
+            )
+
+            const updatedTreeData: CustomTreeDataItem[] = [
+                ...updatedFolders,
+                ...updatedQueries,
+            ]
+
+            treeData.value.forEach((item) => {
+                if (item.title === 'Load more') updatedTreeData.push(item)
+            })
+
+            treeData.value = updatedTreeData
+            console.log('parent update final: ', { guid, updatedTreeData })
+        } else {
+            let parentStack: string[]
+
+            const updateNodeNested = async (node: CustomTreeDataItem) => {
+                // debugger
+                const currentPath = parentStack.pop()
+
+                // if the target node is reached
+                if (node.key === guid || !currentPath) {
+                    console.log('parent update start: ', node)
+                    let folderResponse: IndexSearchResponse<Folder> | null =
+                        null
+                    let queryResponse: IndexSearchResponse<SavedQuery> | null =
+                        null
+
+                    if (refetchEntityType === 'Folder' || !refetchEntityType) {
+                        folderResponse = await getSubFolders(node.qualifiedName)
+                    }
+                    if (refetchEntityType === 'query' || !refetchEntityType) {
+                        queryResponse = await getFolderQueries(
+                            node.qualifiedName
+                        )
+                    }
+
+                    console.log('parent update final api: ', {
+                        guid,
+                        folderResponse,
+                        queryResponse,
+                    })
+
+                    //correct till here
+
+                    const updatedFolders = checkAndAppendNewNodes(
+                        folderResponse,
+                        'Folder',
+                        false,
+                        node
+                    )
+                    const updatedQueries = checkAndAppendNewNodes(
+                        queryResponse,
+                        'Query',
+                        false,
+                        node
+                    )
+
+                    // If the first item in the updatedFolder list is CTA, remove the CTA node
+                    if (updatedFolders[0]?.isCta === 'cta') {
+                        updatedFolders.shift()
+                        console.log('updatedFolders: ', updatedFolders)
+                    }
+
+                    const ctaNode = {
+                        ...node,
+                        key: `cta-${node?.key}`,
+                        isLeaf: true,
+                        selected: 'false',
+                        // typeName: 'cta',
+                        selectable: false,
+                        checkable: false,
+                        isCta: 'cta',
+                        class: 'no-hover', // Added to manipulate hover and cursor states
+                    }
+
+                    let updatedChildren: CustomTreeDataItem[] = []
+
+                    // Condition to add new node to the tree
+                    if (
+                        updatedFolders.length === 0 &&
+                        updatedQueries.length === 0
+                    ) {
+                        updatedChildren = [
+                            ...updatedFolders,
+                            ...updatedQueries,
+                            ctaNode,
+                        ]
+                    } else {
+                        updatedChildren = [...updatedFolders, ...updatedQueries]
+                    }
+
+                    // const updatedChildren: CustomTreeDataItem[] = [
+                    //     ...updatedFolders,
+                    //     ...updatedQueries,
+                    // ]
+
+                    node.children?.forEach((item) => {
+                        if (item.title === 'Load more')
+                            updatedChildren.push(item)
+                    })
+
+                    return {
+                        ...node,
+                        children: updatedChildren,
+                    }
+                }
+                const updatedChildren: CustomTreeDataItem[] = []
+
+                // eslint-disable-next-line no-restricted-syntax
+                for (const childNode of node?.children ?? []) {
+                    // if the current node is in the path that is needed to reach the target node
+                    if (childNode.key === currentPath) {
+                        const updatedNode = await updateNodeNested(childNode)
+                        updatedChildren.push(updatedNode)
+                    } else {
+                        updatedChildren.push(childNode)
+                    }
+                }
+                return {
+                    ...node,
+                    children: updatedChildren,
+                }
+            }
+
+            // find the path to the node
+            parentStack = recursivelyFindPath(guid)
+            const parent = parentStack.pop()
+            console.log('parent here: ', parent)
+
+            const updatedTreeData: CustomTreeDataItem[] = []
+
+            // eslint-disable-next-line no-restricted-syntax
+            for (const node of treeData.value) {
+                // debugger
+                if (node.key === parent) {
+                    // console.log('loaded keys: ', loadedKeys.value)
+                    const updatedNode = await updateNodeNested(node)
+                    // console.log('parent updated new nodes: ', updatedNode)
+
                     updatedTreeData.push(updatedNode)
                     const isExpanded = expandedKeys.value?.includes(guid)
                     if (!isExpanded) {
@@ -871,6 +1079,7 @@ const useQueryTree = ({
         isNodeLoading,
         nodeError,
         errorNode,
+        refetchNodeLocally,
         // addInputBox,
         // removeInputBox
     }

@@ -624,6 +624,14 @@
                 ) => void
             >('refetchNode', () => {})
 
+            const refetchNodeLocally = inject<
+                (
+                    guid: string,
+                    type: 'query' | 'Folder',
+                    tree?: 'personal' | 'all'
+                ) => void
+            >('refetchNodeLocally', () => {})
+
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
             ) as Ref<string>
@@ -1214,6 +1222,7 @@
                 isDeleteLoading.value = true
 
                 watch([data, error, isLoading], ([newData, newError]) => {
+                    // debugger
                     isDeleteLoading.value = isLoading.value
                     console.log('delete: ', isLoading.value)
                     if (newData && !newError) {
@@ -1226,8 +1235,17 @@
                             pushGuidToURL
                         )
 
+                        // find the parent of the deleted node
+                        // filter the children of the parent where key != deleted node's key
+                        // children is empty? add cta
+
+                        // Dont refetch node, only add a child to it
                         setTimeout(() => {
-                            refetchNode(
+                            // refetchNode(
+                            //     parentGuid,
+                            //     type === 'Query' ? 'query' : 'Folder'
+                            // )
+                            refetchNodeLocally(
                                 parentGuid,
                                 type === 'Query' ? 'query' : 'Folder'
                             )

@@ -908,6 +908,7 @@
                 expandNode: expandNode,
                 selectNode: selectNode,
                 refetchNode: refetchNode,
+                refetchNodeLocally: refetchNodeLocally,
                 immediateParentGuid: immediateParentGuid,
                 nodeToParentKeyMap: nodeToParentKeyMap,
                 updateNode: updateNode,
@@ -1047,6 +1048,8 @@
             // provide('savedQueryType', savedQueryType)
             provide('refetchParentNode', refetchParentNode)
             provide('refetchNode', refetchNode)
+            provide('refetchNodeLocally', refetchNodeLocally)
+
             provide('createFolderInput', createFolderInput)
             // refecthing node on updating the query
             watch(refetchQueryNode, (newRefetchQueryNode) => {
@@ -1216,6 +1219,7 @@
                 nodeError,
                 errorNode,
                 refetchNode,
+                refetchNodeLocally,
             }
         },
     })

@@ -7,7 +7,7 @@
             </div>
         </div>
         <div
-            class="p-4 pb-2 mt-1"
+            class="px-3 py-1"
             :class="
                 item?.attributes?.channelLink &&
                 'hover:bg-gray-100 cursor-pointer container-channel'
@@ -124,10 +124,10 @@
                 <AtlanLoader class="h-5" />
             </span>
         </div>
-        <div class="flex flex-col p-4 pt-0">
-            <div class="mt-5">
-                <div class="mb-2.5 text-gray-500">Policies</div>
-                <!-- <a-dropdown trigger="click">
+
+        <div class="px-3 py-1 mt-5">
+            <div class="mb-2.5 text-gray-500">Policies</div>
+            <!-- <a-dropdown trigger="click">
                     <template #overlay>
                         <a-menu>
                             <a-menu-item>
@@ -155,113 +155,112 @@
                         </a-menu>
                     </template>
                 </a-dropdown> -->
-                <span
-                    class="text-sm cursor-pointer text-primary"
-                    @click="$emit('addPolicy')"
-                >
-                    <AtlanIcon v-if="!total" icon="Add" class="mr-2" />
+            <span
+                class="text-sm cursor-pointer text-primary"
+                @click="$emit('addPolicy')"
+            >
+                <AtlanIcon v-if="!total" icon="Add" class="mr-2" />
 
-                    {{ titlePolices }}
-                </span>
-            </div>
-            <div class="mt-7" v-if="item.apikeys && item.apikeys.length">
-                <div class="mb-2.5 text-gray-500">API Keys</div>
-                <div class="flex items-center">
-                    <a-popover
-                        :align="{ offset: [88, -6] }"
-                        trigger="click"
-                        placement="bottom"
-                    >
-                        <template #content>
-                            <div class="px-4">
-                                <div
-                                    v-for="(apiKey, index) in item.apikeys"
-                                    class="w-56 py-4"
-                                    :key="index"
-                                >
+                {{ titlePolices }}
+            </span>
+        </div>
+        <div
+            :class="`px-3 py-1 mt-5 ${visibleLink && 'bg-gray-100'}`"
+            v-if="item.apikeys && item.apikeys.length"
+        >
+            <div class="mb-2.5 text-gray-500">API Keys</div>
+            <div class="flex items-center">
+                <a-popover
+                    :align="{ offset: [88, -6] }"
+                    trigger="click"
+                    placement="bottom"
+                    v-model:visible="visibleLink"
+                    overlayClassName="popover-api-keys"
+                >
+                    <template #content>
+                        <div class="px-4 rounded-xl">
+                            <div
+                                v-for="(apiKey, index) in item.apikeys"
+                                class="w-56 py-4"
+                                :key="index"
+                            >
+                                <div class="flex items-center justify-between">
                                     <div
-                                        class="flex items-center justify-between"
+                                        class="text-sm font-bold text-gray-700"
                                     >
-                                        <div
-                                            class="text-sm font-bold text-gray-700"
-                                        >
-                                            {{ apiKey.displayName }}
-                                        </div>
-                                        <div
-                                            class="flex items-center text-xs text-gray-400"
-                                        >
-                                            <AtlanIcon
-                                                icon="Clock"
-                                                class="mr-1 text-gray-400"
-                                            />
-                                            {{ convertExpired(apiKey) }}
-                                        </div>
+                                        {{ apiKey.displayName }}
                                     </div>
-                                    <div class="flex items-center mt-2">
-                                        <Avatar
-                                            v-if="apiKey.createdBy"
-                                            :allow-upload="false"
-                                            :avatar-size="14"
-                                            :avatar-shape="'circle'"
-                                            class="mr-1"
+                                    <div
+                                        class="flex items-center text-xs text-gray-400"
+                                    >
+                                        <AtlanIcon
+                                            icon="Clock"
+                                            class="mr-1 text-gray-400"
                                         />
-                                        <div class="text-xs text-gray-500">
-                                            {{ apiKey.createdBy || '' }}
-                                        </div>
-                                        <div
-                                            v-if="
-                                                apiKey.createdAt &&
-                                                apiKey.createdBy
-                                            "
-                                            class="mx-1 mt-1 text-gray-300"
-                                        >
-                                            •
-                                        </div>
-                                        <div class="text-xs text-gray-500">
-                                            {{ timeStamp(+apiKey.createdAt) }}
-                                        </div>
+                                        {{ convertExpired(apiKey) }}
+                                    </div>
+                                </div>
+                                <div class="flex items-center mt-2">
+                                    <Avatar
+                                        v-if="apiKey.createdBy"
+                                        :allow-upload="false"
+                                        :avatar-size="14"
+                                        :avatar-shape="'circle'"
+                                        class="mr-1"
+                                    />
+                                    <div class="text-xs text-gray-500">
+                                        {{ apiKey.createdBy || '' }}
+                                    </div>
+                                    <div
+                                        v-if="
+                                            apiKey.createdAt && apiKey.createdBy
+                                        "
+                                        class="mx-1 mt-1 text-gray-300"
+                                    >
+                                        •
+                                    </div>
+                                    <div class="text-xs text-gray-500">
+                                        {{ timeStamp(+apiKey.createdAt) }}
                                     </div>
                                 </div>
                             </div>
-                        </template>
-                        <div class="text-sm cursor-pointer text-primary">
-                            {{
-                                `${item.apikeys.length} ${
-                                    item.apikeys.length > 1 ? 'keys' : 'key'
-                                } linked`
-                            }}
                         </div>
-                    </a-popover>
-                </div>
-            </div>
-            <div class="mt-7">
-                <div class="mb-2.5 text-gray-500">Created by</div>
-                <div class="flex items-center">
-                    <template
-                        v-if="
-                            item?.createdBy?.startsWith(
-                                'service-account-apikey-'
-                            )
-                        "
-                    >
-                        <span class="flex items-center gap-x-1">
-                            <AtlanIcon icon="Key" class="h-3" />
-                            <div class="">API key</div>
-                        </span>
                     </template>
-                    <template v-else>
-                        <Avatar
-                            :allow-upload="false"
-                            :avatar-size="16"
-                            :avatar-shape="'circle'"
-                            class="mr-2"
-                        />
-                        {{ item.createdBy }}</template
-                    >
-                    <div class="mx-1 mt-1 text-gray-300">•</div>
-                    <div class="text-sm text-gray-500">
-                        {{ item.createdAt ? timeStamp(item.createdAt) : '' }}
+                    <div class="text-sm cursor-pointer text-primary">
+                        {{
+                            `${item.apikeys.length} ${
+                                item.apikeys.length > 1 ? 'keys' : 'key'
+                            } linked`
+                        }}
                     </div>
+                </a-popover>
+            </div>
+        </div>
+        <div class="px-3 py-1 mt-5">
+            <div class="mb-2.5 text-gray-500">Created by</div>
+            <div class="flex items-center">
+                <template
+                    v-if="
+                        item?.createdBy?.startsWith('service-account-apikey-')
+                    "
+                >
+                    <span class="flex items-center gap-x-1">
+                        <AtlanIcon icon="Key" class="h-3" />
+                        <div class="">API key</div>
+                    </span>
+                </template>
+                <template v-else>
+                    <Avatar
+                        :allow-upload="false"
+                        :avatar-size="16"
+                        :avatar-shape="'circle'"
+                        class="mr-2"
+                    />
+                    {{ item.createdBy }}</template
+                >
+                <div class="mx-1 mt-1 text-gray-300">•</div>
+                <div class="text-sm text-gray-500">
+                    {{ item.createdAt ? timeStamp(item.createdAt) : '' }}
                 </div>
             </div>
         </div>
@@ -316,6 +315,7 @@
         },
         emits: ['changeLink'],
         setup(props, { emit }) {
+            const visibleLink = ref(false)
             const { item } = toRefs(props)
             const link = ref('')
             const showPopover = ref(false)
@@ -415,11 +415,17 @@
                 convertExpired,
                 useTimeAgo,
                 dayjs,
+                visibleLink,
             }
         },
     })
 </script>
 <style lang="less">
+    .popover-api-keys {
+        .ant-popover-inner {
+            border-radius: 8px !important;
+        }
+    }
     .container-channel {
         .edit-channel {
             display: none;

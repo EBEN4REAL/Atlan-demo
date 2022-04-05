@@ -86,6 +86,7 @@ export function useAssetAttributes({ id, attributes }: DiscoverListParams) {
         defaultBody.value = {
             dsl,
             attributes: attributes?.value,
+            suppressLogs: true,
         }
     }
 

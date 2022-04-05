@@ -108,7 +108,10 @@
                         </div>
                         <div class>
                             <a-tooltip :title="announcementType(item)">
-                                <AtlanIcon :icon="icon"></AtlanIcon>
+                                <AtlanIcon
+                                    :icon="icon"
+                                    class="outline-none"
+                                ></AtlanIcon>
                             </a-tooltip>
                         </div>
                     </div>
@@ -201,6 +204,14 @@
                                         ) && isCustom(item)
                                     "
                                     >(custom)</span
+                                >
+                                <span
+                                    v-if="
+                                        ['TableauDatasource'].includes(
+                                            item.typeName
+                                        ) && isPublished(item)
+                                    "
+                                    >(Published)</span
                                 >
                             </div>
                         </div>
@@ -1301,6 +1312,7 @@
                 isCustom,
                 announcementType,
                 assetTypeImage,
+                isPublished,
             } = useAssetInfo()
 
             const icon = computed(() => {
@@ -1470,6 +1482,7 @@
                 announcementType,
                 mouseEnterDelay,
                 enteredPill,
+                isPublished,
             }
         },
     })

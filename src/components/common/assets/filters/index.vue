@@ -69,50 +69,45 @@
             filterList: {
                 type: Array,
                 required: false,
-                default() {
-                    return []
-                },
+                default: () => [],
             },
             modelValue: {
                 type: Object,
                 required: false,
-                default() {
-                    return {}
-                },
+                default: () => ({}),
             },
             isAccordion: {
                 type: Boolean,
                 required: false,
-                default() {
-                    return false
-                },
+                default: () => false,
             },
             typeName: {
                 type: String,
                 required: false,
-                default() {
-                    return '__all'
-                },
+                default: () => '__all',
             },
             activeKey: {
                 required: false,
             },
             allowCustomFilters: {
+                type: Boolean,
                 required: false,
-                default() {
-                    return true
-                },
+                default: () => true,
             },
             noFilterTitle: {
+                type: String,
                 required: false,
-                default() {
-                    return 'Filters'
-                },
+                default: () => 'Filters',
             },
             extraCountFilter: {
+                type: Number,
+                required: false,
+                default: () => 0,
+            },
+            denyCustomMetadata: {
                 required: false,
                 default() {
-                    return 0
+                    return []
                 },
             },
         },
@@ -131,6 +126,7 @@
                 filterList,
                 allowCustomFilters,
                 extraCountFilter,
+                denyCustomMetadata,
             } = toRefs(props)
             const localValue = ref(modelValue.value)
             const localActiveKeyValue = ref(activeKey.value)
@@ -168,7 +164,15 @@
                     return true
                 })
                 if (allowCustomFilters.value) {
-                    return [...arr, ...cmList(typeName.value, true)]
+                    return [
+                        ...arr,
+                        ...cmList(
+                            typeName.value,
+                            true,
+                            false,
+                            denyCustomMetadata.value
+                        ),
+                    ]
                 }
                 return [...arr]
             })
@@ -187,7 +191,8 @@
                         if (Object.keys(localValue.value[key]).length > 0) {
                             count += 1
                         }
-                    }
+                    } else if (typeof localValue.value[key] === 'string')
+                        count += 1
                 })
                 return count
             })

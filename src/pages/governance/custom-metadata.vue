@@ -190,7 +190,6 @@
             })
 
             provide('resetSelection', resetSelection)
-
             return {
                 selectedId,
                 error,

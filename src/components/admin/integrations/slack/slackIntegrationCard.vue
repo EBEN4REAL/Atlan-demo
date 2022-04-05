@@ -1,410 +1,124 @@
 <template>
-    <div class="border rounded-lg shadow drop-shadow wrapper">
-        <section
-            class="flex items-center h-24 p-6 bg-gray-100 border-b rounded-t-lg bg-slack gap-x-3"
-        >
-            <div class="flex-grow">
-                <div class="flex items-center gap-x-3">
-                    <div
-                        class="flex items-center justify-center w-12 h-12 bg-gray-200 rounded"
-                    >
-                        <AtlanIcon icon="Slack" class="h-8" />
-                    </div>
-                    <div class="">
-                        <h2 class="text-lg font-bold">Slack</h2>
-                        <span class="text-gray-500">{{ description }}</span>
-                    </div>
-                </div>
-            </div>
-            <div
-                :style="{
-                    color: '#00a680',
-                    background:
-                        'linear-gradient(90deg,#fafafa 0%,#fafafa 65.62%,rgba(250, 250, 250, 0) 95.54%)',
-                }"
-                class="px-3 py-1.5 space-y-2"
-            >
-                <div class="flex items-center justify-center rounded gap-x-1">
-                    <AtlanIcon icon="Check" />
-                    {{ tenantSlackStatus.teamName }} workspace connected
-                </div>
-                <div
-                    class="flex items-center text-xs text-gray-500 gap-x-1.5 justify-center"
-                >
-                    <template v-if="userList[0]">
-                        Added by
-                        <div class="flex justify-center text-xs">
-                            <!-- <img
-                                :src="avatarURL"
-                                class="w-4 h-4 rounded-full"
-                            /> -->
-                            <div class="self-center text-gray-700">
-                                {{ userList[0]?.name }}
-                            </div>
-                        </div>
-                    </template>
-                    <span>{{
-                        useTimeAgo(tenantSlackStatus.createdAt).value
-                    }}</span>
-                </div>
-            </div>
-        </section>
-        <section class="flex flex-col p-6 border-b gap-y-3">
-            <div class="">
-                <h2 class="text-lg font-bold">Channels</h2>
-                <span class="text-gray-500"> {{ channel_description }} </span>
-            </div>
-            <div
-                class="flex flex-wrap items-center h-12 gap-2 p-1 mb-5 border rounded"
-            >
-                <Chip
-                    v-for="(channel, x) in channels"
-                    :key="channel.name"
-                    :index="x"
-                    :content="channel.name"
-                    icon="Number"
-                    :class="
-                        channel.invalid
-                            ? 'border border-dashed border-red-500'
-                            : ''
-                    "
-                    @remove="removeChannel"
-                />
+    <a-modal
+        :visible="showSlackConfigModal"
+        :destroy-on-close="true"
+        :footer="null"
+        :closable="false"
+        :width="692"
+        :class="$style.inviteModal"
+        @cancel="showSlackConfigModal = false"
+        @afterClose="showSlackConfigModal = false"
+    >
+        <SlackConfigModal @close="showSlackConfigModal = false" />
+    </a-modal>
 
-                <div class="flex-grow inline-block mx-3">
-                    <input
-                        v-model="channelValue"
-                        class="w-full focus:outline-none"
-                        placeholder="Add public channels"
-                        @keydown.enter="addChannel"
-                        @blur="addChannel"
-                        @keydown.backspace="
-                            (e) => {
-                                if (!e?.target?.value)
-                                    removeChannel(
-                                        channelValue.valueOf.length - 1
-                                    )
-                            }
-                        "
-                        @keydown.tab="
-                            (e) => {
-                                e.preventDefault()
-                                addChannel(e)
-                            }
-                        "
+    <div
+        class="overflow-hidden border rounded-lg customShadow"
+        :class="
+            openKeys.includes('slack')
+                ? ' border-primary-focus'
+                : 'border-gray-300'
+        "
+    >
+        <a-menu v-model:openKeys="openKeys" mode="inline" :class="$style.menu">
+            <a-sub-menu key="slack" mode="inline">
+                <template #title>
+                    <SlackHeader
+                        class="cursor-pointer"
+                        :is-open="openKeys.includes('slack')"
+                        @openConfig="showSlackConfigModal = true"
                     />
-                </div>
-            </div>
-
-            <AddWorkflowChannel
-                v-model:workflowChannel="workflowChannel.name"
-                :invalid="workflowChannel.invalid"
-                @change="handleWorkflowChannelChange"
-            />
-        </section>
-        <section class="flex items-center justify-between p-6 gap-x-3">
-            <AtlanButton2
-                v-auth="access.DELETE_INTEGRATION"
-                color="secondary"
-                class="text-red-500"
-                label="Disconnect"
-                :loading="isLoading"
-                @click="handleDisconnect"
-            />
-            <!-- v-auth="access.UPDATE_INTEGRATIONS" -->
-            <AtlanButton2
-                :loading="updateLoading"
-                :disabled="!isEdit"
-                label="Save"
-                @click="update"
-            />
-        </section>
+                </template>
+                <a-menu-item>
+                    <div class="">
+                        <UpdateSlackConfig
+                            v-if="tenantSlackStatus.configured"
+                        />
+                        <template v-else>
+                            <OverviewBanner
+                                class="flex flex-col p-4 m-6 border rounded-lg gap-y-3"
+                            />
+                        </template>
+                    </div>
+                </a-menu-item>
+            </a-sub-menu>
+        </a-menu>
     </div>
 </template>
 
-<script lang="ts">
-    import {
-        computed,
-        defineComponent,
-        h,
-        inject,
-        onMounted,
-        reactive,
-        Ref,
-        ref,
-        toRefs,
-        watch,
-    } from 'vue'
-    import { message, Modal } from 'ant-design-vue'
-    import { useTimeAgo } from '@vueuse/core'
-    import AtlanButton from '@/UI/button.vue'
-    import useTenantData from '~/composables/tenant/useTenantData'
-    import {
-        UpdateIntegration,
-        archiveIntegration,
-        getIntegrationById,
-        refetchIntegration,
-    } from '~/composables/integrations/useIntegrations'
+<script setup lang="ts">
+    import { ref, toRefs, watch } from 'vue'
     import integrationStore from '~/store/integrations/index'
-    import Chip from '@/UI/chip.vue'
-    import access from '~/constant/accessControl/map'
-    import { archiveSlack } from '~/composables/integrations/slack/useSlack'
-    import { integrations } from '~/constant/integrations'
-    import { useUsers } from '~/composables/user/useUsers'
-    import useAddEvent from '~/composables/eventTracking/useAddEvent'
-    import AddWorkflowChannel from '@/admin/integrations/slack/misc/addWorkflowChannel.vue'
+    import UpdateSlackConfig from './updateSlackConfig.vue'
+    import SlackConfigModal from './slackConfigModal.vue'
+    import SlackHeader from '@/admin/integrations/slack/slackHeader.vue'
+    import OverviewBanner from '@/admin/integrations/slack/misc/overviewBannerCard.vue'
 
-    export default defineComponent({
-        name: 'SlackIntegrationCard',
-        components: { AtlanButton, Chip, AddWorkflowChannel },
-        setup() {
-            const { name: tenantName } = useTenantData()
+    const openKeys = ref([])
 
-            const store = integrationStore()
+    const showSlackConfigModal = ref(false)
+    // store
+    const store = integrationStore()
 
-            const { tenantSlackStatus } = toRefs(store)
-
-            const pV = computed(() => ({ id: tenantSlackStatus.value.id }))
-
-            const channels: Ref<[{ name: string; invalid?: boolean }]> = ref([])
-
-            const channelValue = ref([])
-            const workflowChannel = ref({ name: '', invalid: false })
-
-            const isEdit = ref(false)
-
-            const addChannel = (e) => {
-                const value = e?.target?.value.trim() ?? null
-                if (value) {
-                    channels.value.push({ name: value })
-                    isEdit.value = true
-                }
-                channelValue.value = []
-            }
-
-            const removeChannel = (i) => {
-                const index = i
-                channels.value.splice(index, 1)
-                isEdit.value = true
-            }
-
-            onMounted(() => {
-                channels.value = tenantSlackStatus.value.channels as any
-                workflowChannel.value.name =
-                    tenantSlackStatus.value?.alertsWorkflowChannel?.name || ''
-            })
-
-            const body = computed(() => ({
-                channels: channels.value.map((c) => ({ name: c.name })),
-
-                ...(workflowChannel.value.name
-                    ? {
-                          alertsWorkflowChannel: {
-                              name: workflowChannel.value.name,
-                          },
-                      }
-                    : {}),
-            }))
-
-            const { data, isLoading, error, disconnect } = archiveSlack(pV)
-
-            // TODO @SAMIRAN HANDLE FAILED CHANNEL FOR WORKFLOW CHANNEL
-            const handleFailed = (failedC) => {
-                failedC.forEach((c) => {
-                    if (c === workflowChannel.value.name)
-                        workflowChannel.value.invalid = true
-                    const index = channels.value.findIndex(
-                        (ch) => ch.name === c
-                    )
-                    if (index > -1) {
-                        channels.value[index].invalid = true
-                    }
-                })
-            }
-
-            const {
-                data: updateData,
-                isLoading: updateLoading,
-                error: updateError,
-                mutate: update,
-            } = UpdateIntegration(pV, body, { immediate: false })
-
-            watch([updateLoading, updateError], () => {
-                if (updateLoading.value) {
-                    message.loading({
-                        content: 'Adding channels...',
-                        key: 'addChannel',
-                        duration: 2,
-                    })
-                } else if (updateError.value) {
-                    const errMsg =
-                        updateError.value?.response?.data?.errorMessage || ''
-                    const generalError = 'Network error'
-                    const e = errMsg || generalError
-                    message.error({
-                        content: e,
-                        key: 'addChannel',
-                        duration: 2,
-                    })
-                } else {
-                    let updatedChannelCount = channels.value.length
-                    if (updateData.value?.failedChannels) {
-                        const { failedChannels } = updateData.value
-                        handleFailed(failedChannels)
-                        updatedChannelCount -= failedChannels.length
-                        message.error({
-                            content: `Unable to add some channels: "${failedChannels.join(
-                                ', '
-                            )}"`,
-                            key: 'failedChannels',
-                            duration: 4,
-                        })
-                    }
-                    refetchIntegration(pV.value.id)
-                    useAddEvent(
-                        'integration',
-                        'slack',
-                        'share_channels_updated',
-                        {
-                            channel_count: updatedChannelCount,
-                        }
-                    )
-
-                    message.success({
-                        content: 'Updated channels successfully.',
-                        key: 'addChannel',
-                        duration: 2,
-                    })
-                    isEdit.value = false
-                }
-            })
-
-            const { description, channel_description } = integrations.slack
-
-            const userListAPIParams: any = reactive({
-                limit: 1,
-                offset: 0,
-                sort: 'firstName',
-                filter: {
-                    $and: [
-                        {
-                            emailVerified: true,
-                        },
-                        {
-                            username: tenantSlackStatus.value.createdBy,
-                        },
-                    ],
-                },
-            })
-
-            const avatarURL = computed(
-                () =>
-                    `${window.location.origin}/api/service/avatars/${tenantSlackStatus.value.createdBy}`
+    const { tenantSlackStatus } = toRefs(store)
+    watch(
+        () => tenantSlackStatus.value.configured,
+        (v) => {
+            if (
+                showSlackConfigModal.value &&
+                tenantSlackStatus.value.configured
             )
-
-            const {
-                userList,
-                isLoading: uLoading,
-                error: uError,
-            } = useUsers(userListAPIParams, true)
-
-            const handleDisconnect = () => {
-                Modal.confirm({
-                    class: '',
-                    icon: null,
-                    content: () =>
-                        h('div', { class: [''] }, [
-                            h(
-                                'h1',
-                                {
-                                    class: ['font-bold -mt-4 mb-2'],
-                                },
-                                ['Disconnect Slack']
-                            ),
-
-                            h(
-                                'div',
-                                {
-                                    class: ['font-normal'],
-                                },
-                                [
-                                    'Are you sure you want to disconnect ',
-                                    h(
-                                        'b',
-                                        {
-                                            class: [''],
-                                        },
-                                        'Slack'
-                                    ),
-                                    ' integration?',
-                                ]
-                            ),
-                            h(
-                                'div',
-                                {
-                                    class: ['font-normal', 'mb-2'],
-                                },
-                                [
-                                    'This will also disconnect slack integration for other users.',
-                                ]
-                            ),
-                        ]),
-                    okType: 'danger',
-                    autoFocusButton: null,
-                    okButtonProps: {
-                        type: 'primary',
-                    },
-                    okText: 'Disconnect',
-                    cancelText: 'Cancel',
-                    async onOk() {
-                        await disconnect()
-                        useAddEvent('admin', 'integration', 'removed', {
-                            integration: 'slack',
-                            level: 'tenant',
-                        })
-                    },
-                })
-            }
-
-            const handleWorkflowChannelChange = (v) => {
-                isEdit.value = true
-                if (!v) workflowChannel.value = { name: '', invalid: false }
-            }
-
-            return {
-                workflowChannel,
-                handleWorkflowChannelChange,
-                handleDisconnect,
-                useTimeAgo,
-                avatarURL,
-                userList,
-                uLoading,
-                uError,
-                channel_description,
-                description,
-                tenantSlackStatus,
-                body,
-                removeChannel,
-                isLoading,
-                tenantName,
-                updateLoading,
-                channelValue,
-                addChannel,
-                disconnect,
-                update,
-                channels,
-                isEdit,
-                access,
-            }
-        },
-    })
+                showSlackConfigModal.value = false
+        }
+    )
 </script>
 
-<style scoped>
-    .bg-slack {
-        background: url('~/assets/images/admin/integrations/add-slack-bg.svg')
-            no-repeat;
-        background-size: contain;
-        background-position-x: right;
+<style lang="less" module>
+    .inviteModal {
+        :global(.ant-modal-content) {
+            @apply rounded-lg;
+        }
+    }
+</style>
+
+<style lang="less" module>
+    .menu {
+        div {
+            line-height: normal;
+            @apply whitespace-normal;
+        }
+        @apply border-none  !important;
+        :global(.ant-menu-submenu-title) {
+            @apply h-full p-0 m-0 !important;
+            :global(.ant-menu-submenu-arrow) {
+                @apply hidden !important;
+            }
+        }
+
+        :global(.ant-menu-title-content) {
+            @apply cursor-default;
+        }
+
+        :global(.ant-menu-item) {
+            @apply h-full  bg-white px-0 !important;
+        }
+
+        :global(.ant-menu-submenu-title:active) {
+            @apply bg-transparent;
+        }
+
+        :global(.ant-menu-inline) {
+            @apply bg-white !important;
+        }
+
+        :global(.ant-menu-item-selected) {
+            @apply text-gray-700;
+        }
+        :global(.ant-menu-item:hover) {
+            @apply text-gray-700;
+        }
+    }
+    :global(.ant-menu-item::after) {
+        @apply border-r-0 !important;
     }
 </style>

@@ -93,6 +93,7 @@
                     :value="enumValueModel"
                     delimiter=";"
                     @change="(v) => (enumValueModel = v)"
+                    id="enum_value"
                 />
             </template>
             <p v-else class="flex flex-wrap">
@@ -100,8 +101,10 @@
                     v-for="(e, x) in selectedEnumOptions"
                     :key="x"
                     class="flex items-center justify-center mb-1 bg-gray-200 border-0 rounded h-7"
-                    >{{ e.title }}</a-tag
+                    style=""
                 >
+                    <SimpleEllipsis :text="e.title" max-width="100px" />
+                </a-tag>
             </p>
         </div>
 
@@ -142,10 +145,13 @@
     import MultiInput from '@/common/input/customizedTagInput.vue'
     import EnumDef from '@/governance/enums/enum.interface'
     import Search from '@/common/input/searchAdvanced.vue'
+    import Truncate from '@/common/ellipsis/index.vue'
+    import SimpleEllipsis from '@/common/ellipsis/simpleEllipsis.vue'
 
     export default defineComponent({
         components: {
             Search,
+            SimpleEllipsis,
             CreateEnumForm,
             MultiInput,
             VNodes: (_, { attrs }) => attrs.vnodes,

@@ -20,16 +20,30 @@ export interface DataPolicies {
     description: string
     connectionId: string
     maskType:
-    | 'null'
-    | 'MASK_REDACT'
-    | 'MASK_HASH'
-    | 'MASK_SHOW_LAST_4'
-    | 'MASK_SHOW_FIRST_4'
-    | 'MASK_NULL'
-    | 'MASK_NONE'
-    | 'MASK_DATE_SHOW_YEAR'
+        | 'null'
+        | 'MASK_REDACT'
+        | 'MASK_HASH'
+        | 'MASK_SHOW_LAST_4'
+        | 'MASK_SHOW_FIRST_4'
+        | 'MASK_NULL'
+        | 'MASK_NONE'
+        | 'MASK_DATE_SHOW_YEAR'
     name: string
     isNew?: boolean
+    createdBy: string
+    createdAt: number
+}
+
+export interface glossaryQualifiedNames {
+    glossaryQualifiedNames: string[]
+}
+export interface GlossaryPolicies {
+    id?: string
+    name: string
+    description: string
+    actions: string[]
+    allow: boolean
+    glossaryQualifiedNames: string[]
     createdBy: string
     createdAt: number
 }
@@ -51,6 +65,7 @@ export interface IPersona {
     updatedBy?: string
     createdAt?: number
     createdBy?: string
+    glossaryPolicies?: any[]
 }
 
 export interface IUser {

@@ -99,6 +99,18 @@ export interface assetInterface {
                 name: string
             }
         }
+        anchor?: {
+            guid: string
+            typeName: string
+            uniqueAttributes: {
+                qualifiedName: string
+            }
+            attributes: {
+                description?: string
+                name?: string
+                certificateStatus?: string
+            }
+        }
         __createdBy: string
         __customAttributes: string
         __guid: string

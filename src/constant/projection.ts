@@ -64,6 +64,8 @@ export const AssetAttributes = [
     'ownerGroups',
     'adminUsers',
     'adminGroups',
+    'viewerGroups',
+    'viewerUsers',
     'meanings',
     'readme',
     'rawQuery',
@@ -83,7 +85,6 @@ export const AssetAttributes = [
     'parentQualifiedName',
     'collectionQualifiedName',
     'parent',
-    'queries',
     'externalLocation',
     'externalLocationFormat',
     'sql',
@@ -127,6 +128,7 @@ export const AssetAttributes = [
     'inlineHelpText',
     'picklistValues',
     'formula',
+    'isPublished',
 ]
 
 export const SQLAttributes = [
@@ -148,7 +150,10 @@ export const SQLAttributes = [
     'isDist',
     'table',
     'view',
+    'tablePartition',
+    'materialisedView',
     'database',
+    'atlanSchema',
     'tableCount',
     'viewsCount',
 ]
@@ -237,6 +242,8 @@ export const MinimalAttributes = [
     'isPrimary',
     'table',
     'view',
+    'tablePartition',
+    'materialisedView',
     'database',
     'tableCount',
     'viewsCount',
@@ -248,6 +255,7 @@ export const MinimalAttributes = [
     'isForeign',
     'isDist',
     'order',
+    'isPublished',
 ]
 
 export const BasicSearchAttributes = [

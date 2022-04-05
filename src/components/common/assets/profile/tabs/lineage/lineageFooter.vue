@@ -58,6 +58,20 @@
                     </div>
                 </a-popover>
 
+                <!-- onSvgExport -->
+                <!-- <div class="control-item" @click="onSvgExport">
+                    <a-tooltip placement="top">
+                        <template #title>
+                            <span>Export as SVG</span>
+                        </template>
+
+                        <AtlanIcon
+                            icon="Image"
+                            class="outline-none"
+                        ></AtlanIcon>
+                    </a-tooltip>
+                </div> -->
+
                 <!-- Minimap -->
                 <div
                     class="control-item"
@@ -136,9 +150,12 @@
 <script lang="ts">
     /** VUE */
     import { defineComponent, inject, ref, toRefs } from 'vue'
+    import { DataUri } from '@antv/x6'
 
     /** COMPOSABLES */
     import useTransformGraph from './useTransformGraph'
+
+    import { exportStyles } from './stylesTwo'
 
     export default defineComponent({
         name: 'LineageFooter',
@@ -174,8 +191,13 @@
             const preferences = inject('preferences', ref({}))
 
             /** DATA */
-            const { graph, lineageContainer, graphHeight, graphWidth } =
-                toRefs(props)
+            const {
+                graph,
+                baseEntityGuid,
+                lineageContainer,
+                graphHeight,
+                graphWidth,
+            } = toRefs(props)
             const showMinimap = ref(false)
             const isFullscreen = ref(false)
             const isExpanded = ref(true)
@@ -185,6 +207,29 @@
             /** METHODS */
             // useTransformGraph
             const { zoom, fit, fullscreen } = useTransformGraph(graph, emit)
+
+            // onSvgExport
+            const onSvgExport = () => {
+                const baseNode = graph.value
+                    .getNodes()
+                    .find((node) => node.id === baseEntityGuid.value)
+                const { displayText, guid } = baseNode.store.data.entity
+                const fileName = `${displayText}_${guid}`
+
+                graph.value.toSVG(
+                    (dataUri: string) => {
+                        DataUri.downloadDataUri(
+                            DataUri.svgToDataUrl(dataUri),
+                            fileName
+                        )
+                    },
+                    {
+                        copyStyles: false,
+                        stylesheet: exportStyles,
+                        serializeImages: true,
+                    }
+                )
+            }
 
             // onFullscreen
             const onFullscreen = () => {
@@ -228,6 +273,7 @@
                 fit,
                 onShowMinimap,
                 onFullscreen,
+                onSvgExport,
                 toggleControlVisibility,
             }
         },

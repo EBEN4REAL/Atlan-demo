@@ -4,12 +4,17 @@ import { getRequests } from '~/services/service/requests'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
 export function useRequest(guid,  pagination: Ref, type, filterStatus = {value: {}}) {
-     const filterType = type === 'AtlasGlossaryTerm' ? 'sourceGuid' :'destinationGuid'
+    const payloadFilter = type === 'AtlasGlossaryTerm' ? {
+        '$or': [{sourceGuid: guid}, {destinationGuid: guid}]
+    } : {
+        destinationGuid: guid,
+    }
+    //  const filterType = type === 'AtlasGlossaryTerm' ? 'sourceGuid' :'destinationGuid'
      const params = computed(() => ({
         sort: '-createdAt',
         limit: pagination.value.limit,
         offset: pagination.value.offset,
-        filter: { [filterType]: guid, ...filterStatus.value}, 
+        filter: {"$and": [filterStatus.value, payloadFilter]}, 
     }))
     const { data, mutate, error, isLoading, isValidating } = getRequests(params)
     watch(pagination, () => {

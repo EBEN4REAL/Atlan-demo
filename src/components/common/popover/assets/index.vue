@@ -1,10 +1,65 @@
 <template>
-    <a-popover title="" placement="left" :mouse-enter-delay="mouseEnterDelay">
+    <a-popover
+        v-model:visible="assetPopoverVisible"
+        title=""
+        placement="left"
+        :mouse-enter-delay="mouseEnterDelay"
+        trigger="hover"
+    >
         <template #content>
-            <div class="relation-ship">
-                <div class="flex justify-between">
-                    <div class="flex items-center mb-1 text-gray-500">
-                        <AtlanIcon :icon="logoTitle" class="h-3 mr-1 mb-0.5" />
+            <div class="rounded w-96">
+                <!-- Start Header-->
+                <div class="p-4 bg-gray-100 border-b rounded-tl rounded-tr">
+                    <div class="flex justify-between mb-2">
+                        <div
+                            class="flex items-center font-semibold break-words"
+                        >
+                            <div class="flex mr-3.5">
+                                <div
+                                    v-if="
+                                        item.typeName?.toLowerCase() ===
+                                            'column' &&
+                                        item.attributes?.dataType
+                                    "
+                                    class="flex items-center h-6 p-1 mr-2 text-gray-500 bg-gray-200 border-gray-300 rounded"
+                                >
+                                    <component
+                                        :is="dataTypeCategoryImage(item)"
+                                        class="h-4 text-gray-500"
+                                    />
+                                </div>
+                                <span class="text-lg break-all line-clamp-2">
+                                    {{
+                                        item?.displayText ||
+                                        item?.attributes?.name
+                                    }}
+                                </span>
+                                <CertificateBadge
+                                    v-if="certificateStatus(item)"
+                                    :status="certificateStatus(item)"
+                                    :username="certificateUpdatedBy(item)"
+                                    :timestamp="certificateUpdatedAt(item)"
+                                    class="flex mt-1.5 ml-1"
+                                    style="min-width: 16px"
+                                    :icon-class="'self-start'"
+                                />
+                            </div>
+                        </div>
+                        <slot name="button">
+                            <AtlanBtn
+                                v-if="showPreviewCTA"
+                                class="self-start flex-none bg-white border border-gray-300"
+                                size="icn"
+                                color="minimal"
+                                padding="icon"
+                                @click="handleAssetPreview"
+                            >
+                                <AtlanIcon icon="OpenPreview" />
+                            </AtlanBtn>
+                        </slot>
+                    </div>
+                    <div class="flex items-center leading-5">
+                        <img :src="logoTitle" class="h-4 mr-1 mb-0.5" />
                         <AtlanIcon
                             v-if="
                                 ['atlasglossarycategory'].includes(
@@ -23,215 +78,300 @@
                             icon="Term"
                             class="h-4 mb-0.5 mr-1"
                         ></AtlanIcon>
-
-                        <span class="uppercase">{{
-                            title || item?.typeName
-                        }}</span>
-
-                        <div>
-                            <span
-                                v-if="
-                                    item.typeName?.toLowerCase() === 'table' ||
-                                    item.typeName?.toLowerCase() === 'view' ||
-                                    item.typeName?.toLowerCase() ===
-                                        'tablepartition' ||
-                                    item.typeName?.toLowerCase() ===
-                                        'materialisedview'
-                                "
-                                class="ml-3 text-xs text-gray-500"
-                            >
-                                <a-tooltip placement="bottomLeft">
-                                    <span
-                                        class="mr-1 text-xs font-semibold tracking-tight text-gray-500 cursor-pointer"
-                                        >{{ rows }}</span
-                                    >Rows
-                                    <template #title>
-                                        <span
-                                            v-if="
-                                                sizeBytes(item, false) &&
-                                                rows !== '~'
-                                            "
-                                            class="font-semibold"
-                                            >{{ rows }} rows ({{
-                                                sizeBytes(item, false)
-                                            }})</span
-                                        >
-                                        <span v-else class="font-semibold"
-                                            >Row count is not available for
-                                            {{ connectorName(item) }}/{{
-                                                connectionName(item)
-                                            }}</span
-                                        >
-                                    </template>
-                                </a-tooltip>
-                            </span>
-                            <span
-                                v-if="
-                                    item.typeName?.toLowerCase() === 'table' ||
-                                    item.typeName?.toLowerCase() === 'view' ||
-                                    item.typeName?.toLowerCase() ===
-                                        'tablepartition' ||
-                                    item.typeName?.toLowerCase() ===
-                                        'materialisedview'
-                                "
-                                class="text-xs text-gray-500"
-                            >
-                                <span
-                                    class="text-xs font-semibold tracking-tight text-gray-500"
-                                    >{{ cols }}</span
-                                >
-                                Cols
-                            </span>
+                        <div class="uppercase">
+                            {{ title || item?.typeName }}
                         </div>
 
-                        <slot name="extraHeaders"> </slot>
-                    </div>
-                    <div
-                        v-if="
-                            item.typeName?.toLowerCase() === 'column' &&
-                            item.attributes?.dataType
-                        "
-                        class="flex items-center px-1 text-gray-500 bg-gray-100 border-gray-300 rounded"
-                    >
-                        <component
-                            :is="dataTypeCategoryImage(item)"
-                            class="h-4 text-gray-500"
-                            style="margin-bottom: 3px"
-                        />
-                        <span>{{ item.attributes?.dataType }}</span>
-                    </div>
-                </div>
-                <div class="mb-0.5 font-semibold flex items-center break-words">
-                    <span class="break-words line-clamp-3">
-                        {{ item?.displayText || item?.attributes?.name }}
-                        <CertificateBadge
-                            v-if="certificateStatus(item)"
-                            :status="certificateStatus(item)"
-                            :username="certificateUpdatedBy(item)"
-                            :timestamp="certificateUpdatedAt(item)"
-                            class="flex mb-1 ml-1"
-                            style="min-width: 16px"
-                        />
-                    </span>
-                </div>
-                <div class="flex flex-wrap items-center gap-x-2">
-                    <div
-                        v-if="table"
-                        class="flex items-center text-sm text-gray-500"
-                    >
-                        <AtlanIcon
-                            icon="TableGray"
-                            :class="`mr-1 mb-0.5 ${
-                                item.typeName?.toLowerCase() === 'column'
-                                    ? 'icon-blue-color'
-                                    : ''
-                            }`"
-                        />
+                        <!-- Table context for columns -->
+                        <div v-if="table" class="flex items-center">
+                            <span class="mx-2">in</span>
+                            <AtlanIcon
+                                icon="TableGray"
+                                :class="`mr-1 mb-0.5 text-blueGray`"
+                            />
+                            <div
+                                class="w-56 truncate cursor-pointer hover:underline"
+                                @click="handleTableForColumnPreview"
+                            >
+                                {{ table }}
+                            </div>
+                        </div>
+                        <!-- DB and Schema context for tables/views etc. -->
                         <div
-                            class="max-w-full text-xs tracking-tight text-gray-500 break-all"
+                            v-if="
+                                db && item.typeName?.toLowerCase() !== 'column'
+                            "
+                            class="flex items-center text-gray-500"
                         >
-                            {{ table }}
+                            <span class="mx-2">in</span>
+                            <AtlanIcon
+                                icon="DatabaseGray"
+                                class="mr-1 mb-0.5"
+                            />
+                            <div class="truncate max-w-100px">
+                                {{ db }}
+                            </div>
+                        </div>
+                        <div
+                            v-if="
+                                schema &&
+                                item.typeName?.toLowerCase() !== 'column'
+                            "
+                            class="flex items-center text-gray-500"
+                        >
+                            <span v-if="db" class="mx-0.5 mb-0.5"
+                                ><AtlanIcon icon="CaretRight"
+                            /></span>
+                            <AtlanIcon icon="SchemaGray" class="mr-1 mb-0.5" />
+                            <div class="truncate max-w-100px">
+                                {{ schema }}
+                            </div>
+                        </div>
+                        <!--Collection context for queries -->
+                        <div
+                            v-if="collectionName"
+                            class="flex items-center text-gray-500"
+                        >
+                            <span class="mx-2">in</span>
+                            <AtlanIcon
+                                icon="CollectionIconSmall"
+                                class="mr-1 mb-0.5"
+                            />
+                            <div class="w-56 truncate">
+                                {{ collectionName }}
+                            </div>
                         </div>
                     </div>
+                </div>
+
+                <!-- End Header-->
+                <div class="w-full px-4 mt-3">
+                    <!-- Start Row 1  -->
+                    <div>
+                        <!-- #rows/cols/size for tables, views etc. -->
+                        <div
+                            v-if="
+                                [
+                                    'table',
+                                    'view',
+                                    'tablepartition',
+                                    'materialisedview',
+                                ].includes(item.typeName?.toLowerCase())
+                            "
+                            class="flex justify-between flex-grow pb-4"
+                        >
+                            <div class="">
+                                <div class="text-gray-500">Rows</div>
+                                <div class="mt-1 font-bold">{{ rows }}</div>
+                            </div>
+                            <div class="">
+                                <div class="text-gray-500">Columns</div>
+                                <div class="mt-1 font-bold">{{ cols }}</div>
+                            </div>
+                            <div class="mr-14">
+                                <div class="text-gray-500">Size</div>
+                                <div class="mt-1 font-bold">
+                                    {{ sizeBytes(item, false) }}
+                                </div>
+                            </div>
+                        </div>
+                        <!--data type context for columns -->
+                        <div
+                            v-if="
+                                item.typeName?.toLowerCase() === 'column' &&
+                                item.attributes?.dataType
+                            "
+                            class="pb-4"
+                        >
+                            <div class="text-gray-500">Data type</div>
+                            <div class="flex items-center mt-1">
+                                <component
+                                    :is="dataTypeCategoryImage(item)"
+                                    class="h-4 mr-1 text-gray-500 mb-0.5"
+                                />
+                                <span>{{ item.attributes?.dataType }}</span>
+                                <div class="flex ml-1 gap-x-2">
+                                    <ColumnKeys
+                                        :is-primary="isPrimary(item)"
+                                        :is-foreign="isForeign(item)"
+                                        :is-partition="isPartition(item)"
+                                        :is-sort="isSort(item)"
+                                        :is-indexed="isIndexed(item)"
+                                    />
+                                </div>
+                                <!-- <span
+                                    v-if="isPrimary(item)"
+                                    class="pt-1.5 pb-1 pr-2 pl-1 ml-2 text-xs rounded"
+                                    style="background-color: #fffbf5"
+                                >
+                                    <AtlanIcon
+                                        icon="primaryKey"
+                                        class="mr-0.5"
+                                    ></AtlanIcon
+                                    ><span style="color: #eb9d07">Pkey</span>
+                                </span> -->
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Row 1  -->
+
+                    <!-- Description -->
+                    <div v-if="description(item)" class="pb-4">
+                        <div class="text-gray-500">Description</div>
+                        <div class="flex items-center mt-1">
+                            {{ description(item) }}
+                        </div>
+                    </div>
+
+                    <!-- Terms/Clsfs  -->
                     <div
                         v-if="
-                            table && item.typeName?.toLowerCase() !== 'column'
+                            list?.length ||
+                            item?.meanings?.length ||
+                            item?.attributes?.meanings?.length
                         "
-                        class="dot"
-                    />
-                    <div
-                        v-if="db && item.typeName?.toLowerCase() !== 'column'"
-                        class="flex items-center text-gray-500"
+                        class="pb-4"
                     >
-                        <AtlanIcon icon="DatabaseGray" class="mr-1 mb-0.5" />
-                        <div class="text-xs tracking-tight text-gray-500">
-                            {{ db }}
-                        </div>
-                    </div>
-                    <div
-                        v-if="db && item.typeName?.toLowerCase() !== 'column'"
-                        class="dot"
-                    />
-                    <div
-                        v-if="
-                            schema && item.typeName?.toLowerCase() !== 'column'
-                        "
-                        class="flex items-center text-gray-500"
-                    >
-                        <AtlanIcon icon="SchemaGray" class="mr-1 mb-0.5" />
-                        <div class="text-xs tracking-tight text-gray-500">
-                            {{ schema }}
-                        </div>
-                    </div>
-                </div>
-                <div v-if="description(item)" class="mt-1 text-sm">
-                    {{ description(item) }}
-                </div>
-                <div v-if="list?.length > 0" class="flex flex-wrap gap-1 mt-3">
-                    <template
-                        v-for="classification in list"
-                        :key="classification.guid"
-                    >
-                        <ClassificationPill
-                            :name="classification.name"
-                            :display-name="classification?.displayName"
-                            :is-propagated="isPropagated(classification)"
-                            :allow-delete="false"
-                            :created-by="classification?.createdBy"
-                        ></ClassificationPill>
-                    </template>
-                    <template
-                        v-for="term in item.meanings"
-                        :key="term.termGuid"
-                    >
-                        <TermPill :term="term" :allow-delete="false" />
-                    </template>
-                </div>
-                <div
-                    v-if="item?.attributes?.ownerUsers?.length > 0"
-                    class="mt-4"
-                >
-                    <div class="mb-1 text-sm text-gray-500">Owners</div>
-                    <div class="flex flex-wrap gap-1">
-                        <template
-                            v-for="(user, idx) in item?.attributes?.ownerUsers"
-                            :key="idx"
+                        <div class="text-gray-500">Terms & Classifications</div>
+
+                        <div
+                            v-if="list?.length"
+                            class="flex flex-wrap gap-1 mt-1"
                         >
-                            <PopOverUser :item="user">
-                                <UserPill :key="idx" :username="user" />
-                            </PopOverUser>
-                        </template>
-                    </div>
-                </div>
-                <div class="flex mt-4">
-                    <slot name="button"></slot>
-                    <router-link
-                        v-if="!slots?.button"
-                        :to="path"
-                        class="ml-auto"
-                    >
-                        <AtlanBtn
-                            class="flex-none px-0"
-                            size="sm"
-                            color="minimal"
-                            padding="compact"
-                            style="height: fit-content"
-                        >
-                            <span class="text-primary whitespace-nowrap">
-                                View Profile</span
+                            <template
+                                v-for="classification in list.slice(0, 3)"
+                                :key="classification.guid"
                             >
-                            <AtlanIcon icon="ArrowRight" class="text-primary" />
-                        </AtlanBtn>
-                    </router-link>
+                                <ClassificationPill
+                                    :name="classification.name"
+                                    :display-name="classification?.displayName"
+                                    :is-propagated="
+                                        isPropagated(classification)
+                                    "
+                                    :allow-delete="false"
+                                    :created-by="classification?.createdBy"
+                                ></ClassificationPill>
+                            </template>
+                            <span
+                                v-if="list.slice(3, list.length).length"
+                                class="bg-gray-100 border border-gray-300 flex items-center px-1.5 py-1 rounded-full text-gray-500"
+                            >
+                                +{{ list.slice(3, list.length).length }}
+                            </span>
+                        </div>
+                        <div
+                            v-if="item?.meanings?.length"
+                            class="flex flex-wrap gap-1 mt-1"
+                        >
+                            <template
+                                v-for="term in item.meanings.slice(0, 3)"
+                                :key="term.termGuid"
+                            >
+                                <TermPill :term="term" :allow-delete="false" />
+                            </template>
+                            <span
+                                v-if="
+                                    item.meanings.slice(3, item.meanings.length)
+                                        .length
+                                "
+                                class="bg-gray-100 border border-gray-300 flex items-center px-1.5 py-1 rounded-full text-gray-500"
+                            >
+                                +{{
+                                    item.meanings.slice(3, item.meanings.length)
+                                        .length
+                                }}
+                            </span>
+                        </div>
+                        <div
+                            v-else-if="item?.attributes?.meanings?.length"
+                            class="flex flex-wrap gap-1 mt-1"
+                        >
+                            <template
+                                v-for="term in item?.attributes?.meanings.slice(
+                                    0,
+                                    3
+                                )"
+                                :key="term.termGuid"
+                            >
+                                <TermPill :term="term" :allow-delete="false" />
+                            </template>
+                            <span
+                                v-if="
+                                    item?.attributes?.meanings.slice(
+                                        3,
+                                        item?.attributes?.meanings.length
+                                    ).length
+                                "
+                                class="bg-gray-100 border border-gray-300 flex items-center px-1.5 py-1 rounded-full text-gray-500"
+                            >
+                                +{{
+                                    item?.attributes?.meanings.slice(
+                                        3,
+                                        item?.attributes?.meanings.length
+                                    ).length
+                                }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Owners -->
+                    <div
+                        v-if="item?.attributes?.ownerUsers?.length > 0"
+                        class="pb-4"
+                    >
+                        <div class="text-gray-500">Owners</div>
+                        <div class="flex flex-wrap gap-1 mt-1">
+                            <div
+                                v-for="(user, idx) in item?.attributes
+                                    ?.ownerUsers"
+                                :key="idx"
+                            >
+                                <UserPill
+                                    :key="idx"
+                                    :username="user"
+                                    @click="handleUserPreview(user)"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex" v-if="showPreviewLink" >
+                        <router-link
+                            :to="path"
+                            class="ml-auto" 
+                        >
+                            <AtlanBtn
+                                class="flex-none px-0"
+                                size="sm"
+                                color="minimal"
+                                padding="compact"
+                                style="height: fit-content"
+                            >
+                                <span class="text-primary whitespace-nowrap">
+                                    View Profile</span
+                                >
+                                <AtlanIcon
+                                    icon="ArrowRight"
+                                    class="text-primary"
+                                />
+                            </AtlanBtn>
+                        </router-link>
+                    </div>
                 </div>
             </div>
         </template>
         <slot></slot>
     </a-popover>
+    <AssetDrawer
+        key="asset-sidebar-asset-popover"
+        :guid="tableGuid"
+        :show-drawer="showTablePreview"
+        @closeDrawer="handleCloseTablePreview"
+    />
 </template>
 
 <script lang="ts">
-    import { toRefs, computed } from 'vue'
+    import { toRefs, computed, inject, onMounted, ref, ComputedRef } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { mergeArray } from '~/utils/array'
@@ -241,6 +381,10 @@
     import AtlanBtn from '@/UI/button.vue'
     import TermPill from '@/common/pills/term.vue'
     import PopOverUser from '@/common/popover/user/user.vue'
+    import { QueryCollection } from '~/types/insights/savedQuery.interface'
+    import AssetDrawer from '@/common/assets/preview/drawer.vue'
+    import { useUserPreview } from '~/composables/user/showUserPreview'
+    import ColumnKeys from '~/components/common/column/columnKeys.vue'
 
     export default {
         name: 'PopoverAsset',
@@ -251,6 +395,8 @@
             CertificateBadge,
             AtlanBtn,
             TermPill,
+            AssetDrawer,
+            ColumnKeys,
         },
         props: {
             item: {
@@ -265,9 +411,17 @@
                 required: false,
                 default: 1,
             },
+            showPreviewLink: {
+                type: Boolean,
+                default: false,
+            },
+            showPreviewCTA: {
+                type: Boolean,
+                default: true,
+            },
         },
-        emits: [],
-        setup(props, { slots }) {
+        emits: ['previewAsset'],
+        setup(props, { slots, emit }) {
             const { item } = toRefs(props)
 
             const {
@@ -287,9 +441,19 @@
                 sizeBytes,
                 connectionName,
                 connectorName,
+                isPrimary,
+                isForeign,
+                isPartition,
+                isSort,
+                isIndexed,
+                getProfilePath,
             } = useAssetInfo()
 
+            const { showUserPreview: openPreview, setUserUniqueAttribute } =
+                useUserPreview()
             const { classificationList } = useTypedefData()
+            const assetPopoverVisible = ref(false)
+            const showTablePreview = ref(false)
 
             const isPropagated = (classification) => {
                 if (!item?.value?.guid) {
@@ -308,24 +472,72 @@
                 return matchingIdsResult
             })
 
-            const rows = computed(() => rowCount(item.value, false))
-            const cols = computed(() => columnCount(item.value, false))
+            const rows = computed(() => {
+                const rawRowCount = rowCount(item.value, true)
+                if (rawRowCount.length > 12) return rowCount(item.value, false)
+                return rawRowCount ?? ''
+            })
+            const cols = computed(() => {
+                const rawColCount = columnCount(item.value, true)
+                if (rawColCount.length > 12)
+                    return columnCount(item.value, false)
+                return rawColCount ?? ''
+            })
             const table = computed(() => tableName(item.value))
             const db = computed(() => databaseName(item.value))
             const schema = computed(() => schemaName(item.value))
             const title = computed(() => assetTypeLabel(item.value))
             const logoTitle = computed(() => getConnectorImage(item.value))
-            const path = computed(() => {
+            const path = computed(() => getProfilePath(item.value))
+            const tableGuid = computed(
+                () => item?.value?.attributes?.table?.guid
+            )
+            const collectionName = ref('')
+
+            const queryCollections = inject('queryCollections') as ComputedRef<
+                QueryCollection[] | undefined
+            >
+
+            const setCollectionName = () => {
                 if (
-                    [
-                        'AtlasGlossaryTerm',
-                        'AtlasGlossaryCategory',
-                        'AtlasGlossary',
-                    ].includes(item?.value?.typeName)
+                    item?.value?.attributes &&
+                    queryCollections?.value?.length
                 ) {
-                    return `/glossary/${item.value.guid}`
+                    const { attributes } = item.value
+                    const { collectionQualifiedName } = attributes
+                    if (collectionQualifiedName) {
+                        const col = queryCollections.value?.find(
+                            (col) =>
+                                col.attributes.qualifiedName ===
+                                collectionQualifiedName
+                        )
+                        collectionName.value = col?.displayText || ''
+                    }
                 }
-                return `/assets/${item.value.guid}`
+            }
+
+            const closePopover = () => {
+                assetPopoverVisible.value = false
+            }
+            const handleTableForColumnPreview = () => {
+                closePopover()
+                showTablePreview.value = true
+            }
+            const handleCloseTablePreview = () => {
+                showTablePreview.value = false
+            }
+            const handleUserPreview = (username: string) => {
+                closePopover()
+                setUserUniqueAttribute(username, 'username')
+                openPreview()
+            }
+            const handleAssetPreview = () => {
+                closePopover()
+                emit('previewAsset')
+            }
+
+            onMounted(() => {
+                setCollectionName()
             })
 
             return {
@@ -349,26 +561,26 @@
                 sizeBytes,
                 connectionName,
                 connectorName,
+                collectionName,
+                isPrimary,
+                isForeign,
+                isSort,
+                isIndexed,
+                isPartition,
+                assetPopoverVisible,
+                handleTableForColumnPreview,
+                handleCloseTablePreview,
+                tableGuid,
+                showTablePreview,
+                handleUserPreview,
+                closePopover,
+                handleAssetPreview,
             }
         },
     }
 </script>
-<style lang="less">
-    .icon-blue-color {
-        path {
-            stroke: #5277d7;
-        }
-    }
-</style>
 <style lang="less" scoped>
-    .relation-ship {
-        width: 350px;
-        padding: 16px;
-    }
-    .dot {
-        background: #c4c4c4;
-        height: 4px;
-        width: 4px;
-        border-radius: 50%;
+    .max-w-100px {
+        max-width: 100px;
     }
 </style>

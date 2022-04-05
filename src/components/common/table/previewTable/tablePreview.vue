@@ -1,9 +1,9 @@
 <template>
-    <div class="table_height" ref="tableHeightRef">
+    <div ref="tableHeightRef" class="table_height">
         <regular-table
+            id="regularTable"
             ref="tableRef"
             :class="$style.regular_table"
-            id="regularTable"
         ></regular-table>
     </div>
     <VariantModal
@@ -90,10 +90,12 @@
 
             watch([tableRef, dataList], () => {
                 // init()
+
                 const tbody = document.getElementsByTagName('tbody')[0]
 
                 tbody.onclick = function (e) {
-                    let td = e.target.closest('td')
+                    debugger
+                    const td = e.target.closest('td')
                     if (!td) return
                     if (!tbody.contains(td)) return
                     if (
@@ -105,7 +107,8 @@
                     }
                 }
                 tbody.onmouseover = function (e) {
-                    let td = e.target.closest('td')
+                    debugger
+                    const td = e.target.closest('td')
                     if (!td) return
                     if (!tbody.contains(td)) return
                     if (
@@ -139,7 +142,7 @@
                     }
                 }
                 tbody.onmouseout = function (e) {
-                    let td = e.target.closest('td')
+                    const td = e.target.closest('td')
                     if (!td) return
                     if (!tbody.contains(td)) return
                     hoverTD.value = td
@@ -162,11 +165,11 @@
                 const thead = document.getElementsByTagName('thead')[0]
 
                 thead.onmouseover = function (e) {
-                    let img = e.target.closest('img')
+                    const img = e.target.closest('img')
                     if (!img) return
                     if (!thead.contains(img)) return
 
-                    let tooltipContent = img.dataset.tooltip
+                    const tooltipContent = img.dataset.tooltip
                     if (!tooltipContent) return
 
                     hoverTH.value = document.createElement('div')
@@ -178,7 +181,7 @@
                 }
 
                 thead.onmouseout = function (e) {
-                    let img = e.target.closest('img')
+                    const img = e.target.closest('img')
                     if (!img) return
                     if (!thead.contains(img)) return
 
@@ -235,7 +238,7 @@
             }
 
             function column_header(i) {
-                let title = columns.value[i]?.title
+                const title = columns.value[i]?.title
                     ? columns.value[i]?.title
                     : '-'
                 return [`${title}`]
@@ -285,24 +288,18 @@
                 return [`${i + 1}`]
             }
 
-            const dataHere = (rows) => {
-                return (x0, y0, x1, y1) => {
-                    return {
-                        num_rows: dataList.value.length,
-                        num_columns: columns.value.length,
-                        column_headers: range(x0, x1, column_header.bind(null)),
-                        row_headers: range(y0, y1, row_header.bind(null)),
-                        data: range(x0, x1, (x) =>
-                            range(y0, y1, (y) => rows[y][x])
-                        ),
-                    }
-                }
-            }
+            const dataHere = (rows) => (x0, y0, x1, y1) => ({
+                num_rows: dataList.value.length,
+                num_columns: columns.value.length,
+                column_headers: range(x0, x1, column_header.bind(null)),
+                row_headers: range(y0, y1, row_header.bind(null)),
+                data: range(x0, x1, (x) => range(y0, y1, (y) => rows[y][x])),
+            })
 
             function init() {
                 const table = document.getElementsByTagName('regular-table')[0]
 
-                let rows = dataList.value
+                const rows = dataList.value
 
                 table?.setDataListener(dataHere(rows))
                 //table?.addStyleListener(styleListener)
@@ -328,7 +325,7 @@
 
             // const tableHeight = document.getElementsByClassName('table_height')[0]
 
-            let observer = ref()
+            const observer = ref()
 
             const onResize = () => {
                 console.log('resize')

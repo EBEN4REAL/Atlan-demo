@@ -1483,7 +1483,7 @@
                     handleClick: newFolder,
                 },
                 {
-                    title: 'Rename folder',
+                    title: 'Rename',
                     key: 'rename',
                     class: '',
                     disabled: false,
@@ -1517,7 +1517,7 @@
                     },
                 },
                 {
-                    title: 'Delete folder',
+                    title: 'Delete',
 
                     key: 'delete',
                     class: 'text-red-600',

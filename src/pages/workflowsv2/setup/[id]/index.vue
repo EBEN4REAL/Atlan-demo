@@ -1,18 +1,14 @@
 <template>
-    <div class="flex flex-col w-full h-full overflow-hidden bg-white">
+    <div class="w-full h-full p-3 overflow-hidden bg-primary-light">
         <Loader v-if="isLoadingPackage || isLoadingConfigMap"></Loader>
-        <div
+        <ErrorView
             v-else-if="!isLoadingPackage && !isLoadingConfigMap && error"
-            class="flex items-center justify-center flex-grow"
-        >
-            <ErrorView></ErrorView>
-        </div>
-        <div class="flex-1 h-full overflow-hidden" v-else-if="localConfig">
-            <PackagesSetup
-                :workflowTemplate="localSelected"
-                :configMap="localConfig"
-            ></PackagesSetup>
-        </div>
+        />
+        <PackagesSetup
+            v-else-if="localConfig"
+            :workflowTemplate="localSelected"
+            :configMap="localConfig"
+        />
     </div>
 </template>
 
@@ -29,7 +25,7 @@
 
     import Loader from '@/common/loaders/page.vue'
     import ErrorView from '@common/error/discover.vue'
-    import PackagesSetup from '~/workflows/components/packages/setup/index.vue'
+    import PackagesSetup from '~/workflowsv2/components/marketplace/setup/setup.vue'
 
     import { usePackageByName } from '~/workflows/composables/package/usePackageByName'
     import { usePackageInfo } from '~/workflows/composables/package/usePackageInfo'

@@ -13,13 +13,13 @@
 
             <div class="flex items-center justify-between">
                 <router-link
-                    :to="`/workflowsv2/profile/${wfName(workflow)}`"
+                    :to="`/workflows/profile/${wfName(workflow)}`"
                     class="font-bold tracking-wide truncate cursor-pointer text-primary hover:underline"
                 >
                     {{ dName }}
                 </router-link>
 
-                <router-link :to="`/workflowsv2/profile/${wfName(workflow)}`">
+                <router-link :to="`/workflows/profile/${wfName(workflow)}`">
                     <IconButton icon="EnterProfile" />
                 </router-link>
             </div>

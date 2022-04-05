@@ -32,7 +32,7 @@
         </div>
 
         <div class="flex h-full overflow-hidden">
-            <div v-if="!status" class="flex-1 px-6 py-8">
+            <div v-if="!status" class="flex-grow-0 px-6 py-8">
                 <a-steps
                     v-if="steps.length > 0"
                     direction="vertical"
@@ -182,7 +182,7 @@
                             </template>
                             <template #extra>
                                 <div class="flex items-center justify-center">
-                                    <router-link to="/workflowsv2">
+                                    <router-link to="/workflows">
                                         <AtlanButton2
                                             v-if="
                                                 updateStatus.status ===
@@ -521,7 +521,7 @@
             const handleTrackLink = () => {
                 if (run.value?.metadata?.name) {
                     router.push(
-                        `/workflowsv2/profile/${
+                        `/workflows/profile/${
                             data.value?.metadata?.name ||
                             run.value?.metadata?.labels[
                                 'workflows.argoproj.io/workflow-template'
@@ -762,7 +762,7 @@
             }
 
             const handleExit = () => {
-                router.replace(`/workflowsv2/marketplace`)
+                router.replace(`/workflows/marketplace`)
             }
 
             const handleStepClick = (step) => {

@@ -221,7 +221,7 @@
             const router = useRouter()
 
             const handleSetupWorkflow = () => {
-                router.push(`/workflowsv2/setup/${item.value?.metadata?.name}`)
+                router.push(`/workflows/setup/${item.value?.metadata?.name}`)
             }
 
             return {

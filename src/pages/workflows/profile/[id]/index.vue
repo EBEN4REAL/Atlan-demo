@@ -7,7 +7,7 @@
             const route = useRoute()
             const router = useRouter()
             const id = computed(() => route?.params?.id || '')
-            router.replace(`/workflowsv2/profile/${id.value}/runs`)
+            router.replace(`/workflows/profile/${id.value}/runs`)
         },
     })
 </script>

@@ -25,9 +25,7 @@
                 </div>
 
                 <div class="flex items-center mt-1 gap-x-1">
-                    <router-link
-                        :to="`/workflowsv2/profile/${wfName(workflow)}`"
-                    >
+                    <router-link :to="`/workflows/profile/${wfName(workflow)}`">
                         <span
                             class="font-bold tracking-wide truncate cursor-pointer text-primary hover:underline"
                             >{{ dName }}</span

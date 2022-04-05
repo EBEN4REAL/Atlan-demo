@@ -4,7 +4,7 @@
             class="flex flex-col items-start col-span-5 text-gray-500 cursor-pointer gap-y-1"
         >
             <router-link
-                :to="`/workflowsv2/profile/${workflowTemplateName(
+                :to="`/workflows/profile/${workflowTemplateName(
                     run
                 )}/runs?name=${run.metadata.name}`"
             >

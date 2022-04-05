@@ -78,7 +78,7 @@
                 const runId = runs.value?.[index - 1]?._id
                 if (runId)
                     router.push(
-                        `/workflowsv2/profile/${workflow.value}/runs?name=${runId}`
+                        `/workflows/profile/${workflow.value}/runs?name=${runId}`
                     )
             }
 

@@ -1,7 +1,7 @@
 <template>
     <div class="wf-list-item" :class="{ selected }">
         <div class="flex items-center gap-x-2">
-            <div class="p-2 package-icon">
+            <div class="package-icon">
                 <img
                     v-if="icon(workflow)"
                     :src="icon(workflow)"
@@ -147,7 +147,7 @@
         }
 
         .package-icon {
-            @apply rounded-lg border bg-white;
+            @apply rounded-lg border bg-white p-2 flex-none;
         }
 
         &:hover {

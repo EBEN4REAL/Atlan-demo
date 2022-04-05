@@ -22,18 +22,7 @@
                 </template>
                 <template v-else>
                     <span>Manual Run by</span>
-                    <span
-                        class="cursor-pointer hover:underline"
-                        @click="() => openUserSidebar(creatorUsername(run))"
-                    >
-                        <img
-                            v-if="showCreatorImage"
-                            :src="avatarUrl(creatorUsername(run))"
-                            class="flex-none inline-block h-4 rounded-full"
-                            @error="showCreatorImage = false"
-                        />
-                        {{ creatorUsername(run) }}
-                    </span>
+                    <UserWrapper :username="creatorUsername(run)" />
                 </template>
             </div>
         </div>
@@ -58,13 +47,13 @@
 <script lang="ts">
     import { defineComponent, PropType, ref } from 'vue'
     import { LiveRun } from '~/types/workflow/runs.interface'
-    import { useUserPreview } from '~/composables/user/showUserPreview'
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
-    import { avatarUrl } from '~/composables/user/useUsers'
+
+    import UserWrapper from '~/workflowsv2/components/common/user.vue'
 
     export default defineComponent({
         name: 'RunListItem',
-        components: {},
+        components: { UserWrapper },
         props: {
             run: {
                 type: Object as PropType<LiveRun>,
@@ -84,10 +73,6 @@
                 workflowTemplateName,
             } = useWorkflowInfo()
 
-            const { openUserSidebar } = useUserPreview()
-
-            const showCreatorImage = ref(true)
-
             return {
                 getRunTextClass,
                 getRunClass,
@@ -97,10 +82,6 @@
                 cronString,
                 isCronRun,
                 workflowTemplateName,
-                useUserPreview,
-                avatarUrl,
-                openUserSidebar,
-                showCreatorImage,
             }
         },
     })

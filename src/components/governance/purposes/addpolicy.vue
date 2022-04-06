@@ -46,6 +46,25 @@
                     </span>
                 </div> -->
             </div>
+            <div
+                v-if="policyType === 'meta' && policy.updatedBy"
+                class="flex items-center p-4 text-sm text-gray-700 bg-gray-200"
+            >
+                <AtlanIcon icon="DateTime" class="mr-1 text-gray-700" />
+                Last updated by
+                <Avatar
+                    :image-url="imageUrl(policy.updatedBy)"
+                    :allow-upload="false"
+                    :avatar-name="policy.updatedBy"
+                    :avatar-size="16"
+                    :avatar-shape="'circle'"
+                    class="mx-1 bg-primary-light"
+                />
+                {{ policy.updatedBy }}
+                <div class="ml-1">
+                    {{ useTimeAgo(policy.updatedAt).value }}
+                </div>
+            </div>
             <div class="mt-4">
                 <div class="px-4">
                     <div class="relative mt-2 bg-white shadow-section">
@@ -386,7 +405,8 @@
     // import DataMaskingSelector from './policies/dataMaskingSelector.vue'
     import { IPersona } from '~/types/accessPolicies/personas'
     // import useScopeService from './composables/useScopeService'
-
+    import { useTimeAgo } from '@vueuse/core'
+    import Avatar from '~/components/common/avatar/index.vue'
     export default defineComponent({
         name: 'AddPolicy',
         components: {
@@ -394,6 +414,7 @@
             ManagePermission,
             DataMaskingSelector,
             Owners,
+            Avatar,
         },
         props: {
             type: {
@@ -661,6 +682,8 @@
                     rules.value.users.show = false
                 }
             }
+            const imageUrl = (username: any) =>
+                `${window.location.origin}/api/service/avatars/${username}`
             return {
                 selectedPersonaDirty,
                 rules,
@@ -681,6 +704,8 @@
                 selectedOwnersData,
                 handleOwnersChange,
                 refOwners,
+                imageUrl,
+                useTimeAgo,
             }
         },
     })

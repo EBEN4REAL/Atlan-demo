@@ -1,18 +1,18 @@
 <template>
     <span
-        class="cursor-pointer hover:underline text-gray"
+        class="text-sm cursor-pointer hover:underline text-new-gray-800"
         @click="() => openUserSidebar(username)"
     >
         <img
             v-if="showCreatorImage"
             :src="avatarUrl(username)"
-            class="flex-none inline-block h-4 rounded-full mb-0.5"
+            class="flex-none inline-block h-4 rounded-full"
             @error="showCreatorImage = false"
         />
         <AtlanIcon
             v-else
             icon="User"
-            class="mb-0.5 rounded-full overflow-hidden text-gray-500"
+            class="overflow-hidden text-gray-500 rounded-full"
         />
         {{ username }}
     </span>

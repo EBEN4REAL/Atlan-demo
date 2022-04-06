@@ -11,9 +11,11 @@
             />
         </div>
         <div
-            class="flex flex-col overflow-hidden divide-y divide-gray-300 rounded-lg"
+            class="flex flex-col overflow-hidden border divide-y divide-gray-300 rounded-lg border-new-gray-300"
         >
-            <div class="grid items-center h-10 grid-cols-8 px-3 bg-gray-100">
+            <div
+                class="grid items-center h-10 grid-cols-8 pl-3 pr-16 bg-new-gray-100 gap-x-4"
+            >
                 <div
                     v-for="head in tableHeaders"
                     :key="head.title"
@@ -52,21 +54,19 @@
                     </span>
                 </div>
             </div>
-
-            <div class="flex items-center justify-end py-3">
-                <span class="mr-auto"
-                    >Showing {{ offset + 1 }} -
-                    {{ offset + runs?.length || 0 }} out of
-                    {{ totalRuns }} runs</span
-                >
-                <Pagination
-                    v-model:offset="offset"
-                    :total-pages="Math.ceil(totalRuns / limit)"
-                    :loading="isLoading"
-                    :page-size="limit"
-                    @mutate="resetAndFetchRuns"
-                />
-            </div>
+        </div>
+        <div class="flex items-center justify-end py-3">
+            <span class="mr-auto text-new-gray-600"
+                >Showing {{ offset + 1 }} - {{ offset + runs?.length || 0 }} out
+                of {{ totalRuns }} runs</span
+            >
+            <Pagination
+                v-model:offset="offset"
+                :total-pages="Math.ceil(totalRuns / limit)"
+                :loading="isLoading"
+                :page-size="limit"
+                @mutate="resetAndFetchRuns"
+            />
         </div>
     </div>
 </template>
@@ -134,15 +134,22 @@
             // If changed this should be manually synced with the flex-grow properties of <RunListItem/>
             const tableHeaders = [
                 {
-                    title: 'Workflow Run',
-                    style: 'grid-column: span 5 / span 5',
+                    title: 'Workflow & Run',
+                    style: 'grid-column: span 4 / span 4',
                 },
                 {
                     title: 'Status',
                     style: 'grid-column: span 1 / span 1; justify-content: center; display:flex',
                 },
-                { title: 'Started', style: 'grid-column: span 1 / span 1' },
-                { title: 'Duration', style: 'grid-column: span 1 / span 1' },
+                { title: 'Run Type', style: 'grid-column: span 1 / span 1' },
+                {
+                    title: 'Started',
+                    style: 'grid-column: span 1 / span 1; justify-content: flex-end; display:flex',
+                },
+                {
+                    title: 'Duration',
+                    style: 'grid-column: span 1 / span 1; justify-content: flex-end; display:flex',
+                },
                 // { title: 'Output', style: 'grid-column: span 2 / span 2' },
             ]
 

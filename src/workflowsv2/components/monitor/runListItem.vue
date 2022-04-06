@@ -1,6 +1,6 @@
 <template>
     <div
-        class="run-list-item hover:bg-primary-menu"
+        class="run-list-item hover:bg-primary-menu text-new-gray-800"
         @click="
             $router.push(
                 `/workflows/profile/${workflowTemplateName(run)}/runs?name=${
@@ -9,21 +9,13 @@
             )
         "
     >
-        <div class="flex flex-col items-start col-span-5 text-gray-500 gap-y-1">
+        <div class="flex flex-col items-start col-span-4 text-gray-500 gap-y-1">
             <span class="text-xs">{{ run.metadata.name }}</span>
 
             <div class="flex items-center gap-x-2">
                 <span class="font-medium text-primary">{{
                     startedAt(run, false)
                 }}</span>
-                <template v-if="isCronRun(run)">
-                    <AtlanIcon icon="Schedule" class="ml-1 text-success" />
-                    <span>Scheduled Run</span>
-                </template>
-                <template v-else>
-                    <span>Manually Run by</span>
-                    <UserWrapper :username="creatorUsername(run)" @click.stop />
-                </template>
             </div>
         </div>
 
@@ -34,21 +26,38 @@
                 :class="[getRunTextClass(run), getRunClassBgLight(run)]"
             >
                 <div class="dot" :class="getRunClassBg(run)" />
-                {{ run.status.phase }}
+                {{ runStatusMap[run.status.phase]?.label || run.status.phase }}
             </span>
         </div>
+
+        <div class="col-span-1 text-new-gray-600">
+            <template v-if="isCronRun(run)">
+                <AtlanIcon icon="Schedule" class="mr-1 text-success" />
+                <span>Scheduled Run</span>
+            </template>
+            <template v-else>
+                <p>Manually Run by</p>
+                <UserWrapper :username="creatorUsername(run)" @click.stop />
+            </template>
+        </div>
+
         <a-tooltip :title="startedAt(run, false)">
-            <div class="col-span-1">{{ startedAt(run, true) }}</div>
+            <div class="flex items-center justify-end col-span-1">
+                <span>{{ startedAt(run, true) }}</span>
+            </div>
         </a-tooltip>
 
-        <div class="col-span-1">{{ duration(run) }}</div>
+        <div class="flex items-center justify-end col-span-1">
+            <span>{{ duration(run) }}</span>
+        </div>
         <!-- <div class="col-span-2">Output</div> -->
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref } from 'vue'
+    import { defineComponent, PropType } from 'vue'
     import { LiveRun } from '~/types/workflow/runs.interface'
+    import { runStatusMap } from '~/workflowsv2/constants/maps'
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
 
     import UserWrapper from '~/workflowsv2/components/common/user.vue'
@@ -86,16 +95,16 @@
                 cronString,
                 isCronRun,
                 workflowTemplateName,
+                runStatusMap,
             }
         },
     })
 </script>
 <style lang="less" scoped>
     .run-list-item {
-        height: 70px;
+        padding: 14px 64px 14px 12px;
         @apply cursor-pointer;
-        @apply px-3;
-        @apply grid grid-cols-8 items-center;
+        @apply grid grid-cols-8 items-center gap-x-4;
         @apply text-sm;
     }
     .status-badge {

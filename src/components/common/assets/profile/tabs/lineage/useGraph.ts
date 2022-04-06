@@ -392,7 +392,7 @@ export default function useGraph(graph) {
                     // eslint-disable-next-line no-nested-ternary
                     href: isPrimary
                         ? iconPrimaryB64
-                        : !isForeign
+                        : isForeign
                         ? iconForeignB64
                         : '',
                 },

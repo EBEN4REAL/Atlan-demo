@@ -16,7 +16,7 @@
                     class="bg-new-gray-100"
                 >
                     <template #switcherIcon>
-                        <AtlanIcon icon="CaretRight" />
+                        <AtlanIcon class="switcher_icon" icon="CaretRight" />
                     </template>
 
                     <template #title="item">
@@ -367,8 +367,11 @@
 <style lang="less" module>
     .queryTreeStyles {
         :global(.ant-tree-switcher_open) {
+            transform: none;
+        }
+        :global(.ant-tree-switcher_open > .switcher_icon) {
             transform: rotate(90deg);
-            margin-bottom: -5px !important;
+            // margin-bottom: -5px !important;
         }
         :global(.ant-tree-title) {
             width: calc(100% - 1.5rem) !important;

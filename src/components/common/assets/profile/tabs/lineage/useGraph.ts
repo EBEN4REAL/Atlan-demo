@@ -5,7 +5,7 @@ import {
     getNodeTypeText,
 } from './util.js'
 import { iconVerified, iconDraft, iconDeprecated } from './icons'
-import { iconCaretDownB64 } from './iconsBase64'
+import { iconCaretDownB64, iconPrimaryB64 } from './iconsBase64'
 import { dataTypeCategoryList } from '~/constant/dataType'
 import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
@@ -236,6 +236,10 @@ export default function useGraph(graph) {
                                 tagName: 'image',
                                 selector: 'portImageLoader',
                             },
+                            {
+                                tagName: 'image',
+                                selector: 'portImageRight',
+                            },
                         ],
                         attrs: {
                             portBody: {
@@ -269,6 +273,14 @@ export default function useGraph(graph) {
                                 href: '',
                                 width: 22,
                                 height: 22,
+                            },
+                            portImageRight: {
+                                ref: 'portBody',
+                                refX: 180,
+                                refY: 10,
+                                event: 'port:click',
+                                href: '',
+                                height: 20,
                             },
                         },
                         position: 'erPortPosition',
@@ -351,6 +363,8 @@ export default function useGraph(graph) {
     }
 
     const createPortData = (item) => {
+        const { isPrimary } = item.attributes
+
         let text =
             item.displayText.charAt(0).toUpperCase() +
             item.displayText.slice(1).toLowerCase()
@@ -373,6 +387,9 @@ export default function useGraph(graph) {
                     href: `/dataType/${dataType || 'empty'}.svg`,
                     width: 16,
                     height: 16,
+                },
+                portImageRight: {
+                    href: isPrimary ? iconPrimaryB64 : '',
                 },
             },
         }

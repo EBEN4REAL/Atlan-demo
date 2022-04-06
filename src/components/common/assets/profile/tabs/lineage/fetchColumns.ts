@@ -15,6 +15,7 @@ export default function fetchColumns(
         'certificateStatus',
         'table',
         'view',
+        'isPrimary',
     ]
     const relationAttributes = []
     const base = bodybuilder()

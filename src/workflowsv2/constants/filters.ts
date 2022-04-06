@@ -77,23 +77,23 @@ export const runStatuses = [
         value: undefined,
     },
     {
-        value: 'Running',
-        label: 'Running',
-        colorDot: '#FFBA52',
-    },
-    {
         value: 'Succeeded',
         label: 'Success',
-        colorDot: '#00A680',
+        colorDot: '#00B28A',
+    },
+    {
+        value: 'Running',
+        label: 'Running',
+        colorDot: '#F7B43D',
     },
     {
         value: ['Failed', 'Error'],
         label: 'Failed',
-        colorDot: '#DC5252',
+        colorDot: '#BF1B1B',
     },
     {
         value: 'Pending',
-        label: 'Pending',
-        colorDot: '#6F7950',
+        label: 'Waiting',
+        colorDot: '#6A7692',
     },
 ]

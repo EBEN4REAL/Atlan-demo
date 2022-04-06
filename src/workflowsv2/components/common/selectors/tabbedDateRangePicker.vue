@@ -1,6 +1,6 @@
 <template>
     <div
-        class="box-border flex items-stretch h-8 overflow-hidden border border-gray-300 divide-x divide-gray-300 rounded"
+        class="box-border flex items-stretch h-8 overflow-hidden border border-gray-300 divide-x divide-gray-300 rounded-lg"
     >
         <a-tooltip
             v-for="item in ranges"
@@ -20,7 +20,7 @@
             </template>
             <button
                 class="tabbed-btn"
-                :class="selected === item.label ? 'fake-bold selected' : ''"
+                :class="{ selected: selected === item.label }"
                 @click="handleSelect(item.label, item.value)"
             >
                 {{ item.label }}
@@ -118,7 +118,7 @@
         @apply px-4;
         @apply bg-white text-gray;
 
-        &:hover:not(:disabled) {
+        &:hover:not(:disabled):not(.selected) {
             background-color: #f8f8f8;
         }
 
@@ -130,8 +130,8 @@
         }
 
         &.selected {
-            @apply bg-primary-light;
-            @apply text-primary;
+            @apply bg-primary;
+            @apply text-white;
         }
 
         &:focus-visible {

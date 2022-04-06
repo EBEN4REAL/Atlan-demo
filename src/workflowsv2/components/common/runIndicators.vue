@@ -45,8 +45,14 @@
         },
         setup(props) {
             const { runs, workflow } = toRefs(props)
-            const { phase, finishedAt, startedAt, duration, getRunTooltip } =
-                useWorkflowInfo()
+            const {
+                phase,
+                finishedAt,
+                startedAt,
+                duration,
+                getRunTooltip,
+                getRunClassBg,
+            } = useWorkflowInfo()
             const router = useRouter()
 
             const getRun = (index) => {
@@ -58,21 +64,7 @@
 
             const getRunStatus = (index) => phase(getRun(index))
 
-            const getRunClass = (index) => {
-                const tempStatus = phase(getRun(index))
-                switch (tempStatus) {
-                    case 'Succeeded':
-                        return 'bg-green-500 bg-opacity-75'
-                    case 'Running':
-                        return 'bg-yellow-300 bg-opacity-75'
-                    case 'Failed':
-                    case 'Error':
-                    case 'Stopped':
-                        return 'bg-red-500 bg-opacity-75'
-                    default:
-                        return 'bg-gray-200'
-                }
-            }
+            const getRunClass = (index) => getRunClassBg(getRun(index))
 
             const handleRunClick = (index) => {
                 const runId = runs.value?.[index - 1]?._id

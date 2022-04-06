@@ -48,7 +48,6 @@
         emits: [],
         setup() {
             const {
-                getRunClass,
                 duration,
                 startedAt,
                 creatorUsername,
@@ -59,7 +58,6 @@
             } = useWorkflowInfo()
 
             return {
-                getRunClass,
                 phase,
                 duration,
                 startedAt,

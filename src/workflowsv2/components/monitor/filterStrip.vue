@@ -1,40 +1,27 @@
 <template>
-    <div
-        class="flex flex-col w-full px-5 py-4 bg-white gap-y-4"
-        style="transition: height 300ms"
-        :class="isExpanded ? 'h-28' : 'h-16'"
-    >
-        <div class="flex items-center w-full gap-x-4">
+    <div class="flex flex-col w-full h-28">
+        <div
+            class="flex items-center w-full px-5 py-4 bg-white border-b gap-x-4"
+        >
             <PackageSelector v-model:value="packageId" />
             <WorkflowSelector
                 v-model:value="workflowId"
                 :package-name="packageId"
                 :disabled="!packageId"
             />
-
+            <CreatorSelector v-model:value="creators" />
+        </div>
+        <div class="flex items-center px-5 py-4 gap-x-3">
             <!-- <PackageWorkflowSelector
                 v-model:packageId="packageId"
                 v-model:workflowId="workflowId"
             /> -->
             <!-- <StatusSelector v-model:value="status" /> -->
-            <TabbedStatusSelector v-model:value="status" class="raised" />
+            <span>Run Status</span>
+            <TabbedStatusSelector v-model:value="status" />
 
-            <TabbedDateRangePicker
-                v-model:value="runDateRange"
-                class="raised"
-            />
-
-            <!-- TODO: Enable when additional filters come in -->
-            <IconButton
-                icon="ChevronDown"
-                class="ml-auto rounded-full shadow-none"
-                :class="{ '-rotate-180 transform': isExpanded }"
-                @click="isExpanded = !isExpanded"
-            />
-        </div>
-        <div class="flex items-center" :class="{ hidden: !isExpanded }">
-            <!-- Space for additional filters -->
-            <CreatorSelector v-model:value="creators" />
+            <span class="ml-1">Run Start Time</span>
+            <TabbedDateRangePicker v-model:value="runDateRange" />
         </div>
     </div>
 </template>
@@ -69,7 +56,6 @@
         },
         emits: ['update:filters'],
         setup(props, { emit }) {
-            const isExpanded = ref(false)
             const activeKey = ref([])
             const { filters } = toRefs(props)
 
@@ -93,7 +79,6 @@
 
             return {
                 runDateRange,
-                isExpanded,
                 packageId,
                 workflowId,
                 runFilter,
@@ -104,11 +89,6 @@
         },
     })
 </script>
-<style lang="less" scoped>
-    .raised {
-        box-shadow: 0px 1px 0px 0px #0000000d;
-    }
-</style>
 
 <style lang="less" module>
     .request-filter-wrapper {

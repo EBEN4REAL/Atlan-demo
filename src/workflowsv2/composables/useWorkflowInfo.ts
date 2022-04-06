@@ -180,45 +180,64 @@ export default function useWorkflowInfo() {
     const isCronWorkflow = (workflow) =>
         !!workflow?.metadata?.annotations?.['orchestration.atlan.com/schedule']
 
-    const getRunClassByPhase = (tempStatus) => {
-        switch (tempStatus) {
+    const getRunClassByPhase = (status) => {
+        switch (status) {
             case 'Succeeded':
-                return 'bg-green-500 bg-opacity-10'
+                return 'bg-new-green-100'
             case 'Running':
-                return 'bg-yellow-300 bg-opacity-10'
+                return 'bg-new-yellow-100'
             case 'Failed':
             case 'Error':
             case 'Stopped':
-                return 'bg-red-500 bg-opacity-10'
+                return 'bg-new-red-100'
+            default:
+                return 'bg-new-gray-200'
+        }
+    }
+
+    const getRunClassBgByPhase = (status) => {
+        switch (status) {
+            case 'Succeeded':
+                return 'bg-green-500 bg-opacity-75'
+            case 'Running':
+                return 'bg-yellow-300 bg-opacity-75'
+            case 'Failed':
+            case 'Error':
+            case 'Stopped':
+                return 'bg-red-500 bg-opacity-75'
             default:
                 return 'bg-gray-200'
         }
     }
 
-    const getRunTextClassByPhase = (tempStatus) => {
-        switch (tempStatus) {
+    const getRunTextClassByPhase = (status) => {
+        switch (status) {
             case 'Succeeded':
-                return 'text-green-500'
+                return 'text-new-green-500'
             case 'Running':
-                return 'text-yellow-500'
+                return 'text-new-yellow-500'
             case 'Error':
-                return 'text-warning'
             case 'Failed':
             case 'Stopped':
-                return 'text-red-500'
+                return 'text-new-red-500'
             default:
-                return 'text-gray-500'
+                return 'text-new-gray-500'
         }
     }
 
-    const getRunBorderClassByPhase = (tempStatus) => {
-        if (tempStatus === 'Succeeded')
-            return 'border-green-500 border-opacity-75'
-        if (tempStatus === 'Failed') return 'border-red-500 border-opacity-75'
-        if (tempStatus === 'Error') return 'border-warning border-opacity-75'
-        if (tempStatus === 'Running')
-            return 'border-yellow-500 border-opacity-75'
-        return 'border-gray-400'
+    const getRunBorderClassByPhase = (status) => {
+        switch (status) {
+            case 'Succeeded':
+                return 'border-green-500 border-opacity-75'
+            case 'Running':
+                return 'border-yellow-500 border-opacity-75'
+            case 'Error':
+            case 'Failed':
+            case 'Stopped':
+                return 'border-red-500 border-opacity-75'
+            default:
+                return 'border-gray-400'
+        }
     }
 
     const getRunIconByPhase = (item) => {
@@ -238,7 +257,8 @@ export default function useWorkflowInfo() {
         }
     }
 
-    const getRunClass = (item) => getRunClassByPhase(phase(item))
+    const getRunClassBgLight = (item) => getRunClassByPhase(phase(item))
+    const getRunClassBg = (item) => getRunClassBgByPhase(phase(item))
 
     const getRunBorderClass = (item) => getRunBorderClassByPhase(phase(item))
 
@@ -345,7 +365,8 @@ export default function useWorkflowInfo() {
         cron,
         isCronRun,
         isCronWorkflow,
-        getRunClass,
+        getRunClassBgLight,
+        getRunClassBg,
         getRunTooltip,
         getRunBorderClass,
         getRunTextClass,

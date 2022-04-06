@@ -1,17 +1,24 @@
 <template>
     <div
-        class="box-border flex items-stretch h-8 overflow-hidden border border-gray-300 divide-x divide-gray-300 rounded"
+        class="box-border flex items-stretch h-8 overflow-hidden border border-gray-300 divide-x divide-gray-300 rounded-lg"
     >
         <button
             v-for="item in runStatuses"
             :key="item.label"
             class="tabbed-btn"
-            :class="selected === item.label ? 'fake-bold selected' : ''"
+            :class="{ selected: selected === item.label }"
+            :style="
+                selected === item.label
+                    ? `background-color:${item.colorDot || '#3C71DF'}`
+                    : ''
+            "
             @click="handleSelect(item.label, item.value)"
         >
             <div
                 v-if="item.colorDot"
-                :style="`background-color: ${item.colorDot}`"
+                :style="`background-color: ${
+                    selected === item.label ? '#fff' : item.colorDot
+                }`"
                 class="dot"
             />
             {{ item.label }}
@@ -45,15 +52,19 @@
 
 <style lang="less" scoped>
     .tabbed-btn {
-        @apply flex items-center gap-x-1;
+        @apply flex items-center;
         @apply box-border;
         @apply transition-colors;
         @apply outline-none;
-        @apply px-4;
+        @apply px-3;
         @apply bg-white text-gray;
 
-        &:hover:not(:disabled) {
+        &:hover:not(:disabled):not(.selected) {
             background-color: #f8f8f8;
+        }
+
+        &:hover.selected {
+            @apply bg-opacity-70;
         }
 
         &:disabled {
@@ -64,8 +75,7 @@
         }
 
         &.selected {
-            @apply bg-primary-light;
-            @apply text-primary;
+            @apply text-white;
         }
 
         &:focus-visible {
@@ -76,9 +86,10 @@
         }
     }
     .dot {
-        height: 6px;
-        width: 6px;
+        height: 8px;
+        width: 8px;
         border-radius: 50%;
         margin-bottom: 2px;
+        margin-right: 6px;
     }
 </style>

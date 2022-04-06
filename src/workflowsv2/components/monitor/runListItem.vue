@@ -29,10 +29,12 @@
 
         <div class="flex items-center justify-center col-span-1">
             <span
-                class="text-xs font-bold tracking-wider uppercase rounded"
-                style="padding: 3px 8px 1px"
-                :class="[getRunTextClass(run), getRunClass(run)]"
-                >{{ run.status.phase }}
+                class="status-badge"
+                style="padding: 7px 12px 5px"
+                :class="[getRunTextClass(run), getRunClassBgLight(run)]"
+            >
+                <div class="dot" :class="getRunClassBg(run)" />
+                {{ run.status.phase }}
             </span>
         </div>
         <a-tooltip :title="startedAt(run, false)">
@@ -64,7 +66,8 @@
         setup() {
             const {
                 getRunTextClass,
-                getRunClass,
+                getRunClassBgLight,
+                getRunClassBg,
                 duration,
                 startedAt,
                 creatorUsername,
@@ -75,7 +78,8 @@
 
             return {
                 getRunTextClass,
-                getRunClass,
+                getRunClassBgLight,
+                getRunClassBg,
                 duration,
                 startedAt,
                 creatorUsername,
@@ -93,5 +97,17 @@
         @apply px-3;
         @apply grid grid-cols-8 items-center;
         @apply text-sm;
+    }
+    .status-badge {
+        @apply flex items-center;
+        @apply text-xs font-bold tracking-wider uppercase;
+        @apply rounded-full;
+    }
+    .dot {
+        height: 8px;
+        width: 8px;
+        border-radius: 50%;
+        margin-bottom: 2px;
+        margin-right: 6px;
     }
 </style>

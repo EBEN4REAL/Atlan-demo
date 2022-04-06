@@ -242,43 +242,11 @@
 
         // Legend
         &-legend {
-            bottom: 1rem;
+            bottom: 1.5rem;
             left: 1.5rem;
             position: absolute;
             z-index: 9;
             background: #ffffff;
-
-            &__item {
-                display: flex;
-                align-items: center;
-                margin-bottom: 0.8rem;
-
-                &:last-child {
-                    margin-bottom: 0;
-                }
-
-                & > span {
-                    font-size: 0.8rem;
-
-                    &:first-child {
-                        margin-right: 1rem;
-                        width: 2rem;
-                        height: 3px;
-
-                        &#upstream {
-                            background: #bed9a3;
-                        }
-
-                        &#downstream {
-                            background: #f1a183;
-                        }
-
-                        &#selected {
-                            background: #2351cc;
-                        }
-                    }
-                }
-            }
         }
 
         // Control

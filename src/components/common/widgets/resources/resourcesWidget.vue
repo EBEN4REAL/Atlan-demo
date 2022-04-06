@@ -33,7 +33,7 @@
         </template>
 
         <template v-else>
-            <div class="flex flex-col justify-between p-4 border-b gap-x-6">
+            <div class="flex justify-between p-4 border-b gap-x-6">
                 <div>
                     <AtlanIcon icon="Link" class="w-auto h-4 mr-3" />
                     <span class="text-base font-bold text-gray">
@@ -53,9 +53,12 @@
                 </template>
                 <AddResource v-if="!readOnly" @add="addCallback">
                     <template #trigger>
-                        <span class="text-sm cursor-pointer text-primary"
-                            ><AtlanIcon icon="Add" class="mr-2" />Add</span
+                        <a-button
+                            class="flex items-center border-0 shadow-none text-primary"
+                            type="minimal"
                         >
+                            <AtlanIcon icon="Add" class="w-auto h-4 mr-1" />Add
+                        </a-button>
                     </template>
                 </AddResource>
             </div>

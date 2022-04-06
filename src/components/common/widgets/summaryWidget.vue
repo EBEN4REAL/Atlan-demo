@@ -181,7 +181,7 @@
                         <div class="px-4 rounded-xl container-api">
                             <div
                                 v-for="(apiKey, index) in item.apikeys"
-                                class="w-56 py-4 border-b border-gray-200"
+                                class="w-56 py-3 border-b border-gray-200"
                                 :key="index"
                             >
                                 <div class="flex items-center justify-between">

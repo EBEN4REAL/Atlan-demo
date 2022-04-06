@@ -1481,6 +1481,17 @@ export default function useEventGraph({
         graph.value.unfreeze('showArrow')
     }
 
+    // controlSchemaToggle
+    const controlSchemaToggle = () => {
+        const val = preferences.value.showSchema
+        const nodesList = document.querySelectorAll('.node-schema')
+        const nodesArr = Array.from(nodesList)
+        nodesArr.forEach((n) => {
+            if (val) n?.classList.remove('hidden')
+            else n?.classList.add('hidden')
+        })
+    }
+
     /** Resets */
     // resetSelectedNode
     const resetSelectedNode = () => {
@@ -1793,6 +1804,13 @@ export default function useEventGraph({
         () => preferences.value.showArrow,
         () => {
             controlEdgesArrow()
+        }
+    )
+
+    watch(
+        () => preferences.value.showSchema,
+        () => {
+            controlSchemaToggle()
         }
     )
 }

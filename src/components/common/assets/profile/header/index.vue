@@ -306,12 +306,7 @@
                                         icon="Query"
                                         class="mr-1 -mt-0.5 text-primary"
                                     />
-                                    <span class=""
-                                        >Query this
-                                        <span class="lowercase">{{
-                                            assetType(item)
-                                        }}</span>
-                                    </span>
+                                    <span class="">Query </span>
                                 </div>
                             </a-button>
                         </template>
@@ -328,12 +323,7 @@
                                 icon="Query"
                                 class="mr-1 -mt-0.5 text-primary"
                             />
-                            <span class=""
-                                >Query this
-                                <span class="lowercase">{{
-                                    assetType(item)
-                                }}</span>
-                            </span>
+                            <span class="">Query </span>
                         </div>
                     </a-button>
                 </a-tooltip>

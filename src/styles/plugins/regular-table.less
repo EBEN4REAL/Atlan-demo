@@ -1,4 +1,3 @@
-/*# sourceMappingURL=material.css.map */
 regular-table {
   tbody {
     td {
@@ -75,6 +74,14 @@ regular-table {
           max-width: 0;
         }
       }
+      & th:nth-of-type(2) {
+        clip-path: polygon(
+            var(--regular-table--clip-x, 0) 0,
+            var(--regular-table--clip-x, 0) 100%,
+            100% 100%,
+            100% 0
+        );
+    }
       &:last-child {
         .rt-float {
           text-align: right;

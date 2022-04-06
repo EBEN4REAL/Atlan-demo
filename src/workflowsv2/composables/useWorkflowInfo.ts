@@ -198,15 +198,15 @@ export default function useWorkflowInfo() {
     const getRunClassBgByPhase = (status) => {
         switch (status) {
             case 'Succeeded':
-                return 'bg-green-500 bg-opacity-75'
+                return 'bg-new-green-500'
             case 'Running':
-                return 'bg-yellow-300 bg-opacity-75'
+                return 'bg-new-yellow-300'
             case 'Failed':
             case 'Error':
             case 'Stopped':
-                return 'bg-red-500 bg-opacity-75'
+                return 'bg-new-red-500'
             default:
-                return 'bg-gray-200'
+                return 'bg-new-gray-800'
         }
     }
 
@@ -221,7 +221,7 @@ export default function useWorkflowInfo() {
             case 'Stopped':
                 return 'text-new-red-500'
             default:
-                return 'text-new-gray-500'
+                return 'text-new-gray-800'
         }
     }
 

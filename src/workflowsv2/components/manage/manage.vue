@@ -30,7 +30,7 @@
                         v-model:value="queryText"
                         size="minimal"
                         class="bg-white border-b-0 rounded-tr-md rounded-br-md focus-within:ring-2 ml-0.5"
-                        placeholder="Search all Snowflake Assets workflows..."
+                        :placeholder="getPlaceholder"
                         @update:value="refetch()"
                         @select="$event.target.blur()"
                     />
@@ -87,16 +87,18 @@
 
     import AssetFilters from '@/common/assets/filters/index.vue'
 
+    import { useWorkflowStore } from '~/workflowsv2/store'
     import { workflowFilter } from '~/workflowsv2/constants/filters'
     import { useRunDiscoverList } from '~/workflowsv2/composables/useRunDiscoverList'
     import { useWorkflowDiscoverList } from '~/workflowsv2/composables/useWorkflowDiscoverList'
     import { useWorkflowTypes } from '~/workflowsv2/composables/useWorkflowTypes'
+    import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
 
     import WorkflowList from '~/workflowsv2/components/manage/workflowList.vue'
-    import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
     import SearchAndFilter from '~/components/common/input/searchAndFilter.vue'
     import PackageSelector from '~/workflowsv2/components/common/selectors/packageSelector.vue'
     import WorkflowPreview from '~/workflowsv2/components/common/preview/workflowPreview.vue'
+    import { usePackageInfo } from '~/workflowsv2/composables/usePackageInfo'
 
     export default defineComponent({
         name: 'ManageWorkflows',
@@ -111,14 +113,24 @@
         emits: [],
         setup() {
             const { name } = useWorkflowInfo()
+            const { name: pkgName } = usePackageInfo()
+            const workflowStore = useWorkflowStore()
             const isDrawerVisible = ref(false)
             const activeKey = ref([])
             const wfFilters = ref({})
-            const packageId = ref(undefined)
+            const packageId = ref<string | undefined>(undefined)
             const offset = ref(0)
             const limit = ref(20)
             const selectedId = ref('')
 
+            const getPlaceholder = computed(() => {
+                if (packageId.value)
+                    return `Search all ${pkgName(
+                        workflowStore.packageMeta?.[packageId.value]
+                    )} workflows`
+
+                return 'Search all workflows'
+            })
             const preference = ref({
                 sort: 'metadata.creationTimestamp-desc',
             })
@@ -247,6 +259,7 @@
                 loadMoreWorkflows,
                 selectedId,
                 selectedWorkflow,
+                getPlaceholder,
             }
         },
     })

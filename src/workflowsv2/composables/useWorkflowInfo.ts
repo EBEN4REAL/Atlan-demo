@@ -191,7 +191,7 @@ export default function useWorkflowInfo() {
             case 'Stopped':
                 return 'bg-new-red-100'
             default:
-                return 'bg-new-gray-200'
+                return 'bg-new-gray-100'
         }
     }
 
@@ -206,7 +206,7 @@ export default function useWorkflowInfo() {
             case 'Stopped':
                 return 'bg-new-red-500'
             default:
-                return 'bg-new-gray-800'
+                return 'bg-new-gray-300'
         }
     }
 
@@ -221,7 +221,7 @@ export default function useWorkflowInfo() {
             case 'Stopped':
                 return 'text-new-red-500'
             default:
-                return 'text-new-gray-800'
+                return 'text-new-gray-600'
         }
     }
 

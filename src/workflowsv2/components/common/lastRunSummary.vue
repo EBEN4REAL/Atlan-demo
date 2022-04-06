@@ -4,7 +4,7 @@
         :title="false"
         :paragraph="{ rows: 1 }"
         active
-        class="mt-2.5"
+        style="height: 22px"
     />
     <div v-else class="flex text-gray-500 gap-x-5">
         <template v-if="run">

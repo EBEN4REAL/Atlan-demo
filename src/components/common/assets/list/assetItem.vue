@@ -434,7 +434,10 @@
                             "
                             class="flex flex-wrap text-sm text-gray-500 gap-x-2"
                         >
-                            <a-tooltip placement="bottomLeft">
+                            <a-tooltip
+                                placement="bottomLeft"
+                                :mouseEnterDelay="0.3"
+                            >
                                 <div
                                     v-if="databaseName(item)"
                                     class="flex items-center text-gray-500"
@@ -448,10 +451,29 @@
                                     </div>
                                 </div>
                                 <template #title>
-                                    <span
-                                        >Database -
-                                        {{ databaseName(item) }}</span
+                                    <div
+                                        class="flex items-center justify-between"
                                     >
+                                        <div class="flex flex-col">
+                                            <div class="text-xs">Database</div>
+
+                                            {{ databaseName(item) }}
+                                        </div>
+                                        <div class="pl-3 font-bold">
+                                            <a-button
+                                                shape="circle"
+                                                type="dashed"
+                                                @click="
+                                                    handleBrowseAsset(
+                                                        'databaseQualifiedName'
+                                                    )
+                                                "
+                                                ><AtlanIcon
+                                                    icon="Search"
+                                                ></AtlanIcon
+                                            ></a-button>
+                                        </div>
+                                    </div>
                                 </template>
                             </a-tooltip>
                             <a-tooltip placement="bottomLeft">
@@ -468,7 +490,29 @@
                                     </div>
                                 </div>
                                 <template #title>
-                                    <span>Schema - {{ schemaName(item) }}</span>
+                                    <div
+                                        class="flex items-center justify-between"
+                                    >
+                                        <div class="flex flex-col">
+                                            <div class="text-xs">Schema</div>
+
+                                            {{ schemaName(item) }}
+                                        </div>
+                                        <div class="pl-3 font-bold">
+                                            <a-button
+                                                shape="circle"
+                                                type="dashed"
+                                                @click="
+                                                    handleBrowseAsset(
+                                                        'schemaQualifiedName'
+                                                    )
+                                                "
+                                                ><AtlanIcon
+                                                    icon="Search"
+                                                ></AtlanIcon
+                                            ></a-button>
+                                        </div>
+                                    </div>
                                 </template>
                             </a-tooltip>
                         </div>
@@ -1237,7 +1281,13 @@
                 default: 'notAssets',
             },
         },
-        emits: ['listItem:check', 'unlinkAsset', 'preview', 'updateDrawer'],
+        emits: [
+            'listItem:check',
+            'unlinkAsset',
+            'preview',
+            'updateDrawer',
+            'browseAsset',
+        ],
         setup(props, { emit }) {
             const {
                 preference,
@@ -1313,6 +1363,9 @@
                 announcementType,
                 assetTypeImage,
                 isPublished,
+                databaseQualifiedName,
+                schemaQualifiedName,
+                connectionQualifiedName,
             } = useAssetInfo()
 
             const icon = computed(() => {
@@ -1394,6 +1447,33 @@
                     return 'TermDeprecated'
                 }
                 return 'Term'
+            }
+
+            const handleBrowseAsset = (typeName: string) => {
+                console.log(typeName, databaseQualifiedName(item.value))
+                if (typeName === 'databaseQualifiedName') {
+                    emit('browseAsset', {
+                        typeName: 'Database',
+                        connector: connectorName(item.value),
+
+                        connectionQualifiedName: connectionQualifiedName(
+                            item.value
+                        ),
+                        attributeName: typeName,
+                        attributeValue: databaseQualifiedName(item.value),
+                    })
+                } else if (typeName === 'schemaQualifiedName') {
+                    emit('browseAsset', {
+                        typeName: 'Schema',
+                        connector: connectorName(item.value),
+
+                        connectionQualifiedName: connectionQualifiedName(
+                            item.value
+                        ),
+                        attributeName: typeName,
+                        attributeValue: schemaQualifiedName(item.value),
+                    })
+                }
             }
 
             const {
@@ -1483,6 +1563,10 @@
                 mouseEnterDelay,
                 enteredPill,
                 isPublished,
+                databaseQualifiedName,
+                connectionQualifiedName,
+                handleBrowseAsset,
+                schemaQualifiedName,
             }
         },
     })

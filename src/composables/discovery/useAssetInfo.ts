@@ -184,6 +184,12 @@ export default function useAssetInfo() {
     const databaseName = (asset: assetInterface) =>
         attributes(asset)?.databaseName ?? ''
 
+    const databaseQualifiedName = (asset: assetInterface) =>
+        attributes(asset)?.databaseQualifiedName
+
+    const schemaQualifiedName = (asset: assetInterface) =>
+        attributes(asset)?.schemaQualifiedName
+
     const parentDatabase = (asset: assetInterface) =>
         attributes(asset)?.database
 
@@ -1382,5 +1388,7 @@ export default function useAssetInfo() {
         getConnectorLabelByName,
         isIndexed,
         isPublished,
+        databaseQualifiedName,
+        schemaQualifiedName,
     }
 }

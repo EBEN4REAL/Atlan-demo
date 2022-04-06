@@ -27,6 +27,7 @@
                         class="px-1 border-r"
                         :persona="persona"
                         @change="handleConnectorChange"
+                        :key="hierarchyDirtyTimestamp"
                     ></ConnectorSelect>
                     <SearchAdvanced
                         :key="searchDirtyTimestamp"
@@ -125,7 +126,7 @@
                         v-model="facets.hierarchy"
                         @change="handleFilterChange"
                         :persona="persona"
-                        :key="facets.connector"
+                        :key="`${facets.connector}_${hierarchyDirtyTimestamp}`"
                     ></Heirarchy>
                 </div>
                 <div
@@ -238,6 +239,7 @@
                                 @listItem:check="
                                     (e, item) => updateBulkSelectedAssets(item)
                                 "
+                                @browseAsset="handleBrowseAsset"
                             ></AssetItem>
                         </template>
                     </AssetList>
@@ -448,6 +450,9 @@
             const activeKey: Ref<string[]> = ref([])
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
             const searchDirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
+            const hierarchyDirtyTimestamp = ref(
+                `dirty_${Date.now().toString()}`
+            )
             const searchBox: Ref<null | HTMLInputElement> = ref(null)
 
             const discoveryStore = useAssetStore()
@@ -633,6 +638,18 @@
             const isConnectorChange = ref(false)
             const isGlossaryChange = ref(false)
             const connector = ref('')
+
+            const handleBrowseAsset = (val) => {
+                facets.value.connector = val.connector
+                facets.value.hierarchy.connectionQualifiedName =
+                    val.connectionQualifiedName
+                facets.value.hierarchy.attributeName = val.attributeName
+                facets.value.hierarchy.attributeValue = val.attributeValue
+
+                hierarchyDirtyTimestamp.value = `dirty_${Date.now().toString()}`
+                offset.value = 0
+                quickChange()
+            }
 
             const handleFilterChange = (filterItem) => {
                 isConnectorChange.value = false
@@ -927,6 +944,8 @@
                 handleConnectorChange,
                 handleGlossaryChange,
                 isGlossaryChange,
+                handleBrowseAsset,
+                hierarchyDirtyTimestamp,
             }
         },
     })

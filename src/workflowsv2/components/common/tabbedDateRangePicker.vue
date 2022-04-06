@@ -30,22 +30,29 @@
             const ranges = [
                 {
                     label: 'Today',
-                    value: () => dayjs().startOf('day').valueOf(),
+                    value: () => ({ gt: dayjs().startOf('day').valueOf() }),
                 },
                 {
                     label: 'Yesterday',
-                    value: () =>
-                        dayjs().startOf('day').subtract(1, 'day').valueOf(),
+                    value: () => ({
+                        lt: dayjs().startOf('day').valueOf(),
+                        gt: dayjs().startOf('day').subtract(1, 'day').valueOf(),
+                    }),
                 },
                 {
                     label: '7 days',
-                    value: () =>
-                        dayjs().startOf('day').subtract(7, 'day').valueOf(),
+                    value: () => ({
+                        gt: dayjs().startOf('day').subtract(7, 'day').valueOf(),
+                    }),
                 },
                 {
                     label: '30 days',
-                    value: () =>
-                        dayjs().startOf('day').subtract(30, 'day').valueOf(),
+                    value: () => ({
+                        gt: dayjs()
+                            .startOf('day')
+                            .subtract(30, 'day')
+                            .valueOf(),
+                    }),
                 },
                 // { label: 'Custom' },
             ]
@@ -58,6 +65,10 @@
                     selected.value = sel
                 }
             }
+
+            // Select today by default
+            handleSelect('Today', { gt: dayjs().startOf('day').valueOf() })
+
             return { selected, ranges, handleSelect }
         },
     })

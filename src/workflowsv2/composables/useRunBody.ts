@@ -127,14 +127,16 @@ export function useRunBody(
                     }
                     break
                 }
-                case 'startDate': {
+                case 'dateRange': {
                     if (filterObject) {
                         base.andFilter('nested', {
                             path: 'metadata',
                             ...bodybuilder()
-                                .query('range', 'metadata.creationTimestamp', {
-                                    gt: filterObject,
-                                })
+                                .query(
+                                    'range',
+                                    'metadata.creationTimestamp',
+                                    filterObject
+                                )
                                 .build(),
                         })
                     }

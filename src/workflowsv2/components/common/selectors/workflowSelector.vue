@@ -1,14 +1,12 @@
-<!-- FIXME: Deprecated component -->
 <template>
     <BaseSelector
         :type="type"
         :value="value"
         :list="workflowList"
         :loading="isLoading"
-        :placeholder="
-            $attrs.disabled ? 'Select a package first' : 'Select workflow'
-        "
+        placeholder="Select workflow"
         :not-found-content="isLoading ? 'Loading' : 'No workflow found'"
+        :title="$attrs.disabled ? 'Select a package first' : ''"
         @update:value="$emit('update:value', $event)"
     />
 </template>
@@ -29,7 +27,6 @@
 
     import BaseSelector from './baseSelector.vue'
 
-    /** @deprecated - Remove this component*/
     export default defineComponent({
         name: 'WorkflowSelector',
         components: { BaseSelector },

@@ -47,10 +47,17 @@
                 @click="isDrawerVisible = !isDrawerVisible"
             />
 
-            <PackageWorkflowSelector
+            <PackageSelector v-model:value="packageId" />
+            <WorkflowSelector
+                v-model:value="workflowId"
+                :package-name="packageId"
+                :disabled="!packageId"
+            />
+
+            <!-- <PackageWorkflowSelector
                 v-model:packageId="packageId"
                 v-model:workflowId="workflowId"
-            />
+            /> -->
             <StatusSelector v-model:value="status" />
 
             <TabbedDateRangePicker v-model:value="runDateRange" />
@@ -63,12 +70,7 @@
             /> -->
         </div>
         <div class="flex items-center" :class="{ hidden: !isExpanded }">
-            <!-- FIXME: Deprecated component -->
-            <!-- <WorkflowSelector
-                v-model:value="workflowId"
-                :package-name="packageId"
-                :disabled="!packageId"
-            /> -->
+            <!-- Space for additional filters -->
         </div>
     </div>
 </template>
@@ -77,7 +79,8 @@
     import { computed, defineComponent, ref, toRefs } from 'vue'
     import AssetFilters from '@/common/assets/filters/index.vue'
     import WorkflowSelector from '~/workflowsv2/components/common/selectors/workflowSelector.vue'
-    import PackageWorkflowSelector from '~/workflowsv2/components/common/selectors/packageWorkflowSelector.vue'
+    import PackageSelector from '~/workflowsv2/components/common/selectors/packageSelector.vue'
+    // import PackageWorkflowSelector from '~/workflowsv2/components/common/selectors/packageWorkflowSelector.vue'
     import StatusSelector from '~/workflowsv2/components/common/selectors/statusSelector.vue'
     import TabbedDateRangePicker from '~/workflowsv2/components/common/tabbedDateRangePicker.vue'
     import { runFilter } from '~/workflowsv2/constants/filters'
@@ -86,7 +89,8 @@
         name: 'FilterStrip',
         components: {
             WorkflowSelector,
-            PackageWorkflowSelector,
+            PackageSelector,
+            // PackageWorkflowSelector,
             StatusSelector,
             TabbedDateRangePicker,
             AssetFilters,
@@ -118,7 +122,7 @@
             const packageId = computed(computedFactory('packageId'))
             const workflowId = computed(computedFactory('workflowId'))
             const status = computed(computedFactory('status'))
-            const runDateRange = computed(computedFactory('startDate'))
+            const runDateRange = computed(computedFactory('dateRange'))
             const drawerFilters = computed(computedFactory('sidebar'))
 
             const drawerFiltersApplied = computed(() => {

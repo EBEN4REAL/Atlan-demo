@@ -4,7 +4,11 @@
             <span class="text-sm font-bold leading-6 tracking-widest"
                 >WORKFLOW RUN HISTORY</span
             >
-            <IconButton icon="Retry" class="ml-auto" @click="quickChange" />
+            <IconButton
+                icon="Retry"
+                class="ml-auto"
+                @click="resetAndFetchRuns"
+            />
         </div>
         <div
             class="flex flex-col overflow-hidden divide-y divide-gray-300 rounded-lg"
@@ -60,7 +64,7 @@
                     :total-pages="Math.ceil(totalRuns / limit)"
                     :loading="isLoading"
                     :page-size="limit"
-                    @mutate="quickChange"
+                    @mutate="resetAndFetchRuns"
                 />
             </div>
         </div>
@@ -99,7 +103,7 @@
                 workflowTemplate: filters.value?.workflowId,
                 prefix: workflowStore.packageMeta?.[filters.value?.packageId]
                     ?.metadata?.name,
-                startDate: filters.value?.startDate,
+                dateRange: filters.value?.dateRange,
                 status: filters.value?.status,
                 ...filters.value?.sidebar,
             }))
@@ -111,6 +115,7 @@
             const {
                 list: runs,
                 quickChange,
+                resetState,
                 isLoading,
                 data,
             } = useRunDiscoverList({
@@ -141,14 +146,19 @@
                 // { title: 'Output', style: 'grid-column: span 2 / span 2' },
             ]
 
-            watch(filters, () => quickChange(), { deep: true })
+            const resetAndFetchRuns = () => {
+                resetState()
+                quickChange()
+            }
+
+            watch(filters, resetAndFetchRuns, { deep: true })
 
             return {
                 runs,
                 tableHeaders,
                 isLoading,
                 EmptyLogsIllustration,
-                quickChange,
+                resetAndFetchRuns,
                 limit,
                 offset,
                 totalRuns,

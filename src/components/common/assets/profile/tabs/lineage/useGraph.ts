@@ -280,7 +280,6 @@ export default function useGraph(graph) {
                                 refY: 10,
                                 event: 'port:click',
                                 href: '',
-                                height: 20,
                             },
                         },
                         position: 'erPortPosition',
@@ -389,10 +388,11 @@ export default function useGraph(graph) {
                     height: 16,
                 },
                 portImageRight: {
+                    height: isPrimary ? 20 : 17,
                     // eslint-disable-next-line no-nested-ternary
                     href: isPrimary
                         ? iconPrimaryB64
-                        : isForeign
+                        : !isForeign
                         ? iconForeignB64
                         : '',
                 },

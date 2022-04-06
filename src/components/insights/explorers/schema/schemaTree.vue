@@ -208,6 +208,10 @@
 <style lang="less" module>
     // @bg-selected: rgba(219, 234, 254, 1);
 
+    .tree {
+        @apply bg-new-gray-100;
+    }
+
     .schemaTreeStyles {
         :global(.ant-tree-switcher_open) {
             transform: rotate(90deg);
@@ -220,14 +224,20 @@
             background-color: #fff !important;
         }
         :global(.ant-tree-treenode-selected) {
-            background-color: rgba(219, 234, 254, 1) !important;
+            // @apply border !important;
+            // @apply border-primary !important;
+            @apply bg-new-gray-200 !important;
+            @apply hover:bg-new-gray-200 !important;
+            box-shadow: inset 0px 0px 0px 1px #5277d7;
+
+            // background-color: rgba(219, 234, 254, 1) !important;
         }
         // :global(.ant-tree-treenode) {
         //     @apply hover:bg-primary-light;
         // }
         :global(.ant-tree-treenode) {
             padding-bottom: 0px !important;
-            @apply hover:bg-primary-light rounded !important;
+            @apply hover:bg-new-gray-200 rounded-lg !important;
         }
 
         :global(.ant-tree-title) {
@@ -249,13 +259,15 @@
         }
 
         :global(.ant-tree li .ant-tree-node-content-wrapper:hover) {
-            @apply bg-gray-light;
+            // @apply bg-gray-light;
+            @apply bg-new-gray-200;
         }
         // :global(.ant-tree li .ant-tree-node-content-wrapper:hover) {
         //     @apply bg-gray-light;
         // }
         :global(.ant-tree .ant-tree-treenode) {
             @apply p-0 !important;
+            @apply px-2 !important;
         }
         :global(.ant-tree-treenode-switcher-open.ant-tree-treenode-selected
                 > .ant-tree-switcher_open) {
@@ -264,7 +276,8 @@
             justify-content: center;
             display: inline-flex !important;
             align-items: center;
-            background-color: rgba(219, 234, 254, 1) !important;
+            // background-color: rgba(219, 234, 254, 1) !important;
+            @apply bg-new-gray-200 !important;
 
             // @apply hover:bg-selected !important;
         }
@@ -279,17 +292,25 @@
         }
         :global(.ant-tree
                 .ant-tree-node-content-wrapper.ant-tree-node-selected) {
-            background-color: rgba(219, 234, 254, 1) !important;
+            // background-color: rgba(219, 234, 254, 1) !important;
+            // @apply bg-new-gray-200 !important;
+            @apply bg-transparent !important;
         }
         :global(.ant-tree-treenode-selected) {
-            background-color: rgba(219, 234, 254, 1) !important;
-            @apply hover:bg-primary-selected-focus !important;
+            // background-color: rgba(219, 234, 254, 1) !important;
+            @apply bg-new-gray-200 !important;
+
+            @apply hover:bg-new-gray-200 !important;
+            // @apply hover:bg-primary-selected-focus !important;
+
             // ::hover {
             //     background-color: rgba(219, 234, 254, 1) !important;
             // }
         }
         :global(.ant-tree-node-content-wrapper) {
-            @apply hover:bg-primary-light !important;
+            @apply hover:bg-new-gray-200 rounded-lg !important;
+
+            // @apply hover:bg-primary-light !important;
             transition: none !important;
         }
         :global(.ant-tree span.ant-tree-indent-unit) {

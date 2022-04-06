@@ -87,6 +87,7 @@
                         v-model="postFacets.typeName"
                         class=""
                         :list="assetTypeAggregationList"
+                        :isReset="isConnectorChange"
                         :shortcut-enabled="true"
                         @change="handleAssetTypeChange"
                     >
@@ -561,7 +562,21 @@
                 quickChange()
             }, 100)
 
+            const isConnectorChange = ref(false)
+            const connector = ref('')
+
             const handleFilterChange = (filterItem) => {
+                isConnectorChange.value = false
+
+                if (!facets.value.hierarchy?.connectorName) {
+                    connector.value = ''
+                } else if (
+                    connector.value !== facets.value.hierarchy?.connectorName
+                ) {
+                    isConnectorChange.value = true
+                    connector.value = facets.value.hierarchy?.connectorName
+                }
+
                 offset.value = 0
                 quickChange()
                 discoveryStore.setActiveFacet(facets.value)
@@ -804,6 +819,8 @@
                 quickChange,
                 isAssetProfile,
                 listNavigationBlocked,
+                isConnectorChange,
+                connector,
                 denyCustomMetadata,
             }
         },

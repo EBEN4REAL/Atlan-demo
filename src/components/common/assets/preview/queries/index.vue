@@ -1,8 +1,6 @@
 <template>
-    <div class="flex flex-col h-full" style="height: calc(100% - 84px)">
-        <div
-            class="flex items-center justify-between px-5 py-2 border-b border-gray-200 bg-gray-50"
-        >
+    <div class="flex flex-col h-full">
+        <div class="flex items-center justify-between px-5 py-4">
             <span class="flex items-center">
                 <PreviewTabsIcon
                     :icon="tab.icon"
@@ -36,11 +34,12 @@
                 desc="This asset doesn't have any saved queries"
                 button-text="Create a new query"
                 button-color="secondary"
+                button-class="mt-4"
                 @event="handleCreateQuery"
             ></EmptyView>
         </div>
 
-        <div v-else class="flex flex-col flex-grow">
+        <div v-else class="flex flex-col flex-grow overflow-y-auto">
             <div class="px-5 pt-3 pb-0">
                 <SearchAdvanced
                     v-model:value="queryText"
@@ -70,7 +69,7 @@
                 :is-load-more="isLoadMore"
                 :is-loading="isValidating || isQueriesRelationsLoading"
                 @loadMore="handleLoadMore"
-                class="mt-4"
+                class="mt-2"
             >
                 <template #default="{ item, itemIndex }">
                     <Popover
@@ -108,7 +107,6 @@
 
     import AssetItem from '@common/assets/list/assetItem.vue'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
-    import Sorting from '@/common/select/sorting.vue'
 
     import AssetList from '@/common/assets/list/index.vue'
 
@@ -133,7 +131,6 @@
             PreviewTabsIcon,
             AssetList,
             AssetItem,
-            Sorting,
             EmptyView,
             ErrorView,
             Popover,
@@ -170,19 +167,17 @@
             const limit = ref(20)
             const offset = ref(0)
             const queryText = ref('')
-            const facets = ref({
-                typeName: 'Query',
-            })
-            const postFacets = ref({})
+
+            const facets = ref({})
+            const postFacets = ref({ typeName: 'Query' })
+
             const dependentKey = ref()
             const defaultAttributes = ref([
                 ...MinimalAttributes,
                 'ownerUsers',
                 'ownerGroups',
             ])
-            const preference = ref({
-                sort: 'order-asc',
-            })
+            const preference = ref({})
             const guidToFetch = ref('')
             const drawerVisible = ref(false)
             const relationAttributes = ref([...DefaultRelationAttributes])
@@ -190,9 +185,17 @@
             const updateFacet = () => {
                 facets.value = {}
 
-                facets.value.guidList = queries(asset.value)?.map(
-                    (query) => query.guid
-                )
+                if (
+                    selectedAsset?.value.typeName?.toLowerCase() ===
+                    'collection'
+                ) {
+                    facets.value.collectionQualifiedName =
+                        selectedAsset.value?.attributes?.qualifiedName
+                } else {
+                    facets.value.guidList = queries(asset.value)?.map(
+                        (query) => query.guid
+                    )
+                }
             }
 
             const {

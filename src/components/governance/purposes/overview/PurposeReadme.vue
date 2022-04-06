@@ -5,6 +5,7 @@
             :is-editing-allowed="true"
             empty-text-if-editing-allowed="Add a README with an overview of your persona."
             empty-text-if-editing-disallowed="Add a README with an overview of your persona."
+            asset-type="Purpose"
             :handle-save="handleSave"
             :handle-success="handleSuccess"
             :handle-failure="handleFailure"

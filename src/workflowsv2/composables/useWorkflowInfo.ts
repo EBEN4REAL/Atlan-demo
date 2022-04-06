@@ -327,9 +327,6 @@ export default function useWorkflowInfo() {
         return map
     }
 
-    const workflowTemplateName = (item) =>
-        item?.metadata?.labels?.['workflows.argoproj.io/workflow-template']
-
     return {
         name,
         creationTimestamp,
@@ -368,6 +365,5 @@ export default function useWorkflowInfo() {
         getRunBorderClassByPhase,
         getRunTextClassByPhase,
         getRunIconByPhase,
-        workflowTemplateName,
     }
 }

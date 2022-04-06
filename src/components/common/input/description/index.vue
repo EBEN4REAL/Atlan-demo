@@ -41,10 +41,10 @@
             </div>
             <div
                 v-if="!editPermission && role !== 'Guest' && isEdit"
-                class="bg-gray-100 px-3 py-2 mt-3"
+                class="px-3 py-2 mt-3 bg-gray-100"
             >
                 You don't have edit access. Suggest a new Description and
-                <span class="text-primary cursor-pointer">
+                <span class="cursor-pointer text-primary">
                     <a-popover placement="rightBottom">
                         <template #content>
                             <AdminList></AdminList>
@@ -95,7 +95,7 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import Shortcut from '@/common/popover/shortcut.vue'
-    import whoami from '~/composables/user/whoami.ts'
+    import whoami from '~/composables/user/whoami'
     import { useCreateRequests } from '~/composables/requests/useCreateRequests'
 
     export default defineComponent({
@@ -172,7 +172,10 @@
             }
 
             const handleEdit = () => {
-                if (!props.readOnly) {
+                if (
+                    !props.readOnly &&
+                    (role.value !== 'Guest' || editPermission.value)
+                ) {
                     isEdit.value = true
                     start()
                 }

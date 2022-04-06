@@ -1,4 +1,59 @@
 <template>
+    <div v-if="preferences.showLegend" class="lineage-legend footer">
+        <div>
+            <div class="flex justify-between px-4 py-3 text-sm">
+                <div>Legend</div>
+                <div>
+                    <AtlanIcon
+                        @click="preferences.showLegend = false"
+                        icon="Cross"
+                        class="cursor-pointer"
+                        style="width: 0.8rem !important"
+                    ></AtlanIcon>
+                </div>
+            </div>
+            <a-divider class="m-0" />
+            <div class="flex flex-col w-48 p-4 text-gray-500 gap-y-2">
+                <div class="flex items-center">
+                    <AtlanIcon icon="LegendExpand"></AtlanIcon>
+                    <div class="ml-4">Expandable node</div>
+                </div>
+                <div class="flex items-center">
+                    <AtlanIcon icon="LegendCollapse"></AtlanIcon>
+                    <div class="ml-4">Collapsible node</div>
+                </div>
+                <div class="flex items-center">
+                    <AtlanIcon
+                        icon="LegendAnomaly"
+                        style="width: 1.1rem !important"
+                    ></AtlanIcon>
+                    <div class="ml-4">Anomaly node</div>
+                </div>
+                <div class="flex items-center">
+                    <AtlanIcon
+                        icon="LegendSelected"
+                        style="width: 1.1rem !important"
+                    ></AtlanIcon>
+                    <div class="ml-4">Selected node</div>
+                </div>
+                <div class="flex items-center">
+                    <AtlanIcon
+                        icon="LegendHighlighted"
+                        style="width: 1.1rem !important"
+                    ></AtlanIcon>
+                    <div class="ml-4">Highlighted node</div>
+                </div>
+            </div>
+            <!-- <div class="flex items-center justify-between">
+                    <span class="text-gray-500">Show Arrows</span>
+                    <a-switch v-model:checked="preferences.showArrow" />
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-500">Show Schema</span>
+                    <a-switch v-model:checked="preferences.showSchema" />
+                </div>  -->
+        </div>
+    </div>
     <div ref="footerRoot" class="lineage-control footer">
         <slot></slot>
 
@@ -35,9 +90,21 @@
                         <a-divider class="m-0" />
                         <div class="flex flex-col w-64 p-4 gap-y-4">
                             <div class="flex items-center justify-between">
+                                <span class="text-gray-500">Show Legend</span>
+                                <a-switch
+                                    v-model:checked="preferences.showLegend"
+                                />
+                            </div>
+                            <div class="flex items-center justify-between">
                                 <span class="text-gray-500">Show Arrows</span>
                                 <a-switch
                                     v-model:checked="preferences.showArrow"
+                                />
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-500">Show Schema</span>
+                                <a-switch
+                                    v-model:checked="preferences.showSchema"
                                 />
                             </div>
                         </div>
@@ -57,6 +124,20 @@
                         ></AtlanIcon>
                     </div>
                 </a-popover>
+
+                <!-- onSvgExport -->
+                <!-- <div class="control-item" @click="onSvgExport">
+                    <a-tooltip placement="top">
+                        <template #title>
+                            <span>Export as SVG</span>
+                        </template>
+
+                        <AtlanIcon
+                            icon="Image"
+                            class="outline-none"
+                        ></AtlanIcon>
+                    </a-tooltip>
+                </div> -->
 
                 <!-- Minimap -->
                 <div
@@ -136,9 +217,12 @@
 <script lang="ts">
     /** VUE */
     import { defineComponent, inject, ref, toRefs } from 'vue'
+    import { DataUri } from '@antv/x6'
 
     /** COMPOSABLES */
     import useTransformGraph from './useTransformGraph'
+
+    import { exportStyles } from './stylesTwo'
 
     export default defineComponent({
         name: 'LineageFooter',
@@ -174,8 +258,13 @@
             const preferences = inject('preferences', ref({}))
 
             /** DATA */
-            const { graph, lineageContainer, graphHeight, graphWidth } =
-                toRefs(props)
+            const {
+                graph,
+                baseEntityGuid,
+                lineageContainer,
+                graphHeight,
+                graphWidth,
+            } = toRefs(props)
             const showMinimap = ref(false)
             const isFullscreen = ref(false)
             const isExpanded = ref(true)
@@ -185,6 +274,29 @@
             /** METHODS */
             // useTransformGraph
             const { zoom, fit, fullscreen } = useTransformGraph(graph, emit)
+
+            // onSvgExport
+            const onSvgExport = () => {
+                const baseNode = graph.value
+                    .getNodes()
+                    .find((node) => node.id === baseEntityGuid.value)
+                const { displayText, guid } = baseNode.store.data.entity
+                const fileName = `${displayText}_${guid}`
+
+                graph.value.toSVG(
+                    (dataUri: string) => {
+                        DataUri.downloadDataUri(
+                            DataUri.svgToDataUrl(dataUri),
+                            fileName
+                        )
+                    },
+                    {
+                        copyStyles: false,
+                        stylesheet: exportStyles,
+                        serializeImages: true,
+                    }
+                )
+            }
 
             // onFullscreen
             const onFullscreen = () => {
@@ -228,6 +340,7 @@
                 fit,
                 onShowMinimap,
                 onFullscreen,
+                onSvgExport,
                 toggleControlVisibility,
             }
         },

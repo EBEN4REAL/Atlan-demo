@@ -286,24 +286,39 @@ export function useBody(
             case 'owners': {
                 if (filterObject) {
                     base.filter('bool', (q) => {
-                        if (filterObject.ownerUsers?.length > 0)
+                        if (filterObject.ownerUsers?.length > 0) {
                             q.orFilter(
                                 'terms',
                                 'ownerUsers',
                                 filterObject.ownerUsers
                             )
+                            q.orFilter(
+                                'terms',
+                                'adminUsers',
+                                filterObject.ownerUsers
+                            )
+                        }
 
-                        if (filterObject.ownerGroups?.length > 0)
+                        if (filterObject.ownerGroups?.length > 0) {
                             q.orFilter(
                                 'terms',
                                 'ownerGroups',
                                 filterObject.ownerGroups
                             )
+                            q.orFilter(
+                                'terms',
+                                'adminGroups',
+                                filterObject.ownerGroups
+                            )
+                        }
+
                         if (filterObject.empty === true) {
                             q.orFilter('bool', (query) =>
                                 query.filter('bool', (query2) => {
                                     query2.notFilter('exists', 'ownerUsers')
                                     query2.notFilter('exists', 'ownerGroups')
+                                    query2.notFilter('exists', 'adminUsers')
+                                    query2.notFilter('exists', 'adminGroups')
                                     return query2
                                 })
                             )
@@ -378,6 +393,12 @@ export function useBody(
             case 'objectQualifiedName': {
                 if (filterObject) {
                     base.filter('term', 'objectQualifiedName', filterObject)
+                }
+                break
+            }
+            case 'collectionQualifiedName': {
+                if (filterObject) {
+                    base.filter('term', 'collectionQualifiedName', filterObject)
                 }
                 break
             }
@@ -743,6 +764,7 @@ export function useBody(
         ])
         base.orFilter('terms', '__typeName.keyword', [
             'Query',
+            'Collection',
             'AtlasGlossaryCategory',
             'AtlasGlossaryTerm',
             'Connection',

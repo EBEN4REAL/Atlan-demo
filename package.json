@@ -1,6 +1,6 @@
 {
   "private": true,
-  "version": "2.26.0",
+  "version": "2.34.1",
   "scripts": {
     "dev": "vite --port 3333 --open",
     "build-dev": "vite build --mode development",
@@ -176,6 +176,7 @@
         "dayjs",
         "dayjs/plugin/advancedFormat",
         "dayjs/plugin/relativeTime",
+        "dayjs/plugin/timezone",
         "dayjs/plugin/utc",
         "emoji-mart-vue-fast/src",
         "event-source-polyfill",

@@ -348,14 +348,14 @@
                                 @click="togglePane"
                                 @mouseout="recordTooltipPresence"
                             >
-                             <a-tooltip
-                                placement="topRight"
-                                color="#363636"
-                                :mouse-enter-delay="
-                                    lastTooltipPresence !== undefined
-                                        ? 0.1
-                                        : 0.5
-                                "
+                                <a-tooltip
+                                    placement="topRight"
+                                    color="#363636"
+                                    :mouse-enter-delay="
+                                        lastTooltipPresence !== undefined
+                                            ? 0.1
+                                            : 0.5
+                                    "
                                 >
                                     <template #title>Toggle output</template>
                                     <div
@@ -596,6 +596,10 @@
             const activeTabCollection = inject(
                 'activeTabCollection'
             ) as ComputedRef
+
+            const refreshSchedulesWorkflowTab = inject(
+                'refreshSchedulesWorkflowTab'
+            ) as Ref<Function>
 
             // toRaw(editorInstance.value).updateOptions({
             //     readOnly: hasQueryWritePermission ? false : true,
@@ -850,6 +854,10 @@
                 const queryId = activeInlineTab.value?.queryId
                 if (queryId) {
                     await updateQuery()
+                    debugger
+                    // for updating the schedule query tab
+                    if (refreshSchedulesWorkflowTab.value)
+                        refreshSchedulesWorkflowTab.value(true)
                     refetchQueryNode.value = {
                         guid: queryId,
                     }

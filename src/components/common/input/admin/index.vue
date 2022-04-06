@@ -22,6 +22,7 @@
 
         <div class="flex flex-wrap items-center gap-1 text-sm">
             <a-tooltip
+                v-if="showAddButton"
                 placement="left"
                 :title="
                     !editPermission
@@ -31,6 +32,7 @@
                 :mouse-enter-delay="0.5"
             >
                 <a-button
+                    v-if="showAddButton"
                     :disabled="!editPermission"
                     shape="circle"
                     size="small"
@@ -114,7 +116,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
-        name: 'OwnersWidget',
+        name: 'AdminsWidget',
         components: {
             UserPill,
             GroupPill,
@@ -157,6 +159,11 @@
                 type: Boolean,
                 required: false,
                 default: false,
+            },
+            showAddButton: {
+                type: Boolean,
+                required: false,
+                default: true,
             },
         },
         emits: ['change', 'update:modelValue'],

@@ -113,6 +113,13 @@
                     return false
                 },
             },
+            isReset: {
+                type: Boolean,
+                required: false,
+                default() {
+                    return false
+                },
+            },
             fullWidth: {
                 type: Boolean,
                 required: false,
@@ -130,7 +137,7 @@
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const { list, icon, noAll } = toRefs(props)
+            const { list, icon, noAll, isReset } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
             const selectedTab = ref(modelValue.value)
             const dataList = ref(list.value)
@@ -164,9 +171,16 @@
 
                 dataList.value = list.value
                 if (!found && modelValue.value !== '__all') {
+                    console.log('not found', modelValue.value)
+
                     if (currentType) {
                         currentType.count = 0
-                        dataList.value.push(currentType)
+
+                        if (isReset.value) {
+                            modelValue.value = '__all'
+                        } else {
+                            dataList.value.push(currentType)
+                        }
                     }
                     if (sum !== 0) {
                         if (dataList.value.length !== 1 && !noAll.value) {
@@ -222,6 +236,7 @@
                 onTabChange,
                 getKeyboardShortcutData,
                 currentIndex,
+                isReset,
             }
         },
     })
@@ -259,7 +274,7 @@
 
         :global(.ant-tabs-tab:first-child) {
             border-top-left-radius: 4px !important;
-            @apply ml-0 !important;
+            @apply ml-0 mt-0 !important;
         }
 
         :global(.ant-tabs-nav-container-scrolling) {

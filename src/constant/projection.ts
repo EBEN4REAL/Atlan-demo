@@ -64,6 +64,8 @@ export const AssetAttributes = [
     'ownerGroups',
     'adminUsers',
     'adminGroups',
+    'viewerGroups',
+    'viewerUsers',
     'meanings',
     'readme',
     'rawQuery',
@@ -151,6 +153,7 @@ export const SQLAttributes = [
     'tablePartition',
     'materialisedView',
     'database',
+    'atlanSchema',
     'tableCount',
     'viewsCount',
 ]

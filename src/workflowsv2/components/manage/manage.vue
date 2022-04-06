@@ -35,9 +35,7 @@
                         @select="$event.target.blur()"
                     />
                 </div>
-                <router-link :to="{ params: { tab: 'marketplace' } }">
-                    <AtlanButton2 label="New workflow" class="flex-none" />
-                </router-link>
+                <AtlanButton2 label="New workflow" class="flex-none" />
             </div>
 
             <WorkflowList
@@ -69,7 +67,7 @@
             </template>
         </div>
 
-        <div style="width: 420px" class="flex-none hidden lg:block">
+        <div style="width: 420px" class="flex-none">
             <WorkflowPreview
                 v-if="selectedWorkflow"
                 :workflow="selectedWorkflow"

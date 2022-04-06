@@ -1,5 +1,5 @@
 <template>
-    <div class="px-5 pb-0 mt-3">
+    <div class="px-5 pb-0 mt-1">
         <SearchAndFilter
             v-model:value="queryText"
             :placeholder="getPlaceholder"

@@ -76,29 +76,38 @@
 
             <div class="mt-75">
                 <div
-                    v-if="type === 'meta' && policy.updatedBy"
+                    v-if="
+                        type === 'meta' &&
+                        (policy.updatedBy || policy.createdBy)
+                    "
                     class="flex items-center p-4 -mt-3 text-sm text-gray-700 bg-gray-200"
                 >
                     <AtlanIcon icon="DateTime" class="mr-1 text-gray-700" />
-                    Last updated by
+                    {{ policy.updatedBy ? 'Last updated by' : 'Created by' }}
+
                     <Avatar
-                        :image-url="imageUrl(policy.updatedBy)"
+                        :image-url="
+                            imageUrl(policy.updatedBy || policy.createdBy)
+                        "
                         :allow-upload="false"
-                        :avatar-name="policy.updatedBy"
+                        :avatar-name="policy.updatedBy || policy.createdBy"
                         :avatar-size="16"
                         :avatar-shape="'circle'"
                         class="mx-1 bg-primary-light"
                     />
-                    {{ policy.updatedBy }}
+                    {{ policy.updatedBy || policy.createdBy }}
                     <div class="ml-1">
-                        {{ useTimeAgo(policy.updatedAt).value }}
+                        {{
+                            useTimeAgo(policy.updatedAt || policy.createdAt)
+                                .value
+                        }}
                     </div>
-
                 </div>
                 <div class="px-4 mb-20 bg-gray-100">
                     <div
                         :class="`relative ${
-                            type === 'meta' && policy.updatedBy
+                            type === 'meta' &&
+                            (policy.updatedBy || policy.createdBy)
                                 ? 'mt-4'
                                 : 'mt-2'
                         } bg-white shadow-section`"

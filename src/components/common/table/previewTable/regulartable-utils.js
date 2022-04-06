@@ -67,7 +67,7 @@ export const setRowHeaderStyle = (th, columns) => {
         if (imageMap[getDataType(column?.data_type)]) {
             span.innerHTML = `<img style="filter: grayscale(100%);" data-tooltip=${
                 column?.data_type
-            }  class="cursor-pointer inline-flex w-4 h-4 mr-1 mb-0.5 text-gray-500 src="${
+            }  class="cursor-pointer inline-flex w-4 h-4 mr-1 mb-0.5" src="${
                 imageMap[getDataType(column?.data_type)]
             }">`
         }

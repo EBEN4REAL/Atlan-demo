@@ -14,6 +14,7 @@
         <template #suffixIcon>
             <AtlanIcon icon="CaretDown" class="mb-0" />
         </template>
+
         <template
             v-for="item in filteredList"
             :key="item.attributes?.qualifiedName"
@@ -26,7 +27,10 @@
                             class="h-4 mr-1 mb-0.5"
                             style="min-width: 1rem"
                         />
-                        <Tooltip :tooltip-text="item.attributes.name" />
+                        <Tooltip
+                            :tooltip-text="item.attributes.name"
+                            placement="topLeft"
+                        />
                     </div>
                     <span v-if="showCount" class="text-xs text-gray-500"
                         >{{ item.assetCount }} assets</span

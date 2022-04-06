@@ -5,7 +5,6 @@
             :value="modelValue"
             :allowClear="true"
             :showSearch="true"
-            :options="dropdownOption"
             class="w-full asset-select"
             :dropdownMatchSelectWidth="true"
             @change="handleChange"
@@ -15,6 +14,18 @@
             :loading="isLoading"
             @search="handleSearch"
         >
+            <template v-for="item in dropdownOption" :key="item.value">
+                <a-select-option :value="item.value">
+                    <div class="flex flex-col">
+                        <div class="flex items-center">
+                            <Tooltip
+                                :tooltip-text="item.label"
+                                placement="topLeft"
+                            />
+                        </div>
+                    </div>
+                </a-select-option>
+            </template>
             <template #suffixIcon>
                 <AtlanIcon icon="CaretDown" class="mb-0" />
             </template>

@@ -10,8 +10,9 @@
         class="connector-select"
     >
         <template #suffixIcon>
-            <AtlanIcon icon="CaretDown" class="ml-1" />
+            <AtlanIcon icon="CaretDown" class="" />
         </template>
+
         <template v-for="item in list" :key="item.id">
             <a-select-option :value="item.id" class="flex">
                 <div class="flex items-center">
@@ -20,7 +21,7 @@
                         v-if="item.typeName == 'AtlasGlossary'"
                         class="mr-1"
                     ></AtlanIcon>
-                    <img :src="item.image" class="w-auto h-4 mr-1" v-else />
+                    <img :src="item.image" class="w-4 h-4 mr-1" v-else />
                     <span class="">{{ item.label }}</span>
                     <span v-if="showCount" class="ml-1"
                         >({{ item.count }})</span
@@ -142,7 +143,7 @@
 <style lang="less">
     .connector-select {
         .ant-select-selector {
-            @apply border-0 rounded-none !important;
+            @apply border-0 rounded-none  !important;
             border-top-width: 0px !important;
             border-right-width: 0px !important;
             border-bottom-width: 0px !important;
@@ -155,6 +156,15 @@
             ) !important;
             box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
                 var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow) !important;
+        }
+
+        &.ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input)
+            .ant-select-selector {
+            @apply border-0 !important;
+        }
+
+        &.ant-select:not(.ant-select-disabled):hover .ant-select-selector {
+            @apply border-0 !important;
         }
     }
 </style>

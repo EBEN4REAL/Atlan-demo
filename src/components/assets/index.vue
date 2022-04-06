@@ -20,10 +20,11 @@
 
         <div class="flex flex-col items-stretch flex-1 w-80 bg-primary-light">
             <div class="flex flex-col h-full">
-                <div class="flex items-center px-3 bg-white shadow-sm">
+                <div class="flex items-center bg-white shadow-sm">
                     <ConnectorSelect
-                        style="width: 130px"
+                        style="min-width: 150px"
                         v-model="facets.connector"
+                        class="px-1 border-r"
                         :persona="persona"
                         @change="handleConnectorChange"
                     ></ConnectorSelect>

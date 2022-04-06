@@ -5,7 +5,7 @@ import {
     getNodeTypeText,
 } from './util.js'
 import { iconVerified, iconDraft, iconDeprecated } from './icons'
-import { iconCaretDownB64, iconPrimaryB64 } from './iconsBase64'
+import { iconCaretDownB64, iconPrimaryB64, iconForeignB64 } from './iconsBase64'
 import { dataTypeCategoryList } from '~/constant/dataType'
 import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
@@ -363,7 +363,7 @@ export default function useGraph(graph) {
     }
 
     const createPortData = (item) => {
-        const { isPrimary } = item.attributes
+        const { isPrimary, isForeign } = item.attributes
 
         let text =
             item.displayText.charAt(0).toUpperCase() +
@@ -389,7 +389,12 @@ export default function useGraph(graph) {
                     height: 16,
                 },
                 portImageRight: {
-                    href: isPrimary ? iconPrimaryB64 : '',
+                    // eslint-disable-next-line no-nested-ternary
+                    href: isPrimary
+                        ? iconPrimaryB64
+                        : isForeign
+                        ? iconForeignB64
+                        : '',
                 },
             },
         }

@@ -18,7 +18,7 @@
                     @select="selectNode"
                 >
                     <template #switcherIcon>
-                        <AtlanIcon icon="CaretRight" />
+                        <AtlanIcon class="switcher_icon" icon="CaretRight" />
                     </template>
                     <template #title="item">
                         <SchemaTreeItem
@@ -214,14 +214,18 @@
 
     .schemaTreeStyles {
         :global(.ant-tree-switcher_open) {
+            transform: none;
+        }
+        :global(.ant-tree-switcher_open > .switcher_icon) {
             transform: rotate(90deg);
+            // margin-bottom: -5px !important;
         }
         :global(.ant-tree li ul) {
             padding-left: 16px !important;
         }
         :global(.ant-tree-treenode-switcher-open.ant-tree-treenode-selected
                 > .ant-tree-switcher_open) {
-            background-color: #fff !important;
+            background-color: transparent !important;
         }
         :global(.ant-tree-treenode-selected) {
             // @apply border !important;
@@ -277,7 +281,7 @@
             display: inline-flex !important;
             align-items: center;
             // background-color: rgba(219, 234, 254, 1) !important;
-            @apply bg-new-gray-200 !important;
+            @apply bg-transparent !important;
 
             // @apply hover:bg-selected !important;
         }

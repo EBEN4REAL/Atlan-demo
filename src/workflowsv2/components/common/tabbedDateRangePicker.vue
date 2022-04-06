@@ -2,15 +2,30 @@
     <div
         class="box-border flex items-stretch h-8 overflow-hidden border border-gray-300 divide-x divide-gray-300 rounded"
     >
-        <button
+        <a-tooltip
             v-for="item in ranges"
             :key="item.label"
-            class="tabbed-btn"
-            :class="selected === item.label ? 'fake-bold selected' : ''"
-            @click="handleSelect(item.label, item.value())"
+            placement="top"
+            color="#2A2F45"
+            :mouse-enter-delay="0.5"
+            :mouse-leave-delay="0"
         >
-            {{ item.label }}
-        </button>
+            <template v-if="item.hint" #title>
+                <p class="text-xs font-semibold">
+                    {{ item.hint?.split('/')[0] }}
+                </p>
+                <p class="text-xs mt-0.5 font-semibold">
+                    {{ item.hint?.split('/')[1] }}
+                </p>
+            </template>
+            <button
+                class="tabbed-btn"
+                :class="selected === item.label ? 'fake-bold selected' : ''"
+                @click="handleSelect(item.label, item.value)"
+            >
+                {{ item.label }}
+            </button>
+        </a-tooltip>
     </div>
 </template>
 
@@ -30,29 +45,50 @@
             const ranges = [
                 {
                     label: 'Today',
-                    value: () => ({ gt: dayjs().startOf('day').valueOf() }),
+                    value: { gt: dayjs().startOf('day').valueOf() },
+                    hint:
+                        'Runs created on/' +
+                        dayjs().startOf('day').format('D MMM YYYY [(GMT] Z[)]'),
                 },
                 {
                     label: 'Yesterday',
-                    value: () => ({
+                    value: {
                         lt: dayjs().startOf('day').valueOf(),
                         gt: dayjs().startOf('day').subtract(1, 'day').valueOf(),
-                    }),
+                    },
+                    hint:
+                        'Runs created on/' +
+                        dayjs()
+                            .startOf('day')
+                            .subtract(1, 'day')
+                            .format('D MMM YYYY [(GMT] Z[)]'),
                 },
                 {
-                    label: '7 days',
-                    value: () => ({
+                    label: 'Last 7D',
+                    value: {
                         gt: dayjs().startOf('day').subtract(7, 'day').valueOf(),
-                    }),
+                    },
+                    hint:
+                        'Runs created after/' +
+                        dayjs()
+                            .startOf('day')
+                            .subtract(7, 'day')
+                            .format('D MMM YYYY [(GMT] Z[)]'),
                 },
                 {
-                    label: '30 days',
-                    value: () => ({
+                    label: 'Last 30D',
+                    value: {
                         gt: dayjs()
                             .startOf('day')
                             .subtract(30, 'day')
                             .valueOf(),
-                    }),
+                    },
+                    hint:
+                        'Runs created after/' +
+                        dayjs()
+                            .startOf('day')
+                            .subtract(30, 'day')
+                            .format('D MMM YYYY [(GMT] Z[)]'),
                 },
                 // { label: 'Custom' },
             ]

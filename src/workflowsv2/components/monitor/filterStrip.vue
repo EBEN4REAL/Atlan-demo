@@ -58,7 +58,8 @@
                 v-model:packageId="packageId"
                 v-model:workflowId="workflowId"
             /> -->
-            <StatusSelector v-model:value="status" />
+            <!-- <StatusSelector v-model:value="status" /> -->
+            <TabbedStatusSelector v-model:value="status" />
 
             <TabbedDateRangePicker v-model:value="runDateRange" />
             <!-- TODO: Enable when additional filters come in -->
@@ -81,8 +82,9 @@
     import WorkflowSelector from '~/workflowsv2/components/common/selectors/workflowSelector.vue'
     import PackageSelector from '~/workflowsv2/components/common/selectors/packageSelector.vue'
     // import PackageWorkflowSelector from '~/workflowsv2/components/common/selectors/packageWorkflowSelector.vue'
-    import StatusSelector from '~/workflowsv2/components/common/selectors/statusSelector.vue'
+    // import StatusSelector from '~/workflowsv2/components/common/selectors/statusSelector.vue'
     import TabbedDateRangePicker from '~/workflowsv2/components/common/tabbedDateRangePicker.vue'
+    import TabbedStatusSelector from '~/workflowsv2/components/common/selectors/tabbedStatusSelector.vue'
     import { runFilter } from '~/workflowsv2/constants/filters'
 
     export default defineComponent({
@@ -91,9 +93,10 @@
             WorkflowSelector,
             PackageSelector,
             // PackageWorkflowSelector,
-            StatusSelector,
+            // StatusSelector,
             TabbedDateRangePicker,
             AssetFilters,
+            TabbedStatusSelector,
         },
         props: {
             filters: {

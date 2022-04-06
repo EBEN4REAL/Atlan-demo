@@ -73,27 +73,26 @@ export const workflowFilter = [
 
 export const runStatuses = [
     {
-        id: 'Running',
+        label: 'All',
+        value: undefined,
+    },
+    {
+        value: 'Running',
         label: 'Running',
         colorDot: '#FFBA52',
     },
     {
-        id: 'Succeeded',
-        label: 'Succeeded',
+        value: 'Succeeded',
+        label: 'Success',
         colorDot: '#00A680',
     },
     {
-        id: 'Failed',
+        value: ['Failed', 'Error'],
         label: 'Failed',
         colorDot: '#DC5252',
     },
     {
-        id: 'Error',
-        label: 'Errored',
-        colorDot: '#FF751f',
-    },
-    {
-        id: 'Pending',
+        value: 'Pending',
         label: 'Pending',
         colorDot: '#6F7950',
     },

@@ -174,6 +174,10 @@
                         'absolute bg-black text-white px-3 py-1 rounded opacity-80'
                     hoverTH.value.style.maxWidth = `fit-content`
                     hoverTH.value.style.maxHeight = `fit-content`
+                    // fit content for firefox
+                    hoverTH.value.style.height = '-moz-max-content'
+                    hoverTH.value.style.width = '-moz-max-content'
+
                     hoverTH.value.innerHTML = tooltipContent
 
                     // calculate tooltip position
@@ -188,6 +192,7 @@
                     hoverTH.value.style.left = `${offsetLeft}px`
 
                     // tooltip has to be a direct child of table to prevent it being hidden under table data. z-index doesn't work. //TODO: find out why
+
                     table?.appendChild(hoverTH.value)
                 }
 
@@ -346,6 +351,7 @@
 
 <style lang="less" module>
     .regular_table {
+        overflow: overlay;
         border: none;
         tr:hover td {
             background: #fff;

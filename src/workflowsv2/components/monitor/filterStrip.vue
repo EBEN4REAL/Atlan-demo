@@ -1,52 +1,10 @@
 <template>
-    <a-drawer
-        v-model:visible="isDrawerVisible"
-        mask
-        mask-closable
-        placement="left"
-        class="drawer-filter-runs"
-        :width="240"
-        :closable="false"
-    >
-        <div
-            class="relative h-full pb-10 overflow-scroll bg-gray-50"
-            :class="$style['request-filter-wrapper']"
-        >
-            <div
-                v-if="isDrawerVisible"
-                class="close-btn-sidebar button-close-drawer-run"
-                @click="isDrawerVisible = false"
-            >
-                <AtlanIcon icon="Add" class="text-white" />
-            </div>
-
-            <AssetFilters
-                v-model="drawerFilters"
-                v-model:activeKey="activeKey"
-                :filter-list="runFilter"
-                :allow-custom-filters="false"
-                :no-filter-title="'No filters applied'"
-                class="drawer-request"
-                @change="handleFilterChange"
-                @reset="handleResetEvent"
-            />
-        </div>
-    </a-drawer>
     <div
         class="flex flex-col w-full px-5 py-4 bg-white gap-y-4"
         style="transition: height 300ms"
         :class="isExpanded ? 'h-28' : 'h-16'"
     >
         <div class="flex items-center w-full gap-x-4">
-            <AtlanButton2
-                color="secondary"
-                :prefix-icon="
-                    drawerFiltersApplied ? 'FilterFunnelDot' : 'FilterFunnel'
-                "
-                label="Filters"
-                @click="isDrawerVisible = !isDrawerVisible"
-            />
-
             <PackageSelector v-model:value="packageId" />
             <WorkflowSelector
                 v-model:value="workflowId"
@@ -59,32 +17,37 @@
                 v-model:workflowId="workflowId"
             /> -->
             <!-- <StatusSelector v-model:value="status" /> -->
-            <TabbedStatusSelector v-model:value="status" />
+            <TabbedStatusSelector v-model:value="status" class="raised" />
 
-            <TabbedDateRangePicker v-model:value="runDateRange" />
+            <TabbedDateRangePicker
+                v-model:value="runDateRange"
+                class="raised"
+            />
+
             <!-- TODO: Enable when additional filters come in -->
-            <!-- <IconButton
+            <IconButton
                 icon="ChevronDown"
                 class="ml-auto rounded-full shadow-none"
                 :class="{ '-rotate-180 transform': isExpanded }"
                 @click="isExpanded = !isExpanded"
-            /> -->
+            />
         </div>
         <div class="flex items-center" :class="{ hidden: !isExpanded }">
             <!-- Space for additional filters -->
+            <CreatorSelector v-model:value="creators" />
         </div>
     </div>
 </template>
 
 <script lang="ts">
     import { computed, defineComponent, ref, toRefs } from 'vue'
-    import AssetFilters from '@/common/assets/filters/index.vue'
     import WorkflowSelector from '~/workflowsv2/components/common/selectors/workflowSelector.vue'
     import PackageSelector from '~/workflowsv2/components/common/selectors/packageSelector.vue'
     // import PackageWorkflowSelector from '~/workflowsv2/components/common/selectors/packageWorkflowSelector.vue'
     // import StatusSelector from '~/workflowsv2/components/common/selectors/statusSelector.vue'
-    import TabbedDateRangePicker from '~/workflowsv2/components/common/tabbedDateRangePicker.vue'
+    import TabbedDateRangePicker from '~/workflowsv2/components/common/selectors/tabbedDateRangePicker.vue'
     import TabbedStatusSelector from '~/workflowsv2/components/common/selectors/tabbedStatusSelector.vue'
+    import CreatorSelector from '~/workflowsv2/components/common/selectors/creatorSelector.vue'
     import { runFilter } from '~/workflowsv2/constants/filters'
 
     export default defineComponent({
@@ -95,8 +58,8 @@
             // PackageWorkflowSelector,
             // StatusSelector,
             TabbedDateRangePicker,
-            AssetFilters,
             TabbedStatusSelector,
+            CreatorSelector,
         },
         props: {
             filters: {
@@ -106,7 +69,6 @@
         },
         emits: ['update:filters'],
         setup(props, { emit }) {
-            const isDrawerVisible = ref(false)
             const isExpanded = ref(false)
             const activeKey = ref([])
             const { filters } = toRefs(props)
@@ -126,64 +88,25 @@
             const workflowId = computed(computedFactory('workflowId'))
             const status = computed(computedFactory('status'))
             const runDateRange = computed(computedFactory('dateRange'))
-            const drawerFilters = computed(computedFactory('sidebar'))
 
-            const drawerFiltersApplied = computed(() => {
-                if (!drawerFilters.value) return false
-
-                // eslint-disable-next-line no-restricted-syntax
-                for (const value of Object.values(drawerFilters.value)) {
-                    if (value) return true
-                }
-
-                return false
-            })
-
-            const handleResetEvent = () => {
-                drawerFilters.value = {}
-            }
-
-            const handleFilterChange = () => {}
+            const creators = computed(computedFactory('creators'))
 
             return {
                 runDateRange,
-                isDrawerVisible,
                 isExpanded,
                 packageId,
                 workflowId,
                 runFilter,
-                drawerFilters,
+                creators,
                 activeKey,
-                handleResetEvent,
-                handleFilterChange,
-                drawerFiltersApplied,
                 status,
             }
         },
     })
 </script>
 <style lang="less" scoped>
-    .drawer-filter-runs {
-        .ant-drawer-content-wrapper {
-            width: 240px !important;
-        }
-    }
-    .button-close-drawer-run {
-        left: 260px !important;
-        top: 12px;
-    }
-    .drawer-request {
-        @apply bg-gray-100;
-
-        .ant-collapse-content {
-            background: none !important;
-        }
-        .ant-collapse-header {
-            @apply hover:bg-transparent !important;
-        }
-        .group {
-            background: none !important;
-        }
+    .raised {
+        box-shadow: 0px 1px 0px 0px #0000000d;
     }
 </style>
 

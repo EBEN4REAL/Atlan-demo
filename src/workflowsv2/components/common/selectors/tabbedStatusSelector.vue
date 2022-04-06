@@ -24,7 +24,7 @@
     import { runStatuses } from '~/workflowsv2/constants/filters'
 
     export default defineComponent({
-        name: 'TabbedDateRangePicker',
+        name: 'TabbedStatusSelector',
         components: {},
         props: {
             value: { type: String, required: false, default: () => undefined },

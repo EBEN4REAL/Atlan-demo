@@ -105,7 +105,7 @@
                     ?.metadata?.name,
                 dateRange: filters.value?.dateRange,
                 status: filters.value?.status,
-                ...filters.value?.sidebar,
+                creators: filters.value?.creators,
             }))
 
             const preference = ref({

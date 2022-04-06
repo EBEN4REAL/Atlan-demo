@@ -113,7 +113,7 @@ export function useRunBody(
                     break
                 }
                 case 'creators': {
-                    if (filterObject?.ownerUsers) {
+                    if (filterObject?.ownerUsers?.length) {
                         base.andFilter('nested', {
                             path: 'metadata',
                             ...bodybuilder()

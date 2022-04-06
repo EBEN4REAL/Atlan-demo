@@ -21,7 +21,7 @@
                         class="mr-1"
                     ></AtlanIcon>
                     <img :src="item.image" class="w-auto h-4 mr-1" v-else />
-                    {{ item.label }}
+                    <span class="">{{ item.label }}</span>
                     <span v-if="showCount" class="ml-1"
                         >({{ item.count }})</span
                     >
@@ -80,6 +80,13 @@
 
             const glossaryStore = useGlossaryStore()
 
+            watch(persona, () => {
+                console.log('watch persona')
+                if (!list.value.find((i) => i.id === localValue.value)) {
+                    localValue.value = undefined
+                }
+            })
+
             const localValue = ref(modelValue.value)
             const applicableConnectionArray = computed(() => {
                 const found = personaStore.list.find(
@@ -126,6 +133,7 @@
                 sourceFilteredList,
                 applicableConnectionArray,
                 glossaryStore,
+                persona,
             }
         },
     })

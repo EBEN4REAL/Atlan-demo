@@ -26,7 +26,6 @@
                         v-model="facets.connector"
                         :persona="persona"
                         @change="handleConnectorChange"
-                        :key="`${dirtyTimestamp}_${persona}`"
                     ></ConnectorSelect>
                     <SearchAdvanced
                         :key="searchDirtyTimestamp"
@@ -300,7 +299,7 @@
     import useShortcuts from '~/composables/shortcuts/useShortcuts'
     import { usePersonaStore } from '~/store/persona'
 
-    import ConnectorSelect from './connector.vue'
+    import ConnectorSelect from './hierarchy/connector.vue'
 
     import Heirarchy from './hierarchy/index.vue'
 

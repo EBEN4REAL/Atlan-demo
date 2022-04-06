@@ -12,14 +12,40 @@
                     :placeholder="placeholder"
                     @change="handleSearchChange"
                 >
-                    <template #postFilter>
-                        <div style="max-width: 330px">
-                            <PreferenceSelector
-                                v-model="preference"
-                                @change="fetchList(0)"
-                                @display="handleDisplayChange"
-                            />
-                        </div>
+                    <template #sort>
+                        <Sorting
+                            v-model="preference.sort"
+                            @change="fetchList(0)"
+                        />
+                    </template>
+                    <template #display>
+                        <a-popover trigger="click" placement="bottomRight">
+                            <template #content>
+                                <div class="p-3" style="max-width: 250px">
+                                    <PreferenceSelector
+                                        v-model="preference.display"
+                                        @change="fetchList(0)"
+                                    />
+                                </div>
+                            </template>
+
+                            <a-badge
+                                :color="
+                                    preference.display?.length > 0
+                                        ? '#5278d7'
+                                        : null
+                                "
+                            >
+                                <button
+                                    class="transition-colors rounded hover:bg-gray-100"
+                                >
+                                    <AtlanIcon
+                                        icon="Display"
+                                        class="w-4 h-4 px-1"
+                                    />
+                                </button>
+                            </a-badge>
+                        </a-popover>
                     </template>
                 </SearchAdvanced>
                 <slot name="searchAction"></slot>
@@ -128,6 +154,8 @@
     import AssetItem from '@/common/assets/list/assetItem.vue'
     import useAssetStore from '~/store/asset'
     import useFetchAssetList from './usefetchAssetList'
+
+    import Sorting from '@/common/dropdown/sorting.vue'
     import {
         DefaultRelationAttributes,
         MinimalAttributes,
@@ -143,6 +171,7 @@
             AssetItem,
             EmptyView,
             ErrorView,
+            Sorting,
         },
         props: {
             /**

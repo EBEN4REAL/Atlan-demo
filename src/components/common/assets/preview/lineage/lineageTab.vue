@@ -79,7 +79,6 @@
 
     // import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     // import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
-    // import PreferenceSelector from '@/assets/preference/index.vue'
 
     // import AssetFilters from '@/common/assets/filters/index.vue'
     // import AssetList from '@/common/assets/list/index.vue'

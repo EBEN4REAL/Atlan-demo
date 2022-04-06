@@ -124,8 +124,6 @@
 
                 let temp = []
 
-                console.log(connection)
-
                 if (connection) {
                     const assetList = personaStore.getAssetListByConnectionId(
                         persona.value,

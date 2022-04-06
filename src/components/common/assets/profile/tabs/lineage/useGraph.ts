@@ -111,7 +111,7 @@ export default function useGraph(graph) {
                                 <div class="node-meta">
                                     <span class="mb-0.5">${img}</span>
                                     <div class="truncate node-meta__text isTypename">${typeNameComputed}</div>
-                                    <div class="node-meta__text">
+                                    <div class="node-meta__text node-schema">
                                         ${
                                             ['Table', 'View'].includes(
                                                 typeName
@@ -120,7 +120,7 @@ export default function useGraph(graph) {
                                                 : ''
                                         }
                                     </div>
-                                    <div class="node-meta__text text-gray  truncate ${
+                                    <div class="node-meta__text node-schema text-gray  truncate ${
                                         isNodeWithColumns ? '' : 'hidden'
                                     }">
                                         ${schemaName || ''}

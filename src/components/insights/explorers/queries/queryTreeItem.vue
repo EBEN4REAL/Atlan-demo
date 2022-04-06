@@ -455,6 +455,10 @@
             const createFolderInput =
                 inject<(guid: string) => void>('createFolderInput')
 
+            const createFolderInputFromCta = inject<(guid: string) => void>(
+                'createFolderInputFromCta'
+            )
+
             const toggleCreateQueryModal = inject<
                 (guid: string, isVQB: boolean) => void
             >('toggleCreateQueryModal')
@@ -685,7 +689,7 @@
             }
 
             const newFolder = () => {
-                if (createFolderInput) createFolderInput()
+                if (createFolderInputFromCta) createFolderInputFromCta(item)
             }
 
             const addBackground = (visible) => {
@@ -1583,6 +1587,7 @@
                 addBackground,
                 removeBackground,
                 createFolderInput,
+                createFolderInputFromCta,
                 // input,
                 // newFolderName,
             }

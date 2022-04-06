@@ -47,10 +47,7 @@
                 </div> -->
             </div>
             <div
-                v-if="
-                    policyType === 'meta' &&
-                    (policy.updatedBy || policy.createdBy)
-                "
+                v-if="policy.updatedBy || policy.createdBy"
                 class="flex items-center p-4 text-sm text-gray-700 bg-gray-200"
             >
                 <AtlanIcon icon="DateTime" class="mr-1 text-gray-700" />

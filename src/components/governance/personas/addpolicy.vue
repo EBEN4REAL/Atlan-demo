@@ -76,10 +76,7 @@
 
             <div class="mt-75">
                 <div
-                    v-if="
-                        type === 'meta' &&
-                        (policy.updatedBy || policy.createdBy)
-                    "
+                    v-if="policy.updatedBy || policy.createdBy"
                     class="flex items-center p-4 -mt-3 text-sm text-gray-700 bg-gray-200"
                 >
                     <AtlanIcon icon="DateTime" class="mr-1 text-gray-700" />
@@ -106,8 +103,7 @@
                 <div class="px-4 mb-20 bg-gray-100">
                     <div
                         :class="`relative ${
-                            type === 'meta' &&
-                            (policy.updatedBy || policy.createdBy)
+                            policy.updatedBy || policy.createdBy
                                 ? 'mt-4'
                                 : 'mt-2'
                         } bg-white shadow-section`"

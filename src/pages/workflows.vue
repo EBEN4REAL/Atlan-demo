@@ -1,52 +1,23 @@
 <template>
-    <KeepAlive>
-        <router-view v-if="isItem" />
-        <WorkflowDiscovery v-else ref="assetdiscovery" />
-    </KeepAlive>
+    <router-view></router-view>
 </template>
-
 <script lang="ts">
-    import { computed, defineComponent, onMounted, provide, ref } from 'vue'
-    import { useHead } from '@vueuse/head'
-    import { useRoute } from 'vue-router'
-    import WorkflowDiscovery from '~/workflows/components/workflows/workflowDiscovery.vue'
+    import { defineComponent } from 'vue'
+    import { useRouter, onBeforeRouteUpdate, useRoute } from 'vue-router'
 
     export default defineComponent({
-        components: {
-            WorkflowDiscovery,
-        },
+        name: 'WorkflowV2Wrapper',
         setup() {
-            useHead({
-                title: 'Workflows Center',
-            })
+            const router = useRouter()
             const route = useRoute()
-            const assetdiscovery = ref()
 
-            const isItem = computed(() => route.params.id || isSetup.value)
-            const isSetup = computed(() =>
-                route.path.startsWith('/workflows/setup')
-            )
-            const localSelected = ref()
+            if (!route.params?.tab) router.replace('/workflows/monitor')
 
-            const handlePreview = (asset) => {
-                localSelected.value = asset
-            }
-            const updateList = (asset) => {
-                if (assetdiscovery.value) {
-                    assetdiscovery.value.updateCurrentList(asset)
-                }
-                handlePreview(asset)
-            }
-
-            provide('updateList', updateList)
-            provide('preview', handlePreview)
-
-            return {
-                isSetup,
-                assetdiscovery,
-                localSelected,
-                isItem,
-            }
+            onBeforeRouteUpdate((to, _, next) => {
+                console.log(to)
+                if (to.path === '/workflows') next('/workflows/monitor')
+                else next(true)
+            })
         },
     })
 </script>

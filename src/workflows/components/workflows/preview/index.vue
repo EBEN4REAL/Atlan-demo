@@ -168,14 +168,12 @@
             item: {
                 type: Object,
                 required: false,
-                default: () => {},
+                default: () => ({}),
             },
             mode: {
                 type: String,
                 required: false,
-                default() {
-                    return 'workflow'
-                },
+                default: () => 'workflow',
             },
         },
         emits: ['assetMutation', 'closeDrawer'],

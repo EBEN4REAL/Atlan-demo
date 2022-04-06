@@ -7,7 +7,7 @@
         @close-drawer="isDrawerVisible = false"
         @update="handleDrawerUpdate"
     />
-    <div v-if="isEdit" class="flex flex-col w-2/3">
+    <div v-if="isEdit" class="flex flex-col max-w-2xl">
         <div class="flex flex-col px-3 py-2 border rounded gap-y-2">
             <div v-if="selectedConnection?.guid" class="flex flex-col flex-1">
                 <div class="flex items-center justify-between">
@@ -53,7 +53,7 @@
                         />
                     </div>
                 </div>
-                <div class="flex flex-col gap-y-2">
+                <div class="flex flex-col mt-3 gap-y-2">
                     <div class="flex gap-x-3">
                         <div class="flex flex-col">
                             <div class="text-gray-500">Name</div>
@@ -364,7 +364,7 @@
                             placeholder: 'environment',
                             help: "Name of your connection which represents your source environment. Example - 'production', 'development', 'gold', 'analytics' ",
                             required: true,
-                            grid: 3,
+                            grid: 4,
                             prefixImage: connectorImage.value,
                             prefixText: `${connector.value}-`,
                             rules: [

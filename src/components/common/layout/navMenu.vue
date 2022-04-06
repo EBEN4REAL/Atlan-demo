@@ -74,22 +74,30 @@
                                 v-auth="[map.CREATE_WORKFLOW]"
                                 class="menu-item"
                             >
-                                <a href="/workflows/setup">New Workflow</a>
+                                <router-link to="/workflows/marketplace">
+                                    New Workflow
+                                </router-link>
                             </div>
                             <div class="menu-item">
-                                <a href="/insights">New Query</a>
+                                <router-link to="/insights">
+                                    New Query
+                                </router-link>
                             </div>
                             <div
                                 v-auth="[map.CREATE_PERSONA]"
                                 class="menu-item"
                             >
-                                <a href="/governance/personas">New Persona</a>
+                                <router-link to="/governance/personas">
+                                    New Persona
+                                </router-link>
                             </div>
                             <div
                                 v-auth="[map.CREATE_PURPOSE]"
                                 class="menu-item"
                             >
-                                <a href="/governance/purposes">New Purpose</a>
+                                <router-link to="/governance/purposes">
+                                    New Purpose
+                                </router-link>
                             </div>
                         </div>
                     </a-menu></template

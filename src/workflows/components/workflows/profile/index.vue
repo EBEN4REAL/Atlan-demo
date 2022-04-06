@@ -75,7 +75,9 @@
             const isWorkflowDirty = ref(false)
             const router = useRouter()
             const handleChangeTab = (key) => {
-                router.replace(`/workflows/${route.params.id}/${key}`)
+                router.push({
+                    params: { tab: key },
+                })
             }
 
             watch(

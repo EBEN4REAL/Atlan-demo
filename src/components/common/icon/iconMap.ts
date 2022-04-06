@@ -1,3 +1,8 @@
+import LegendExpand from '~/assets/images/lineage/legendExpand.svg'
+import LegendCollapse from '~/assets/images/lineage/legendCollapse.svg'
+import LegendAnomaly from '~/assets/images/lineage/legendAnomaly.svg'
+import LegendSelected from '~/assets/images/lineage/legendSelected.svg'
+import LegendHighlighted from '~/assets/images/lineage/legendHighlighted.svg'
 import Time from '~/assets/images/icons/time.svg'
 import BookmarkFilled from '~/assets/images/icons/bookmark-filled.svg'
 import Bookmark from '~/assets/images/icons/bookmark.svg'
@@ -454,6 +459,11 @@ import Workflow from '~/assets/images/icons/workflows.svg'
 import Package from '~/assets/images/icons/package.svg'
 
 export default {
+    LegendExpand,
+    LegendCollapse,
+    LegendAnomaly,
+    LegendSelected,
+    LegendHighlighted,
     Schedule24,
     Mail,
     EmptyJira,

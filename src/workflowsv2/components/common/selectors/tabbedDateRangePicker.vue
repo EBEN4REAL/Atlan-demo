@@ -69,7 +69,7 @@
                         gt: dayjs().startOf('day').subtract(7, 'day').valueOf(),
                     },
                     hint:
-                        'Runs created after/' +
+                        'Runs created since/' +
                         dayjs()
                             .startOf('day')
                             .subtract(7, 'day')
@@ -84,7 +84,7 @@
                             .valueOf(),
                     },
                     hint:
-                        'Runs created after/' +
+                        'Runs created since/' +
                         dayjs()
                             .startOf('day')
                             .subtract(30, 'day')

@@ -81,7 +81,7 @@
 
 <script lang="ts">
     import { useDebounceFn, watchOnce, whenever } from '@vueuse/core'
-    import { computed, defineComponent, provide, ref } from 'vue'
+    import { computed, defineComponent, provide, ref, watch } from 'vue'
 
     import { capitalizeFirstLetter } from '~/utils/string'
 
@@ -116,7 +116,7 @@
             const { name: pkgName } = usePackageInfo()
             const workflowStore = useWorkflowStore()
             const isDrawerVisible = ref(false)
-            const activeKey = ref(['schedule_0', 'wfType_0'])
+            const activeKey = ref(['schedule_0'])
             const wfFilters = ref({})
             const packageId = ref<string | undefined>(undefined)
             const offset = ref(0)
@@ -158,6 +158,11 @@
             const selectedWorkflow = computed(() =>
                 list.value?.find((li) => li?.metadata?.uid === selectedId.value)
             )
+
+            watch(list, () => {
+                if (list.value.length && offset.value === 0)
+                    selectedId.value = list.value[0]?.metadata?.uid || ''
+            })
 
             const runFacets = computed(() => ({
                 workflowTemplates: list.value

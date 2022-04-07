@@ -67,7 +67,7 @@
                 <p class="info-title">Package and Type</p>
 
                 <div class="flex mb-2 gap-x-2">
-                    <span class="font-bold truncate text-primary">
+                    <span class="font-bold truncate text-new-gray-600">
                         {{ name(workflow) }}
                     </span>
                     <span class="italic text-gray-500"

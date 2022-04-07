@@ -18,7 +18,7 @@
                     </div>
                 </div>
                 <div>
-                    <p class="text-base font-medium text-new-gray-800">
+                    <p class="text-sm font-medium text-new-gray-800">
                         {{ pkgName(pkg) || run.metadata.name }}
                         <AtlanIcon v-if="dName" icon="CaretRight" />
                         {{ dName }}
@@ -49,15 +49,22 @@
 
             <div class="col-span-1 text-new-gray-600">
                 <template v-if="isCronRun(run)">
-                    <p>Scheduled Run</p>
-                    <AtlanIcon icon="Schedule" class="mr-1 text-success" />
-                    <span class="text-sm text-new-gray-800">{{
-                        cronString(workflow) || 'No info'
-                    }}</span>
+                    <p class="whitespace-nowrap">Scheduled Run</p>
+                    <div class="flex items-center flex-nowrap">
+                        <AtlanIcon icon="Schedule" class="mr-1 text-success" />
+                        <span
+                            class="text-sm text-new-gray-800 whitespace-nowrap"
+                            >{{ cronString(workflow) || 'No info' }}</span
+                        >
+                    </div>
                 </template>
                 <template v-else>
-                    <p>Manually Run by</p>
-                    <UserWrapper :username="creatorUsername(run)" @click.stop />
+                    <p class="whitespace-nowrap">Manually Run by</p>
+                    <UserWrapper
+                        :username="creatorUsername(run)"
+                        @click.stop
+                        class="flex items-center flex-nowrap gap-x-1"
+                    />
                 </template>
             </div>
 

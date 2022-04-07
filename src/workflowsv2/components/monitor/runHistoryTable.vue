@@ -25,7 +25,10 @@
                     <span>{{ head.title }}</span>
                 </div>
             </div>
-            <div class="flex overflow-y-scroll" style="height: 45vh">
+            <div
+                class="flex overflow-y-scroll"
+                style="height: calc(100vh - 400px)"
+            >
                 <AtlanLoader
                     v-if="isLoading"
                     class="h-10 mx-auto place-self-center"
@@ -94,6 +97,7 @@
         emits: ['update:filters'],
         setup(props) {
             const { filters } = toRefs(props)
+            const pagiKey = ref(Date.now())
             const limit = ref(30)
             const offset = ref(0)
             const queryText = ref('')
@@ -156,6 +160,7 @@
             ]
 
             const resetAndFetchRuns = () => {
+                offset.value = 0
                 resetState()
                 quickChange()
             }

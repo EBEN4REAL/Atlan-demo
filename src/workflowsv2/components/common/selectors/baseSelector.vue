@@ -7,6 +7,7 @@
         :value="value"
         :get-popup-container="(target) => target.parentNode"
         @update:value="$emit('update:value', $event)"
+        dropdownClassName="w-64"
     >
         <template #suffixIcon>
             <AtlanLoader v-if="loading" />
@@ -25,6 +26,9 @@
                         item.emoji
                     }}</span>
                     {{ item.label }}
+                    <span v-if="item.count" class="text-gray-500"
+                        >({{ item.count }})</span
+                    >
                 </div>
             </a-select-option>
         </template>
@@ -40,6 +44,7 @@
         icon?: string
         colorDot?: string
         emoji?: string
+        count?: number
     }
 
     export default defineComponent({

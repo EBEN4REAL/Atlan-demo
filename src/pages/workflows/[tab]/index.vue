@@ -1,11 +1,19 @@
 <template>
     <div class="flex flex-col w-full h-full">
         <a-tabs
-            v-model:activeKey="activeKey"
+            :activeKey="activeKey"
             :class="$style.profiletab"
             class="flex-1"
         >
-            <a-tab-pane v-for="tab in mainTabs" :key="tab.id" :tab="tab.label">
+            <a-tab-pane v-for="tab in mainTabs" :key="tab.id">
+                <template #tab>
+                    <router-link
+                        :to="{ params: { tab: tab.id } }"
+                        class="select-none"
+                    >
+                        {{ tab.label }}
+                    </router-link>
+                </template>
                 <component
                     :is="tab.component"
                     :key="tab.id"
@@ -43,14 +51,8 @@
                 title: 'Workflows Center V2',
             })
             const route = useRoute()
-            const router = useRouter()
 
-            const activeKey = computed({
-                get: () => route?.params?.tab,
-                set: (key) => {
-                    router.push({ params: { tab: key } })
-                },
-            })
+            const activeKey = computed(() => route?.params?.tab)
             return { activeKey, mainTabs }
         },
     })

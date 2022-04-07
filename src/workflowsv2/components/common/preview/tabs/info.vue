@@ -31,7 +31,9 @@
                 <p class="info-title">Schedule</p>
 
                 <AtlanIcon icon="Schedule" class="text-success" />
-                <span class="ml-1 pt-0.5">{{ cronString(workflow) }}</span>
+                <span class="ml-1 pt-0.5">{{
+                    cronString(workflow, true)
+                }}</span>
             </div>
 
             <div v-if="creatorUsername(workflow)">

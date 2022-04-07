@@ -7,7 +7,7 @@ export const mainTabs = [
     },
     {
         id: 'manage',
-        label: 'Manage workflows',
+        label: 'Manage',
         component: 'manage',
         tooltip: 'Manage workflows',
     },

@@ -7,7 +7,7 @@
                     :src="icon(workflow)"
                     class="w-6 h-6"
                 />
-                <div v-else class="w-6 text-xl leading-6 text-center">
+                <div v-else class="w-6 mt-1 text-xl leading-none text-center">
                     {{ emoji(workflow) }}
                 </div>
             </div>

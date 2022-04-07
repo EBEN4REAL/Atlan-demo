@@ -4,7 +4,7 @@
         :value="value"
         :list="workflowList"
         :loading="isLoading"
-        placeholder="Select workflow"
+        :placeholder="placeholder"
         :not-found-content="isLoading ? 'Loading' : 'No workflow found'"
         :title="$attrs.disabled ? 'Select a package first' : ''"
         @update:value="$emit('update:value', $event)"
@@ -26,6 +26,7 @@
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
 
     import BaseSelector from './baseSelector.vue'
+    import { usePackageInfo } from '~/workflowsv2/composables/usePackageInfo'
 
     export default defineComponent({
         name: 'WorkflowSelector',
@@ -55,6 +56,13 @@
                     : {}
             )
             const { displayName } = useWorkflowInfo()
+            const { type } = usePackageInfo()
+
+            const placeholder = computed(() =>
+                packageName.value && type(pkg.value) === 'connector'
+                    ? 'Select connector'
+                    : 'Select workflow'
+            )
 
             const { list, quickChange, isLoading } = useWorkflowDiscoverList({
                 facets: computed(() => ({
@@ -66,7 +74,11 @@
                 })),
                 limit: ref(100),
                 source: ref({
-                    excludes: ['spec'],
+                    includes: [
+                        'metadata.name',
+                        'metadata.annotations.package.argoproj.io/name',
+                        'metadata.annotations.orchestration.atlan.com/schedule',
+                    ],
                 }),
                 preference: ref({
                     sort: 'metadata.creationTimestamp-desc',
@@ -89,7 +101,14 @@
                     quickChange()
                 }
             })
-            return { workflowName, workflowList, pkg, list, isLoading }
+            return {
+                workflowName,
+                workflowList,
+                pkg,
+                list,
+                isLoading,
+                placeholder,
+            }
         },
     })
 </script>

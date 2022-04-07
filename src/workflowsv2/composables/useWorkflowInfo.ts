@@ -151,11 +151,12 @@ export default function useWorkflowInfo() {
         return temp
     }
 
-    const cronString = (item) => {
+    const cronString = (item, verbose = false) => {
         if (cron(item)) {
             return `${cronstrue.toString(cron(item), {
                 use24HourTimeFormat: true,
-            })}(${cronTimezone(item)})`
+                verbose,
+            })} (${cronTimezone(item)})`
         }
     }
 
@@ -299,7 +300,7 @@ export default function useWorkflowInfo() {
         item?.metadata?.labels['orchestration.atlan.com/type']
 
     const packageName = (item) =>
-        item?.metadata?.annotations['package.argoproj.io/name']
+        item?.metadata?.annotations?.['package.argoproj.io/name']
 
     const useCases = (item) => {
         let temp =
@@ -317,7 +318,7 @@ export default function useWorkflowInfo() {
 
     const displayName = (item, workflowName) => {
         // debugger
-        let suffix = workflowName.split(`${name(item)}-`).pop()
+        let suffix = workflowName?.split(`${name(item)}-`).pop()
         if (packageType(item) === 'connector') {
             suffix = suffix.replaceAll('-', '/')
             const found = connectorStore.list.find(
@@ -328,7 +329,7 @@ export default function useWorkflowInfo() {
             }
             return suffix
         }
-        return suffix
+        return suffix ? suffix : workflowName
     }
 
     const getGlobalArguments = (item) => {
@@ -348,7 +349,9 @@ export default function useWorkflowInfo() {
     }
 
     const workflowTemplateName = (item) =>
-        item?.metadata?.labels?.['workflows.argoproj.io/workflow-template']
+        item?.metadata?.labels?.[
+            'workflows.argoproj.io/workflow-template'
+        ] as string
 
     return {
         name,

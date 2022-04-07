@@ -38,6 +38,8 @@
                         v-for="run in runs"
                         :key="run.metadata.uid"
                         :run="run"
+                        :workflow="workflowMap.get(workflowTemplateName(run))"
+                        :wfLoading="isWFLoading"
                     />
                 </div>
                 <div
@@ -80,6 +82,8 @@
 
     import EmptyLogsIllustration from '~/assets/images/illustrations/empty_logs.svg'
     import { useWorkflowStore } from '~/workflowsv2/store'
+    import { useWorkflowDiscoverList } from '~/workflowsv2/composables/useWorkflowDiscoverList'
+    import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
 
     export default defineComponent({
         name: 'RunHistoryTable',
@@ -98,6 +102,7 @@
             const queryText = ref('')
 
             const workflowStore = useWorkflowStore()
+            const { workflowTemplateName, name } = useWorkflowInfo()
 
             const facets = computed(() => ({
                 workflowTemplate: filters.value?.workflowId,
@@ -160,6 +165,48 @@
 
             watch(filters, resetAndFetchRuns, { deep: true })
 
+            const workflowMap = new Map<string, any>()
+
+            const wfFacets = ref({ name: [] as string[], ui: true })
+
+            const {
+                list: wfList,
+                quickChange: fetchWF,
+                isLoading: isWFLoading,
+            } = useWorkflowDiscoverList({
+                facets: wfFacets,
+                limit: ref(100),
+                source: ref({
+                    includes: [
+                        'metadata.name',
+                        'metadata.annotations.package.argoproj.io/name',
+                        'metadata.annotations.orchestration.atlan.com/schedule',
+                        'metadata.annotations.orchestration.atlan.com/timezone',
+                    ],
+                }),
+                immediate: false,
+            })
+
+            watch(runs, () => {
+                wfFacets.value.name = []
+
+                runs.value.forEach((run) => {
+                    if (
+                        !workflowMap.has(workflowTemplateName(run)) &&
+                        workflowTemplateName(run)
+                    )
+                        wfFacets.value.name.push(workflowTemplateName(run))
+                })
+
+                if (wfFacets.value.name.length) fetchWF()
+            })
+
+            watch(wfList, () => {
+                wfList.value.forEach((wf) => {
+                    workflowMap.set(name(wf), wf)
+                })
+            })
+
             return {
                 runs,
                 tableHeaders,
@@ -169,6 +216,9 @@
                 limit,
                 offset,
                 totalRuns,
+                isWFLoading,
+                workflowMap,
+                workflowTemplateName,
             }
         },
     })

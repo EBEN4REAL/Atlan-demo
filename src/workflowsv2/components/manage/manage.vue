@@ -116,7 +116,7 @@
             const { name: pkgName } = usePackageInfo()
             const workflowStore = useWorkflowStore()
             const isDrawerVisible = ref(false)
-            const activeKey = ref([])
+            const activeKey = ref(['schedule_0', 'wfType_0'])
             const wfFilters = ref({})
             const packageId = ref<string | undefined>(undefined)
             const offset = ref(0)

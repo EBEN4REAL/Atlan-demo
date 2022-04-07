@@ -17,7 +17,7 @@ export function useRunBody(
 
     try {
         const state = ref('ACTIVE')
-        // console.log(facets)
+
         Object.keys(facets ?? {}).forEach((mkey) => {
             const filterObject = facets[mkey]
             switch (mkey) {

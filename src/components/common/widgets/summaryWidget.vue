@@ -192,7 +192,7 @@
                                         {{ apiKey.displayName }}
                                     </div>
                                     <div
-                                        class="flex items-center text-xs text-gray-400"
+                                        class="flex items-center text-sm text-gray-400"
                                     >
                                         <AtlanIcon
                                             icon="Clock"
@@ -205,12 +205,13 @@
                                     <Avatar
                                         v-if="apiKey.createdBy"
                                         :allow-upload="false"
-                                        :avatar-size="14"
+                                        :avatar-size="12"
                                         :avatar-shape="'circle'"
                                         class="mr-1"
+                                        :imageUrl="imageUrl(apiKey.createdBy)"
                                     />
                                     <div
-                                        class="text-xs text-gray-500 truncate title-api"
+                                        class="text-sm text-gray-500 truncate title-api"
                                     >
                                         {{ apiKey.createdBy || '' }}
                                     </div>
@@ -261,6 +262,7 @@
                         :avatar-size="16"
                         :avatar-shape="'circle'"
                         class="mr-2"
+                        :imageUrl="imageUrl(item.createdBy)"
                     />
                     {{ item.createdBy }}</template
                 >

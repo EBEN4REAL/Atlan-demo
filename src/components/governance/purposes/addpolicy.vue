@@ -48,7 +48,7 @@
             </div>
             <div
                 v-if="policy.updatedBy || policy.createdBy"
-                class="flex items-center p-4 text-sm text-gray-700 bg-gray-200"
+                class="flex items-center px-6 py-4 text-sm text-gray-700 bg-gray-200"
             >
                 <AtlanIcon icon="DateTime" class="mr-1 text-gray-700" />
                 {{ policy.updatedBy ? 'Last updated by' : 'Created by' }}

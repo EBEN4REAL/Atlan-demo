@@ -390,7 +390,16 @@ export default function useGraph(graph) {
             item.displayText.charAt(0).toUpperCase() +
             item.displayText.slice(1).toLowerCase()
 
-        if (text.length > 23) text = `${text.slice(0, 23)}...`
+        if (text.length >= 21) {
+            if (!announcementIcon && !isPrimary && !isForeign)
+                text = `${text.slice(0, 21)}...`
+            else if (announcementIcon && (isPrimary || isForeign))
+                text = `${text.slice(0, 11)}...`
+            else if (announcementIcon && !isPrimary && !isForeign)
+                text = `${text.slice(0, 15)}...`
+            else if (!announcementIcon && (isPrimary || isForeign))
+                text = `${text.slice(0, 15)}...`
+        }
 
         const portData = {
             id: item.guid,

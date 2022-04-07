@@ -790,7 +790,7 @@
                         const child = obj?.children.find(
                             ({ key }) => key === connectorKey
                         )
-                        return `${nodeStringFilter(chunks[1])}: ${child.title}`
+                        return `${nodeStringFilter(chunks[1])}: ${child?.title}`
                     }
                     return ''
                 }

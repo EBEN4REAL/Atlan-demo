@@ -209,9 +209,9 @@ const keyMap = {
                 properties: (props) => ({ asset_type: props.asset_type }),
             },
         },
-        view_preference: {
+        display_preference: {
             changed: {
-                action: 'discovery_view_preference_changed',
+                action: 'discovery_display_preference_changed',
                 properties: (props: {
                     visible: boolean
                     preference: 'description' | 'terms' | 'classifications'

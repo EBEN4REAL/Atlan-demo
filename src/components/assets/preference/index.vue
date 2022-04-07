@@ -40,21 +40,13 @@
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
-            const sendPreferenceEvent = (id, selectedIds) => {
-                const visible = selectedIds.indexOf(id) > -1
-                useAddEvent('discovery', 'view_preference', 'changed', {
-                    visible: visible,
-                    preference: id,
-                })
-            }
             const handleChange = (id) => {
                 modelValue.value = localValue.value
                 console.log('preference changed', {
                     final: localValue.value,
                     clicked: id,
                 })
-                emit('change')
-                sendPreferenceEvent(id, localValue.value)
+                emit('change', id)
             }
 
             return {

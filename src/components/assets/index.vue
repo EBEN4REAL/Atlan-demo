@@ -76,7 +76,9 @@
                         <template #sort>
                             <Sorting
                                 v-model="preference.sort"
-                                @change="handleChangePreference"
+                                @change="
+                                    (id) => handleChangePreference(id, 'sort')
+                                "
                             />
                         </template>
                         <template #display>
@@ -89,7 +91,13 @@
                                     <div class="p-3" style="max-width: 250px">
                                         <PreferenceSelector
                                             v-model="preference.display"
-                                            @change="handleChangePreference"
+                                            @change="
+                                                (id) =>
+                                                    handleChangePreference(
+                                                        id,
+                                                        'display'
+                                                    )
+                                            "
                                             @display="handleDisplayChange"
                                         />
                                     </div>
@@ -615,6 +623,24 @@
                 }
             }, 600)
 
+            const sendPreferenceEvent = (type, id, preferences) => {
+                console.log('sendPreferenceEvent', type, id, preferences.sort)
+                if (type === 'sort') {
+                    useAddEvent('discovery', 'sort', 'changed', {
+                        sort_type: preferences.sort,
+                    })
+                } else if (type === 'display') {
+                    const visible = preferences.display.indexOf(id) > -1
+                    useAddEvent('discovery', 'display_preference', 'changed', {
+                        visible: visible,
+                        preference: id,
+                    })
+                    useAddEvent('discovery', 'display', 'changed', {
+                        type: id,
+                    })
+                }
+            }
+
             const firstAssetAutoClicked = ref(false)
 
             const handleClickAssetItem = (...args) => {
@@ -721,9 +747,10 @@
                 quickChange()
             }
 
-            const handleChangePreference = () => {
+            const handleChangePreference = (id, type) => {
                 quickChange()
                 discoveryStore.setPreferences(preference.value)
+                sendPreferenceEvent(type, id, preference.value)
             }
 
             const handleDisplayChange = () => {

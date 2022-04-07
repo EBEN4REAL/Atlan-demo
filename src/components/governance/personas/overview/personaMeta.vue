@@ -1,6 +1,7 @@
 <template>
     <div class="grid grid-cols-3 gap-3">
         <Summary
+            :haveLink="true"
             :item="persona"
             :is-loading="loadingLink"
             @changeLink="changeLink"

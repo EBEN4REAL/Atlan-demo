@@ -166,7 +166,7 @@
         </div>
         <div
             :class="`px-3 py-1 mt-5 ${visibleLink && 'bg-gray-100'}`"
-            v-if="item.apikeys && item.apikeys.length"
+            v-if="haveLink"
         >
             <div class="mb-2.5 text-gray-500">API Keys</div>
             <div class="flex items-center">
@@ -176,9 +176,10 @@
                     placement="bottom"
                     v-model:visible="visibleLink"
                     overlayClassName="popover-api-keys"
+                    v-if="item?.apikeys?.length"
                 >
                     <template #content>
-                        <div class="px-4 rounded-xl container-api">
+                        <div class="px-4 pt-1 rounded-xl container-api">
                             <div
                                 v-for="(apiKey, index) in item.apikeys"
                                 class="w-56 py-3 border-b border-gray-200"
@@ -195,7 +196,7 @@
                                     >
                                         <AtlanIcon
                                             icon="Clock"
-                                            class="mr-1 text-gray-400"
+                                            class="mr-1 text-gray-400 icon-clock-api"
                                         />
                                         {{ convertExpired(apiKey) }}
                                     </div>
@@ -236,6 +237,9 @@
                         }}
                     </div>
                 </a-popover>
+                <div v-else class="text-sm text-gray-500">
+                    No api keys linked
+                </div>
             </div>
         </div>
         <div class="px-3 py-1 mt-5">
@@ -313,6 +317,11 @@
                     (Object as PropType<IPurpose>) ||
                     (Object as IItem),
                 required: true,
+            },
+            haveLink: {
+                type: Boolean,
+                default: false,
+                required: false,
             },
         },
         emits: ['changeLink'],
@@ -423,6 +432,11 @@
     })
 </script>
 <style lang="less">
+    .icon-clock-api {
+        path {
+            stroke: #9fa3ad;
+        }
+    }
     .container-api {
         max-height: 160px !important;
         overflow-y: scroll;

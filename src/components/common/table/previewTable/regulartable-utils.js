@@ -47,6 +47,7 @@ export const setRowHeaderStyle = (th, columns) => {
     // add default # to first row as default symbol
     if (th.classList.contains('rt-group-corner')) {
         th.innerText = '#'
+        th.style.setProperty('text-align', 'center', 'important')
     }
 
     // get column data type for reach column and figure out the alignment style based on data type

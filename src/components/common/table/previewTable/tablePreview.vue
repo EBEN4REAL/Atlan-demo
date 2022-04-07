@@ -272,6 +272,12 @@
                 data: range(x0, x1, (x) => range(y0, y1, (y) => rows[y][x])),
             })
 
+            function handleResize() {
+                const table = document.getElementsByTagName('regular-table')[0]
+                const rows = dataList.value
+                table?.setDataListener(dataHere(rows))
+                table?.draw()
+            }
             function init() {
                 const table = document.getElementsByTagName('regular-table')[0]
 
@@ -320,7 +326,8 @@
             const observer = ref()
 
             const onResize = () => {
-                init()
+                // init()
+                handleResize()
             }
 
             onMounted(() => {
@@ -361,7 +368,6 @@
         th {
             max-width: 200px;
             min-width: 200px;
-            text-align: left !important;
             height: 28px !important;
             padding: 0px 16px !important;
             font-size: 14px !important;
@@ -374,6 +380,9 @@
             position: relative;
             color: #3e4359 !important;
             // text-align: right !important;
+        }
+        th:not(.rt-group-corner) {
+            text-align: left !important;
         }
 
         tbody {

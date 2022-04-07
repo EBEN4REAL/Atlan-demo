@@ -89,11 +89,24 @@ export const exportStyles = `
                                 text-overflow: ellipsis !important;
                                 white-space: nowrap !important;
                             }
+                            .hidden {
+                                display: none !important;
+                            }
                             .flex-none {
                                 flex: none !important;
                             }
                             .mr-1 {
                                 margin-right: 0.25rem !important;
+                            }
+                            .text-primary {
+                                --tw-text-opacity: 1 !important;
+                                color: rgba(82, 119, 215, var(--tw-text-opacity)) !important;
+                            }
+                            .leading-none {
+                                line-height: 1 !important;
+                            }
+                            .font-bold {
+                                font-weight: 700 !important;
                             }
                             .lineage-node .node-meta {
                                 display: flex !important;
@@ -137,6 +150,25 @@ export const exportStyles = `
                                 border: 1.5px solid #3c71df !important;
                                 background-color: #f6f8fd !important;
                                 color: #3c71df !important;
+                            }
+                            .lineage-node.isVpNode {
+                                display: flex !important;
+                                align-items: center !important;
+                                justify-content: center !important;
+                                -moz-column-gap: 0.5rem !important;
+                                column-gap: 0.5rem !important;
+                                border-radius: 9999px !important;
+                                --tw-bg-opacity: 1 !important;
+                                background-color: rgba(255, 255, 255, var(--tw-bg-opacity)) !important;
+                                height: 40px !important;
+                                padding: unset !important;
+                                width: 268px !important;
+                            }
+                            g[port-group="ctaPortRight"] {
+                                display: none !important;
+                            }
+                            g[port-group="ctaPortLeft"] {
+                                display: none !important;
                             }
                             
                         `

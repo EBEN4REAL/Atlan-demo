@@ -1,4 +1,59 @@
 <template>
+    <div v-if="preferences.showLegend" class="lineage-legend footer">
+        <div>
+            <div class="flex justify-between px-4 py-3 text-sm">
+                <div>Legend</div>
+                <div>
+                    <AtlanIcon
+                        @click="preferences.showLegend = false"
+                        icon="Cross"
+                        class="cursor-pointer"
+                        style="width: 0.8rem !important"
+                    ></AtlanIcon>
+                </div>
+            </div>
+            <a-divider class="m-0" />
+            <div class="flex flex-col w-48 p-4 text-gray-500 gap-y-2">
+                <div class="flex items-center">
+                    <AtlanIcon icon="LegendExpand"></AtlanIcon>
+                    <div class="ml-4">Expandable node</div>
+                </div>
+                <div class="flex items-center">
+                    <AtlanIcon icon="LegendCollapse"></AtlanIcon>
+                    <div class="ml-4">Collapsible node</div>
+                </div>
+                <div class="flex items-center">
+                    <AtlanIcon
+                        icon="LegendAnomaly"
+                        style="width: 1.1rem !important"
+                    ></AtlanIcon>
+                    <div class="ml-4">Anomaly node</div>
+                </div>
+                <div class="flex items-center">
+                    <AtlanIcon
+                        icon="LegendSelected"
+                        style="width: 1.1rem !important"
+                    ></AtlanIcon>
+                    <div class="ml-4">Selected node</div>
+                </div>
+                <div class="flex items-center">
+                    <AtlanIcon
+                        icon="LegendHighlighted"
+                        style="width: 1.1rem !important"
+                    ></AtlanIcon>
+                    <div class="ml-4">Highlighted node</div>
+                </div>
+            </div>
+            <!-- <div class="flex items-center justify-between">
+                    <span class="text-gray-500">Show Arrows</span>
+                    <a-switch v-model:checked="preferences.showArrow" />
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-500">Show Schema</span>
+                    <a-switch v-model:checked="preferences.showSchema" />
+                </div>  -->
+        </div>
+    </div>
     <div ref="footerRoot" class="lineage-control footer">
         <slot></slot>
 
@@ -35,9 +90,21 @@
                         <a-divider class="m-0" />
                         <div class="flex flex-col w-64 p-4 gap-y-4">
                             <div class="flex items-center justify-between">
+                                <span class="text-gray-500">Show Legend</span>
+                                <a-switch
+                                    v-model:checked="preferences.showLegend"
+                                />
+                            </div>
+                            <div class="flex items-center justify-between">
                                 <span class="text-gray-500">Show Arrows</span>
                                 <a-switch
                                     v-model:checked="preferences.showArrow"
+                                />
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-500">Show Schema</span>
+                                <a-switch
+                                    v-model:checked="preferences.showSchema"
                                 />
                             </div>
                         </div>
@@ -155,7 +222,7 @@
     /** COMPOSABLES */
     import useTransformGraph from './useTransformGraph'
 
-    import { exportStyles } from './styles'
+    import { exportStyles } from './stylesTwo'
 
     export default defineComponent({
         name: 'LineageFooter',
@@ -224,7 +291,7 @@
                         )
                     },
                     {
-                        copyStyles: true,
+                        copyStyles: false,
                         stylesheet: exportStyles,
                         serializeImages: true,
                     }

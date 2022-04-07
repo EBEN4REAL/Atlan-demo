@@ -1,8 +1,6 @@
 <template>
     <div class="flex flex-col w-full h-full">
-        <div
-            class="flex items-center justify-between px-5 py-2 border-b border-gray-200 bg-gray-50"
-        >
+        <div class="flex items-center justify-between px-5 py-4">
             <span class="flex items-center">
                 <PreviewTabsIcon
                     :icon="tab.icon"
@@ -25,7 +23,7 @@
                 Saving</span
             >
         </div>
-        <div class="flex flex-col py-4 overflow-y-auto gap-y-4">
+        <div class="flex flex-col pb-4 overflow-y-auto p gap-y-4">
             <AnnouncementWidget
                 class="mx-5"
                 :selected-asset="selectedAsset"
@@ -362,15 +360,16 @@
 
             <div
                 v-if="
-                    (isBiAsset(selectedAsset) || isSaasAsset(selectedAsset)) &&
-                    ![
-                        'PowerBIWorkspace',
-                        'TableauSite',
-                        'LookerFolder',
-                        'LookerProject',
-                        'LookerQuery',
-                        'SalesforceOrganization',
-                    ].includes(selectedAsset?.typeName)
+                    ((isBiAsset(selectedAsset) || isSaasAsset(selectedAsset)) &&
+                        ![
+                            'PowerBIWorkspace',
+                            'TableauSite',
+                            'LookerFolder',
+                            'LookerProject',
+                            'LookerQuery',
+                            'SalesforceOrganization',
+                        ].includes(selectedAsset?.typeName)) ||
+                    ['Schema'].includes(selectedAsset?.typeName)
                 "
                 class="flex px-5"
             >
@@ -847,7 +846,7 @@
                             isDrawer,
                             'RELATIONSHIP_ADD',
                             'AtlasGlossaryTerm'
-                        ) || editPermission
+                        )
                     "
                     :allow-delete="
                         selectedAssetUpdatePermission(
@@ -855,7 +854,7 @@
                             isDrawer,
                             'RELATIONSHIP_REMOVE',
                             'AtlasGlossaryTerm'
-                        ) || editPermission
+                        )
                     "
                     @change="handleMeaningsUpdate"
                 >

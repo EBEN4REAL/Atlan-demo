@@ -286,7 +286,7 @@
                         assetType(item) !== 'Connection' &&
                         connectorName(item) !== 'glue'
                     "
-                    title="Query"
+                    title=""
                 >
                     <QueryDropdown
                         v-if="
@@ -301,7 +301,13 @@
                             <a-button
                                 class="flex items-center justify-center p-2"
                             >
-                                <AtlanIcon icon="Query" />
+                                <div class="flex items-center">
+                                    <AtlanIcon
+                                        icon="Query"
+                                        class="mr-1 -mt-0.5 text-primary"
+                                    />
+                                    <span class="">Query </span>
+                                </div>
                             </a-button>
                         </template>
                     </QueryDropdown>
@@ -312,7 +318,13 @@
                         class="flex items-center justify-center p-2"
                         @click="handleClick"
                     >
-                        <AtlanIcon icon="Query" />
+                        <div class="flex items-center">
+                            <AtlanIcon
+                                icon="Query"
+                                class="mr-1 -mt-0.5 text-primary"
+                            />
+                            <span class="">Query </span>
+                        </div>
                     </a-button>
                 </a-tooltip>
 

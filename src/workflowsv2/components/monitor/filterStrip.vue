@@ -54,12 +54,13 @@
             <StatusSelector v-model:value="status" />
 
             <TabbedDateRangePicker v-model:value="runDateRange" />
-            <IconButton
+            <!-- TODO: Enable when additional filters come in -->
+            <!-- <IconButton
                 icon="ChevronDown"
                 class="ml-auto rounded-full shadow-none"
                 :class="{ '-rotate-180 transform': isExpanded }"
                 @click="isExpanded = !isExpanded"
-            />
+            /> -->
         </div>
         <div class="flex items-center" :class="{ hidden: !isExpanded }">
             <!-- FIXME: Deprecated component -->

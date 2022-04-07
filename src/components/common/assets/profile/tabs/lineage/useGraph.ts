@@ -4,8 +4,8 @@ import {
     getSchema,
     getNodeTypeText,
 } from './util.js'
-import { iconVerified, iconDraft, iconDeprecated, iconLoader } from './icons'
-import CaretDown from '~/assets/images/icons/caret-down.svg?url'
+import { iconVerified, iconDraft, iconDeprecated } from './icons'
+import { iconCaretDownB64, iconPrimaryB64, iconForeignB64 } from './iconsBase64'
 import { dataTypeCategoryList } from '~/constant/dataType'
 import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
@@ -27,6 +27,7 @@ export default function useGraph(graph) {
         const img = getNodeSourceImage[source]
         const isBase = guid === baseEntityGuid
         const isVpNode = typeName === 'vpNode'
+        const isNodeWithColumns = ['Table', 'View'].includes(typeName)
 
         if (certificateStatus) {
             switch (certificateStatus) {
@@ -43,10 +44,12 @@ export default function useGraph(graph) {
 
         const computedData = {
             id: guid,
+            columnLineageCount: 0,
             isSelectedNode: null,
             isHighlightedNode: null,
             isGrayed: null,
             hiddenCount: 0,
+            nodeHeight: isNodeWithColumns ? 121 : 70,
             ...dataObj,
         }
 
@@ -70,9 +73,12 @@ export default function useGraph(graph) {
                     // prettier-ignore
                     return `
                 <div class="flex items-center">
-                    <div id="node-${guid}" class="lineage-node group ${
+                    <div style="height: ${
+                        data?.nodeHeight
+                    }px" id="node-${guid}" class="lineage-node group ${
                         isVpNode ? 'isVpNode' : ''
                     }   
+                    ${isNodeWithColumns ? 'isNodeWithColumns' : ''}
                     ${isBase ? 'isBase' : ''} 
                     ${data?.isSelectedNode === data?.id ? 'isSelectedNode' : ''}
                     ${
@@ -97,14 +103,6 @@ export default function useGraph(graph) {
                             </div>
                             <div>
                                 <div class="node-text">
-                                    <span class="relative z-50 block ">
-                                        <div class="absolute right-0 justify-end hidden w-6 group-hover:flex caret-bg">${
-                                            ['Table', 'View'].includes(typeName)
-                                                ? `<img class="node-caret h-6 w-6" src="${CaretDown}">`
-                                                : ''
-                                        }
-                                        </div>
-                                    </span>
                                     <div class="flex items-center gap-x-1">
                                         <span class="truncate node-title">${displayText}</span>
                                         <span class="flex-none mr-1">${status}</span>
@@ -113,7 +111,7 @@ export default function useGraph(graph) {
                                 <div class="node-meta">
                                     <span class="mb-0.5">${img}</span>
                                     <div class="truncate node-meta__text isTypename">${typeNameComputed}</div>
-                                    <div class="node-meta__text">
+                                    <div class="node-meta__text node-schema">
                                         ${
                                             ['Table', 'View'].includes(
                                                 typeName
@@ -122,10 +120,8 @@ export default function useGraph(graph) {
                                                 : ''
                                         }
                                     </div>
-                                    <div class="node-meta__text text-gray  truncate ${
-                                        ['Table', 'View'].includes(typeName)
-                                            ? ''
-                                            : 'hidden'
+                                    <div class="node-meta__text node-schema text-gray  truncate ${
+                                        isNodeWithColumns ? '' : 'hidden'
                                     }">
                                         ${schemaName || ''}
                                     </div>
@@ -134,10 +130,6 @@ export default function useGraph(graph) {
                         }
 
                     </div>
-                    <div id="node-${guid}-columnListLoader" class="node-columnListLoader hidden">
-                        <span class="absolute w-9 h-9">${iconLoader}</span>
-                    </div>
-                    
                 </div>`
                 },
                 shouldComponentUpdate(node) {
@@ -240,30 +232,54 @@ export default function useGraph(graph) {
                                 tagName: 'image',
                                 selector: 'portImage',
                             },
+                            {
+                                tagName: 'image',
+                                selector: 'portImageLoader',
+                            },
+                            {
+                                tagName: 'image',
+                                selector: 'portImageRight',
+                            },
                         ],
                         attrs: {
                             portBody: {
-                                width: 268,
+                                width: 247,
                                 height: 40,
                                 strokeWidth: 1,
-                                stroke: isBase ? '#3c71df' : '#E0E4EB',
+                                stroke: '#E0E4EB',
                                 fill: '#ffffff',
                                 event: 'port:click',
-                                y: -11,
+                                x: 10,
                             },
                             portNameLabel: {
                                 ref: 'portBody',
-                                refX: 36,
-                                refY: 12,
+                                refX: 44,
+                                refY: 13,
                                 fontSize: 16,
                                 fill: '#374151',
                                 event: 'port:click',
                             },
                             portImage: {
                                 ref: 'portBody',
-                                refX: 12,
+                                refX: 20,
                                 refY: 12,
                                 event: 'port:click',
+                            },
+                            portImageLoader: {
+                                ref: 'portBody',
+                                refX: 220,
+                                refY: 10,
+                                event: 'port:click',
+                                href: '',
+                                width: 22,
+                                height: 22,
+                            },
+                            portImageRight: {
+                                ref: 'portBody',
+                                refX: 180,
+                                refY: 10,
+                                event: 'port:click',
+                                href: '',
                             },
                         },
                         position: 'erPortPosition',
@@ -275,9 +291,35 @@ export default function useGraph(graph) {
                         group: 'invisiblePort',
                         zIndex: 0,
                     },
+                    {
+                        id: `${guid}-viewPort`,
+                        group: 'columnList',
+                        attrs: {
+                            portBody: {
+                                x: 1,
+                                width: 266,
+                                height: 38,
+                                fill: '#F9FAFB',
+                                stroke: '#f9fafb00',
+                            },
+                            portNameLabel: {
+                                text: `view columns`,
+                                refX: 22,
+                                fill: '#3c71df',
+                                refY: 12,
+                            },
+                            portImage: {
+                                refX: 120,
+                                refY: 10,
+                                href: iconCaretDownB64,
+                            },
+                        },
+                    },
                 ],
             },
         }
+
+        if (!isNodeWithColumns) nodeData.ports.items = [nodeData.ports.items[0]]
 
         return { nodeData }
     }
@@ -320,6 +362,8 @@ export default function useGraph(graph) {
     }
 
     const createPortData = (item) => {
+        const { isPrimary, isForeign } = item.attributes
+
         let text =
             item.displayText.charAt(0).toUpperCase() +
             item.displayText.slice(1).toLowerCase()
@@ -342,6 +386,15 @@ export default function useGraph(graph) {
                     href: `/dataType/${dataType || 'empty'}.svg`,
                     width: 16,
                     height: 16,
+                },
+                portImageRight: {
+                    height: isPrimary ? 20 : 17,
+                    // eslint-disable-next-line no-nested-ternary
+                    href: isPrimary
+                        ? iconPrimaryB64
+                        : isForeign
+                        ? iconForeignB64
+                        : '',
                 },
             },
         }

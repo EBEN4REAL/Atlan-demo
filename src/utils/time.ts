@@ -18,3 +18,15 @@ export const getDurationStringFromMilliSec = (time) => {
     }
     return ''
 }
+
+export const getDurationStringFromSec = (time) => {
+    if (time) {
+        if (time < 60) return `${time} s`
+        if (time / (1000 * 60) < 60)
+            return `${Math.floor(time / 60)} mins ${Math.floor(time % 60)} s`
+        return `${Math.floor(time / (60 * 60))} h ${Math.floor(
+            (time / 60) % 60
+        )} mins`
+    }
+    return ''
+}

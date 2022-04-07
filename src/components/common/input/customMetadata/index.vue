@@ -3,9 +3,18 @@
         v-if="cmList(assetType(selectedAsset), false, true).length > 0"
         class="flex flex-col"
     >
-        <p class="flex items-center justify-between mb-1 text-sm text-gray-500">
+        <div
+            class="flex items-center justify-between mb-1 text-sm text-gray-500"
+        >
             Custom Metadata
-        </p>
+            <router-link
+                v-if="checkAccess(page.PAGE_GOVERNANCE)"
+                class="font-semibold text-primary hover:underline"
+                to="/governance/custom-metadata"
+                target="_blank"
+                >Manage all</router-link
+            >
+        </div>
         <!--  Checking for overview flag -->
         <div
             v-for="(tab, index) in cmList(
@@ -51,6 +60,8 @@
     import { useAssetAttributes } from '~/composables/discovery/useCurrentUpdate'
     import { usePersonaStore } from '~/store/persona'
     import useAssetStore from '~/store/asset'
+    import page from '~/constant/accessControl/page'
+    import useAuth from '~/composables/auth/useAuth'
 
     export default defineComponent({
         name: 'CustomMetadata',
@@ -72,6 +83,8 @@
             const guid = ref()
 
             const { getList: cmList } = useCustomMetadataFacet()
+
+            const { checkAccess } = useAuth()
 
             const discoveryStore = useAssetStore()
 
@@ -138,6 +151,8 @@
                 isCmReady,
                 asset,
                 denyCustomMetadata,
+                page,
+                checkAccess,
             }
         },
     })

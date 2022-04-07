@@ -100,11 +100,11 @@
                 :data="request?.sourceEntity?.attributes"
                 :request="request"
             />
-
             <AttrPiece
                 v-else-if="request.destinationAttribute"
                 :name="request.destinationAttribute"
                 :value="request.destinationValue"
+                :value-array="request?.destinationValueArray"
             />
 
             <AssetPiece

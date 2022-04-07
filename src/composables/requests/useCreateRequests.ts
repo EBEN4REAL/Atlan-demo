@@ -17,6 +17,7 @@ interface requestPayload {
     destinationAttribute?: String
     destinationValue?: String
     payload?: any
+    destinationValueType?: String
 }
 interface params {
     assetGuid: String
@@ -140,35 +141,33 @@ export function useCreateRequests({
             if (ownerUsers?.length) {
                 eventPayload.value.request_type = 'ownerUsers'
                 eventPayload.value.action = 'add'
-                ownerUsers.forEach((el) => {
-                    requests.value.push({
-                        requestType: 'attribute',
-                        approvalType: 'single',
-                        destinationAttribute: 'ownerUsers',
-                        id: assetGuid,
-                        destinationGuid: assetGuid,
-                        destinationQualifiedName: assetQf,
-                        destinationValue: el,
-                        entityType: assetType,
-                        sourceType: 'static',
-                    })
+                requests.value.push({
+                    requestType: 'attribute',
+                    approvalType: 'single',
+                    destinationAttribute: 'ownerUsers',
+                    id: assetGuid,
+                    destinationGuid: assetGuid,
+                    destinationQualifiedName: assetQf,
+                    destinationValue: JSON.stringify(ownerUsers),
+                    destinationValueType: 'array',
+                    entityType: assetType,
+                    sourceType: 'static',
                 })
             }
             if (ownerGroups.length) {
                 eventPayload.value.request_type = 'ownerGroups'
                 eventPayload.value.action = 'add'
-                ownerGroups.forEach((el) => {
-                    requests.value.push({
-                        requestType: 'attribute',
-                        approvalType: 'single',
-                        destinationAttribute: 'ownerGroups',
-                        id: assetGuid,
-                        destinationGuid: assetGuid,
-                        destinationQualifiedName: assetQf,
-                        destinationValue: el,
-                        entityType: assetType,
-                        sourceType: 'static',
-                    })
+                requests.value.push({
+                    requestType: 'attribute',
+                    approvalType: 'single',
+                    destinationAttribute: 'ownerGroups',
+                    id: assetGuid,
+                    destinationGuid: assetGuid,
+                    destinationQualifiedName: assetQf,
+                    destinationValue: JSON.stringify(ownerGroups),
+                    destinationValueType: 'array',
+                    entityType: assetType,
+                    sourceType: 'static',
                 })
             }
         }

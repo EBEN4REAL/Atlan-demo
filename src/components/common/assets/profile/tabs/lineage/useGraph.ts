@@ -5,7 +5,14 @@ import {
     getNodeTypeText,
 } from './util.js'
 import { iconVerified, iconDraft, iconDeprecated } from './icons'
-import { iconCaretDownB64, iconPrimaryB64, iconForeignB64 } from './iconsBase64'
+import {
+    iconCaretDownB64,
+    iconPrimaryB64,
+    iconForeignB64,
+    iconInformationB64,
+    iconIssueB64,
+    iconWarningB64,
+} from './iconsBase64'
 import { dataTypeCategoryList } from '~/constant/dataType'
 import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
@@ -238,7 +245,11 @@ export default function useGraph(graph) {
                             },
                             {
                                 tagName: 'image',
-                                selector: 'portImageRight',
+                                selector: 'portImageKeys',
+                            },
+                            {
+                                tagName: 'image',
+                                selector: 'portImageFlags',
                             },
                         ],
                         attrs: {
@@ -274,7 +285,7 @@ export default function useGraph(graph) {
                                 width: 22,
                                 height: 22,
                             },
-                            portImageRight: {
+                            portImageKeys: {
                                 ref: 'portBody',
                                 refX: 180,
                                 refY: 10,
@@ -362,16 +373,33 @@ export default function useGraph(graph) {
     }
 
     const createPortData = (item) => {
-        const { isPrimary, isForeign } = item.attributes
+        const { isPrimary, isForeign, announcementType } = item.attributes
 
-        let text =
-            item.displayText.charAt(0).toUpperCase() +
-            item.displayText.slice(1).toLowerCase()
+        let announcementIcon = ''
+        if (announcementType === 'information')
+            announcementIcon = iconInformationB64
+        else if (announcementType === 'issue') announcementIcon = iconIssueB64
+        else if (announcementType === 'warning')
+            announcementIcon = iconWarningB64
+
         const dataType = dataTypeCategoryList.find((d) =>
             d.type.includes(item.attributes?.dataType?.toUpperCase())
         )?.imageText
 
-        if (text.length > 23) text = `${text.slice(0, 23)}...`
+        let text =
+            item.displayText.charAt(0).toUpperCase() +
+            item.displayText.slice(1).toLowerCase()
+
+        if (text.length >= 21) {
+            if (!announcementIcon && !isPrimary && !isForeign)
+                text = `${text.slice(0, 21)}...`
+            else if (announcementIcon && (isPrimary || isForeign))
+                text = `${text.slice(0, 11)}...`
+            else if (announcementIcon && !isPrimary && !isForeign)
+                text = `${text.slice(0, 15)}...`
+            else if (!announcementIcon && (isPrimary || isForeign))
+                text = `${text.slice(0, 15)}...`
+        }
 
         const portData = {
             id: item.guid,
@@ -387,7 +415,7 @@ export default function useGraph(graph) {
                     width: 16,
                     height: 16,
                 },
-                portImageRight: {
+                portImageKeys: {
                     height: isPrimary ? 20 : 17,
                     // eslint-disable-next-line no-nested-ternary
                     href: isPrimary
@@ -395,6 +423,13 @@ export default function useGraph(graph) {
                         : isForeign
                         ? iconForeignB64
                         : '',
+                },
+                portImageFlags: {
+                    refY: 12,
+                    refX: isPrimary || isForeign ? 165 : 180,
+                    height: 17,
+                    // eslint-disable-next-line no-nested-ternary
+                    href: announcementIcon,
                 },
             },
         }

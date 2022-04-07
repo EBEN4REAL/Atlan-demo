@@ -5,7 +5,7 @@
         }`"
     >
         <div
-            class="border-b border-gray-300 run-list-item hover:bg-primary-menu text-new-gray-800"
+            class="border-b border-gray-300 run-list-item hover:bg-primary-menu text-new-gray-800 group"
         >
             <div class="flex items-center col-span-4 text-new-gray-600 gap-x-3">
                 <div class="package-icon">
@@ -49,21 +49,21 @@
 
             <div class="col-span-1 text-new-gray-600">
                 <template v-if="isCronRun(run)">
-                    <p class="whitespace-nowrap">Scheduled Run</p>
+                    <p class="lg:whitespace-nowrap">Scheduled Run</p>
                     <div class="flex items-center flex-nowrap">
                         <AtlanIcon icon="Schedule" class="mr-1 text-success" />
                         <span
-                            class="text-sm text-new-gray-800 whitespace-nowrap"
+                            class="text-sm text-new-gray-800 lg:whitespace-nowrap"
                             >{{ cronString(workflow) || 'No info' }}</span
                         >
                     </div>
                 </template>
                 <template v-else>
-                    <p class="whitespace-nowrap">Manually Run by</p>
+                    <p class="lg:whitespace-nowrap">Manually Run by</p>
                     <UserWrapper
+                        class="flex items-center flex-nowrap gap-x-1"
                         :username="creatorUsername(run)"
                         @click.stop
-                        class="flex items-center flex-nowrap gap-x-1"
                     />
                 </template>
             </div>
@@ -74,8 +74,12 @@
                 </div>
             </a-tooltip>
 
-            <div class="flex items-center justify-end col-span-1">
+            <div class="flex items-center justify-end col-span-1 gap-x-4">
                 <span>{{ duration(run) }}</span>
+                <IconButton
+                    icon="ArrowRight"
+                    class="-mr-12 opacity-0 group-hover:opacity-100 text-primary"
+                />
             </div>
             <!-- <div class="col-span-2">Output</div> -->
         </div>
@@ -162,7 +166,7 @@
 </script>
 <style lang="less" scoped>
     .run-list-item {
-        padding: 14px 64px 14px 12px;
+        padding: 14px 64px 14px 16px;
         @apply cursor-pointer;
         @apply grid grid-cols-8 items-center gap-x-4;
         @apply text-sm;

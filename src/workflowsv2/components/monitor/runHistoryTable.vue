@@ -14,7 +14,7 @@
             class="flex flex-col overflow-hidden border divide-y divide-gray-300 rounded-lg border-new-gray-300"
         >
             <div
-                class="grid items-center h-10 grid-cols-8 pl-3 pr-16 bg-new-gray-100 gap-x-4"
+                class="grid items-center h-10 grid-cols-8 pl-4 pr-16 bg-new-gray-100 gap-x-4"
             >
                 <div
                     v-for="head in tableHeaders"

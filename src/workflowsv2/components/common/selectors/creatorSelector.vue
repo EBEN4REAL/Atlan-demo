@@ -1,6 +1,7 @@
 <template>
     <div
-        class="box-border flex items-stretch h-8 overflow-hidden border border-gray-300 divide-x divide-gray-300 rounded"
+        class="box-border flex items-stretch h-8 overflow-hidden border border-gray-300 divide-x divide-gray-300 rounded-lg"
+        style="box-shadow: 0px 1px 0px 0px hsla(0, 0%, 0%, 0.05)"
     >
         <button
             class="tabbed-btn"

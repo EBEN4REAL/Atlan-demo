@@ -3,11 +3,12 @@
         class="w-52"
         allow-clear
         show-search
+        :class="$style.baseSelector"
         :bordered="type !== 'minimal'"
         :value="value"
         :get-popup-container="(target) => target.parentNode"
         @update:value="$emit('update:value', $event)"
-        dropdownClassName="w-64"
+        dropdown-class-name="w-64"
     >
         <template #suffixIcon>
             <AtlanLoader v-if="loading" />
@@ -72,5 +73,14 @@
         height: 6px;
         width: 6px;
         border-radius: 50%;
+    }
+</style>
+
+<style lang="less" module>
+    .baseSelector {
+        :global(.ant-select-selector) {
+            @apply rounded-lg !important;
+            box-shadow: 0px 1px 0px 0px hsla(0, 0%, 0%, 0.05);
+        }
     }
 </style>

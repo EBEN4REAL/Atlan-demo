@@ -6,94 +6,78 @@
         <div
             v-if="item?.typeName === 'cta'"
             class="flex flex-wrap items-center w-full"
-            :class="!hasCreatePermission ? '' : 'space-y-0'"
         >
-            <div v-if="isEvaluating" class="w-full">
-                <a-skeleton
-                    :class="$style.skeleton"
-                    :loading="true"
-                    active
-                    :title="true"
-                    :paragraph="null"
-                />
-            </div>
-            <template v-else>
-                <template v-if="hasCreatePermission">
-                    <span v-if="!checkable" class="pr-1"> Add a </span>
-                    <AddGtcModal
-                        v-if="!checkable"
-                        entityType="AtlasGlossaryTerm"
-                        :glossaryName="item?.glossaryName"
-                        :categoryName="item?.categoryName"
-                        :categoryGuid="item?.categoryGuid"
-                        :glossary-qualified-name="glossaryQualifiedName"
-                        @add="handleAdd"
-                    >
-                        <template #trigger>
-                            <div v-if="hasTermAddPermission">
-                                <div
-                                    class="flex items-center hover:underline text-primary"
-                                >
-                                    <AtlanIcon
-                                        icon="Term"
-                                        class="m-0 mr-0.5 align-text-bottom"
-                                    />
-                                    <p class="p-0 m-0">Term</p>
-                                </div>
-                            </div>
-                        </template>
-                    </AddGtcModal>
-                    <span
-                        v-if="!checkable && hasCategoryAddPermission"
-                        class="px-1"
-                        >or
-                    </span>
-
-                    <AddGtcModal
-                        v-if="!checkable"
-                        entityType="AtlasGlossaryCategory"
-                        :glossaryName="item?.glossaryName"
-                        :categoryName="item?.categoryName"
-                        :categoryGuid="item?.categoryGuid"
-                        :glossary-qualified-name="glossaryQualifiedName"
-                        @add="handleAdd"
-                    >
-                        <template #trigger>
-                            <div v-if="hasCategoryAddPermission">
-                                <div
-                                    class="flex items-center hover:underline text-primary"
-                                >
-                                    <AtlanIcon
-                                        icon="Category"
-                                        class="m-0 mr-1 align-text-bottom"
-                                    />
-                                    <p class="p-0 m-0">Category</p>
-                                </div>
-                            </div>
-                        </template>
-                    </AddGtcModal>
-                </template>
-
-                <div v-if="checkable || !hasCreatePermission">
-                    This
-                    <span v-if="item.categoryName">category</span>
-                    <span v-else-if="item.glossaryName">glossary</span>
-                    <span v-else>node</span>
-                    is empty!
-                    <br />
-
-                    <span v-if="hasTermAddPermission">
-                        Go to the
-                        <span
-                            class="hover:underline text-primary"
-                            @click="ctaToProfile"
+            <span v-if="!checkable" class="pr-1"> Add a </span>
+            <AddGtcModal
+                v-if="!checkable"
+                entityType="AtlasGlossaryTerm"
+                :glossaryName="item?.glossaryName"
+                :categoryName="item?.categoryName"
+                :categoryGuid="item?.categoryGuid"
+                :glossary-qualified-name="glossaryQualifiedName"
+                @add="handleAdd"
+                :createPermission="hasTermAddPermission"
+            >
+                <template #trigger>
+                    <div>
+                        <div
+                            class="flex items-center hover:underline text-primary"
                         >
-                            profile
-                        </span>
-                        to add some terms.
+                            <AtlanIcon
+                                icon="Term"
+                                class="m-0 mr-0.5 align-text-bottom"
+                            />
+                            <p class="p-0 m-0">Term</p>
+                        </div>
+                    </div>
+                </template>
+            </AddGtcModal>
+            <span v-if="!checkable" class="px-1">or </span>
+
+            <AddGtcModal
+                v-if="!checkable"
+                entityType="AtlasGlossaryCategory"
+                :glossaryName="item?.glossaryName"
+                :categoryName="item?.categoryName"
+                :categoryGuid="item?.categoryGuid"
+                :glossary-qualified-name="glossaryQualifiedName"
+                @add="handleAdd"
+                :createPermission="hasCategoryAddPermission"
+            >
+                <template #trigger>
+                    <div>
+                        <div
+                            class="flex items-center hover:underline text-primary"
+                        >
+                            <AtlanIcon
+                                icon="Category"
+                                class="m-0 mr-1 align-text-bottom"
+                            />
+                            <p class="p-0 m-0">Category</p>
+                        </div>
+                    </div>
+                </template>
+            </AddGtcModal>
+
+            <div v-if="checkable">
+                This
+                <span v-if="item.categoryName">category</span>
+                <span v-else-if="item.glossaryName">glossary</span>
+                <span v-else>node</span>
+                is empty!
+                <br />
+
+                <span v-if="hasTermAddPermission">
+                    Go to the
+                    <span
+                        class="hover:underline text-primary"
+                        @click="ctaToProfile"
+                    >
+                        profile
                     </span>
-                </div>
-            </template>
+                    to add some terms.
+                </span>
+            </div>
         </div>
 
         <div

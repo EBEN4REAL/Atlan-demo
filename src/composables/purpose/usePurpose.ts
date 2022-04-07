@@ -19,6 +19,12 @@ export default function usePurpose(immediate = true) {
         purposeStore.setList(data.value?.records)
         // console.log(tenantStore.tenantRaw)
     })
+    watch(error, () => {
+        if(error.value){
+            purposeStore.setList([])
+        }
+ 
+    })
     return {
         data, isLoading, isReady, error, mutate
     }

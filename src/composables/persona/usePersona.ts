@@ -40,6 +40,12 @@ export default function usePersona(immediate = true) {
         personaStore.setList(data.value?.records)
         // console.log(tenantStore.tenantRaw)
     })
+    watch(error, () => {
+        if(error.value){
+            personaStore.setList([])
+        }
+ 
+    })
     return {
         data,
         isLoading,

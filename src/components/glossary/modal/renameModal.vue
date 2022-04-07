@@ -33,12 +33,12 @@
                 class="rounded mx-4 mb-4"
             />
         </div>
-        <div class="flex justify-end p-3 space-x-2 ">
+        <div class="flex justify-end p-3 space-x-2">
             <a-button @click="handleCancel">Cancel</a-button>
             <a-button
                 class="text-white bg-primary"
                 :loading="isLoading"
-                @click="handleDelete"
+                @click="handleRequest"
                 >Submit Request</a-button
             >
         </div>
@@ -62,8 +62,7 @@
     } from 'vue'
 
     import { useVModels, whenever } from '@vueuse/core'
-    import updateAsset from '~/composables/discovery/updateAsset'
-    import { generateUUID } from '~/utils/helper/generator'
+    import { useCreateRequests } from '~/composables/requests/useCreateRequests'
     import { message } from 'ant-design-vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import assetTypeLabel from '~/components/glossary/constants/assetTypeLabel.ts'
@@ -85,7 +84,10 @@
                     return ''
                 },
             },
-
+            selectedAsset: {
+                type: Object,
+                required: true,
+            },
             entityType: {
                 type: String,
                 required: false,
@@ -108,7 +110,39 @@
             const handleCancel = () => {
                 visible.value = false
             }
-            return { visible, handleCancel, showModal, assetTypeLabel, newName }
+            const handleRequest = () => {
+                const {
+                    error: requestError,
+                    isLoading: isRequestLoading,
+                    isReady: requestReady,
+                } = useCreateRequests({
+                    assetGuid: props.selectedAsset?.guid,
+                    assetQf: props.selectedAsset?.attributes?.qualifiedName,
+                    assetType: props.selectedAsset?.typeName,
+                    name: newName.value,
+                    requestType: 'name',
+                })
+                whenever(requestError, () => {
+                    if (requestError.value) {
+                        message.error(`Request failed`)
+                        visible.value = false
+                    }
+                })
+                whenever(requestReady, () => {
+                    if (requestReady.value) {
+                        message.success(`Request raised`)
+                        visible.value = false
+                    }
+                })
+            }
+            return {
+                visible,
+                handleCancel,
+                showModal,
+                assetTypeLabel,
+                newName,
+                handleRequest,
+            }
         },
     })
 </script>

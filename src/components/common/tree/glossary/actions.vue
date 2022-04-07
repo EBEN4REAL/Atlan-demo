@@ -44,7 +44,7 @@
                         </div>
                     </template>
                     <template v-else>
-                        <RenameModal :entityType="entity?.typeName" :entityTitle="entity?.attributes?.name">
+                        <RenameModal :entityType="entity?.typeName" :entityTitle="entity?.attributes?.name" :selected-asset="entity">
                             <template #trigger>
                                 <div class="flex items-center">
                                     <AtlanIcon icon="Pencil" class="m-0 mr-2" />

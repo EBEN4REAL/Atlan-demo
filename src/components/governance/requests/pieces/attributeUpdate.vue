@@ -34,7 +34,8 @@
                 userDescription: 'Update description',
                 certificateStatus: 'Update certificate',
                 ownerUsers:'Update Owners',
-                ownerGroups:'Update Groups'
+                ownerGroups:'Update Groups',
+                name:'Update Name'
             }
 
             const attrLabel = computed(() => labelMap[name.value] || 'ATTR')

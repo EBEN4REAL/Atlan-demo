@@ -367,15 +367,7 @@
                     @edit="handleEdit"
                 >
                     <a-button
-                        v-if="
-                            isGTC(item) &&
-                            (selectedAssetUpdatePermission(item) ||
-                                selectedAssetUpdatePermission(
-                                    item,
-                                    false,
-                                    'ENTITY_DELETE'
-                                ))
-                        "
+                        v-if="isGTC(item)"
                         block
                         class="flex items-center justify-center p-2"
                     >

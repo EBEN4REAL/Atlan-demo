@@ -305,6 +305,9 @@
     import ConnectorSelect from './hierarchy/connector.vue'
 
     import Heirarchy from './hierarchy/index.vue'
+    const ANALYTICS_KEYS = {
+        connector: 'connector',
+    }
 
     export default defineComponent({
         name: 'AssetDiscovery',
@@ -652,6 +655,7 @@
             }
 
             const handleFilterChange = (filterItem) => {
+                console.log('handleFilterChange', filterItem)
                 isConnectorChange.value = false
                 isGlossaryChange.value = false
                 offset.value = 0
@@ -679,7 +683,9 @@
                 offset.value = 0
                 quickChange()
                 discoveryStore.setActiveFacet(facets.value)
-                sendFilterEvent(filterItem)
+                sendFilterEvent({
+                    analyticsKey: ANALYTICS_KEYS.connector,
+                })
             }
 
             const handleGlossaryChange = (filterItem) => {

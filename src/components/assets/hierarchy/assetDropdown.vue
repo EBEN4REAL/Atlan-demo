@@ -34,6 +34,12 @@
     import { usePersonaStore } from '~/store/persona'
     import { useConnectionStore } from '~/store/connection'
 
+    // these analytics keys are sent for discovery.filter.changed event filterType property, Don't change them!
+    const ANALYTICS_KEYS = {
+        database: 'database',
+        schema: 'schema',
+    }
+
     export default defineComponent({
         name: 'AssetDropdown',
         components: { AssetSelector },
@@ -249,6 +255,12 @@
                         tempAsset[lv.attribute] = undefined
                     }
                 })
+                let analyticsKey = ''
+                if (key === 'databaseQualifiedName') {
+                    analyticsKey = ANALYTICS_KEYS.database
+                } else if (key === 'schemaQualifiedName') {
+                    analyticsKey = ANALYTICS_KEYS.schema
+                }
                 // Check the most granular filter and emit it
                 for (let i = list.value.length - 1; i >= 0; i--) {
                     const currentListItem = list.value[i]
@@ -257,6 +269,7 @@
                             attributeName: currentListItem?.attribute,
                             attributeValue:
                                 tempAsset[currentListItem?.attribute],
+                            analyticsKey,
                         })
                         isFilterAttributeFound = true
                         break
@@ -265,7 +278,11 @@
 
                 // Emit with empty attributes when the selectors are cleared
                 if (!isFilterAttributeFound)
-                    emit('change', { attributeName: '', attributeValue: '' })
+                    emit('change', {
+                        attributeName: '',
+                        attributeValue: '',
+                        analyticsKey,
+                    })
 
                 setSelectorValue()
             }

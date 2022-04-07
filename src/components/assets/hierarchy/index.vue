@@ -42,6 +42,9 @@
 
     import useAssetStore from '~/store/asset'
     import { useConnectionStore } from '~/store/connection'
+    const ANALYTICS_KEYS = {
+        connection: 'connection',
+    }
 
     export default defineComponent({
         name: 'ConnectionFilter',
@@ -93,20 +96,21 @@
                     }
 
                     modelValue.value = localValue.value
-                    emit('change')
+                    emit('change', { analyticsKey: ANALYTICS_KEYS.connection })
                 }
             )
 
             const handleAssetChange = (val) => {
+                console.log('handleAssetChange', val)
                 if (val.attributeName && val.attributeValue) {
                     localValue.value.attributeValue = val.attributeValue
                     localValue.value.attributeName = val.attributeName
                     modelValue.value = localValue.value
-                    emit('change')
+                    emit('change', { analyticsKey: val.analyticsKey })
                 } else {
                     localValue.value.attributeValue = ''
                     localValue.value.attributeName = ''
-                    emit('change')
+                    emit('change', { analyticsKey: val.analyticsKey })
                 }
             }
 

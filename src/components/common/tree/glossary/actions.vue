@@ -18,11 +18,7 @@
                 >
                     <div class="flex items-center">
                         <AtlanIcon icon="CopyOutlined" class="m-0 mr-2" />
-                        <p class="p-0 m-0">
-                            Copy
-                            {{ assetTypeLabel[entity?.typeName] }}
-                            profile link
-                        </p>
+                        <p class="p-0 m-0">Copy link</p>
                     </div>
                 </a-menu-item>
                 <a-menu-item
@@ -33,11 +29,7 @@
                 >
                     <div class="flex items-center">
                         <AtlanIcon icon="CopyOutlined" class="m-0 mr-2" />
-                        <p class="p-0 m-0">
-                            Copy
-                            {{ assetTypeLabel[entity?.typeName] }}
-                            name
-                        </p>
+                        <p class="p-0 m-0">Copy name</p>
                     </div>
                 </a-menu-item>
                 <!-- entity update -->

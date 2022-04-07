@@ -130,17 +130,19 @@ export function useDiscoverList({
         const diff = defaultListMap.filter((d) => listMap.includes(d) === false)
         const overlap = defaultListMap.filter((d) => listMap.includes(d))
 
+        // Update count - Revert this to the previous way if any problem is observed with aggregation counts
         overlap.forEach((item) => {
             const found = labelList.find(
                 (t) => t.id.toLowerCase() === item.toLowerCase()
             )
-
             if (found) {
-                found.count = aggregationMap(aggregationKey).find(
-                    (i) => i.key.toLowerCase() === item.toLowerCase()
-                )?.doc_count
-
-                temp.push(found)
+                temp.push({
+                    ...found,
+                    count:
+                        aggregationMap(aggregationKey).find(
+                            (i) => i.key.toLowerCase() === item.toLowerCase()
+                        )?.doc_count ?? 0,
+                })
             }
         })
         if (includeWithoutLabel) {

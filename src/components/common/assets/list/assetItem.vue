@@ -108,7 +108,10 @@
                         </div>
                         <div class>
                             <a-tooltip :title="announcementType(item)">
-                                <AtlanIcon :icon="icon"></AtlanIcon>
+                                <AtlanIcon
+                                    :icon="icon"
+                                    class="outline-none"
+                                ></AtlanIcon>
                             </a-tooltip>
                         </div>
                     </div>

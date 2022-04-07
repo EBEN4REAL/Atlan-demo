@@ -340,7 +340,11 @@
         approveRequest,
         declineRequest,
     } from '~/composables/requests/useRequests'
-    import { primaryText, requestTypeIcon } from './requestType'
+    import {
+        primaryText,
+        requestTypeIcon,
+        requestTypeEventMap,
+    } from './requestType'
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
 
     export default defineComponent({
@@ -405,6 +409,24 @@
                 assetGuid.value = guid
                 showAssetSidebar.value = true
             }
+
+            const handleEvent = (action) => {
+                let request_type
+                if (request.value?.destinationAttribute)
+                    request_type =
+                        requestTypeEventMap[request.value?.destinationAttribute]
+                            .requestType
+                else
+                    request_type =
+                        requestTypeEventMap[request.value?.requestType]
+                            .requestType
+
+                useAddEvent('governance', 'requests', 'resolved', {
+                    action,
+                    request_type,
+                    widget_type: 'table',
+                })
+            }
             async function handleApproval(messageProp = '') {
                 state.isApprovalLoading = true
                 try {
@@ -413,9 +435,7 @@
                     request.value.status = 'approved'
                     emit('action', request.value)
                     message.success('Request approved')
-                    useAddEvent('governance', 'requests', 'resolved', {
-                        action: 'approve',
-                    })
+                    handleEvent('approve')
                 } catch (error) {
                     raiseErrorMessage()
                 }
@@ -430,9 +450,8 @@
                     request.value.status = 'rejected'
                     emit('action', request.value)
                     message.success('Request declined')
-                    useAddEvent('governance', 'requests', 'resolved', {
-                        action: 'decline',
-                    })
+                    console.log(request.value)
+                    handleEvent('decline')
                 } catch (error) {
                     raiseErrorMessage()
                 }

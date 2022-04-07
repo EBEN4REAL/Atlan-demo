@@ -2,6 +2,12 @@ import { VueNodeViewRenderer } from '@tiptap/vue-3'
 import { Image } from '@tiptap/extension-image'
 import { TextSelection } from 'prosemirror-state'
 import Component from './component.vue'
+import {
+    NAME_OF_EVENTS,
+    README_TRIGGERS,
+    TYPE_OF_EVENTS,
+    useTrackEvent,
+} from '~/modules/editor/analytics/useTrackEvent'
 
 export default Image.extend({
     name: 'uploadimage',

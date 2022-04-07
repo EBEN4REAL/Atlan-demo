@@ -2,6 +2,7 @@ import { Ref, computed, watch, ref } from 'vue'
 import { createBulkRequest } from '~/services/service/requests'
 import { useDebounceFn } from '@vueuse/core'
 import { message } from 'ant-design-vue'
+import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
 interface requestPayload {
     requestType: String
@@ -30,6 +31,19 @@ interface params {
     ownerGroups?: Array<any>
     glossaryPayload?: any
 }
+interface eventPayload {
+    request_type:
+        | 'term'
+        | 'userDescription'
+        | 'classification'
+        | 'certificateStatus'
+        | 'ownerUser'
+        | 'ownerGroup'
+        | ''
+    asset_type: String
+    count: Number
+    action: 'add' | 'remove' | 'edit' | ''
+}
 export function useCreateRequests({
     assetGuid,
     assetQf,
@@ -44,8 +58,18 @@ export function useCreateRequests({
     glossaryPayload,
 }: params) {
     const requests = ref<requestPayload[]>([])
+    const eventPayload = ref<eventPayload>({
+        request_type: '',
+        asset_type: assetType,
+        count: 0,
+        action: '',
+    })
     const constructPayload = () => {
         if (terms?.length) {
+            eventPayload.value.request_type = 'term'
+            eventPayload.value.count = terms?.length ?? 0
+            eventPayload.value.action = 'add'
+
             terms?.forEach((element) => {
                 requests.value.push({
                     requestType: 'term_link',
@@ -63,6 +87,8 @@ export function useCreateRequests({
             })
         }
         if (certificate !== '') {
+            eventPayload.value.request_type = 'certificateStatus'
+            eventPayload.value.action = 'edit'
             requests.value.push({
                 requestType: 'attribute',
                 approvalType: 'single',
@@ -76,6 +102,9 @@ export function useCreateRequests({
             })
         }
         if (classifications?.length) {
+            eventPayload.value.request_type = 'classification'
+            eventPayload.value.action = 'add'
+            eventPayload.value.count = classifications?.length
             classifications.forEach((classification) => {
                 requests.value.push({
                     requestType: 'attach_classification',
@@ -95,6 +124,8 @@ export function useCreateRequests({
             })
         }
         if (requestType === 'userDescription') {
+            eventPayload.value.request_type = 'userDescription'
+            eventPayload.value.action = 'edit'
             requests.value.push({
                 requestType: 'attribute',
                 approvalType: 'single',
@@ -109,6 +140,8 @@ export function useCreateRequests({
         }
         if (requestType === 'ownerUsers') {
             if (ownerUsers?.length) {
+                eventPayload.value.request_type = 'ownerUsers'
+                eventPayload.value.action = 'add'
                 ownerUsers.forEach((el) => {
                     requests.value.push({
                         requestType: 'attribute',
@@ -124,6 +157,8 @@ export function useCreateRequests({
                 })
             }
             if (ownerGroups.length) {
+                eventPayload.value.request_type = 'ownerGroups'
+                eventPayload.value.action = 'add'
                 ownerGroups.forEach((el) => {
                     requests.value.push({
                         requestType: 'attribute',
@@ -181,5 +216,17 @@ export function useCreateRequests({
         createBulkRequest({
             requests: requests?.value,
         })
+
+    watch(isReady, () => {
+        if (isReady.value) {
+            if (eventPayload.value?.request_type)
+                useAddEvent(
+                    'governance',
+                    'requests',
+                    'created',
+                    eventPayload.value
+                )
+        }
+    })
     return { response: data, error, isLoading, mutate, isReady }
 }

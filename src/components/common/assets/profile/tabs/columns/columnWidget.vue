@@ -53,11 +53,11 @@
                 v-else-if="columnsList.length > 0 && !isLoading"
                 :columns="columns"
                 :data-source="columnsData.filteredList"
-                :scroll="{ y: 342, x: true }"
+                :scroll="{ y: 342, x: 780 }"
                 :pagination="false"
                 :custom-row="customRow"
                 :row-class-name="rowClassName"
-                class="self-start overflow-hidden column-table"
+                class="self-start column-table"
             >
                 <template #bodyCell="{ column, record, text }">
                     <template v-if="column.key === 'hash_index'">
@@ -598,6 +598,7 @@
                         key: 'data_type',
                     },
                     {
+                        width: 300,
                         title: 'Description',
                         dataIndex: 'description',
                         key: 'description',

@@ -645,6 +645,8 @@
                     (selectedPersonaDirty.value?.metadataPolicies?.length ||
                         0) +
                         (selectedPersonaDirty.value?.dataPolicies?.length ||
+                            0) +
+                        (selectedPersonaDirty.value?.glossaryPolicies?.length ||
                             0) ?? 0
             )
             const handleCloseAddPolicy = () => {

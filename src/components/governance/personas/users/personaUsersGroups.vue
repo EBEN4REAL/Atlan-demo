@@ -561,7 +561,10 @@
     import Avatar from '~/components/common/avatar/avatar.vue'
     import { useGroupPreview } from '~/composables/group/showGroupPreview'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
-    import { selectedPersonaDirty } from '../composables/useEditPersona'
+    import {
+        selectedPersonaDirty,
+        updateSelectedPersona,
+    } from '../composables/useEditPersona'
     import { IGroup, IUser } from '~/types/accessPolicies/personas'
     import RaisedTab from '@/UI/raisedTab.vue'
 
@@ -782,12 +785,12 @@
                                 userGroupData.value.ownerUsers ?? []
                             persona.value.groups =
                                 userGroupData.value.ownerGroups ?? []
+                            updateSelectedPersona()
                             // when we change users/groups in a persona, a watch runs to fetch more info for users/groups
                         })
                         .catch((e) => {
                             addUsersLoading.value = false
                             message.error('Failed to add users')
-                            console.log('Failed to add users', e)
                         })
                 }
             }
@@ -829,20 +832,21 @@
                         (groupId) => groupId !== userOrGroup.id
                     )
                 }
-                selectedPersonaDirty.value.users = updatedUsersIds
-                selectedPersonaDirty.value.groups = updatedGroupIds
                 updateUsers({
                     id: persona.value.id,
                     users: updatedUsersIds,
                     groups: updatedGroupIds,
                 })
                     .then(() => {
+                        selectedPersonaDirty.value.users = updatedUsersIds
+                        selectedPersonaDirty.value.groups = updatedGroupIds
                         showRemoveUserPopover.value[userOrGroup.id] = false
                         addUsersLoading.value = false
                         userGroupData.value.ownerUsers = updatedUsersIds
                         userGroupData.value.ownerGroups = updatedGroupIds
                         persona.value.users = updatedUsersIds
                         persona.value.groups = updatedGroupIds
+                        updateSelectedPersona()
                     })
                     .catch((e) => {
                         if (type === 'user') {
@@ -858,7 +862,7 @@
                         }
                         showRemoveUserPopover.value[userOrGroup.id] = false
                         addUsersLoading.value = false
-                        message.error('Failed to add users')
+                        message.error('Failed to remove user')
                     })
             }
 

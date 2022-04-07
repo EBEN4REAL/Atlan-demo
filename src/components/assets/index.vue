@@ -247,7 +247,9 @@
                                 @listItem:check="
                                     (e, item) => updateBulkSelectedAssets(item)
                                 "
-                                @browseAsset="handleBrowseAsset"
+                                @browseAsset="
+                                    (val) => handleBrowseAsset(val, item)
+                                "
                             ></AssetItem>
                         </template>
                     </AssetList>
@@ -668,7 +670,8 @@
             const isGlossaryChange = ref(false)
             const connector = ref('')
 
-            const handleBrowseAsset = (val) => {
+            const handleBrowseAsset = (val, asset) => {
+                console.log('handleBrowseAsset', val, asset)
                 facets.value.connector = val.connector
                 facets.value.hierarchy.connectionQualifiedName =
                     val.connectionQualifiedName
@@ -678,6 +681,15 @@
                 hierarchyDirtyTimestamp.value = `dirty_${Date.now().toString()}`
                 offset.value = 0
                 quickChange()
+                useAddEvent(
+                    'discovery',
+                    'asset_card',
+                    'filter_context_changed',
+                    {
+                        hierarchy_type: val.typeName,
+                        asset_type: asset.typeName,
+                    }
+                )
             }
 
             const handleFilterChange = (filterItem) => {

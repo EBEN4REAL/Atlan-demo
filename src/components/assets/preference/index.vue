@@ -20,6 +20,7 @@
 
     import { displayProperties } from '~/constant/displayProperties'
     import CustomRadioButton from '@common/radio/customRadioButton.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'PreferenceSelector',
@@ -39,9 +40,21 @@
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
-            const handleChange = () => {
+            const sendPreferenceEvent = (id, selectedIds) => {
+                const visible = selectedIds.indexOf(id) > -1
+                useAddEvent('discovery', 'view_preference', 'changed', {
+                    visible: visible,
+                    preference: id,
+                })
+            }
+            const handleChange = (id) => {
                 modelValue.value = localValue.value
+                console.log('preference changed', {
+                    final: localValue.value,
+                    clicked: id,
+                })
                 emit('change')
+                sendPreferenceEvent(id, localValue.value)
             }
 
             return {

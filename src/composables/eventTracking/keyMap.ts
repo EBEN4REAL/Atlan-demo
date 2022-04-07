@@ -209,6 +209,25 @@ const keyMap = {
                 properties: (props) => ({ asset_type: props.asset_type }),
             },
         },
+        view_preference: {
+            changed: {
+                action: 'discovery_view_preference_changed',
+                properties: (props: {
+                    visible: boolean
+                    preference: 'description' | 'terms' | 'classifications'
+                }) => ({
+                    ...props,
+                }),
+            },
+        },
+        sort: {
+            changed: {
+                action: 'discovery_sort_changed',
+                properties: (props: { sort_type: string }) => ({
+                    ...props,
+                }),
+            },
+        },
     },
     gtc: {
         term: {
@@ -490,7 +509,7 @@ const keyMap = {
                     // approve/decline
                     action: props.action,
                     request_type: props.request_type,
-                    widget_type:props.widget_type
+                    widget_type: props.widget_type,
                 }),
             },
         },

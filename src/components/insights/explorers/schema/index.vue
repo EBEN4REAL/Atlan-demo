@@ -128,6 +128,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
     import SchemaFilter from './schemaFilter.vue'
+    import { watchOnce } from '@vueuse/core'
 
     export default defineComponent({
         components: { Connector, SchemaTree, SchemaFilter },
@@ -141,6 +142,9 @@
             const { getFirstQueryConnection, checkConnection } = useUtils()
             const tables: tableInterface[] = tablesData
             const fullSreenState = inject('fullSreenState') as Ref<boolean>
+            const UrlDetectedAsset = inject(
+                'UrlDetectedAsset'
+            ) as Ref<assetInterface>
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
@@ -435,6 +439,68 @@
                 },
                 { immediate: true, deep: true }
             )
+            watchOnce(
+                UrlDetectedAsset,
+                () => {
+                    const _fields =
+                        UrlDetectedAsset.value.attributes.qualifiedName?.split(
+                            '/'
+                        )
+                    // if fields.length == 6 ->> table
+                    // if fields.length == 7 ->> column
+                    if (_fields.length < 7) {
+                        expandedKeys.value = [
+                            ...expandedKeys.value,
+                            UrlDetectedAsset.value.attributes.qualifiedName,
+                        ]
+                        selectedKeys.value = [
+                            UrlDetectedAsset.value.attributes.qualifiedName,
+                        ]
+                        let isExecuted = false
+                        const _intervalId = setInterval(() => {
+                            if (isExecuted) {
+                                clearInterval(_intervalId)
+                                return
+                            }
+                            const element = document.getElementsByClassName(
+                                'ant-tree-treenode-selected'
+                            )[0]
+                            if (element?.scrollIntoView) {
+                                isExecuted = true
+                                element.scrollIntoView(true)
+                            }
+                        }, 1000)
+                    } else if (_fields.length > 6) {
+                        const tableQualifiedName = _fields
+                            .slice(0, _fields.length - 1)
+                            .join('/')
+                        expandedKeys.value = [
+                            ...expandedKeys.value,
+                            tableQualifiedName,
+                            UrlDetectedAsset.value.attributes.qualifiedName,
+                        ]
+                        selectedKeys.value = [
+                            UrlDetectedAsset.value.attributes.qualifiedName,
+                        ]
+                        let isExecuted = false
+                        const _intervalId = setInterval(() => {
+                            if (isExecuted) {
+                                clearInterval(_intervalId)
+                                return
+                            }
+                            const element = document.getElementsByClassName(
+                                'ant-tree-treenode-selected'
+                            )[0]
+                            if (element?.scrollIntoView) {
+                                isExecuted = true
+                                element.scrollIntoView(true)
+                            }
+                        }, 1000)
+                    }
+                },
+                { immediate: true }
+            )
+
             console.log(selectedKeys.value, 'out')
 
             return {

@@ -30,10 +30,7 @@
                     v-if="isLoading"
                     class="h-10 mx-auto place-self-center"
                 />
-                <div
-                    v-else-if="runs?.length"
-                    class="w-full divide-y divide-gray-300"
-                >
+                <div v-else-if="runs?.length" class="w-full">
                     <RunListItem
                         v-for="run in runs"
                         :key="run.metadata.uid"

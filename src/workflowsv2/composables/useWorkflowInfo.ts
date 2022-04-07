@@ -1,10 +1,17 @@
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+import advanced from 'dayjs/plugin/advancedFormat'
+
 import parser from 'cron-parser'
 import cronstrue from 'cronstrue'
 import { useConnectionStore } from '~/store/connection'
 import { getDurationStringFromSec } from '~/utils/time'
 
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.extend(advanced)
 dayjs.extend(relativeTime)
 
 export default function useWorkflowInfo() {
@@ -153,11 +160,16 @@ export default function useWorkflowInfo() {
 
     const cronString = (item, verbose = false) => {
         if (cron(item)) {
-            return `${cronstrue.toString(cron(item), {
+            let str = cronstrue.toString(cron(item), {
                 use24HourTimeFormat: true,
                 verbose,
-            })} (${cronTimezone(item)})`
+            })
+            str += verbose
+                ? ` (${cronTimezone(item)})`
+                : ` (${dayjs().tz(cronTimezone(item)).format('z')})`
+            return str
         }
+        return undefined
     }
 
     const cronObject = (item) => ({

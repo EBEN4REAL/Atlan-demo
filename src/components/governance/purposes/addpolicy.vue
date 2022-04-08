@@ -52,7 +52,17 @@
             >
                 <AtlanIcon icon="DateTime" class="mr-1 text-gray-700" />
                 {{ policy.updatedBy ? 'Last updated by' : 'Created by' }}
+                <AtlanIcon
+                    v-if="
+                        (policy.updatedBy || policy.createdBy)?.startsWith(
+                            'service-account-apikey-'
+                        )
+                    "
+                    class="h-3 mx-1"
+                    icon="Key"
+                />
                 <Avatar
+                    v-else
                     :image-url="imageUrl(policy.updatedBy || policy.createdBy)"
                     :allow-upload="false"
                     :avatar-name="policy.updatedBy || policy.createdBy"
@@ -60,7 +70,14 @@
                     :avatar-shape="'circle'"
                     class="mx-1 bg-primary-light"
                 />
-                {{ policy.updatedBy || policy.createdBy }}
+
+                {{
+                    (policy.updatedBy || policy.createdBy)?.startsWith(
+                        'service-account-apikey-'
+                    )
+                        ? 'API key'
+                        : policy.updatedBy || policy.createdBy
+                }}
                 <div class="ml-1">
                     {{ useTimeAgo(policy.updatedAt || policy.createdAt).value }}
                 </div>

@@ -1,9 +1,9 @@
 <template>
     <div class="mb-3">
         <div
-            class="relative p-3 mx-1 border border-gray-200 rounded-lg cursor-pointer hover:border-primary card-container"
+            class="relative mx-1 border border-gray-200 rounded-lg cursor-pointer hover:border-primary card-container"
         >
-            <div class="flex items-center">
+            <div class="flex items-center bg-gray-100 px-3 py-3">
                 <div
                     v-if="item.requestType === 'term_link' && isGlossary"
                     class="text-sm font-bold text-gray-500"
@@ -157,7 +157,7 @@
                 </div> -->
             </div>
 
-            <div v-else class="flex items-center justify-between mt-2">
+            <div v-else class="flex items-center justify-between p-3">
                 <div
                     v-if="item.requestType === 'attach_classification'"
                     class="w-fit"
@@ -241,7 +241,8 @@
                 </div>
             </div>
 
-            <div class="flex mt-3">
+            <div class="flex px-3 py-2 mt-2 border-t border-gray-200 text-gray-500">
+                <span class="mr-2">by</span>
                 <AtlanIcon
                     v-if="item.createdBy?.startsWith('service-account-apikey-')"
                     class="h-3 mt-1"
@@ -256,7 +257,7 @@
                     :avatar-shape="'circle'"
                     :image-url="item.createdBy ? '' : atlanLogo"
                 />
-                <span class="ml-2 text-gray-700">{{
+                <span class="ml-2 text-gray-500">{{
                     item.createdBy?.startsWith('service-account-apikey-')
                         ? 'API key'
                         : item.createdBy
@@ -336,7 +337,8 @@
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import {
         typeCopyMapping,
-        destinationAttributeMapping,requestTypeEventMap
+        destinationAttributeMapping,
+        requestTypeEventMap,
     } from '~/components/governance/requests/requestType'
     import {
         approveRequest,
@@ -411,9 +413,8 @@
                 message.error(msg || 'Request modification failed, try again')
             }
 
-
             const handleEvent = (action) => {
-                console.log(item);
+                console.log(item)
                 let request_type
                 if (item.value?.destinationAttribute)
                     request_type =
@@ -421,14 +422,13 @@
                             .requestType
                 else
                     request_type =
-                        requestTypeEventMap[item.value?.requestType]
-                            .requestType
+                        requestTypeEventMap[item.value?.requestType].requestType
 
-                console.log(request_type);
+                console.log(request_type)
                 useAddEvent('governance', 'requests', 'resolved', {
                     action,
                     request_type,
-                    widget_type:'sidebar'
+                    widget_type: 'sidebar',
                 })
             }
             async function handleApproval(messageProp = '') {

@@ -6,6 +6,7 @@
         "description": "Description",
         "custom": "Custom",
         "persona": "persona | personas",
+        "owner": "Owner | Owners",
         "default": "Default",
         "default-lower": "default",
         "active": "Active",
@@ -14,6 +15,7 @@
         "alias-upper": "Alias",
         "member": "member | members",
         "group-upper": "Group | Groups",
+        "category": "Category | Categories",
         "integration": "Integration | Integrations",
         "user": "User | Users",
         "asset-lower": "asset | assets",
@@ -27,7 +29,10 @@
         "endpoint": "endpoint",
         "attribute-upper": "Attribute",
         "attribute-lower": "attribute",
-        "warning": "Warning"
+        "warning": "Warning",
+        "term-lower": "term | terms",
+        "term-upper": "Term | Terms",
+        "related-term": "Related term | Related terms"
     },
     "grammar": {
         "on": "on"

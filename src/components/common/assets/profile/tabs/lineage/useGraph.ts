@@ -401,7 +401,7 @@ export default function useGraph(graph) {
                 text = `${text.slice(0, 15)}...`
         }
 
-        const portData = {
+        let portData = {
             id: item.guid,
             group: 'columnList',
             entity: item,
@@ -432,6 +432,13 @@ export default function useGraph(graph) {
                     href: announcementIcon,
                 },
             },
+        }
+
+        if (item.highlight) {
+            portData.attrs.portBody = {
+                stroke: '#3c71df',
+            }
+            portData = { ...portData, zIndex: 99 }
         }
         return { portData }
     }

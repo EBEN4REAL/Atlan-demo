@@ -112,12 +112,25 @@
                         </div>
                     </div>
                     <div class="relative mt-4 bg-white shadow-section">
-                        <div
-                            class="p-3 text-sm font-bold text-gray-700 border-b"
-                        >
-                            Users and Groups<span class="ml-1 text-red-500"
-                                >*</span
+                        <div class="flex justify-between p-3 border-b">
+                            <div class="text-sm font-bold text-gray-700">
+                                Users and Groups<span class="ml-1 text-red-500"
+                                    >*</span
+                                >
+                            </div>
+                            <div
+                                v-if="!allUser"
+                                class="cursor-pointer"
+                                @click="addAllUser"
                             >
+                                <span class="text-sm text-primary">
+                                    Include all users
+                                </span>
+                                <AtlanIcon
+                                    icon="Add"
+                                    class="w-4 h-4 -mt-1 text-primary"
+                                />
+                            </div>
                         </div>
                         <div class="relative p-3 overflow-y-scroll max-h-52">
                             <Owners
@@ -127,12 +140,33 @@
                                     }
                                 "
                                 v-model:modelValue="selectedOwnersData"
+                                :enable-tabs="
+                                    allUser ? ['groups'] : ['users', 'groups']
+                                "
                                 :align="{ offset: [-10, 230] }"
                                 :edit-permission="true"
                                 :read-only="false"
                                 :destroy-tooltip-on-hide="true"
                                 @change="handleOwnersChange"
-                            />
+                            >
+                                <template #users>
+                                    <div
+                                        v-if="allUser"
+                                        class="flex items-center justify-between w-24 px-2 py-1 border border-gray-200 rounded-full"
+                                        :class="'hover:bg-primary-light cursor-pointer ml-2'"
+                                    >
+                                        <span class="asset-name">
+                                            All users
+                                        </span>
+
+                                        <AtlanIcon
+                                            icon="Cross"
+                                            class="h-3 ml-3 text-red-500 rotate-45"
+                                            @click="allUser = ''"
+                                        />
+                                    </div>
+                                </template>
+                            </Owners>
                             <div
                                 v-if="rules.users.show"
                                 class="mt-2 text-xs text-red-500"
@@ -466,6 +500,7 @@
             // const { scopeList } = useScopeService().listScopes('persona')
             const { scopeList } = useScopeService().listScopes('purpose')
             const policyType = ref('')
+            const allUser = ref('all-users')
             const refOwners = ref()
             const isShow = ref(false)
             const policyNameRef = ref()
@@ -476,7 +511,15 @@
                 ownerUsers: [],
                 ownerGroups: [],
             })
-
+            const addAllUser = () => {
+                const objOwner = {
+                    ownerUsers: [],
+                    ownerGroups: selectedOwnersData.value.ownerGroups || [],
+                }
+                refOwners.value.setLocalValue(objOwner)
+                allUser.value = 'all-users'
+                selectedOwnersData.value = objOwner
+            }
             const rules = ref({
                 policyName: {
                     text: 'Enter a policy name!',
@@ -596,6 +639,7 @@
                     rules.value.policyName.show = true
                 } else if (
                     policy.value.users.length === 0 &&
+                    !allUser.value &&
                     policy.value.groups.length === 0
                 ) {
                     rules.value.users.show = true
@@ -605,7 +649,13 @@
                 ) {
                     rules.value.metadata.show = true
                 } else {
-                    emit('save', policyType.value, policy.value, isEdit.value)
+                    const newPayload = {
+                        ...policy.value,
+                        users: allUser.value
+                            ? [allUser.value]
+                            : policy.value.users,
+                    }
+                    emit('save', policyType.value, newPayload, isEdit.value)
                 }
             }
             const selectedPermission = computed(() => {
@@ -706,6 +756,8 @@
                 refOwners,
                 imageUrl,
                 useTimeAgo,
+                allUser,
+                addAllUser,
             }
         },
     })

@@ -117,6 +117,7 @@
                     ></UserPill>
                 </PopOverUser>
             </template>
+            <slot name="users"></slot>
 
             <template v-for="name in localValue?.ownerGroups" :key="name">
                 <PopOverGroup :item="name">
@@ -199,6 +200,10 @@
             ),
         },
         props: {
+            enableTabs: {
+                type: Array as PropType<Array<any>>,
+                default: () => ['users', 'groups'],
+            },
             editPermission: {
                 type: Boolean,
                 required: false,

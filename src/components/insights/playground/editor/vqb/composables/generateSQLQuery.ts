@@ -121,7 +121,7 @@ export function generateSQLQuery(
     let select = squel.select()
     if (assetQuoteType)
         select = squel.select({ fieldAliasQuoteCharacter: assetQuoteType })
-        
+
     const columnPanel = activeInlineTab.playground.vqb.panels.find(
         (panel) => panel.id.toLowerCase() === 'columns'
     )
@@ -309,17 +309,16 @@ export function generateSQLQuery(
                     if (aggregatorUpperCase && tableName && columnName) {
                         if (contextPrefix !== '') {
                             select.field(
-                                `COUNT (DISTINCT ${contextPrefix}.${tableName}.${assetQuoteType}${columnName}${assetQuoteType})`,
-                                aggregatedAliasMap[aggregatorUpperCase](
-                                    duplicatedColumnName
-                                )
+                                `COUNT (DISTINCT ${contextPrefix}.${tableName}.${assetQuoteType}${columnName}${assetQuoteType}) AS ${assetQuoteType}${aggregatedAliasMap[
+                                    aggregatorUpperCase
+                                ](duplicatedColumnName)}${assetQuoteType}`
                             )
                         } else {
+                            debugger
                             select.field(
-                                `COUNT (DISTINCT ${tableName}.${assetQuoteType}${columnName}${assetQuoteType})`,
-                                aggregatedAliasMap[aggregatorUpperCase](
-                                    duplicatedColumnName
-                                )
+                                `COUNT (DISTINCT ${tableName}.${assetQuoteType}${columnName}${assetQuoteType}) AS ${assetQuoteType}${aggregatedAliasMap[
+                                    aggregatorUpperCase
+                                ](duplicatedColumnName)}${assetQuoteType}`
                             )
                         }
                     }
@@ -327,17 +326,15 @@ export function generateSQLQuery(
                     if (aggregatorUpperCase && tableName && columnName) {
                         if (contextPrefix !== '') {
                             select.field(
-                                `${aggregatorUpperCase} (${contextPrefix}.${tableName}.${assetQuoteType}${columnName}${assetQuoteType})`,
-                                aggregatedAliasMap[aggregatorUpperCase](
-                                    duplicatedColumnName
-                                )
+                                `${aggregatorUpperCase} (${contextPrefix}.${tableName}.${assetQuoteType}${columnName}${assetQuoteType}) AS ${assetQuoteType}${aggregatedAliasMap[
+                                    aggregatorUpperCase
+                                ](duplicatedColumnName)}${assetQuoteType}`
                             )
                         } else {
                             select.field(
-                                `${aggregatorUpperCase} (${tableName}.${assetQuoteType}${columnName}${assetQuoteType})`,
-                                aggregatedAliasMap[aggregatorUpperCase](
-                                    duplicatedColumnName
-                                )
+                                `${aggregatorUpperCase} (${tableName}.${assetQuoteType}${columnName}${assetQuoteType}) AS ${assetQuoteType}${aggregatedAliasMap[
+                                    aggregatorUpperCase
+                                ](duplicatedColumnName)}${assetQuoteType}`
                             )
                         }
                     }

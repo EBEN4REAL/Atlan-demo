@@ -23,11 +23,13 @@
             </a-button>
         </div>
         <div
-            class="my-3 mt-1.5 flex align-center items-center text-gray-700 text-sm"
+            class="mt-3 mt-1.5 flex align-center items-center text-gray-700 text-sm"
         >
             <AtlanIcon :icon="primaryIcon" class="h-4" />
             <span class="ml-1.5 uppercase">
-                {{ isTerm ? 'Term' : 'Category' }}
+                {{
+                    isTerm ? $t('common.term.term') : $t('common.term.category')
+                }}
             </span>
             <span v-if="anchorAttributes?.name" class="ml-2">in</span>
             <AtlanIcon

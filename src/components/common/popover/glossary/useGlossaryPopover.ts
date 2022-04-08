@@ -1,15 +1,13 @@
-import { ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
 import {
     AssetAttributes,
     InternalAttributes,
-    SQLAttributes,
     AssetRelationAttributes,
     GlossaryAttributes,
 } from '~/constant/projection'
-import { Term } from '~/types/glossary/glossary.interface'
 
-export function useGlossaryPopover() {
+export function useGlossaryPopover(term) {
     /**
      * * OPTMIZING THE TERMS POPOVER vvvvv
      */
@@ -17,7 +15,7 @@ export function useGlossaryPopover() {
     const limit = ref(1)
     const offset = ref(0)
     const facets = ref({
-        guid: '',
+        guid: term.guid,
     })
 
     const dependentKey = ref(facets.value.guid)
@@ -31,11 +29,9 @@ export function useGlossaryPopover() {
 
     const {
         list: fetchTermArr,
-        isLoading: termLoading,
-        fetch,
+        isLoading,
         isReady,
-        error: termError,
-        quickChange,
+        error,
     } = useDiscoverList({
         isCache: false,
         dependentKey,
@@ -46,41 +42,18 @@ export function useGlossaryPopover() {
         relationAttributes,
     })
 
-    const fetchedTerms = ref<Term[]>([])
-
-    const getFetchedTerm = (guid) =>
-        fetchedTerms.value.find((t) => t.guid === guid)
-
-    watch([fetchTermArr, isReady], () => {
-        if (fetchTermArr.value.length && isReady?.value) {
-            const term: Term = fetchTermArr.value[0]
-            const index = fetchedTerms.value.findIndex(
-                (t) => t.guid === term.guid
-            )
-            if (index > -1) fetchedTerms.value[index] = term
-            else fetchedTerms.value.push(term)
-        }
-    })
-
-    const handleTermPopoverVisibility = (v, term) => {
-        if (getFetchedTerm(term.guid || term.termGuid)) return
-        if (v) {
-            facets.value.guid = term.guid ?? term.termGuid
-            quickChange()
-        }
-    }
-
     /**
      * * OPTMIZING THE TERMS POPOVER ^^^^^
      */
 
+    const fetchedTerm = computed(() =>
+        fetchTermArr.value.length > 0 ? fetchTermArr.value[0] : null
+    )
+
     return {
         isReady,
-        getFetchedTerm,
-        handleTermPopoverVisibility,
-        termLoading,
-        termError,
+        term: fetchedTerm,
+        isLoading,
+        error,
     }
 }
-
-export default useTermPopover

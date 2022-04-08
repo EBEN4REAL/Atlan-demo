@@ -6,7 +6,7 @@
             class="mb-4"
         />
         <GlossaryPopoverCategories
-            v-if="attributes?.localCategories.length > 0"
+            v-if="attributes?.localCategories?.length > 0"
             :attributes="attributes"
             class="mb-4"
         />
@@ -23,6 +23,11 @@
             :attributes="attributes"
             class="mb-4"
         />
+        <GlossaryPopoverLinkedTerms
+            v-if="attributes?.termsCount"
+            :attributes="attributes"
+            class="mb-4"
+        />
     </div>
 </template>
 
@@ -31,6 +36,7 @@
     import GlossaryPopoverCategories from './common/categories.vue'
     import GlossaryPopoverOwners from './common/owners.vue'
     import GlossaryPopoverRelatedTerms from './common/relatedTerms.vue'
+    import GlossaryPopoverLinkedTerms from './common/linkedTerms.vue'
 
     export default {
         name: 'GlossaryPopoverBody',

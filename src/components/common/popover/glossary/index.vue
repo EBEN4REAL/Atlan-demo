@@ -2,11 +2,20 @@
     <a-popover
         :placement="placement"
         :trigger="trigger"
-        @visible-change="handleVisibleChange"
+        @visible-change="handleVisibilityChange"
     >
         <template #content>
-            <GlossaryPopoverHeader :term="fetchedTerm" />
-            <GlossaryPopoverBody :attributes="attributes" />
+            <div v-if="isLoading" style="width: 374px; height: 150px">
+                <div
+                    class="w-full h-full flex justify-center items-center content-center"
+                >
+                    <AtlanLoader class="h-7" />
+                </div>
+            </div>
+            <div v-else>
+                <GlossaryPopoverHeader :term="fetchedTerm" />
+                <GlossaryPopoverBody :attributes="attributes" />
+            </div>
         </template>
         <slot />
     </a-popover>
@@ -25,22 +34,27 @@
     import { onMounted, ref, toRefs, watch } from 'vue'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
     import GlossaryPopoverBody from '@common/popover/glossary/body.vue'
+    import { useGlossaryPopover } from '@common/popover/glossary/useGlossaryPopover'
 
     const props = defineProps({
         term: {
             type: Object,
             required: true,
         },
-        loading: {
+        passingFetchedTerm: {
             type: Boolean,
-            required: true,
-        },
-        error: {
-            required: true,
+            default: false,
+            required: false,
         },
         fetchedTerm: {
             type: Object,
-            required: true,
+            required: false,
+            default: null,
+        },
+        isFetchedTermLoading: {
+            type: Boolean,
+            default: false,
+            required: false,
         },
         placement: {
             type: String,
@@ -56,23 +70,40 @@
 
     const emit = defineEmits(['visible'])
 
-    const { term, fetchedTerm, loading } = toRefs(props)
+    const {
+        term,
+        isFetchedTermLoading,
+        fetchedTerm: initialFetchedTerm,
+        passingFetchedTerm,
+    } = toRefs(props)
 
-    const attributes = ref()
+    const attributes = ref({})
+    const fetchedTerm = ref({})
+    const isLoading = ref(true)
 
-    watch([loading, fetchedTerm], () => {
-        if (fetchedTerm.value) {
-            attributes.value = updateAssetAttributes(fetchedTerm)
+    const handleVisibilityChange = (visible) => {
+        if (!visible) return
+
+        if (passingFetchedTerm.value) {
+            watch([isFetchedTermLoading, initialFetchedTerm], () => {
+                isLoading.value = isFetchedTermLoading?.value
+                if (!isFetchedTermLoading?.value) {
+                    fetchedTerm.value = initialFetchedTerm?.value
+                    attributes.value = updateAssetAttributes(initialFetchedTerm)
+                }
+            })
+            return
         }
-    })
 
-    const handleVisibleChange = (v) => {
-        emit('visible', v, term.value)
+        const { term: fetchedTermInner, isLoading: termLoading } =
+            useGlossaryPopover(term?.value)
+
+        watch([fetchedTermInner, termLoading], () => {
+            isLoading.value = termLoading.value
+            if (!termLoading.value) {
+                fetchedTerm.value = fetchedTermInner.value
+                attributes.value = updateAssetAttributes(fetchedTermInner)
+            }
+        })
     }
-
-    onMounted(() => {
-        if (fetchedTerm.value) {
-            attributes.value = updateAssetAttributes(fetchedTerm)
-        }
-    })
 </script>

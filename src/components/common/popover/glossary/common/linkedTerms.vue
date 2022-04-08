@@ -1,20 +1,9 @@
 <template>
     <div>
         <p class="text-gray-500 mb-1">
-            {{ $t('common.term.related-term', 2) }}
+            {{ $t('common.term.linked-term', 2) }}
         </p>
-        <div class="flex flex-wrap gap-1">
-            <TermPill
-                v-for="(term, index) in relatedTerms.slice(0, 2)"
-                :key="index"
-                :term="term"
-                :allow-delete="false"
-            />
-            <BasePill
-                v-if="relatedTerms.length > 2"
-                :text="`+${relatedTerms.length - 2}`"
-            />
-        </div>
+        <p class="font-bold">{{ linkedTerms }}</p>
     </div>
 </template>
 
@@ -36,7 +25,7 @@
 
     const { attributes } = toRefs(props)
 
-    const linkedTerms = computed(() => attributes?.value?.localSeeAlso)
+    const linkedTerms = computed(() => attributes?.value?.termsCount)
 </script>
 
 <style scoped></style>

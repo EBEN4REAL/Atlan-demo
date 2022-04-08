@@ -1,6 +1,6 @@
 <template>
     <div class="request">
-        <Pill  class="pill" :label="data?.name" :has-action="false">
+        <Pill  class="pill" :label="data?.attributes?.name" :has-action="false">
             <template #prefix>
                 <AtlanIcon icon="Category"></AtlanIcon>
             </template>

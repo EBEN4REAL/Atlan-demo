@@ -16,7 +16,7 @@
                 </template>
             </Pill>
         </TermPopover>
-        <Pill v-else class="term-pill" :label="data?.name" :has-action="false">
+        <Pill v-else class="term-pill" :label="data?.attributes?.name" :has-action="false">
             <template #prefix>
                 <AtlanIcon icon="Term"></AtlanIcon>
             </template>

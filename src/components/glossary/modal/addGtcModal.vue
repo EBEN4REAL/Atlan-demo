@@ -396,49 +396,63 @@
             })
 
             const defaultRetry = ref(3)
+            const constructPayload = () => {
+                entity.typeName = localEntityType.value
+                if (typeNameTitle.value === 'Glossary') {
+                    entity.attributes.qualifiedName = ''
+                }
+
+                if (
+                    ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'].includes(
+                        entityType.value
+                    )
+                ) {
+                    entity.attributes.qualifiedName = ''
+                    entity.relationshipAttributes = {
+                        anchor: {
+                            typeName: 'AtlasGlossary',
+                            guid: getGlossaryByQF(anchorQf.value)?.guid,
+                        },
+                    }
+                    console.log(entity)
+                    if (
+                        categoryGuid.value &&
+                        categoryGuid.value !==
+                            getGlossaryByQF(anchorQf.value)?.guid
+                    ) {
+                        if (typeNameTitle.value === 'Category') {
+                            entity.relationshipAttributes.parentCategory = {
+                                typeName: 'AtlasGlossaryCategory',
+                                guid: categoryGuid.value,
+                            }
+                            if (!props.createPermission) {
+                                entity.relationshipAttributes.parentCategory.attributes =
+                                    {
+                                        name: props.categoryName,
+                                    }
+                            }
+                        }
+                        if (typeNameTitle.value === 'Term') {
+                            entity.relationshipAttributes.categories = [
+                                {
+                                    typeName: 'AtlasGlossaryCategory',
+                                    guid: categoryGuid.value,
+                                },
+                            ]
+                            if (!props.createPermission) {
+                                entity.relationshipAttributes.categories[0].attributes =
+                                    {
+                                        name: props.categoryName,
+                                    }
+                            }
+                        }
+                    }
+                }
+            }
             const handleSave = () => {
                 defaultRetry.value = 2
                 if (entity.attributes.name) {
-                    entity.typeName = localEntityType.value
-                    if (typeNameTitle.value === 'Glossary') {
-                        entity.attributes.qualifiedName = ''
-                    }
-
-                    if (
-                        ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'].includes(
-                            entityType.value
-                        )
-                    ) {
-                        entity.attributes.qualifiedName = ''
-                        entity.relationshipAttributes = {
-                            anchor: {
-                                typeName: 'AtlasGlossary',
-                                guid: getGlossaryByQF(anchorQf.value)?.guid,
-                            },
-                        }
-                        console.log(entity)
-                        if (
-                            categoryGuid.value &&
-                            categoryGuid.value !==
-                                getGlossaryByQF(anchorQf.value)?.guid
-                        ) {
-                            if (typeNameTitle.value === 'Category') {
-                                entity.relationshipAttributes.parentCategory = {
-                                    typeName: 'AtlasGlossaryCategory',
-                                    guid: categoryGuid.value,
-                                }
-                            }
-                            if (typeNameTitle.value === 'Term') {
-                                entity.relationshipAttributes.categories = [
-                                    {
-                                        typeName: 'AtlasGlossaryCategory',
-                                        guid: categoryGuid.value,
-                                    },
-                                ]
-                            }
-                        }
-                    }
-
+                    constructPayload()
                     body.value = {
                         entities: [entity],
                     }
@@ -569,26 +583,19 @@
 
             const handleRequest = () => {
                 console.log('raising request')
-                let requestType, glossaryPayload
-                glossaryPayload = {
-                    name: entity.attributes.name,
-                    shortDescription: entity.attributes.userDescription,
-                    longDescription: entity.attributes.userDescription,
-                }
+                let requestType
+                constructPayload()
+                const glossaryPayload = entity
 
                 if (props.entityType === 'AtlasGlossary') {
                     requestType = 'create_glossary'
-                } else {
-                    if (props.entityType === 'AtlasGlossaryCategory')
-                        requestType = 'create_category'
-                    else requestType = 'create_term'
-                    glossaryPayload.anchor = {
-                        glossaryGuid: getGlossaryByQF(
-                            props.glossaryQualifiedName
-                        )?.guid,
-                        displayText: props.glossaryName,
-                    }
+                } else if (props.entityType === 'AtlasGlossaryCategory')
+                    requestType = 'create_category'
+                else requestType = 'create_term'
+                glossaryPayload.relationshipAttributes.anchor.attributes = {
+                    name: props.glossaryName,
                 }
+
                 console.log(requestType)
                 console.log(glossaryPayload)
                 const {

@@ -29,7 +29,12 @@
                             'AtlasGlossaryTerm',
                             'AtlasGlossaryCategory',
                             'AtlasGlossary',
-                        ].includes(request?.entityType)
+                        ].includes(request?.entityType) &&
+                        ![
+                            'create_term',
+                            'create_category',
+                            'create_glossary',
+                        ].includes(request?.requestType)
                     "
                     class="flex items-center"
                 >
@@ -72,9 +77,10 @@
                         (request?.requestType === 'create_category' &&
                             request?.payload)
                     "
-                >
+                    >
                     <span class="text-primary mb-1">{{
-                        request.payload?.anchor?.displayText
+                        request.payload?.relationshipAttributes?.anchor
+                            ?.attributes?.name
                     }}</span>
                     <div class="flex items-center text-gray-500">
                         <atlan-icon icon="Glossary" class="mr-1 w-4" />

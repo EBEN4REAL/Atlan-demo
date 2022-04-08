@@ -188,9 +188,9 @@ export function useCreateRequests({
             requests.value.push({
                 requestType: 'create_term',
                 approvalType: 'single',
-                entityType: 'term',
+                entityType: 'AtlasGlossaryTerm',
                 sourceType: 'static',
-                id: glossaryPayload?.name,
+                id: glossaryPayload?.attributes?.name,
                 payload: glossaryPayload,
             })
         }
@@ -198,9 +198,9 @@ export function useCreateRequests({
             requests.value.push({
                 requestType: 'create_category',
                 approvalType: 'single',
-                entityType: 'category',
+                entityType: 'AtlasGlossaryCategory',
                 sourceType: 'static',
-                id: glossaryPayload?.name,
+                id: glossaryPayload?.attributes?.name,
                 payload: glossaryPayload,
             })
         }

@@ -77,13 +77,21 @@
                             <a-tooltip placement="top">
                                 <template #title>
                                     {{
-                                        policy.users.length > 1
+                                        policy.users.length === 1 &&
+                                        policy.users[0] === 'all-users'
+                                            ? 'All Users'
+                                            : policy.users.length > 1
                                             ? `${policy.users.length} Users`
                                             : `${policy.users.length} User`
                                     }}
                                 </template>
                                 <AtlanIcon icon="User" class="-mt-1" />
-                                {{ policy.users.length }}
+                                {{
+                                    policy.users.length === 1 &&
+                                    policy.users[0] === 'all-users'
+                                        ? 'All'
+                                        : policy.users.length
+                                }}
                             </a-tooltip>
                         </span>
                     </div>

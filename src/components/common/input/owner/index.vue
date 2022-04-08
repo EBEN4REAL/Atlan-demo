@@ -35,6 +35,7 @@
                             ref="ownerInputRef"
                             v-model="localValue"
                             :show-none="false"
+                            :enableTabs="enableTabs"
                         ></OwnerFacets>
 
                         <!-- <OwnerFacets -->
@@ -137,7 +138,7 @@
                     localValue?.ownerGroups?.length < 1 &&
                     localValue?.ownerUsers?.length < 1
                 "
-                class="text-gray-600 ml-1"
+                class="ml-1 text-gray-600"
                 >No owners assigned</span
             >
         </div>

@@ -506,20 +506,10 @@
             const policyNameRef = ref()
             const { showDrawer, type, isEdit, selectedPolicy } = toRefs(props)
             const policy = ref({})
-            const isAddAll = ref(false)
             const selectedOwnersData = ref({
                 ownerUsers: [],
                 ownerGroups: [],
             })
-            const addAllUser = () => {
-                const objOwner = {
-                    ownerUsers: [],
-                    ownerGroups: selectedOwnersData.value.ownerGroups || [],
-                }
-                refOwners.value.setLocalValue(objOwner)
-                allUser.value = 'all-users'
-                selectedOwnersData.value = objOwner
-            }
             const rules = ref({
                 policyName: {
                     text: 'Enter a policy name!',
@@ -534,8 +524,17 @@
                     show: false,
                 },
             })
+            const addAllUser = () => {
+                const objOwner = {
+                    ownerUsers: [],
+                    ownerGroups: selectedOwnersData.value.ownerGroups || [],
+                }
+                refOwners.value.setLocalValue(objOwner)
+                allUser.value = 'all-users'
+                selectedOwnersData.value = objOwner
+                rules.value.users.show = false
+            }
             const initPolicy = () => {
-                isAddAll.value = false
                 rules.value = {
                     policyName: {
                         text: 'Enter a policy name!',
@@ -555,10 +554,20 @@
                     policy.value = { ...selectedPolicy.value }
                     policyType.value = selectedPolicy.value?.type
                     const objOwner = {
-                        ownerUsers: selectedPolicy.value?.users,
+                        ownerUsers:
+                            selectedPolicy?.value?.users?.length === 1 &&
+                            selectedPolicy?.value?.users[0] === 'all-users'
+                                ? []
+                                : selectedPolicy.value?.users,
                         ownerGroups: selectedPolicy.value?.groups,
                     }
                     selectedOwnersData.value = objOwner
+                    if (
+                        selectedPolicy?.value?.users?.length !== 1 ||
+                        selectedPolicy?.value?.users[0] !== 'all-users'
+                    ) {
+                        allUser.value = ''
+                    }
                     if (refOwners.value) {
                         refOwners.value.setLocalValue(objOwner)
                     }
@@ -725,7 +734,8 @@
                 if (
                     selectedOwnersData.value?.ownerUsers?.length +
                         selectedOwnersData.value?.ownerGroups?.length <
-                    1
+                        1 &&
+                    !allUser.value
                 ) {
                     rules.value.users.show = true
                 } else {
@@ -742,7 +752,6 @@
                 isShow,
                 handleToggleManage,
                 handleSavePermission,
-                isAddAll,
                 handleClose,
                 resetPolicy,
                 handleSave,

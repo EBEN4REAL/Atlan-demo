@@ -2,6 +2,7 @@
 import { isFor } from '@babel/types'
 import bodybuilder from 'bodybuilder'
 import { ref } from 'vue'
+import { useUtils } from '~/components/governance/personas/assets/useUtils'
 import { useConnectionStore } from '~/store/connection'
 import { usePersonaStore } from '~/store/persona'
 import { usePurposeStore } from '~/store/purpose'
@@ -181,16 +182,18 @@ export function useBody(
     //filters
     Object.keys(facets ?? {})?.forEach((mkey) => {
         const filterObject = facets[mkey]
+
         switch (mkey) {
             case 'hierarchy': {
-                if (filterObject.connectorName) {
-                    base.filter(
-                        'term',
-                        'connectorName',
-                        filterObject.connectorName
-                    )
-                    connectorName = filterObject.connectorName
-                }
+                // compatibility fix
+                // if (filterObject.connectorName) {
+                //     base.filter(
+                //         'term',
+                //         'connectorName',
+                //         filterObject.connectorName
+                //     )
+                //     connectorName = filterObject.connectorName
+                // }
                 if (filterObject.connectionQualifiedName) {
                     base.filter('bool', (q) => {
                         q.orFilter(
@@ -237,7 +240,12 @@ export function useBody(
                 break
             }
             case 'connector': {
-                if (filterObject) {
+                if (filterObject == '__glossary') {
+                    base.filter('terms', '__typeName.keyword', [
+                        'AtlasGlossaryTerm',
+                        'AtlasGlossaryCategory',
+                    ])
+                } else if (filterObject && filterObject !== '__glossary') {
                     base.filter('term', 'connectorName', filterObject)
                     connectorName = filterObject.connectorName
                 }
@@ -484,6 +492,12 @@ export function useBody(
                 }
                 break
             }
+            case 'connectorName': {
+                if (filterObject) {
+                    base.filter('terms', '__guid', filterObject)
+                }
+                break
+            }
             case 'stateList': {
                 // if (filterObject) {
                 //     base.filter('terms', '__state', filterObject)
@@ -496,9 +510,8 @@ export function useBody(
             case 'sql':
             default: {
                 if (filterObject) {
-                    console.log('filterObject', filterObject)
                     Object.keys(filterObject)?.forEach((key) => {
-                        filterObject[key].forEach((element) => {
+                        filterObject[key]?.forEach((element) => {
                             if (!element.operand) return
                             if (element.operator === 'isNull') {
                                 base.notFilter('exists', element.operand)

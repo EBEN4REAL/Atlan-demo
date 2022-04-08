@@ -79,6 +79,14 @@ const keyMap = {
                     keyboard_shortcut: !!props.keyboard_shortcut,
                 }),
             },
+            // when someone clicks schema or database to set it as filter
+            filter_context_changed: {
+                action: 'discovery_asset_card_filter_context_changed',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
+                    hierarchy_type: props.hierarchy_type,
+                }),
+            },
         },
         asset_sidebar: {
             tab_changed: {
@@ -207,6 +215,25 @@ const keyMap = {
             updated: {
                 action: 'discovery_readme_updated',
                 properties: (props) => ({ asset_type: props.asset_type }),
+            },
+        },
+        display_preference: {
+            changed: {
+                action: 'discovery_display_preference_changed',
+                properties: (props: {
+                    visible: boolean
+                    preference: 'description' | 'terms' | 'classifications'
+                }) => ({
+                    ...props,
+                }),
+            },
+        },
+        sort: {
+            changed: {
+                action: 'discovery_sort_changed',
+                properties: (props: { sort_type: string }) => ({
+                    ...props,
+                }),
             },
         },
     },
@@ -490,7 +517,7 @@ const keyMap = {
                     // approve/decline
                     action: props.action,
                     request_type: props.request_type,
-                    widget_type:props.widget_type
+                    widget_type: props.widget_type,
                 }),
             },
         },

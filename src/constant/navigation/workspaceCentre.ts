@@ -5,7 +5,7 @@ export const workspaceCentreList = [
     {
         path: '/workflows',
         icon: 'WorkflowsActive',
-        label: 'Workflow Center',
+        label: 'Workflow',
         isActive: true,
         auth: page.PAGE_ADMIN,
         inactiveIcon: 'WorkflowsInactive',
@@ -15,7 +15,7 @@ export const workspaceCentreList = [
     {
         path: '/governance',
         icon: 'GovernanceCenter',
-        label: 'Governance Center',
+        label: 'Governance',
         description: 'Set up and manage access for all data and metadata',
         isActive: true,
         auth: page.PAGE_GOVERNANCE,
@@ -23,7 +23,7 @@ export const workspaceCentreList = [
     {
         path: '/admin',
         icon: 'Admin',
-        label: 'Admin Center',
+        label: 'Admin',
         description:
             'Manage users and groups, API keys, integrations, and more',
         isActive: true,

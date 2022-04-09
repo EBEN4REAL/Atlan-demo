@@ -42,9 +42,6 @@
             <section>
                 <RecentAnnouncements />
             </section>
-            <!-- <section>
-                <PopularQueries />
-            </section> -->
         </aside>
     </div>
 </template>

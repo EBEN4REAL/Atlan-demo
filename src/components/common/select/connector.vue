@@ -6,7 +6,7 @@
         :showSearch="true"
         notFoundContent="No connector found"
         :get-popup-container="(target) => target.parentNode"
-        class="selector"
+        class="bg-white border-0 selector"
     >
         <template #suffixIcon>
             <AtlanIcon icon="CaretDown" />

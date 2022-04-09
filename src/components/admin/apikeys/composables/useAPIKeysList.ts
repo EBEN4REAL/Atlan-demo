@@ -15,7 +15,7 @@ export interface APIKeyParams {
     sort?: string
     filter?: unknown
 }
-const getAPIKeyValidity = (apikey) => {
+export const getAPIKeyValidity = (apikey) => {
     if (
         apikey?.attributes?.createdAt &&
         apikey?.attributes?.['access.token.lifespan']
@@ -29,7 +29,7 @@ const getAPIKeyValidity = (apikey) => {
     }
     return undefined
 }
-const getAPIKeyValidityStringRelative = (apikey) => {
+export const getAPIKeyValidityStringRelative = (apikey) => {
     if (getAPIKeyValidity(apikey)) {
         return capitalizeFirstLetter(getAPIKeyValidity(apikey).fromNow())
     }

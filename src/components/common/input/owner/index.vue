@@ -136,7 +136,7 @@
                     localValue?.ownerGroups?.length < 1 &&
                     localValue?.ownerUsers?.length < 1
                 "
-                class="text-gray-600"
+                class="text-gray-600 ml-1"
                 >No owners assigned</span
             >
         </div>

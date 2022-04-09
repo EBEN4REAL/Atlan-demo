@@ -1,8 +1,6 @@
 <template>
     <div>
-        <div
-            class="flex items-center justify-between px-5 py-2 border-b border-gray-200 bg-gray-50"
-        >
+        <div class="flex items-center justify-between px-5 py-4">
             <span class="flex items-center">
                 <PreviewTabsIcon
                     :icon="tab.icon"

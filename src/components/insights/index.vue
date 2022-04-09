@@ -195,7 +195,7 @@
                 assetSidebarPaneSize,
                 paneResize,
             } = useSpiltPanes()
-            const { getDetectQueryTab } = useQuery()
+            const { getDetectQueryTab, getAssetInfo } = useQuery()
             const route = useRoute()
             // TODO: will be used for HOTKEYs
             const {
@@ -224,6 +224,7 @@
             const schemaNameFromURL = inject('schemaNameFromURL')
             const tableNameFromURL = inject('tableNameFromURL')
             const columnNameFromURL = inject('columnNameFromURL')
+            const assetGuidFromURL = inject('assetGuidFromURL')
 
             const openVQB = inject('openVQB')
 
@@ -527,6 +528,11 @@
                 })
 
                 inlineTabAdd(queryTab, tabsArray, activeInlineTabKey)
+                getAssetInfo({
+                    assetGuidFromURL,
+                    tabsArray,
+                    key: queryTab.key,
+                })
                 let vqb = openVQB === 'true' ? true : false
                 const activeInlineTabKeyCopy = activeInlineTabKey.value
 
@@ -827,7 +833,7 @@
             :global(.ant-tabs-nav) {
                 order: 0 !important;
                 min-width: 60px !important;
-                @apply border border-r border-gray-300  !important;
+                @apply border-r border-b border-gray-300  !important;
             }
             :global(.ant-tabs-nav-container) {
                 @apply ml-0 !important;

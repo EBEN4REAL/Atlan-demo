@@ -317,7 +317,7 @@
                                 block: 'start',
                             })
                     }
-                } else if (key === 'Enter') router.push(`/assets/${asset.guid}`)
+                } else if (key === 'Enter') router.push(getProfilePath(asset))
             })
 
             return {

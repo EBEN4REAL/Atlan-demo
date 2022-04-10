@@ -2,13 +2,15 @@
     <div
         v-if="cmList(assetType(selectedAsset), false, true).length > 0"
         class="flex flex-col"
+        @mouseenter="showManageButton = true"
+        @mouseleave="showManageButton = false"
     >
         <div
             class="flex items-center justify-between mb-1 text-sm text-gray-500"
         >
             Custom Metadata
             <router-link
-                v-if="checkAccess(page.PAGE_GOVERNANCE)"
+                v-if="checkAccess(page.PAGE_GOVERNANCE) && showManageButton"
                 class="font-semibold text-primary hover:underline"
                 to="/governance/custom-metadata"
                 target="_blank"
@@ -82,6 +84,8 @@
             const { assetType } = useAssetInfo()
             const guid = ref()
 
+            const showManageButton = ref(false)
+
             const { getList: cmList } = useCustomMetadataFacet()
 
             const { checkAccess } = useAuth()
@@ -153,6 +157,7 @@
                 denyCustomMetadata,
                 page,
                 checkAccess,
+                showManageButton,
             }
         },
     })

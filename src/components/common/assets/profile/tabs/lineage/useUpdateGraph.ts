@@ -70,9 +70,9 @@ export default function useUpdateGraph(graph) {
 
             if (!isBase) {
                 updateIconStroke(x, '#B2B8C7')
-                cell.updateData({ isSelectedNode: null })
-                cell.updateData({ isHighlightedNode: null })
-                cell.updateData({ isGrayed: null })
+                cell.updateData({ isSelectedNode: false })
+                cell.updateData({ isHighlightedNode: false })
+                cell.updateData({ isGrayed: false })
             }
             if (!selectedNodeId?.value && !nodesToHighlight.length) return
             cell.setZIndex(0)
@@ -80,25 +80,25 @@ export default function useUpdateGraph(graph) {
             if (isSelectedNode) {
                 lineageNodeElement?.classList.add('isSelectedNode')
                 cell.setZIndex(10)
-                cell.updateData({ isSelectedNode: x.id })
-                cell.updateData({ isHighlightedNode: null })
-                cell.updateData({ isGrayed: null })
+                cell.updateData({ isSelectedNode: true })
+                cell.updateData({ isHighlightedNode: false })
+                cell.updateData({ isGrayed: false })
                 updateIconStroke(x, '#3c71df')
             }
             if (isHighlightedNode && !isSelectedNode) {
                 lineageNodeElement?.classList.add('isHighlightedNode')
                 cell.setZIndex(10)
-                cell.updateData({ isSelectedNode: null })
-                cell.updateData({ isHighlightedNode: x.id })
-                cell.updateData({ isGrayed: null })
+                cell.updateData({ isSelectedNode: false })
+                cell.updateData({ isHighlightedNode: true })
+                cell.updateData({ isGrayed: false })
                 if (!isBase) updateIconStroke(x, '#3c71df')
             }
             if (isGrayed) {
                 lineageNodeElement?.classList.add('isGrayed')
                 cell.setZIndex(0)
-                cell.updateData({ isSelectedNode: null })
-                cell.updateData({ isHighlightedNode: null })
-                cell.updateData({ isGrayed: x.id })
+                cell.updateData({ isSelectedNode: false })
+                cell.updateData({ isHighlightedNode: false })
+                cell.updateData({ isGrayed: true })
                 if (!isBase) updateIconStroke(x, '#e0e4eb')
             }
         })

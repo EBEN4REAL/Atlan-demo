@@ -4,9 +4,38 @@ import {
     getSchema,
     getNodeTypeText,
 } from './util.js'
-import { iconVerified, iconDraft, iconDeprecated } from './icons'
 import {
-    iconCaretDownB64,
+    iconVerified,
+    iconDraft,
+    iconDeprecated,
+    iconCaretDown,
+    iconCaretUp,
+    iconLoader,
+    iconPrimary,
+    iconForeign,
+    iconInformation,
+    iconIssue,
+    iconWarning,
+    array,
+    boolean,
+    date,
+    empty,
+    expand,
+    float1,
+    geography,
+    number,
+    string,
+    struct,
+    variant,
+    blob,
+    spatial,
+    bits,
+    super1,
+    lookup,
+    enum1,
+    percent,
+} from './icons'
+import {
     iconPrimaryB64,
     iconForeignB64,
     iconInformationB64,
@@ -19,6 +48,38 @@ import useAssetInfo from '~/composables/discovery/useAssetInfo'
 interface EdgeStyle {
     stroke?: string
     arrowSize?: number
+}
+
+const columnDataTypeIcons = {
+    array,
+    boolean,
+    date,
+    empty,
+    expand,
+    float1,
+    geography,
+    number,
+    string,
+    struct,
+    variant,
+    blob,
+    spatial,
+    bits,
+    super1,
+    lookup,
+    enum1,
+    percent,
+}
+
+const columnAnnouncementTypeIcons = {
+    information: iconInformation,
+    issue: iconIssue,
+    warning: iconWarning,
+}
+
+const columnKeyTypeIcons = {
+    isPrimary: iconPrimary,
+    isForeign: iconForeign,
 }
 
 export default function useGraph(graph) {
@@ -51,12 +112,14 @@ export default function useGraph(graph) {
 
         const computedData = {
             id: guid,
-            columnLineageCount: 0,
-            isSelectedNode: null,
-            isHighlightedNode: null,
-            isGrayed: null,
+            columns: [],
+            columnsCount: null,
+            columnsListExpanded: false,
+            fetchingColumnsList: false,
+            isSelectedNode: false,
+            isHighlightedNode: false,
+            isGrayed: false,
             hiddenCount: 0,
-            nodeHeight: isNodeWithColumns ? 121 : 70,
             ...dataObj,
         }
 
@@ -77,39 +140,96 @@ export default function useGraph(graph) {
                     const totalHidden = isVpNode
                         ? data?.hiddenCount || entity.attributes.hiddenCount
                         : 0
+
+                    const columnsList = () => {
+                        let res = ''
+                        data?.columns.forEach((column) => {
+                            if (column.typeName !== 'showMorePort') {
+                                const {
+                                    isPrimary,
+                                    isForeign,
+                                    announcementType,
+                                } = column.attributes
+
+                                const text =
+                                    column.displayText.charAt(0).toUpperCase() +
+                                    column.displayText.slice(1).toLowerCase()
+
+                                const dataType = dataTypeCategoryList.find(
+                                    (d) =>
+                                        d.type.includes(
+                                            column.attributes?.dataType?.toUpperCase()
+                                        )
+                                )?.imageText
+
+                                res += `
+                                <div class="node-column flex justify-between items-center">
+                                    <div class="flex items-center truncate"> 
+                                        ${columnDataTypeIcons[dataType]}
+                                        <span class="truncate flex-grow-0 flex-shrink">${text}</span> 
+                                    </div>
+                                    <div class="flex items-center">
+                                        ${
+                                            isPrimary
+                                                ? `<span class="ml-2">
+                                                    ${columnKeyTypeIcons.isPrimary}
+                                                  </span>`
+                                                : ''
+                                        }
+                                        ${
+                                            isForeign
+                                                ? `<span class= "ml-2" >
+                                                    ${columnKeyTypeIcons.isForeign}
+                                                    </span>`
+                                                : ''
+                                        }
+                                        ${
+                                            announcementType
+                                                ? `<span class="ml-2">
+                                                    ${columnAnnouncementTypeIcons[announcementType]}
+                                                   </span>`
+                                                : ''
+                                        }
+                                    </div>
+                                </div>`
+                            } else
+                                res += `<div class="node-column flex justify-center text-new-blue-400"> Show more columns </div>`
+                        })
+                        return res
+                    }
+
                     // prettier-ignore
                     return `
                 <div class="flex items-center">
-                    <div style="height: ${
-                        data?.nodeHeight
-                    }px" id="node-${guid}" class="lineage-node group ${
-                        isVpNode ? 'isVpNode' : ''
-                    }   
-                    ${isNodeWithColumns ? 'isNodeWithColumns' : ''}
-                    ${isBase ? 'isBase' : ''} 
-                    ${data?.isSelectedNode === data?.id ? 'isSelectedNode' : ''}
-                    ${
-                        data?.isHighlightedNode === data?.id
-                            ? 'isHighlightedNode'
-                            : ''
-                    }
-                    ${data?.isGrayed === data?.id ? 'isGrayed' : ''} 
-                    ">
+                    <div  
+                        id="node-${guid}"
+                        class="lineage-node 
+                        ${isVpNode ? 'isVpNode' : ''}   
+                        ${isNodeWithColumns ? 'isNodeWithColumns' : ''}
+                        ${data?.columnsListExpanded ? 'isExpandedNode' : ''}
+                        ${isBase ? 'isBase' : ''} 
+                        ${data?.isSelectedNode ? 'isSelectedNode' : ''}
+                        ${data?.isHighlightedNode ? 'isHighlightedNode' : ''}
+                        ${data?.isGrayed ? 'isGrayed' : ''} ">
+                        
                         <div class=" ${isBase ? 'inscr' : 'hidden'}">BASE</div>
+
                         ${
                             isVpNode
-                                ? `<span class="font-bold text-primary leading-none">Load ${
-                                      totalHidden > 4 ? 4 : totalHidden
-                                  } more</span>${
-                                      totalHidden > 4
-                                          ? `<span class="text-gray-500 leading-none">(out of ${totalHidden})</span>`
-                                          : ''
-                                  }`
-                                : `<div class="popover  group-hover:opacity-100 group-hover:delay-1000">
-                                ${displayText}
+                                ? `<span class="font-bold text-primary leading-none">Load 
+                                    ${
+                                        totalHidden > 4 ? 4 : totalHidden
+                                    } more</span>
+                                    ${
+                                        totalHidden > 4
+                                            ? `<span class="text-gray-500 leading-none">(out of 
+                                            ${totalHidden})</span>`
+                                            : ''
+                                    }`
+                                : `<div class="popover  group-hover:opacity-100              group-hover:delay-1000"> ${displayText}
                             </div>
-                            <div>
-                                <div class="node-text">
+                            <div class="lineage-node__content">
+                                <div class="node-text group">
                                     <div class="flex items-center gap-x-1">
                                         <span class="truncate node-title">${displayText}</span>
                                         <span class="flex-none mr-1">${status}</span>
@@ -117,7 +237,9 @@ export default function useGraph(graph) {
                                 </div>
                                 <div class="node-meta">
                                     <span class="mb-0.5">${img}</span>
-                                    <div class="truncate node-meta__text isTypename">${typeNameComputed}</div>
+                                    <div class="truncate node-meta__text isTypename">
+                                        ${typeNameComputed}
+                                    </div>
                                     <div class="node-meta__text node-schema">
                                         ${
                                             ['Table', 'View'].includes(
@@ -127,15 +249,47 @@ export default function useGraph(graph) {
                                                 : ''
                                         }
                                     </div>
-                                    <div class="node-meta__text node-schema text-gray  truncate ${
-                                        isNodeWithColumns ? '' : 'hidden'
-                                    }">
+                                    <div class="node-meta__text node-schema text-gray  truncate 
+                                        ${isNodeWithColumns ? '' : 'hidden'}">
                                         ${schemaName || ''}
                                     </div>
+                                </div>  
+                            </div>
+                            <div class="lineage-node__columns 
+                                    ${isNodeWithColumns ? '' : 'hidden'}">
+                                <div nodecol="${guid}" class="lineage-node__columns-cta">
+                                    <div class="flex items-center">
+                                        <span class="mr-2">
+                                            ${
+                                                data?.columnsCount ||
+                                                data?.columnsCount === 0
+                                                    ? `${data?.columnsCount} columns`
+                                                    : 'view columns'
+                                            }
+                                        </span>
+                                        <span>
+                                            ${
+                                                data?.columnsListExpanded
+                                                    ? iconCaretUp
+                                                    : iconCaretDown
+                                            } 
+                                        </span>
+                                    </div>
+                                    <div class="w-5 h-5">
+                                        ${
+                                            data?.fetchingColumnsList
+                                                ? iconLoader
+                                                : ''
+                                        }
+                                    </div>
                                 </div>
-                            </div>`
+                                <div class="lineage-node__columns-list 
+                                    ${data?.columns.length ? '' : 'hidden'}">
+                                        ${columnsList()}
+                                </div>
+                            </div>
+                            `
                         }
-
                     </div>
                 </div>`
                 },
@@ -302,30 +456,30 @@ export default function useGraph(graph) {
                         group: 'invisiblePort',
                         zIndex: 0,
                     },
-                    {
-                        id: `${guid}-viewPort`,
-                        group: 'columnList',
-                        attrs: {
-                            portBody: {
-                                x: 1,
-                                width: 266,
-                                height: 38,
-                                fill: '#F9FAFB',
-                                stroke: '#f9fafb00',
-                            },
-                            portNameLabel: {
-                                text: `view columns`,
-                                refX: 22,
-                                fill: '#3c71df',
-                                refY: 12,
-                            },
-                            portImage: {
-                                refX: 120,
-                                refY: 10,
-                                href: iconCaretDownB64,
-                            },
-                        },
-                    },
+                    // {
+                    //     id: `${guid}-viewPort`,
+                    //     group: 'columnList',
+                    //     attrs: {
+                    //         portBody: {
+                    //             x: 1,
+                    //             width: 266,
+                    //             height: 38,
+                    //             fill: '#F9FAFB',
+                    //             stroke: '#f9fafb00',
+                    //         },
+                    //         portNameLabel: {
+                    //             text: `view columns`,
+                    //             refX: 22,
+                    //             fill: '#3c71df',
+                    //             refY: 12,
+                    //         },
+                    //         portImage: {
+                    //             refX: 120,
+                    //             refY: 10,
+                    //             href: iconCaretDownB64,
+                    //         },
+                    //     },
+                    // },
                 ],
             },
         }
@@ -349,24 +503,6 @@ export default function useGraph(graph) {
             zIndex: 999,
             attrs: { portImage: {}, portBody: {} },
             position: { name: '' },
-        }
-
-        return { portData }
-    }
-
-    const createShowMorePortData = (node) => {
-        const portData = {
-            id: `${node.id}-showMorePort`,
-            group: 'columnList',
-            attrs: {
-                portBody: {
-                    rx: 4,
-                },
-                portNameLabel: {
-                    text: 'Show more columns',
-                    fill: '#3c71df',
-                },
-            },
         }
 
         return { portData }
@@ -558,7 +694,6 @@ export default function useGraph(graph) {
         addNode,
         createCTAPortData,
         createPortData,
-        createShowMorePortData,
         createEdgeData,
         addEdge,
     }

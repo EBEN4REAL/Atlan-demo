@@ -294,28 +294,81 @@
 
         // Non-Process Nodes
         &-node {
-            padding: 10px 8px 10px 20px;
             font-size: 16px;
             border: 1.5px solid #e0e4eb;
-            border-radius: 6px;
             background-color: #ffffff;
+            border-radius: 6px;
             width: 270px;
-            height: 70px;
+            // height: 70px;
             cursor: pointer;
             outline: 0 !important;
             @apply transition-all duration-100;
 
             &:hover {
-                @apply shadow-lg;
+                // @apply shadow-lg;
             }
 
             &__content {
-                display: flex;
-                align-items: center;
+                padding: 10px 8px 10px 16px;
+
+                &:hover {
+                    border-top-right-radius: 5px;
+                    border-top-left-radius: 5px;
+                    background-color: #f6f8fd;
+                }
             }
 
-            &.isNodeWithColumns {
-                height: 114px;
+            &__columns {
+                background-color: #f9fafb;
+                border-top: 1px solid #e0e4eb;
+                border-bottom-right-radius: 5px;
+                border-bottom-left-radius: 5px;
+
+                // padding: 0px 10px 10px 10px;
+
+                &-cta {
+                    @apply pl-4 pr-2 flex justify-between items-center;
+                    color: #3c71df;
+                    height: 2.5rem;
+
+                    &:hover {
+                        text-decoration: underline;
+                        // background-color: #f6f8fd;
+                    }
+                }
+
+                &-list {
+                    @apply bg-white;
+                    margin: 0 10px 0px 10px;
+                    border: 1px solid #e0e4eb;
+                    border-bottom-width: 0px;
+                    border-radius: 6px;
+                    color: #3e4359 !important;
+
+                    & .node-column {
+                        @apply pl-3 pr-2 py-2;
+                        border: 1px solid transparent;
+                        border-bottom: 1px solid #e0e4eb;
+                        box-sizing: border-box;
+                        margin-top: -1px;
+
+                        &:hover {
+                            background-color: #f6f8fd;
+                            border-top: 1px solid #e0e4eb;
+                            // border-color: #3c71df;
+                        }
+
+                        &:first-child {
+                            border-top-right-radius: 5px;
+                            border-top-left-radius: 5px;
+                        }
+
+                        &:last-child {
+                            border-bottom-right-radius: 5px;
+                            border-bottom-left-radius: 5px;
+                        }
+                    }
+                }
             }
 
             &.isVpNode {
@@ -419,6 +472,12 @@
                     #f6f8fd 84.68%,
                     rgba(255, 255, 255, 0) 103.12%
                 ) !important;
+            }
+        }
+
+        .isExpandedNode {
+            & .lineage-node__columns {
+                padding-bottom: 10px !important;
             }
         }
 

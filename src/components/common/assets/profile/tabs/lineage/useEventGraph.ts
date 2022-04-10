@@ -21,13 +21,7 @@ import { LineageAttributes } from '~/constant/projection'
 
 /** UTILS */
 import { isCyclicEdge, getFilteredRelations } from './util.js'
-import {
-    iconCaretUpB64,
-    iconCaretDownB64,
-    iconMinusB64,
-    iconPlusB64,
-    iconLoaderB64,
-} from './iconsBase64'
+import { iconMinusB64, iconPlusB64, iconLoaderB64 } from './iconsBase64'
 
 export default function useEventGraph({
     graph,
@@ -49,14 +43,7 @@ export default function useEventGraph({
     const { useFetchLineage } = useLineageService()
     const { highlightNode, highlightNodes, highlightEdges, dimNodesEdges } =
         useUpdateGraph(graph)
-    const {
-        createPortData,
-        createShowMorePortData,
-        addNode,
-        addEdge,
-        createEdgeData,
-        createNodeData,
-    } = useGraph(graph)
+    const { addNode, addEdge, createEdgeData, createNodeData } = useGraph(graph)
 
     /** DATA */
     const selectedNodeId = ref('')
@@ -141,7 +128,7 @@ export default function useEventGraph({
     // isExpandedNode
     const isExpandedNode = (nodeId) => expandedNodes.value.includes(nodeId)
 
-    // isNodePortInCurrPortLineage
+    // TODO: isNodePortInCurrPortLineage
     const isNodePortInCurrPortLineage = (nodeId) => {
         if (!currPortLineage.value?.guidEntityMap) return false
 
@@ -204,7 +191,7 @@ export default function useEventGraph({
         return res
     }
 
-    // isPortRendered
+    // TODO: isPortRendered
     const isPortRendered = (portId) =>
         graph.value.getNodes().some((x) => x.hasPort(portId))
 
@@ -226,17 +213,10 @@ export default function useEventGraph({
         return res
     }
 
-    // getNodeColumnOnlyPorts
-    const getNodeColumnOnlyPorts = (node) => {
-        const ports = node.getPorts()
-        const res = ports.filter(
-            (port) =>
-                !port.id.includes('invisiblePort') &&
-                !port.id.includes('viewPort') &&
-                !port.id.includes('ctaPortLeft') &&
-                !port.id.includes('ctaPortRight')
-        )
-        return res
+    // getNodeColumns
+    const getNodeColumns = (node) => {
+        const { columns } = node.getData()
+        return columns
     }
 
     // selectNode
@@ -495,7 +475,7 @@ export default function useEventGraph({
         })
 
         const { y: y2 } = nodePrev.position()
-        const nodePrevPortsLength = getNodeColumnOnlyPorts(nodePrev).length + 1
+        const nodePrevPortsLength = getNodeColumns(nodePrev).length + 1
         const portsLengthTotal = nodePrevPortsLength * 40
         const newY = y2 + 130.5 + portsLengthTotal
 
@@ -539,7 +519,7 @@ export default function useEventGraph({
                     if (k === 'selectPort') {
                         const nodeId = v?.nodeId
                         const node = getX6Node(nodeId)
-                        controlColumnListLoader(nodeId, true)
+                        // controlColumnListLoader(nodeId, true)
                         controlCaretExp(nodeId)
                         fetchNodeColumns(node)
                     }
@@ -601,7 +581,7 @@ export default function useEventGraph({
                     if (k === 'selectPort') {
                         const nodeId = v.nodeId
                         const node = getX6Node(nodeId)
-                        controlColumnListLoader(nodeId, true)
+                        // controlColumnListLoader(nodeId, true)
                         controlCaretExp(nodeId)
                         fetchNodeColumns(node)
                     }
@@ -611,32 +591,19 @@ export default function useEventGraph({
         })
     }
 
-    // updateColumnLineageCount
-    const updateColumnLineageCount = (node, total) => {
-        let caretIconRefX = 97
-        if (total >= 10 && total < 100) caretIconRefX = 107
-        if (total >= 100 && total < 1000) caretIconRefX = 117
-        if (total >= 1000 && total < 10000) caretIconRefX = 127
-        if (total >= 10000 && total < 100000) caretIconRefX = 137
-
-        const portId = `${node.id}-viewPort`
-        node.setPortProp(portId, 'attrs/portNameLabel/text', `${total} columns`)
-        node.setPortProp(portId, 'attrs/portImage/refX', caretIconRefX)
-    }
-
     // fetchNodeColumns
     const fetchNodeColumns = (node, offset = 0) => {
+        controlColumnsListLoader(node, true)
+
         if (lineageStore.hasColumnList(node.id) && offset === 0) {
             const { columns: c, total: t } = lineageStore.getNodesColumnList(
                 node.id
             )
 
-            addPorts(node, c)
-            controlNodeWithColumnsHeight(node, c.length)
-            if (c.length < t) {
-                addPorts(node, ['showMorePort'], true)
-                controlNodeWithColumnsHeight(node, c.length + 1)
-            }
+            addColumns(node, c)
+
+            if (c.length < t) addShowMorePort(node)
+
             translateSubsequentNodes(node)
 
             if (Object.keys(actions.value).length) {
@@ -644,9 +611,8 @@ export default function useEventGraph({
                     if (k === 'selectPort') selectPort(v.portId)
                     delete actions.value[k]
                 })
-            } else {
-                controlColumnListLoader(node.id, false)
-            }
+            } else controlColumnsListLoader(node, false)
+
             return
         }
 
@@ -675,10 +641,7 @@ export default function useEventGraph({
                     if (k === 'selectPort') selectPort(v.portId)
                     delete actions.value[k]
                 })
-            } else {
-                controlCaretExp(node.id)
-                controlColumnListLoader(node.id, false)
-            }
+            } else controlColumnsListLoader(node, false)
         })
 
         watchOnce(
@@ -686,15 +649,12 @@ export default function useEventGraph({
             () => {
                 const total = count.value || 0
                 const columns = list.value
-                updateColumnLineageCount(node, total)
 
                 if (columns.length) {
-                    addPorts(node, columns)
-                    controlNodeWithColumnsHeight(node, columns.length)
+                    addColumns(node, columns, total)
 
                     let columnsLength = columns.length
                     const newColumns = [...columns]
-                    const shomeMorePortId = `${node.id}-showMorePort`
 
                     if (lineageStore.hasColumnList(node.id)) {
                         const { columns: c } = lineageStore.getNodesColumnList(
@@ -711,30 +671,19 @@ export default function useEventGraph({
                         total
                     )
 
-                    if (node.hasPort(shomeMorePortId)) {
-                        node.removePort(shomeMorePortId)
-                        controlNodeWithColumnsHeight(node, columnsLength)
-                    }
-
-                    if (columnsLength < total) {
-                        addPorts(node, ['showMorePort'], true)
-                        controlNodeWithColumnsHeight(node, columnsLength + 1)
-                    }
+                    if (columnsLength < total) addShowMorePort(node)
+                    else removeShowMorePort(node)
 
                     translateSubsequentNodes(node)
-                } else {
-                    controlCaretExp(node.id)
+                } else
                     message.info('No column with lineage found for this node')
-                }
 
                 if (Object.keys(actions.value).length) {
                     Object.entries(actions.value).forEach(([k, v]) => {
                         if (k === 'selectPort') selectPort(v.portId)
                         delete actions.value[k]
                     })
-                } else {
-                    controlColumnListLoader(node.id, false)
-                }
+                } else controlColumnsListLoader(node, false)
             },
             { deep: true }
         )
@@ -773,7 +722,7 @@ export default function useEventGraph({
         })
     }
 
-    // fetchPortLineage
+    // TODO: fetchPortLineage
     const fetchPortLineage = (portId) => {
         const node = graph.value.getNodes().find((n) => n.hasPort(portId))
 
@@ -855,12 +804,12 @@ export default function useEventGraph({
                 const { columns: c, total: t } =
                     lineageStore.getNodesColumnList(nn.id)
                 removePorts(nn, true)
-                addPorts(nn, c)
+                // addPorts(nn, c)
                 controlNodeWithColumnsHeight(nn, c.length)
                 controlCaretExp(nn.id)
-                updateColumnLineageCount(nn, t)
+                // updateColumnLineageCount(nn, t)
                 if (c.length !== t) {
-                    addPorts(nn, ['showMorePort'], true)
+                    // addPorts(nn, ['showMorePort'], true)
                     controlNodeWithColumnsHeight(nn, c.length + 1)
                 }
                 translateSubsequentNodes(nn)
@@ -873,30 +822,66 @@ export default function useEventGraph({
     const getPortNode = (id) =>
         graph.value.getNodes().find((x) => x.hasPort(id))
 
-    // removePorts
+    // controlColumnsListLoader
+    const controlColumnsListLoader = (node, show) => {
+        node.updateData({
+            fetchingColumnsList: show,
+        })
+    }
+
+    // removeColumns
+    const removeColumns = (node) => {
+        controlCaretExp(node.id)
+        node.updateData({
+            columns: [],
+            columnsListExpanded: false,
+        })
+    }
+
+    // addColumns
+    const addColumns = (node, c, total?) => {
+        controlCaretExp(node.id)
+        const { columns } = node.getData()
+        const mergedColumns = [...columns, ...c]
+        node.updateData({
+            columns: mergedColumns,
+            columnsListExpanded: true,
+        })
+        if (total) node.updateData({ columnsCount: total })
+    }
+
+    // addShowMorePort
+    const addShowMorePort = (node) => {
+        const { columns } = node.getData()
+        const filtered = columns.filter(
+            (x) => !x?.typeName.includes('showMorePort')
+        )
+        const showMorePort = { typeName: 'showMorePort' }
+        node.updateData({
+            columns: [...filtered, showMorePort],
+        })
+    }
+
+    // removeShowMorePort
+    const removeShowMorePort = (node) => {
+        const { columns } = node.getData()
+        const filtered = columns.filter(
+            (x) => !x?.typeName.includes('showMorePort')
+        )
+        node.updateData({
+            cols: filtered,
+        })
+    }
+
+    // TODO: removePorts
     const removePorts = (node, handleCaretExp = false) => {
-        const ports = getNodeColumnOnlyPorts(node)
+        const ports = getNodeColumns(node)
         node.removePorts(ports)
 
         if (handleCaretExp) controlCaretExp(node.id)
     }
 
-    // addPorts
-    const addPorts = (node, columns, isShowMorePort = false) => {
-        const ports = columns.map((x) => {
-            const { portData } = !isShowMorePort
-                ? createPortData(x)
-                : createShowMorePortData(node)
-            return portData
-        })
-
-        ports.forEach((x) => {
-            if (isPortRendered(x.id)) node.removePort(x.id)
-        })
-        node.addPorts(ports)
-    }
-
-    // setPortStyle
+    // TODO: setPortStyle
     const setPortStyle = (node, portId, mode) => {
         if (!node || !portId) return
 
@@ -909,7 +894,7 @@ export default function useEventGraph({
         node.setPortProp(portId, 'zIndex', 99)
     }
 
-    // selectPort
+    // TODO: selectPort
     const selectPort = (portId) => {
         const parentNode = getPortNode(portId)
         if (!parentNode) return
@@ -922,7 +907,7 @@ export default function useEventGraph({
         fetchPortLineage(portId)
     }
 
-    // selectPortEdge
+    // TODO: selectPortEdge
     const selectPortEdge = (edgeId) => {
         const processId = edgeId.split('/')[1]
         onSelectAsset({ guid: processId })
@@ -940,7 +925,7 @@ export default function useEventGraph({
         return res
     }
 
-    // addPortLineagePorts
+    // TODO: addPortLineagePorts
     const addPortLineagePorts = (portId, portLineage) => {
         const { guidEntityMap, relations } = portLineage
         const basePortNode = getPortNode(portId)
@@ -972,7 +957,7 @@ export default function useEventGraph({
 
         Object.entries(_guidEntityMap).forEach(([k, cols]) => {
             const parentNode = getX6Node(k)
-            const ports = getNodeColumnOnlyPorts(parentNode)
+            const ports = getNodeColumns(parentNode)
             if (ports.length) removePorts(parentNode)
             addPorts(parentNode, cols)
         })
@@ -992,7 +977,7 @@ export default function useEventGraph({
         })
 
         graph.value.getNodes().forEach((n) => {
-            const ports = getNodeColumnOnlyPorts(n)
+            const ports = getNodeColumns(n)
             if (ports.length && basePortNode.id !== n.id) {
                 translateSubsequentNodes(n)
                 controlCaretExp(n.id, true)
@@ -1010,7 +995,7 @@ export default function useEventGraph({
             )
     }
 
-    // addPortEdge
+    // TODO: addPortEdge
     const addPortEdge = (relation, guidEntityMap, mode?) => {
         const getTypeName = (guid) => guidEntityMap[guid]?.typeName
 
@@ -1106,67 +1091,34 @@ export default function useEventGraph({
 
     // controlCaretExp
     const controlCaretExp = (nodeId, override = false) => {
-        const node = getX6Node(nodeId)
-        const portId = `${nodeId}-viewPort`
-
         if (isExpandedNode(nodeId)) {
             if (override) return
 
             const index = expandedNodes.value.findIndex((x) => x === nodeId)
             expandedNodes.value.splice(index, 1)
-            node.setPortProp(portId, 'attrs/portImage/href', iconCaretDownB64)
-        } else {
-            expandedNodes.value.push(nodeId)
-            node.setPortProp(portId, 'attrs/portImage/href', iconCaretUpB64)
-        }
+        } else expandedNodes.value.push(nodeId)
     }
 
     // controlCaret
     const controlCaret = (node) => {
-        const nodeId = node.id
-
-        controlColumnListLoader(nodeId, true)
-
         if (
             selectedPortId.value &&
-            (isNodePortInCurrPortLineage(nodeId) ||
-                activeNodesToggled.value[nodeId])
+            (isNodePortInCurrPortLineage(node.id) ||
+                activeNodesToggled.value[node.id])
         ) {
             controlToggleOfActiveNode(node)
-            controlColumnListLoader(nodeId, false)
-
             return
         }
 
-        if (isExpandedNode(nodeId)) {
-            controlColumnListLoader(nodeId, false)
-
-            controlCaretExp(nodeId)
-            removePorts(node)
-            controlNodeWithColumnsHeight(node)
+        if (isExpandedNode(node.id)) {
+            removeColumns(node)
             resetNodeTranslatedNodes(node)
-        } else {
-            controlCaretExp(nodeId)
-            fetchNodeColumns(node)
-        }
+        } else fetchNodeColumns(node)
     }
 
     // controlColumnLineageLoader
     const controlColumnLineageLoader = (nodeId, portId, show) => {
         const node = getX6Node(nodeId)
-        if (show)
-            node.setPortProp(
-                portId,
-                'attrs/portImageLoader/href',
-                iconLoaderB64
-            )
-        else node.setPortProp(portId, 'attrs/portImageLoader/href', '')
-    }
-
-    // controlColumnListLoader
-    const controlColumnListLoader = (nodeId, show) => {
-        const node = getX6Node(nodeId)
-        const portId = `${nodeId}-viewPort`
         if (show)
             node.setPortProp(
                 portId,
@@ -1255,10 +1207,10 @@ export default function useEventGraph({
         })
     }
 
-    // controlToggleOfActiveNode
+    // TODO: controlToggleOfActiveNode
     const controlToggleOfActiveNode = (node) => {
         if (!activeNodesToggled.value[node.id]) {
-            const ports = getNodeColumnOnlyPorts(node)
+            const ports = getNodeColumns(node)
 
             activeNodesToggled.value[node.id] = {
                 ports,
@@ -1334,7 +1286,7 @@ export default function useEventGraph({
         }
     }
 
-    // controlEdgeAnimation
+    // TODO: controlEdgeAnimation
     const controlEdgeAnimation = (edge, animate = true) => {
         if (!edge) return
 
@@ -1414,7 +1366,7 @@ export default function useEventGraph({
         }
     }
 
-    // controlSelectedNodeEdgeAction
+    // TODO: controlSelectedNodeEdgeAction
     const controlSelectedNodeEdgeAction = (node, portId) => {
         const _selectedNodeEdgeId = selectedNodeEdgeId.value
 
@@ -1434,7 +1386,7 @@ export default function useEventGraph({
         }
     }
 
-    // controlSelectedPortAction
+    // TODO: controlSelectedPortAction
     const controlSelectedPortAction = (node, portId) => {
         const _selectedPortId = selectedPortId.value
         const _parentNodeId = getPortNode(_selectedPortId)?.id
@@ -1443,7 +1395,7 @@ export default function useEventGraph({
             selectVpNode(node)
 
             resetState()
-            controlColumnListLoader(node.id, true)
+            // controlColumnListLoader(node.id, true)
 
             const parentNode = getX6Node(_parentNodeId)
             const { columns: c, total: t } = lineageStore.getNodesColumnList(
@@ -1475,7 +1427,7 @@ export default function useEventGraph({
         }
     }
 
-    // controlEdgesArrow
+    // TODO: controlEdgesArrow
     const controlEdgesArrow = () => {
         const val = preferences.value.showArrow
         const size = val ? 12 : 0.1
@@ -1516,7 +1468,7 @@ export default function useEventGraph({
         selectNode(null)
     }
 
-    // resetSelectedPort
+    // TODO: resetSelectedPort
     const resetSelectedPort = () => {
         const parentNode = getPortNode(selectedPortId.value)
         controlColumnLineageLoader(parentNode.id, selectedPortId.value, true)
@@ -1537,7 +1489,7 @@ export default function useEventGraph({
         const _expandedNodes = [...expandedNodes.value]
         _expandedNodes.forEach((nodeId) => {
             const x6Node = getX6Node(nodeId)
-            const ports = getNodeColumnOnlyPorts(x6Node)
+            const ports = getNodeColumns(x6Node)
 
             if (parentNode?.id === nodeId || ports.length > 0) {
                 if (ports.length <= 30) {
@@ -1563,14 +1515,14 @@ export default function useEventGraph({
         dimNodesEdges(false)
     }
 
-    // resetSelectedPortEdge
+    // TODO: resetSelectedPortEdge
     const resetSelectedPortEdge = () => {
         const edge = getX6Edge(selectedPortEdgeId.value)
         controlEdgeAnimation(edge, false)
         selectedPortEdgeId.value = ''
     }
 
-    // resetPortStyle
+    // TODO: resetPortStyle
     const resetPortStyle = (node, portId) => {
         if (!node || !portId) return
 
@@ -1593,7 +1545,7 @@ export default function useEventGraph({
         node.setPortProp(portId, 'zIndex', 'auto')
     }
 
-    // resetState
+    // TODO: resetState
     const resetState = (all?) => {
         onCloseDrawer()
         if (selectedNodeId.value) resetSelectedNode()
@@ -1635,6 +1587,16 @@ export default function useEventGraph({
 
     // Node - Mouseup
     graph.value.on('node:mouseup', ({ e, node }) => {
+        const isNodeColCTA = getEventPath(e).find((x) =>
+            typeof x === 'object' && x !== null && 'getAttribute' in x
+                ? x?.getAttribute('nodecol')
+                : ''
+        )
+        if (isNodeColCTA) {
+            controlCaret(node)
+            return
+        }
+
         if (isGraphLoading.value) return
 
         if (node.id.includes('vpNode')) {
@@ -1660,7 +1622,7 @@ export default function useEventGraph({
         selectNode(node.id)
     })
 
-    // Edge - Click
+    // TODO: Edge - Click
     graph.value.on('edge:click', ({ edge }) => {
         if (isGraphLoading.value) return
 
@@ -1699,7 +1661,7 @@ export default function useEventGraph({
         controlEdgeAnimation(edge, false)
     })
 
-    // Port - Click
+    // TODO: Port - Click
     graph.value.on('port:click', ({ e, node }) => {
         e.stopPropagation()
 
@@ -1757,6 +1719,7 @@ export default function useEventGraph({
     })
 
     /** WATCHERS */
+    // TODO:
     watch(
         columnToSelect,
         (newVal) => {
@@ -1775,7 +1738,7 @@ export default function useEventGraph({
                         parentName
                 )
 
-            addPorts(parentNode, [newVal])
+            // addPorts(parentNode, [newVal])
             controlNodeWithColumnsHeight(parentNode, 1)
 
             translateSubsequentNodes(parentNode)

@@ -61,7 +61,6 @@ export const setRowHeaderStyle = (th, columns) => {
             getColumnAlignment(getDataType(column?.data_type)),
             'important'
         )
-
         // add icons based on dataTypes to header
         const span = document.createElement('span')
         span.setAttribute('id', 'icon')
@@ -95,10 +94,15 @@ export const setCellTextStyle = (rows, columns) => {
     })
 }
 
+// set data-key and key attribute for each cell that has variant type data - this enables hovering and clicking on these cells so variantModal can be triggered on click
 export const setVariantCellStyle = (th, columns, rows, variantTypeIndexes) => {
+    // get column index
     const { x } = window.regularTable.getMeta(th)
+    // get column data from index
     const column = columns.value[x]
+    // check if the column data is any of the variant data types
     if (variantTypeIndexes.includes(column?.dataIndex)) {
+        // traverse each row to append the expand icon and set key and data-key attributes
         rows.forEach((element, i) => {
             if (element?.children?.length - 1 > x) {
                 element?.children[x + 1]?.setAttribute(
@@ -109,6 +113,7 @@ export const setVariantCellStyle = (th, columns, rows, variantTypeIndexes) => {
                     'data-key',
                     column.dataIndex.toString()
                 )
+                // create a span element that has the expand icon - visible on hovering
                 const span = document.createElement('span')
                 span.setAttribute('id', 'expandIcon')
                 span.innerHTML = `<img  class="inline-flex w-4 h-4 mr-4 mb-0.5 absolute top-1.5 hidden right-0" src=${Expand}>`

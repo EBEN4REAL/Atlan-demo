@@ -20,7 +20,6 @@
             <template #popover="{ item }">
                 <ClassificationInfoCard :classification="item" class="w-32" />
             </template> -->
-
             <ClassificationPill
                 :name="localClassification[0].name"
                 :display-name="localClassification[0]?.displayName"

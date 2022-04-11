@@ -391,10 +391,6 @@ export default function useRunQuery() {
                             /* ------------------- */
                         }
                         if (message?.details?.status === 'error') {
-                            tabsArray.value[
-                                tabIndex
-                            ].playground.resultsPane.result.isQueryRunning =
-                                'error'
                             const { setHekaErrorInActiveInlineTab } = useError()
                             setHekaErrorInActiveInlineTab(
                                 tabsArray,
@@ -423,9 +419,6 @@ export default function useRunQuery() {
                     !tabsArray.value[tabIndex].playground.resultsPane.result
                         .isQueryAborted
                 ) {
-                    tabsArray.value[
-                        tabIndex
-                    ].playground.resultsPane.result.isQueryRunning = 'error'
                     const { setStreamErrorInActiveInlineTab } = useError()
                     setStreamErrorInActiveInlineTab(tabsArray, error, tabIndex)
 

@@ -63,7 +63,7 @@
                     v-else-if="
                         item.typeName === 'Folder' && item.isCta === 'cta'
                     "
-                    class="relative flex content-center w-full h-10 pt-1 my-auto overflow-hidden text-sm leading-5 text-gray-700"
+                    class="relative flex content-center w-full h-12 py-1 my-auto overflow-hidden text-sm leading-5 text-gray-700"
                 >
                     <div class="w-full">
                         <div class="flex w-11/12">

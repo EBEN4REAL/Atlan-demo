@@ -930,12 +930,12 @@
                 position: relative;
                 align-items: center;
                 justify-content: center;
-                min-width: 53px;
+                min-width: 20%;
                 // transition: flex-grow var(--duration) var(--cubic);
                 // transition: flex-grow var(--duration) var(--cubic);
             }
             :global(.ant-tabs-tab-active) {
-                flex-grow: 2.7;
+                flex-grow: 2.2;
             }
         }
     }

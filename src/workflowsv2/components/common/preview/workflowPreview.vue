@@ -11,7 +11,7 @@
                 <span class="text-gray-500 truncate">{{ name(workflow) }}</span>
             </div>
 
-            <div class="flex items-center">
+            <div class="flex items-center justify-between">
                 <router-link
                     :to="`/workflows/profile/${wfName(workflow)}`"
                     class="font-bold tracking-wide truncate cursor-pointer text-primary hover:underline"
@@ -19,14 +19,21 @@
                     {{ dName }}
                 </router-link>
 
-                <div class="flex ml-auto border divide-x rounded">
+                <div class="flex items-center overflow-hidden border rounded">
                     <router-link
                         class="ml-auto border-r"
                         :to="`/workflows/profile/${wfName(workflow)}`"
                     >
-                        <IconButton icon="EnterProfile" class="border-none" />
+                        <IconButton
+                            icon="EnterProfile"
+                            class="button-group-item"
+                        />
                     </router-link>
-                    <Dropdown :options="dropdownOptions" @click.stop />
+
+                    <Dropdown
+                        :options="dropdownOptions"
+                        class="button-group-item"
+                    />
                 </div>
             </div>
         </div>
@@ -234,6 +241,24 @@
                 @apply h-full !important;
                 @apply bg-white;
             }
+        }
+    }
+</style>
+
+<style lang="less">
+    .button-group-item {
+        @apply border-none;
+
+        &:hover {
+            @apply bg-primary-light;
+            box-shadow: none;
+            border-radius: 0;
+            @apply text-primary;
+        }
+
+        &:focus-visible,
+        &:active {
+            @apply ring-2 ring-primary-focus;
         }
     }
 </style>

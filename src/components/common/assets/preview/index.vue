@@ -257,7 +257,6 @@
                     <template #tab>
                         <div class="flex flex-col">
                             <PreviewTabsIcon
-                                :title="tab.tooltip"
                                 :icon="tab.icon"
                                 :image="tab.image"
                                 :emoji="tab.emoji"

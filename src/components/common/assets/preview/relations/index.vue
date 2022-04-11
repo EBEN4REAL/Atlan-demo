@@ -27,9 +27,8 @@
                 <template #postFilter>
                     <div style="max-width: 330px">
                         <PreferenceSelector
-                            v-model="preference"
-                            @change="handleChangePreference"
-                            @display="handleDisplayChange"
+                            v-model="preference.display"
+                            @change="handleDisplayChange"
                         />
                     </div>
                 </template>

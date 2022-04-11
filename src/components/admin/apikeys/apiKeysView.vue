@@ -15,11 +15,11 @@
                 @click="handleGenerateKey"
             />
 
-            <AtlanButton2
+            <!-- <AtlanButton2
                 color="link"
                 label="Learn more about API keys"
                 suffixIcon="ArrowRight"
-            />
+            /> -->
         </div>
         <DefaultLayout v-else title="API Keys">
             <template #header>

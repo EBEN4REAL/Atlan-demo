@@ -584,7 +584,7 @@
                     case 'open':
                         router.push(getProfilePath(selectedAsset.value))
                         useAddEvent('discovery', 'cta_action', 'clicked', {
-                            action: 1,
+                            action: 'open_asset',
                             asset_type: selectedAsset.value.typeName,
                         })
                         break
@@ -604,7 +604,7 @@
                     )}&openVQB=${openVQB}`
                 )
                 useAddEvent('discovery', 'cta_action', 'clicked', {
-                    action: 2,
+                    action: !openVQB ? 'sql_query' : 'vqb_query',
                     asset_type: selectedAsset.value.typeName,
                 })
             }

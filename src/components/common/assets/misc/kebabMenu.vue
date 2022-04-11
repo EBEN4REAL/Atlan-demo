@@ -115,7 +115,7 @@
             async function handleCopyProfileLink() {
                 await copyToClipboard(link.value)
                 useAddEvent('discovery', 'cta_action', 'clicked', {
-                    action: 3,
+                    action: 'copy_link',
                     asset_type: asset.value.typeName,
                 })
                 message.success('Link copied!')

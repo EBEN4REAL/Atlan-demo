@@ -1,4 +1,4 @@
-enum CTAAction { 'open_asset' = 1, 'query', 'copy_link' }
+enum CTAAction { 'open_asset', 'vqb_query', 'sql_query', 'copy_link' }
 
 import {
     NAME_OF_EVENTS,

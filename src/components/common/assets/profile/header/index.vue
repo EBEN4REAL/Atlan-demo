@@ -506,7 +506,7 @@
 
                 window.open(URL, '_blank')?.focus()
                 useAddEvent('discovery', 'cta_action', 'clicked', {
-                    action: 2,
+                    action: !openVQB ? 'sql_query' : 'vqb_query',
                     asset_type: item.value.typeName,
                 })
             }
@@ -514,7 +514,7 @@
             const handleClick = () => {
                 // router.push(getAssetQueryPath(asset))
                 useAddEvent('discovery', 'cta_action', 'clicked', {
-                    action: 2,
+                    action: 'sql_query',
                     asset_type: item.value.typeName,
                 })
                 const URL =

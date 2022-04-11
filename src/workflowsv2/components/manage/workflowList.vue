@@ -75,7 +75,6 @@
                 'isRunLoading',
                 ref(false)
             )
-            const workflowOffset = inject<Ref<number>>('workflowOffset', ref(0))
 
             const init = async () => {
                 await workflowStore.fetchActivePackages()
@@ -91,7 +90,7 @@
                 () => Object.keys(lastRunsMap.value).length
             )
 
-            return { runs, isRunLoading, workflowOffset, runMapLength }
+            return { runs, isRunLoading, runMapLength }
         },
     })
 </script>

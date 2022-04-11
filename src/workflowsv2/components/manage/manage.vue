@@ -81,7 +81,7 @@
 </template>
 
 <script lang="ts">
-    import { useDebounceFn, watchOnce, whenever } from '@vueuse/core'
+    import { until, useDebounceFn, watchOnce, whenever } from '@vueuse/core'
     import { computed, defineComponent, provide, ref, watch } from 'vue'
 
     import { capitalizeFirstLetter } from '~/utils/string'
@@ -233,8 +233,26 @@
                 }
             }
 
+            const updateRunByWorkflowName = async (workflowName: string) => {
+                const { runByWorkflowMap: runWfMap, isLoading: runLoading } =
+                    useRunDiscoverList({
+                        preference,
+                        facets: computed(() => ({
+                            workflowTemplate: workflowName,
+                        })),
+                        limit: ref(0),
+                        aggregations: ref(['status']),
+                    })
+
+                await until(runLoading).toBe(false)
+
+                if (runWfMap.value[workflowName])
+                    runByWorkflowMap.value[workflowName] =
+                        runWfMap.value[workflowName]
+            }
+
             provide('isRunLoading', isRunLoading)
-            provide('workflowOffset', offset)
+            provide('updateRunByWorkflowName', updateRunByWorkflowName)
 
             /**  Dynamically inject the workflow type filter after getting response from API */
 

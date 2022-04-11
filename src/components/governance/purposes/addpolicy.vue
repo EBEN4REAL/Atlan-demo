@@ -661,6 +661,7 @@
                         users: allUser.value
                             ? [allUser.value]
                             : policy.value.users,
+                        groups: allUser.value ? [] : policy.value.groups,
                     }
                     emit('save', policyType.value, newPayload, isEdit.value)
                 }

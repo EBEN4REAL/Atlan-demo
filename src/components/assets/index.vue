@@ -11,28 +11,36 @@
                 v-model:activeKey="activeKey"
                 :filter-list="discoveryFilters"
                 :type-name="postFacets.typeName"
+                :deny-custom-metadata="denyCustomMetadata"
                 @change="handleFilterChange"
                 @reset="handleResetEvent"
                 @change-active-key="handleActiveKeyChange"
             ></AssetFilters>
         </div>
 
-        <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
-            <div class="flex flex-col h-full bg-primary-light">
-                <div class="flex">
+        <div class="flex flex-col items-stretch flex-1 w-80 bg-primary-light">
+            <div class="flex flex-col h-full">
+                <div class="flex items-center bg-white shadow-sm">
+                    <ConnectorSelect
+                        style="min-width: 150px"
+                        v-model="facets.connector"
+                        class="px-1 border-r"
+                        :persona="persona"
+                        @change="handleConnectorChange"
+                        :key="hierarchyDirtyTimestamp"
+                    ></ConnectorSelect>
                     <SearchAdvanced
                         :key="searchDirtyTimestamp"
                         ref="searchBox"
                         v-model="queryText"
-                        :connector-name="facets?.hierarchy?.connectorName"
                         :autofocus="true"
                         :allow-clear="true"
-                        :isLoading="isValidating"
+                        :is-loading="isValidating"
                         size="large"
                         :class="
                             ['admin', 'classifications'].includes(page)
                                 ? ''
-                                : 'px-3 bg-white border-b mt-3 mx-4 rounded-lg'
+                                : 'px-3 bg-white  border-none'
                         "
                         :placeholder="placeholder"
                         @change="handleSearchChange"
@@ -64,28 +72,81 @@
                                 ></AtlanIcon>
                             </a-popover>
                         </template>
-                        <template #postFilter>
-                            <div style="max-width: 330px">
-                                <PreferenceSelector
-                                    v-model="preference"
-                                    @change="handleChangePreference"
-                                    @display="handleDisplayChange"
-                                />
-                            </div>
+
+                        <template #sort>
+                            <Sorting
+                                v-model="preference.sort"
+                                @change="
+                                    (id) => handleChangePreference(id, 'sort')
+                                "
+                            />
+                        </template>
+                        <template #display>
+                            <a-popover
+                                trigger="click"
+                                placement="bottomRight"
+                                :overlay-class-name="$style.search"
+                            >
+                                <template #content>
+                                    <div class="p-3" style="max-width: 250px">
+                                        <PreferenceSelector
+                                            v-model="preference.display"
+                                            @change="
+                                                (id) =>
+                                                    handleChangePreference(
+                                                        id,
+                                                        'display'
+                                                    )
+                                            "
+                                            @display="handleDisplayChange"
+                                        />
+                                    </div>
+                                </template>
+
+                                <a-badge
+                                    :color="
+                                        preference.display?.length > 0
+                                            ? '#5278d7'
+                                            : null
+                                    "
+                                >
+                                    <button
+                                        class="transition-colors rounded hover:bg-gray-100"
+                                    >
+                                        <AtlanIcon
+                                            icon="Display"
+                                            class="w-4 h-4 px-1"
+                                        />
+                                    </button>
+                                </a-badge>
+                            </a-popover>
                         </template>
                     </SearchAdvanced>
                     <slot name="searchAction"></slot>
                 </div>
 
                 <div
+                    class="flex items-center w-full mt-2"
+                    v-if="facets.connector"
+                >
+                    <Heirarchy
+                        :connector="facets.connector"
+                        v-model="facets.hierarchy"
+                        @change="handleFilterChange"
+                        :persona="persona"
+                        :key="`${facets.connector}_${hierarchyDirtyTimestamp}`"
+                    ></Heirarchy>
+                </div>
+                <div
                     v-if="showAggrs"
                     class="w-full"
-                    :class="page === 'admin' ? '' : 'px-4 mt-3 mb-1'"
+                    :class="page === 'admin' ? '' : 'px-4 mt-2 mb-1'"
                 >
                     <AggregationTabs
                         v-model="postFacets.typeName"
                         class=""
                         :list="assetTypeAggregationList"
+                        :isReset="isConnectorChange"
                         :shortcut-enabled="true"
                         @change="handleAssetTypeChange"
                     >
@@ -130,9 +191,6 @@
                     <AtlanLoader class="h-10" />
                 </div>
 
-                <!--                             :show-check-box="
-                                preference?.display?.includes('enableCheckbox')
-                            " -->
                 <ListNavigator
                     v-else
                     :list="list"
@@ -147,15 +205,15 @@
                         :selected-asset="selectedAsset"
                         :is-load-more="isLoadMore"
                         :is-loading="isValidating"
-                        @loadMore="handleLoadMore"
                         class="bg-primary-light"
+                        @loadMore="handleLoadMore"
                     >
                         <template #default="{ item, itemIndex }">
                             <AssetItem
                                 :id="getAssetId(item)"
                                 :item="item"
                                 :item-index="itemIndex"
-                                :isLoading="isValidating"
+                                :is-loading="isValidating"
                                 :selected-guid="
                                     page === 'admin' || page === 'glossary'
                                         ? null
@@ -188,6 +246,9 @@
                                 @updateDrawer="updateCurrentList"
                                 @listItem:check="
                                     (e, item) => updateBulkSelectedAssets(item)
+                                "
+                                @browseAsset="
+                                    (val) => handleBrowseAsset(val, item)
                                 "
                             ></AssetItem>
                         </template>
@@ -227,9 +288,12 @@
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import PreferenceSelector from '@/assets/preference/index.vue'
 
+    import Sorting from '@/common/dropdown/sorting.vue'
+
     import AssetFilters from '@/common/assets/filters/index.vue'
     import AssetList from '@/common/assets/list/index.vue'
     import AssetItem from '@/common/assets/list/assetItem.vue'
+    import SchemaTree from './schema/index.vue'
 
     import {
         AssetAttributes,
@@ -246,6 +310,14 @@
     import useBulkUpdateStore from '~/store/bulkUpdate'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import useShortcuts from '~/composables/shortcuts/useShortcuts'
+    import { usePersonaStore } from '~/store/persona'
+
+    import ConnectorSelect from './hierarchy/connector.vue'
+
+    import Heirarchy from './hierarchy/index.vue'
+    const ANALYTICS_KEYS = {
+        connector: 'connector',
+    }
 
     export default defineComponent({
         name: 'AssetDiscovery',
@@ -260,6 +332,10 @@
             AtlanIcon,
             AssetItem,
             ListNavigator,
+            Heirarchy,
+            ConnectorSelect,
+            Sorting,
+            SchemaTree,
             // PopOverAsset,
         },
         props: {
@@ -368,6 +444,7 @@
             const selectedAssetId = ref('')
             /* Assiging prefrence props if any from props */
             const preference = ref(toRaw(preferenceProp.value))
+
             const aggregations = ref(['typeName'])
             const postFacets = ref({
                 typeName: '__all',
@@ -386,6 +463,9 @@
             const activeKey: Ref<string[]> = ref([])
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
             const searchDirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
+            const hierarchyDirtyTimestamp = ref(
+                `dirty_${Date.now().toString()}`
+            )
             const searchBox: Ref<null | HTMLInputElement> = ref(null)
 
             const discoveryStore = useAssetStore()
@@ -422,6 +502,15 @@
                     ...initialFilters.value,
                 }
             }
+
+            const personaStore = usePersonaStore()
+            const { globalState: stateAsset } = toRefs(discoveryStore)
+            const denyCustomMetadata = computed(
+                () =>
+                    personaStore.list.find(
+                        (persona) => persona.id === stateAsset?.value[1]
+                    )?.attributes?.preferences?.customMetadataDenyList || []
+            )
             /* Watcher for parent component changes initial filters otherwise req won't be triggered */
             watch(initialFilters, () => {
                 facets.value = {
@@ -429,6 +518,15 @@
                     ...initialFilters.value,
                 }
                 quickChange()
+            })
+
+            const persona = computed(() => {
+                if (discoveryStore.globalState.length === 2) {
+                    if (discoveryStore.globalState[0] === 'persona') {
+                        return discoveryStore.globalState[1]
+                    }
+                }
+                return ''
             })
 
             watch(
@@ -530,6 +628,24 @@
                 }
             }, 600)
 
+            const sendPreferenceEvent = (type, id, preferences) => {
+                console.log('sendPreferenceEvent', type, id, preferences.sort)
+                if (type === 'sort') {
+                    useAddEvent('discovery', 'sort', 'changed', {
+                        sort_type: preferences.sort,
+                    })
+                } else if (type === 'display') {
+                    const visible = preferences.display.indexOf(id) > -1
+                    useAddEvent('discovery', 'display_preference', 'changed', {
+                        visible: visible,
+                        preference: id,
+                    })
+                    useAddEvent('discovery', 'display', 'changed', {
+                        type: id,
+                    })
+                }
+            }
+
             const firstAssetAutoClicked = ref(false)
 
             const handleClickAssetItem = (...args) => {
@@ -553,11 +669,79 @@
                 quickChange()
             }, 100)
 
+            const isConnectorChange = ref(false)
+            const isGlossaryChange = ref(false)
+            const connector = ref('')
+
+            const handleBrowseAsset = (val, asset) => {
+                console.log('handleBrowseAsset', val, asset)
+                facets.value.connector = val.connector
+                facets.value.hierarchy.connectionQualifiedName =
+                    val.connectionQualifiedName
+                facets.value.hierarchy.attributeName = val.attributeName
+                facets.value.hierarchy.attributeValue = val.attributeValue
+
+                hierarchyDirtyTimestamp.value = `dirty_${Date.now().toString()}`
+                offset.value = 0
+                quickChange()
+                useAddEvent(
+                    'discovery',
+                    'asset_card',
+                    'filter_context_changed',
+                    {
+                        hierarchy_type: val.typeName,
+                        asset_type: asset.typeName,
+                    }
+                )
+            }
+
             const handleFilterChange = (filterItem) => {
+                console.log('handleFilterChange', filterItem)
+                isConnectorChange.value = false
+                isGlossaryChange.value = false
                 offset.value = 0
                 quickChange()
                 discoveryStore.setActiveFacet(facets.value)
                 sendFilterEvent(filterItem)
+            }
+
+            const handleConnectorChange = (filterItem) => {
+                facets.value.hierarchy = {}
+
+                if (!facets.value.connector) {
+                    connector.value = ''
+                    // facets.value.glossary = ''
+                    isGlossaryChange.value = false
+                    isConnectorChange.value = false
+                } else if (facets.value.connector == '__glossary') {
+                    connector.value = ''
+                    isConnectorChange.value = false
+                    isGlossaryChange.value = true
+                } else if (connector.value !== facets.value.connector) {
+                    isConnectorChange.value = true
+                    connector.value = facets.value.connector
+                }
+                offset.value = 0
+                quickChange()
+                discoveryStore.setActiveFacet(facets.value)
+                sendFilterEvent({
+                    analyticsKey: ANALYTICS_KEYS.connector,
+                })
+            }
+
+            const handleGlossaryChange = (filterItem) => {
+                // console.log('changed glossary')
+                // isConnectorChange.value = false
+                // isGlossaryChange.value = true
+                // connector.value = ''
+                // facets.value.hierarchy = {}
+                // facets.value.glossary = facets.value.connector
+                // facets.value.connector = ''
+                // console.log('changed glossary', facets.value)
+                // offset.value = 0
+                // quickChange()
+                // discoveryStore.setActiveFacet(facets.value)
+                // sendFilterEvent(filterItem)
             }
 
             const handleAssetTypeChange = (tabName) => {
@@ -578,51 +762,14 @@
                 quickChange()
             }
 
-            const handleChangePreference = () => {
-                useAddEvent('discovery', 'sort', 'changed', {
-                    sort_type: preference.value.sort,
-                })
+            const handleChangePreference = (id, type) => {
                 quickChange()
-                discoveryStore.setPreferences(
-                    JSON.parse(JSON.stringify(preference.value))
-                )
-            }
-
-            const trackDisplayChange = () => {
-                let displayVisible
-                let displayOption
-                const oldDisplay = JSON.parse(
-                    JSON.stringify(discoveryStore.preferences?.display || [])
-                )
-                const newDisplay = preference.value.display || []
-                const unionOfNewOldDisplay = [...newDisplay, ...oldDisplay]
-                let index = 0
-                for (index; index < unionOfNewOldDisplay.length; index += 1) {
-                    if (
-                        newDisplay.includes(unionOfNewOldDisplay[index]) &&
-                        !oldDisplay.includes(unionOfNewOldDisplay[index])
-                    ) {
-                        displayVisible = true
-                        displayOption = unionOfNewOldDisplay[index]
-                        break
-                    } else if (
-                        !newDisplay.includes(unionOfNewOldDisplay[index]) &&
-                        oldDisplay.includes(unionOfNewOldDisplay[index])
-                    ) {
-                        displayVisible = false
-                        displayOption = unionOfNewOldDisplay[index]
-                        break
-                    }
-                }
-                if (displayOption)
-                    useAddEvent('discovery', 'view_preference', 'changed', {
-                        visible: displayVisible,
-                        preference: displayOption,
-                    })
+                discoveryStore.setPreferences(preference.value)
+                sendPreferenceEvent(type, id, preference.value)
             }
 
             const handleDisplayChange = () => {
-                trackDisplayChange()
+                // trackDisplayChange()
 
                 discoveryStore.setPreferences(
                     JSON.parse(JSON.stringify(preference.value))
@@ -630,7 +777,11 @@
             }
 
             const handleResetEvent = () => {
-                facets.value = { ...initialFilters.value }
+                facets.value = {
+                    ...initialFilters.value,
+                    connector: facets.value.connector,
+                    hierarchy: facets.value.hierarchy,
+                }
                 queryText.value = ''
                 handleFilterChange(facets.value)
                 dirtyTimestamp.value = `dirty_${Date.now().toString()}`
@@ -668,13 +819,12 @@
             const getAssetId = (item) => item.guid
 
             const { allowedTabAndArrowShortcuts } = useShortcuts()
-            const listNavigationBlocked = computed(() => {
-                return (
+            const listNavigationBlocked = computed(
+                () =>
                     !allowedTabAndArrowShortcuts.value ||
                     isCmndKVisible.value ||
                     isAssetProfile.value
-                )
-            })
+            )
             const keys = useMagicKeys()
             const { tab, shift_tab } = keys
 
@@ -684,10 +834,6 @@
             }
 
             whenever(tab, () => {
-                console.log(
-                    'tab allowedTabAndArrowShortcuts',
-                    allowedTabAndArrowShortcuts.value
-                )
                 if (
                     shift_tab.value ||
                     isCmndKVisible.value ||
@@ -843,6 +989,15 @@
                 quickChange,
                 isAssetProfile,
                 listNavigationBlocked,
+                isConnectorChange,
+                connector,
+                denyCustomMetadata,
+                persona,
+                handleConnectorChange,
+                handleGlossaryChange,
+                isGlossaryChange,
+                handleBrowseAsset,
+                hierarchyDirtyTimestamp,
             }
         },
     })

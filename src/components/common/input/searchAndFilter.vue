@@ -127,7 +127,7 @@
             border-right: none;
         }
         .ant-input::placeholder {
-            @apply text-gray-500;
+            @apply text-gray-500 select-none;
         }
 
         &.default {

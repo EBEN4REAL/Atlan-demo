@@ -1,28 +1,28 @@
 <template>
     <div class="flex flex-col h-full">
-        <div
-            class="px-4 pt-2 pb-2.5 text-sm bg-white border-b shadow-sm filter-head"
-        >
+        <div class="px-4 py-3 text-sm bg-white border-b shadow-sm filter-head">
             <div
                 v-if="totalFilteredCount > 0"
-                class="flex items-center justify-between"
+                class="flex items-center justify-between leading-none"
             >
                 <span>
                     {{ totalFilteredCount }}
                     {{ totalFilteredCount > 1 ? 'filters' : 'filter' }}</span
                 >
-                <div class="flex font-medium text-gray-500">
+                <div class="flex leading-none text-gray-500">
                     <span
                         class="text-red-500 clear-filter-asset"
                         @click="handleResetAll"
                     >
-                        <span class="text-sm cursor-pointer">Clear All</span>
+                        <span class="text-sm leading-none cursor-pointer"
+                            >Clear All</span
+                        >
                     </span>
                 </div>
             </div>
             <div
                 v-else
-                class="flex items-center justify-between text-gray-500 no-filter"
+                class="flex items-center justify-between leading-none text-gray-500 no-filter"
             >
                 <span> {{ noFilterTitle }}</span>
             </div>
@@ -104,6 +104,12 @@
                 required: false,
                 default: () => 0,
             },
+            denyCustomMetadata: {
+                required: false,
+                default() {
+                    return []
+                },
+            },
         },
         emits: [
             'change',
@@ -120,6 +126,7 @@
                 filterList,
                 allowCustomFilters,
                 extraCountFilter,
+                denyCustomMetadata,
             } = toRefs(props)
             const localValue = ref(modelValue.value)
             const localActiveKeyValue = ref(activeKey.value)
@@ -157,7 +164,15 @@
                     return true
                 })
                 if (allowCustomFilters.value) {
-                    return [...arr, ...cmList(typeName.value, true)]
+                    return [
+                        ...arr,
+                        ...cmList(
+                            typeName.value,
+                            true,
+                            false,
+                            denyCustomMetadata.value
+                        ),
+                    ]
                 }
                 return [...arr]
             })
@@ -165,17 +180,20 @@
             const totalFilteredCount = computed(() => {
                 let count = 0 + extraCountFilter.value
                 Object.keys(localValue.value).forEach((key) => {
-                    if (Array.isArray(localValue.value[key])) {
-                        if (localValue.value[key].length > 0) {
+                    if (key !== 'hierarchy' && key !== 'connector') {
+                        if (Array.isArray(localValue.value[key])) {
+                            if (localValue.value[key].length > 0) {
+                                count += 1
+                            }
+                        } else if (
+                            typeof localValue.value[key] === 'object' &&
+                            localValue.value[key] !== null
+                        ) {
+                            if (Object.keys(localValue.value[key]).length > 0) {
+                                count += 1
+                            }
+                        } else if (typeof localValue.value[key] === 'string')
                             count += 1
-                        }
-                    } else if (
-                        typeof localValue.value[key] === 'object' &&
-                        localValue.value[key] !== null
-                    ) {
-                        if (Object.keys(localValue.value[key]).length > 0) {
-                            count += 1
-                        }
                     }
                 })
                 return count

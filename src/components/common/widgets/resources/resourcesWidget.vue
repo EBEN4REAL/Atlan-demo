@@ -3,7 +3,7 @@
         <template v-if="minimal">
             <template v-if="resources?.length">
                 <div
-                    class="flex justify-between px-5 py-2 border-b border-gray-200 gap-x-6 bg-gray-50"
+                    class="flex items-center justify-between px-5 pt-4 gap-x-6"
                 >
                     <span class="flex items-center">
                         <PreviewTabsIcon
@@ -53,9 +53,12 @@
                 </template>
                 <AddResource v-if="!readOnly" @add="addCallback">
                     <template #trigger>
-                        <span class="text-sm cursor-pointer text-primary"
-                            ><AtlanIcon icon="Add" class="mr-2" />Add</span
+                        <a-button
+                            class="flex items-center border-0 shadow-none text-primary"
+                            type="minimal"
                         >
+                            <AtlanIcon icon="Add" class="w-auto h-4 mr-1" />Add
+                        </a-button>
                     </template>
                 </AddResource>
             </div>

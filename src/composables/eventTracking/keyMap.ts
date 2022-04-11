@@ -1,5 +1,50 @@
 enum CTAAction { 'open_asset' = 1, 'query', 'copy_link' }
 
+import {
+    NAME_OF_EVENTS,
+    README_TRIGGERS,
+} from '~/modules/editor/analytics/useTrackEvent'
+
+interface BLOCK_README_EVENT_INTERFACE {
+    assetType: string
+    blockType: NAME_OF_EVENTS
+    trigger: README_TRIGGERS
+    embedService?: string
+}
+
+interface BLOCK_README_EVENT_RETURN_INTERFACE {
+    asset_type: string
+    block_type: NAME_OF_EVENTS
+    trigger: README_TRIGGERS
+    embed_service?: string
+}
+
+interface FORMATTING_README_EVENT_INTERFACE {
+    assetType: string
+    markType: NAME_OF_EVENTS
+    trigger: README_TRIGGERS
+    alignment?: string
+}
+
+interface FORMATTING_README_EVENT_RETURN_INTERFACE {
+    asset_type: string
+    mark_type: NAME_OF_EVENTS
+    trigger: README_TRIGGERS
+    alignment?: string
+}
+
+interface EMBED_README_EVENT_INTERFACE {
+    assetType: string
+    application: string
+    trigger: README_TRIGGERS
+}
+
+interface EMBED_README_EVENT_RETURN_INTERFACE {
+    asset_type: string
+    application: string
+    trigger: README_TRIGGERS
+}
+
 const keyMap = {
     discovery: {
         filter: {
@@ -66,6 +111,14 @@ const keyMap = {
                 properties: (props) => ({
                     click_index: props.click_index,
                     keyboard_shortcut: !!props.keyboard_shortcut,
+                }),
+            },
+            // when someone clicks schema or database to set it as filter
+            filter_context_changed: {
+                action: 'discovery_asset_card_filter_context_changed',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
+                    hierarchy_type: props.hierarchy_type,
                 }),
             },
         },
@@ -203,6 +256,25 @@ const keyMap = {
             updated: {
                 action: 'discovery_readme_updated',
                 properties: (props) => ({ asset_type: props.asset_type }),
+            },
+        },
+        display_preference: {
+            changed: {
+                action: 'discovery_display_preference_changed',
+                properties: (props: {
+                    visible: boolean
+                    preference: 'description' | 'terms' | 'classifications'
+                }) => ({
+                    ...props,
+                }),
+            },
+        },
+        sort: {
+            changed: {
+                action: 'discovery_sort_changed',
+                properties: (props: { sort_type: string }) => ({
+                    ...props,
+                }),
             },
         },
     },
@@ -368,6 +440,18 @@ const keyMap = {
             resource_deleted: {
                 action: 'persona_resource_deleted',
             },
+            cm_preferences: {
+                action: 'persona_preferences_cm_toggled',
+                properties: (props) => ({
+                    state: props.state,
+                }),
+            },
+            persona_enable: {
+                action: 'governance_persona_enabled',
+            },
+            persona_disable: {
+                action: 'governance_persona_disabled',
+            },
         },
         purpose: {
             created: {
@@ -482,11 +566,22 @@ const keyMap = {
             searched: {
                 action: 'governance_requests_searched',
             },
+            created: {
+                action: 'governance_requests_created',
+                properties: (props) => ({
+                    request_type: props.request_type,
+                    asset_type: props.asset_type,
+                    count: props.count,
+                    actions: props.action,
+                }),
+            },
             resolved: {
                 action: 'governance_requests_resolved',
                 properties: (props) => ({
                     // approve/decline
                     action: props.action,
+                    request_type: props.request_type,
+                    widget_type: props.widget_type,
                 }),
             },
         },
@@ -647,7 +742,7 @@ const keyMap = {
             share_channels_updated: {
                 action: 'integration_slack_share_channels_updated',
                 properties: (props: {
-                    channel_count: string,
+                    channel_count: string
                     workflow_alert_channel_present: boolean
                 }) => ({
                     ...props,
@@ -667,7 +762,7 @@ const keyMap = {
             issue_linked: {
                 action: 'integration_jira_issue_linked',
                 properties: (props: {
-                    asset_type: string,
+                    asset_type: string
                     selected_issue_count: number
                     total_issue_count: number
                 }) => ({
@@ -679,29 +774,86 @@ const keyMap = {
             },
             issue_unlinked: {
                 action: 'integration_jira_issue_unlinked',
-                properties: (props: {
-                    asset_type: string,
-                }) => ({
+                properties: (props: { asset_type: string }) => ({
                     ...props,
                 }),
             },
             issue_searched: {
                 action: 'integration_jira_issue_searched',
-                properties: (props: {
-                    asset_type: string
-                }) => ({
+                properties: (props: { asset_type: string }) => ({
                     ...props,
                 }),
             },
             config_updated: {
                 action: 'integration_jira_config_updated',
-                properties: (props: {
-                    default_project_present: Boolean
-                }) => ({
+                properties: (props: { default_project_present: Boolean }) => ({
                     ...props,
                 }),
-            }
-
+            },
+        },
+    },
+    readme: {
+        block: {
+            added: {
+                action: 'readme_block_added',
+                properties: ({
+                    assetType,
+                    blockType,
+                    trigger,
+                    embedService,
+                }: BLOCK_README_EVENT_INTERFACE): BLOCK_README_EVENT_RETURN_INTERFACE => ({
+                    asset_type: assetType,
+                    block_type: blockType,
+                    trigger,
+                    ...(embedService && {
+                        embed_service: embedService,
+                    }),
+                }),
+            },
+        },
+        formatting: {
+            added: {
+                action: 'readme_formatting_added',
+                properties: ({
+                    assetType,
+                    markType,
+                    trigger,
+                    alignment,
+                }: FORMATTING_README_EVENT_INTERFACE): FORMATTING_README_EVENT_RETURN_INTERFACE => ({
+                    asset_type: assetType,
+                    mark_type: markType,
+                    trigger,
+                    ...(alignment && {
+                        alignment,
+                    }),
+                }),
+            },
+        },
+        embed: {
+            added: {
+                action: 'readme_embed_added',
+                properties: ({
+                    assetType,
+                    application,
+                    trigger,
+                }: EMBED_README_EVENT_INTERFACE): EMBED_README_EVENT_RETURN_INTERFACE => ({
+                    asset_type: assetType,
+                    application,
+                    trigger,
+                }),
+            },
+            open_cta_clicked: {
+                action: 'readme_embed_open_cta_clicked',
+                properties: ({
+                    assetType,
+                    application,
+                    trigger,
+                }: EMBED_README_EVENT_INTERFACE): EMBED_README_EVENT_RETURN_INTERFACE => ({
+                    asset_type: assetType,
+                    application,
+                    trigger,
+                }),
+            },
         },
     },
 }

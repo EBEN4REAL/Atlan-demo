@@ -78,6 +78,11 @@ export function useRunDiscoverList({
         refresh()
     }
 
+    const resetState = () => {
+        list.value = []
+        runByWorkflowMap.value = {}
+    }
+
     return {
         queryText,
         limit,
@@ -90,6 +95,7 @@ export function useRunDiscoverList({
         data,
         quickChange,
         cancelRequest,
+        resetState,
 
         refresh,
         error,

@@ -34,6 +34,8 @@
                 <div class="flex items-center mb-0 text-sm text-gray-500">
                     <div class="mb-0 text-xl text-gray-700 truncate">
                         <span
+                            :data-name="persona.displayName"
+                            id="personaDisplayName"
                             class="flex-shrink mb-0 overflow-hidden text-base font-bold text-gray-700 capitalize truncate"
                             data-test-id="header-name"
                         >
@@ -54,35 +56,68 @@
                         ></span>
                     </a-tooltip>
                 </div>
-                <div v-if="persona.updatedBy" class="flex text-gray-500">
-                    last updated by {{ persona.updatedBy }},
+                <div class="flex text-gray-500">
+                    last updated by
+                    {{ persona.updatedBy || persona.createdBy }},
                     <a-tooltip
                         class="ml-1"
-                        :title="timeStamp(persona.updatedAt, true)"
+                        :title="
+                            timeStamp(
+                                persona.updatedAt || persona.createdAt,
+                                true
+                            )
+                        "
                         placement="right"
-                        >{{ timeStamp(persona.updatedAt) }}</a-tooltip
+                        >{{
+                            timeStamp(persona.updatedAt || persona.createdAt)
+                        }}</a-tooltip
                     >
                 </div>
             </div>
-            <a-button-group>
+            <a-button-group class="flex items-center">
                 <!-- Edit -->
                 <!-- <a-popover
-                    :align="{ offset: [5, -10] }"
+                    v-model:visible="visibleEnable"
+                    :align="{ offset: [21, -10] }"
                     trigger="click"
-                    placement="bottom"
+                    placement="bottomRight"
                 >
                     <template #content>
                         <div
-                            class="flex p-2 text-sm font-bold text-gray-700 cursor-pointer btn-status hover:bg-gray-100"
+                            @click="
+                                () => {
+                                    visibleEnable = false
+                                    $emit('updateStatus', !persona.enabled)
+                                }
+                            "
+                            :class="`flex p-2 py-2.5 text-sm font-bold ${
+                                !persona.enabled
+                                    ? 'text-success'
+                                    : 'text-gray-700'
+                            } cursor-pointer btn-status shadow-box  hover:bg-gray-100`"
                         >
-                            <AtlanIcon icon="NoAllow" class="mr-1" />Disable
+                            <AtlanIcon
+                                :icon="!persona.enabled ? 'Check' : 'NoAllow'"
+                                class="mr-1"
+                            />{{ !persona.enabled ? 'Enable' : 'Disable' }}
                             persona
                         </div>
                     </template>
+
                     <div
-                        class="flex p-2 mr-3 text-sm font-bold cursor-pointer text-success btn-status hover:bg-gray-100"
+                        class="flex text-sm font-bold cursor-pointer btn-status hover:bg-gray-100 py-1.5 px-2.5 border-gray-300 border mr-3 rounded items-center"
+                        :class="`${
+                            persona.enabled ? 'text-success' : 'text-gray-700'
+                        } `"
                     >
-                        <AtlanIcon icon="Check" class="mr-1" />Enabled
+                        <AtlanIcon
+                            :icon="persona.enabled ? 'Check' : 'NoAllow'"
+                            class="mr-1.5"
+                        />{{ persona.enabled ? 'Enabled' : 'Disabled' }}
+                        <AtlanIcon
+                            icon="ChevronDown"
+                            class="ml-2 text-gray-500"
+                        />
                     </div>
                 </a-popover> -->
                 <a-tooltip v-auth="map.UPDATE_PERSONA" placement="bottom">
@@ -117,7 +152,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, computed, toRefs, h, watch } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        computed,
+        toRefs,
+        h,
+        watch,
+        ref,
+    } from 'vue'
     import { message, Modal } from 'ant-design-vue'
     import { useTimeAgo, useVModels } from '@vueuse/core'
     import CreationModal from '@/admin/common/addModal.vue'
@@ -152,8 +195,10 @@
                 default: () => false,
             },
         },
+        emits: ['updateStatus'],
         setup(props, { emit }) {
             const { persona } = toRefs(props)
+            const visibleEnable = ref(false)
             // const { openEditModal } = toRefs(props)
             const { openEditModal } = useVModels(props, emit)
             const deletePersona = () => {
@@ -167,7 +212,7 @@
                             h(
                                 'span',
                                 {
-                                    class: ['font-bold'],
+                                    class: ['font-bold', 'persona-name'],
                                 },
                                 [`${persona.value.displayName}`]
                             ),
@@ -288,12 +333,17 @@
                 map,
                 deletePersona,
                 handleCancel,
+                visibleEnable,
             }
         },
     })
 </script>
 <style lang="less"></style>
 <style lang="less" scoped>
+    .shadow-box {
+        min-width: 145px;
+        box-shadow: 0px 9px 32px 0px #0000001f;
+    }
     .btn-status {
         height: fit-content !important;
     }

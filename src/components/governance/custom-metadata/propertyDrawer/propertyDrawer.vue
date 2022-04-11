@@ -286,7 +286,7 @@
 
                     watch([isReady, error], ([newValue, newError]) => {
                         if (newValue) {
-                            message.success('Attribute edited')
+                            message.success('Attribute updated')
                             loading.value = false
                             const returnSome = (oldData) => {
                                 console.log(oldData)

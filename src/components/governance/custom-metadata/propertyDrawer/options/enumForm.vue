@@ -93,6 +93,7 @@
                     :value="enumValueModel"
                     delimiter=";"
                     @change="(v) => (enumValueModel = v)"
+                    id="enum_value"
                 />
             </template>
             <p v-else class="flex flex-wrap">

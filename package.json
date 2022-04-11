@@ -1,6 +1,6 @@
 {
   "private": true,
-  "version": "2.25.2",
+  "version": "2.36.2",
   "scripts": {
     "dev": "vite --port 3333 --open",
     "build-dev": "vite build --mode development",
@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview --port 8080",
     "preview-https": "serve dist",
-    "lint": "npx eslint --fix --ext .js,.vue,.ts ",
+    "lint": "npx eslint --fix --ext .js,.vue,.ts,.json ",
     "prepare": "husky install"
   },
   "dependencies": {
@@ -94,6 +94,7 @@
   "devDependencies": {
     "@babel/core": "^7.17.2",
     "@babel/eslint-parser": "^7.17.0",
+    "@intlify/eslint-plugin-vue-i18n": "^1.4.0",
     "@intlify/vite-plugin-vue-i18n": "^3.2.2",
     "@rollup/plugin-strip": "^2.1.0",
     "@tailwindcss/line-clamp": "^0.3.1",
@@ -175,6 +176,7 @@
         "dayjs",
         "dayjs/plugin/advancedFormat",
         "dayjs/plugin/relativeTime",
+        "dayjs/plugin/timezone",
         "dayjs/plugin/utc",
         "emoji-mart-vue-fast/src",
         "event-source-polyfill",

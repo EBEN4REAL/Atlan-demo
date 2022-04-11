@@ -128,7 +128,10 @@ export default function useCreateGraph({
             portsPositionArgs.map((_, index) => ({
                 position: {
                     x: 1,
-                    y: (index + 1) * 41 + 40,
+                    y:
+                        index === 0
+                            ? (index + 1) * 40 + 40
+                            : (index + 1) * 40 + 50,
                 },
                 angle: 0,
             })),
@@ -188,7 +191,7 @@ export default function useCreateGraph({
         controlPoints: true,
         nodesepFunc() {
             // vertical spacing btw nodes
-            return 20
+            return 40
         },
         ranksepFunc() {
             // horizontal spacing btw nodes

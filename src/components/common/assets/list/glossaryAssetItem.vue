@@ -68,13 +68,11 @@
                                 ></CertificateBadge>
                             </div>
                         </div>
-
-                        <div class="flex items-center">
-                            <div
-                                class="flex items-center text-xs text-gray-500"
-                            >
-                                {{ getAnchorName(item) }}
-                            </div>
+                        <div style="max-width: 95%">
+                            <Tooltip
+                                :tooltip-text="`${getAnchorName(item)}`"
+                                :classes="`flex items-center text-xs text-gray-500 w-full`"
+                            />
                         </div>
                     </div>
                 </div>

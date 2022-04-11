@@ -67,7 +67,7 @@ export default function useCustomMetadataFacet() {
      * @param overview flag to check if required list should be shown in the overview tab in the sidebar, if overview=true then check for showInOverview flag
      * @returns
      */
-    const getList = (typeName, facet = false, overview = false) => {
+    const getList = (typeName, facet = false, overview = false, denyCustomMetadata = []) => {
         const finalList: any = []
         customMetadataList.value.forEach((bm) => {
             const attributeList = typeNameFiltering(
@@ -79,7 +79,7 @@ export default function useCustomMetadataFacet() {
                 ),
                 typeName
             )
-            if (attributeList.length > 0) {
+            if (attributeList.length > 0 && !denyCustomMetadata.includes(bm.guid)) {
                 finalList.push({
                     guid: bm.guid,
                     description: bm.description,

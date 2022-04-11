@@ -1,8 +1,6 @@
 <template>
     <div class="flex flex-col w-full h-full pb-4">
-        <div
-            class="flex items-center justify-between px-5 py-2 border-b border-gray-200 bg-gray-50"
-        >
+        <div class="flex items-center justify-between px-5 py-4">
             <span class="flex items-center">
                 <PreviewTabsIcon
                     :icon="tab.icon"
@@ -14,7 +12,7 @@
                 <span class="ml-1 font-semibold text-gray-500">Properties</span>
             </span>
         </div>
-        <div class="flex flex-col px-5 pt-3 overflow-auto gap-y-5">
+        <div class="flex flex-col px-5 pt-0 overflow-auto gap-y-5">
             <div
                 v-if="
                     sourceUpdatedBy(selectedAsset) ||

@@ -109,6 +109,10 @@ export function useWorkflowDiscoverList({
         return temp
     })
 
+    const isLoadMore = computed(
+        () => data.value?.hits?.total?.value > list.value.length || false
+    )
+
     const quickChange = () => {
         generateBody()
         cancelRequest()
@@ -129,6 +133,7 @@ export function useWorkflowDiscoverList({
         quickChange,
         refresh,
         packageList,
+        isLoadMore,
         workflowDistinctList,
         workflowMapByPackage,
     }

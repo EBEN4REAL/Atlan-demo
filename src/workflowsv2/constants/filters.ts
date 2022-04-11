@@ -16,44 +16,6 @@ export const runFilter = [
         // selectUserKey: 'id',
         class: 'bg-transparent',
     },
-    {
-        id: 'status',
-        label: 'RUN STATUS',
-        component: 'CheckBoxOption',
-        overallCondition: 'OR',
-        attributes: [],
-        isDeleted: false,
-        isDisabled: false,
-        exclude: false,
-        class: 'bg-transparent',
-        data: [
-            {
-                id: 'Running',
-                label: 'Running',
-                colorDot: '#225BD2',
-            },
-            {
-                id: 'Succeeded',
-                label: 'Succeeded',
-                colorDot: '#00A680',
-            },
-            {
-                id: 'Failed',
-                label: 'Failed',
-                colorDot: '#DC5252',
-            },
-            {
-                id: 'Error',
-                label: 'Errored',
-                colorDot: '#E48A8A',
-            },
-            {
-                id: 'Pending',
-                label: 'Pending',
-                colorDot: '#FFBA52',
-            },
-        ],
-    },
 ]
 
 export const workflowFilter = [
@@ -73,5 +35,66 @@ export const workflowFilter = [
         },
         // selectUserKey: 'id',
         class: 'bg-transparent',
+    },
+    {
+        id: 'wfType',
+        label: 'Workflow Type',
+        component: 'CheckBoxOption',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+        class: 'bg-transparent',
+        data: [],
+    },
+    {
+        id: 'schedule',
+        label: 'Schedule',
+        component: 'RadioButton',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+        class: 'bg-transparent',
+        data: [
+            {
+                id: 'scheduled',
+                label: 'Scheduled',
+            },
+            {
+                id: 'manual',
+                label: 'Unscheduled',
+            },
+        ],
+    },
+]
+
+export const runStatuses = [
+    {
+        id: 'Running',
+        label: 'Running',
+        colorDot: '#FFBA52',
+    },
+    {
+        id: 'Succeeded',
+        label: 'Succeeded',
+        colorDot: '#00A680',
+    },
+    {
+        id: 'Failed',
+        label: 'Failed',
+        colorDot: '#DC5252',
+    },
+    {
+        id: 'Error',
+        label: 'Errored',
+        colorDot: '#FF751f',
+    },
+    {
+        id: 'Pending',
+        label: 'Pending',
+        colorDot: '#6F7950',
     },
 ]

@@ -10,7 +10,7 @@
                     :value="el.id"
                     class="flex-row-reverse items-center w-full mb-1 atlan-reverse"
                 >
-                    <div class="flex items-center w-44">
+                    <div class="flex items-center w-48 pt-2">
                         <div
                             v-if="el.colorDot"
                             :style="`background-color: ${el.colorDot}`"
@@ -22,7 +22,7 @@
                             :icon="el.icon"
                         />
                         <div
-                            class="flex-1 mb-0 truncate text-gray label-checkbox"
+                            class="flex-1 mb-0 text-sm truncate text-gray label-checkbox"
                         >
                             {{ el.label }}
                         </div>
@@ -66,6 +66,7 @@
 <style lang="less" scoped>
     .label-checkbox {
         max-width: 70%;
+        line-height: 16px !important;
     }
     .dot {
         height: 6px;

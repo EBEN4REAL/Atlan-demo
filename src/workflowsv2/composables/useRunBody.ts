@@ -100,7 +100,9 @@ export function useRunBody(
                             path: 'metadata',
                             ...bodybuilder()
                                 .query(
-                                    'terms',
+                                    Array.isArray(filterObject)
+                                        ? 'terms'
+                                        : 'term',
                                     'metadata.labels.workflows.argoproj.io/phase.keyword',
                                     filterObject
                                 )
@@ -181,6 +183,7 @@ export function useRunBody(
                                                                 'status.startedAt',
                                                                 'status.finishedAt',
                                                                 'status.progress',
+                                                                'status.estimatedDuration',
                                                                 'metadata.labels.workflows.argoproj.io/creator-preferred-username',
                                                             ],
                                                         },

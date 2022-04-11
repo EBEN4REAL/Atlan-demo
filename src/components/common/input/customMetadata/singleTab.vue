@@ -25,25 +25,27 @@
                                 height="h-4"
                                 width="w-4"
                                 class="mr-1"
+                                :class="{
+                                    'mb-0.5': tab.icon || tab.image,
+                                    'mr-1': tab.emoji,
+                                }"
                                 :display-mode="true"
-                                emoji-size="text-md"
+                                emoji-size="text-base"
                             />
                             <Truncate
                                 :tooltip-text="data.label"
                                 placement="left"
                                 :should-open-in-new-tab="true"
                                 :classes="
-                                    checkAccess(page.PAGE_GOVERNANCE)
+                                    selectedAssetUpdatePermission(
+                                        selectedAsset,
+                                        isDrawer,
+                                        'ENTITY_UPDATE_BUSINESS_METADATA'
+                                    )
                                         ? 'text-primary hover:underline mr-1 font-semibold'
                                         : 'mr-1 line-clamp-1'
                                 "
-                                v-bind="
-                                    checkAccess(page.PAGE_GOVERNANCE)
-                                        ? {
-                                              routeTo: `/governance/custom-metadata/${data.guid}`,
-                                          }
-                                        : {}
-                                "
+                                @click="switchTab(selectedAsset, data?.label)"
                                 clamp-percentage="75%"
                             />
                             <a-tooltip>
@@ -136,23 +138,19 @@
         defineComponent,
         ref,
         toRefs,
-        watch,
         PropType,
         defineAsyncComponent,
         inject,
-        computed,
     } from 'vue'
     import { whenever } from '@vueuse/core'
     import useCustomMetadataHelpers from '~/composables/custommetadata/useCustomMetadataHelpers'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
-    import { useAssetAttributes } from '~/composables/discovery/useCurrentUpdate'
     import Truncate from '@/common/ellipsis/index.vue'
     import page from '~/constant/accessControl/page'
     import useAuth from '~/composables/auth/useAuth'
     import InternalCMBanner from '@/common/customMetadata/internalCMBanner.vue'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
-    import { useTypedefStore } from '~/store/typedef'
 
     export default defineComponent({
         name: 'CustomMetadata',
@@ -185,36 +183,28 @@
                 type: Object,
                 required: false,
             },
+            loading: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+            isCmReady: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         setup(props) {
-            const { selectedAsset, data } = toRefs(props)
+            const { selectedAsset, data, isCmReady } = toRefs(props)
 
-            const loading = ref(false)
             const viewOnly = ref(data.value?.options?.isLocked === 'true')
             const activeKey = ref(['0'])
-            const guid = ref()
+
             const { checkAccess } = useAuth()
 
             const showEditButton = ref(false)
 
-            const typedefStore = useTypedefStore()
-
-            const customMetadataListProjections = computed(() =>
-                typedefStore.getCustomMetadataListProjectionsByName(
-                    data.value?.id
-                )
-            )
             const isEvaluating = inject('isEvaluating')
-
-            const {
-                asset,
-                mutate: mutateCM,
-                isReady: isCmReady,
-                isLoading: isCmLoading,
-            } = useAssetAttributes({
-                id: guid,
-                attributes: customMetadataListProjections,
-            })
 
             const { selectedAssetUpdatePermission } = useAssetInfo()
             const {
@@ -248,9 +238,9 @@
              */
             const setAttributesList = () => {
                 initializeAttributesList()
-                if (asset.value?.attributes) {
+                if (selectedAsset.value?.attributes) {
                     const bmAttributes = Object.keys(
-                        asset.value?.attributes
+                        selectedAsset.value?.attributes
                     ).filter((attr) => attr.split('.').length > 1)
 
                     if (bmAttributes.length)
@@ -258,7 +248,8 @@
                             if (data.value.id === ab.split('.')[0]) {
                                 const attribute = ab.split('.')[1]
 
-                                const value = asset.value?.attributes[ab]
+                                const value =
+                                    selectedAsset.value?.attributes[ab]
                                 const attrIndex =
                                     applicableList.value.findIndex(
                                         (a) => a.name === attribute
@@ -317,22 +308,6 @@
                 }
             })
 
-            watch(isCmLoading, () => {
-                loading.value = isCmLoading.value
-            })
-
-            watch(
-                () => selectedAsset.value.guid,
-                () => {
-                    guid.value = selectedAsset.value?.guid
-                    mutateCM()
-                    initializeAttributesList()
-                },
-                {
-                    immediate: true,
-                }
-            )
-
             const isProfile = inject('isProfile')
 
             const switchTab = inject('switchTab')
@@ -350,7 +325,6 @@
                 formatDisplayValue,
                 applicableList,
                 getEnumOptions,
-                loading,
                 selectedAssetUpdatePermission,
                 activeKey,
                 isEvaluating,

@@ -42,8 +42,8 @@ export default function useInsightsTabList(): {
             id: 'schedule',
             name: 'Schedule',
             component: 'schedule',
-            icon: undefined,
-            isVisible: false,
+            icon: 'Schedule24',
+            isVisible: true,
             title: 'Schedule',
         },
     ]

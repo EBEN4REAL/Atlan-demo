@@ -247,8 +247,10 @@
                 await until(runLoading).toBe(false)
 
                 if (runWfMap.value[workflowName])
-                    runByWorkflowMap.value[workflowName] =
-                        runWfMap.value[workflowName]
+                    runByWorkflowMap.value = {
+                        ...runByWorkflowMap.value,
+                        [workflowName]: runWfMap.value[workflowName],
+                    }
             }
 
             provide('isRunLoading', isRunLoading)

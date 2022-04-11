@@ -176,10 +176,12 @@
                             // tracking for slack channel update event
                             if (formData.value.slack !== slackUrl.value)
                                 useAddEvent('admin', 'group', 'updated', {
-                                    action: 'slack_channel_updated',
                                     users_count:
                                         selectedGroup.value.memberCount,
-                                    slack_channel_added: !!slackLink,
+                                    has_slack_channel_added: !!slackLink,
+                                    is_default: !!selectedGroup.value.isDefault,
+                                    has_description:
+                                        !!formData.value.description,
                                 })
 
                             selectedGroup.value.name = formData.value.name

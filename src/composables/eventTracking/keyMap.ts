@@ -653,6 +653,7 @@ const keyMap = {
                 action: 'admin_sso_updated',
                 properties: (props: {
                     enforced_sso: boolean
+                    enabled: boolean
                 }) => ({
                     ...props,
                 }),
@@ -677,6 +678,11 @@ const keyMap = {
             },
             removed: { // revoke invitation
                 action: 'admin_user_removed',
+                properties: (props: {
+                    status: string
+                }) => ({
+                    ...props,
+                }),
             },
             // updated: {
             //     action: 'admin_user_updated',
@@ -694,7 +700,9 @@ const keyMap = {
                 action: 'admin_group_created',
                 properties: (props: {
                     users_count: number
-                    slack_channel_added: boolean
+                    has_slack_channel_added: boolean
+                    is_default: boolean
+                    has_description: boolean
                 }) => ({
                     ...props,
                 }),
@@ -705,9 +713,10 @@ const keyMap = {
             updated: {
                 action: 'admin_group_updated',
                 properties: (props: {
-                    action: 'members_updated' | 'slack_channel_updated',
                     users_count: number,
-                    slack_channel_added: boolean
+                    has_slack_channel_added: boolean,
+                    is_default: boolean
+                    has_description: boolean
 
                 }) => ({
                     ...props,

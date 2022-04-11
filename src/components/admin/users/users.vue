@@ -453,7 +453,9 @@
                         reloadTable()
                         // update user type aggregations in filter dropdown
                         userTypeAgg.value = getUserTypeAggregations().value
-                        useAddEvent('admin', 'user', 'removed')
+                        useAddEvent('admin', 'user', 'removed', {
+                            status: 'Invited',
+                        })
                     } else if (error && error.value) {
                         message.error({
                             key: 'remoke_invite',
@@ -490,6 +492,10 @@
                                 }`,
                                 duration: 2,
                             })
+                            if (user.enabled)
+                                useAddEvent('admin', 'user', 'removed', {
+                                    status: user.status_object.status,
+                                })
                             // update user type aggregations in filter dropdown
                             userTypeAgg.value = getUserTypeAggregations().value
                         } else if (error && error.value) {

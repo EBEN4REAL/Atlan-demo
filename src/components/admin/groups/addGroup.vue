@@ -203,7 +203,9 @@
                             emit('closeDrawer')
                             useAddEvent('admin', 'group', 'created', {
                                 users_count: userIds.value?.length || 0,
-                                slack_channel_added: !!slackLink,
+                                has_slack_channel_added: !!slackLink,
+                                is_default: isDefault.value,
+                                has_description: !!group.description,
                             })
                         } else if (error && error.value) {
                             if (

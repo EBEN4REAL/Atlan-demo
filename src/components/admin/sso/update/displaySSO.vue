@@ -198,6 +198,10 @@
                     await getDefaultIDPList()
                     await setConfig()
                     enableSSOChanging.value = false
+                    useAddEvent('admin', 'sso', 'updated', {
+                        enforced_sso: ssoForm.enforceSSO,
+                        enabled: ssoForm.enabled,
+                    })
                     message.success({
                         content: `${
                             ssoForm.enabled ? 'SSO enabled' : 'SSO disabled'
@@ -240,6 +244,7 @@
                     })
                     useAddEvent('admin', 'sso', 'updated', {
                         enforced_sso: ssoForm.enforceSSO,
+                        enabled: ssoForm.enabled,
                     })
                 } catch (error) {
                     enforceSSOChanging.value = false

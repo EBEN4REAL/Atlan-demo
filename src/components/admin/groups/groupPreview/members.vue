@@ -349,7 +349,7 @@
                                         action: 'members_updated',
                                         users_count:
                                             selectedGroup.value.memberCount - 1,
-                                        slack_channel_added:
+                                        has_slack_channel_added:
                                             selectedGroup.value.attributes?.channels.some(
                                                 (c) => c?.includes('slack')
                                             ),

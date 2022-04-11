@@ -41,7 +41,7 @@
     } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 
-    import WorkflowHeader from './header/index.vue'
+    import WorkflowHeader from '~/workflowsv2/components/profile/header.vue'
     import { workflowTabs } from '~/constant/workflowTabs'
 
     export default defineComponent({

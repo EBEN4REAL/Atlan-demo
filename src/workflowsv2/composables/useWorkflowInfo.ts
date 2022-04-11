@@ -3,6 +3,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import advanced from 'dayjs/plugin/advancedFormat'
+import { useTimeAgo } from '@vueuse/core'
 
 import parser from 'cron-parser'
 import cronstrue from 'cronstrue'
@@ -150,12 +151,21 @@ export default function useWorkflowInfo() {
             tz: cronTimezone(item),
         }
         const interval = parser.parseExpression(cron(item), options)
-        const temp = []
+        const temp: string[] = []
 
         temp.push(interval.next().toString())
         temp.push(interval.next().toString())
         temp.push(interval.next().toString())
         return temp
+    }
+
+    const nextRunRelativeTime = (item) => {
+        const options = {
+            tz: cronTimezone(item),
+        }
+        const interval = parser.parseExpression(cron(item), options)
+        const nextRunTime = interval.next().toString()
+        return useTimeAgo(new Date(nextRunTime)).value
     }
 
     const cronString = (item, verbose = false) => {
@@ -395,6 +405,7 @@ export default function useWorkflowInfo() {
         allowSchedule,
         cronObject,
         nextRuns,
+        nextRunRelativeTime,
         getGlobalArguments,
         useCases,
         supportLink,

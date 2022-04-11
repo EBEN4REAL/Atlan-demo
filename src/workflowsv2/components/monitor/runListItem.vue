@@ -8,28 +8,18 @@
             class="border-b border-gray-300 run-list-item hover:bg-primary-menu text-new-gray-800 group"
         >
             <div class="flex items-center col-span-4 text-new-gray-600 gap-x-3">
-                <div class="package-icon">
-                    <img v-if="icon(pkg)" :src="icon(pkg)" class="w-6 h-6" />
-                    <div
-                        v-else
-                        class="w-6 h-6 mt-1 text-xl leading-none text-center"
-                    >
-                        {{ emoji(pkg) || '📦' }}
-                    </div>
-                </div>
-                <div>
-                    <p class="text-sm font-medium text-new-gray-800">
+                <PackageIcon :package="pkg" />
+                <div class="overflow-x-hidden">
+                    <p class="text-sm font-bold truncate text-new-gray-700">
                         {{ pkgName(pkg) || run.metadata.name }}
-                        <AtlanIcon v-if="dName" icon="CaretRight" />
+                        <AtlanIcon
+                            v-if="dName"
+                            icon="CaretRight"
+                            class="-ml-1 -mr-0.5 mb-0.5"
+                        />
                         {{ dName }}
                     </p>
-                    <p class="text-sm">{{ run.metadata.name }}</p>
-
-                    <!-- <div class="flex items-center gap-x-2">
-                    <span class="font-medium text-primary">{{
-                        startedAt(run, false)
-                    }}</span>
-                </div> -->
+                    <p class="mt-1 text-sm truncate">{{ run.metadata.name }}</p>
                 </div>
             </div>
 
@@ -47,13 +37,14 @@
                 </span>
             </div>
 
-            <div class="col-span-1 text-new-gray-600">
+            <div class="col-span-1 truncate text-new-gray-600">
                 <template v-if="isCronRun(run)">
                     <p class="lg:whitespace-nowrap">Scheduled Run</p>
-                    <div class="flex items-center flex-nowrap">
+                    <div class="flex items-center overflow-hidden flex-nowrap">
                         <AtlanIcon icon="Schedule" class="mr-1 text-success" />
                         <span
-                            class="text-sm text-new-gray-800 lg:whitespace-nowrap"
+                            class="text-sm truncate text-new-gray-800 lg:whitespace-nowrap"
+                            :title="cronString(workflow) || 'No info'"
                             >{{ cronString(workflow) || 'No info' }}</span
                         >
                     </div>
@@ -92,13 +83,14 @@
     import { runStatusMap } from '~/workflowsv2/constants/maps'
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
 
-    import UserWrapper from '~/workflowsv2/components/common/user.vue'
     import { useWorkflowStore } from '~/workflowsv2/store'
     import { usePackageInfo } from '~/workflowsv2/composables/usePackageInfo'
+    import UserWrapper from '~/workflowsv2/components/common/user.vue'
+    import PackageIcon from '~/workflowsv2/components/common/packageIcon.vue'
 
     export default defineComponent({
         name: 'RunListItem',
-        components: { UserWrapper },
+        components: { UserWrapper, PackageIcon },
         props: {
             run: {
                 type: Object as PropType<LiveRun>,
@@ -133,7 +125,7 @@
                 name,
             } = useWorkflowInfo()
 
-            const { icon, emoji, name: pkgName } = usePackageInfo()
+            const { name: pkgName } = usePackageInfo()
 
             const pkg = computed(() => {
                 const pkgId = packageName(workflow.value)
@@ -156,8 +148,6 @@
                 workflowTemplateName,
                 runStatusMap,
                 pkg,
-                icon,
-                emoji,
                 dName,
                 pkgName,
             }
@@ -182,8 +172,5 @@
         border-radius: 50%;
         margin-bottom: 2px;
         margin-right: 6px;
-    }
-    .package-icon {
-        @apply rounded-lg border bg-white p-2 flex-none;
     }
 </style>

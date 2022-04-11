@@ -1,17 +1,7 @@
 <template>
     <div class="wf-list-item" :class="{ selected }">
         <div class="flex items-center gap-x-2">
-            <div class="package-icon">
-                <img
-                    v-if="icon(workflow)"
-                    :src="icon(workflow)"
-                    class="w-6 h-6"
-                />
-                <div v-else class="w-6 mt-1 text-xl leading-none text-center">
-                    {{ emoji(workflow) }}
-                </div>
-            </div>
-
+            <PackageIcon :package="workflow" />
             <div class="truncate">
                 <div class="flex items-center gap-x-1">
                     <span class="text-gray-500 truncate">{{
@@ -65,6 +55,7 @@
     import CreateUpdateInfo from '@/common/info/createUpdateInfo.vue'
     import RunIndicators from '~/workflowsv2/components/common/runIndicators.vue'
     import LastRunSummary from '~/workflowsv2/components/common/lastRunSummary.vue'
+    import PackageIcon from '~/workflowsv2/components/common/packageIcon.vue'
 
     import { usePackageInfo } from '~/workflowsv2/composables/usePackageInfo'
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
@@ -72,7 +63,12 @@
 
     export default defineComponent({
         name: 'WorkflowListItem',
-        components: { CreateUpdateInfo, RunIndicators, LastRunSummary },
+        components: {
+            CreateUpdateInfo,
+            RunIndicators,
+            LastRunSummary,
+            PackageIcon,
+        },
         props: {
             workflow: {
                 type: Object,

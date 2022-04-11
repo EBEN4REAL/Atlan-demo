@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col w-full h-full">
         <a-tabs
-            :activeKey="activeKey"
+            v-model:activeKey="activeKey"
             :class="$style.profiletab"
             class="flex-1"
         >
@@ -10,6 +10,7 @@
                     <router-link
                         :to="{ params: { tab: tab.id } }"
                         class="select-none"
+                        @click.stop=""
                     >
                         {{ tab.label }}
                     </router-link>
@@ -51,8 +52,15 @@
                 title: 'Workflows Center V2',
             })
             const route = useRoute()
+            const router = useRouter()
 
-            const activeKey = computed(() => route?.params?.tab)
+            const activeKey = computed({
+                get: () => route?.params?.tab,
+                set: (key) => {
+                    router.push({ params: { tab: key } })
+                },
+            })
+
             return { activeKey, mainTabs }
         },
     })

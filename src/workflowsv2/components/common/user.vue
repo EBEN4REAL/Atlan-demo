@@ -3,16 +3,18 @@
         class="text-sm cursor-pointer hover:underline text-new-gray-800"
         @click="() => openUserSidebar(username)"
     >
-        <img
-            v-if="showCreatorImage"
-            :src="avatarUrl(username)"
-            class="flex-none inline-block h-4 rounded-full"
-            @error="showCreatorImage = false"
-        />
         <AtlanIcon
-            v-else
+            v-if="!creatorImageLoaded"
             icon="User"
             class="overflow-hidden text-gray-500 rounded-full"
+        />
+        <img
+            v-if="showImage"
+            :src="avatarUrl(username)"
+            class="flex-none inline-block h-4 rounded-full"
+            :class="{ hidden: !creatorImageLoaded }"
+            @error="showImage = false"
+            @load="creatorImageLoaded = true"
         />
         {{ username }}
     </span>
@@ -32,14 +34,16 @@
             },
         },
         setup(props) {
-            const showCreatorImage = ref(true)
+            const creatorImageLoaded = ref(false)
+            const showImage = ref(true)
 
             const { openUserSidebar } = useUserPreview()
 
             return {
                 openUserSidebar,
-                showCreatorImage,
+                creatorImageLoaded,
                 avatarUrl,
+                showImage,
             }
         },
     })

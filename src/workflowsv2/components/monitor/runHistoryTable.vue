@@ -7,7 +7,7 @@
             <IconButton
                 icon="Retry"
                 class="ml-auto"
-                @click="resetAndFetchRuns"
+                @click="fetchRuns(false)"
             />
         </div>
         <div
@@ -67,7 +67,7 @@
                 :total-pages="Math.ceil(totalRuns / limit)"
                 :loading="isLoading"
                 :page-size="limit"
-                @mutate="resetAndFetchRuns"
+                @mutate="fetchRuns"
             />
         </div>
     </div>
@@ -97,7 +97,6 @@
         emits: ['update:filters'],
         setup(props) {
             const { filters } = toRefs(props)
-            const pagiKey = ref(Date.now())
             const limit = ref(30)
             const offset = ref(0)
             const queryText = ref('')
@@ -159,13 +158,13 @@
                 // { title: 'Output', style: 'grid-column: span 2 / span 2' },
             ]
 
-            const resetAndFetchRuns = () => {
-                offset.value = 0
+            const fetchRuns = (reset = false) => {
+                if (reset) offset.value = 0
                 resetState()
                 quickChange()
             }
 
-            watch(filters, resetAndFetchRuns, { deep: true })
+            watch(filters, () => fetchRuns(true), { deep: true })
 
             const workflowMap = new Map<string, any>()
 
@@ -214,7 +213,7 @@
                 tableHeaders,
                 isLoading,
                 EmptyLogsIllustration,
-                resetAndFetchRuns,
+                fetchRuns,
                 limit,
                 offset,
                 totalRuns,

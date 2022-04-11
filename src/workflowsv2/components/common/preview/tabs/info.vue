@@ -36,6 +36,11 @@
                 }}</span>
             </div>
 
+            <div v-if="isCronWorkflow(workflow)">
+                <p class="info-title">Next Run</p>
+                <span class="text-sm">{{ nextRunRelativeTime(workflow) }}</span>
+            </div>
+
             <div v-if="creatorUsername(workflow)">
                 <p class="info-title">Created</p>
                 <span>{{ creationTimestamp(workflow, true) }} by </span>
@@ -130,6 +135,7 @@
                 modifierUsername,
                 name: wfName,
                 packageType,
+                nextRunRelativeTime,
             } = useWorkflowInfo()
 
             const { name, version } = usePackageInfo()
@@ -173,6 +179,7 @@
                 creatorUsername,
                 modifierUsername,
                 creationTimestamp,
+                nextRunRelativeTime,
                 packageType,
                 name,
                 version,

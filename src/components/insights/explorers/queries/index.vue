@@ -935,10 +935,10 @@
                                             parentGuid.value,
                                             'Folder'
                                         )
-                                        await refetchNode(
-                                            parentGuid.value,
-                                            'query'
-                                        )
+                                        // await refetchNode(
+                                        //     parentGuid.value,
+                                        //     'query'
+                                        // )
                                         ul.removeChild(div)
                                     }, 1000)
                                 }
@@ -1060,7 +1060,7 @@
 
                 // if the folder is not loaded
                 if (!loaded) {
-                    // expandNodeManually(item.value)
+                    expandNodeManually(item.value)
                     // refetchNode(parentGuid.value, 'Folder')
                     setTimeout(appendInput, 1000)
                 }
@@ -1117,7 +1117,7 @@
                 immediateParentFolderQF: immediateParentFolderQF,
                 onLoadData: onLoadData,
                 expandNode: expandNode,
-                // expandNodeManually: expandNodeManually,
+                expandNodeManually: expandNodeManually,
                 selectNode: selectNode,
                 refetchNode: refetchNode,
                 refetchNodeLocally: refetchNodeLocally,
@@ -1451,7 +1451,7 @@
                 expandedKeys,
                 onLoadData,
                 expandNode,
-                // expandNodeManually,
+                expandNodeManually,
                 selectNode,
                 searchQuery,
                 facets,

@@ -333,6 +333,25 @@ const useQueryTree = ({
         loadedKeys.value.push(treeNode.dataRef.key)
     }
 
+    const expandNodeManually = (event: any) => {
+        // debugger
+        if (!event.isLeaf) {
+            const key: string = event.guid
+            const isExpanded = expandedKeys.value?.includes(key)
+            if (!isExpanded) {
+                if (isAccordion && event.dataRef.isRoot) {
+                    expandedKeys.value = []
+                }
+                expandedKeys.value?.push(key)
+            } else if (isExpanded) {
+                const index = expandedKeys.value?.indexOf(key)
+                expandedKeys.value?.splice(index, 1)
+            }
+            expandedKeys.value = [...expandedKeys.value]
+        }
+        store.set(expandedCacheKey, expandedKeys.value)
+    }
+
     const expandNode = (expanded: string[], event: any) => {
         // triggered by select
         // const item = event.node.dataRef.entity as Folder | SavedQuery
@@ -1072,6 +1091,7 @@ const useQueryTree = ({
         onLoadData,
         onLoadFolderData,
         expandNode,
+        expandNodeManually,
         selectNode,
         refetchNode,
         initTreeData,

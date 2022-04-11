@@ -96,11 +96,7 @@
                         }"
                         @click="() => (isEdit = true)"
                     >
-                        <span
-                            ><AtlanIcon
-                                icon="Add"
-                                class="h-3"
-                            ></AtlanIcon></span
+                        <span> <AtlanIcon icon="Add" class="h-3" /> </span
                     ></a-button>
                 </Shortcut>
             </a-tooltip>
@@ -137,11 +133,13 @@
                 v-if="
                     !showAddBtn &&
                     localValue?.ownerGroups?.length < 1 &&
-                    localValue?.ownerUsers?.length < 1
+                    localValue?.ownerUsers?.length < 1 &&
+                    showEmptyOwner
                 "
                 class="ml-1 text-gray-600"
-                >No owners assigned</span
             >
+                No owners assigned
+            </span>
         </div>
     </div>
 </template>
@@ -259,6 +257,11 @@
                 type: Object,
                 required: false,
                 default: () => ({}),
+            },
+            showEmptyOwner: {
+                type: Boolean,
+                required: false,
+                default: true,
             },
         },
         emits: ['change', 'update:modelValue', 'changeData'],

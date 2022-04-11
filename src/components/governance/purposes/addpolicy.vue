@@ -146,6 +146,8 @@
                                 :destroy-tooltip-on-hide="true"
                                 @change="handleOwnersChange"
                                 @changeData="allUser = ''"
+                                :showAddBtn="!allUser"
+                                :showEmptyOwner="false"
                             >
                                 <template #users>
                                     <div

@@ -44,6 +44,7 @@ export function useWorkflowDiscoverList({
         defaultBody.value = {
             ...dsl,
             _source: source?.value,
+            suppressLogs: true,
         }
     }
 

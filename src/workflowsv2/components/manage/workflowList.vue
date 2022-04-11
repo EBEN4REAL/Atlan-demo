@@ -4,11 +4,12 @@
         class="flex flex-col h-full px-4 pb-4 overflow-y-scroll gap-y-2"
     >
         <WorkflowListItem
-            v-for="workflow in workflows"
+            v-for="(workflow, idx) in workflows"
             :key="workflow?.metadata?.uid"
             :selected="selectedId === workflow?.metadata?.uid"
             :workflow="workflow"
             :runs="runs(workflow)"
+            :isRunLoading="idx >= runMapLength ? isRunLoading : false"
             @click="$emit('update:selectedId', workflow?.metadata?.uid)"
         />
         <div
@@ -36,7 +37,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, toRefs } from 'vue'
+    import { defineComponent, inject, toRefs, ref, Ref, computed } from 'vue'
     import WorkflowListItem from '~/workflowsv2/components/manage/workflowListItem.vue'
 
     import { useWorkflowStore } from '~/workflowsv2/store'
@@ -70,17 +71,27 @@
         setup(props) {
             const { lastRunsMap } = toRefs(props)
             const workflowStore = useWorkflowStore()
+            const isRunLoading = inject<Ref<boolean>>(
+                'isRunLoading',
+                ref(false)
+            )
+            const workflowOffset = inject<Ref<number>>('workflowOffset', ref(0))
 
             const init = async () => {
                 await workflowStore.fetchActivePackages()
                 workflowStore.fetchActivePackageMeta()
             }
+
             init()
 
             const runs = (workflow) =>
                 lastRunsMap.value?.[workflow?.metadata?.name]
 
-            return { runs }
+            const runMapLength = computed(
+                () => Object.keys(lastRunsMap.value).length
+            )
+
+            return { runs, isRunLoading, workflowOffset, runMapLength }
         },
     })
 </script>

@@ -11,7 +11,7 @@
                 <span class="text-gray-500 truncate">{{ name(workflow) }}</span>
             </div>
 
-            <div class="flex items-center justify-between">
+            <div class="flex items-center">
                 <router-link
                     :to="`/workflows/profile/${wfName(workflow)}`"
                     class="font-bold tracking-wide truncate cursor-pointer text-primary hover:underline"
@@ -19,9 +19,15 @@
                     {{ dName }}
                 </router-link>
 
-                <router-link :to="`/workflows/profile/${wfName(workflow)}`">
-                    <IconButton icon="EnterProfile" />
-                </router-link>
+                <div class="flex ml-auto border divide-x rounded">
+                    <router-link
+                        class="ml-auto border-r"
+                        :to="`/workflows/profile/${wfName(workflow)}`"
+                    >
+                        <IconButton icon="EnterProfile" class="border-none" />
+                    </router-link>
+                    <Dropdown :options="dropdownOptions" @click.stop />
+                </div>
             </div>
         </div>
         <a-tabs
@@ -74,16 +80,23 @@
         defineComponent,
         ref,
         toRefs,
+        h,
     } from 'vue'
+    import { Modal, message } from 'ant-design-vue'
+    import { until } from '@vueuse/core'
+
+    import Dropdown from '@/UI/dropdown.vue'
     import { workflowPreviewTabs } from '~/workflowsv2/constants/tabs'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import { usePackageInfo } from '~/workflowsv2/composables/usePackageInfo'
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
+    import { deleteWorkflowByName } from '~/workflowsv2/composables/useWorkflowList'
     import { useWorkflowStore } from '~/workflowsv2/store'
 
     export default defineComponent({
         name: 'WorkflowPreview',
         components: {
+            Dropdown,
             PreviewTabsIcon,
             info: defineAsyncComponent(() => import('./tabs/info.vue')),
             runs: defineAsyncComponent(() => import('./tabs/runs.vue')),
@@ -98,8 +111,8 @@
                 default: () => [],
             },
         },
-        emits: [],
-        setup(props) {
+        emits: ['archive'],
+        setup(props, { emit }) {
             const { workflow } = toRefs(props)
             const workflowStore = useWorkflowStore()
             const activeKey = ref(0)
@@ -122,6 +135,48 @@
                     : 'Workflow Name'
             )
 
+            const archiveWorkflow = (workflowName: string) => {
+                Modal.confirm({
+                    title: 'Delete Workflow',
+                    content: () =>
+                        h('span', [
+                            'Are you sure you want to delete ',
+                            h('b', [workflowName]),
+                            ' workflow?',
+                        ]),
+                    okType: 'danger',
+                    autoFocusButton: null,
+                    okButtonProps: {
+                        type: 'primary',
+                    },
+                    okText: 'Delete',
+                    cancelText: 'Cancel',
+                    async onOk() {
+                        const { error, isLoading } = deleteWorkflowByName(
+                            workflowName,
+                            true
+                        )
+                        await until(isLoading).toBe(false)
+                        if (error.value)
+                            message.error('Failed to delete workflow')
+                        else {
+                            message.success('Workflow deleted')
+                            emit('archive', workflowName)
+                        }
+                    },
+                })
+            }
+
+            const dropdownOptions = [
+                {
+                    title: 'Delete',
+                    icon: 'Trash',
+                    class: 'text-red-700',
+                    handleClick: () =>
+                        archiveWorkflow(workflow.value?.metadata?.name),
+                },
+            ]
+
             return {
                 workflowPreviewTabs,
                 activeKey,
@@ -131,6 +186,8 @@
                 type,
                 dName,
                 wfName,
+                dropdownOptions,
+                archiveWorkflow,
             }
         },
     })

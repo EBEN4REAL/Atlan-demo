@@ -74,6 +74,7 @@
                 v-if="selectedWorkflow"
                 :workflow="selectedWorkflow"
                 :runs="runs(selectedWorkflow)"
+                @archive="handleArchiveWorkflow"
             />
         </div>
     </div>
@@ -125,9 +126,10 @@
 
             const getPlaceholder = computed(() => {
                 if (packageId.value)
-                    return `Search all ${pkgName(
-                        workflowStore.packageMeta?.[packageId.value]
-                    )} workflows`
+                    return `Search ${
+                        pkgName(workflowStore.packageMeta?.[packageId.value]) ||
+                        'all'
+                    } workflows`
 
                 return 'Search all workflows'
             })
@@ -193,7 +195,8 @@
                 () => runFacets.value.workflowTemplates,
                 () => {
                     if (!offset.value) resetRunState()
-                    quickChangeRun()
+                    if (runFacets.value.workflowTemplates?.length)
+                        quickChangeRun()
                 },
                 { deep: true }
             )
@@ -213,13 +216,26 @@
             }
 
             const loadMoreWorkflows = () => {
-                if (isLoadMore.value) offset.value += limit.value
+                if (isLoadMore.value) offset.value = list.value.length
                 quickChange()
             }
 
-            provide('isRunLoading', isRunLoading)
+            const handleArchiveWorkflow = (workflowName: string) => {
+                const idx = list.value.findIndex(
+                    (li) => li?.metadata?.name === workflowName
+                )
 
-            ///////////////////////////////////////////////////////////////////////////////////
+                if (idx > -1) {
+                    list.value.splice(idx, 1)
+
+                    const nextIdx = idx < list.value.length - 1 ? idx : idx - 1
+                    selectedId.value = list.value[nextIdx]?.metadata?.uid || ''
+                }
+            }
+
+            provide('isRunLoading', isRunLoading)
+            provide('workflowOffset', offset)
+
             /**  Dynamically inject the workflow type filter after getting response from API */
 
             // Existing filters
@@ -242,7 +258,7 @@
                             })`,
                         }))
             })
-            ///////////////////////////////////////////////////////////////////////////////////
+            /**  END Block */
 
             return {
                 list,
@@ -265,6 +281,7 @@
                 selectedId,
                 selectedWorkflow,
                 getPlaceholder,
+                handleArchiveWorkflow,
             }
         },
     })

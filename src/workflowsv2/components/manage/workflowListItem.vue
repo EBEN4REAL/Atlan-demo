@@ -82,12 +82,14 @@
                 type: Boolean,
                 default: () => false,
             },
+            isRunLoading: {
+                type: Boolean,
+                default: () => false,
+            },
         },
         emits: [],
         setup(props) {
             const { workflow } = toRefs(props)
-
-            const isRunLoading = inject<boolean>('isRunLoading')
 
             const workflowStore = useWorkflowStore()
 
@@ -121,7 +123,6 @@
                 isCronWorkflow,
                 cronString,
                 creatorUsername,
-                isRunLoading,
                 pkg,
             }
         },

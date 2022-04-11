@@ -43,6 +43,7 @@ export default function usePersona(immediate = true) {
     watch(error, (newErr) => {
         if (newErr) {
             personaStore.setList([])
+            personaStore.setErrorPersona(newErr)
         }
     })
     return {

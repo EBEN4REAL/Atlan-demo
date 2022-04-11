@@ -4,7 +4,7 @@ import usePersona from '~/composables/persona/usePersona'
 import { Persona } from '~/services/service/persona'
 
 const personaStore = usePersonaStore()
-const { updatePersona: handleUpdateList } = personaStore
+const { updatePersona: handleUpdateList, errorPersona } = personaStore
 const { getList: personaList } = toRefs(personaStore)
 const {
     mutate: reFetchList,
@@ -31,6 +31,7 @@ export {
     isPersonaLoading,
     isPersonaError,
     handleUpdateList,
+    errorPersona
 }
 // Selected Persona Details
 export const selectedPersonaId = ref('')

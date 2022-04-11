@@ -37,11 +37,11 @@ export default function usePurpose(immediate = true) {
     const purposeStore = usePurposeStore()
     watch(data, () => {
         purposeStore.setList(data.value?.records)
-        // console.log(tenantStore.tenantRaw)
     })
     watch(error, (newErr) => {
         if (newErr) {
             purposeStore.setList([])
+            purposeStore.setErrorPurpose(newErr)
         }
     })
     return {

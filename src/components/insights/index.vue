@@ -57,6 +57,7 @@
                                                 ? 'active-tab'
                                                 : 'inactive-tab'
                                         "
+                                        class="nav-text"
                                     >
                                         {{ tab.name }}
                                     </div>
@@ -765,6 +766,14 @@
     })
 </script>
 <style lang="less" module>
+    html {
+        // box-sizing: border-box ;
+        --duration: 0.1s;
+        --cubic: cubic-bezier(0.4, 0, 0.2, 1);
+        // --color-1: #d5dadd ;
+        // --color-2: #51d5c2 ;
+    }
+
     .splitpane_insights {
         :global(.splitpanes__splitter) {
             @apply bg-new-gray-100;
@@ -891,9 +900,10 @@
                 height: 40px !important;
             }
             :global(.ant-tabs-nav-wrap) {
-                justify-content: space-evenly;
+                justify-content: center;
                 position: relative;
                 top: -1px;
+                width: 100%;
             }
             :global(.ant-tabs-ink-bar) {
                 display: none;
@@ -902,7 +912,30 @@
                 @apply border-new-gray-300 !important;
             }
             :global(.ant-tabs-nav-list .ant-tabs-tab:not(:first-child)) {
-                margin-left: 16px !important;
+                // margin-left: 16px !important;
+                margin-left: 0 !important;
+            }
+            :global(.ant-tabs-nav-list) {
+                display: flex;
+                position: relative;
+                align-items: center;
+
+                justify-content: center;
+                width: 100%;
+                @apply px-8;
+            }
+            :global(.ant-tabs-tab) {
+                flex-grow: 1;
+                display: flex;
+                position: relative;
+                align-items: center;
+                justify-content: center;
+                min-width: 53px;
+                // transition: flex-grow var(--duration) var(--cubic);
+                // transition: flex-grow var(--duration) var(--cubic);
+            }
+            :global(.ant-tabs-tab-active) {
+                flex-grow: 2.7;
             }
         }
     }
@@ -954,10 +987,36 @@
         // top: 0.5px !important;
         color: #225bd2;
         @apply h-5;
+        // animation: fadeIn ease 1s;
     }
     .inactive-tab {
         display: none;
         color: #6a7692;
+        animation: fadeOut ease 2s;
+    }
+
+    .nav-text {
+        animation: fadeIn ease 0.4s;
+        // -webkit-animation: fadeIn ease 10s;
+        // -moz-animation: fadeIn ease 10s;
+        // -o-animation: fadeIn ease 10s;
+        // -ms-animation: fadeIn ease 10s;
+    }
+    @keyframes fadeIn {
+        0% {
+            opacity: 0;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
+    @keyframes fadeOut {
+        0% {
+            opacity: 1;
+        }
+        100% {
+            opacity: 0;
+        }
     }
 </style>
 

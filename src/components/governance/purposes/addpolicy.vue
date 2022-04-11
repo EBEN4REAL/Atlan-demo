@@ -140,14 +140,12 @@
                                     }
                                 "
                                 v-model:modelValue="selectedOwnersData"
-                                :enable-tabs="
-                                    allUser ? ['groups'] : ['users', 'groups']
-                                "
                                 :align="{ offset: [-10, 230] }"
                                 :edit-permission="true"
                                 :read-only="false"
                                 :destroy-tooltip-on-hide="true"
                                 @change="handleOwnersChange"
+                                @changeData="allUser = ''"
                             >
                                 <template #users>
                                     <div
@@ -527,7 +525,7 @@
             const addAllUser = () => {
                 const objOwner = {
                     ownerUsers: [],
-                    ownerGroups: selectedOwnersData.value.ownerGroups || [],
+                    ownerGroups: [],
                 }
                 refOwners.value.setLocalValue(objOwner)
                 allUser.value = 'all-users'
@@ -744,6 +742,7 @@
             }
             const imageUrl = (username: any) =>
                 `${window.location.origin}/api/service/avatars/${username}`
+
             return {
                 selectedPersonaDirty,
                 rules,

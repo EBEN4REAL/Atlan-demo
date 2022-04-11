@@ -36,6 +36,7 @@
                             v-model="localValue"
                             :show-none="false"
                             :enableTabs="enableTabs"
+                            @change="handleChangeData"
                         ></OwnerFacets>
 
                         <!-- <OwnerFacets -->
@@ -260,7 +261,7 @@
                 default: () => ({}),
             },
         },
-        emits: ['change', 'update:modelValue'],
+        emits: ['change', 'update:modelValue', 'changeData'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const { selectedAsset, inProfile, editPermission } = toRefs(props)
@@ -425,7 +426,9 @@
             const handleCancelRequest = () => {
                 isEdit.value = false
             }
-
+            const handleChangeData = () => {
+                emit('changeData', localValue)
+            }
             return {
                 ownerGroups,
                 ownerUsers,
@@ -444,6 +447,7 @@
                 handleRequest,
                 handleCancelRequest,
                 newOwners,
+                handleChangeData,
             }
         },
     })

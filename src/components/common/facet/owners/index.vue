@@ -77,6 +77,7 @@
                 :query-text="queryText"
                 :select-group-key="selectGroupKey"
                 :user-id="userId"
+                @change="handleChange"
             ></Groups>
         </div>
         <div v-if="showNone" class="px-4 pt-1">
@@ -261,7 +262,6 @@
             }
             const handleChange = () => {
                 modelValue.value = localValue.value
-                console.log('change')
                 emit('change')
             }
 

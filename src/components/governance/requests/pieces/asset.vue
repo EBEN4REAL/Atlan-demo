@@ -1,13 +1,17 @@
 <template>
     <div class="flex flex-col">
         <span
-            class="mb-1 overflow-hidden text-sm overflow-ellipsis text-primary"
+            class="mb-1 overflow-hidden text-sm overflow-ellipsis text-primary flex items-center"
+            :style="size === 'small' ? 'max-width: 200px' : ''"
         >
-            {{ assetText[0] }}
+            <Tooltip
+                :tooltipText="assetText[0]"
+                :clampPercentage="size === 'small' ? '80%' : '95%'"
+            />
             <CertificateBadge
                 v-if="destinationEntity?.attributes?.certificateStatus"
                 :status="destinationEntity?.attributes?.certificateStatus"
-                class="mb-1 ml-1"
+                class="mb-1 ml-2 mr-2"
                 :username="destinationEntity?.attributes?.certificateUpdatedBy"
                 :timestamp="timeAgo"
             />
@@ -16,30 +20,45 @@
             <!-- <AssetLogo :selected="selected" :asset="assetWrappper" /> -->
             <AtlanIcon class="mr-1" :icon="assetIcon" />
             <span
-                class="ml-1 overflow-hidden text-gray-500 overflow-ellipsis"
+                class="ml-1 overflow-hidden text-gray-500 overflow-ellipsis w-12"
                 >{{ entityType.toUpperCase() }}</span
             >
             <AtlanIcon class="mx-1 ml-2 icon-table" icon="Schema2" />
-            <span class="overflow-hidden text-gray-500 overflow-ellipsis">
-                {{ assetText[2] }}</span
+            <!-- <span class="overflow-hidden text-gray-500 overflow-ellipsis"> -->
+            <!--     {{ assetText[2] }}</span -->
+            <!-- > -->
+            <span
+                :style="size === 'small' ? 'max-width: 30px' : ''"
+                class="w-full "
             >
-            <AtlanIcon class="mx-1 ml-2 text-gray-500" icon="SchemaGray" />
+                <Tooltip
+                    :tooltipText="assetText[2]"
+                    :classes="'text-gray-500 w-full'"
+                />
+            </span>
+            <AtlanIcon class="mr-1  text-gray-500" icon="SchemaGray" />
 
-            <span class="overflow-hidden text-gray-500 overflow-ellipsis">
-                {{ assetText[1] }}</span
-            >
+            <!-- <span class="overflow-hidden text-gray-500 overflow-ellipsis"> -->
+            <!--     {{ assetText[1] }}</span -->
+            <!-- > -->
+            <Tooltip
+                :tooltipText="assetText[1]"
+                :classes="'text-gray-500'"
+                clampPercentage="60%"
+            />
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, toRefs } from 'vue'
+    import { computed, defineComponent, toRefs ,ref} from 'vue'
     import CertificateBadge from '@common/badge/certificate/index.vue'
     import { useTimeAgo } from '@vueuse/core'
     import AssetLogo from '@/common/icon/assetIcon.vue'
+    import Tooltip from '@/common/ellipsis/index.vue'
 
     export default defineComponent({
-        components: { AssetLogo, CertificateBadge },
+        components: { AssetLogo, CertificateBadge, Tooltip },
         props: {
             assetQfName: { type: String, required: true },
             selected: {
@@ -54,6 +73,11 @@
             destinationEntity: {
                 type: Object,
                 required: true,
+            },
+            size: {
+                type: String,
+                required: false,
+                default: () => 'default',
             },
         },
         setup(props) {
@@ -86,8 +110,12 @@
                         dt.toDateString().split(' ').slice(1).join(' '),
                 }
             )
-
-            return { assetWrappper, assetText, timeAgo, assetIcon }
+            return {
+                assetWrappper,
+                assetText,
+                timeAgo,
+                assetIcon,
+            }
         },
     })
 </script>

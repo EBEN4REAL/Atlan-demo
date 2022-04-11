@@ -3,13 +3,13 @@
         class="flex flex-col border border-gray-200 rounded requests-container"
     >
         <div
-            class="flex items-baseline py-2 pl-6 pr-5 mb-1 bg-gray-100 border-b"
+            class="flex items-baseline py-2 pl-4 pr-5 mb-1 bg-gray-100 border-b"
         >
             <span class="text-sm font-semibold text-gray-500">
                 My Requests
             </span>
         </div>
-        <div v-if="requestList?.length" class="p-4 overflow-x-hidden overflow-y-auto">
+        <div v-if="requestList?.length" class="py-4 overflow-x-hidden overflow-y-auto">
             <template
                 v-for="(request, index) in requestList"
                 :key="request?.id"
@@ -19,6 +19,7 @@
                     :showActions="false"
                     @mouseenter="handleMouseEnter(request.id, index)"
                     :active-hover="activeHover"
+                    size="small"
                 />
             </template>
         </div>
@@ -69,7 +70,6 @@
             })
             const requestList = ref([])
             const filters = ref({
-                status: 'active' as RequestStatus,
                 request_type: [],
                 createdBy: username.value,
             })

@@ -1,6 +1,6 @@
 <template>
     <div
-        class="grid items-center justify-between grid-cols-10 pl-4 bg-white border-t border-gray-light border-style-500 group gap-x-4 request-card"
+        class="grid items-center justify-between grid-cols-10  bg-white border-t border-gray-light border-style-500 group gap-x-4 request-card pl-4"
         style="height: 72px"
         :class="{
             'bg-primary-light': selected,
@@ -9,7 +9,7 @@
         }"
         @click="$emit('select')"
     >
-        <div class="flex items-center col-span-4 overflow-hidden">
+        <div class="flex items-center col-span-4 overflow-hidden " >
             <!-- TODO: Uncomment for bulk selection -->
             <!-- <a-checkbox :checked="selected" class="mr-4" /> -->
             <!-- <Popover
@@ -66,6 +66,7 @@
                     :asset-qf-name="request.destinationQualifiedName"
                     :entity-type="request?.entityType"
                     :destination-entity="request.destinationEntity"
+                    :size="size"
                 />
                 <span v-else class="text-sm overflow-ellipsis">
                     {{
@@ -76,7 +77,10 @@
                 </span>
             </div>
         </div>
-        <div class="flex items-center col-span-3 ml-24  " :class="showActions?'':'w-full'">
+        <div
+            class="flex items-center col-span-3 ml-24"
+            :class="showActions ? '' : 'w-full'"
+        >
             <ClassificationPiece
                 v-if="
                     request?.requestType === 'create_typedef' &&
@@ -115,7 +119,10 @@
             />
         </div>
 
-        <div v-if="showActions" class="flex items-center justify-end col-span-3">
+        <div
+            v-if="showActions"
+            class="flex items-center justify-end col-span-3"
+        >
             <!-- <AtlanIcon
                 v-if="state.isLoading"
                 icon="CircleLoader"
@@ -359,11 +366,16 @@
                 default: () => '',
                 required: false,
             },
-            showActions:{
-                type:Boolean,
-                required:false,
-                default:true
-            }
+            showActions: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
+            size: {
+                type: String,
+                required: false,
+                default: () => 'default',
+            },
         },
         emits: ['select', 'action'],
         setup(props, { emit }) {
@@ -403,7 +415,7 @@
                 useAddEvent('governance', 'requests', 'resolved', {
                     action,
                     request_type,
-                    widget_type:'table'
+                    widget_type: 'table',
                 })
             }
             async function handleApproval(messageProp = '') {

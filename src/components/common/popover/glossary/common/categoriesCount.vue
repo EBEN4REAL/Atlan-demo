@@ -1,15 +1,15 @@
 <template>
     <div>
         <p class="text-gray-500 mb-1">
-            {{ $t('common.term.linked-term', 2) }}
+            {{ $t('common.term.category', 2) }}
         </p>
-        <p class="font-bold">{{ linkedTerms }}</p>
+        <p class="font-bold">{{ categories }}</p>
     </div>
 </template>
 
 <script lang="ts">
     export default {
-        name: 'GlossaryPopoverLinkedTerms',
+        name: 'GlossaryPopoverCategoryCount',
     }
 </script>
 
@@ -30,7 +30,7 @@
 
     const { attributes, term } = toRefs(props)
 
-    const linkedTerms = computed(() => term?.value?.termsCount || 0)
+    const categories = computed(() => term?.value?.categoryCount || 0)
 </script>
 
 <style scoped></style>

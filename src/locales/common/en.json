@@ -32,7 +32,8 @@
         "warning": "Warning",
         "term-lower": "term | terms",
         "term-upper": "Term | Terms",
-        "related-term": "Related term | Related terms"
+        "related-term": "Related term | Related terms",
+        "linked-term": "Linked term | Linked terms"
     },
     "grammar": {
         "on": "on"

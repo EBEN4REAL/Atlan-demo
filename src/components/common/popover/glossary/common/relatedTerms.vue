@@ -10,10 +10,12 @@
                 :term="term"
                 :allow-delete="false"
             />
-            <BasePill
+            <div
                 v-if="relatedTerms.length > 2"
-                :text="`+${relatedTerms.length - 2}`"
-            />
+                class="rounded-full bg-gray-100 flex justify-center align-center items-center px-1.5 py-1 border border-gray-200 text-gray-700"
+            >
+                +{{ relatedTerms.length - 2 }}
+            </div>
         </div>
     </div>
 </template>

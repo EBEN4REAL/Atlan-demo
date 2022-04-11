@@ -2,6 +2,7 @@
     <a-popover
         :placement="placement"
         :trigger="trigger"
+        :mouse-enter-delay="mouseEnterDelay"
         @visible-change="handleVisibilityChange"
     >
         <template #content>
@@ -14,7 +15,10 @@
             </div>
             <div v-else>
                 <GlossaryPopoverHeader :term="fetchedTerm" />
-                <GlossaryPopoverBody :attributes="attributes" />
+                <GlossaryPopoverBody
+                    :attributes="attributes"
+                    :term="fetchedTerm"
+                />
             </div>
         </template>
         <slot />
@@ -23,23 +27,24 @@
 
 <script lang="ts">
     import GlossaryPopoverHeader from './header.vue'
+    import GlossaryPopoverBody from './body.vue'
 
     export default {
         name: 'GlossaryPopover',
-        components: { GlossaryPopoverHeader },
+        components: { GlossaryPopoverHeader, GlossaryPopoverBody },
     }
 </script>
 
 <script setup lang="ts">
     import { onMounted, ref, toRefs, watch } from 'vue'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
-    import GlossaryPopoverBody from '@common/popover/glossary/body.vue'
     import { useGlossaryPopover } from '@common/popover/glossary/useGlossaryPopover'
 
     const props = defineProps({
         term: {
             type: Object,
-            required: true,
+            required: false,
+            default: () => {},
         },
         passingFetchedTerm: {
             type: Boolean,
@@ -66,6 +71,11 @@
             required: false,
             default: 'hover',
         },
+        mouseEnterDelay: {
+            type: Number,
+            required: false,
+            default: 1.5,
+        },
     })
 
     const emit = defineEmits(['visible'])
@@ -75,6 +85,9 @@
         isFetchedTermLoading,
         fetchedTerm: initialFetchedTerm,
         passingFetchedTerm,
+        placement,
+        trigger,
+        mouseEnterDelay,
     } = toRefs(props)
 
     const attributes = ref({})
@@ -83,8 +96,17 @@
 
     const handleVisibilityChange = (visible) => {
         if (!visible) return
-
+        emit('visible')
         if (passingFetchedTerm.value) {
+            isLoading.value = isFetchedTermLoading?.value
+            if (
+                !isFetchedTermLoading?.value &&
+                initialFetchedTerm?.value &&
+                initialFetchedTerm?.value?.guid
+            ) {
+                fetchedTerm.value = initialFetchedTerm?.value
+                attributes.value = updateAssetAttributes(initialFetchedTerm)
+            }
             watch([isFetchedTermLoading, initialFetchedTerm], () => {
                 isLoading.value = isFetchedTermLoading?.value
                 if (!isFetchedTermLoading?.value) {
@@ -97,7 +119,7 @@
 
         const { term: fetchedTermInner, isLoading: termLoading } =
             useGlossaryPopover(term?.value)
-
+        isLoading.value = termLoading.value
         watch([fetchedTermInner, termLoading], () => {
             isLoading.value = termLoading.value
             if (!termLoading.value) {

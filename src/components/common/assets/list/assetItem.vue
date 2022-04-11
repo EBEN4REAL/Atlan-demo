@@ -966,6 +966,7 @@
                                     :entity-guid="item.guid"
                                     :mouse-enter-delay="mouseEnterDelay"
                                     @mouse-entered="enteredPill"
+                                    @mouse-left="leftPill"
                                 >
                                     <ClassificationPill
                                         :name="classification.name"
@@ -1001,20 +1002,14 @@
                                 >
                                     <TermPopover
                                         :term="term"
-                                        :loading="termLoading"
-                                        :fetched-term="
-                                            getFetchedTerm(
-                                                term?.guid ?? term?.termGuid
-                                            )
-                                        "
-                                        :error="termError"
                                         trigger="hover"
-                                        :ready="isReady"
-                                        @visible="handleTermPopoverVisibility"
+                                        :mouse-enter-delay="termMouseEnterDelay"
                                     >
                                         <TermPill
                                             :term="term"
                                             :allow-delete="false"
+                                            @mouseenter="termEnteredPill"
+                                            @mouseleave="termLeftPill"
                                         />
                                     </TermPopover>
                                 </div>
@@ -1397,22 +1392,15 @@
                 return 'Term'
             }
 
+            const { mouseEnterDelay, enteredPill, leftPill } =
+                useMouseEnterDelay()
             const {
-                getFetchedTerm,
-                handleTermPopoverVisibility,
-                termLoading,
-                isReady,
-                termError,
-            } = useTermPopover()
-
-            const { mouseEnterDelay, enteredPill } = useMouseEnterDelay()
+                mouseEnterDelay: termMouseEnterDelay,
+                enteredPill: termEnteredPill,
+                leftPill: termLeftPill,
+            } = useMouseEnterDelay()
 
             return {
-                getFetchedTerm,
-                handleTermPopoverVisibility,
-                termLoading,
-                isReady,
-                termError,
                 isSelected,
                 title,
                 getConnectorImage,
@@ -1484,6 +1472,10 @@
                 mouseEnterDelay,
                 enteredPill,
                 isPublished,
+                leftPill,
+                termMouseEnterDelay,
+                termEnteredPill,
+                termLeftPill,
             }
         },
     })

@@ -79,6 +79,7 @@ import TermIssue from '~/assets/images/icons/term-issue.svg'
 import TermVerified from '~/assets/images/icons/term-verified.svg'
 import TermDraft from '~/assets/images/icons/term-wip.svg'
 import Category from '~/assets/images/icons/category.svg'
+import CategoryShaded from '~/assets/images/icons/category-shaded.svg'
 import CategoryDeprecated from '~/assets/images/icons/category-deprecated.svg'
 import CategoryIssue from '~/assets/images/icons/category-issue.svg'
 import CategoryVerified from '~/assets/images/icons/category-verified.svg'
@@ -622,6 +623,7 @@ export default {
     TermVerified,
     TermDraft,
     Category,
+    CategoryShaded,
     CategoryDeprecated,
     CategoryIssue,
     CategoryVerified,

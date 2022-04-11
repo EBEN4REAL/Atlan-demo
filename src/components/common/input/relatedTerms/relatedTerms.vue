@@ -49,18 +49,24 @@
             <template v-for="term in list" :key="term.guid">
                 <TermPopover
                     :term="term"
-                    :loading="termLoading"
-                    :fetched-term="getFetchedTerm(term.guid)"
-                    :error="termError"
                     trigger="hover"
-                    :ready="isReady"
-                    @visible="handleTermPopoverVisibility"
+                    :mouse-enter-delay="termMouseEnterDelay"
+                    :passing-fetched-term="true"
+                    :fetched-term="getFetchedTerm(term.guid)"
+                    :is-fetched-term-loading="termLoading"
+                    @visible="
+                        () => {
+                            handleTermPopoverVisibility(true, term)
+                        }
+                    "
                 >
                     <TermPill
                         :term="term"
                         :allow-delete="allowDelete"
                         @delete="handleDeleteTerm"
-                        @toggleDrawer="handleDrawerVisible(term)"
+                        @toggle-drawer="handleDrawerVisible(term)"
+                        @mouseleave="termLeftPill"
+                        @mouseenter="termEnteredPill"
                     />
                 </TermPopover>
             </template>
@@ -91,8 +97,9 @@
 
     import GlossaryTree from '~/components/glossary/index.vue'
     import TermPill from '@/common/pills/term.vue'
-    import TermPopover from '@/common/popover/term/term.vue'
+    import TermPopover from '@/common/popover/glossary/index.vue'
     import useTermPopover from '@/common/popover/term/useTermPopover'
+    import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
 
     export default defineComponent({
         name: 'RelatedTerms',
@@ -238,6 +245,11 @@
                     localValue.value = temp
                 }
             }
+            const {
+                mouseEnterDelay: termMouseEnterDelay,
+                enteredPill: termEnteredPill,
+                leftPill: termLeftPill,
+            } = useMouseEnterDelay()
 
             return {
                 getFetchedTerm,
@@ -258,6 +270,9 @@
                 handleCloseDrawer,
                 drawerAsset,
                 handleListUpdate,
+                termMouseEnterDelay,
+                termEnteredPill,
+                termLeftPill,
             }
         },
     })

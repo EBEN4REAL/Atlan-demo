@@ -945,6 +945,21 @@
                             })
                         }
 
+                        // Hiding the CTA when a new folder is being created
+                        let ctaCalledFor = null
+                        if (item.value.isCta === 'cta') {
+                            ctaCalledFor = document.getElementsByClassName(
+                                `${parentQualifiedName.value}`
+                            )
+                            ctaCalledFor = ctaCalledFor[1]
+                            if (ctaCalledFor) {
+                                ctaCalledFor.style.display = 'none'
+                            } else {
+                                return
+                            }
+                            console.log(ctaCalledFor)
+                        }
+
                         input.setAttribute(
                             'class',
                             `outline-none py-0 rounded my-1 w-full bg-new-gray-100 ${inputClassName}`
@@ -960,6 +975,9 @@
                                 ul.removeChild(div)
                                 // removeInputBox()
                                 showEmptyState.value = true
+                                ctaCalledFor
+                                    ? (ctaCalledFor.style.display = 'unset')
+                                    : null
                             }
                             if (e.key === 'Enter') {
                                 // create folder request
@@ -971,6 +989,9 @@
                                     newFolderName.value = ''
                                     ul.removeChild(div)
                                     showEmptyState.value = true
+                                    ctaCalledFor
+                                        ? (ctaCalledFor.style.display = 'unset')
+                                        : null
                                     // removeInputBox()
                                 }
                             }
@@ -985,10 +1006,14 @@
                                 // removeInputBox()
                                 newFolderName.value = ''
                                 newFolderCreateable.value = false
+
                                 setTimeout(() => {
                                     newFolderCreateable.value = true
                                     showEmptyState.value = true
                                 }, 300)
+                                ctaCalledFor
+                                    ? (ctaCalledFor.style.display = 'unset')
+                                    : null
                             }
                         })
 
@@ -1035,6 +1060,8 @@
 
                 // if the folder is not loaded
                 if (!loaded) {
+                    // expandNodeManually(item.value)
+                    // refetchNode(parentGuid.value, 'Folder')
                     setTimeout(appendInput, 1000)
                 }
             }
@@ -1090,6 +1117,7 @@
                 immediateParentFolderQF: immediateParentFolderQF,
                 onLoadData: onLoadData,
                 expandNode: expandNode,
+                // expandNodeManually: expandNodeManually,
                 selectNode: selectNode,
                 refetchNode: refetchNode,
                 refetchNodeLocally: refetchNodeLocally,
@@ -1423,6 +1451,7 @@
                 expandedKeys,
                 onLoadData,
                 expandNode,
+                // expandNodeManually,
                 selectNode,
                 searchQuery,
                 facets,

@@ -8,9 +8,7 @@
         class="flex flex-col w-full overflow-hidden gap-y-2"
     >
         <!-- header starts here -->
-        <div
-            class="flex items-center justify-between px-5 py-2 border-b border-gray-200 gap-x-4 group bg-gray-50"
-        >
+        <div class="flex items-center justify-between px-5 py-4 gap-x-4">
             <span class="flex items-center">
                 <PreviewTabsIcon
                     :icon="tab.icon"

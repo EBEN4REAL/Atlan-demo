@@ -44,12 +44,12 @@
                 </div>
             </div>
         </div>
-        <div class="flex items-start">
+        <!-- <div class="flex items-start">
             <div class="flex items-center text-gray-500">
                 <AtlanIcon icon="External" class="mr-1 -mt-0.5" />
                 <span class="">Learn more</span>
             </div>
-        </div>
+        </div> -->
     </div>
 </template>
 

@@ -165,7 +165,7 @@
                     text: 'Connection is required!',
                     show: false,
                 },
-                users: { text: 'Select atleast 1 user!', show: false },
+                users: { text: 'No user selected', show: false },
             })
 
             const variablesData = ref(
@@ -257,20 +257,18 @@
             if (workflowParameters.value) {
                 debugger
                 // query variables
-                const queryVariables =
+                let queryVariables =
                     JSON.parse(
                         workflowParameters.value.find(
                             (e) => e.name === 'query-variables'
                         )?.value
                     ) ?? {}
+
                 if (variablesData.value.length > 0) {
                     variablesData.value = variablesData.value.map(
                         (variable) => {
                             return {
-                                ...variable,
-                                value:
-                                    queryVariables[variable?.name] ??
-                                    variable.value,
+                                ...queryVariables[variable?.name],
                             }
                         }
                     )
@@ -336,6 +334,7 @@
                 infoTabeState.value.frequency = getCronFrequency(
                     cronModel.value.cron
                 )
+                infoTabeState.value.timezone = cronData.value.timezone
                 const interval = parser.parseExpression(cronModel.value.cron)
                 infoTabeState.value.time = `${interval.fields.hour[0].toString()}:${interval.fields.minute[0].toString()}`
                 if (interval.fields.dayOfWeek.length === 1) {
@@ -393,7 +392,7 @@
             }
 
             const validateFileds = () => {
-                if (infoTabeState.value.name === '') {
+                if (infoTabeState.value.name.trim() === '') {
                     rules.value.users.show = true
                     return Promise.reject()
                 }
@@ -443,13 +442,17 @@
                                     variablesData.value.forEach((variable) => {
                                         inputParameters.value[
                                             'query-variables'
-                                        ][variable.name] =
-                                            typeof variable.value === 'object'
-                                                ? variable.value?.join(',')
-                                                : getValueByType(
-                                                      variable.value,
-                                                      variable.type
-                                                  )
+                                        ][variable.name] = {
+                                            ...variable,
+                                            value:
+                                                typeof variable.value ===
+                                                'object'
+                                                    ? variable.value?.join(',')
+                                                    : getValueByType(
+                                                          variable.value,
+                                                          variable.type
+                                                      ),
+                                        }
                                     })
                                     // setting up report name
                                     inputParameters.value['report-name'] =
@@ -606,16 +609,19 @@
                                                 (variable) => {
                                                     inputParameters.value[
                                                         'query-variables'
-                                                    ][variable.name] =
-                                                        typeof variable.value ===
-                                                        'object'
-                                                            ? variable.value?.join(
-                                                                  ','
-                                                              )
-                                                            : getValueByType(
-                                                                  variable.value,
-                                                                  variable.type
-                                                              )
+                                                    ][variable.name] = {
+                                                        ...variable,
+                                                        value:
+                                                            typeof variable.value ===
+                                                            'object'
+                                                                ? variable.value?.join(
+                                                                      ','
+                                                                  )
+                                                                : getValueByType(
+                                                                      variable.value,
+                                                                      variable.type
+                                                                  ),
+                                                    }
                                                 }
                                             )
                                             // setting up report name

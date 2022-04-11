@@ -4,6 +4,7 @@
             v-model="editorValue"
             :is-editing-allowed="true"
             :is-saving="loadingSave"
+            asset-type="Persona"
             :handle-save="handleSave"
             :handle-success="handleSuccess"
             :handle-failure="handleFailure"

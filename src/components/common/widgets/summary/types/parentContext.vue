@@ -214,6 +214,24 @@
                 >{{ parentDatabase(asset)?.attributes?.name }}</span
             >
         </div>
+        <div
+            v-if="
+                [
+                    'Table',
+                    'View',
+                    'MaterialisedView',
+                    'TablePartition',
+                ].includes(asset?.typeName) && parentSchema(asset)?.guid
+            "
+            class="flex flex-col text-sm"
+        >
+            <span class="mb-1 text-sm text-gray-500">Schema</span>
+            <span
+                class="font-bold cursor-pointer text-primary hover:underline"
+                @click="handleOpenDrawer(parentSchema(asset)?.guid)"
+                >{{ parentSchema(asset)?.attributes?.name }}</span
+            >
+        </div>
     </div>
     <AssetDrawer
         :show-drawer="drawerVisible"
@@ -253,6 +271,7 @@
                 parentReport,
                 parentDashboard,
                 parentDatabase,
+                parentSchema,
                 parentOrganization,
                 parentObject,
             } = useAssetInfo()
@@ -282,6 +301,7 @@
                 parentReport,
                 parentDashboard,
                 parentDatabase,
+                parentSchema,
                 parentOrganization,
                 parentObject,
                 guidToFetch,

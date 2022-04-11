@@ -1,5 +1,5 @@
 export function usePackageInfo() {
-    const metadata = (pkg) => pkg.metadata
+    const metadata = (pkg) => pkg?.metadata
     const labels = (pkg) => metadata(pkg)?.labels
 
     const annotations = (pkg) => metadata(pkg)?.annotations
@@ -13,6 +13,8 @@ export function usePackageInfo() {
 
     const type = (pkg) => labels(pkg)?.['orchestration.atlan.com/type']
 
+    const version = (pkg) => labels(pkg)?.['package.argoproj.io/version']
+
     return {
         metadata,
         annotations,
@@ -24,5 +26,6 @@ export function usePackageInfo() {
         logo,
         emoji,
         type,
+        version,
     }
 }

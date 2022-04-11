@@ -1,3 +1,8 @@
+import LegendExpand from '~/assets/images/lineage/legendExpand.svg'
+import LegendCollapse from '~/assets/images/lineage/legendCollapse.svg'
+import LegendAnomaly from '~/assets/images/lineage/legendAnomaly.svg'
+import LegendSelected from '~/assets/images/lineage/legendSelected.svg'
+import LegendHighlighted from '~/assets/images/lineage/legendHighlighted.svg'
 import Time from '~/assets/images/icons/time.svg'
 import BookmarkFilled from '~/assets/images/icons/bookmark-filled.svg'
 import Bookmark from '~/assets/images/icons/bookmark.svg'
@@ -298,7 +303,7 @@ import Enum from '~/assets/images/icons/label.svg'
 import Boolean from '~/assets/images/dataType/boolean.svg'
 import String from '~/assets/images/dataType/string.svg'
 import MoveItem from '~/assets/images/icons/move-item.svg'
-import DateTime from '~/assets/images/dataType/date.svg'
+import DateTime from '~/assets/images/icons/datetime.svg'
 import Number from '~/assets/images/dataType/number.svg'
 import Struct from '~/assets/images/dataType/struct.svg'
 import Geography from '~/assets/images/dataType/geography.svg'
@@ -315,6 +320,7 @@ import SSO from '~/assets/images/icons/sso.svg'
 import SMTP from '~/assets/images/icons/smtp.svg'
 import APIKey from '~/assets/images/icons/apikey.svg'
 import Camera from '~/assets/images/icons/camera.svg'
+import Image from '~/assets/images/icons/image.svg'
 import FormatText from '~/assets/images/icons/formatText.svg'
 import BeautifySql from '~/assets/images/icons/beautifySql.svg'
 import NoUsers from '~/assets/images/illustrations/no-users.svg'
@@ -449,8 +455,17 @@ import Schedule24 from '~/assets/images/icons/schedule-24.svg'
 
 import Chat from '~/assets/images/icons/chat.svg'
 import NotificationNoDot from '~/assets/images/icons/notification-no-dot.svg'
+import Workflow from '~/assets/images/icons/workflows.svg'
+import Package from '~/assets/images/icons/package.svg'
+
+import Display from '~/assets/images/icons/display.svg'
 
 export default {
+    LegendExpand,
+    LegendCollapse,
+    LegendAnomaly,
+    LegendSelected,
+    LegendHighlighted,
     Schedule24,
     Mail,
     EmptyJira,
@@ -781,6 +796,7 @@ export default {
     SMTP,
     APIKey,
     Camera,
+    Image,
     CustomSaml,
     Struct,
     Geography,
@@ -881,5 +897,8 @@ export default {
     Mysql: MySQL,
     NoAllow,
     Glue,
-    Bigquery: BigQuery
+    Bigquery: BigQuery,
+    Workflow,
+    Package,
+    Display,
 }

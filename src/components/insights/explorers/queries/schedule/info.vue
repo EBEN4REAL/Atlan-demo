@@ -12,13 +12,14 @@
                 v-model:value="infoTabeState.name"
                 class="input"
                 placeholder="Enter a name for your report"
+                :class="rules.name.show ? 'input-error' : ''"
             />
-            <p
+            <!-- <p
                 class="mt-0.5 text-red-500 absolute -bottom-8"
                 v-if="rules.name.show"
             >
                 {{ rules.name.text }}
-            </p>
+            </p> -->
         </div>
         <div class="flex flex-wrap mb-12">
             <div class="mr-4 item-1">
@@ -50,12 +51,13 @@
                     :minuteStep="15"
                     v-model:value="infoTabeState.time"
                     @change="buildCron"
+                    inputReadOnly="true"
                 />
             </div>
             <div class="item-3">
                 <p class="mb-1 font-bold text-gray-500 required">Timezone</p>
                 <Timezone
-                    v-model="infoTabeState.timezone"
+                    v-model:modelValue="infoTabeState.timezone"
                     placeholder=""
                     @change="buildCron"
                     :allowClear="false"
@@ -102,7 +104,9 @@
             </div> -->
         </div>
         <div class="text-sm text-gray-700">
-            <div class="flex flex-wrap items-center gap-y-2 gap-x-1">
+            <div
+                class="flex flex-wrap items-center overflow-scroll gap-y-2 gap-x-1 max-h-24"
+            >
                 <a-button
                     shape="circle"
                     size="small"
@@ -258,7 +262,8 @@
             )
 
             const onNameBlur = () => {
-                if (!infoTabeState.value.name) rules.value.name.show = true
+                if (!infoTabeState.value.name.trim())
+                    rules.value.name.show = true
                 else rules.value.name.show = false
             }
 
@@ -353,6 +358,7 @@
                 cronStringReadable.value = cronstrue.toString(
                     cronData.value.cron
                 )
+                cronData.value.timezone = infoTabeState.value.timezone
                 console.log(cronData.value.cron, cronStringReadable.value)
             }
 
@@ -441,6 +447,15 @@
     }
     .item-5 {
         min-width: 230px;
+    }
+    .ant-input {
+        @apply text-gray-700 !important;
+    }
+    .input-error {
+        @apply border-red-500;
+    }
+    .input-error:focus {
+        box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
     }
 </style>
 <style module lang="less">

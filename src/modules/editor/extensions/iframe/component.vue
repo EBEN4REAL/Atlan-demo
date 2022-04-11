@@ -8,9 +8,9 @@
             >
                 <div class="flex items-center content-center">
                     <atlan-icon :icon="node.attrs.embedicon" />
-                    <span class="font-bold text-gray-700 ml-1">{{
-                        node.attrs.embedtitle
-                    }}</span>
+                    <span class="font-bold text-gray-700 ml-1">
+                        {{ node.attrs.embedtitle }}
+                    </span>
                 </div>
                 <div
                     v-if="redirectTo"
@@ -21,6 +21,7 @@
                         style="text-decoration: none"
                         :href="redirectTo"
                         target="_blank"
+                        @click.prevent="handleOpenCtaClick"
                     >
                         Open
                     </a>
@@ -35,6 +36,12 @@
     import { computed, defineComponent, toRefs } from 'vue'
     import { NodeViewWrapper, nodeViewProps } from '@tiptap/vue-3'
     import AtlanIcon from '@common/icon/atlanIcon.vue'
+    import {
+        useTrackEvent,
+        TYPE_OF_EVENTS,
+        NAME_OF_EVENTS,
+        README_TRIGGERS,
+    } from '~/modules/editor/analytics/useTrackEvent'
 
     export default defineComponent({
         name: 'CustomIFrame',
@@ -43,7 +50,7 @@
             ...nodeViewProps,
         },
         setup(props) {
-            const { node, selected, extension } = toRefs(props)
+            const { node, selected, extension, editor } = toRefs(props)
 
             const options = computed(() => extension.value?.options)
 
@@ -56,7 +63,31 @@
 
             const redirectTo = computed(() => node.value?.attrs.redirectTo)
 
-            return { attrs, selected, showFooter, redirectTo }
+            const handleOpenCtaClick = () => {
+                useTrackEvent({
+                    type: TYPE_OF_EVENTS.EMBED,
+                    name: NAME_OF_EVENTS.OPEN_CTA_CLICKED,
+                    trigger: README_TRIGGERS.SLASH_MENU,
+                    properties: {
+                        assetType:
+                            editor.value?.options.editorProps.attributes[
+                                'data-asset-type'
+                            ],
+                        embedService: node.value?.attrs.analyticskey
+                            ? node.value?.attrs.analyticskey
+                            : node.value?.attrs.embedtitle,
+                    },
+                })
+                window.open(redirectTo.value)
+            }
+
+            return {
+                attrs,
+                selected,
+                showFooter,
+                redirectTo,
+                handleOpenCtaClick,
+            }
         },
     })
 </script>

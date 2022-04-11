@@ -1,17 +1,43 @@
 <template>
     <div class="flex flex-col items-center w-full h-full">
-        <div class="w-full">
+        <div
+            v-if="list.length"
+            class="flex items-center w-full p-4 pb-0 mb-4 text-lg font-bold text-gray-700"
+        >
+            <span class="mr-2"> Scheduled Queries </span>
             <div
-                class="flex items-center w-full p-4 pb-0 mb-4 text-lg font-bold text-gray-700"
+                class="flex items-center justify-center px-1.5 py-1 text-sm font-bold rounded text-primary bg-gray-200"
             >
-                <span class="mr-2"> Schedule Queries </span>
-                <div
-                    class="flex items-center justify-center px-1.5 py-1 text-sm font-bold rounded text-primary bg-gray-200"
-                >
-                    <span class="mt-0.5"> {{ list.length ?? 0 }}</span>
-                </div>
+                <span class="mt-0.5"> {{ list.length ?? 0 }}</span>
             </div>
-            <!-- <div class="flex flex-row w-full px-4 mt-3 mb-6">
+        </div>
+        <div
+            v-if="!list.length && !isLoading && !fetchListError"
+            class="overflow-y-scroll"
+        >
+            <div
+                class="flex flex-col items-center justify-center w-full px-8 pt-6 mb-6 text-2xl text-gray-700"
+            >
+                <span class="mb-0 font-bold"> Scheduled Queries </span>
+            </div>
+            <div class="relative px-10 rounded-lg">
+                <div class="fader">
+                    <img :src="ScheduleQueryGif1" class="rounded-lg" />
+                </div>
+                <p class="mt-4 text-sm font-bold text-center">
+                    Create schedule for queries from your collection
+                </p>
+            </div>
+            <div class="relative px-10 rounded-lg mt-14">
+                <div class="fader">
+                    <img :src="ScheduleQueryGif2" class="rounded-lg" />
+                </div>
+                <p class="mt-4 text-sm font-bold text-center">
+                    View and navigate all your scheduled queries here.
+                </p>
+            </div>
+        </div>
+        <!-- <div class="flex flex-row w-full px-4 mt-3 mb-6">
             <a-input
                 v-model:value="queryText"
                 class="h-8 rounded"
@@ -36,40 +62,50 @@
             </a-popover>
         </div> -->
 
-            <div
-                class="flex flex-col w-full h-full px-4 overflow-y-scroll"
-                v-if="list.length && !isLoading"
-                style="height: calc(100vh - 142px) !important"
-            >
-                <template v-for="item in list" :key="item.name">
-                    <WorkflowCard
-                        :item="item"
-                        v-model:selectedCardKey="selectedCardKey"
-                        @archive="onWorkflowArchive"
-                    />
-                </template>
+        <div
+            class="flex flex-col w-full h-full px-4 overflow-y-scroll"
+            v-if="list.length && !isLoading"
+            style="height: calc(100vh - 142px) !important"
+        >
+            <template v-for="item in list" :key="item.name">
+                <WorkflowCard
+                    :item="item"
+                    v-model:selectedCardKey="selectedCardKey"
+                    @archive="onWorkflowArchive"
+                />
+            </template>
 
-                <div
-                    v-if="list.length > 0 && list.length < totalWorkflows"
-                    class="flex items-center justify-center mb-3"
-                >
-                    <button
-                        :disabled="isLoading"
-                        class="flex items-center justify-between px-3 py-2 transition-all duration-300 bg-white rounded-full text-primary"
-                        :class="isLoading ? 'px-3 py-2' : ''"
-                        @click="handleLoadMore"
-                    >
-                        <template v-if="!isLoading">
-                            <p
-                                class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
-                            >
-                                Load more
-                            </p>
-                            <AtlanIcon icon="ArrowDown" class="-mt-0.5" />
-                        </template>
-                        <AtlanLoader v-else class="w-6 h-6" />
-                    </button>
-                </div>
+            <div
+                class="flex items-center justify-center w-full h-full px-4"
+                v-if="isLoading"
+            >
+                <Loader class="" style="min-height: 64px !important"></Loader>
+            </div>
+            <div
+                v-else-if="fetchListError && !isLoading"
+                class="flex items-center justify-center h-full px-4"
+            >
+                <ErrorView :error="errorObjectForScheduleWorkflows">
+                    <div class="mt-3">
+                        <a-button
+                            data-test-id="try-again"
+                            size="large"
+                            type="primary"
+                            ghost
+                            @click="quickChangeRun"
+                        >
+                            <template v-if="!isLoading">
+                                <p
+                                    class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
+                                >
+                                    Load more
+                                </p>
+                                <AtlanIcon icon="ArrowDown" class="-mt-0.5" />
+                            </template>
+                            <AtlanLoader v-else class="w-6 h-6" />
+                        </a-button>
+                    </div>
+                </ErrorView>
             </div>
 
             <div
@@ -118,6 +154,8 @@
     import { archiveWorkflow } from './composables/useScheduleQueryWorkflow'
     import { message } from 'ant-design-vue'
     import WorkflowCard from './workflowCard.vue'
+    import ScheduleQueryGif1 from '~/assets/gifs/scheduleQueries/schedule_query_1.gif'
+    import ScheduleQueryGif2 from '~/assets/gifs/scheduleQueries/schedule_query_2.gif'
     export default defineComponent({
         components: { WorkflowCard, Loader, ErrorView },
         props: {},
@@ -277,6 +315,8 @@
             refreshSchedulesWorkflowTab.value = quickChange
 
             return {
+                ScheduleQueryGif1,
+                ScheduleQueryGif2,
                 refreshSchedulesWorkflowTab,
                 selectedCardKey,
                 quickChangeRun,
@@ -317,6 +357,25 @@
     }
     .item-border {
         border-bottom: 1px solid #f3f3f3;
+    }
+    .fader {
+        position: relative;
+    }
+
+    .fader::after {
+        content: '';
+        position: absolute;
+        z-index: 1;
+        bottom: 0;
+        left: 0;
+        pointer-events: none;
+        background-image: linear-gradient(
+            to bottom,
+            rgba(255, 255, 255, 0),
+            #f8f9fb 100%
+        );
+        width: 100%;
+        height: 6em;
     }
 </style>
 

@@ -558,6 +558,7 @@
             let showEmptyState = ref(true)
 
             const createFolderInput = () => {
+                // debugger
                 // const inputClassName = `${per_immediateParentGuid.value}_folder_input`
                 const inputClassName = `${immediateParentGuid.value}_folder_input`
                 console.log('append input')
@@ -593,6 +594,7 @@
 
                 // appends the input element into the DOM with all the event listeners attached
                 const appendInput = () => {
+                    // debugger
                     // check if there are existing inputs to avoid duplication
                     if (!existingInputs.length && newFolderCreateable.value) {
                         let parentFolder
@@ -701,6 +703,25 @@
                             })
                         }
 
+                        // Hiding the CTA when a new folder is being created
+                        let ctaCalledFor = null
+                        if (
+                            document.getElementsByClassName(
+                                `${parentQualifiedName.value}`
+                            )
+                        ) {
+                            ctaCalledFor = document.getElementsByClassName(
+                                `${parentQualifiedName.value}`
+                            )
+                            ctaCalledFor = ctaCalledFor[1]
+                            if (ctaCalledFor) {
+                                ctaCalledFor.style.display = 'none'
+                            } else {
+                                return
+                            }
+                            console.log(ctaCalledFor)
+                        }
+
                         input.setAttribute(
                             'class',
                             `outline-none py-0 rounded my-1 w-full bg-new-gray-100 ${inputClassName}`
@@ -716,6 +737,9 @@
                                 ul.removeChild(div)
                                 // removeInputBox()
                                 showEmptyState.value = true
+                                ctaCalledFor
+                                    ? (ctaCalledFor.style.display = 'unset')
+                                    : null
                             }
                             if (e.key === 'Enter') {
                                 // create folder request
@@ -727,6 +751,9 @@
                                     newFolderName.value = ''
                                     ul.removeChild(div)
                                     showEmptyState.value = true
+                                    ctaCalledFor
+                                        ? (ctaCalledFor.style.display = 'unset')
+                                        : null
                                     // removeInputBox()
                                 }
                             }
@@ -745,6 +772,9 @@
                                     newFolderCreateable.value = true
                                     showEmptyState.value = true
                                 }, 300)
+                                ctaCalledFor
+                                    ? (ctaCalledFor.style.display = 'unset')
+                                    : null
                             }
                         })
 
@@ -947,7 +977,11 @@
 
                         // Hiding the CTA when a new folder is being created
                         let ctaCalledFor = null
-                        if (item.value.isCta === 'cta') {
+                        if (
+                            item.value.isCta === 'cta' ||
+                            (item.value.children?.length === 1 &&
+                                item.value.children[0]?.isCta === 'cta')
+                        ) {
                             ctaCalledFor = document.getElementsByClassName(
                                 `${parentQualifiedName.value}`
                             )

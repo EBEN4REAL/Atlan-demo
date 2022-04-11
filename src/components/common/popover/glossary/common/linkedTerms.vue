@@ -14,7 +14,7 @@
 </script>
 
 <script setup lang="ts">
-    import { computed, toRefs } from 'vue'
+    import { computed, ref, toRefs } from 'vue'
 
     const props = defineProps({
         attributes: {
@@ -24,13 +24,13 @@
         term: {
             type: Object,
             required: false,
-            default: {},
+            default: () => {},
         },
     })
 
-    const { attributes, term } = toRefs(props)
+    const { attributes } = toRefs(props)
 
-    const linkedTerms = computed(() => term?.value?.termsCount || 0)
+    const linkedTerms = computed(() => attributes?.value?.linkedTermsCount || 0)
 </script>
 
 <style scoped></style>

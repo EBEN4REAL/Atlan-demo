@@ -46,7 +46,6 @@
     const { attributes } = toRefs(props)
 
     const relatedTerms = computed(() => attributes?.value?.localSeeAlso)
-    console.log(attributes?.value)
 </script>
 
 <style scoped></style>

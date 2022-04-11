@@ -1,4 +1,4 @@
-import { computed, ref } from 'vue'
+import { computed, ref, toRefs, watch } from 'vue'
 import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
 import {
     AssetAttributes,
@@ -6,6 +6,7 @@ import {
     AssetRelationAttributes,
     GlossaryAttributes,
 } from '~/constant/projection'
+import useFetchAssetList from '@common/assetList/usefetchAssetList'
 
 export function useGlossaryPopover(term) {
     /**

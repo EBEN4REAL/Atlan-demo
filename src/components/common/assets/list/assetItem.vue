@@ -992,27 +992,39 @@
                             "
                             class="flex flex-wrap gap-1 mt-1"
                         >
-                            <template v-for="term in terms" :key="term.guid">
-                                <div
-                                    class="flex flex-wrap"
-                                    v-if="
-                                        term?.attributes?.__state &&
-                                        term?.attributes?.__state !== 'DELETED'
+                            <template
+                                v-for="term in terms.filter(
+                                    (t) =>
+                                        !t?.attributes?.__state ||
+                                        (t?.attributes?.__state &&
+                                            t?.attributes?.__state !==
+                                                'DELETED')
+                                )"
+                                :key="term.guid"
+                            >
+                                <TermPopover
+                                    :term="term"
+                                    :passing-fetched-term="true"
+                                    trigger="hover"
+                                    :fetched-term="getFetchedTerm(term.guid)"
+                                    :mouse-enter-delay="termMouseEnterDelay"
+                                    :is-fetched-term-loading="termLoading"
+                                    @visible="
+                                        () => {
+                                            handleTermPopoverVisibility(
+                                                true,
+                                                term
+                                            )
+                                        }
                                     "
                                 >
-                                    <TermPopover
+                                    <TermPill
                                         :term="term"
-                                        trigger="hover"
-                                        :mouse-enter-delay="termMouseEnterDelay"
-                                    >
-                                        <TermPill
-                                            :term="term"
-                                            :allow-delete="false"
-                                            @mouseenter="termEnteredPill"
-                                            @mouseleave="termLeftPill"
-                                        />
-                                    </TermPopover>
-                                </div>
+                                        :allow-delete="false"
+                                        @mouseenter="termEnteredPill"
+                                        @mouseleave="termLeftPill"
+                                    />
+                                </TermPopover>
                             </template>
                         </div>
                         <div
@@ -1399,6 +1411,8 @@
                 enteredPill: termEnteredPill,
                 leftPill: termLeftPill,
             } = useMouseEnterDelay()
+            const { handleTermPopoverVisibility, termLoading, getFetchedTerm } =
+                useTermPopover()
 
             return {
                 isSelected,
@@ -1476,6 +1490,9 @@
                 termMouseEnterDelay,
                 termEnteredPill,
                 termLeftPill,
+                handleTermPopoverVisibility,
+                termLoading,
+                getFetchedTerm,
             }
         },
     })

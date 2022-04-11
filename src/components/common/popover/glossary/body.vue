@@ -7,38 +7,51 @@
         style="min-width: 374px"
     >
         <GlossaryPopoverDescription
-            v-if="attributes?.localDescription"
+            v-if="
+                attributes?.localDescription &&
+                !excludeFields.includes('description')
+            "
             :attributes="attributes"
         />
         <div v-if="isGlossary" class="flex">
-            <div class="mr-12">
+            <div v-if="!excludeFields.includes('terms')" class="mr-12">
                 <p class="text-gray-500 mb-1">Terms</p>
                 <p class="font-bold">{{ term?.termsCount || 0 }}</p>
             </div>
-            <div>
+            <div v-if="!excludeFields.includes('categories')">
                 <p class="text-gray-500 mb-1">Categories</p>
                 <p class="font-bold">{{ term?.categoryCount || 0 }}</p>
             </div>
         </div>
         <GlossaryPopoverCategories
-            v-if="isTerm && attributes?.localCategories?.length > 0"
+            v-if="
+                isTerm &&
+                attributes?.localCategories?.length > 0 &&
+                !excludeFields.includes('categories')
+            "
             :attributes="attributes"
         />
         <GlossaryPopoverOwners
             v-if="
                 !isCategory &&
+                !excludeFields.includes('owners') &&
                 (attributes?.localOwners?.ownerGroups?.length ||
                     attributes?.localOwners?.ownerUsers?.length)
             "
             :attributes="attributes"
         />
         <GlossaryPopoverRelatedTerms
-            v-if="isTerm && attributes?.localSeeAlso?.length"
+            v-if="
+                isTerm &&
+                attributes?.localSeeAlso?.length &&
+                !excludeFields.includes('relatedTerms')
+            "
             :attributes="attributes"
         />
         <div v-if="isCategory" class="flex">
             <div class="mr-12">
                 <GlossaryPopoverLinkedTerms
+                    v-if="!excludeFields.includes('linkedTerms')"
                     :attributes="attributes"
                     :term="term"
                 />
@@ -46,8 +59,9 @@
             <div>
                 <GlossaryPopoverOwners
                     v-if="
-                        attributes?.localOwners?.ownerGroups?.length ||
-                        attributes?.localOwners?.ownerUsers?.length
+                        !excludeFields.includes('owners') &&
+                        (attributes?.localOwners?.ownerGroups?.length ||
+                            attributes?.localOwners?.ownerUsers?.length)
                     "
                     :attributes="attributes"
                 />
@@ -86,11 +100,16 @@
         term: {
             type: Object,
             required: false,
-            default: {},
+            default: () => {},
+        },
+        excludeFields: {
+            type: Array,
+            required: false,
+            default: () => [],
         },
     })
 
-    const { attributes, term } = toRefs(props)
+    const { attributes, term, excludeFields } = toRefs(props)
     const isTermEmpty = computed(
         () =>
             !(

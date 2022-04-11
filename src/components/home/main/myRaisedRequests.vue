@@ -17,6 +17,7 @@
                 <RequestListItem
                     :request="request"
                     :showActions="false"
+                    :showRequestStatus="true"
                     @mouseenter="handleMouseEnter(request.id, index)"
                     :active-hover="activeHover"
                     size="small"

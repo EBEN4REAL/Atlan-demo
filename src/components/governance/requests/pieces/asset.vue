@@ -16,7 +16,7 @@
                 :timestamp="timeAgo"
             />
         </span>
-        <div class="flex items-center text-xs">
+        <div v-if="size === 'small'" class="flex items-center text-xs">
             <!-- <AssetLogo :selected="selected" :asset="assetWrappper" /> -->
             <AtlanIcon class="mr-1" :icon="assetIcon" />
             <span
@@ -24,34 +24,43 @@
                 >{{ entityType.toUpperCase() }}</span
             >
             <AtlanIcon class="mx-1 ml-2 icon-table" icon="Schema2" />
-            <!-- <span class="overflow-hidden text-gray-500 overflow-ellipsis"> -->
-            <!--     {{ assetText[2] }}</span -->
-            <!-- > -->
             <span
                 :style="size === 'small' ? 'max-width: 30px' : ''"
-                class="w-full "
+                class="w-full"
             >
                 <Tooltip
                     :tooltipText="assetText[2]"
                     :classes="'text-gray-500 w-full'"
                 />
             </span>
-            <AtlanIcon class="mr-1  text-gray-500" icon="SchemaGray" />
-
-            <!-- <span class="overflow-hidden text-gray-500 overflow-ellipsis"> -->
-            <!--     {{ assetText[1] }}</span -->
-            <!-- > -->
+            <AtlanIcon class="mr-1 text-gray-500" icon="SchemaGray" />
             <Tooltip
                 :tooltipText="assetText[1]"
                 :classes="'text-gray-500'"
                 clampPercentage="60%"
             />
         </div>
+        <div v-else class="flex items-center text-xs">
+            <AtlanIcon class="mr-1" :icon="assetIcon" />
+            <span
+                class="ml-1 overflow-hidden text-gray-500 overflow-ellipsis"
+                >{{ entityType.toUpperCase() }}</span
+            >
+            <AtlanIcon class="mx-1 ml-2 icon-table" icon="Schema2" />
+            <span class="overflow-hidden text-gray-500 overflow-ellipsis">
+                {{ assetText[2] }}</span
+            >
+            <AtlanIcon class="mx-1 ml-2 text-gray-500" icon="SchemaGray" />
+
+            <span class="overflow-hidden text-gray-500 overflow-ellipsis">
+                {{ assetText[1] }}</span
+            >
+        </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, toRefs ,ref} from 'vue'
+    import { computed, defineComponent, toRefs, ref } from 'vue'
     import CertificateBadge from '@common/badge/certificate/index.vue'
     import { useTimeAgo } from '@vueuse/core'
     import AssetLogo from '@/common/icon/assetIcon.vue'

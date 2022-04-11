@@ -1,6 +1,6 @@
 <template>
     <div
-        class="grid items-center justify-between grid-cols-10  bg-white border-t border-gray-light border-style-500 group gap-x-4 request-card pl-4"
+        class="grid items-center justify-between grid-cols-10 bg-white border-t border-gray-light border-style-500 group gap-x-4 request-card pl-4"
         style="height: 72px"
         :class="{
             'bg-primary-light': selected,
@@ -9,7 +9,10 @@
         }"
         @click="$emit('select')"
     >
-        <div class="flex items-center col-span-4 overflow-hidden " >
+        <div
+            class="flex items-center overflow-hidden"
+            :class="showRequestStatus ? 'col-span-4' : 'col-span-4'"
+        >
             <!-- TODO: Uncomment for bulk selection -->
             <!-- <a-checkbox :checked="selected" class="mr-4" /> -->
             <!-- <Popover
@@ -78,8 +81,8 @@
             </div>
         </div>
         <div
-            class="flex items-center col-span-3 ml-24"
-            :class="showActions ? '' : 'w-full'"
+            class="flex items-center col-span-3"
+            :class="showActions || showRequestStatus ? 'ml-4' : 'w-full ml-24'"
         >
             <ClassificationPiece
                 v-if="
@@ -276,6 +279,51 @@
                 </div>
             </div>
         </div>
+        <div
+            v-if="showRequestStatus"
+            class="flex items-center justify-end col-span-3 mr-4 text-xs"
+        >
+            <div
+                v-if="request.status === 'active'"
+                class="flex items-center space-x-1"
+            >
+                <span class="text-warning">Pending</span>
+                <span>|</span>
+                <a-popover placement="rightBottom">
+                    <template #content>
+                        <AdminList></AdminList>
+                    </template>
+                    <span class="cursor-pointer"
+                        >Reviewers<atlan-icon icon="CaretDown" class="mx-0.5 h-3"
+                    /></span>
+                </a-popover>
+            </div>
+            <div
+                v-else
+                class="flex items-center justify-end font-light whitespace-nowrap"
+                :class="
+                    request.status === 'approved'
+                        ? 'text-success'
+                        : 'text-error'
+                "
+            >
+                {{
+                    request.status === 'approved'
+                        ? 'Approved by'
+                        : 'Rejected by'
+                }}
+                <div class="flex items-center mx-2 truncate">
+                    <Avatar
+                        :allow-upload="false"
+                        :avatar-name="nameUpdater"
+                        :avatar-size="18"
+                        :avatar-shape="'circle'"
+                        class="mr-2"
+                    />
+                    <span class="text-gray-700">{{ nameUpdater }}</span>
+                </div>
+            </div>
+        </div>
         <AssetDrawer
             key="asset-sidebar-asset-popover"
             :guid="assetGuid"
@@ -295,6 +343,7 @@
         watch,
         ref,
         computed,
+        defineAsyncComponent,
     } from 'vue'
     import { message } from 'ant-design-vue'
     // import { useMagicKeys, whenever } from '@vueuse/core'
@@ -345,6 +394,9 @@
             IconStatus,
             Popover,
             AssetDrawer,
+            AdminList: defineAsyncComponent(
+                () => import('@/common/info/adminList.vue')
+            ),
         },
         props: {
             request: {
@@ -375,6 +427,11 @@
                 type: String,
                 required: false,
                 default: () => 'default',
+            },
+            showRequestStatus: {
+                type: Boolean,
+                required: false,
+                default: false,
             },
         },
         emits: ['select', 'action'],

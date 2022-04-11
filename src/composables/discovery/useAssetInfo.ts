@@ -184,6 +184,12 @@ export default function useAssetInfo() {
     const databaseName = (asset: assetInterface) =>
         attributes(asset)?.databaseName ?? ''
 
+    const databaseQualifiedName = (asset: assetInterface) =>
+        attributes(asset)?.databaseQualifiedName
+
+    const schemaQualifiedName = (asset: assetInterface) =>
+        attributes(asset)?.schemaQualifiedName
+
     const parentDatabase = (asset: assetInterface) =>
         attributes(asset)?.database
 
@@ -455,13 +461,13 @@ export default function useAssetInfo() {
                     : viewName(asset)
             const columnName = attributes(asset).name
 
-            queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${name}&columnNameFromURL=${columnName}`
+            queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${name}&columnNameFromURL=${columnName}&guid=${asset.guid}`
         } else if (
             assetType(asset) === 'Table' ||
             assetType(asset) === 'View'
         ) {
             const tableName = attributes(asset).name
-            queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}`
+            queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}&guid=${asset.guid}`
         } else if (assetType(asset) === 'Query') {
             queryPath = `/insights?id=${asset.guid}`
         } else if (assetType(asset) === 'Collection') {
@@ -1382,5 +1388,7 @@ export default function useAssetInfo() {
         getConnectorLabelByName,
         isIndexed,
         isPublished,
+        databaseQualifiedName,
+        schemaQualifiedName,
     }
 }

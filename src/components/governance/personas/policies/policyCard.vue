@@ -113,7 +113,9 @@
                             >•</span
                         >
                         <span
-                            class="ml-1 text-gray-500"
+                            :class="`${
+                                type !== 'glossaryPolicy' && 'ml-1'
+                            } text-gray-500`"
                             data-test-id="policy-type"
                             >{{
                                 type === 'glossaryPolicy'

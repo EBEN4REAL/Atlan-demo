@@ -22,6 +22,7 @@
             <div
                 class="cursor-pointer flex items-center"
                 @mouseenter="$emit('mouseEnterAsset')"
+                @click="handleShowAssetSidebar(item.guid)"
             >
                 <div
                     v-if="

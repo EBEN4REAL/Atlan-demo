@@ -87,6 +87,7 @@
             const schemaNameFromURL = route.query?.schemaNameFromURL
             const tableNameFromURL = route.query?.tableNameFromURL
             const columnNameFromURL = route.query?.columnNameFromURL
+            const assetGuidFromURL = route.query?.guid
             const openVQB = route.query?.openVQB
 
             /* --------PROVIDERS---- */
@@ -97,6 +98,7 @@
             provide('schemaNameFromURL', schemaNameFromURL)
             provide('tableNameFromURL', tableNameFromURL)
             provide('columnNameFromURL', columnNameFromURL)
+            provide('assetGuidFromURL', assetGuidFromURL)
             provide('openVQB', openVQB)
 
             provide('savedQueryGuidFromURL', savedQueryGuidFromURL)

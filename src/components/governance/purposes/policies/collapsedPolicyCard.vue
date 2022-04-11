@@ -85,7 +85,15 @@
                                             : `${policy.users.length} User`
                                     }}
                                 </template>
-                                <AtlanIcon icon="User" class="-mt-1" />
+                                <AtlanIcon
+                                    :icon="
+                                        policy.users.length === 1 &&
+                                        policy.users[0] === 'all-users'
+                                            ? 'Group'
+                                            : 'User'
+                                    "
+                                    class="-mt-1"
+                                />
                                 {{
                                     policy.users.length === 1 &&
                                     policy.users[0] === 'all-users'

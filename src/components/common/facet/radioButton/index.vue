@@ -1,14 +1,14 @@
 <template>
     <a-radio-group
         v-model:value="localValue"
-        class="w-full px-4"
+        class="w-full px-3"
         @change="handleChange"
     >
         <div class="flex flex-col w-full">
             <template v-for="el in item.data" :key="el.id">
                 <a-radio
                     :value="el.id"
-                    class="inline-flex flex-row-reverse items-center w-full mb-1 atlan-reverse"
+                    class="inline-flex flex-row-reverse items-center w-full px-1 py-0.5 rounded atlan-reverse hover:bg-primary-menu"
                 >
                     <div class="flex items-center gap-x-2">
                         <div

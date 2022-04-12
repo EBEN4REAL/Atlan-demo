@@ -80,6 +80,8 @@ export const fetchGlossaryPermission = (glossary, immediate = false) => {
             (ev) => ev?.entityGuid === glossary.value?.guid
         )
         console.log(permissionsAlreadyFetched)
+        console.log(glossary)
+        console.log(useGTCPermissions(glossary))
         if (permissionsAlreadyFetched) return
         refresh()
     }

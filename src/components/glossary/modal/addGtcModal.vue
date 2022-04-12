@@ -1,3 +1,4 @@
+// TODO: refactor this file after request creation
 <template>
     <div @click="showModal">
         <slot name="trigger" @click="showModal" />
@@ -12,7 +13,7 @@
         :footer="null"
     >
         <div
-            v-if="!createPermission"
+            v-if="showRequestElements"
             class="px-3 py-2 mb-3 bg-gray-100 fixed top-14 rounded text-gray-500 text-xs"
             style="width: 40%"
         >
@@ -178,7 +179,7 @@
         >
             <div class="flex items-center spaxe-x-4">
                 <div
-                    v-if="entityType !== 'AtlasGlossary' && createPermission"
+                    v-if="entityType !== 'AtlasGlossary' && hasCreatePermission"
                     class="flex items-center mr-2 space-x-2"
                 >
                     <a-switch size="small" v-model:checked="isCreateMore" />
@@ -189,7 +190,7 @@
                 </div>
             </div>
             <a-button
-                v-if="createPermission"
+                v-if="hasCreatePermission"
                 type="primary"
                 @click="handleSave"
                 :loading="isLoading"
@@ -242,6 +243,10 @@
     import GlossarySelect from '@/common/popover/glossarySelect/index.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import { useCreateRequests } from '~/composables/requests/useCreateRequests'
+    import useGTCPermissions, {
+        fetchGlossaryPermission,
+    } from '~/composables/glossary/useGTCPermissions'
+    import whoami from '~/composables/user/whoami'
 
     export default defineComponent({
         name: 'AddGtcModal',
@@ -301,7 +306,7 @@
             createPermission: {
                 type: Boolean,
                 required: false,
-                default: true,
+                default: false,
             },
         },
         emits: ['add', 'update:visible'],
@@ -312,6 +317,7 @@
                 categoryGuid,
                 glossaryName,
                 categoryName,
+                createPermission,
             } = toRefs(props)
             const checkDuplicateCategoryNames = inject(
                 'checkDuplicateCategoryNames',
@@ -323,6 +329,7 @@
 
             const router = useRouter()
             const localEntityType = ref(entityType.value)
+            const { role } = whoami()
             watch(entityType, () => {
                 localEntityType.value = entityType.value
             })
@@ -353,8 +360,36 @@
                 },
             })
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
+            // handle create permissions for gtc
+            const glossaryForPermission = computed(() => {
+                if (props.showGlossarySelect) {
+                    return getGlossaryByQF(parentGlossary.value)
+                }
+                return getGlossaryByQF(props.glossaryQualifiedName)
+            })
+            const {
+                createPermission: hasCreatePermission,
+                fetch: fetchPermissions,
+            } = fetchGlossaryPermission(glossaryForPermission, false)
 
+            const handleFetchPermission = () => {
+                console.log(
+                    'calling fetch permissions for -> ',
+                    getGlossaryByQF(parentGlossary.value)
+                )
+                if (parentGlossary.value) {
+                    console.log('fetching again')
+                    fetchPermissions()
+                }
+                console.log(hasCreatePermission.value)
+            }
+            const showRequestElements = computed(() => {
+                if (role.value?.toLowerCase() === 'admin') return false
+                return !hasCreatePermission.value
+            })
             const showModal = async () => {
+                //               handleFetchPermission()
+                fetchPermissions()
                 resetInput()
                 visible.value = true
                 await nextTick()
@@ -425,7 +460,7 @@
                                 typeName: 'AtlasGlossaryCategory',
                                 guid: categoryGuid.value,
                             }
-                            if (!props.createPermission) {
+                            if (!hasCreatePermission.value) {
                                 entity.relationshipAttributes.parentCategory.attributes =
                                     {
                                         name: props.categoryName,
@@ -439,7 +474,7 @@
                                     guid: categoryGuid.value,
                                 },
                             ]
-                            if (!props.createPermission) {
+                            if (!hasCreatePermission.value) {
                                 entity.relationshipAttributes.categories[0].attributes =
                                     {
                                         name: props.categoryName,
@@ -561,7 +596,7 @@
                 if (meta.value && Enter.value) {
                     Enter.value = false
                     meta.value = false
-                    if (entity.attributes.name && props.createPermission) {
+                    if (entity.attributes.name && hasCreatePermission?.value) {
                         handleSave()
                     }
                 }
@@ -571,16 +606,11 @@
                 parentGlossary.value = parentGlossaryQf.value
                 console.log(parentGlossaryQf.value)
             })
-            const handleSelectGlossary = (val) => {
-                console.log(glossaryQualifiedName.value.length)
-                console.log(
-                    glossaryQualifiedName.value.length
-                        ? glossaryQualifiedName.value
-                        : parentGlossary.value
-                )
-                console.log(glossaryQualifiedName.value || parentGlossary.value)
-            }
 
+            const handleSelectGlossary = (val) => {
+                // handleFetchPermission()
+                fetchPermissions()
+            }
             const handleRequest = () => {
                 console.log('raising request')
                 let requestType
@@ -651,6 +681,11 @@
                 parentGlossary,
                 handleSelectGlossary,
                 handleRequest,
+                createPermission,
+                hasCreatePermission,
+                glossaryForPermission,
+                role,
+                showRequestElements,
             }
         },
     })

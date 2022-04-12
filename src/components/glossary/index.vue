@@ -14,7 +14,6 @@
             ></GlossarySelect>
             <div class="flex">
                 <CreateGtcBtn
-                    v-if="createButtonVisibility"
                     :selected-glossary-qf="selectedGlossaryQf"
                     :term-add-permission="true"
                     :category-add-permission="true"

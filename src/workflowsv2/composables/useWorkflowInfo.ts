@@ -225,7 +225,7 @@ export default function useWorkflowInfo() {
             case 'Failed':
             case 'Error':
             case 'Stopped':
-                return 'bg-new-red-500'
+                return 'bg-new-red-400'
             default:
                 return 'bg-new-gray-300'
         }

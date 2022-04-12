@@ -60,7 +60,7 @@
 
             const placeholder = computed(() =>
                 packageName.value && type(pkg.value) === 'connector'
-                    ? 'Select connector'
+                    ? 'Select connection'
                     : 'Select workflow'
             )
 

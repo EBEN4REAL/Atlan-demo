@@ -5,6 +5,7 @@
             :is-loading="loadingLink"
             @changeLink="changeLink"
             @addPolicy="handleAddPolicy"
+            :haveLink="true"
         />
         <PersonaUsersGroups
             :key="persona.id"

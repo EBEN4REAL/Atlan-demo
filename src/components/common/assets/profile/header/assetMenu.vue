@@ -101,17 +101,18 @@
                         </div>
                     </template>
                     <template v-else>
-                        <a-tooltip
-                            placement="right"
-                            title="You don't have permission to perform this action"
+                        <RenameModal
+                            :entityType="asset?.typeName"
+                            :entityTitle="asset?.attributes?.name"
+                            :selected-asset="asset"
                         >
-                            <div
-                                class="flex items-center text-gray-500 cursor-not-allowed"
-                            >
-                                <AtlanIcon icon="Pencil" class="mr-2" />
-                                <p class="p-0 m-0">Rename</p>
-                            </div>
-                        </a-tooltip>
+                            <template #trigger>
+                                <div class="flex items-center">
+                                    <AtlanIcon icon="Pencil" class="m-0 mr-2" />
+                                    <p class="p-0 m-0">Rename</p>
+                                </div>
+                            </template>
+                        </RenameModal>
                     </template>
                 </a-menu-item>
 
@@ -257,6 +258,7 @@
     import BulkUploadModal from '@/glossary/modal/bulkUploadModal.vue'
     import RemoveGTCModal from '@/glossary/modal/removeGTCModal.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import RenameModal from '@/glossary/modal/renameModal.vue'
 
     // utils
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -264,7 +266,7 @@
     import useAuth from '~/composables/auth/useAuth'
 
     export default defineComponent({
-        components: { AnnouncementModal, RemoveGTCModal, BulkUploadModal },
+        components: { AnnouncementModal, RemoveGTCModal, BulkUploadModal , RenameModal },
         props: {
             asset: {
                 type: Object as PropType<assetInterface>,

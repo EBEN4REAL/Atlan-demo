@@ -257,6 +257,7 @@
                     <template #tab>
                         <div class="flex flex-col">
                             <PreviewTabsIcon
+                                :title="tab.tooltip"
                                 :icon="tab.icon"
                                 :image="tab.image"
                                 :emoji="tab.emoji"
@@ -568,12 +569,12 @@
 
             provide('switchTab', switchTab)
 
-            watch(
+            debouncedWatch(
                 drawerActiveKey,
                 (newVal) => {
                     switchTab(selectedAsset.value, newVal)
                 },
-                { immediate: true }
+                { debounce: 200, immediate: true }
             )
 
             const router = useRouter()

@@ -27,6 +27,7 @@ interface params {
     certificate?: String
     classifications?: Array<String>
     userDescription?: String
+    name?: String
     ownerUsers?: Array<any>
     ownerGroups?: Array<any>
 }
@@ -34,6 +35,7 @@ interface eventPayload {
     request_type:
         | 'term'
         | 'userDescription'
+        | 'name'
         | 'classification'
         | 'certificateStatus'
         | 'ownerUser'
@@ -52,6 +54,7 @@ export function useCreateRequests({
     certificate = '',
     classifications = [],
     userDescription = '',
+    name = '',
     ownerUsers = [],
     ownerGroups = [],
 }: params) {
@@ -136,6 +139,22 @@ export function useCreateRequests({
                 sourceType: 'static',
             })
         }
+        if (requestType === 'name') {
+            eventPayload.value.request_type = 'name'
+            eventPayload.value.action = 'edit'
+            requests.value.push({
+                requestType: 'attribute',
+                approvalType: 'single',
+                destinationAttribute: 'name',
+                id: assetGuid,
+                destinationGuid: assetGuid,
+                destinationQualifiedName: assetQf,
+                destinationValue: name,
+                entityType: assetType,
+                sourceType: 'static',
+            })
+        }
+
         if (requestType === 'ownerUsers') {
             if (ownerUsers?.length) {
                 eventPayload.value.request_type = 'ownerUsers'

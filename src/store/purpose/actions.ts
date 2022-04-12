@@ -4,9 +4,13 @@ export interface Actions extends State {
     setList(value: any): void
     updatePurpose(purpose: any): void
     removePurpose(purpose: any): void
+    setErrorPurpose(purpose: any): void
 }
 
 export const actions: Actions = {
+    setErrorPurpose(value) {
+        this.errorPurpose = value
+    },
     setList(value) {
         this.list = value
     },

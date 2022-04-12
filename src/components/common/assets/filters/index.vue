@@ -1,6 +1,8 @@
 <template>
     <div class="flex flex-col h-full">
-        <div class="px-4 py-3 text-sm bg-white border-b shadow-sm filter-head">
+        <div
+            class="px-4 pb-3 pt-3.5 text-sm bg-white border-b shadow-sm filter-head"
+        >
             <div
                 v-if="totalFilteredCount > 0"
                 class="flex items-center justify-between leading-none"

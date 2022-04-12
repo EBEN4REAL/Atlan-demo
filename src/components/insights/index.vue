@@ -534,6 +534,11 @@
                 inlineTabAdd(queryTab, tabsArray, activeInlineTabKey)
                 const callbackFunc = (asset: assetInterface) => {
                     UrlDetectedAsset.value = asset
+                    // setting tab to schema explorer
+
+                    if (activeTabId.value !== 'schema') {
+                        activeTabId.value = 'schema'
+                    }
                 }
                 getAssetInfo({
                     assetGuidFromURL,

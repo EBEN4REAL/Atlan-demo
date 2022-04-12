@@ -550,6 +550,10 @@
                 } else {
                     window.open(sourceURL(item.value), '_blank').focus()
                 }
+                useAddEvent('discovery', 'cta_action', 'clicked', {
+                    action: 'open_in_source',
+                    asset_type: item.value.typeName,
+                })
             }
 
             /*  whenever(and(Escape, notUsingInput), (v) => {

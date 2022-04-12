@@ -1,4 +1,4 @@
-enum CTAAction { 'open_asset', 'vqb_query', 'sql_query', 'copy_link' }
+
 
 import {
     NAME_OF_EVENTS,
@@ -59,7 +59,7 @@ const keyMap = {
             clicked: {
                 action: 'discovery_cta_action_clicked',
                 properties: (props: {
-                    action: CTAAction,
+                    action: 'open_asset' | 'vqb_query' | 'sql_query' | 'copy_link' | 'open_in_source'
                     asset_type: string
                 }) => ({
                     ...props,

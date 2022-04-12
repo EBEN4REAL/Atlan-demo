@@ -3,8 +3,8 @@
         placement="left"
         :title="
             isScrubbed
-                ? `You don't have permission to view ${title} for this asset`
-                : title
+                ? `You don't have the permission to view ${title} for this asset`
+                : ''
         "
         :mouse-enter-delay="0.1"
     >

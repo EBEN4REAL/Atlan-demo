@@ -20,6 +20,10 @@
                 >
                     <span
                         v-if="!isEdit && description(selectedAsset)"
+                        v-linkified="{
+                            className: 'text-primary',
+                            target: '_blank',
+                        }"
                         class="break-words whitespace-pre-wrap"
                         >{{ description(selectedAsset) }}</span
                     >

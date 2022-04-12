@@ -113,6 +113,7 @@
     const isLocalLoading = ref(true)
     const isLinkedTermLoading = ref(true)
     const isGlobalLoading = or(isLocalLoading, isLinkedTermLoading)
+    const hasLinkedTermsBeenLoaded = ref(false)
 
     const handleVisibilityChange = (visible) => {
         if (!visible) return
@@ -136,6 +137,12 @@
                     initialFetchedTerm.value?.typeName ===
                     'AtlasGlossaryCategory'
                 ) {
+                    // If we have already loaded the number of linked terms,
+                    // skip this calculation.
+                    if (hasLinkedTermsBeenLoaded.value) {
+                        isLinkedTermLoading.value = false
+                        return
+                    }
                     const {
                         linkedTermsCount,
                         isLoading: isLinkedTermLoadingInner,
@@ -149,6 +156,7 @@
                         isLinkedTermLoading.value =
                             isLinkedTermLoadingInner.value
                         if (!isLinkedTermLoadingInner.value) {
+                            hasLinkedTermsBeenLoaded.value = true
                             attributes.value.linkedTermsCount =
                                 linkedTermsCount.value
                         }
@@ -166,6 +174,12 @@
                         initialFetchedTerm.value?.typeName ===
                         'AtlasGlossaryCategory'
                     ) {
+                        // If we have already loaded the number of linked terms,
+                        // skip this calculation.
+                        if (hasLinkedTermsBeenLoaded.value) {
+                            isLinkedTermLoading.value = false
+                            return
+                        }
                         const {
                             linkedTermsCount,
                             isLoading: isLinkedTermLoadingInner,
@@ -183,6 +197,7 @@
                                 isLinkedTermLoadingInner.value
                         })
                         if (!isLinkedTermLoadingInner.value) {
+                            hasLinkedTermsBeenLoaded.value = true
                             attributes.value.linkedTermsCount =
                                 linkedTermsCount.value
                         }
@@ -205,6 +220,12 @@
                 if (
                     fetchedTermInner.value?.typeName === 'AtlasGlossaryCategory'
                 ) {
+                    // If we have already loaded the number of linked terms,
+                    // skip this calculation.
+                    if (hasLinkedTermsBeenLoaded.value) {
+                        isLinkedTermLoading.value = false
+                        return
+                    }
                     const {
                         linkedTermsCount,
                         isLoading: isLinkedTermLoadingInner,
@@ -218,6 +239,7 @@
                             isLinkedTermLoadingInner.value
                     })
                     if (!isLinkedTermLoadingInner.value) {
+                        hasLinkedTermsBeenLoaded.value = true
                         attributes.value.linkedTermsCount =
                             linkedTermsCount.value
                     }

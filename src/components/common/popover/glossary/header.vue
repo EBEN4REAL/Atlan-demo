@@ -1,6 +1,6 @@
 <template>
     <div class="w-full px-4 py-3 border-b border-gray-300 bg-gray-100">
-        <div class="flex w-full align-center items-center">
+        <div class="flex w-full content-center items-center">
             <span
                 class="text-lg font-gray-700 font-bold max-w-xs truncate mr-1"
             >
@@ -26,17 +26,15 @@
                 <AtlanIcon icon="SidebarSwitch" style="height: auto" />
             </AtlanButton>
         </div>
-        <div
-            class="mt-3 mt-1.5 flex flex-wrap align-center items-center text-gray-700 text-sm"
-        >
-            <AtlanIcon :icon="icon" class="h-4" />
+        <div class="mt-1.5 text-gray-700 text-sm break-all">
+            <AtlanIcon :icon="icon" />
             <span class="ml-1.5 uppercase">
                 {{ typeName }}
             </span>
             <span v-if="anchorAttributes?.name" class="ml-2">in</span>
             <AtlanIcon
                 v-if="anchorAttributes?.name"
-                class="ml-2 mr-1.5 h-4"
+                class="ml-2 mr-1.5"
                 icon="Glossary"
             />
             <span v-if="anchorAttributes?.name">

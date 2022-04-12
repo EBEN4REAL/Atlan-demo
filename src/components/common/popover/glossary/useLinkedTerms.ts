@@ -33,7 +33,7 @@ export function useLinkedTerms(
     const { assetTypeAggregationList, isLoading } = useFetchAssetList({
         queryText,
         offset: ref(0),
-        limit: ref(20),
+        limit: ref(0),
         facets: ref({
             parentCategory: isRef(categoryQualifiedName)
                 ? categoryQualifiedName.value

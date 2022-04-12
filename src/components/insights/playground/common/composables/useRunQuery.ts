@@ -421,6 +421,7 @@ export default function useRunQuery() {
                 ) {
                     const { setStreamErrorInActiveInlineTab } = useError()
                     setStreamErrorInActiveInlineTab(tabsArray, error, tabIndex)
+
                     // tabsArray.value[tabIndex].playground.resultsPane.result.tabQueryState =
                     //     activeTabKey.value === tabsArray.value[tabIndex].key
                     //         ? false

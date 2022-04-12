@@ -178,6 +178,7 @@
                             })
                             .filter('term', '__state', 'ACTIVE')
                             .filter('term', '__typeName.keyword', typeName)
+                            .sort('name.keyword', 'asc')
                             .size(100)
                             .build()
                     }
@@ -213,6 +214,7 @@
                             })
                             return q
                         })
+                        .sort('name.keyword', 'asc')
                         .size(100)
                         .build()
                 }

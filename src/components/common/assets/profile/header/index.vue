@@ -249,7 +249,14 @@
                                     icon="DatabaseGray"
                                     class="mr-1 mb-0.5"
                                 />
-                                <div class="tracking-tight text-gray-500">
+                                <div
+                                    @click="
+                                        handleOpenDrawer(
+                                            databaseQualifiedName(item)
+                                        )
+                                    "
+                                    class="tracking-tight text-gray-500 border-b border-gray-500 border-dashed cursor-pointer hover:text-primary"
+                                >
                                     {{ databaseName(item) }}
                                 </div>
                             </div>
@@ -266,7 +273,14 @@
                                     icon="SchemaGray"
                                     class="mr-1 mb-0.5"
                                 />
-                                <div class="tracking-tight text-gray-500">
+                                <div
+                                    @click="
+                                        handleOpenDrawer(
+                                            schemaQualifiedName(item)
+                                        )
+                                    "
+                                    class="tracking-tight text-gray-500 border-b border-gray-500 border-dashed cursor-pointer hover:text-primary"
+                                >
                                     {{ schemaName(item) }}
                                 </div>
                             </div>
@@ -391,6 +405,12 @@
             </a-button-group>
         </div>
     </div>
+    <AssetDrawer
+        :show-drawer="drawerVisible"
+        :qualifiedName="qfToFetch"
+        @closeDrawer="handleCloseDrawer"
+        :drawerActiveKey="drawerActiveKey"
+    />
 </template>
 
 <script lang="ts">
@@ -417,6 +437,7 @@
     import QueryDropdown from '@/common/query/queryDropdown.vue'
     import Name from '@/glossary/common/name.vue'
     import SlackAskButton from '~/components/common/assets/misc/slackAskButton.vue'
+    import AssetDrawer from '@common/assets/preview/drawer.vue'
     import { disableSlackAsk } from '~/composables/integrations/slack/useAskAQuestion'
     import useGTCPermissions, {
         fetchGlossaryPermission,
@@ -433,6 +454,7 @@
             Tooltip,
             QueryDropdown,
             Name,
+            AssetDrawer,
         },
         props: {
             item: {
@@ -482,10 +504,13 @@
                 isCustom,
                 isPublished,
                 assetPermission,
+                databaseQualifiedName,
+                schemaQualifiedName,
             } = useAssetInfo()
 
             const entityTitle = ref(title(item.value))
             const router = useRouter()
+            const drawerActiveKey = ref('Relations')
 
             const goToInsights = (openVQB) => {
                 // router.push(getAssetQueryPath(asset))
@@ -551,6 +576,19 @@
             const handleNameUpdate = (val) => {
                 entityTitle.value = val
                 console.log(val)
+            }
+
+            const drawerVisible = ref(false)
+            const qfToFetch = ref('')
+
+            const handleOpenDrawer = (qfName) => {
+                drawerVisible.value = true
+                qfToFetch.value = qfName
+            }
+
+            const handleCloseDrawer = () => {
+                drawerVisible.value = false
+                qfToFetch.value = ''
             }
 
             // * permissions for glossary to check against the glossary and not category or term,
@@ -623,6 +661,13 @@
                 handleNameUpdate,
                 entityTitle,
                 isPublished,
+                databaseQualifiedName,
+                schemaQualifiedName,
+                handleOpenDrawer,
+                drawerVisible,
+                qfToFetch,
+                handleCloseDrawer,
+                drawerActiveKey,
             }
         },
     })

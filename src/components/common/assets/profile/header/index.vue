@@ -255,7 +255,7 @@
                                             databaseQualifiedName(item)
                                         )
                                     "
-                                    class="tracking-tight text-gray-500 border-b border-gray-500 border-dashed cursor-pointer hover:text-primary"
+                                    class="tracking-tight text-gray-500 border-b border-gray-400 border-dashed cursor-pointer hover:text-primary hover:border-gray-500"
                                 >
                                     {{ databaseName(item) }}
                                 </div>
@@ -279,7 +279,7 @@
                                             schemaQualifiedName(item)
                                         )
                                     "
-                                    class="tracking-tight text-gray-500 border-b border-gray-500 border-dashed cursor-pointer hover:text-primary"
+                                    class="tracking-tight text-gray-500 border-b border-gray-400 border-dashed cursor-pointer hover:text-primary hover:border-gray-500"
                                 >
                                     {{ schemaName(item) }}
                                 </div>

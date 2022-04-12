@@ -19,7 +19,7 @@
                 />
             </a-tooltip>
             <span class="mr-2 text-xl font-bold text-gray-600"
-                >Setup a new workflow:
+                >Setup a new workflow &nbsp;
             </span>
             <img
                 v-if="icon(workflowTemplate)"
@@ -35,19 +35,37 @@
         </div>
 
         <div class="flex h-full overflow-hidden">
-            <div v-if="!status" class="flex-grow-0 px-6 py-8">
-                <a-steps
-                    v-if="steps.length > 0"
-                    direction="vertical"
-                    :current="currentStep"
-                    class="w-44"
+            <div
+                v-if="!status && steps.length > 0"
+                class="flex flex-col flex-none px-6 py-8 overflow-y-auto w-52 gap-y-7"
+            >
+                <div
+                    v-for="(step, index) in steps"
+                    :key="step.id"
+                    :class="{
+                        selected: currentStep === index,
+                        disabled: index > currentStep,
+                    }"
+                    class="stepper"
+                    @click="handleStepClick(index)"
                 >
-                    <template v-for="(step, index) in steps" :key="step.id">
-                        <a-step class="h-16" @click="handleStepClick(index)">
-                            <template #title>{{ step.title }}</template>
-                        </a-step>
-                    </template>
-                </a-steps>
+                    <span
+                        v-if="index >= currentStep"
+                        class="absolute -top-2.5 -left-2.5 dot"
+                        >{{ index + 1 }}
+                    </span>
+                    <AtlanIcon
+                        v-else
+                        icon="RunSuccess"
+                        class="absolute -top-2.5 -left-2.5 h-5"
+                    />
+                    <p class="text-sm font-bold">
+                        {{ step.title }}
+                    </p>
+                    <p class="text-xs text-new-gray-700">
+                        {{ step.description }}
+                    </p>
+                </div>
             </div>
 
             <div
@@ -839,6 +857,37 @@
 
         :global(.ant-popover-arrow) {
             @apply block !important;
+        }
+    }
+</style>
+<style lang="less" scoped>
+    .stepper {
+        @apply relative;
+        @apply px-3 py-2;
+        @apply border rounded-lg border-new-gray-300 bg-new-gray-100;
+        @apply text-new-gray-700;
+        @apply cursor-pointer;
+        @apply transition-colors duration-200;
+
+        &:hover:not(.disabled) {
+            @apply border-primary;
+        }
+
+        &.disabled {
+            @apply cursor-not-allowed;
+        }
+
+        .dot {
+            @apply w-5 h-5 text-center rounded-full bg-new-gray-300 text-xs;
+            padding-top: 3px;
+        }
+
+        &.selected {
+            @apply border-primary bg-primary-menu text-primary;
+
+            .dot {
+                @apply bg-primary text-white;
+            }
         }
     }
 </style>

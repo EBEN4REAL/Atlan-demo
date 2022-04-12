@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col flex-1 h-full bg-primary-menu">
+    <div class="flex flex-col flex-1 h-full overflow-y-hidden bg-primary-menu">
         <div class="flex flex-col px-6 py-3">
             <span class="text-xl font-semibold text-gray-700">
                 Metadata Marketplace</span
@@ -24,7 +24,7 @@
             </div>
         </div>
 
-        <div class="flex flex-1 w-full h-full mb-3 overflow-y-auto">
+        <div class="flex flex-1 w-full mb-3 overflow-y-auto">
             <div
                 class="flex items-center justify-center w-full"
                 v-if="isLoading"

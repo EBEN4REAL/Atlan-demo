@@ -364,7 +364,7 @@
                             placeholder: 'environment',
                             help: "Name of your connection which represents your source environment. Example - 'production', 'development', 'gold', 'analytics' ",
                             required: true,
-                            grid: 4,
+                            grid: 6,
                             prefixImage: connectorImage.value,
                             prefixText: `${connector.value}-`,
                             rules: [
@@ -403,7 +403,7 @@
                             widget: 'userMultiple',
                             label: 'Admin Users',
                             start: 1,
-                            grid: 5,
+                            grid: 6,
                         },
                     },
                     adminGroups: {
@@ -413,7 +413,7 @@
                             widget: 'groupMultiple',
                             label: 'Admin Groups',
 
-                            grid: 4,
+                            grid: 6,
                         },
                     },
                     allowQuery: {
@@ -441,7 +441,7 @@
                         ui: {
                             label: 'Allow Data Preview',
                             help: 'Users will be view sample preview of the assets',
-                            grid: 3,
+                            grid: 4,
                             hidden: true,
                             rules: [
                                 {

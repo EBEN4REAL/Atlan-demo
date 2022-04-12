@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col h-full">
+    <div class="flex flex-col h-full overflow-y-hidden">
         <div class="flex flex-col px-4 py-4 border-b border-gray-200">
             <div class="flex items-center" style="padding-bottom: 1px">
                 <div class="flex items-center justify-between">
@@ -90,18 +90,45 @@
                 />
             </template>
         </div>
+        <div class="flex flex-col overflow-y-auto">
+            <Property
+                v-if="mode === 'package'"
+                :item="item"
+                :key="item.metadata.name"
+                class="flex-none"
+            />
 
-        <Property
-            :item="item"
-            v-if="mode === 'package'"
-            :key="item.metadata.name"
-        ></Property>
+            <Workflows
+                v-if="mode === 'workflow'"
+                :item="item"
+                :key="item.metadata.name"
+                class="flex-none"
+            />
 
-        <Workflows
-            :item="item"
-            v-if="mode === 'workflow'"
-            :key="item.metadata.name"
-        ></Workflows>
+            <div
+                v-if="packageType(item) === 'connector'"
+                class="px-5 space-y-1.5 text-sm"
+            >
+                <span class="mb-1 text-gray-500"
+                    >Existing Connections ({{
+                        previousConnectors.length
+                    }})</span
+                >
+                <template v-if="!prevConnLoading">
+                    <template v-for="conn in previousConnectors" :key="conn.id">
+                        <span class="block font-bold text-primary">{{
+                            conn.label
+                        }}</span>
+                    </template>
+                </template>
+                <a-skeleton
+                    v-else
+                    active
+                    :title="false"
+                    :paragraph="{ rows: 5 }"
+                />
+            </div>
+        </div>
 
         <!-- <a-tabs
             v-model:activeKey="activeKey"
@@ -147,10 +174,11 @@
         provide,
         defineAsyncComponent,
     } from 'vue'
-
-    import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
-    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import { useRoute, useRouter } from 'vue-router'
+
+    import { useWorkflowDiscoverList } from '~/workflowsv2/composables/useWorkflowDiscoverList'
+    import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
+    import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
 
     export default defineComponent({
         name: 'Sidebar',
@@ -180,6 +208,7 @@
         setup(props, { emit }) {
             const activeKey = ref('detail')
             const { item, mode } = toRefs(props)
+            const { displayName, packageType, packageName } = useWorkflowInfo()
 
             if (mode.value === 'workflow') {
                 activeKey.value = 'workflow'
@@ -224,6 +253,44 @@
                 router.push(`/workflows/setup/${item.value?.metadata?.name}`)
             }
 
+            const {
+                list,
+                isLoading: prevConnLoading,
+                quickChange,
+            } = useWorkflowDiscoverList({
+                facets: computed(() => ({
+                    ui: true,
+                    packageName: packageName(item.value),
+                })),
+                limit: ref(100),
+                source: ref({
+                    includes: [
+                        'metadata.name',
+                        'metadata.annotations.package.argoproj.io/name',
+                        'metadata.annotations.orchestration.atlan.com/schedule',
+                    ],
+                }),
+                preference: ref({
+                    sort: 'metadata.creationTimestamp-desc',
+                }),
+            })
+
+            const previousConnectors = computed(() =>
+                list.value.map((workflow) => ({
+                    id: workflow.metadata.name,
+                    label: displayName(item.value, workflow.metadata.name),
+                }))
+            )
+
+            watch(
+                () => packageName(item.value),
+                () => {
+                    if (packageName(item.value)) {
+                        quickChange()
+                    }
+                }
+            )
+
             return {
                 filteredTabs,
                 activeKey,
@@ -233,6 +300,9 @@
                 route,
                 handleSetupWorkflow,
                 router,
+                previousConnectors,
+                prevConnLoading,
+                packageType,
             }
         },
     })

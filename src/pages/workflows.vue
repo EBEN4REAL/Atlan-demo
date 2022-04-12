@@ -14,7 +14,6 @@
             if (!route.params?.tab) router.replace('/workflows/monitor')
 
             onBeforeRouteUpdate((to, _, next) => {
-                console.log(to)
                 if (to.path === '/workflows') next('/workflows/monitor')
                 else next(true)
             })

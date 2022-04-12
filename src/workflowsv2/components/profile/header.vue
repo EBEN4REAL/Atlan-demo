@@ -7,11 +7,11 @@
         />
 
         <div
-            class="flex flex-grow border-gray-200 gap-x-2"
+            class="flex flex-grow mb-2 border-gray-200 gap-x-2"
             v-if="packageObject?.metadata?.annotations"
         >
             <div class="relative flex-none mt-0.5">
-                <PackageIcon :package="packageObject" rounded />
+                <PackageIcon :package="packageObject" />
 
                 <div
                     v-if="
@@ -26,12 +26,34 @@
                     </a-tooltip>
                 </div>
             </div>
-            <div class="flex flex-col">
-                <span class="text-base font-bold font-gray">
-                    {{ displayName(packageObject, name(workflowObject)) }}
-                </span>
 
-                <div class="flex flex-wrap items-center text-gray-500 gap-x-2">
+            <div class="truncate">
+                <div class="flex items-center gap-x-1">
+                    <span class="truncate text-new-gray-700">{{
+                        pkgName(workflowObject)
+                    }}</span>
+                    <div v-if="type(workflowObject)" class="badge">
+                        <span style="margin-top: 1px">{{
+                            type(workflowObject)
+                        }}</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center mt-0.5 text-base gap-x-1">
+                    <span
+                        class="font-bold tracking-wide truncate cursor-pointer text-new-gray-800"
+                        >{{
+                            displayName(packageObject, name(workflowObject))
+                        }}</span
+                    >
+                    <span class="italic truncate text-grey-500">
+                        ({{ name(workflowObject) }})
+                    </span>
+                </div>
+
+                <div
+                    class="flex flex-wrap items-center mt-2 text-gray-500 gap-x-2"
+                >
                     <div class="text-sm text-gray-500">
                         <span
                             >Created
@@ -88,20 +110,7 @@
             </div>
         </div>
 
-        <div class="flex ml-auto gap-x-1 mt-1.5">
-            <AtlanButton2
-                label="Run Now"
-                color="secondary"
-                @click="handleRunNow"
-            />
-
-            <AtlanButton2
-                v-if="allowSchedule(workflowObject)"
-                :label="scheduleCTAMessage"
-                color="secondary"
-                @click="toggleSchedule"
-            />
-
+        <div class="flex ml-auto gap-x-2 mt-1.5">
             <a-modal
                 v-model:visible="scheduleVisible"
                 title="Schedule"
@@ -111,29 +120,51 @@
                 @ok="handleScheduleUpdate"
             >
                 <div class="px-4 py-2">
-                    <Schedule v-model="cronModel"></Schedule>
+                    <Schedule v-model="cronModel" />
                 </div>
             </a-modal>
+
+            <AtlanButton2
+                v-if="allowSchedule(workflowObject)"
+                bold
+                color="secondary"
+                prefixIcon="Schedule"
+                :label="scheduleCTAMessage"
+                @click="toggleSchedule"
+            />
+
+            <AtlanButton2
+                label="Run Workflow"
+                color="secondary"
+                prefixIcon="WorkflowsActive"
+                bold
+                @click="handleRunNow"
+            />
+
+            <Dropdown :options="dropdownOptions" />
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, toRefs, watch } from 'vue'
+    import { computed, defineComponent, ref, toRefs, watch, h } from 'vue'
     import { useRouter } from 'vue-router'
     import { Modal, message } from 'ant-design-vue'
-    import { watchOnce } from '@vueuse/core'
+    import { watchOnce, until } from '@vueuse/core'
     import useWorkflowSubmit from '~/workflows/composables/package/useWorkflowSubmit'
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
+    import { usePackageInfo } from '~/workflowsv2/composables/usePackageInfo'
     import useWorkflowUpdate from '~/workflows/composables/package/useWorkflowUpdate'
+    import { deleteWorkflowByName } from '~/workflowsv2/composables/useWorkflowList'
 
+    import Dropdown from '@/UI/dropdown.vue'
     import Schedule from '@/common/input/schedule.vue'
     import UserWrapper from '~/workflowsv2/components/common/user.vue'
     import PackageIcon from '~/workflowsv2/components/common/packageIcon.vue'
 
     export default defineComponent({
         name: 'WorkflowHeader',
-        components: { Schedule, PackageIcon, UserWrapper },
+        components: { Schedule, PackageIcon, UserWrapper, Dropdown },
         props: {
             packageObject: {
                 type: Object,
@@ -169,6 +200,8 @@
                 isCronWorkflow,
                 nextRunRelativeTime,
             } = useWorkflowInfo()
+
+            const { type, name: pkgName } = usePackageInfo()
 
             const cronModel = ref(cronObject(workflowObject.value))
 
@@ -269,12 +302,53 @@
                 updateWorkflow()
             }
 
+            const archiveWorkflow = (workflowName: string) => {
+                Modal.confirm({
+                    title: 'Delete Workflow',
+                    content: () =>
+                        h('span', [
+                            'Are you sure you want to delete ',
+                            h('b', [workflowName]),
+                            ' workflow?',
+                        ]),
+                    okType: 'danger',
+                    autoFocusButton: null,
+                    okButtonProps: {
+                        type: 'primary',
+                    },
+                    okText: 'Delete',
+                    cancelText: 'Cancel',
+                    async onOk() {
+                        const { error: err, isLoading: isDeleteLoading } =
+                            deleteWorkflowByName(workflowName, true)
+                        await until(isDeleteLoading).toBe(false)
+                        if (err.value)
+                            message.error('Failed to delete workflow')
+                        else {
+                            message.success('Workflow deleted')
+                            handleBack()
+                        }
+                    },
+                })
+            }
+
+            const dropdownOptions = [
+                {
+                    title: 'Delete',
+                    icon: 'Trash',
+                    class: 'text-red-700',
+                    handleClick: () =>
+                        archiveWorkflow(workflowObject.value?.metadata?.name),
+                },
+            ]
             return {
                 handleBack,
                 name,
                 creationTimestamp,
                 creatorUsername,
                 displayName,
+                type,
+                pkgName,
                 router,
                 handleRunNow,
                 isCronWorkflow,
@@ -296,7 +370,17 @@
                 error,
                 data,
                 nextRunRelativeTime,
+                archiveWorkflow,
+                dropdownOptions,
             }
         },
     })
 </script>
+
+<style scoped>
+    .badge {
+        @apply flex items-center justify-center;
+        @apply h-5 rounded uppercase px-2 mx-1;
+        @apply text-xs tracking-wider bg-gray-200 text-gray;
+    }
+</style>

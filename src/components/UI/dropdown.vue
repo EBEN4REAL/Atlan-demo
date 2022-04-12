@@ -1,10 +1,6 @@
 <template>
     <a-dropdown trigger="click">
-        <IconButton
-            :data-test-id="dataTestId"
-            icon="KebabMenu"
-            class="border-none"
-        />
+        <IconButton :data-test-id="dataTestId" icon="KebabMenu" />
 
         <template #overlay>
             <a-menu>

@@ -3,6 +3,7 @@
         <!-- !typeName && data.length
                     ? formattedClassifications
                     : localClassification -->
+        <span class="pt-1 pr-2 text-gray-500">Link Classification</span>
         <Popover
             v-if="
                 localClassification?.length &&
@@ -37,7 +38,6 @@
                 Classification deleted
             </div>
         </template>
-        <span class="pt-1 pr-2 text-gray-500">Link Classification</span>
     </div>
 </template>
 

@@ -281,46 +281,53 @@
         </div>
         <div
             v-if="showRequestStatus"
-            class="flex items-center justify-end col-span-3 mr-4 text-xs"
+            class="flex items-center col-span-3 text-sm ml-10"
         >
-            <div
-                v-if="request.status === 'active'"
-                class="flex items-center space-x-1"
-            >
-            <span class="text-yellow-500 flex items-center"><atlan-icon icon="History" class="mr-0.5 h-3"/>Pending</span>
-                <span>|</span>
+            <div v-if="request.status === 'active'" class="flex flex-col">
+                <span class="text-yellow-500 flex items-center mb-2"
+                    ><atlan-icon
+                        icon="History"
+                        class="mr-0.5 h-3"
+                    />Pending</span
+                >
                 <a-popover placement="rightBottom">
                     <template #content>
                         <AdminList></AdminList>
                     </template>
                     <span class="cursor-pointer"
-                        >Reviewers<atlan-icon icon="CaretDown" class="mx-0.5 h-3"
+                        >Reviewers<atlan-icon
+                            icon="CaretDown"
+                            class="mx-0.5 h-3"
                     /></span>
                 </a-popover>
             </div>
             <div
-                v-else
-                class="flex items-center justify-end font-light whitespace-nowrap"
                 :class="
                     request.status === 'approved'
                         ? 'text-success'
                         : 'text-error'
                 "
+                v-else
             >
                 {{
                     request.status === 'approved'
                         ? 'Approved by'
                         : 'Rejected by'
                 }}
-                <div class="flex items-center mx-2 truncate">
-                    <Avatar
-                        :allow-upload="false"
-                        :avatar-name="nameUpdater"
-                        :avatar-size="18"
-                        :avatar-shape="'circle'"
-                        class="mr-2"
-                    />
-                    <span class="text-gray-700">{{ nameUpdater }}</span>
+
+                <div
+                    class="flex  items-center  font-light whitespace-nowrap mt-2"
+                >
+                    <div class="flex items-center truncate">
+                        <Avatar
+                            :allow-upload="false"
+                            :avatar-name="nameUpdater"
+                            :avatar-size="18"
+                            :avatar-shape="'circle'"
+                            class="mr-2"
+                        />
+                        <span class="text-gray-700">{{ nameUpdater }}</span>
+                    </div>
                 </div>
             </div>
         </div>

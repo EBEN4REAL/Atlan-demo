@@ -156,7 +156,7 @@
         <div
             v-else-if="
                 (purposeList === null || purposeList?.length == 0) &&
-                isPurposeError === undefined
+                errorPurpose === undefined
             "
             class="flex flex-col items-center h-full"
         >
@@ -190,7 +190,7 @@
                 </a>
             </div>
         </div>
-        <ErrorView v-else :error="isPurposeError">
+        <ErrorView v-else :error="errorPurpose">
             <div class="mt-3">
                 <a-button
                     data-test-id="try-again"
@@ -231,7 +231,7 @@
         selectedPurposeId,
         isPurposeListReady,
         isPurposeLoading,
-        isPurposeError,
+        errorPurpose,
         facets,
     } from './composables/usePurposeList'
     import { isEditing } from './composables/useEditPurpose'
@@ -367,7 +367,7 @@
                 searchTerm,
                 modalVisible,
                 isPurposeLoading,
-                isPurposeError,
+                errorPurpose,
                 // createNewPersona,
                 isEditing,
                 AddPersonaIllustration,

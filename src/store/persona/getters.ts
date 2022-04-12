@@ -4,7 +4,7 @@ import { State } from './state'
 export interface Getters {
     getList(state: State): any[]
     getConnectionList(): (id: string) => string[]
-    getAssetList(): (id: string) => string[]
+    getAssetList(): (id: string) => string[],
 }
 
 export const getters: GettersTree<State> & Getters = {

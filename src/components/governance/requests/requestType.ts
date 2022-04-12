@@ -66,12 +66,17 @@ export const requestTypeEventMap = {
     create_category:{
         requestType:'create_category',
         action:'create'
+    },
+    name:{
+        requestType:'name',
+        action:'edit'
     }
 }
 
 export const attributeCopyMapping: Record<string, string> = {
     certificateStatus: 'Certificate',
     userDescription: 'Description',
+    name:'Name'
 }
 
 export const typeCopyMapping: Record<string, string> = {
@@ -86,11 +91,13 @@ export const typeCopyMapping: Record<string, string> = {
     certificateStatus: 'Certificate',
     ownerUsers: 'Owner',
     userDescription: 'Description',
+    name:'Name'
 }
 
 export const destinationAttributeMapping: Record<string, string> = {
     ownerUsers: 'Owner',
     userDescription: 'Description',
+    name:'Name',
     certificateStatus: 'Certificate',
 }
 

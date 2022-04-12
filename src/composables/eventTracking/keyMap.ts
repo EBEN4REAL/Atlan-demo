@@ -48,8 +48,14 @@ const keyMap = {
         filter: {
             changed: {
                 action: 'discovery_filter_changed',
-                properties: (props) => ({
-                    type: props.type,
+                properties: (props: {
+                    type: string,
+                    property?: string,
+                    value?: string,
+                    operator?: string,
+                }
+                ) => ({
+                    ...props,
                 }),
             },
         },

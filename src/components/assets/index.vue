@@ -614,16 +614,51 @@
                 }
                 return k
             }
-            const sendFilterEvent = useDebounceFn((filterItem) => {
-                if (filterItem && filterItem.analyticsKey) {
-                    const parsedAnalyticKey = getAnalyticKey(
-                        filterItem.analyticsKey
-                    )
-                    useAddEvent('discovery', 'filter', 'changed', {
-                        type: parsedAnalyticKey,
-                    })
-                }
-            }, 600)
+
+            const sendFilterEvent = useDebounceFn(
+                (filterItem, otherArguments) => {
+                    if (filterItem && filterItem.analyticsKey) {
+                        const parsedAnalyticKey = getAnalyticKey(
+                            filterItem.analyticsKey
+                        )
+
+                        if (parsedAnalyticKey === 'property') {
+                            const [property, currentValue] = otherArguments
+
+                            if (currentValue) {
+                                const { operator, value, operand } =
+                                    currentValue
+                                if (
+                                    operator &&
+                                    operand &&
+                                    ((value !== undefined && value !== '') ||
+                                        ['isNotNull', 'isNull'].includes(
+                                            operator
+                                        ))
+                                )
+                                    useAddEvent(
+                                        'discovery',
+                                        'filter',
+                                        'changed',
+                                        {
+                                            type: parsedAnalyticKey,
+                                            property: operand,
+                                            ...(value !== undefined &&
+                                            value !== ''
+                                                ? { value }
+                                                : {}),
+                                            operator,
+                                        }
+                                    )
+                            }
+                        } else
+                            useAddEvent('discovery', 'filter', 'changed', {
+                                type: parsedAnalyticKey,
+                            })
+                    }
+                },
+                600
+            )
 
             const sendPreferenceEvent = (type, id, preferences) => {
                 console.log('sendPreferenceEvent', type, id, preferences.sort)
@@ -692,14 +727,13 @@
                 )
             }
 
-            const handleFilterChange = (filterItem) => {
-                console.log('handleFilterChange', filterItem)
+            const handleFilterChange = (filterItem, ...args) => {
                 isConnectorChange.value = false
                 isGlossaryChange.value = false
                 offset.value = 0
                 quickChange()
                 discoveryStore.setActiveFacet(facets.value)
-                sendFilterEvent(filterItem)
+                sendFilterEvent(filterItem, args)
             }
 
             const handleConnectorChange = (filterItem) => {

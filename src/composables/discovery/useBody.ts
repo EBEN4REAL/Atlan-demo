@@ -386,6 +386,12 @@ export function useBody(
 
                 break
             }
+            case 'qualifiedName': {
+                if (filterObject) {
+                    base.filter('term', 'qualifiedName', filterObject)
+                }
+                break
+            }
             case 'tableQualifiedName': {
                 if (filterObject) {
                     base.filter('term', 'tableQualifiedName', filterObject)

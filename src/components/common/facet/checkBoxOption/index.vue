@@ -8,17 +8,24 @@
             <template v-for="el in item.data" :key="el.id">
                 <a-checkbox
                     :value="el.id"
-                    class="inline-flex flex-row-reverse items-center w-full mb-1 atlan-reverse"
+                    class="flex-row-reverse items-center w-full mb-1 atlan-reverse"
                 >
-                    <div class="flex items-center">
+                    <div class="flex items-center w-48 pt-2">
                         <div
                             v-if="el.colorDot"
                             :style="`background-color: ${el.colorDot}`"
                             class="mr-3 dot"
                         />
-                        <span class="mb-0 text-gray">
+                        <AtlanIcon
+                            v-if="el.icon"
+                            class="mr-2"
+                            :icon="el.icon"
+                        />
+                        <div
+                            class="flex-1 mb-0 text-sm truncate text-gray label-checkbox"
+                        >
                             {{ el.label }}
-                        </span>
+                        </div>
                     </div>
                 </a-checkbox>
             </template>
@@ -57,6 +64,10 @@
 </script>
 
 <style lang="less" scoped>
+    .label-checkbox {
+        max-width: 70%;
+        line-height: 16px !important;
+    }
     .dot {
         height: 6px;
         width: 6px;

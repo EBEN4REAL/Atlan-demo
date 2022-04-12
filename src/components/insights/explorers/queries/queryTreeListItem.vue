@@ -1,10 +1,10 @@
 <template>
     <div
+        :id="`${item.qualifiedName}-selector`"
         class="`w-9/11 group`"
         :style="`opacity: ${
             selectedFolderHide?.guid === item?.guid ? 0.5 : 1
         };`"
-        :id="`${item.qualifiedName}-selector`"
     >
         <div class="flex justify-between w-full overflow-hidden item-center">
             <div class="flex w-full m-0">
@@ -13,20 +13,33 @@
                     class="relative flex content-center w-full my-auto overflow-hidden text-sm leading-5 text-gray-700"
                 >
                     <div class="py-1 parent-ellipsis-container">
-                        <div class="flex w-full">
-                            <AtlanIcon
-                                :icon="
+                        <div class="w-full">
+                            <div class="flex">
+                                <AtlanIcon
+                                    :icon="
+                                        expandedKeys.find(
+                                            (key) => key === item.key
+                                        )
+                                            ? 'FolderOpen'
+                                            : 'FolderClosed'
+                                    "
+                                    class="w-4 h-4 mr-1"
+                                    style="margin-top: 3px"
+                                ></AtlanIcon>
+                                <span
+                                    class="text-sm text-gray-700 parent-ellipsis-container-base mt-0.5"
+                                    >{{ title(item) }}</span
+                                >
+                            </div>
+                            <div
+                                v-if="
+                                    !item?.children?.length &&
                                     expandedKeys.find((key) => key === item.key)
-                                        ? 'FolderOpen'
-                                        : 'FolderClosed'
                                 "
-                                class="w-4 h-4 mr-1"
-                                style="margin-top: 3px"
-                            ></AtlanIcon>
-                            <span
-                                class="text-sm text-gray-700 parent-ellipsis-container-base mt-0.5"
-                                >{{ title(item) }}</span
+                                class="mt-2 italic text-gray-500"
                             >
+                                This folder is empty
+                            </div>
                         </div>
                     </div>
                 </div>

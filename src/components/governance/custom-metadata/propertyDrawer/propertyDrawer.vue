@@ -224,6 +224,7 @@
                     data_type: dataType,
                     multi_value: tempForm?.options.multiValueSelect,
                     allow_filtering: tempForm?.options.allowFiltering,
+                    show_in_overview: tempForm?.options.showInOverview,
                 }
                 return properties
             }
@@ -241,7 +242,7 @@
                         formRef.value.validate(),
                         enumFormValidate(),
                     ]
-                    await Promise.allSettled(promises)
+                    await Promise.all(promises)
                     await executeCreateEnum()
                 } else await formRef.value.validate()
 
@@ -285,7 +286,7 @@
 
                     watch([isReady, error], ([newValue, newError]) => {
                         if (newValue) {
-                            message.success('Attribute edited')
+                            message.success('Attribute updated')
                             loading.value = false
                             const returnSome = (oldData) => {
                                 console.log(oldData)

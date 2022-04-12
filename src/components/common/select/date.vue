@@ -4,6 +4,7 @@
         v-model:value="localValue"
         class="w-full"
         @change="handleChange"
+        :allowClear="allowClear"
     >
         <a-select-option
             v-for="item in list"
@@ -30,6 +31,11 @@
             modelValue: {
                 type: [Array, String],
                 required: false,
+            },
+            allowClear: {
+                type: Boolean,
+                required: false,
+                default: true,
             },
         },
         emits: ['change', 'update:modelValue'],

@@ -96,6 +96,18 @@
                             />
                         </span>
                     </a-form-item>
+                    <a-form-item class="-mt-2.5" v-if="ssoForm.alias==='azure'">
+                        <template #label>
+                            <div class="">
+                                <div class="mb-2">
+                                    Single Logout Service URL
+                                </div>
+                            </div>
+                        </template>
+                        <a-input
+                            v-model:value="ssoForm.singleLogoutServiceUrl"
+                        />
+                    </a-form-item>
                 </a-form>
                 <div v-if="provider.isCustomSaml" class="mt-6">
                     <div class="mb-6 font-bold text-gray-700">
@@ -230,6 +242,7 @@
     interface FormState {
         alias: string
         singleSignOnServiceUrl: string
+        singleLogoutServiceUrl: string
         signingCertificate: string
         displayName: string
     }
@@ -286,6 +299,7 @@
             const ssoForm: UnwrapRef<FormState> = reactive({
                 alias: props.alias,
                 singleSignOnServiceUrl: '',
+                singleLogoutServiceUrl: '',
                 signingCertificate: '',
                 displayName: '',
             })
@@ -386,6 +400,8 @@
                 ssoForm.singleSignOnServiceUrl =
                     data?.config?.singleSignOnServiceUrl
                 ssoForm.signingCertificate = data?.config?.signingCertificate
+                ssoForm.singleLogoutServiceUrl =
+                    data?.config?.singleLogoutServiceUrl
             })
 
             const addNewMapper = () => {
@@ -461,6 +477,11 @@
                         },
                         displayName: ssoForm.displayName,
                     }
+                    if (ssoForm.singleLogoutServiceUrl)
+                        config.config.singleLogoutServiceUrl =
+                            ssoForm.singleLogoutServiceUrl
+                    else delete config.config.singleLogoutServiceUrl
+
                     mapperLists.value.map(
                         (mapper) => mapper?.userAttr && addMapper(mapper)
                     )

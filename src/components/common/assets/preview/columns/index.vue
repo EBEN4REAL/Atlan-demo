@@ -1,8 +1,6 @@
 <template>
     <div class="flex flex-col h-full" style="height: calc(100% - 84px)">
-        <div
-            class="flex items-center justify-between px-5 py-2 border-b border-gray-200 bg-gray-50"
-        >
+        <div class="flex items-center justify-between px-5 pt-4 pb-2">
             <span class="flex items-center">
                 <PreviewTabsIcon
                     :icon="tab.icon"
@@ -15,7 +13,7 @@
             </span>
         </div>
 
-        <div class="px-5 pt-3 pb-0">
+        <div class="px-5 pb-0">
             <SearchAdvanced
                 v-model:value="queryText"
                 :autofocus="true"
@@ -39,7 +37,7 @@
 
         <AggregationTabs
             v-model="postFacets.dataType"
-            class="px-5 mt-2 mb-1"
+            class="px-5 mt-2 mb-2"
             :list="columnDataTypeAggregationList"
             @change="handleDataTypeChange"
         ></AggregationTabs>

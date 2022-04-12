@@ -2,6 +2,7 @@
 import { isFor } from '@babel/types'
 import bodybuilder from 'bodybuilder'
 import { ref } from 'vue'
+import { useUtils } from '~/components/governance/personas/assets/useUtils'
 import { useConnectionStore } from '~/store/connection'
 import { usePersonaStore } from '~/store/persona'
 import { usePurposeStore } from '~/store/purpose'
@@ -181,16 +182,18 @@ export function useBody(
     //filters
     Object.keys(facets ?? {})?.forEach((mkey) => {
         const filterObject = facets[mkey]
+
         switch (mkey) {
             case 'hierarchy': {
-                if (filterObject.connectorName) {
-                    base.filter(
-                        'term',
-                        'connectorName',
-                        filterObject.connectorName
-                    )
-                    connectorName = filterObject.connectorName
-                }
+                // compatibility fix
+                // if (filterObject.connectorName) {
+                //     base.filter(
+                //         'term',
+                //         'connectorName',
+                //         filterObject.connectorName
+                //     )
+                //     connectorName = filterObject.connectorName
+                // }
                 if (filterObject.connectionQualifiedName) {
                     base.filter('bool', (q) => {
                         q.orFilter(
@@ -237,7 +240,12 @@ export function useBody(
                 break
             }
             case 'connector': {
-                if (filterObject) {
+                if (filterObject == '__glossary') {
+                    base.filter('terms', '__typeName.keyword', [
+                        'AtlasGlossaryTerm',
+                        'AtlasGlossaryCategory',
+                    ])
+                } else if (filterObject && filterObject !== '__glossary') {
                     base.filter('term', 'connectorName', filterObject)
                     connectorName = filterObject.connectorName
                 }
@@ -286,24 +294,39 @@ export function useBody(
             case 'owners': {
                 if (filterObject) {
                     base.filter('bool', (q) => {
-                        if (filterObject.ownerUsers?.length > 0)
+                        if (filterObject.ownerUsers?.length > 0) {
                             q.orFilter(
                                 'terms',
                                 'ownerUsers',
                                 filterObject.ownerUsers
                             )
+                            q.orFilter(
+                                'terms',
+                                'adminUsers',
+                                filterObject.ownerUsers
+                            )
+                        }
 
-                        if (filterObject.ownerGroups?.length > 0)
+                        if (filterObject.ownerGroups?.length > 0) {
                             q.orFilter(
                                 'terms',
                                 'ownerGroups',
                                 filterObject.ownerGroups
                             )
+                            q.orFilter(
+                                'terms',
+                                'adminGroups',
+                                filterObject.ownerGroups
+                            )
+                        }
+
                         if (filterObject.empty === true) {
                             q.orFilter('bool', (query) =>
                                 query.filter('bool', (query2) => {
                                     query2.notFilter('exists', 'ownerUsers')
                                     query2.notFilter('exists', 'ownerGroups')
+                                    query2.notFilter('exists', 'adminUsers')
+                                    query2.notFilter('exists', 'adminGroups')
                                     return query2
                                 })
                             )
@@ -378,6 +401,12 @@ export function useBody(
             case 'objectQualifiedName': {
                 if (filterObject) {
                     base.filter('term', 'objectQualifiedName', filterObject)
+                }
+                break
+            }
+            case 'collectionQualifiedName': {
+                if (filterObject) {
+                    base.filter('term', 'collectionQualifiedName', filterObject)
                 }
                 break
             }
@@ -463,6 +492,12 @@ export function useBody(
                 }
                 break
             }
+            case 'connectorName': {
+                if (filterObject) {
+                    base.filter('terms', '__guid', filterObject)
+                }
+                break
+            }
             case 'stateList': {
                 // if (filterObject) {
                 //     base.filter('terms', '__state', filterObject)
@@ -475,9 +510,8 @@ export function useBody(
             case 'sql':
             default: {
                 if (filterObject) {
-                    console.log('filterObject', filterObject)
                     Object.keys(filterObject)?.forEach((key) => {
-                        filterObject[key].forEach((element) => {
+                        filterObject[key]?.forEach((element) => {
                             if (!element.operand) return
                             if (element.operator === 'isNull') {
                                 base.notFilter('exists', element.operand)
@@ -743,6 +777,7 @@ export function useBody(
         ])
         base.orFilter('terms', '__typeName.keyword', [
             'Query',
+            'Collection',
             'AtlasGlossaryCategory',
             'AtlasGlossaryTerm',
             'Connection',

@@ -1,8 +1,8 @@
 <template>
     <div
+        ref="glossaryBox"
         class="flex flex-col items-stretch flex-1 h-full mb-1"
         :class="{ [$style.checkableTree]: checkable }"
-        ref="glossaryBox"
     >
         <div
             v-if="!checkable"
@@ -12,13 +12,17 @@
                 v-model="selectedGlossaryQf"
                 @change="handleSelectGlossary"
             ></GlossarySelect>
-            <div class="flex" v-auth="map.CREATE_GLOSSARY">
+            <div class="flex">
                 <CreateGtcBtn
+                    v-if="createButtonVisibility"
                     :selected-glossary-qf="selectedGlossaryQf"
+                    :term-add-permission="true"
+                    :category-add-permission="true"
                     @add="handleAddGTC"
                 />
                 <div v-if="selectedGlossaryQf?.length" class="ml-2">
                     <GlossaryActions
+                        :entity-delete-permission="entityDeletePermission"
                         :entity="selectedGlossary"
                     ></GlossaryActions>
                 </div>
@@ -27,17 +31,17 @@
 
         <div class="flex px-4">
             <SearchAdvanced
-                v-model="queryText"
-                :connectorName="facets?.hierarchy?.connectorName"
-                :autofocus="true"
                 ref="searchBar"
-                :allowClear="true"
-                @change="handleSearchChange"
+                v-model="queryText"
+                :connector-name="facets?.hierarchy?.connectorName"
+                :autofocus="true"
+                :allow-clear="true"
                 :placeholder="
                     checkable
                         ? 'Search terms...'
                         : 'Search terms & categories...'
                 "
+                @change="handleSearchChange"
             >
                 <template #filter>
                     <a-tooltip v-if="!queryText">
@@ -59,7 +63,7 @@
             </SearchAdvanced>
         </div>
 
-        <div class="w-full px-4" v-if="queryText">
+        <div v-if="queryText" class="w-full px-4">
             <AggregationTabs
                 v-model="postFacets.glossary"
                 class="mt-3"
@@ -76,6 +80,7 @@
         >
             <GlossaryTree
                 ref="glossaryTree"
+                :termAddPermission="termAddPermission"
                 @select="handlePreview"
                 :defaultGlossary="checkable ? '' : selectedGlossaryQf"
                 :checkable="checkable"
@@ -151,13 +156,11 @@
         onMounted,
     } from 'vue'
     import { useRouter } from 'vue-router'
-    import { useVModels } from '@vueuse/core'
+    import { useVModels, useDebounceFn } from '@vueuse/core'
 
     import EmptyView from '@common/empty/index.vue'
-    import { useDebounceFn } from '@vueuse/core'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
-    import PreferenceSelector from '@/assets/preference/index.vue'
 
     import AssetFilters from '@/common/assets/filters/index.vue'
     import AssetList from '@/common/assets/list/index.vue'
@@ -167,6 +170,10 @@
     import GlossarySelect from '@/common/popover/glossarySelect/index.vue'
     import CreateGtcBtn from '@/glossary/actions/createGtcBtn.vue'
     import GlossaryActions from '@/glossary/actions/glossary.vue'
+    import useGTCPermissions, {
+        fetchGlossaryPermission,
+    } from '~/composables/glossary/useGTCPermissions'
+    import whoami from '~/composables/user/whoami'
 
     import {
         AssetAttributes,
@@ -193,7 +200,7 @@
             AggregationTabs,
             AssetFilters,
             SearchAdvanced,
-            PreferenceSelector,
+
             EmptyView,
             AtlanIcon,
             GlossarySelect,
@@ -231,6 +238,8 @@
         },
         emits: ['check', 'update:checkedGuids', 'searchItemCheck'],
         setup(props, { emit }) {
+            const { role } = whoami()
+
             const glossaryStore = useGlossaryStore()
             const { checkedGuids } = useVModels(props, emit)
             const router = useRouter()
@@ -497,7 +506,44 @@
             onMounted(() => {
                 cancelRequest()
             })
+
+            // * permissions being checked against the parent glossary not against individual node
+            const {
+                termAddPermission,
+                categoryAddPermission,
+                createPermission,
+                entityDeletePermission,
+                fetch: fetchEvaluation,
+            } = fetchGlossaryPermission(selectedGlossary, false)
+
+            if (selectedGlossaryQf.value?.length) fetchEvaluation()
+
+            const createButtonVisibility = computed(() => {
+                // ? if in All Glossary Context, disable for non-admin users
+                if (
+                    !selectedGlossaryQf.value?.length &&
+                    role.value?.toLowerCase() !== 'admin'
+                )
+                    return false
+
+                // ? if glossary is selected & non of the create permission exists , disable it
+                if (
+                    selectedGlossaryQf.value?.length &&
+                    !termAddPermission.value &&
+                    !categoryAddPermission.value &&
+                    role.value?.toLowerCase() !== 'admin'
+                )
+                    return false
+
+                return true
+            })
+
             return {
+                createButtonVisibility,
+                role,
+                entityDeletePermission,
+                termAddPermission,
+                categoryAddPermission,
                 checkDuplicateCategoryNames,
                 handleFilterChange,
                 isLoading,

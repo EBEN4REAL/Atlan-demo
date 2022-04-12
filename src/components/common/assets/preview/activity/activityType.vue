@@ -1,6 +1,6 @@
 <template>
     <template v-if="data?.component">
-        <component :is="data.component" :data="data" />
+        <component :is="data.component" :data="data" :typeName="typeName" />
     </template>
 </template>
 
@@ -38,6 +38,9 @@
             Admins: defineAsyncComponent(
                 () => import('./types/admins/index.vue')
             ),
+            Viewers: defineAsyncComponent(
+                () => import('./types/viewers/index.vue')
+            ),
             BusinessMetadata: defineAsyncComponent(
                 () => import('./types/businessMetadata/index.vue')
             ),
@@ -61,9 +64,11 @@
                     return { displayValue: 'Event', value: [] }
                 },
             },
-        },
-        setup(props) {
-            console.log(props.data)
+            typeName: {
+                type: String,
+                required: false,
+                default: () => '',
+            },
         },
     })
 </script>

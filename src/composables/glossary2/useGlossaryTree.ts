@@ -12,6 +12,7 @@ import useUpdateGtcEntity from '~/composables/glossary/useUpdateGtcEntity'
 import useLoadGlossaryTreeData from '~/composables/glossary/useLoadGlossaryTreeData'
 import useGtcEntity from '~/composables/glossary/useGtcEntity'
 import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
+import { fetchGlossaryPermission } from '~/composables/glossary/useGTCPermissions'
 
 // types
 import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
@@ -93,6 +94,7 @@ const useGlossaryTree = ({
     const allKeys = ref<string[]>([])
     const treeData = ref<TreeDataItem[]>([])
     const nodeToParentKeyMap: Record<string, 'root' | string | string[]> = {}
+    const hasPermissionToDnD = ref(true)
     const defaultBody = ref({})
     const updateList = inject('updateList')
     const generateBody = () => {
@@ -514,7 +516,7 @@ const useGlossaryTree = ({
         }
     }
 
-    const { getAnchorQualifiedName } = useAssetInfo()
+    const { getAnchorQualifiedName, getAnchorGuid } = useAssetInfo()
 
     const recursivelyAddOrDeleteNode = async (
         asset,
@@ -1055,7 +1057,7 @@ const useGlossaryTree = ({
             title: `Confirm changes`,
             okText: 'Confirm',
             cancelButtonProps: { type: 'default' },
-            okButtonProps: { type: 'primary', class:'bg-primary' },
+            okButtonProps: { type: 'primary', class: 'bg-primary' },
             maskClosable: true,
             keyboard: true,
             cancelText: 'Cancel',
@@ -1078,8 +1080,36 @@ const useGlossaryTree = ({
         })
     }
 
+    // handles start of drag event
+    // being used to evaluate permissions
+    const dragStart = ({ event, node }) => {
+        hasPermissionToDnD.value=true
+        console.log(node)
+        const parentGlossary = computed(() => {
+            return {
+                guid: getAnchorGuid(node?.dataRef),
+                typeName: 'AtlasGlossary',
+            }
+        })
+        const { entityUpdatePermission, fetch, isEvaluating } =
+            fetchGlossaryPermission(parentGlossary, false)
+        fetch()
+        const updatePermission = () => {
+            console.log(entityUpdatePermission.value)
+            if (entityUpdatePermission !== undefined)
+                hasPermissionToDnD.value = entityUpdatePermission.value
+        }
+        updatePermission()
+        watch(entityUpdatePermission, () => {
+            updatePermission()
+        })
+    }
+
     const dragAndDropNode = ({ event, node, dragNode, dragNodesKeys }) => {
-        console.log(node, dragNode, event)
+        if (!hasPermissionToDnD.value) {
+            message.error(`You don't have permission to perform this action`)
+            return
+        }
         let nodeParentGlossaryGuid
         if (node?.typeName === 'AtlasGlossary')
             nodeParentGlossaryGuid = node?.guid
@@ -1364,7 +1394,10 @@ const useGlossaryTree = ({
                 if (node.children && node.children.length) {
                     const index =
                         node.children.findIndex((child) => {
-                            return child?.attributes?.name === name && child?.typeName==='AtlasGlossaryCategory'
+                            return (
+                                child?.attributes?.name === name &&
+                                child?.typeName === 'AtlasGlossaryCategory'
+                            )
                         }) ?? 0
                     nameExists = index > -1
                 }
@@ -1394,7 +1427,9 @@ const useGlossaryTree = ({
         } else {
             const index =
                 treeData.value.findIndex(
-                    (child) => child?.attributes.name === name && child?.typeName==='AtlasGlossaryCategory'
+                    (child) =>
+                        child?.attributes.name === name &&
+                        child?.typeName === 'AtlasGlossaryCategory'
                 ) ?? 0
             nameExists = index > -1
         }
@@ -1437,6 +1472,7 @@ const useGlossaryTree = ({
         nodeToParentKeyMap,
         allKeys,
         checkDuplicateCategoryNames,
+        dragStart,
     }
 }
 

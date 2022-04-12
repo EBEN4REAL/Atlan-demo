@@ -1,15 +1,15 @@
 export const discoveryFilters = [
-    {
-        id: 'hierarchy',
-        label: 'Connection',
-        component: 'hierarchy',
-        overallCondition: 'OR',
-        attributes: [],
-        isDeleted: false,
-        isDisabled: false,
-        exclude: false,
-        analyticsKey: 'connection',
-    },
+    // {
+    //     id: 'hierarchy',
+    //     label: 'Connection',
+    //     component: 'hierarchy',
+    //     overallCondition: 'OR',
+    //     attributes: [],
+    //     isDeleted: false,
+    //     isDisabled: false,
+    //     exclude: false,
+    //     analyticsKey: 'connection',
+    // },
     {
         id: 'certificateStatus',
         label: 'Certificate',

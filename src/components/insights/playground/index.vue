@@ -5,7 +5,7 @@
             fullSreenState ? 'height: calc( 100vh - 40px )' : 'height:100vh'
         "
     >
-        <div class="relative flex flex-col bg-gray-light">
+        <div class="relative flex flex-col bg-new-gray-100">
             <div class="flex w-full text-gray">
                 <a-tabs
                     v-model:activeKey="activeInlineTabKey"
@@ -85,10 +85,10 @@
                                     @contextmenu.prevent="showContextMenu"
                                 >
                                     <div
-                                        class="flex items-center text-gray-700"
+                                        class="flex items-center text-gray-700 w-full"
                                     >
                                         <span
-                                            class="text-sm truncate inline_tab_label"
+                                            class="text-sm truncate inline_tab_label w-full"
                                             :class="[
                                                 tab.key !== activeInlineTabKey
                                                     ? tabHover === tab.key
@@ -96,7 +96,13 @@
                                                         : 'text-gray-500'
                                                     : '',
                                             ]"
-                                            >{{ tab.label }}</span
+                                            >
+                                            <Tooltip
+                                                clamp-percentage="99%"
+                                                :tooltip-text="tab.label"
+                                                :rows="1"
+                                                />
+                                                </span
                                         >
                                     </div>
                                 </div>
@@ -174,7 +180,7 @@
         <div
             v-if="activeInlineTabKey"
             class="w-full"
-            style="max-height: 100%; min-height: 92%; height: 100%"
+            style="max-height: 100%; min-height: 70%; height: 100%"
             :class="$style.splitspane_playground"
         >
             <splitpanes
@@ -256,6 +262,7 @@
     import { useActiveTab } from '~/components/insights/common/composables/useActiveTab'
     import { useSpiltPanes } from '~/components/insights/common/composables/useSpiltPanes'
     import { useDebounceFn } from '@vueuse/core'
+    import Tooltip from '@/common/ellipsis/index.vue'
 
     // import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
 
@@ -267,6 +274,7 @@
             UnsavedPopover,
             SaveQueryModal,
             ResultPaneFooter,
+            Tooltip
         },
         props: {
             activeInlineTabKey: {

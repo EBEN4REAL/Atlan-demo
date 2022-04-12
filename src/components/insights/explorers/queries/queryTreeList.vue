@@ -174,12 +174,15 @@
         }
         :global(.ant-tree-switcher) {
             width: 16px !important;
+            align-self: start;
+            @apply mt-2;
         }
 
         :global(.ant-tree .ant-tree-node-content-wrapper) {
             padding: 0 !important;
             overflow: hidden;
-            @apply h-8 !important;
+            min-height: 2rem !important;
+            // @apply h-8 !important;
         }
 
         :global(.ant-tree-treenode) {

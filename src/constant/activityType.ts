@@ -20,7 +20,7 @@ export const activityTypeMap = [
             'detail.attributes.announcementMessage',
             'detail.attributes.announcementTitle',
         ],
-        excludes: ['Query'],
+        excludes: ['Query', 'Collection'],
     },
 
     {
@@ -199,12 +199,23 @@ export const activityTypeMap = [
             'detail.attributes.ownerUsers.keyword',
             'detail.attributes.ownerGroups.keyword',
         ],
+        excludes: ['Column', 'Collection'],
     },
     {
         value: 'admins',
         label: 'Admins',
         action: 'ENTITY_UPDATE',
         includes: ['Connection'],
+        exists: [
+            'detail.attributes.adminUsers.keyword',
+            'detail.attributes.adminGroups.keyword',
+        ],
+    },
+    {
+        value: 'admins',
+        label: 'Editors',
+        action: 'ENTITY_UPDATE',
+        includes: ['Collection'],
         exists: [
             'detail.attributes.adminUsers.keyword',
             'detail.attributes.adminGroups.keyword',

@@ -37,15 +37,22 @@
                     {{ error }}
                 </p>
             </div>
+            <slot name="customFooter"></slot>
         </div>
     </node-view-wrapper>
 </template>
 
 <script lang="ts">
-    import { ref, toRefs, defineComponent, computed } from 'vue'
-    import { NodeViewWrapper, nodeViewProps } from '@tiptap/vue-3'
+    import { computed, defineComponent, ref, toRefs } from 'vue'
+    import { nodeViewProps, NodeViewWrapper } from '@tiptap/vue-3'
     import AtlanIcon from '@common/icon/atlanIcon.vue'
     import AtlanButton from '@/UI/button.vue'
+    import {
+        useTrackEvent,
+        TYPE_OF_EVENTS,
+        README_TRIGGERS,
+        NAME_OF_EVENTS,
+    } from '~/modules/editor/analytics/useTrackEvent'
 
     export default defineComponent({
         components: {
@@ -82,8 +89,21 @@
                             redirectTo: linkInput.value,
                             embedtitle: options.value?.title,
                             embedicon: options.value?.icon,
+                            analyticskey: options.value?.analyticsKey,
                         })
                         .run()
+                    useTrackEvent({
+                        type: TYPE_OF_EVENTS.EMBED,
+                        name: NAME_OF_EVENTS.IFRAME_INSERTED,
+                        trigger: README_TRIGGERS.SLASH_MENU,
+                        properties: {
+                            assetType:
+                                editor.value.options.editorProps.attributes[
+                                    'data-asset-type'
+                                ],
+                            embedService: options.value?.analyticsKey,
+                        },
+                    })
                 }
             }
 

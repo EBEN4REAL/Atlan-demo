@@ -41,6 +41,7 @@
                             ref="ownerInputRef"
                             v-model="newOwners"
                             :show-none="false"
+                            :disabledValues="localValue"
                         ></OwnerFacets>
                     </div>
 

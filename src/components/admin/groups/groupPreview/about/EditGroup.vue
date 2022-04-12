@@ -184,15 +184,12 @@
                                 updateSuccess.value = false
                             }, 2000)
                             // tracking for slack channel update event
-                            if (formData.value.slack !== slackUrl.value)
-                                useAddEvent('admin', 'group', 'updated', {
-                                    users_count:
-                                        selectedGroup.value.memberCount,
-                                    has_slack_channel_added: !!slackLink,
-                                    is_default: !!selectedGroup.value.isDefault,
-                                    has_description:
-                                        !!formData.value.description,
-                                })
+                            useAddEvent('admin', 'group', 'updated', {
+                                users_count: selectedGroup.value.memberCount,
+                                has_slack_channel_added: !!slackLink,
+                                is_default: formData.value.isDefault,
+                                has_description: !!formData.value.description,
+                            })
 
                             selectedGroup.value.name = formData.value.name
                             selectedGroup.value.alias = formData.value.alias

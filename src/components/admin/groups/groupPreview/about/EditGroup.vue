@@ -98,8 +98,6 @@
             const isRequestLoading = ref(false)
             const formRef = ref(null)
             const nameRef = ref(null)
-            // const isDefault = ref(false)
-
             // const { selectedGroup } = toRefs(props)
             const { selectedGroup } = useVModels(props, emit)
             const groupChannels = computed(

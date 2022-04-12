@@ -39,13 +39,13 @@
             </div>
         </div>
     </div>
-    <div v-if="role?.toLowerCase() === 'admin'" class="my-2 mx-4">
-        <router-link :to="'/governance/requests'" :target="'_blank'">
-            <span class="text-primary text-sm cursor-pointer py-2"
-                >See all my requests<atlan-icon icon="ArrowRight" class="ml-1"
-            /></span>
-        </router-link>
-    </div>
+    <!-- <div v-if="role?.toLowerCase() === 'admin'" class="my-2 mx-4"> -->
+    <!--     <router-link :to="'/governance/requests'" :target="'_blank'"> -->
+    <!--         <span class="text-primary text-sm cursor-pointer py-2" -->
+    <!--             >See all my requests<atlan-icon icon="ArrowRight" class="ml-1" -->
+    <!--         /></span> -->
+    <!--     </router-link> -->
+    <!-- </div> -->
 </template>
 
 <script lang="ts">
@@ -86,7 +86,7 @@
             })
             const searchTerm = ref('')
             const pagination = ref({
-                limit: 10,
+                limit: 50,
                 offset: 0,
                 totalPages: 1,
                 totalData: 0,

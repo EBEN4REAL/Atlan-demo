@@ -114,7 +114,6 @@ const useGlossaryTree = ({
             suppressLogs: true,
         }
     }
-
     const { data, mutate, isLoading, error, isReady } = useIndexSearch<
         Category | Term
     >(defaultBody, dependentKey, false, false, 1)
@@ -1083,7 +1082,7 @@ const useGlossaryTree = ({
     // handles start of drag event
     // being used to evaluate permissions
     const dragStart = ({ event, node }) => {
-        hasPermissionToDnD.value=true
+        hasPermissionToDnD.value = true
         console.log(node)
         const parentGlossary = computed(() => {
             return {

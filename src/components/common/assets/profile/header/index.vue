@@ -417,7 +417,7 @@
         :show-drawer="drawerVisible"
         :qualifiedName="qfToFetch"
         @closeDrawer="handleCloseDrawer"
-        drawerActiveKey="Relations"
+        :drawerActiveKey="drawerActiveKey"
     />
 </template>
 
@@ -518,6 +518,7 @@
 
             const entityTitle = ref(title(item.value))
             const router = useRouter()
+            const drawerActiveKey = ref('Relations')
 
             const goToInsights = (openVQB) => {
                 // router.push(getAssetQueryPath(asset))
@@ -674,6 +675,7 @@
                 drawerVisible,
                 qfToFetch,
                 handleCloseDrawer,
+                drawerActiveKey,
             }
         },
     })

@@ -569,12 +569,12 @@
 
             provide('switchTab', switchTab)
 
-            watch(
+            debouncedWatch(
                 drawerActiveKey,
                 (newVal) => {
                     switchTab(selectedAsset.value, newVal)
                 },
-                { immediate: true }
+                { debounce: 200, immediate: true }
             )
 
             const router = useRouter()

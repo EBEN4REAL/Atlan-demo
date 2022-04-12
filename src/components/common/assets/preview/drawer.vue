@@ -1,43 +1,39 @@
 <template>
-    <teleport to="#overAssetSidebar">
-        <a-drawer
-            v-if="visible"
-            :key="data?.guid"
-            v-model:visible="visible"
-            placement="right"
-            :get-container="false"
-            :class="$style.drawerStyles"
-            :closable="false"
-            :mask-closable="showMask"
-            :style="{ position: 'absolute' }"
-            :width="420"
-            :mask="showMask"
-            @close="$emit('closeDrawer')"
+    <a-drawer
+        v-if="visible"
+        :key="data?.guid"
+        v-model:visible="visible"
+        placement="right"
+        :class="$style.drawerStyles"
+        :closable="false"
+        :mask-closable="showMask"
+        :width="420"
+        :mask="showMask"
+        @close="$emit('closeDrawer')"
+    >
+        <div
+            v-if="showCloseBtn && visible"
+            class="close-btn"
+            @click="() => $emit('closeDrawer')"
         >
+            <AtlanIcon icon="Add" class="text-white" />
+        </div>
+        <transition name="fade">
             <div
-                v-if="showCloseBtn && visible"
-                class="close-btn"
-                @click="() => $emit('closeDrawer')"
+                v-if="deferredLoading"
+                class="flex items-center justify-center w-full h-full"
             >
-                <AtlanIcon icon="Add" class="text-white" />
+                <AtlanLoader class="h-12 mx-auto my-auto" />
             </div>
-            <transition name="fade">
-                <div
-                    v-if="deferredLoading"
-                    class="flex items-center justify-center w-full h-full"
-                >
-                    <AtlanLoader class="h-12 mx-auto my-auto" />
-                </div>
-                <AssetPreview
-                    v-else
-                    :selected-asset="drawerData"
-                    :is-drawer="true"
-                    :drawer-active-key="drawerActiveKey"
-                    @closeDrawer="$emit('closeDrawer')"
-                ></AssetPreview>
-            </transition>
-        </a-drawer>
-    </teleport>
+            <AssetPreview
+                v-else
+                :selected-asset="drawerData"
+                :is-drawer="true"
+                :drawer-active-key="drawerActiveKey"
+                @closeDrawer="$emit('closeDrawer')"
+            ></AssetPreview>
+        </transition>
+    </a-drawer>
 </template>
 
 <script lang="ts">

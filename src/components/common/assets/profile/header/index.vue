@@ -417,6 +417,7 @@
         :show-drawer="drawerVisible"
         :qualifiedName="qfToFetch"
         @closeDrawer="handleCloseDrawer"
+        drawerActiveKey="Relations"
     />
 </template>
 

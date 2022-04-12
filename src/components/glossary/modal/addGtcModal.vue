@@ -13,7 +13,7 @@
         :footer="null"
     >
         <div
-            v-if="showRequestElements"
+            v-if="!hasCreatePermission"
             class="px-3 py-2 mb-3 bg-gray-100 fixed top-14 rounded text-gray-500 text-xs"
             style="width: 40%"
         >
@@ -383,10 +383,12 @@
                 }
                 console.log(hasCreatePermission.value)
             }
+            /*
             const showRequestElements = computed(() => {
                 if (role.value?.toLowerCase() === 'admin') return false
                 return !hasCreatePermission.value
             })
+            */
             const showModal = async () => {
                 //               handleFetchPermission()
                 fetchPermissions()
@@ -685,7 +687,6 @@
                 hasCreatePermission,
                 glossaryForPermission,
                 role,
-                showRequestElements,
             }
         },
     })

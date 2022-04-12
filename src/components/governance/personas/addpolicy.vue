@@ -428,7 +428,10 @@
                                 {{ rules.assets.text }}
                             </div>
                         </div>
-                        <SameAssetPolicy :assets="policy.assets" />
+                        <SameAssetPolicy
+                            :id="policy.id"
+                            :assets="policy.assets"
+                        />
                     </div>
                     <div
                         v-if="

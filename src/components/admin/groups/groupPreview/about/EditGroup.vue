@@ -144,11 +144,6 @@
 
                 attributes.channels =
                     slackLink.length > 0 ? [`[{"slack": "${slackLink}"}]`] : []
-                //     const currentSlackChannel = selectedGroup.value.attributes?.channels.find((c) =>
-                //                 c?.includes('slack')
-                //             )
-                //             const newSlackChannel =
-                // const isSlackChannelUpdated =
                 requestPayload.value = {
                     name: formData.value.alias,
                     path: selectedGroup?.value?.path,

@@ -706,6 +706,15 @@
                                         : 'marked'
                                 } as default`
                             )
+                            useAddEvent('admin', 'group', 'updated', {
+                                users_count: group.memberCount,
+                                has_slack_channel_added:
+                                    group.attributes?.channels?.some((c) =>
+                                        c?.includes('slack')
+                                    ) || false,
+                                is_default: group.isDefault === 'true',
+                                has_description: !!group.description,
+                            })
                             cancelTokenSource.value = null
                             getGroupList()
                         } else if (error && error.value) {

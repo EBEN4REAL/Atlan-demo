@@ -100,13 +100,14 @@
                     selectedUserIds.value.ownerUsers = []
                     emit('membersAdded')
                     useAddEvent('admin', 'group', 'updated', {
-                        action: 'members_updated',
                         users_count:
                             selectedGroup.value.memberCount + userIds.length,
                         has_slack_channel_added:
-                            selectedGroup.value.attributes?.channels.some((c) =>
-                                c?.includes('slack')
-                            ),
+                            selectedGroup.value.attributes?.channels?.some(
+                                (c) => c?.includes('slack')
+                            ) || false,
+                        is_default: selectedGroup.value.isDefault === 'true',
+                        has_description: !!selectedGroup.value.description,
                     })
                 } else if (error && error.value) {
                     message.error('Unable to add members, please try again.')

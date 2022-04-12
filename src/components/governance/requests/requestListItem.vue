@@ -10,7 +10,7 @@
         @click="$emit('select')"
     >
         <div
-            class="flex items-center overflow-hidden"
+            class="flex items-center overflow-hidden "
             :class="showRequestStatus ? 'col-span-4' : 'col-span-4'"
         >
             <!-- TODO: Uncomment for bulk selection -->
@@ -23,7 +23,8 @@
               
             </Popover> -->
             <div
-                class="cursor-pointer flex items-center"
+                class="cursor-pointer flex items-center "
+                :class="showRequestStatus?'w-full':''"
                 @mouseenter="$emit('mouseEnterAsset')"
                 @click="handleShowAssetSidebar(item.guid)"
             >
@@ -82,7 +83,7 @@
         </div>
         <div
             class="flex items-center col-span-3"
-            :class="showActions || showRequestStatus ? 'ml-4' : 'w-full ml-24'"
+            :class="showActions || showRequestStatus ? '' : 'w-full ml-24'"
         >
             <ClassificationPiece
                 v-if="
@@ -284,11 +285,8 @@
             class="flex items-center col-span-3 text-sm ml-10"
         >
             <div v-if="request.status === 'active'" class="flex flex-col">
-                <span class="text-yellow-500 flex items-center mb-2"
-                    ><atlan-icon
-                        icon="History"
-                        class="mr-0.5 h-3"
-                    />Pending</span
+                <span class="text-yellow-500 flex items-center mb-2">
+                    Pending</span
                 >
                 <a-popover placement="rightBottom">
                     <template #content>
@@ -316,7 +314,7 @@
                 }}
 
                 <div
-                    class="flex  items-center  font-light whitespace-nowrap mt-2"
+                    class="flex items-center font-light whitespace-nowrap mt-2"
                 >
                     <div class="flex items-center truncate">
                         <Avatar

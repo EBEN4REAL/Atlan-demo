@@ -1,12 +1,12 @@
 <template>
-    <div class="flex flex-col">
+    <div class="flex flex-col w-full">
         <span
             class="mb-1 overflow-hidden text-sm overflow-ellipsis text-primary flex items-center"
-            :style="size === 'small' ? 'max-width: 200px' : ''"
+            :style="size === 'small' ? 'max-width: 600px' : ''"
         >
             <Tooltip
                 :tooltipText="assetText[0]"
-                :clampPercentage="size === 'small' ? '80%' : '95%'"
+                :clampPercentage="size === 'small' ? '90%' : '95%'"
             />
             <CertificateBadge
                 v-if="destinationEntity?.attributes?.certificateStatus"

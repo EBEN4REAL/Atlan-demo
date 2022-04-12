@@ -496,6 +496,10 @@
                                 useAddEvent('admin', 'user', 'removed', {
                                     status: user.status_object.status,
                                 })
+                            else
+                                useAddEvent('admin', 'user', 'enabled', {
+                                    status: user.status_object.status,
+                                })
                             // update user type aggregations in filter dropdown
                             userTypeAgg.value = getUserTypeAggregations().value
                         } else if (error && error.value) {

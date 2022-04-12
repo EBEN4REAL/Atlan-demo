@@ -55,16 +55,6 @@ const keyMap = {
                 }),
             },
         },
-        sort: {
-            changed: {
-                action: 'discovery_sort_changed',
-                properties: (props: {
-                    sort_type: string
-                }) => ({
-                    ...props,
-                }),
-            },
-        },
         cta_action: {
             clicked: {
                 action: 'discovery_cta_action_clicked',
@@ -272,7 +262,9 @@ const keyMap = {
         sort: {
             changed: {
                 action: 'discovery_sort_changed',
-                properties: (props: { sort_type: string }) => ({
+                properties: (props: {
+                    sort_type: string
+                }) => ({
                     ...props,
                 }),
             },
@@ -676,7 +668,10 @@ const keyMap = {
                     ...props,
                 }),
             },
-            removed: { // revoke invitation
+            enabled: { // enable user
+                action: 'admin_user_enabled',
+            },
+            removed: { // revoke invitation o disable users
                 action: 'admin_user_removed',
                 properties: (props: {
                     status: string

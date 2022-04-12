@@ -43,8 +43,26 @@
                             <p class="p-0 m-0">Rename</p>
                         </div>
                     </template>
+                    <template v-else-if="role?.toLowerCase() === 'guest'">
+                        <a-tooltip
+                            placement="right"
+                            title="You don't have permission to perform this action"
+                        >
+                            <div
+                                :class="'cursor-not-allowed text-gray-500'"
+                                class="flex items-center"
+                            >
+                                <AtlanIcon icon="Pencil" class="m-0 mr-2" />
+                                <p class="p-0 m-0">Rename</p>
+                            </div>
+                        </a-tooltip>
+                    </template>
                     <template v-else>
-                        <RenameModal :entityType="entity?.typeName" :entityTitle="entity?.attributes?.name" :selected-asset="entity">
+                        <RenameModal
+                            :entityType="entity?.typeName"
+                            :entityTitle="entity?.attributes?.name"
+                            :selected-asset="entity"
+                        >
                             <template #trigger>
                                 <div class="flex items-center">
                                     <AtlanIcon icon="Pencil" class="m-0 mr-2" />
@@ -234,6 +252,7 @@
     import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
     // composables
     // import useDeleteGlossary from '~/components/glossary/composables/useDeleteGlossary'
+    import whoami from '~/composables/user/whoami'
     import {
         Glossary,
         Category,
@@ -318,6 +337,7 @@
             const isModalVisible = ref<boolean>(false)
             const isRenameModalOpen = ref<boolean>(false)
             const route = useRoute()
+            const { role } = whoami()
             const shouldRedirect = computed(
                 () => route?.params?.id === props?.entity?.guid
             ) // Should the page be redirect on deletion of the entity
@@ -442,6 +462,7 @@
                 map,
                 handleCopyProfileLink,
                 handleCopyName,
+                role,
             }
         },
     })

@@ -716,8 +716,6 @@
                             ctaCalledFor = ctaCalledFor[1]
                             if (ctaCalledFor) {
                                 ctaCalledFor.style.display = 'none'
-                            } else {
-                                return
                             }
                             console.log(ctaCalledFor)
                         }
@@ -988,8 +986,6 @@
                             ctaCalledFor = ctaCalledFor[1]
                             if (ctaCalledFor) {
                                 ctaCalledFor.style.display = 'none'
-                            } else {
-                                return
                             }
                             console.log(ctaCalledFor)
                         }

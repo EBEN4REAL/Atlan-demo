@@ -9,7 +9,10 @@
                 My Requests
             </span>
         </div>
-        <div v-if="requestList?.length" class="py-4 overflow-x-hidden overflow-y-auto">
+        <div
+            v-if="requestList?.length"
+            class="py-4 overflow-x-hidden overflow-y-auto"
+        >
             <template
                 v-for="(request, index) in requestList"
                 :key="request?.id"
@@ -35,6 +38,13 @@
                 There are no requests at this time
             </div>
         </div>
+    </div>
+    <div v-if="role?.toLowerCase() === 'admin'" class="my-2 mx-4">
+        <router-link :to="'/governance/requests'" :target="'_blank'">
+            <span class="text-primary text-sm cursor-pointer py-2"
+                >See all my requests<atlan-icon icon="ArrowRight" class="ml-1"
+            /></span>
+        </router-link>
     </div>
 </template>
 
@@ -63,7 +73,7 @@
         setup() {
             // data
 
-            const { username } = whoami()
+            const { username, role } = whoami()
             const activeHover = ref('')
             // My requests will be showing active requests which the logged in user has raised
             const facets = ref({
@@ -107,6 +117,7 @@
                 requestList,
                 handleMouseEnter,
                 activeHover,
+                role,
             }
         },
     })

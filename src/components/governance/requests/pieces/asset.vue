@@ -18,7 +18,7 @@
         </span>
         <div v-if="size === 'small'" class="flex items-center text-xs">
             <!-- <AssetLogo :selected="selected" :asset="assetWrappper" /> -->
-            <AtlanIcon class="mr-1" :icon="assetIcon" />
+            <img class="mb-0.5" :src="assetIcon" />
             <span
                 class="ml-1 overflow-hidden text-gray-500 overflow-ellipsis w-12"
                 >{{ entityType.toUpperCase() }}</span
@@ -41,7 +41,7 @@
             />
         </div>
         <div v-else class="flex items-center text-xs">
-            <AtlanIcon class="mr-1" :icon="assetIcon" />
+            <img class="mb-0.5" :src="assetIcon" />
             <span
                 class="ml-1 overflow-hidden text-gray-500 overflow-ellipsis"
                 >{{ entityType.toUpperCase() }}</span
@@ -61,6 +61,8 @@
 
 <script lang="ts">
     import { computed, defineComponent, toRefs, ref } from 'vue'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import { useConnectionStore } from '~/store/connection'
     import CertificateBadge from '@common/badge/certificate/index.vue'
     import { useTimeAgo } from '@vueuse/core'
     import AssetLogo from '@/common/icon/assetIcon.vue'
@@ -92,6 +94,7 @@
         setup(props) {
             const { assetQfName } = toRefs(props)
             const { destinationEntity } = toRefs(props)
+            const connectionStore = useConnectionStore()
             const assetWrappper = computed(() => ({
                 attributes: {
                     integrationName: assetQfName.value.split('/')[1],
@@ -104,12 +107,8 @@
             const assetIcon = computed(() => {
                 let name = assetQfName.value?.split('/')[1] || ''
                 name = name.toLowerCase()
-                // name[0] = name[0].toUpperCase()
-                const result = `${name[0]?.toUpperCase() || ''}${name.slice(
-                    1,
-                    name.length
-                )}`
-                return result
+                const found = connectionStore.getConnectorImageMapping[name]
+                return found
             })
             const timeAgo = useTimeAgo(
                 destinationEntity.value?.attributes?.certificateUpdatedAt,

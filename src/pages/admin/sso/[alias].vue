@@ -119,7 +119,7 @@
     import { storeToRefs } from 'pinia'
     import { useRoute, useRouter } from 'vue-router'
     import { message } from 'ant-design-vue'
-    import useAddEvent from '../../../composables/eventTracking/useAddEvent'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import UpdateSSOConfig from '~/components/admin/sso/update/updateSSOConfig.vue'
     import { useTenantStore } from '~/store/tenant'
     import { topSAMLProviders, customSamlProvider } from '~/constant/saml'

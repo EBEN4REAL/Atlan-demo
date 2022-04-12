@@ -27,7 +27,7 @@
                     class="text-center text-gray-500"
                 >
                     You do not have query access to
-                    {{ queryErrorObj?.details?.asset.table }} table
+                    {{ queryErrorObj?.details?.asset?.table }} table
                 </div>
             </div>
             <div v-else-if="queryErrorObj?.errorMessage">

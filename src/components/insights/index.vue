@@ -348,6 +348,7 @@
             */
 
             const provideData: provideDataInterface = {
+                activeExplorerTabId: activeTabId,
                 showcustomToolBar,
                 activeInlineTab,
                 queryCollections,

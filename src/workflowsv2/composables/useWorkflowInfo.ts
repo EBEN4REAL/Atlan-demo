@@ -73,14 +73,12 @@ export default function useWorkflowInfo() {
 
     const startedAt = (item: any, relative: any) => {
         if (phase(item) === 'Pending') return 'Yet to start'
-        else
-            return (
-                (relative
-                    ? dayjs().from(item.status?.startedAt, true)
-                    : dayjs(item.status?.startedAt).format(
-                          'dddd, MMMM D YYYY, HH:mm:ss'
-                      )) + ' ago'
-            )
+
+        return relative
+            ? dayjs().from(item.status?.startedAt, true) + ' ago'
+            : dayjs(item.status?.startedAt).format(
+                  'dddd, MMMM D YYYY, HH:mm:ss'
+              )
     }
     const finishedAt = (item: any, relative: any) => {
         if (!item?.status?.finishedAt) {
@@ -208,7 +206,7 @@ export default function useWorkflowInfo() {
             case 'Succeeded':
                 return 'bg-new-green-100'
             case 'Running':
-                return 'bg-new-yellow-100'
+                return 'bg-new-yellow-100 animate-pulse'
             case 'Failed':
             case 'Error':
             case 'Stopped':
@@ -238,7 +236,7 @@ export default function useWorkflowInfo() {
             case 'Succeeded':
                 return 'text-new-green-500'
             case 'Running':
-                return 'text-new-yellow-500'
+                return 'text-new-yellow-600'
             case 'Error':
             case 'Failed':
             case 'Stopped':

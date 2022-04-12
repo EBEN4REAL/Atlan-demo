@@ -19,7 +19,7 @@
                         :enableTabs="['users']"
                         hideDisabledTabs
                         multiple
-                        @change="handleSelect('other', $event)"
+                        @update:modelValue="handleSelect('other', $event)"
                     />
                 </div>
             </template>
@@ -37,7 +37,7 @@
                         v-if="selected === 'other' && value?.ownerUsers?.length"
                         class="h-3 ml-1 text-gray-500 hover:text-gray"
                         icon="Cancel"
-                        @click="reset('other')"
+                        @click="reset"
                     />
                     <AtlanIcon v-else icon="CaretDown" class="ml-1" />
                 </span>
@@ -58,9 +58,9 @@
             value: {
                 type: Object,
                 required: false,
-                default: () => {
-                    ownerUsers: []
-                },
+                default: () => ({
+                    ownerUsers: [],
+                }),
             },
         },
         emits: ['update:value'],
@@ -76,17 +76,19 @@
                         return userLength > 1
                             ? `${userLength} people`
                             : value.value?.ownerUsers[0]
-                    else return 'all users'
+
+                    return 'all users'
                 }
                 return ''
             })
 
-            const reset = (sel) => {
+            const reset = () => {
                 emit('update:value', { ownerUsers: [] })
                 selected.value = undefined
             }
+
             const handleSelect = (sel, val) => {
-                if (sel === 'me' && sel === selected.value) reset(sel)
+                if (sel === 'me' && sel === selected.value) reset()
                 else {
                     emit('update:value', val)
                     selected.value = sel

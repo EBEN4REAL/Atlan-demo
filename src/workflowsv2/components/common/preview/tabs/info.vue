@@ -222,9 +222,14 @@
                             })
 
                         if (wfSubmitData.value) {
-                            updateRunByWorkflowName(
-                                workflowTemplateName(wfSubmitData.value)
+                            setTimeout(
+                                () =>
+                                    updateRunByWorkflowName(
+                                        workflowTemplateName(wfSubmitData.value)
+                                    ),
+                                600
                             )
+
                             message.success({
                                 content: 'Run started',
                                 key: 'runKey',

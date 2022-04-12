@@ -195,7 +195,7 @@
                 required: false,
             },
         },
-        emits: ['change', 'update:modelValue'],
+        emits: ['change', 'update:modelValue', 'update:selectedRecords'],
         setup(props, { emit }) {
             const { modelValue, disabledKeys, selectedRecords } = useVModels(
                 props,

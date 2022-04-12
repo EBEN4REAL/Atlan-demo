@@ -37,7 +37,7 @@
         name: 'TabbedDateRangePicker',
         components: {},
         props: {
-            value: { type: Number, required: false, default: () => undefined },
+            value: { type: Object, required: false, default: () => undefined },
         },
         emits: ['update:value'],
         setup(_, { emit }) {

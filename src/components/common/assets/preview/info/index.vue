@@ -220,7 +220,7 @@
                             class="w-auto h-4 mb-0.5 mr-1"
                         />
                         <router-link
-                            class="cursor-pointer text-primary hover:underline"
+                            class="text-gray-700 border-b border-gray-500 border-dashed cursor-pointer hover:text-primary"
                             :to="`/assets/${selectedAsset?.attributes?.table?.guid}`"
                             target="_blank"
                         >
@@ -252,6 +252,7 @@
                             class="w-auto h-4 mb-0.5 break-all mr-1"
                         />
                         <router-link
+                            class="text-gray-700 border-b border-gray-500 border-dashed cursor-pointer hover:text-primary"
                             :to="`/assets/${selectedAsset?.attributes?.view?.guid}`"
                             target="_blank"
                             >{{ viewName(selectedAsset) }}</router-link

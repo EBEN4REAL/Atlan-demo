@@ -16,7 +16,7 @@
             </div>
         </div>
 
-        <div class="px-5 pt-3 pb-0">
+        <div class="px-5 pb-0">
             <SearchAdvanced
                 v-model:value="queryText"
                 :autofocus="true"
@@ -27,9 +27,8 @@
                 <template #postFilter>
                     <div style="max-width: 330px">
                         <PreferenceSelector
-                            v-model="preference"
-                            @change="handleChangePreference"
-                            @display="handleDisplayChange"
+                            v-model="preference.display"
+                            @change="handleDisplayChange"
                         />
                     </div>
                 </template>

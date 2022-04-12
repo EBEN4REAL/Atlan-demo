@@ -459,6 +459,8 @@ import NotificationNoDot from '~/assets/images/icons/notification-no-dot.svg'
 import Workflow from '~/assets/images/icons/workflows.svg'
 import Package from '~/assets/images/icons/package.svg'
 
+import Display from '~/assets/images/icons/display.svg'
+
 export default {
     LegendExpand,
     LegendCollapse,
@@ -900,4 +902,5 @@ export default {
     Bigquery: BigQuery,
     Workflow,
     Package,
+    Display,
 }

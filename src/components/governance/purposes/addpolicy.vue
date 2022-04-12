@@ -46,6 +46,42 @@
                     </span>
                 </div> -->
             </div>
+            <div
+                v-if="policy.updatedBy || policy.createdBy"
+                class="flex items-center px-6 py-4 text-sm text-gray-700 bg-gray-200"
+            >
+                <AtlanIcon icon="DateTime" class="mr-1 text-gray-700" />
+                {{ policy.updatedBy ? 'Last updated by' : 'Created by' }}
+                <AtlanIcon
+                    v-if="
+                        (policy.updatedBy || policy.createdBy)?.startsWith(
+                            'service-account-apikey-'
+                        )
+                    "
+                    class="h-3 mx-1"
+                    icon="Key"
+                />
+                <Avatar
+                    v-else
+                    :image-url="imageUrl(policy.updatedBy || policy.createdBy)"
+                    :allow-upload="false"
+                    :avatar-name="policy.updatedBy || policy.createdBy"
+                    :avatar-size="16"
+                    :avatar-shape="'circle'"
+                    class="mx-1 bg-primary-light"
+                />
+
+                {{
+                    (policy.updatedBy || policy.createdBy)?.startsWith(
+                        'service-account-apikey-'
+                    )
+                        ? 'API key'
+                        : policy.updatedBy || policy.createdBy
+                }}
+                <div class="ml-1">
+                    {{ useTimeAgo(policy.updatedAt || policy.createdAt).value }}
+                </div>
+            </div>
             <div class="mt-4">
                 <div class="px-4">
                     <div class="relative mt-2 bg-white shadow-section">
@@ -386,7 +422,8 @@
     // import DataMaskingSelector from './policies/dataMaskingSelector.vue'
     import { IPersona } from '~/types/accessPolicies/personas'
     // import useScopeService from './composables/useScopeService'
-
+    import { useTimeAgo } from '@vueuse/core'
+    import Avatar from '~/components/common/avatar/index.vue'
     export default defineComponent({
         name: 'AddPolicy',
         components: {
@@ -394,6 +431,7 @@
             ManagePermission,
             DataMaskingSelector,
             Owners,
+            Avatar,
         },
         props: {
             type: {
@@ -661,6 +699,8 @@
                     rules.value.users.show = false
                 }
             }
+            const imageUrl = (username: any) =>
+                `${window.location.origin}/api/service/avatars/${username}`
             return {
                 selectedPersonaDirty,
                 rules,
@@ -681,6 +721,8 @@
                 selectedOwnersData,
                 handleOwnersChange,
                 refOwners,
+                imageUrl,
+                useTimeAgo,
             }
         },
     })

@@ -287,7 +287,7 @@
                 v-if="request.status === 'active'"
                 class="flex items-center space-x-1"
             >
-                <span class="text-warning">Pending</span>
+            <span class="text-yellow-500 flex items-center"><atlan-icon icon="History" class="mr-0.5 h-3"/>Pending</span>
                 <span>|</span>
                 <a-popover placement="rightBottom">
                     <template #content>

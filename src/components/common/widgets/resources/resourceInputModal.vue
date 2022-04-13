@@ -156,7 +156,7 @@
             // eslint-disable-next-line prefer-promise-reject-errors
             return Promise.reject(
                 `Please provide a ${
-                    isSlackLink.value ? 'slack resource' : 'resource'
+                    isSlackTab.value ? 'slack resource' : 'resource'
                 } link`
             )
         }
@@ -164,7 +164,7 @@
             // eslint-disable-next-line prefer-promise-reject-errors
             return Promise.reject(
                 `Please provide a valid ${
-                    isSlackLink.value ? 'slack resource' : 'resource'
+                    isSlackTab.value ? 'slack resource' : 'resource'
                 } link`
             )
         }

@@ -63,7 +63,19 @@ export const iconWarning = `<svg width="14" height="13" viewBox="0 0 14 13" fill
 </svg>
 `
 
+export const iconLoaderFixed = `<svg width="35" height="35"  id="e6op8Zzqnet1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 16 16" shape-rendering="geometricPrecision" text-rendering="geometricPrecision"><style><![CDATA[#e6op8Zzqnet2_tr {animation: e6op8Zzqnet2_tr__tr 3000ms linear infinite normal forwards}@keyframes e6op8Zzqnet2_tr__tr { 0% {transform: translate(8px,8px) rotate(0deg)} 100% {transform: translate(8px,8px) rotate(-720deg)}} #e6op8Zzqnet3_tr {animation: e6op8Zzqnet3_tr__tr 3000ms linear infinite normal forwards}@keyframes e6op8Zzqnet3_tr__tr { 0% {transform: translate(8px,8px) rotate(20deg)} 50% {transform: translate(8px,8px) rotate(720deg)} 100% {transform: translate(8px,8px) rotate(1440deg)}}]]></style><g id="e6op8Zzqnet2_tr" transform="translate(8,8) rotate(0)"><path id="e6op8Zzqnet2" d="M8,2C4.68629,2,2,4.68629,2,8C2,11.3137,4.68629,14,8,14C11.3137,14,14,11.3137,14,8C14,7.3836,13.9072,6.7898,13.7352,6.2313C13.6539,5.96739,13.802,5.68756,14.0659,5.60627C14.3298,5.52499,14.6096,5.67303,14.6909,5.93694C14.8919,6.58973,15,7.28271,15,8C15,11.866,11.866,15,8,15C4.13401,15,1,11.866,1,8C1,4.13401,4.13401,1,8,1C8.97404,1,9.90284,1.19923,10.7469,1.55965C11.0008,1.66809,11.1188,1.96188,11.0103,2.21583C10.9019,2.46979,10.6081,2.58775,10.3541,2.47931C9.63199,2.17093,8.8366,2,8,2Z" transform="translate(-8,-8)" clip-rule="evenodd" fill="rgb(82,119,215)" fill-rule="evenodd" stroke="none" stroke-width="1"/></g><g id="e6op8Zzqnet3_tr" transform="translate(8,8) rotate(20)"><path id="e6op8Zzqnet3" d="M8,4C5.79086,4,4,5.79086,4,8C4,10.2091,5.79086,12,8,12C8.27614,12,8.5,12.2239,8.5,12.5C8.5,12.7761,8.27614,13,8,13C5.23858,13,3,10.7614,3,8C3,5.23858,5.23858,3,8,3C8.27614,3,8.5,3.22386,8.5,3.5C8.5,3.77614,8.27614,4,8,4Z" transform="translate(-8,-8)" clip-rule="evenodd" fill="rgb(98,225,252)" fill-rule="evenodd" stroke="none" stroke-width="1"/></g></svg>`
+
 export const iconLoader = `<svg id="e6op8Zzqnet1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 16 16" shape-rendering="geometricPrecision" text-rendering="geometricPrecision"><style><![CDATA[#e6op8Zzqnet2_tr {animation: e6op8Zzqnet2_tr__tr 3000ms linear infinite normal forwards}@keyframes e6op8Zzqnet2_tr__tr { 0% {transform: translate(8px,8px) rotate(0deg)} 100% {transform: translate(8px,8px) rotate(-720deg)}} #e6op8Zzqnet3_tr {animation: e6op8Zzqnet3_tr__tr 3000ms linear infinite normal forwards}@keyframes e6op8Zzqnet3_tr__tr { 0% {transform: translate(8px,8px) rotate(20deg)} 50% {transform: translate(8px,8px) rotate(720deg)} 100% {transform: translate(8px,8px) rotate(1440deg)}}]]></style><g id="e6op8Zzqnet2_tr" transform="translate(8,8) rotate(0)"><path id="e6op8Zzqnet2" d="M8,2C4.68629,2,2,4.68629,2,8C2,11.3137,4.68629,14,8,14C11.3137,14,14,11.3137,14,8C14,7.3836,13.9072,6.7898,13.7352,6.2313C13.6539,5.96739,13.802,5.68756,14.0659,5.60627C14.3298,5.52499,14.6096,5.67303,14.6909,5.93694C14.8919,6.58973,15,7.28271,15,8C15,11.866,11.866,15,8,15C4.13401,15,1,11.866,1,8C1,4.13401,4.13401,1,8,1C8.97404,1,9.90284,1.19923,10.7469,1.55965C11.0008,1.66809,11.1188,1.96188,11.0103,2.21583C10.9019,2.46979,10.6081,2.58775,10.3541,2.47931C9.63199,2.17093,8.8366,2,8,2Z" transform="translate(-8,-8)" clip-rule="evenodd" fill="rgb(82,119,215)" fill-rule="evenodd" stroke="none" stroke-width="1"/></g><g id="e6op8Zzqnet3_tr" transform="translate(8,8) rotate(20)"><path id="e6op8Zzqnet3" d="M8,4C5.79086,4,4,5.79086,4,8C4,10.2091,5.79086,12,8,12C8.27614,12,8.5,12.2239,8.5,12.5C8.5,12.7761,8.27614,13,8,13C5.23858,13,3,10.7614,3,8C3,5.23858,5.23858,3,8,3C8.27614,3,8.5,3.22386,8.5,3.5C8.5,3.77614,8.27614,4,8,4Z" transform="translate(-8,-8)" clip-rule="evenodd" fill="rgb(98,225,252)" fill-rule="evenodd" stroke="none" stroke-width="1"/></g></svg>`
+
+export const iconExpand = `<svg width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M8 2.5V13.5M13.5 8H2.5" stroke="currentColor" stroke-linecap="round"/>
+</svg>
+`
+
+export const iconCollapse = `<svg width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2.49963 8H13.4996" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+`
 
 export const snowflake = `<svg width="17" height="17" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M13.0314 11.6964L10.0688 9.9849C9.65262 9.74527 9.12038 9.88779 8.87949 10.304C8.78616 10.4679 8.74958 10.6483 8.76724 10.8236V14.1684C8.76724 14.6464 9.1557 15.0348 9.63496 15.0348C10.113 15.0348 10.5014 14.6464 10.5014 14.1684V12.245L12.1612 13.2035C12.5774 13.4444 13.1109 13.3006 13.3505 12.8844C13.5914 12.4682 13.4489 11.936 13.0314 11.6964Z" fill="#29B5E8"/>
@@ -228,7 +240,7 @@ export const glue = `<svg width="17" height="17" viewBox="0 0 16 16" fill="none"
 <path d="M2 7.15539L3.17889 7.03223L4.85046 7.1202L3.56599 7.20818L2 7.15539Z" fill="#6B3A19"/>
 </svg>
 `
-// array, boolean, date, empty, expand, float1, geopgraphy, number, string, struct, variant,
+
 export const array = `<svg class="w-4 h-4 mr-2 mb-1 flex-grow flex-shrink-0" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M11.5 2.5H13.5V13.5H11.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M4.5 2.5H2.5V13.5H4.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>

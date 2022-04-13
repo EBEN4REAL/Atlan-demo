@@ -198,7 +198,7 @@ export default function useGraph(graph) {
                                 ${isHighlightedPort ? 'highlighted-port' : ''}">
                                     <div class="flex items-center truncate">
                                         ${columnDataTypeIcons[dataType]}
-                                        <span class="truncate flex-grow-0 flex-shrink">${text}</span> 
+                                        <span title="${text}" class="truncate flex-grow-0 flex-shrink">${text}</span> 
                                     </div>
                                     <div class="flex items-center">
                                         ${
@@ -276,12 +276,11 @@ export default function useGraph(graph) {
                                             ${totalHidden})</span>`
                                             : ''
                                     }`
-                                : `<div class="popover  group-hover:opacity-100              group-hover:delay-1000"> ${displayText}
-                            </div>
+                                : `
                             <div class="lineage-node__content">
                                 <div class="node-text group">
                                     <div class="flex items-center gap-x-1">
-                                        <span class="truncate node-title">${displayText}</span>
+                                        <span title="${displayText}" class="truncate node-title">${displayText}</span>
                                         <span class="flex-none ml-1">${status}</span>
                                         <span class="flex-none ml-1">${flag}</span>
 

@@ -302,7 +302,6 @@
             cursor: pointer;
             outline: 0 !important;
             z-index: 9999 !important;
-            @apply transition-all duration-100;
 
             &__content {
                 padding: 10px 8px 10px 16px;

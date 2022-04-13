@@ -41,14 +41,7 @@
             "no-logs-found": "No logs found",
             "no-assets-owned": "Seems like {name} doesn't own any assets",
             "try-again-alias": "Try another @:common.term.alias.",
-            "enter-all-details": "Enter all details",
-            "sso-added": "@:common.term.sso added",
-            "sso-not-added": "Could not add @:common.term.sso",
-            "enable-sso": "Enable @:common.term.sso",
-            "allow-users": "Allow users to login with @:common.term.sso",
-            "login-email": "They can also login via email.",
-            "enforce-sso": "Enforce @:common.term.sso",
-            "automatic-redirect": "User will be automatically redirected to configured @:common.term.sso"
+            "enter-all-details": "Enter all details"
         },
         "sso": {
             "service-provider-metadata": "Service provider @:common.term.metadata",
@@ -68,7 +61,14 @@
             "verified-sso": "I have verified the @:common.term.sso connection by logging in and out successfully",
             "provided-notice": "I have provided advanced notice and training for my company on new login procedures",
             "failed-enable": "Unable to @:common.action.lower.enable @:common.term.sso. Please try again",
-            "failed-disable": "Unable to @:common.action.lower.disable @:common.term.sso. Please try again"
+            "failed-disable": "Unable to @:common.action.lower.disable @:common.term.sso. Please try again",
+            "sso-added": "@:common.term.sso added",
+            "sso-not-added": "Could not add @:common.term.sso",
+            "enable-sso": "Enable @:common.term.sso",
+            "allow-users": "Allow users to login with @:common.term.sso",
+            "login-email": "They can also login via email.",
+            "enforce-sso": "Enforce @:common.term.sso",
+            "automatic-redirect": "User will be automatically redirected to configured @:common.term.sso"
         }
     },
     "common": {

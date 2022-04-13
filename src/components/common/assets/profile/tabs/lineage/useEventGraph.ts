@@ -870,6 +870,7 @@ export default function useEventGraph({
     // removeColumns
     const removeColumns = (node) => {
         removeX6Ports(node)
+
         node.updateData({
             columns: [],
             columnsListExpanded: false,
@@ -1516,7 +1517,13 @@ export default function useEventGraph({
             const x6Node = getX6Node(nodeId)
             const { columns } = x6Node.getData()
             if (parentNode?.id !== nodeId && columns.length > 0) {
-                removeX6Ports(x6Node)
+                graph.value
+                    .getEdges()
+                    .filter((edge) => edge.id.includes('port'))
+                    .forEach((edge) => {
+                        const cell = graph.value.getCellById(edge.id)
+                        cell.remove()
+                    })
                 x6Node.updateData({ highlightPorts: false })
             }
 

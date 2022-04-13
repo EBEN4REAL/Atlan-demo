@@ -8,7 +8,8 @@
                 <AtlanIcon icon="WarningIcon" />
             </div>
             <div class="flex-1 ml-2 text-sm text-gray-700">
-                There are {{ listSameAssets.count }} other policies for same
+                There are {{ listSameAssets.count }} other
+                {{ listSameAssets.count > 1 ? 'policies' : 'policy' }} for same
                 assets
             </div>
 
@@ -21,10 +22,17 @@
                 <template #content>
                     <div class="py-1 content-popover">
                         <div
-                            class="flex items-center px-4 py-3 border-b border-gray-200 w-80 hover:bg-gray-100"
-                            v-for="persona in listSameAssets.result"
+                            class="flex items-center px-4 py-3 border-gray-200 w-80 hover:bg-gray-100"
+                            v-for="(persona, idx) in listSameAssets.result"
                             :key="persona.id"
                             @click="handleClickPersona(persona)"
+                            :class="`${
+                                persona.id === personaSelected.id &&
+                                'bg-gray-100'
+                            } ${
+                                idx !== istSameAssets.result.length - 1 &&
+                                'border-b'
+                            }`"
                         >
                             <div class="flex-1 mr-2">
                                 <div
@@ -110,7 +118,7 @@
                             </div>
                         </div>
                         <div class="p-3 bg-gray-100">
-                            <div class="border border-gray-300">
+                            <div class="border border-gray-300 rounded">
                                 <div
                                     class="py-3.5 px-3 flex items-center"
                                     v-for="meta in personaSelected.metadataPolicies"
@@ -227,7 +235,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, toRefs, computed, ref } from 'vue'
+    import { defineComponent, toRefs, computed, ref, watch } from 'vue'
     import { usePersonaStore } from '~/store/persona'
     import { useTimeAgo } from '@vueuse/core'
     import Avatar from '~/components/common/avatar/index.vue'
@@ -299,6 +307,11 @@
                     }
                 })
                 return { result, count }
+            })
+            watch(visible, () => {
+                if (!visible.value) {
+                    personaSelected.value = {}
+                }
             })
             const handleClickPersona = (prop) => {
                 personaSelected.value = prop

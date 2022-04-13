@@ -30,7 +30,7 @@
                                 persona.id === personaSelected.id &&
                                 'bg-gray-100'
                             } ${
-                                idx !== istSameAssets.result.length - 1 &&
+                                idx !== listSameAssets.result.length - 1 &&
                                 'border-b'
                             }`"
                         >

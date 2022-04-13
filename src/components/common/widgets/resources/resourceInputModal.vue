@@ -142,9 +142,13 @@
     const update: Function = inject('update') as Function
     const updateStatus = inject('updateStatus') as Ref
     const tab = inject('tab') as Ref
+    const isTab = computed(() => !!tab?.value?.component)
 
     const isSlackTab = computed(
         () => tab.value.component === 'SlackResourcesTab'
+    )
+    const isSlackLink = computed(
+        () => getDomain(localResource.value.link) === 'slack.com'
     )
 
     const validateLink = async (_rule: Rule, value: string) => {
@@ -152,7 +156,7 @@
             // eslint-disable-next-line prefer-promise-reject-errors
             return Promise.reject(
                 `Please provide a ${
-                    isSlackTab.value ? 'slack resource' : 'resource'
+                    isSlackLink.value ? 'slack resource' : 'resource'
                 } link`
             )
         }
@@ -160,7 +164,7 @@
             // eslint-disable-next-line prefer-promise-reject-errors
             return Promise.reject(
                 `Please provide a valid ${
-                    isSlackTab.value ? 'slack resource' : 'resource'
+                    isSlackLink.value ? 'slack resource' : 'resource'
                 } link`
             )
         }
@@ -174,7 +178,6 @@
 
     const isLinkValid = ref(false) // ? results of custom validation of link
     const formValidation = (name, status, errorMsgs) => {
-        console.log(name, status, errorMsgs)
         if (name[0] === 'link') isLinkValid.value = status
     }
 
@@ -200,10 +203,19 @@
             // ! FIXME this watcher is running multiple times, ???!
             if (localResource.value.title)
                 message.success({
-                    content: `Successfully added new resource "${localResource.value.title}"`,
+                    content: `Successfully added new${
+                        isSlackLink.value ? ' slack ' : ''
+                    }resource "${localResource.value.title}"`,
                     duration: 1.5,
                     key: 'add',
                 })
+            if (isSlackLink.value && isTab.value && !isSlackTab.value) {
+                message.info({
+                    content: `Looks like you’ve added a slack link, you can find it here`,
+                    duration: 4,
+                    key: 'slackAdd',
+                })
+            }
             reset()
             visible.value = false
         } else if (v === 'error') {
@@ -342,6 +354,10 @@
     .form {
         :global(.ant-form-item-explain) {
             @apply font-normal text-xs  pt-1 !important;
+        }
+        :global(.ant-form-item-label
+                > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::after) {
+            @apply hidden !important;
         }
     }
 </style>

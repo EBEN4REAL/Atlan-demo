@@ -20,8 +20,8 @@
 </template>
 
 <script setup lang="ts">
-    import { PropType, computed, toRefs, ref } from 'vue'
-    import { whenever } from '@vueuse/core'
+    import { PropType, computed, toRefs, ref, inject } from 'vue'
+    import { whenever, watchOnce } from '@vueuse/core'
     import ResourcesWidget from '@/common/widgets/resources/resourcesWidget.vue'
     import Placeholder from '@/common/assets/preview/resources/placeholder.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -75,6 +75,7 @@
                 'Link'
             ) && assetPermission('CREATE_LINK')
     )
+    const switchTab = inject('switchTab') as Function
 
     const addStatus = ref('')
     const handleAdd = async (link) => {
@@ -84,6 +85,14 @@
             localResource.value.link = link.attributes.link
             await handleAddResource()
             addStatus.value = 'success'
+            // ? if the created link is slack , redirect to slack tab
+            if (getDomain(link.attributes.link) === 'slack.com')
+                watchOnce(
+                    () => links(selectedAsset.value),
+                    () => {
+                        switchTab(selectedAsset.value, 'Slack Resources')
+                    }
+                )
         } catch (error) {
             addStatus.value = 'error'
         }

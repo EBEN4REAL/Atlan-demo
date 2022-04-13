@@ -79,6 +79,7 @@
     import SlackModal from './slackModal.vue'
     import access from '~/constant/accessControl/map'
     import integrationStore from '~/store/integrations/index'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'KebabMenu',
@@ -113,6 +114,10 @@
             })
             async function handleCopyProfileLink() {
                 await copyToClipboard(link.value)
+                useAddEvent('discovery', 'cta_action', 'clicked', {
+                    action: 'copy_link',
+                    asset_type: asset.value.typeName,
+                })
                 message.success('Link copied!')
                 closeMenu()
             }

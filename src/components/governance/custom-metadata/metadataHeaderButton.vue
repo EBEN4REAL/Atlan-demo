@@ -182,7 +182,9 @@
                         duration: 2,
                     } as any)
                     resetSelection()
-                    useAddEvent('governance', 'custom_metadata', 'deleted')
+                    useAddEvent('governance', 'custom_metadata', 'deleted', {
+                        title: props.metadata.displayName,
+                    })
                     // reloadTable()
                     store.removeCustomMetadataByName(props.metadata.name)
                 } else if (error && error.value) {

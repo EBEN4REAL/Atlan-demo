@@ -19,10 +19,10 @@
                         class="w-4 mr-2"
                     />
                     <AtlanIcon
-                            v-else
-                            icon="PrimaryKey"
-                            class="self-center h-6 mr-1 text-alert"
-                        />
+                        v-else
+                        icon="PrimaryKey"
+                        class="self-center h-6 mr-1 text-alert"
+                    />
                     <span>{{ provider.title || 'SAML 2.0' }}</span>
                 </div>
                 <AtlanBtn
@@ -119,6 +119,7 @@
     import { storeToRefs } from 'pinia'
     import { useRoute, useRouter } from 'vue-router'
     import { message } from 'ant-design-vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import UpdateSSOConfig from '~/components/admin/sso/update/updateSSOConfig.vue'
     import { useTenantStore } from '~/store/tenant'
     import { topSAMLProviders, customSamlProvider } from '~/constant/saml'
@@ -196,6 +197,9 @@
                     showDeleteSSOModal()
                     isDeleting.value = false
                     router.push(`/admin/sso`)
+                    useAddEvent('admin', 'sso', 'removed', {
+                        alias: alias.value,
+                    })
                 } catch (error) {
                     message.error({
                         content: 'Failed to remove.',

@@ -31,7 +31,7 @@
                             :index="index"
                             :attribute="attribute"
                             :condition="condition"
-                            @change="handleChangeCondition"
+                            @change="handleChangeCondition(condition)"
                             @clear="handleRemove(index)"
                         />
                         <div
@@ -126,9 +126,9 @@
                 handleAdd()
             }
 
-            const handleChangeCondition = () => {
+            const handleChangeCondition = (condition) => {
                 modelValue.value = localValue.value
-                emit('change')
+                emit('change', attribute, condition, localValue.value)
             }
 
             const handleClearAll = () => {

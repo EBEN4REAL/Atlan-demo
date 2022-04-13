@@ -512,12 +512,6 @@
             background-color: #ebf1ff !important;
             color: #3c71df;
 
-            // &:hover {
-            //     border: 1.5px solid #3c71df !important;
-            //     background-color: #ebf1ff !important;
-            //     color: #3c71df;
-            // }
-
             & .node-title {
                 color: #3c71df;
             }
@@ -540,11 +534,6 @@
         .isHighlightedNode {
             border: 1.5px solid #3c71df;
             background-color: #ffffff;
-
-            // &:hover {
-            //     border: 1.5px solid #3c71df;
-            //     background-color: #ffffff;
-            // }
         }
 
         .caret-expanded {

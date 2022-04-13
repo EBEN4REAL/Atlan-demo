@@ -22,7 +22,7 @@
                 <template #content>
                     <div class="py-1 content-popover">
                         <div
-                            class="flex items-center px-4 py-3 border-gray-200 w-80 hover:bg-gray-100"
+                            class="flex items-center px-4 py-3 border-gray-200 cursor-pointer w-80 hover:bg-gray-100"
                             v-for="(persona, idx) in listSameAssets.result"
                             :key="persona.id"
                             @click="handleClickPersona(persona)"
@@ -79,7 +79,7 @@
                         </div>
                     </div>
                 </template>
-                <div class="ml-2 text-sm font-bold text-primary">
+                <div class="ml-2 text-sm font-bold cursor-pointer text-primary">
                     View policies
                 </div>
             </a-popover>

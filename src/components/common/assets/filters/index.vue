@@ -201,9 +201,9 @@
                 return count
             })
 
-            const handleChange = (filterItem) => {
+            const handleChange = (filterItem, ...args) => {
                 modelValue.value = localValue.value
-                emit('change', filterItem)
+                emit('change', filterItem, ...args)
             }
 
             const handleResetAll = () => {

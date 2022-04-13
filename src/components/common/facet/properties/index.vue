@@ -106,8 +106,8 @@
                 }
             }
 
-            const handleChange = () => {
-                console.log('handleChange')
+            const handleChange = (property, currentChange, allValues) => {
+                console.log('handleChange', property, currentChange, allValues)
                 Object.keys(localValue.value).forEach((key) => {
                     localValue.value[key] = localValue.value[key].filter(
                         (i) => {
@@ -129,7 +129,7 @@
                 })
 
                 modelValue.value = localValue.value
-                emit('change')
+                emit('change', property, currentChange)
             }
 
             return {

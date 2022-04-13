@@ -147,6 +147,7 @@
     import Search from '@/common/input/searchAdvanced.vue'
     import Truncate from '@/common/ellipsis/index.vue'
     import SimpleEllipsis from '@/common/ellipsis/simpleEllipsis.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         components: {
@@ -296,6 +297,9 @@
                         state?.value?.enumDefs?.length &&
                         state.value.enumDefs[0]
                     store.updateEnum(updatedEnum)
+                    useAddEvent('governance', 'options', 'updated', {
+                        alias: updatedEnum.name,
+                    })
                 }
             }
 

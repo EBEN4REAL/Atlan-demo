@@ -14,7 +14,7 @@
                             class="mb-0.5"
                         />
                         <span class="ml-1 font-semibold text-gray-500">
-                            Resources
+                            {{ headerCopy }}
                         </span>
                     </span>
                     <div class="flex-grow"></div>
@@ -172,6 +172,10 @@
         addStatus: {
             type: String,
             required: true,
+        },
+        headerCopy: {
+            type: String,
+            default: 'Resources',
         },
         updateStatus: {
             type: String,

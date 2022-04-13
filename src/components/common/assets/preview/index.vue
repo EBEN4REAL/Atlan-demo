@@ -407,6 +407,12 @@
                 () =>
                     import('@/common/assets/preview/integrations/jira/jira.vue')
             ),
+            SlackResourcesTab: defineAsyncComponent(
+                () =>
+                    import(
+                        '@/common/assets/preview/resources/slackResourcesWrapper.vue'
+                    )
+            ),
             SlackAskButton,
         },
 

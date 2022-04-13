@@ -1,7 +1,7 @@
 <template>
     <ResourcesWidget
         :ref="resourcesWidget"
-        :resources="resources"
+        :resources="slackResources"
         :add-status="addStatus"
         :update-status="updateStatus"
         :remove-status="removeStatus"
@@ -12,6 +12,7 @@
         @add="handleAdd"
         @update="handleUpdate"
         @remove="handleRemove"
+        headerCopy="Slack Resources"
     >
         <template #placeholder>
             <Placeholder />
@@ -28,7 +29,6 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
     import { getDomain } from '~/utils/url'
-    import integrationStore from '~/store/integrations/index'
 
     const props = defineProps({
         selectedAsset: {
@@ -44,8 +44,6 @@
 
     const { selectedAsset, isDrawer } = toRefs(props)
     const resourcesWidget = ref()
-    const store = integrationStore()
-    const { tenantJiraStatus, tenantSlackStatus } = toRefs(store)
 
     const { links, selectedAssetUpdatePermission, assetPermission } =
         useAssetInfo()
@@ -58,12 +56,10 @@
     } = updateAssetAttributes(selectedAsset)
 
     // eslint-disable-next-line arrow-body-style
-    const resources = computed(() => {
-        if (tenantSlackStatus.value.configured)
-            return links(selectedAsset.value).filter(
-                (l) => getDomain(l.attributes.link) !== 'slack.com'
-            )
-        return links(selectedAsset.value)
+    const slackResources = computed(() => {
+        return links(selectedAsset.value).filter(
+            (l) => getDomain(l.attributes.link) === 'slack.com'
+        )
     })
 
     const linkEditPermission = computed(

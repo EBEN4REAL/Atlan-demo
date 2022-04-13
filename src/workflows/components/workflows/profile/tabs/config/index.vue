@@ -12,13 +12,19 @@
             v-else-if="configMap"
             class="flex-1 h-full overflow-y-hidden bg-white"
         >
-            <Setup
+            <!-- <Setup
                 :workflowTemplate="packageObject"
                 :workflowObject="workflowObject"
                 :configMap="configMapParsed"
                 :isEdit="true"
                 :defaultValue="getGlobalArguments(workflowObject)"
-            ></Setup>
+            ></Setup> -->
+            <Config
+                :workflow-template="packageObject"
+                :workflow-object="workflowObject"
+                :config-map="configMapParsed"
+                :default-value="getGlobalArguments(workflowObject)"
+            />
         </div>
     </div>
 </template>
@@ -27,14 +33,15 @@
     // Vue
     import { defineComponent, computed, inject, toRefs } from 'vue'
     import Setup from '~/workflowsv2/components/marketplace/setup/setup.vue'
+    import Config from '~/workflowsv2/components/profile/config.vue'
     import { useConfigMapByName } from '~/workflows/composables/package/useConfigMapByName'
     import Loader from '@/common/loaders/page.vue'
-    import ErrorView from '@common/error/discover.vue'
+    import ErrorView from '@/common/error/discover.vue'
     import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
 
     export default defineComponent({
         name: 'WorkflowConfig',
-        components: { Setup, Loader, ErrorView },
+        components: { Setup, Loader, ErrorView, Config },
         // mixins: [WorkflowMixin],
         props: {
             workflowObject: {

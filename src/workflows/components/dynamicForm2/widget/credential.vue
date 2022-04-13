@@ -13,119 +13,109 @@
     >
         <ErrorView :error="error"></ErrorView>
     </div>
-    <div v-else-if="isCredential && credential" class="flex flex-col max-w-2xl">
-        <div class="flex flex-col px-3 py-2 border rounded gap-y-2">
-            <div class="flex items-center justify-between">
-                <div class="flex flex-col">
-                    <div class="flex items-center font-semibold">
-                        <div class="flex items-center mr-1">
-                            <img
-                                :src="getImage(connector(credential))"
-                                class="w-auto h-4 mr-1"
-                            />
-
-                            <span class="ml-1 capitalize"
-                                >{{ connector(credential) }} Credential</span
-                            >
-                        </div>
-                    </div>
-                    <div class="text-gray-500">
-                        last updated {{ updatedAt(credential, true) }} ago
-                        <template
-                            v-if="
-                                updatedBy(credential)?.startsWith(
-                                    'service-account-apikey-'
-                                )
-                            "
-                        >
-                            using <AtlanIcon icon="Key" class="h-3" /> API key
-                        </template>
-                        <template v-else>
-                            by
-                            {{ updatedBy(credential) }}
-                        </template>
-                    </div>
-                </div>
-                <div class="flex gap-x-2">
-                    <a-button
-                        v-if="!isEditVisible"
-                        :loading="isLoadingTestByID"
-                        @click="handleTestAuthentication(false)"
-                        class="text-white bg-success border-success"
-                        >Test
-                    </a-button>
-
-                    <AtlanButton2
-                        color="secondary"
-                        :label="isEditVisible ? 'Cancel' : 'Edit'"
-                        @click="toggleEdit"
-                    />
-
-                    <AtlanButton2
-                        v-if="isEditVisible"
-                        label="Test & Update"
-                        :loading="isLoadingTest || isLoadingUpdate"
-                        :disabled="!isDirty"
-                        @click="handleUpdate"
-                    />
-                </div>
+    <div v-else-if="isCredential && credential" class="flex flex-col gap-y-2">
+        <div>
+            <p class="text-base font-bold capitalize text-new-gray-800">
+                {{ connector(credential) }} Credential
+            </p>
+            <div class="text-gray-500">
+                last updated {{ updatedAt(credential, true) }} ago
+                <template
+                    v-if="
+                        updatedBy(credential)?.startsWith(
+                            'service-account-apikey-'
+                        )
+                    "
+                >
+                    using <AtlanIcon icon="Key" class="h-3" /> API key
+                </template>
+                <template v-else>
+                    by
+                    <UserWrapper :username="updatedBy(credential)" />
+                </template>
             </div>
-            <div class="flex text-gray-500" v-if="isEditVisible">
-                <AtlanIcon
-                    icon="Lock2"
-                    class="h-5 mr-1 text-yellow-500"
-                ></AtlanIcon>
-                Sensitive details are not displayed for security reasons. Any
-                changes to these fields will be override existing data.
+            <a-divider class="mt-3 mb-2" />
+        </div>
+
+        <div class="flex text-gray-500" v-if="isEditVisible">
+            <AtlanIcon
+                icon="Lock2"
+                class="h-5 mr-1 text-yellow-500"
+            ></AtlanIcon>
+            Sensitive details are not displayed for security reasons. Any
+            changes to these fields will be override existing data.
+        </div>
+        <div class="flex items-center my-2" v-if="testMessage">
+            <div class="flex items-center">
+                <AtlanIcon :icon="testIcon" class="h-5 mr-1"></AtlanIcon>
+                <span :class="testClass">{{ testMessage }}</span>
             </div>
-            <div class="flex items-center my-2" v-if="testMessage">
-                <div class="flex items-center">
-                    <AtlanIcon :icon="testIcon" class="h-5 mr-1"></AtlanIcon>
-                    <span :class="testClass">{{ testMessage }}</span>
-                </div>
-            </div>
-            <div v-if="isEditVisible" class="mt-2">
-                <FormItem
-                    :configMap="configMap"
-                    :baseKey="property.id"
-                    :isEdit="isCredential"
-                ></FormItem>
+        </div>
+        <div v-if="isEditVisible" class="mt-2">
+            <FormItem
+                :configMap="configMap"
+                :baseKey="property.id"
+                :isEdit="isCredential"
+            ></FormItem>
+        </div>
+
+        <div v-else class="grid grid-cols-2 text-sm font-medium gap-y-4">
+            <div class="space-y-1.5">
+                <p class="text-new-gray-600">Host</p>
+                <p class="select-all text-new-gray-800">
+                    {{ host(credential) }}
+                </p>
             </div>
 
-            <div class="flex flex-col gap-y-2" v-else>
-                <div class="flex gap-x-3">
-                    <div class="flex flex-col">
-                        <div class="text-gray-500">Host</div>
-                        <div class="text-gray-700">
-                            {{ host(credential) }}
-                        </div>
-                    </div>
-                    <div class="flex flex-col">
-                        <div class="text-gray-500">Port</div>
-                        <div class="text-gray-700">
-                            {{ port(credential) }}
-                        </div>
-                    </div>
-                </div>
-                <div class="flex gap-x-3">
-                    <div class="flex flex-col">
-                        <div class="text-gray-500">Auth Type</div>
-                        <div class="text-gray-700 capitalize">
-                            <AtlanIcon
-                                icon="Lock2"
-                                class="mb-0.5 text-yellow-400"
-                            ></AtlanIcon>
-                            {{ authType(credential) }}
-                        </div>
-                    </div>
-                    <div class="flex flex-col">
-                        <div class="text-gray-500">Reference</div>
-                        <div class="text-gray-700">
-                            {{ credential.id }}
-                        </div>
-                    </div>
-                </div>
+            <div class="space-y-1.5">
+                <p class="text-new-gray-600">Port</p>
+                <p class="text-new-gray-800">
+                    {{ port(credential) }}
+                </p>
             </div>
+
+            <div class="space-y-1.5">
+                <p class="text-new-gray-600">Reference</p>
+                <p class="select-all text-new-gray-800">
+                    {{ credential.id }}
+                </p>
+            </div>
+
+            <div class="space-y-1.5">
+                <p class="text-new-gray-600">Auth Type</p>
+                <p class="capitalize text-new-gray-800">
+                    <AtlanIcon
+                        icon="Lock2"
+                        class="mb-0.5 text-yellow-400"
+                    ></AtlanIcon>
+                    {{ authType(credential) }}
+                </p>
+            </div>
+        </div>
+        <a-divider class="mt-3 mb-1" />
+        <div class="flex gap-x-2">
+            <AtlanButton2
+                color="secondary"
+                :label="isEditVisible ? 'Cancel' : 'Edit Credentials'"
+                @click="toggleEdit"
+            />
+
+            <a-button
+                v-if="!isEditVisible"
+                :loading="isLoadingTestByID"
+                class="text-white bg-success border-success"
+                @click="handleTestAuthentication(false)"
+            >
+                Test Authentication
+            </a-button>
+
+            <AtlanButton2
+                v-if="isEditVisible"
+                label="Test & Update"
+                :loading="isLoadingTest || isLoadingUpdate"
+                :disabled="!isDirty"
+                @click="handleUpdate"
+            />
         </div>
     </div>
 
@@ -160,12 +150,13 @@
         onMounted,
         onBeforeMount,
     } from 'vue'
+    import { message } from 'ant-design-vue'
     import { until, useVModels } from '@vueuse/core'
     import { useTestCredential } from '~/composables/credential/useTestCredential'
     import useGetCredential from '~/composables/credential/useGetCredential'
 
     import { useConfigMapByName } from '~/workflows/composables/package/useConfigMapByName'
-    import ErrorView from '@common/error/index.vue'
+    import ErrorView from '@/common/error/index.vue'
     import AtlanIcon from '@/common/icon/atlanIcon.vue'
 
     import { useWorkflowHelper } from '~/workflows/composables/package/useWorkflowHelper'
@@ -175,7 +166,7 @@
 
     import { useConnectionStore } from '~/store/connection'
     import useUpdateCredential from '~/composables/credential/useUpdateCredential'
-    import { message } from 'ant-design-vue'
+    import UserWrapper from '~/workflowsv2/components/common/user.vue'
 
     export default defineComponent({
         name: 'CredentialInput',
@@ -185,6 +176,7 @@
             ),
             ErrorView,
             AtlanIcon,
+            UserWrapper,
         },
         props: {
             property: {

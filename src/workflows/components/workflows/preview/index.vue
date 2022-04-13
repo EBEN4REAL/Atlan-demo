@@ -116,9 +116,7 @@
                 >
                 <template v-if="!prevConnLoading">
                     <template v-for="conn in previousConnectors" :key="conn.id">
-                        <span class="block font-bold text-primary">{{
-                            conn.label
-                        }}</span>
+                        <span class="block font-medium">{{ conn.label }}</span>
                     </template>
                 </template>
                 <a-skeleton

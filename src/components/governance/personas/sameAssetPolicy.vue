@@ -85,13 +85,13 @@
             </a-popover>
             <a-popover
                 overlay-class-name="popover-same-assets"
-                :align="{ offset: [-320, 142] }"
+                :align="{ offset: [-320, 137] }"
                 trigger="click"
                 placement="left"
                 v-model:visible="visible"
             >
                 <template #content>
-                    <div class="w-80 content-popover-policy">
+                    <div class="w-80">
                         <div class="p-4">
                             <div
                                 class="text-base font-bold text-gray-700 truncate"
@@ -117,7 +117,7 @@
                                 }}
                             </div>
                         </div>
-                        <div class="p-3 bg-gray-100">
+                        <div class="p-3 bg-gray-100 content-popover-policy">
                             <div class="border border-gray-300 rounded">
                                 <div
                                     class="py-3.5 px-3 flex items-center"
@@ -361,7 +361,7 @@
 </style>
 <style lang="less" scoped>
     .content-popover-policy {
-        height: 250px;
+        height: 152px;
         overflow-y: scroll;
     }
     .content-popover {

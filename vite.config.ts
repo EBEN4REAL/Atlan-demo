@@ -73,23 +73,20 @@ export default defineConfig(({ mode }) => {
             styleImport({
                 libs: [],
             }),
-            svgLoader(
-                {
-                    // svgoConfig: [
-                    //     'prefixIds'
-                    // ],
-                    svgo: false
-                }
-            ),
+            svgLoader({
+                // svgoConfig: [
+                //     'prefixIds'
+                // ],
+                svgo: false,
+            }),
             {
                 ...strip({ include: '**/*.+(vue|js|ts)' }),
                 apply: 'build',
-
             },
             VueI18n({
                 runtimeOnly: true,
-                compositionOnly: true,
-                include: [path.resolve(__dirname, 'locales/**')],
+                compositionOnly: false,
+                include: [path.resolve(__dirname, 'src/locales/**')],
             }),
 
             // Components(),

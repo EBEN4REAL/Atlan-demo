@@ -15,11 +15,15 @@
         />
         <div v-if="isGlossary" class="flex">
             <div v-if="!excludeFields.includes('terms')" class="mr-12">
-                <p class="text-gray-500 mb-1">Terms</p>
+                <p class="text-gray-500 mb-1">
+                    {{ $t('common.term.term', 2) }}
+                </p>
                 <p class="font-bold">{{ term?.termsCount || 0 }}</p>
             </div>
             <div v-if="!excludeFields.includes('categories')">
-                <p class="text-gray-500 mb-1">Categories</p>
+                <p class="text-gray-500 mb-1">
+                    {{ $t('common.term.category', 2) }}
+                </p>
                 <p class="font-bold">{{ term?.categoryCount || 0 }}</p>
             </div>
         </div>

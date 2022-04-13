@@ -6,6 +6,7 @@ const ADJACENT_TOOLTIP_DELAY = 0.2
 interface UseMouseEnterDelayReturn {
     mouseEnterDelay: Ref<number>
     enteredPill: () => void
+    leftPill: () => void
 }
 
 /**
@@ -14,20 +15,27 @@ interface UseMouseEnterDelayReturn {
  */
 export function useMouseEnterDelay(): UseMouseEnterDelayReturn {
     const mouseEnterDelay = ref(FIRST_TOOLTIP_DELAY)
-    const timer = ref()
+    const timerRunOut = ref(false)
+    const timer = ref(null)
 
     const enteredPill = () => {
-        if (timer.value !== undefined) {
-            clearTimeout(timer.value)
-        }
         mouseEnterDelay.value = ADJACENT_TOOLTIP_DELAY
+        if (timer.value !== null) {
+            clearTimeout(timer.value)
+            timer.value = null
+        }
+    }
+
+    const leftPill = () => {
         timer.value = setTimeout(() => {
             mouseEnterDelay.value = FIRST_TOOLTIP_DELAY
+            timerRunOut.value = true
         }, ADJACENT_TOOLTIP_DELAY * 1000)
     }
 
     return {
         mouseEnterDelay,
         enteredPill,
+        leftPill,
     }
 }

@@ -127,11 +127,8 @@ export default function useCreateGraph({
         (portsPositionArgs) =>
             portsPositionArgs.map((_, index) => ({
                 position: {
-                    x: 1,
-                    y:
-                        index === 0
-                            ? (index + 1) * 40 + 40
-                            : (index + 1) * 40 + 50,
+                    x: 0,
+                    y: 111 + index * 42.15,
                 },
                 angle: 0,
             })),

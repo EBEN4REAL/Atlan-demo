@@ -1,0 +1,165 @@
+<template>
+    <div class="flex items-center h-full">
+        <div
+            class="relative flex items-center justify-center h-full px-2 ml-2 rounded-tl cursor-pointer text-new-gray-700"
+            style="max-width: 85px"
+            :class="activeResultTab ? 'tab-active' : 'not-active'"
+            @click="selectActiveResultTab"
+        >
+            <div class="flex items-center text-sm">
+                <AtlanIcon icon="QueryOutputSuccess" class="mr-1 -mt-0.5" />
+                <span>Results</span>
+            </div>
+            <!-- <div
+                    class="absolute right-0 h-full bg-gray-300"
+                    style="width: 1px"
+                ></div> -->
+        </div>
+        <div
+            class="h-full rounded-tr bg-new-gray-200"
+            style="
+                width: 476px;
+                box-shadow: inset 0px 0px 2px rgba(0, 0, 0, 0.12);
+                min-height: 33px;
+                padding-left: 1px;
+            "
+        >
+            <a-tabs
+                :class="$style.previewtab_footer"
+                :tab-position="mode"
+                :style="{ height: '32px' }"
+                v-model:activeKey="activeKey"
+            >
+                <a-tab-pane v-for="i in 10" :key="i">
+                    <template #tab>
+                        <div
+                            class="flex items-center h-full px-2 text-sm text-new-gray-700"
+                            style="width: 148px"
+                        >
+                            <Tooltip
+                                tooltip-text="Content of tab hello abckhsdfsdfkhjk djfgd"
+                                classes="text-new-gray-700"
+                                :placement="'topRight'"
+                            />
+                        </div>
+                    </template>
+                </a-tab-pane>
+            </a-tabs>
+        </div>
+        <div class="flex items-center px-3 text-new-gray-800 mt-0.5">
+            <span class="mr-1">
+                {{
+                    `${activeInlineTab.playground.resultsPane.result.totalRowsCount?.toLocaleString()} rows, `
+                }}
+            </span>
+
+            <span class="mr-1">
+                {{
+                    activeInlineTab.playground.editor.columnList.length?.toLocaleString()
+                }}
+                cols
+            </span>
+
+            <!-- Execution Time will be shown when it is >0 -->
+            <span v-if="queryExecutionTime > 0" class="flex items-center mr-1">
+                <span class="mr-1" style="color: #6b7692">
+                    in
+                    <span class="font-mono">{{
+                        getFormattedTimeFromMilliSeconds(queryExecutionTime)
+                    }}</span>
+                </span>
+            </span>
+            <!-- -------------------------------------------- -->
+        </div>
+    </div>
+</template>
+
+<script lang="ts">
+    import { defineComponent, Ref, computed, inject, ref } from 'vue'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import Tooltip from '@common/ellipsis/index.vue'
+    import { useUtils } from '~/components/insights/common/composables/useUtils'
+
+    export default defineComponent({
+        components: { Tooltip },
+        props: {},
+        setup(props, { emit }) {
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as Ref<activeInlineTabInterface>
+            const { getFormattedTimeFromMilliSeconds } = useUtils()
+            const mode = ref('top')
+            const activeKey = ref('1')
+            const queryExecutionTime = computed(
+                () =>
+                    activeInlineTab.value?.playground?.resultsPane?.result
+                        ?.executionTime
+            )
+
+            const activeResultTab = ref(false)
+            const selectActiveResultTab = () => {
+                activeResultTab.value = !activeResultTab.value
+            }
+            return {
+                selectActiveResultTab,
+                getFormattedTimeFromMilliSeconds,
+                activeInlineTab,
+                mode,
+                activeKey,
+                queryExecutionTime,
+                activeResultTab,
+            }
+        },
+    })
+</script>
+<style lang="less" scoped>
+    .bg-gray-C4C4C4 {
+        background: #c4c4c4;
+    }
+    .custom-shadow {
+        box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.12);
+    }
+    .tab-active {
+        background: white;
+        @apply shadow !important;
+        padding: 4px 8px;
+        @apply rounded;
+    }
+    .not-active {
+        @apply bg-new-gray-200;
+    }
+</style>
+<style lang="less" module>
+    .previewtab_footer {
+        height: 32px !important;
+        :global(.ant-tabs-nav .ant-tabs-tab-active) {
+            background: white;
+            @apply shadow !important;
+            padding: 4px 8px;
+            @apply rounded;
+        }
+        :global(.ant-tabs-tab) {
+            @apply p-0 !important;
+            margin-top: 2.5px;
+
+            margin-left: 0;
+
+            height: 28px !important;
+        }
+        :global(.ant-tabs-ink-bar) {
+            display: none !important;
+        }
+        :global(.ant-tabs > .ant-tabs-nav .ant-tabs-nav-list, .ant-tabs
+                > div
+                > .ant-tabs-nav
+                .ant-tabs-nav-list) {
+            align-items: center;
+        }
+    }
+</style>
+
+<route lang="yaml">
+meta:
+    layout: default
+    requiresAuth: true
+</route>

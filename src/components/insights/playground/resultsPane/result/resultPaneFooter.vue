@@ -1,37 +1,13 @@
 <template>
     <div
-        class="flex justify-between flex-shrink-0 w-full h-8 py-1 text-xs text-sm border-b"
-        style="max-height: 8%; background: #f6f7f9"
+        class="flex justify-between flex-shrink-0 w-full h-10 py-1 text-xs text-sm border-b bg-new-gray-100"
+        style=""
         v-if="
             activeInlineTab.playground.editor.columnList.length > 0 &&
             isQueryRunning === 'success'
         "
     >
-        <div class="flex items-center px-3 text-gray-700 mt-0.5">
-            <span class="mr-1">
-                {{
-                    `${activeInlineTab.playground.resultsPane.result.totalRowsCount?.toLocaleString()} rows, `
-                }}
-            </span>
-
-            <span class="mr-1">
-                {{
-                    activeInlineTab.playground.editor.columnList.length?.toLocaleString()
-                }}
-                cols
-            </span>
-
-            <!-- Execution Time will be shown when it is >0 -->
-            <span v-if="queryExecutionTime > 0" class="flex items-center mr-1">
-                <span class="mr-1 text-gray-500">
-                    in
-                    <span class="font-mono">{{
-                        getFormattedTimeFromMilliSeconds(queryExecutionTime)
-                    }}</span>
-                </span>
-            </span>
-            <!-- -------------------------------------------- -->
-        </div>
+        <PreviewTabs />
         <div class="flex items-center">
             <a-tooltip
                 color="#363636"
@@ -42,8 +18,13 @@
                 "
             >
                 <template #title>Copy data</template>
-                <div
-                    class="flex items-center mr-4 rounded cursor-pointer"
+
+                <AtlanBtn
+                    size="sm"
+                    color="secondary"
+                    padding="compact"
+                    class="py-0.5 text-sm border-none text-xs rounded custom-shadow cursor-pointer mr-2"
+                    style="height: 24px"
                     @click="
                         useCopy(
                             activeInlineTab.playground.editor.columnList,
@@ -51,12 +32,18 @@
                         )
                     "
                 >
-                    <AtlanIcon
-                        icon="CopyOutlined"
-                        class="w-4 h-4 mr-1 text-gray-700"
-                    />
-                    <span class="mt-0.5 text-gray-700">Copy</span>
-                </div>
+                    <div
+                        class="flex items-center cursor-pointer text-new-gray-800"
+                    >
+                        <AtlanIcon
+                            icon="CopyOutlined"
+                            class="w-4 h-4 mr-1 text-new-gray-800"
+                        />
+                        <span class="mt-0.5 text-new-gray-800 text-xs"
+                            >Copy</span
+                        >
+                    </div>
+                </AtlanBtn>
             </a-tooltip>
             <a-tooltip
                 color="#363636"
@@ -67,8 +54,12 @@
                 "
             >
                 <template #title>Export data</template>
-                <div
-                    class="flex items-center mr-2 rounded cursor-pointer"
+                <AtlanBtn
+                    size="sm"
+                    color="secondary"
+                    padding="compact"
+                    class="py-0.5 text-sm border-none text-xs rounded custom-shadow cursor-pointer mr-2"
+                    style="height: 24px"
                     @click="
                         useTableExport(
                             activeInlineTab?.queryId
@@ -79,28 +70,57 @@
                         )
                     "
                 >
+                    <div
+                        class="flex items-center text-xs cursor-pointer text-new-gray-800"
+                    >
+                        <AtlanIcon
+                            icon="Download"
+                            class="w-4 h-4 mr-1 text-new-gray-800"
+                        />
+                        <span class="mt-1 text-new-gray-800">Download</span>
+                    </div>
+                </AtlanBtn>
+            </a-tooltip>
+            <a-tooltip
+                color="#363636"
+                :mouseEnterDelay="
+                    lastTooltipPresence !== undefined
+                        ? ADJACENT_TOOLTIP_DELAY
+                        : MOUSE_ENTER_DELAY
+                "
+            >
+                <template #title>Full screen</template>
+                <AtlanBtn
+                    size="sm"
+                    color="secondary"
+                    padding="compact"
+                    class="py-0.5 mr-2 text-sm border-none text-xs rounded custom-shadow cursor-pointer"
+                    style="height: 24px"
+                >
                     <AtlanIcon
-                        icon="Download"
-                        class="w-4 h-4 mr-1 text-gray-700"
+                        icon="FullScreenSquare"
+                        class="w-4 h-4 text-xs text-new-gray-800"
                     />
-                    <span class="mt-1 text-gray-700">Download</span>
-                </div>
+                </AtlanBtn>
             </a-tooltip>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, inject, Ref } from 'vue'
+    import { defineComponent, computed, inject, Ref, ref } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import AtlanBtn from '~/components/UI/button.vue'
+    import PreviewTabs from '~/components/insights/playground/resultsPane/result/preview/index.vue'
     import {
         useTableExport,
         useCopy,
     } from '~/components/insights/common/composables/useTableExport'
     import { useUtils } from '~/components/insights/common/composables/useUtils'
+    import Tooltip from '@common/ellipsis/index.vue'
 
     export default defineComponent({
-        components: {},
+        components: { AtlanBtn, Tooltip, PreviewTabs },
         props: {},
         setup() {
             const activeInlineTab = inject(
@@ -114,13 +134,7 @@
                     activeInlineTab.value?.playground?.resultsPane?.result
                         ?.isQueryRunning
             )
-            const queryExecutionTime = computed(
-                () =>
-                    activeInlineTab.value?.playground?.resultsPane?.result
-                        ?.executionTime
-            )
             return {
-                queryExecutionTime,
                 activeInlineTab,
                 isQueryRunning,
                 useTableExport,
@@ -134,7 +148,17 @@
     .bg-gray-C4C4C4 {
         background: #c4c4c4;
     }
+    .custom-shadow {
+        box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.12);
+    }
+    .tab-active {
+        background: white;
+        @apply shadow !important;
+        padding: 4px 8px;
+        @apply rounded;
+    }
 </style>
+<style lang="less" module></style>
 
 <route lang="yaml">
 meta:

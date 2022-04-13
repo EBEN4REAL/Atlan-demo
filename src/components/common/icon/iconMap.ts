@@ -459,8 +459,12 @@ import Workflow from '~/assets/images/icons/workflows.svg'
 import Package from '~/assets/images/icons/package.svg'
 
 import Display from '~/assets/images/icons/display.svg'
+import FullScreenSquare from '~/assets/images/icons/full_screen_sqaure.svg'
+import QueryOutputSuccess from '~/assets/images/icons/query_output_success.svg'
 
 export default {
+    QueryOutputSuccess,
+    FullScreenSquare,
     LegendExpand,
     LegendCollapse,
     LegendAnomaly,

@@ -105,7 +105,9 @@
                     updatePersona(newPersona)
                     selectedPersonaId.value = newPersona.id!
                     modalVisible.value = false
-                    useAddEvent('governance', 'persona', 'created')
+                    useAddEvent('governance', 'persona', 'created', {
+                        title: newPersona.name,
+                    })
                 } catch (error: any) {
                     message.error({
                         content:

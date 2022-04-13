@@ -154,7 +154,9 @@
                     selectedPurposeId.value = newPurpose.id!
                     modalVisible.value = false
 
-                    useAddEvent('governance', 'purpose', 'created')
+                    useAddEvent('governance', 'purpose', 'created', {
+                        title: newPurpose.name,
+                    })
                 } catch (error) {
                     message.error({
                         content:

@@ -479,9 +479,12 @@
             if (discoveryStore.preferences && page.value !== 'admin') {
                 preference.value.sort =
                     discoveryStore.preferences.sort || preference.value.sort
-                preference.value.display =
-                    discoveryStore.preferences.display ||
-                    preference.value.display
+                preference.value.display = JSON.parse(
+                    JSON.stringify(
+                        discoveryStore.preferences.display ||
+                            preference.value.display
+                    )
+                )
             }
             if (discoveryStore.activeFacetTab?.length > 0) {
                 activeKey.value = discoveryStore.activeFacetTab
@@ -800,7 +803,11 @@
             }
 
             const handleDisplayChange = () => {
-                discoveryStore.setPreferences(preference.value)
+                // trackDisplayChange()
+
+                discoveryStore.setPreferences(
+                    JSON.parse(JSON.stringify(preference.value))
+                )
             }
 
             const handleResetEvent = () => {

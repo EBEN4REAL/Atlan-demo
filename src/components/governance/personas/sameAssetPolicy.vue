@@ -16,11 +16,12 @@
                 trigger="click"
                 placement="bottom"
                 :align="{ offset: [115, 0] }"
+                overlay-class-name="popover-same-assets"
             >
                 <template #content>
                     <div class="py-1 content-popover">
                         <div
-                            class="flex items-center px-4 py-3 border-b border-gray-200 w-80"
+                            class="flex items-center px-4 py-3 border-b border-gray-200 w-80 hover:bg-gray-100"
                             v-for="persona in listSameAssets.result"
                             :key="persona.id"
                             @click="handleClickPersona(persona)"
@@ -60,7 +61,7 @@
                                     >
                                         <AtlanIcon
                                             icon="Policies"
-                                            class="mr-1"
+                                            class="mr-1 icon-gray"
                                         />
                                         {{ persona.metadataPolicies.length }}
                                     </div>
@@ -75,6 +76,7 @@
                 </div>
             </a-popover>
             <a-popover
+                overlay-class-name="popover-same-assets"
                 :align="{ offset: [-320, 142] }"
                 trigger="click"
                 placement="left"
@@ -129,6 +131,7 @@
                                             <div class="text-xs text-gray-500">
                                                 <AtlanIcon
                                                     icon="AssetsInactiveLight"
+                                                    class="icon-gray-stroke"
                                                 />
                                                 {{
                                                     isAllAssets(meta.assets[0])
@@ -239,12 +242,16 @@
             },
             id: {
                 type: String,
-                default: () => [],
+                default: () => '',
+            },
+            type: {
+                type: String,
+                default: () => '',
             },
         },
         emits: ['updateStatus'],
-        setup(props, { emit }) {
-            const { assets, id } = toRefs(props)
+        setup(props) {
+            const { assets, id, type } = toRefs(props)
             const visible = ref(false)
             const personaStore = usePersonaStore()
             const personaSelected = ref({})
@@ -267,7 +274,7 @@
                         dataPolicies: [],
                     }
 
-                    if (el.dataPolicies) {
+                    if (el.dataPolicies && type.value === 'data') {
                         el.dataPolicies.forEach((elc) => {
                             if (checkAsset(elc.assets) && elc.id !== id.value) {
                                 policy.dataPolicies.push(elc)
@@ -275,7 +282,7 @@
                             }
                         })
                     }
-                    if (el.metadataPolicies) {
+                    if (el.metadataPolicies && type.value === 'meta') {
                         el.metadataPolicies.forEach((elc) => {
                             if (checkAsset(elc.assets) && elc.id !== id.value) {
                                 policy.metadataPolicies.push(elc)
@@ -323,9 +330,19 @@
     })
 </script>
 <style lang="less">
+    .popover-same-assets {
+        .ant-popover-inner {
+            border-radius: 8px;
+        }
+    }
     .icon-gray {
         path {
             fill: #6f7590 !important;
+        }
+    }
+    .icon-gray-stroke {
+        path {
+            stroke: #6f7590 !important;
         }
     }
 </style>

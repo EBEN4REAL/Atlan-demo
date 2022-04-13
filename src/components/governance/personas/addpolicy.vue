@@ -431,6 +431,7 @@
                         <SameAssetPolicy
                             :id="policy.id"
                             :assets="policy.assets"
+                            :type="type"
                         />
                     </div>
                     <div

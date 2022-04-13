@@ -710,11 +710,16 @@
 
             const handleBrowseAsset = (val, asset) => {
                 console.log('handleBrowseAsset', val, asset)
-                facets.value.connector = val.connector
-                facets.value.hierarchy.connectionQualifiedName =
-                    val.connectionQualifiedName
-                facets.value.hierarchy.attributeName = val.attributeName
-                facets.value.hierarchy.attributeValue = val.attributeValue
+                facets.value = {
+                    ...facets.value,
+                    connector: val.connector,
+                    hierarchy: {
+                        ...facets.value?.hierarchy,
+                        connectionQualifiedName: val.connectionQualifiedName,
+                        attributeName: val.attributeName,
+                        attributeValue: val.attributeValue,
+                    },
+                }
 
                 hierarchyDirtyTimestamp.value = `dirty_${Date.now().toString()}`
                 offset.value = 0

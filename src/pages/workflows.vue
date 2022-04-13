@@ -1,5 +1,12 @@
 <template>
-    <router-view></router-view>
+    <router-view v-slot="{ Component, route }">
+        <keep-alive :max="4" :exclude="['WorkflowSetupPage']">
+            <component
+                :is="Component"
+                :key="`${route.name}${route.params.id}`"
+            />
+        </keep-alive>
+    </router-view>
 </template>
 <script lang="ts">
     import { defineComponent } from 'vue'

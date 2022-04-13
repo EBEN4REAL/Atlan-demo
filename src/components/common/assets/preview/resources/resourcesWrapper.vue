@@ -45,7 +45,7 @@
     const { selectedAsset, isDrawer } = toRefs(props)
     const resourcesWidget = ref()
     const store = integrationStore()
-    const { tenantJiraStatus, tenantSlackStatus } = toRefs(store)
+    const { tenantSlackStatus } = toRefs(store)
 
     const { links, selectedAssetUpdatePermission, assetPermission } =
         useAssetInfo()

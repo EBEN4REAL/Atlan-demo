@@ -14,7 +14,7 @@
                             class="mb-0.5"
                         />
                         <span class="ml-1 font-semibold text-gray-500">
-                            {{ headerCopy }}
+                            {{ tab.name }}
                         </span>
                     </span>
                     <div class="flex-grow"></div>
@@ -173,10 +173,10 @@
             type: String,
             required: true,
         },
-        headerCopy: {
-            type: String,
-            default: 'Resources',
-        },
+        // headerCopy: {
+        //     type: String,
+        //     default: 'Resources',
+        // },
         updateStatus: {
             type: String,
             required: true,
@@ -202,6 +202,7 @@
         tab: {
             type: Object,
             required: false,
+            default: () => ({}),
         },
     })
     const emit = defineEmits(['add', 'update', 'remove'])
@@ -217,6 +218,7 @@
         removeStatus,
         entityName,
         readOnly,
+        tab,
     } = toRefs(props)
 
     const addCallback = (r) => emit('add', r)
@@ -231,6 +233,7 @@
     provide('removeStatus', removeStatus)
     provide('entityName', entityName)
     provide('readOnly', readOnly)
+    provide('tab', tab)
 
     const store = integrationStore()
     const { tenantSlackStatus, userSlackStatus } = toRefs(store)

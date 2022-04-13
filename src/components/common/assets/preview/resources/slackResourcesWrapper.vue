@@ -12,7 +12,6 @@
         @add="handleAdd"
         @update="handleUpdate"
         @remove="handleRemove"
-        headerCopy="Slack Resources"
     >
         <template #placeholder>
             <Placeholder />

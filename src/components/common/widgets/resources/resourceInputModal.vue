@@ -10,7 +10,8 @@
     >
         <template #title>
             <span class="text-sm font-bold text-gray"
-                >{{ isEdit ? 'Edit' : 'New' }} Resource</span
+                >{{ isEdit ? 'Edit' : 'New' }}
+                {{ isSlackTab ? 'Slack Resource' : 'Resource' }}</span
             >
         </template>
         <template #footer>
@@ -33,36 +34,56 @@
                 />
             </div>
         </template>
-        <div class="px-4 pt-0 pb-4">
-            <span class="font-bold">Link</span>
-            <a-input
-                id="linkURL"
-                ref="titleBar"
-                v-model:value="localResource.link"
-                type="url"
-                placeholder="Paste resource link"
-                class="text-lg font-bold text-gray-700"
-                allow-clear
-                @change="handleUrlChange"
-            />
-            <div v-if="localResource.link" class="mt-3">
-                <span class="font-bold">Title</span>
-                <div class="flex items-center gap-x-2">
+        <a-form
+            ref="formRef"
+            layout="vertical"
+            :class="$style.form"
+            :rules="formRules"
+            :model="localResource"
+            :validate-trigger="['click', 'submit']"
+            @validate="formValidation"
+        >
+            <div class="px-4 pt-0 pb-4">
+                <a-form-item
+                    label="Link"
+                    :name="['link']"
+                    class="mb-0 font-bold"
+                >
                     <a-input
-                        v-model:value="localResource.title"
-                        placeholder="Resource title"
+                        id="link"
+                        ref="titleBar"
+                        v-model:value="localResource.link"
+                        type="url"
+                        placeholder="Paste resource link"
                         class="text-lg font-bold text-gray-700"
                         allow-clear
+                        @change="handleUrlChange"
+                    />
+                </a-form-item>
+                <div v-if="localResource.link" class="mt-3">
+                    <a-form-item
+                        label="Title"
+                        :name="['title']"
+                        class="mb-0 font-bold"
                     >
-                        <template v-if="faviconLink" #prefix>
-                            <div class="relative flex w-5 h-5 mr-2">
-                                <img :src="faviconLink" alt="" />
-                            </div>
-                        </template>
-                    </a-input>
+                        <div class="flex items-center gap-x-2">
+                            <a-input
+                                v-model:value="localResource.title"
+                                placeholder="Resource title"
+                                class="text-lg font-bold text-gray-700"
+                                allow-clear
+                            >
+                                <template v-if="faviconLink" #prefix>
+                                    <div class="relative flex w-5 h-5 mr-2">
+                                        <img :src="faviconLink" alt="" />
+                                    </div>
+                                </template>
+                            </a-input>
+                        </div>
+                    </a-form-item>
                 </div>
             </div>
-        </div>
+        </a-form>
     </a-modal>
 </template>
 
@@ -79,6 +100,7 @@
     } from 'vue'
     import { message } from 'ant-design-vue'
     import { useDebounceFn, useTimestamp } from '@vueuse/core'
+    import type { Rule } from 'ant-design-vue/es/form'
     import { generateUUID } from '~/utils/helper/generator'
     import { getDomain } from '~/utils/url'
     import whoami from '~/composables/user/whoami'
@@ -119,6 +141,59 @@
     const addStatus: Ref = inject('addStatus') as Ref
     const update: Function = inject('update') as Function
     const updateStatus = inject('updateStatus') as Ref
+    const tab = inject('tab') as Ref
+
+    const isSlackTab = computed(
+        () => tab.value.component === 'SlackResourcesTab'
+    )
+
+    const validateLink = async (_rule: Rule, value: string) => {
+        if (value === '') {
+            // eslint-disable-next-line prefer-promise-reject-errors
+            return Promise.reject(
+                `Please provide a ${
+                    isSlackTab.value ? 'slack resource' : 'resource'
+                } link`
+            )
+        }
+        if (!isValidUrl.value) {
+            // eslint-disable-next-line prefer-promise-reject-errors
+            return Promise.reject(
+                `Please provide a valid ${
+                    isSlackTab.value ? 'slack resource' : 'resource'
+                } link`
+            )
+        }
+        if (isSlackTab.value && getDomain(value) !== 'slack.com') {
+            // eslint-disable-next-line prefer-promise-reject-errors
+            return Promise.reject('Resource link must be of slack domain')
+        }
+
+        return Promise.resolve()
+    }
+
+    const isLinkValid = ref(false) // ? results of custom validation of link
+    const formValidation = (name, status, errorMsgs) => {
+        console.log(name, status, errorMsgs)
+        if (name[0] === 'link') isLinkValid.value = status
+    }
+
+    const formRules = {
+        link: [
+            {
+                required: true,
+                validator: validateLink,
+                trigger: ['submit', 'change'],
+            },
+        ],
+        title: [
+            {
+                required: true,
+                message: 'Please provide a title for this resource',
+                trigger: ['submit', 'change'],
+            },
+        ],
+    }
 
     watch(addStatus, (v) => {
         if (v === 'success') {
@@ -200,7 +275,8 @@
         () =>
             !localResource.value.link ||
             !localResource.value.title ||
-            !isValidUrl.value
+            !isValidUrl.value ||
+            !isLinkValid.value
     )
 
     const handleUrlChange = (e) => {
@@ -260,6 +336,12 @@
         }
         :global(.ant-input) {
             @apply shadow-none outline-none px-0 border-0 !important;
+        }
+    }
+
+    .form {
+        :global(.ant-form-item-explain) {
+            @apply font-normal text-xs  pt-1 !important;
         }
     }
 </style>

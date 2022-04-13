@@ -345,6 +345,7 @@ export const LineageAttributes = [
     'dataType',
     'columnCount',
     'rowCount',
+    'announcementType',
     // BI Relationships
     'workspace',
     'report',

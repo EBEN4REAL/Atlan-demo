@@ -37,7 +37,7 @@
                                     @click.stop="() => {}"
                                     @visibleChange="addBackground"
                                 >
-                                    <div class="px-2" v-if="hasWritePermission">
+                                    <div class="pl-1" v-if="hasWritePermission">
                                         <div
                                             class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
                                         >
@@ -139,7 +139,7 @@
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
                                         : 'bg-gradient-to-l from-tree-light-color via-tree-light-color',
-                                    hasWritePermission ? 'right-8' : 'right-0',
+                                    hasWritePermission ? 'right-7' : 'right-0',
                                 ]"
                             >
                                 <div
@@ -183,14 +183,14 @@
                             </div>
                             <div
                                 :id="`${item.qualifiedName}-menu`"
-                                class="absolute top-0 flex items-center h-full text-gray-500 opacity-0 right-2 margin-align-top group-hover:opacity-100"
+                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
                             >
                                 <a-dropdown
                                     :trigger="['click']"
                                     @click.stop="() => {}"
                                     @visibleChange="addBackground"
                                 >
-                                    <div class="pl-2" v-if="hasWritePermission">
+                                    <div class="pl-1" v-if="hasWritePermission">
                                         <div
                                             class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
                                         >

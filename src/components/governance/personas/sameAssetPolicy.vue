@@ -344,6 +344,10 @@
 </script>
 <style lang="less">
     .popover-same-assets {
+        .content-popover-policy {
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px !important;
+        }
         .ant-popover-inner {
             border-radius: 8px;
         }

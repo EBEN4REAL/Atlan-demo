@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import {
     getNodeSourceImage,
     getSource,
@@ -11,11 +12,14 @@ import {
     iconCaretDown,
     iconCaretUp,
     iconLoader,
+    iconLoaderFixed,
     iconPrimary,
     iconForeign,
     iconInformation,
     iconIssue,
     iconWarning,
+    iconExpand,
+    iconCollapse,
     array,
     boolean,
     date,
@@ -35,13 +39,6 @@ import {
     enum1,
     percent,
 } from './icons'
-import {
-    iconPrimaryB64,
-    iconForeignB64,
-    iconInformationB64,
-    iconIssueB64,
-    iconWarningB64,
-} from './iconsBase64'
 import { dataTypeCategoryList } from '~/constant/dataType'
 import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
@@ -88,7 +85,9 @@ export default function useGraph(graph) {
         const { guid, typeName, attributes } = entity
         const typeNameComputed = getNodeTypeText[typeName] || typeName
         const certificateStatus = attributes?.certificateStatus
+        const announcementType = attributes?.announcementType
         let status = ''
+        let flag = ''
         const displayText = title(entity)
         const source = getSource(entity)
         const schemaName = getSchema(entity)
@@ -97,17 +96,32 @@ export default function useGraph(graph) {
         const isVpNode = typeName === 'vpNode'
         const isNodeWithColumns = ['Table', 'View'].includes(typeName)
 
-        if (certificateStatus) {
-            switch (certificateStatus) {
-                case 'VERIFIED':
-                    status = iconVerified
-                    break
-                case 'DRAFT':
-                    status = iconDraft
-                    break
-                default:
-                    status = iconDeprecated
-            }
+        switch (certificateStatus) {
+            case 'VERIFIED':
+                status = iconVerified
+                break
+            case 'DRAFT':
+                status = iconDraft
+                break
+            case 'DEPRECATED':
+                status = iconDeprecated
+                break
+            default:
+                status = ''
+        }
+
+        switch (announcementType) {
+            case 'information':
+                flag = iconInformation
+                break
+            case 'issue':
+                flag = iconIssue
+                break
+            case 'warning':
+                flag = iconWarning
+                break
+            default:
+                flag = ''
         }
 
         const computedData = {
@@ -115,11 +129,21 @@ export default function useGraph(graph) {
             columns: [],
             columnsCount: null,
             columnsListExpanded: false,
-            fetchingColumnsList: false,
+            columnListLoading: false,
+            columnItemLoading: false,
+            columnShowMoreLoading: false,
+            selectedPortId: '',
             isSelectedNode: false,
             isHighlightedNode: false,
             isGrayed: false,
+            highlightPorts: false,
             hiddenCount: 0,
+            ctaPortRightIcon: '',
+            ctaPortRightId: '',
+            ctaPortRightLoading: false,
+            ctaPortLeftIcon: '',
+            ctaPortLeftId: '',
+            ctaPortLeftLoading: false,
             ...dataObj,
         }
 
@@ -131,7 +155,7 @@ export default function useGraph(graph) {
             entity,
             isVpNode,
             width: 270,
-            height: isVpNode ? 50 : 70,
+            height: isVpNode ? 50 : 100,
             shape: 'html',
             data: computedData,
             html: {
@@ -148,7 +172,7 @@ export default function useGraph(graph) {
                                 const {
                                     isPrimary,
                                     isForeign,
-                                    announcementType,
+                                    announcementType: aType,
                                 } = column.attributes
 
                                 const text =
@@ -162,9 +186,17 @@ export default function useGraph(graph) {
                                         )
                                 )?.imageText
 
+                                const isSelectedPort =
+                                    data?.selectedPortId === column.guid
+                                const isHighlightedPort = data?.highlightPorts
+
                                 res += `
-                                <div class="node-column flex justify-between items-center">
-                                    <div class="flex items-center truncate"> 
+                                <div id="${column.guid}" iscolitem="${
+                                    column.guid
+                                }" class="node-column flex justify-between items-center relative 
+                                ${isSelectedPort ? 'selected-port' : ''}
+                                ${isHighlightedPort ? 'highlighted-port' : ''}">
+                                    <div class="flex items-center truncate">
                                         ${columnDataTypeIcons[dataType]}
                                         <span class="truncate flex-grow-0 flex-shrink">${text}</span> 
                                     </div>
@@ -184,16 +216,34 @@ export default function useGraph(graph) {
                                                 : ''
                                         }
                                         ${
-                                            announcementType
+                                            aType
                                                 ? `<span class="ml-2">
-                                                    ${columnAnnouncementTypeIcons[announcementType]}
+                                                    ${columnAnnouncementTypeIcons[aType]}
                                                    </span>`
                                                 : ''
                                         }
                                     </div>
+                                    ${
+                                        data?.columnItemLoading &&
+                                        isSelectedPort
+                                            ? `<div class="absolute right-2 w-5 h-5">
+                                            ${iconLoader}
+                                        </div>`
+                                            : ''
+                                    }
                                 </div>`
                             } else
-                                res += `<div class="node-column flex justify-center text-new-blue-400"> Show more columns </div>`
+                                res += `
+                                <div iscolshowmore="true" class="node-column flex justify-center text-new-blue-400 items-center pl-2">
+                                    <span> Show more columns </span>
+                                    ${
+                                        data?.columnShowMoreLoading
+                                            ? `<div class="w-5 h-5 ml-2">
+                                        ${iconLoader}
+                                    </div>`
+                                            : ''
+                                    }
+                                 </div>`
                         })
                         return res
                     }
@@ -232,7 +282,9 @@ export default function useGraph(graph) {
                                 <div class="node-text group">
                                     <div class="flex items-center gap-x-1">
                                         <span class="truncate node-title">${displayText}</span>
-                                        <span class="flex-none mr-1">${status}</span>
+                                        <span class="flex-none ml-1">${status}</span>
+                                        <span class="flex-none ml-1">${flag}</span>
+
                                     </div>
                                 </div>
                                 <div class="node-meta">
@@ -257,7 +309,7 @@ export default function useGraph(graph) {
                             </div>
                             <div class="lineage-node__columns 
                                     ${isNodeWithColumns ? '' : 'hidden'}">
-                                <div nodecol="${guid}" class="lineage-node__columns-cta">
+                                <div iscollist="true" class="lineage-node__columns-cta">
                                     <div class="flex items-center">
                                         <span class="mr-2">
                                             ${
@@ -277,7 +329,7 @@ export default function useGraph(graph) {
                                     </div>
                                     <div class="w-5 h-5">
                                         ${
-                                            data?.fetchingColumnsList
+                                            data?.columnListLoading
                                                 ? iconLoader
                                                 : ''
                                         }
@@ -288,16 +340,42 @@ export default function useGraph(graph) {
                                         ${columnsList()}
                                 </div>
                             </div>
+                            ${
+                                data?.ctaPortLeftIcon
+                                    ? `<div isctaleft="${
+                                          data?.ctaPortLeftId
+                                      }" class="ctaPortLeft">
+                               ${
+                                   data?.ctaPortLeftLoading
+                                       ? iconLoaderFixed
+                                       : data?.ctaPortLeftIcon === 'col'
+                                       ? iconCollapse
+                                       : iconExpand
+                               }
+                            </div>`
+                                    : ''
+                            }
+                            ${
+                                data?.ctaPortRightIcon
+                                    ? `<div isctaright="${
+                                          data?.ctaPortRightId
+                                      }" class="ctaPortRight">
+                                ${
+                                    data?.ctaPortRightLoading
+                                        ? iconLoaderFixed
+                                        : data?.ctaPortRightIcon === 'col'
+                                        ? iconCollapse
+                                        : iconExpand
+                                }
+                            </div>`
+                                    : ''
+                            }
                             `
                         }
                     </div>
                 </div>`
                 },
                 shouldComponentUpdate(node) {
-                    graph.value.freeze('shouldComponentUpdate')
-                    graph.value.getEdges().forEach((edge) => edge.setZIndex(0))
-                    graph.value.unfreeze('shouldComponentUpdate')
-
                     return node.hasChanged('data')
                 },
             },
@@ -310,24 +388,15 @@ export default function useGraph(graph) {
                                 tagName: 'circle',
                                 selector: 'portBody',
                             },
-                            {
-                                tagName: 'image',
-                                selector: 'portImage',
-                            },
                         ],
                         attrs: {
                             portBody: {
                                 r: 14,
-                                strokeWidth: 1.5,
-                                stroke: '#B2B8C7',
-                                fill: '#ffffff',
-                                event: 'port:click',
-                            },
-                            portImage: {
-                                ref: 'portBody',
-                                refX: 5,
-                                refY: 5,
-                                event: 'port:click',
+                                strokeWidth: 0,
+                                stroke: '#000000',
+                                fill: '#000000',
+                                width: 1,
+                                height: 1,
                             },
                         },
                     },
@@ -338,24 +407,15 @@ export default function useGraph(graph) {
                                 tagName: 'circle',
                                 selector: 'portBody',
                             },
-                            {
-                                tagName: 'image',
-                                selector: 'portImage',
-                            },
                         ],
                         attrs: {
                             portBody: {
                                 r: 14,
-                                strokeWidth: 1.5,
-                                stroke: '#B2B8C7',
-                                fill: '#ffffff',
-                                event: 'port:click',
-                            },
-                            portImage: {
-                                ref: 'portBody',
-                                refX: 4,
-                                refY: 4,
-                                event: 'port:click',
+                                strokeWidth: 0,
+                                stroke: '#000000',
+                                fill: '#000000',
+                                width: 1,
+                                height: 1,
                             },
                         },
                     },
@@ -369,12 +429,11 @@ export default function useGraph(graph) {
                         attrs: {
                             portBody: {
                                 width: 268,
-                                height: 60,
+                                height: 70,
                                 strokeWidth: 1,
                                 stroke: 'none',
                                 fill: 'none',
-                                event: 'port:click',
-                                y: -30,
+                                y: isVpNode ? -40 : -50,
                                 x: 1,
                             },
                         },
@@ -385,66 +444,15 @@ export default function useGraph(graph) {
                                 tagName: 'rect',
                                 selector: 'portBody',
                             },
-                            {
-                                tagName: 'text',
-                                selector: 'portNameLabel',
-                            },
-                            {
-                                tagName: 'image',
-                                selector: 'portImage',
-                            },
-                            {
-                                tagName: 'image',
-                                selector: 'portImageLoader',
-                            },
-                            {
-                                tagName: 'image',
-                                selector: 'portImageKeys',
-                            },
-                            {
-                                tagName: 'image',
-                                selector: 'portImageFlags',
-                            },
                         ],
                         attrs: {
                             portBody: {
-                                width: 247,
-                                height: 40,
+                                width: 268,
+                                height: 42,
                                 strokeWidth: 1,
-                                stroke: '#E0E4EB',
-                                fill: '#ffffff',
-                                event: 'port:click',
-                                x: 10,
-                            },
-                            portNameLabel: {
-                                ref: 'portBody',
-                                refX: 44,
-                                refY: 13,
-                                fontSize: 16,
-                                fill: '#374151',
-                                event: 'port:click',
-                            },
-                            portImage: {
-                                ref: 'portBody',
-                                refX: 20,
-                                refY: 12,
-                                event: 'port:click',
-                            },
-                            portImageLoader: {
-                                ref: 'portBody',
-                                refX: 220,
-                                refY: 10,
-                                event: 'port:click',
-                                href: '',
-                                width: 22,
-                                height: 22,
-                            },
-                            portImageKeys: {
-                                ref: 'portBody',
-                                refX: 180,
-                                refY: 10,
-                                event: 'port:click',
-                                href: '',
+                                stroke: '#000000',
+                                fill: '#000000',
+                                x: 1,
                             },
                         },
                         position: 'erPortPosition',
@@ -456,30 +464,6 @@ export default function useGraph(graph) {
                         group: 'invisiblePort',
                         zIndex: 0,
                     },
-                    // {
-                    //     id: `${guid}-viewPort`,
-                    //     group: 'columnList',
-                    //     attrs: {
-                    //         portBody: {
-                    //             x: 1,
-                    //             width: 266,
-                    //             height: 38,
-                    //             fill: '#F9FAFB',
-                    //             stroke: '#f9fafb00',
-                    //         },
-                    //         portNameLabel: {
-                    //             text: `view columns`,
-                    //             refX: 22,
-                    //             fill: '#3c71df',
-                    //             refY: 12,
-                    //         },
-                    //         portImage: {
-                    //             refX: 120,
-                    //             refY: 10,
-                    //             href: iconCaretDownB64,
-                    //         },
-                    //     },
-                    // },
                 ],
             },
         }
@@ -496,97 +480,9 @@ export default function useGraph(graph) {
         graph.value.addNode(nodeData)
     }
 
-    const createCTAPortData = () => {
-        const portData = {
-            id: '',
-            group: '',
-            zIndex: 999,
-            attrs: { portImage: {}, portBody: {} },
-            position: { name: '' },
-        }
-
-        return { portData }
-    }
-
-    const createPortData = (item) => {
-        const { isPrimary, isForeign, announcementType } = item.attributes
-
-        let announcementIcon = ''
-        if (announcementType === 'information')
-            announcementIcon = iconInformationB64
-        else if (announcementType === 'issue') announcementIcon = iconIssueB64
-        else if (announcementType === 'warning')
-            announcementIcon = iconWarningB64
-
-        const dataType = dataTypeCategoryList.find((d) =>
-            d.type.includes(item.attributes?.dataType?.toUpperCase())
-        )?.imageText
-
-        let text =
-            item.displayText.charAt(0).toUpperCase() +
-            item.displayText.slice(1).toLowerCase()
-
-        if (text.length >= 21) {
-            if (!announcementIcon && !isPrimary && !isForeign)
-                text = `${text.slice(0, 21)}...`
-            else if (announcementIcon && (isPrimary || isForeign))
-                text = `${text.slice(0, 11)}...`
-            else if (announcementIcon && !isPrimary && !isForeign)
-                text = `${text.slice(0, 15)}...`
-            else if (!announcementIcon && (isPrimary || isForeign))
-                text = `${text.slice(0, 15)}...`
-        }
-
-        let portData = {
-            id: item.guid,
-            group: 'columnList',
-            entity: item,
-            attrs: {
-                portBody: {},
-                portNameLabel: {
-                    text,
-                },
-                portImage: {
-                    href: `/dataType/${dataType || 'empty'}.svg`,
-                    width: 16,
-                    height: 16,
-                },
-                portImageKeys: {
-                    height: isPrimary ? 20 : 17,
-                    // eslint-disable-next-line no-nested-ternary
-                    href: isPrimary
-                        ? iconPrimaryB64
-                        : isForeign
-                        ? iconForeignB64
-                        : '',
-                },
-                portImageFlags: {
-                    refY: 12,
-                    refX: isPrimary || isForeign ? 165 : 180,
-                    height: 17,
-                    // eslint-disable-next-line no-nested-ternary
-                    href: announcementIcon,
-                },
-            },
-        }
-
-        if (item.highlight) {
-            portData.attrs.portBody = {
-                stroke: '#3c71df',
-            }
-            portData = { ...portData, zIndex: 99 }
-        }
-        return { portData }
-    }
-
     const createEdgeData = (relation, data = {}, styles: EdgeStyle = {}) => {
         const isDup = data?.isDup
         const isCyclicEdge = data?.isCyclicEdge
-
-        // const stroke = relation.id.includes('vpNode')
-        //     ? '#ffffff00'
-        //     : styles?.stroke
-
         const stroke = styles?.stroke
 
         const edgeData = {
@@ -692,8 +588,6 @@ export default function useGraph(graph) {
     return {
         createNodeData,
         addNode,
-        createCTAPortData,
-        createPortData,
         createEdgeData,
         addEdge,
     }

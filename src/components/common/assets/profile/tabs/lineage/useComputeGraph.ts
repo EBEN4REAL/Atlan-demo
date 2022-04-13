@@ -34,8 +34,7 @@ export default async function useComputeGraph({
     const nodes = ref([])
     const mergedLineageData = ref({})
 
-    const { createNodeData, createEdgeData, createCTAPortData } =
-        useGraph(graph)
+    const { createNodeData, createEdgeData } = useGraph(graph)
 
     mergedLineageData.value = { ...lineage.value }
     lineageStore.setMergedLineageData(mergedLineageData.value)
@@ -297,36 +296,27 @@ export default async function useComputeGraph({
         graph.value.freeze('createColCTAPorts')
         graph.value.getNodes().forEach((node) => {
             const isColNode = isCollapsible(node.id)
-            const { portData } = createCTAPortData()
-            if (node.id === baseEntityGuid)
-                portData.attrs.portBody.stroke = '#3c71df'
 
             if (
                 (isColNode && successors.includes(node.id)) ||
                 (baseEntityGuid === node.id && successors.length)
             ) {
-                portData.group = 'ctaPortRight'
-                portData.id = `${node.id}-ctaPortRight-col`
-                portData.attrs.portImage = {
-                    href: iconMinusB64,
-                    width: 20,
-                    height: 20,
-                }
-                node.addPort(portData)
+                const id = `${node.id}-ctaPortRight-coll`
+                node.updateData({
+                    ctaPortRightIcon: 'col',
+                    ctaPortRightId: id,
+                })
             }
 
             if (
                 (isColNode && predecessors.includes(node.id)) ||
                 (baseEntityGuid === node.id && predecessors.length)
             ) {
-                portData.group = 'ctaPortLeft'
-                portData.id = `${node.id}-ctaPortLeft-col`
-                portData.attrs.portImage = {
-                    href: iconMinusB64,
-                    width: 18,
-                    height: 18,
-                }
-                node.addPort(portData)
+                const id = `${node.id}-ctaPortLeft-coll`
+                node.updateData({
+                    ctaPortLeftIcon: 'col',
+                    ctaPortLeftId: id,
+                })
             }
         })
         graph.value.unfreeze('createColCTAPorts')
@@ -334,8 +324,7 @@ export default async function useComputeGraph({
 
     /* createHoPaCTAPorts */
     const createHoPaCTAPorts = () => {
-        const { relations, childrenCounts, baseEntityGuid } =
-            mergedLineageData.value
+        const { relations, childrenCounts } = mergedLineageData.value
 
         const checkNode = (id, prop) => {
             let res = true
@@ -361,20 +350,18 @@ export default async function useComputeGraph({
             const isLeafNode = checkNode(node.id, 'fromEntityId')
 
             if ((isRootNode || isLeafNode) && isHoPaNode) {
-                const { portData } = createCTAPortData()
-                if (node.id === baseEntityGuid)
-                    portData.attrs.portBody.stroke = '#3c71df'
-
                 const pos = isLeafNode ? 'ctaPortRight' : 'ctaPortLeft'
-
-                portData.group = pos
-                portData.id = `${node.id}-${pos}-hoPa`
-                portData.attrs.portImage = {
-                    href: iconPlusB64,
-                    width: 20,
-                    height: 20,
-                }
-                node.addPort(portData)
+                const id = `${node.id}-${pos}-hoPa`
+                if (pos === 'ctaPortRight')
+                    node.updateData({
+                        ctaPortRightIcon: 'exp',
+                        ctaPortRightId: id,
+                    })
+                if (pos === 'ctaPortLeft')
+                    node.updateData({
+                        ctaPortLeftIcon: 'exp',
+                        ctaPortLeftId: id,
+                    })
             }
         })
         graph.value.unfreeze('createHoPaCTAPorts')

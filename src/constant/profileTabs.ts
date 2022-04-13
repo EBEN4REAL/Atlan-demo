@@ -73,8 +73,6 @@ export const profileTabs = [
         component: 'relatedAssets',
         excludes: [
             'Connection',
-            'Database',
-            'Schema',
             'AtlasGlossary',
             'AtlasGlossaryCategory',
             'AtlasGlossaryTerm',

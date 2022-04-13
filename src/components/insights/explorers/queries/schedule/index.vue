@@ -32,6 +32,7 @@
                 :infoTabeState="infoTabeState"
                 :isScheduleWorkFlowLoading="isLoading"
                 :isWorkflowTemplateFetched="isWorkflowTemplateFetched"
+                v-model:scheduleQueryModal="scheduleQueryModal"
                 @runWorkFlow="runWorkFlow"
             />
         </keep-alive>
@@ -149,6 +150,9 @@
         },
         setup(props) {
             const { scheduleQueryModal, item } = useVModels(props)
+            const activeExplorerTabId = inject(
+                'activeExplorerTabId'
+            ) as Ref<string>
             const { cronModel, workflowParameters, mode, workflowDataProp } =
                 toRefs(props)
             const { handleWorkflowSubmit } = useSchedule()
@@ -489,6 +493,8 @@
                         refreshSchedulesWorkflowTab.value(true)
                     }
                     closeModal()
+                    if (activeExplorerTabId.value !== 'schedule')
+                        activeExplorerTabId.value = 'schedule'
                     return
                 }
                 if (type === 'next') {
@@ -800,6 +806,10 @@
                                     duration: 4,
                                 })
                                 refreshSchedulesWorkflowTab.value(true)
+                                // changing the tab to schedule
+                                if (activeExplorerTabId.value !== 'schedule')
+                                    activeExplorerTabId.value = 'schedule'
+                                closeModal()
                             }, 2000)
                         }
                         if (workflowSubmitError.value) {

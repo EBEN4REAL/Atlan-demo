@@ -294,28 +294,101 @@
 
         // Non-Process Nodes
         &-node {
-            padding: 10px 8px 10px 20px;
             font-size: 16px;
             border: 1.5px solid #e0e4eb;
-            border-radius: 6px;
             background-color: #ffffff;
+            border-radius: 6px;
             width: 270px;
-            height: 70px;
             cursor: pointer;
             outline: 0 !important;
-            @apply transition-all duration-100;
-
-            &:hover {
-                @apply shadow-lg;
-            }
+            z-index: 9999 !important;
 
             &__content {
-                display: flex;
-                align-items: center;
+                padding: 10px 8px 10px 16px;
+                z-index: 9999 !important;
+
+                &:hover {
+                    border-radius: 5px;
+                    background-color: #f6f8fd;
+                }
             }
 
-            &.isNodeWithColumns {
-                height: 114px;
+            &__columns {
+                background-color: #f9fafb;
+                border-top: 1px solid #e0e4eb;
+                border-bottom-right-radius: 5px;
+                border-bottom-left-radius: 5px;
+                z-index: 9999 !important;
+
+                &-cta {
+                    @apply pl-4 pr-2 flex justify-between items-center;
+                    color: #3c71df;
+                    height: 2.5rem;
+                    z-index: 9999 !important;
+
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+
+                &-list {
+                    @apply bg-white;
+                    margin: 0 10px 0px 10px;
+                    border: 1px solid #e0e4eb;
+                    border-bottom-width: 0px;
+                    border-radius: 6px;
+                    color: #3e4359 !important;
+                    z-index: 9999 !important;
+
+                    & .node-column {
+                        @apply pl-3 pr-2 py-2;
+                        border: 1px solid transparent;
+                        border-bottom: 1px solid #e0e4eb;
+                        box-sizing: border-box;
+                        margin-top: -1px;
+                        z-index: 1;
+
+                        &.selected-port {
+                            color: #3c71df;
+                            border-color: #3c71df;
+                            background-color: #ebf1ff;
+                            z-index: 999;
+
+                            &:hover {
+                                background-color: #ebf1ff;
+                                border-top: 1px solid #3c71df;
+                            }
+                        }
+
+                        &.highlighted-port {
+                            color: #3c71df;
+                            border-color: #3c71df;
+                            background-color: #ffffff;
+                            z-index: 999;
+
+                            &:hover {
+                                background-color: #ffffff;
+                                border-top: 1px solid #3c71df;
+                            }
+                        }
+
+                        &:hover {
+                            background-color: #f6f8fd;
+                            border-top: 1px solid #e0e4eb;
+                            z-index: 1;
+                        }
+
+                        &:first-child {
+                            border-top-right-radius: 5px;
+                            border-top-left-radius: 5px;
+                        }
+
+                        &:last-child {
+                            border-bottom-right-radius: 5px;
+                            border-bottom-left-radius: 5px;
+                        }
+                    }
+                }
             }
 
             &.isVpNode {
@@ -326,6 +399,34 @@
 
             & .popover {
                 @apply opacity-0 absolute bottom-20 left-0 py-1 px-2 text-xs transition-opacity rounded-md shadow-md bg-black bg-opacity-70 text-white;
+            }
+
+            & .ctaPortRight {
+                @apply absolute bg-white h-8 w-8 rounded-full flex justify-center items-center;
+                border-width: 1.5px;
+                border-style: solid;
+                border-color: inherit;
+                top: 19px !important;
+                right: -15px !important;
+                z-index: 9999 !important;
+
+                &:hover {
+                    background-color: #f6f8fd;
+                }
+            }
+
+            & .ctaPortLeft {
+                @apply absolute bg-white h-8 w-8 rounded-full flex justify-center items-center;
+                border-width: 1.5px;
+                border-style: solid;
+                border-color: inherit;
+                top: 19px !important;
+                left: -15px !important;
+                z-index: 9999 !important;
+
+                &:hover {
+                    background-color: #f6f8fd;
+                }
             }
 
             &.isBase {
@@ -409,6 +510,7 @@
             border: 1.5px solid #3c71df !important;
             background-color: #ebf1ff !important;
             color: #3c71df;
+
             & .node-title {
                 color: #3c71df;
             }
@@ -419,6 +521,12 @@
                     #f6f8fd 84.68%,
                     rgba(255, 255, 255, 0) 103.12%
                 ) !important;
+            }
+        }
+
+        .isExpandedNode {
+            & .lineage-node__columns {
+                padding-bottom: 10px !important;
             }
         }
 

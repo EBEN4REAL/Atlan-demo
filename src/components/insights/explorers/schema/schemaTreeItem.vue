@@ -54,7 +54,7 @@
                             </div>
                             <div
                                 v-if="hoverActions"
-                                class="absolute right-0 flex items-center pr-2 text-gray-500 transition duration-300 opacity-0 h-7 margin-align-top group-hover:opacity-100"
+                                class="absolute right-0 flex items-center pr-2 text-gray-500 transition opacity-0 h-7 margin-align-top group-hover:opacity-100"
                                 style="width: "
                                 :class="
                                     item?.selected

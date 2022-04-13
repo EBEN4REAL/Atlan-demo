@@ -205,9 +205,7 @@
                                     <Avatar
                                         v-if="apiKey.createdBy"
                                         :allow-upload="false"
-                                        :avatar-size="
-                                            imageUrl(apiKey.createdBy) ? 12 : 16
-                                        "
+                                        :avatar-size="16"
                                         :avatar-shape="'circle'"
                                         class="mr-1"
                                         :imageUrl="imageUrl(apiKey.createdBy)"

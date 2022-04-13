@@ -13,7 +13,7 @@
                     <AtlanLoader class="h-7" />
                 </div>
             </div>
-            <div v-else>
+            <div v-else style="max-width: 374px">
                 <GlossaryPopoverHeader :term="fetchedTerm" />
                 <GlossaryPopoverBody
                     :attributes="attributes"

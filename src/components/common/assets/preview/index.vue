@@ -654,6 +654,9 @@
             const updateList = inject('updateList', () => ({}))
             const updateDrawerList = inject('updateDrawerList', () => ({}))
 
+            const store = integrationStore()
+            const { tenantJiraStatus, tenantSlackStatus } = toRefs(store)
+
             /** whenever resource ID is fetched, refresh the asset to load the generated resource, then switch tab */
             watch(resourceId, () => {
                 const id = ref(selectedAsset.value.guid)
@@ -666,8 +669,11 @@
                         updateDrawerList(asset.value)
                     } else updateList(asset.value)
 
-                    if (resourceId.value)
-                        switchTab(selectedAsset.value, 'Resources')
+                    if (resourceId.value) {
+                        if (tenantSlackStatus.value.configured)
+                            switchTab(selectedAsset.value, 'Slack Resources')
+                        else switchTab(selectedAsset.value, 'Resources')
+                    }
                 })
             })
             const trimText = (text) => {
@@ -683,9 +689,6 @@
                 mutate,
             } = issuesCount(false, false)
 
-            const store = integrationStore()
-
-            const { tenantJiraStatus } = toRefs(store)
             watch(
                 () => tenantJiraStatus.value.configured,
                 (v) => {

@@ -18,11 +18,29 @@
                     :class="$style.editable"
                     @click="handleEdit"
                 >
-                    <span
+                    <!--  <span
                         v-if="!isEdit && description(selectedAsset)"
+                        v-linkified="{
+                            className: 'text-primary',
+                            target: '_blank',
+                        }"
                         class="break-words whitespace-pre-wrap"
                         >{{ description(selectedAsset) }}</span
+                    > -->
+                    <a-typography-paragraph
+                        v-if="!isEdit && description(selectedAsset)"
+                        class="break-words whitespace-pre-wrap"
+                        :ellipsis="{
+                            rows: 5,
+                            expandable: true,
+                            symbol: 'more',
+                            onExpand: (e) => {
+                                e.stopPropagation()
+                            },
+                        }"
+                        :content="description(selectedAsset)"
                     >
+                    </a-typography-paragraph>
                     <span
                         v-else-if="!isEdit && description(selectedAsset) === ''"
                         class="text-gray-600"

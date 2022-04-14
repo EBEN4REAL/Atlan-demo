@@ -82,6 +82,7 @@
                 else showSlackTestLink.value = false
             }
             return {
+                modelValue,
                 showSlackTestLink,
                 handleSlackInputBlur,
                 handleTestSlackLink,

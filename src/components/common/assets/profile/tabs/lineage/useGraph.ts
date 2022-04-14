@@ -1,11 +1,44 @@
+/* eslint-disable no-nested-ternary */
 import {
     getNodeSourceImage,
     getSource,
     getSchema,
     getNodeTypeText,
 } from './util.js'
-import { iconVerified, iconDraft, iconDeprecated } from './icons'
-import { iconCaretDownB64 } from './iconsBase64'
+import {
+    iconVerified,
+    iconDraft,
+    iconDeprecated,
+    iconCaretDown,
+    iconCaretUp,
+    iconLoader,
+    iconLoaderFixed,
+    iconPrimary,
+    iconForeign,
+    iconInformation,
+    iconIssue,
+    iconWarning,
+    iconExpand,
+    iconCollapse,
+    array,
+    boolean,
+    date,
+    empty,
+    expand,
+    float1,
+    geography,
+    number,
+    string,
+    struct,
+    variant,
+    blob,
+    spatial,
+    bits,
+    super1,
+    lookup,
+    enum1,
+    percent,
+} from './icons'
 import { dataTypeCategoryList } from '~/constant/dataType'
 import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
@@ -14,42 +47,107 @@ interface EdgeStyle {
     arrowSize?: number
 }
 
+const columnDataTypeIcons = {
+    array,
+    boolean,
+    date,
+    empty,
+    expand,
+    float1,
+    geography,
+    number,
+    string,
+    struct,
+    variant,
+    blob,
+    spatial,
+    bits,
+    super1,
+    lookup,
+    enum1,
+    percent,
+}
+
+const columnAnnouncementTypeIcons = {
+    information: iconInformation,
+    issue: iconIssue,
+    warning: iconWarning,
+}
+
+const columnKeyTypeIcons = {
+    isPrimary: iconPrimary,
+    isForeign: iconForeign,
+}
+
 export default function useGraph(graph) {
     const createNodeData = (entity, baseEntityGuid, dataObj = {}) => {
         const { title } = useAssetInfo()
         const { guid, typeName, attributes } = entity
         const typeNameComputed = getNodeTypeText[typeName] || typeName
         const certificateStatus = attributes?.certificateStatus
+        const announcementType = attributes?.announcementType
         let status = ''
+        let flag = ''
         const displayText = title(entity)
         const source = getSource(entity)
         const schemaName = getSchema(entity)
         const img = getNodeSourceImage[source]
         const isBase = guid === baseEntityGuid
         const isVpNode = typeName === 'vpNode'
-        const isNodeWithColumns = ['Table', 'View'].includes(typeName)
+        const isNodeWithColumns = [
+            'Table',
+            'View',
+            'MaterialisedView',
+        ].includes(typeName)
 
-        if (certificateStatus) {
-            switch (certificateStatus) {
-                case 'VERIFIED':
-                    status = iconVerified
-                    break
-                case 'DRAFT':
-                    status = iconDraft
-                    break
-                default:
-                    status = iconDeprecated
-            }
+        switch (certificateStatus) {
+            case 'VERIFIED':
+                status = iconVerified
+                break
+            case 'DRAFT':
+                status = iconDraft
+                break
+            case 'DEPRECATED':
+                status = iconDeprecated
+                break
+            default:
+                status = ''
+        }
+
+        switch (announcementType) {
+            case 'information':
+                flag = iconInformation
+                break
+            case 'issue':
+                flag = iconIssue
+                break
+            case 'warning':
+                flag = iconWarning
+                break
+            default:
+                flag = ''
         }
 
         const computedData = {
             id: guid,
-            columnLineageCount: 0,
-            isSelectedNode: null,
-            isHighlightedNode: null,
-            isGrayed: null,
+            columns: [],
+            columnsCount: null,
+            columnsListExpanded: false,
+            columnListLoading: false,
+            columnItemLoading: false,
+            columnShowMoreLoading: false,
+            selectedPortId: '',
+            isSelectedNode: false,
+            isHighlightedNode: false,
+            isGrayed: false,
+            highlightPorts: false,
             hiddenCount: 0,
-            nodeHeight: isNodeWithColumns ? 121 : 70,
+            ctaPortRightIcon: '',
+            ctaPortRightId: '',
+            ctaPortRightLoading: false,
+            ctaPortLeftIcon: '',
+            ctaPortLeftId: '',
+            ctaPortLeftLoading: false,
             ...dataObj,
         }
 
@@ -61,7 +159,7 @@ export default function useGraph(graph) {
             entity,
             isVpNode,
             width: 270,
-            height: isVpNode ? 50 : 70,
+            height: isVpNode ? 50 : 100,
             shape: 'html',
             data: computedData,
             html: {
@@ -70,73 +168,215 @@ export default function useGraph(graph) {
                     const totalHidden = isVpNode
                         ? data?.hiddenCount || entity.attributes.hiddenCount
                         : 0
+
+                    const columnsList = () => {
+                        let res = ''
+                        data?.columns.forEach((column) => {
+                            if (column.typeName !== 'showMorePort') {
+                                const {
+                                    isPrimary,
+                                    isForeign,
+                                    announcementType: aType,
+                                } = column.attributes
+
+                                const text =
+                                    column.displayText.charAt(0).toUpperCase() +
+                                    column.displayText.slice(1).toLowerCase()
+
+                                const dataType = dataTypeCategoryList.find(
+                                    (d) =>
+                                        d.type.includes(
+                                            column.attributes?.dataType?.toUpperCase()
+                                        )
+                                )?.imageText
+
+                                const isSelectedPort =
+                                    data?.selectedPortId === column.guid
+                                const isHighlightedPort = data?.highlightPorts
+
+                                res += `
+                                <div id="${column.guid}" iscolitem="${
+                                    column.guid
+                                }" class="node-column flex justify-between items-center relative 
+                                ${isSelectedPort ? 'selected-port' : ''}
+                                ${isHighlightedPort ? 'highlighted-port' : ''}">
+                                    <div class="flex items-center truncate">
+                                        ${columnDataTypeIcons[dataType]}
+                                        <span title="${text}" class="truncate flex-grow-0 flex-shrink">${text}</span> 
+                                    </div>
+                                    <div class="flex items-center">
+                                        ${
+                                            isPrimary
+                                                ? `<span class="ml-2">
+                                                    ${columnKeyTypeIcons.isPrimary}
+                                                  </span>`
+                                                : ''
+                                        }
+                                        ${
+                                            isForeign
+                                                ? `<span class= "ml-2" >
+                                                    ${columnKeyTypeIcons.isForeign}
+                                                    </span>`
+                                                : ''
+                                        }
+                                        ${
+                                            aType
+                                                ? `<span class="ml-2">
+                                                    ${columnAnnouncementTypeIcons[aType]}
+                                                   </span>`
+                                                : ''
+                                        }
+                                    </div>
+                                    ${
+                                        data?.columnItemLoading &&
+                                        isSelectedPort
+                                            ? `<div class="absolute right-2 w-5 h-5">
+                                            ${iconLoader}
+                                        </div>`
+                                            : ''
+                                    }
+                                </div>`
+                            } else
+                                res += `
+                                <div iscolshowmore="true" class="node-column flex justify-center text-new-blue-400 items-center pl-2">
+                                    <span> Show more columns </span>
+                                    ${
+                                        data?.columnShowMoreLoading
+                                            ? `<div class="w-5 h-5 ml-2">
+                                        ${iconLoader}
+                                    </div>`
+                                            : ''
+                                    }
+                                 </div>`
+                        })
+                        return res
+                    }
+
                     // prettier-ignore
                     return `
                 <div class="flex items-center">
-                    <div style="height: ${
-                        data?.nodeHeight
-                    }px" id="node-${guid}" class="lineage-node group ${
-                        isVpNode ? 'isVpNode' : ''
-                    }   
-                    ${isNodeWithColumns ? 'isNodeWithColumns' : ''}
-                    ${isBase ? 'isBase' : ''} 
-                    ${data?.isSelectedNode === data?.id ? 'isSelectedNode' : ''}
-                    ${
-                        data?.isHighlightedNode === data?.id
-                            ? 'isHighlightedNode'
-                            : ''
-                    }
-                    ${data?.isGrayed === data?.id ? 'isGrayed' : ''} 
-                    ">
+                    <div  
+                        id="node-${guid}"
+                        class="lineage-node 
+                        ${isVpNode ? 'isVpNode' : ''}   
+                        ${isNodeWithColumns ? 'isNodeWithColumns' : ''}
+                        ${data?.columnsListExpanded ? 'isExpandedNode' : ''}
+                        ${isBase ? 'isBase' : ''} 
+                        ${data?.isSelectedNode ? 'isSelectedNode' : ''}
+                        ${data?.isHighlightedNode ? 'isHighlightedNode' : ''}
+                        ${data?.isGrayed ? 'isGrayed' : ''} ">
+                        
                         <div class=" ${isBase ? 'inscr' : 'hidden'}">BASE</div>
+
                         ${
                             isVpNode
-                                ? `<span class="font-bold text-primary leading-none">Load ${
-                                      totalHidden > 4 ? 4 : totalHidden
-                                  } more</span>${
-                                      totalHidden > 4
-                                          ? `<span class="text-gray-500 leading-none">(out of ${totalHidden})</span>`
-                                          : ''
-                                  }`
-                                : `<div class="popover  group-hover:opacity-100 group-hover:delay-1000">
-                                ${displayText}
-                            </div>
-                            <div>
-                                <div class="node-text">
+                                ? `<span class="font-bold text-primary leading-none">Load 
+                                    ${
+                                        totalHidden > 4 ? 4 : totalHidden
+                                    } more</span>
+                                    ${
+                                        totalHidden > 4
+                                            ? `<span class="text-gray-500 leading-none">(out of 
+                                            ${totalHidden})</span>`
+                                            : ''
+                                    }`
+                                : `
+                            <div class="lineage-node__content">
+                                <div class="node-text group">
                                     <div class="flex items-center gap-x-1">
-                                        <span class="truncate node-title">${displayText}</span>
-                                        <span class="flex-none mr-1">${status}</span>
+                                        <span title="${displayText}" class="truncate node-title">${displayText}</span>
+                                        <span class="flex-none ml-1">${status}</span>
+                                        <span class="flex-none ml-1">${flag}</span>
+
                                     </div>
                                 </div>
                                 <div class="node-meta">
                                     <span class="mb-0.5">${img}</span>
-                                    <div class="truncate node-meta__text isTypename">${typeNameComputed}</div>
-                                    <div class="node-meta__text">
+                                    <div class="truncate node-meta__text isTypename">
+                                        ${typeNameComputed}
+                                    </div>
+                                    <div class="node-meta__text node-schema">
                                         ${
-                                            ['Table', 'View'].includes(
-                                                typeName
-                                            ) && schemaName
+                                            isNodeWithColumns && schemaName
                                                 ? 'in'
                                                 : ''
                                         }
                                     </div>
-                                    <div class="node-meta__text text-gray  truncate ${
-                                        isNodeWithColumns ? '' : 'hidden'
-                                    }">
+                                    <div class="node-meta__text node-schema text-gray  truncate 
+                                        ${isNodeWithColumns ? '' : 'hidden'}">
                                         ${schemaName || ''}
                                     </div>
+                                </div>  
+                            </div>
+                            <div class="lineage-node__columns 
+                                    ${isNodeWithColumns ? '' : 'hidden'}">
+                                <div iscollist="true" class="lineage-node__columns-cta">
+                                    <div class="flex items-center">
+                                        <span class="mr-2">
+                                            ${
+                                                data?.columnsCount ||
+                                                data?.columnsCount === 0
+                                                    ? `${data?.columnsCount} columns`
+                                                    : data?.highlightPorts ? 'columns' : 'view columns'
+                                            }
+                                        </span>
+                                        <span>
+                                            ${
+                                                data?.columnsListExpanded
+                                                    ? iconCaretUp
+                                                    : iconCaretDown
+                                            } 
+                                        </span>
+                                    </div>
+                                    <div class="w-5 h-5">
+                                        ${
+                                            data?.columnListLoading
+                                                ? iconLoader
+                                                : ''
+                                        }
+                                    </div>
                                 </div>
+                                <div class="lineage-node__columns-list 
+                                    ${data?.columns.length ? '' : 'hidden'}">
+                                        ${columnsList()}
+                                </div>
+                            </div>
+                            ${
+                                data?.ctaPortLeftIcon
+                                    ? `<div isctaleft="${
+                                          data?.ctaPortLeftId
+                                      }" class="ctaPortLeft">
+                               ${
+                                   data?.ctaPortLeftLoading
+                                       ? iconLoaderFixed
+                                       : data?.ctaPortLeftIcon === 'col'
+                                       ? iconCollapse
+                                       : iconExpand
+                               }
                             </div>`
+                                    : ''
+                            }
+                            ${
+                                data?.ctaPortRightIcon
+                                    ? `<div isctaright="${
+                                          data?.ctaPortRightId
+                                      }" class="ctaPortRight">
+                                ${
+                                    data?.ctaPortRightLoading
+                                        ? iconLoaderFixed
+                                        : data?.ctaPortRightIcon === 'col'
+                                        ? iconCollapse
+                                        : iconExpand
+                                }
+                            </div>`
+                                    : ''
+                            }
+                            `
                         }
-
                     </div>
                 </div>`
                 },
                 shouldComponentUpdate(node) {
-                    graph.value.freeze('shouldComponentUpdate')
-                    graph.value.getEdges().forEach((edge) => edge.setZIndex(0))
-                    graph.value.unfreeze('shouldComponentUpdate')
-
                     return node.hasChanged('data')
                 },
             },
@@ -149,24 +389,15 @@ export default function useGraph(graph) {
                                 tagName: 'circle',
                                 selector: 'portBody',
                             },
-                            {
-                                tagName: 'image',
-                                selector: 'portImage',
-                            },
                         ],
                         attrs: {
                             portBody: {
                                 r: 14,
-                                strokeWidth: 1.5,
-                                stroke: '#B2B8C7',
-                                fill: '#ffffff',
-                                event: 'port:click',
-                            },
-                            portImage: {
-                                ref: 'portBody',
-                                refX: 5,
-                                refY: 5,
-                                event: 'port:click',
+                                strokeWidth: 0,
+                                stroke: '#000000',
+                                fill: '#000000',
+                                width: 1,
+                                height: 1,
                             },
                         },
                     },
@@ -177,24 +408,15 @@ export default function useGraph(graph) {
                                 tagName: 'circle',
                                 selector: 'portBody',
                             },
-                            {
-                                tagName: 'image',
-                                selector: 'portImage',
-                            },
                         ],
                         attrs: {
                             portBody: {
                                 r: 14,
-                                strokeWidth: 1.5,
-                                stroke: '#B2B8C7',
-                                fill: '#ffffff',
-                                event: 'port:click',
-                            },
-                            portImage: {
-                                ref: 'portBody',
-                                refX: 4,
-                                refY: 4,
-                                event: 'port:click',
+                                strokeWidth: 0,
+                                stroke: '#000000',
+                                fill: '#000000',
+                                width: 1,
+                                height: 1,
                             },
                         },
                     },
@@ -208,12 +430,11 @@ export default function useGraph(graph) {
                         attrs: {
                             portBody: {
                                 width: 268,
-                                height: 60,
+                                height: 70,
                                 strokeWidth: 1,
                                 stroke: 'none',
                                 fill: 'none',
-                                event: 'port:click',
-                                y: -30,
+                                y: isVpNode ? -40 : -50,
                                 x: 1,
                             },
                         },
@@ -224,51 +445,15 @@ export default function useGraph(graph) {
                                 tagName: 'rect',
                                 selector: 'portBody',
                             },
-                            {
-                                tagName: 'text',
-                                selector: 'portNameLabel',
-                            },
-                            {
-                                tagName: 'image',
-                                selector: 'portImage',
-                            },
-                            {
-                                tagName: 'image',
-                                selector: 'portImageLoader',
-                            },
                         ],
                         attrs: {
                             portBody: {
-                                width: 247,
-                                height: 40,
+                                width: 268,
+                                height: 42,
                                 strokeWidth: 1,
-                                stroke: '#E0E4EB',
-                                fill: '#ffffff',
-                                event: 'port:click',
-                                x: 10,
-                            },
-                            portNameLabel: {
-                                ref: 'portBody',
-                                refX: 44,
-                                refY: 13,
-                                fontSize: 16,
-                                fill: '#374151',
-                                event: 'port:click',
-                            },
-                            portImage: {
-                                ref: 'portBody',
-                                refX: 20,
-                                refY: 12,
-                                event: 'port:click',
-                            },
-                            portImageLoader: {
-                                ref: 'portBody',
-                                refX: 220,
-                                refY: 10,
-                                event: 'port:click',
-                                href: '',
-                                width: 22,
-                                height: 22,
+                                stroke: '#000000',
+                                fill: '#000000',
+                                x: 1,
                             },
                         },
                         position: 'erPortPosition',
@@ -279,30 +464,6 @@ export default function useGraph(graph) {
                         id: `${guid}-invisiblePort`,
                         group: 'invisiblePort',
                         zIndex: 0,
-                    },
-                    {
-                        id: `${guid}-viewPort`,
-                        group: 'columnList',
-                        attrs: {
-                            portBody: {
-                                x: 1,
-                                width: 266,
-                                height: 38,
-                                fill: '#F9FAFB',
-                                stroke: '#f9fafb00',
-                            },
-                            portNameLabel: {
-                                text: `view columns`,
-                                refX: 22,
-                                fill: '#3c71df',
-                                refY: 12,
-                            },
-                            portImage: {
-                                refX: 120,
-                                refY: 10,
-                                href: iconCaretDownB64,
-                            },
-                        },
                     },
                 ],
             },
@@ -320,73 +481,9 @@ export default function useGraph(graph) {
         graph.value.addNode(nodeData)
     }
 
-    const createCTAPortData = () => {
-        const portData = {
-            id: '',
-            group: '',
-            zIndex: 999,
-            attrs: { portImage: {}, portBody: {} },
-            position: { name: '' },
-        }
-
-        return { portData }
-    }
-
-    const createShowMorePortData = (node) => {
-        const portData = {
-            id: `${node.id}-showMorePort`,
-            group: 'columnList',
-            attrs: {
-                portBody: {
-                    rx: 4,
-                },
-                portNameLabel: {
-                    text: 'Show more columns',
-                    fill: '#3c71df',
-                },
-            },
-        }
-
-        return { portData }
-    }
-
-    const createPortData = (item) => {
-        let text =
-            item.displayText.charAt(0).toUpperCase() +
-            item.displayText.slice(1).toLowerCase()
-        const dataType = dataTypeCategoryList.find((d) =>
-            d.type.includes(item.attributes?.dataType?.toUpperCase())
-        )?.imageText
-
-        if (text.length > 23) text = `${text.slice(0, 23)}...`
-
-        const portData = {
-            id: item.guid,
-            group: 'columnList',
-            entity: item,
-            attrs: {
-                portBody: {},
-                portNameLabel: {
-                    text,
-                },
-                portImage: {
-                    href: `/dataType/${dataType || 'empty'}.svg`,
-                    width: 16,
-                    height: 16,
-                },
-            },
-        }
-        return { portData }
-    }
-
     const createEdgeData = (relation, data = {}, styles: EdgeStyle = {}) => {
         const isDup = data?.isDup
         const isCyclicEdge = data?.isCyclicEdge
-
-        // const stroke = relation.id.includes('vpNode')
-        //     ? '#ffffff00'
-        //     : styles?.stroke
-
         const stroke = styles?.stroke
 
         const edgeData = {
@@ -492,9 +589,6 @@ export default function useGraph(graph) {
     return {
         createNodeData,
         addNode,
-        createCTAPortData,
-        createPortData,
-        createShowMorePortData,
         createEdgeData,
         addEdge,
     }

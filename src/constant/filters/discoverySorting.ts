@@ -17,7 +17,7 @@ export const discoverySorting = [
     },
     {
         id: '__modificationTimestamp-desc',
-        label: 'Last updated',
+        label: 'Last updated on Atlan',
     },
     // {
     //     id: '__modificationTimestamp-asc',

@@ -1,4 +1,4 @@
-import { ref, watch } from "vue"
+import { ref, watch } from 'vue'
 import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
 import {
     AssetAttributes,
@@ -11,9 +11,8 @@ import { Term } from '~/types/glossary/glossary.interface'
 
 const useTermPopover = () => {
     /**
-    * * OPTMIZING THE TERMS POPOVER vvvvv
-    */
-
+     * * OPTMIZING THE TERMS POPOVER vvvvv
+     */
 
     const limit = ref(1)
     const offset = ref(0)
@@ -80,8 +79,7 @@ const useTermPopover = () => {
         getFetchedTerm,
         handleTermPopoverVisibility,
         termLoading,
-        termError
-
+        termError,
     }
 }
 

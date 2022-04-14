@@ -31,18 +31,12 @@
                     </div>
                 </div>
                 <div class="flex flex-col w-full">
-                    <a
-                        :href="`${link.attributes.link}`"
-                        target="_blank"
-                        rel="noreferrer"
-                    >
-                        <Tooltip
-                            :tooltip-text="
-                                link.attributes.name || link.attributes.link
-                            "
-                            classes="hover:text-primary font-bold cursor-pointer hover:underline"
-                        />
-                    </a>
+                    <Tooltip
+                        :tooltip-text="
+                            link.attributes.name || link.attributes.link
+                        "
+                        classes="hover:text-primary font-bold cursor-pointer hover:underline"
+                    />
                     <div
                         v-if="
                             link.attributes.__modifiedBy &&
@@ -90,11 +84,17 @@
     import { Link } from '~/types/resources.interface'
     import Tooltip from '@/common/ellipsis/index.vue'
     import CardActions from '@/common/widgets/resources/misc/cardActionMenu.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     const props = defineProps({
         link: {
             type: Object as PropType<Link>,
             required: true,
+        },
+        assetType: {
+            type: String,
+            required: false,
+            default: '',
         },
     })
 
@@ -104,6 +104,10 @@
 
     const openLink = (url) => {
         if (url) window.open(url)
+        useAddEvent('discovery', 'resource', 'clicked', {
+            domain: getDomain(url),
+            asset_type: props.assetType,
+        })
     }
 </script>
 

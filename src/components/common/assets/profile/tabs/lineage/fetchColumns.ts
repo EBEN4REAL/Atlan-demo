@@ -9,12 +9,19 @@ export default function fetchColumns(
     offset,
     limit = 5
 ) {
+    const computedTypeName = ['view', 'materialisedview'].includes(typeName)
+        ? 'view'
+        : 'table'
+
     const attributes = [
         'dataType',
         'qualifiedName',
         'certificateStatus',
         'table',
         'view',
+        'isPrimary',
+        'isForeign',
+        'announcementType',
     ]
     const relationAttributes = []
     const base = bodybuilder()
@@ -40,7 +47,7 @@ export default function fetchColumns(
             prop: 'exists',
         },
         {
-            key: `${typeName}QualifiedName`,
+            key: `${computedTypeName}QualifiedName`,
             value: qualifiedName,
             type: 'should',
             prop: 'terms',
@@ -48,7 +55,7 @@ export default function fetchColumns(
     ]
 
     facets.push({
-        key: `${typeName === 'view' ? 'table' : 'view'}QualifiedName`,
+        key: `${computedTypeName === 'view' ? 'table' : 'view'}QualifiedName`,
         value: ['def'],
         type: 'should',
         prop: 'terms',

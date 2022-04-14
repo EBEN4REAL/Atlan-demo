@@ -43,7 +43,7 @@
                             <p class="p-0 m-0">Rename</p>
                         </div>
                     </template>
-                    <template v-else>
+                    <template v-else-if="role?.toLowerCase() === 'guest'">
                         <a-tooltip
                             placement="right"
                             title="You don't have permission to perform this action"
@@ -56,6 +56,20 @@
                                 <p class="p-0 m-0">Rename</p>
                             </div>
                         </a-tooltip>
+                    </template>
+                    <template v-else>
+                        <RenameModal
+                            :entityType="entity?.typeName"
+                            :entityTitle="entity?.attributes?.name"
+                            :selected-asset="entity"
+                        >
+                            <template #trigger>
+                                <div class="flex items-center">
+                                    <AtlanIcon icon="Pencil" class="m-0 mr-2" />
+                                    <p class="p-0 m-0">Rename</p>
+                                </div>
+                            </template>
+                        </RenameModal>
                     </template>
                 </a-menu-item>
                 <!-- entity create -->
@@ -231,12 +245,14 @@
     // import Categories from '@/glossary/common/categories.vue'
     import ModalHeader from '@/glossary/modal/modalHeader.vue'
     import BulkUploadModal from '@/glossary/modal/bulkUploadModal.vue'
+    import RenameModal from '@/glossary/modal/renameModal.vue'
 
     // utils
     import { copyToClipboard } from '~/utils/clipboard'
     import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
     // composables
     // import useDeleteGlossary from '~/components/glossary/composables/useDeleteGlossary'
+    import whoami from '~/composables/user/whoami'
     import {
         Glossary,
         Category,
@@ -256,6 +272,7 @@
             RemoveGTCModal,
             ModalHeader,
             BulkUploadModal,
+            RenameModal,
         },
         props: {
             entity: {
@@ -318,7 +335,9 @@
             } = toRefs(props)
             const isVisible = ref(false)
             const isModalVisible = ref<boolean>(false)
+            const isRenameModalOpen = ref<boolean>(false)
             const route = useRoute()
+            const { role } = whoami()
             const shouldRedirect = computed(
                 () => route?.params?.id === props?.entity?.guid
             ) // Should the page be redirect on deletion of the entity
@@ -443,6 +462,7 @@
                 map,
                 handleCopyProfileLink,
                 handleCopyName,
+                role,
             }
         },
     })

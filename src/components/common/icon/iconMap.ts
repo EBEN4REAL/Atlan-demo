@@ -1,3 +1,8 @@
+import LegendExpand from '~/assets/images/lineage/legendExpand.svg'
+import LegendCollapse from '~/assets/images/lineage/legendCollapse.svg'
+import LegendAnomaly from '~/assets/images/lineage/legendAnomaly.svg'
+import LegendSelected from '~/assets/images/lineage/legendSelected.svg'
+import LegendHighlighted from '~/assets/images/lineage/legendHighlighted.svg'
 import Time from '~/assets/images/icons/time.svg'
 import BookmarkFilled from '~/assets/images/icons/bookmark-filled.svg'
 import Bookmark from '~/assets/images/icons/bookmark.svg'
@@ -74,6 +79,7 @@ import TermIssue from '~/assets/images/icons/term-issue.svg'
 import TermVerified from '~/assets/images/icons/term-verified.svg'
 import TermDraft from '~/assets/images/icons/term-wip.svg'
 import Category from '~/assets/images/icons/category.svg'
+import CategoryShaded from '~/assets/images/icons/category-shaded.svg'
 import CategoryDeprecated from '~/assets/images/icons/category-deprecated.svg'
 import CategoryIssue from '~/assets/images/icons/category-issue.svg'
 import CategoryVerified from '~/assets/images/icons/category-verified.svg'
@@ -453,7 +459,14 @@ import NotificationNoDot from '~/assets/images/icons/notification-no-dot.svg'
 import Workflow from '~/assets/images/icons/workflows.svg'
 import Package from '~/assets/images/icons/package.svg'
 
+import Display from '~/assets/images/icons/display.svg'
+
 export default {
+    LegendExpand,
+    LegendCollapse,
+    LegendAnomaly,
+    LegendSelected,
+    LegendHighlighted,
     Schedule24,
     Mail,
     EmptyJira,
@@ -612,6 +625,7 @@ export default {
     TermVerified,
     TermDraft,
     Category,
+    CategoryShaded,
     CategoryDeprecated,
     CategoryIssue,
     CategoryVerified,
@@ -888,4 +902,5 @@ export default {
     Bigquery: BigQuery,
     Workflow,
     Package,
+    Display,
 }

@@ -36,15 +36,22 @@
                 />
             </div>
         </a-form>
-        <div class="absolute bottom-0 flex justify-end w-full py-4 bg-white">
-            <a-button
-                class="mr-2 border-0 shadow-none"
-                type="minimal"
-                :disabled="isRequestLoading"
-                @click="onCancel"
-            >
-                Cancel
-            </a-button>
+        <div
+            class="absolute bottom-0 flex items-center justify-between w-full py-4 bg-white"
+        >
+            <a-checkbox v-model:checked="formData.isDefault">
+                <span class="">Mark as default</span>
+                <a-tooltip
+                    :title="'New users will be automatically added to default groups'"
+                    placement="right"
+                    ><span class="ml-1">
+                        <AtlanIcon
+                            icon="Info"
+                            class="text-gray-500 pushtop mb-0.5"
+                        ></AtlanIcon>
+                    </span>
+                </a-tooltip>
+            </a-checkbox>
             <a-button
                 block
                 class="w-1/3"
@@ -59,11 +66,19 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, toRefs, watch } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        ref,
+        toRefs,
+        watch,
+        onUnmounted,
+    } from 'vue'
     import { message } from 'ant-design-vue'
     import { useVModels } from '@vueuse/core'
     import { Groups } from '~/services/service/groups'
     import SlackInput from '@/admin/common/slackInput.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default {
         name: 'EditGroup',
@@ -84,7 +99,6 @@
             const isRequestLoading = ref(false)
             const formRef = ref(null)
             const nameRef = ref(null)
-
             // const { selectedGroup } = toRefs(props)
             const { selectedGroup } = useVModels(props, emit)
             const groupChannels = computed(
@@ -110,6 +124,7 @@
             const formData = ref({
                 name: selectedGroup.value.name,
                 alias: selectedGroup.value.alias,
+                isDefault: selectedGroup.value?.isDefault === 'true',
                 description: selectedGroup.value.description || '',
                 slack: slackUrl.value,
             })
@@ -135,6 +150,7 @@
                 const attributes = {
                     description: [formData.value.description],
                     alias: [formData.value.name],
+                    isDefault: [`${formData.value.isDefault}`],
                 }
                 // check for #
                 let slackLink = formData.value.slack
@@ -167,6 +183,14 @@
                             setTimeout(() => {
                                 updateSuccess.value = false
                             }, 2000)
+                            // tracking for slack channel update event
+                            useAddEvent('admin', 'group', 'updated', {
+                                users_count: selectedGroup.value.memberCount,
+                                has_slack_channel_added: !!slackLink,
+                                is_default: formData.value.isDefault,
+                                has_description: !!formData.value.description,
+                            })
+
                             selectedGroup.value.name = formData.value.name
                             selectedGroup.value.alias = formData.value.alias
                             if (selectedGroup.value.attributes) {
@@ -206,16 +230,19 @@
                                     duration: 3.5,
                                 })
                             else message.error('Failed to update details.')
-                            formRef.value.resetFields()
+                            formRef.value?.resetFields()
                         }
                     },
                     { immediate: true }
                 )
             }
             const onCancel = () => {
-                formRef.value.resetFields()
-                emit('toggleEdit')
+                formRef.value?.resetFields()
             }
+
+            onUnmounted(() => {
+                onCancel()
+            })
 
             return {
                 updateSuccess,

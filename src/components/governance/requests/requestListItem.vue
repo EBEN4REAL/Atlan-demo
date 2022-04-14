@@ -22,6 +22,7 @@
             <div
                 class="cursor-pointer flex items-center"
                 @mouseenter="$emit('mouseEnterAsset')"
+                @click="handleShowAssetSidebar(item.guid)"
             >
                 <div
                     v-if="
@@ -410,6 +411,7 @@
                     message.success('Request approved')
                     handleEvent('approve')
                 } catch (error) {
+                    console.log(error)
                     raiseErrorMessage()
                 }
                 state.isApprovalLoading = false

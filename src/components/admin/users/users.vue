@@ -330,6 +330,7 @@
             const {
                 showPreview,
                 showUserPreview: openPreview,
+                setUserStatus,
                 setUserUniqueAttribute,
                 closePreview,
                 userId,
@@ -340,6 +341,7 @@
                     closePreview()
                 } else {
                     setUserUniqueAttribute(user.id)
+                    setUserStatus(user.status_object.status)
                     openPreview(null, activeTab)
                     selectedUserId.value = user.id
                 }

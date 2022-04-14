@@ -29,6 +29,7 @@
     import { usePackageByName } from '~/workflows/composables/package/usePackageByName'
 
     export default defineComponent({
+        name: 'WorkflowProfileTabWrapper',
         components: {
             WorkflowProfile,
             Loader,

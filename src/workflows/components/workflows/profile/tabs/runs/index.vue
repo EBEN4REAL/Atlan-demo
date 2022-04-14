@@ -7,7 +7,7 @@
                 <span class="mx-5 font-bold text-new-gray-600">Select Run</span>
                 <RunsSelect
                     ref="runSelector"
-                    style="min-width: 150px; max-width: 260px"
+                    style="min-width: 150px; max-width: 300px"
                     class="mx-5"
                     :model-value="path.name"
                     :workflow-name="workflowName"
@@ -17,13 +17,13 @@
                 <Sidebar
                     :key="path.name"
                     :selectedRun="selectedRun"
-                    :isLoading="firstLoad"
+                    :isLoading="isSidebarLoading"
                     :error="error"
-                    style="width: 300px"
+                    style="width: 340px"
                 />
 
                 <div
-                    v-if="!firstLoad && isLoading"
+                    v-if="!isSidebarLoading && isLoading"
                     class="flex items-center p-2 bg-white border rounded gap-x-1"
                 >
                     <AtlanLoader class="h-5" />
@@ -85,14 +85,12 @@
                 error,
             } = useRunItem(path, false)
 
-            const unWatchLoad = watch(isLoading, () => {
-                if (!isLoading.value) {
-                    firstLoad.value = false
-                    unWatchLoad()
-                }
+            watch(isLoading, () => {
+                if (!isLoading.value) firstLoad.value = false
             })
 
             const handleRunSelect = (newRunId) => {
+                firstLoad.value = true
                 if (newRunId && route.query.name !== newRunId) {
                     router.replace({
                         query: {
@@ -101,7 +99,11 @@
                     })
                 }
             }
-
+            const isSidebarLoading = computed(
+                () =>
+                    firstLoad.value ||
+                    (phase(selectedRun.value) !== 'Running' && isLoading.value)
+            )
             watch(
                 path,
                 () => {
@@ -157,6 +159,7 @@
                 route,
                 handleRefresh,
                 path,
+                isSidebarLoading,
             }
         },
     })

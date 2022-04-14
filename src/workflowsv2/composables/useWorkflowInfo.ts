@@ -71,27 +71,27 @@ export default function useWorkflowInfo() {
 
     const phaseMessage = (item: any) => item.status?.message
 
-    const startedAt = (item: any, relative: any) => {
+    const startedAt = (
+        item: any,
+        relative: any,
+        format = 'dddd, MMMM D YYYY, HH:mm:ss'
+    ) => {
         if (phase(item) === 'Pending') return 'Yet to start'
 
         return relative
             ? dayjs().from(item.status?.startedAt, true) + ' ago'
-            : dayjs(item.status?.startedAt).format(
-                  'dddd, MMMM D YYYY, HH:mm:ss'
-              )
+            : dayjs(item.status?.startedAt).format(format)
     }
-    const finishedAt = (item: any, relative: any) => {
-        if (!item?.status?.finishedAt) {
-            return 'N/A'
-        }
-        if (relative) {
-            if (item?.status?.finishedAt) {
-                return dayjs().from(item?.status?.finishedAt, true)
-            }
-        }
-        return dayjs(item?.status?.finishedAt).format(
-            'dddd, MMMM D YYYY, HH:mm:ss'
-        )
+    const finishedAt = (
+        item: any,
+        relative: any,
+        format = 'dddd, MMMM D YYYY, HH:mm:ss'
+    ) => {
+        if (!item?.status?.finishedAt) return 'N/A'
+
+        return relative
+            ? dayjs().from(item?.status?.finishedAt, true)
+            : dayjs(item?.status?.finishedAt).format(format)
     }
 
     const difference = (startTime, endTime) => {

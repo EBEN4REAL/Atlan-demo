@@ -1,9 +1,12 @@
 <template>
     <router-view v-slot="{ Component, route }">
-        <keep-alive :max="4" :exclude="['WorkflowSetupPage']">
+        <keep-alive
+            :max="3"
+            exclude="WorkflowSetupPage,WorkflowProfileTabWrapper,WFProfileId"
+        >
             <component
                 :is="Component"
-                :key="`${route.name}${route.params.id}`"
+                :key="`${route.name}${route.params?.id || ''}`"
             />
         </keep-alive>
     </router-view>

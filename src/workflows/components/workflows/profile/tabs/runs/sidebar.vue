@@ -71,7 +71,13 @@
                     <div class="flex items-center gap-x-2">
                         <AtlanIcon icon="ClockStart" />
                         <span class="text-sm text-new-gray-800">
-                            {{ startedAt(selectedRun, false) }}
+                            {{
+                                startedAt(
+                                    selectedRun,
+                                    false,
+                                    "MMM Do 'YY [at] H:mm:ss A [(]dddd[)]"
+                                )
+                            }}
                         </span>
                     </div>
 
@@ -340,19 +346,18 @@
             const failedPods = computed(() => {
                 const temp = []
                 if (selectedRun?.value?.metadata?.name) {
-                    Object.keys(selectedRun?.value?.status?.nodes).forEach(
-                        (key) => {
-                            if (
-                                ['Failed', 'Error'].includes(
-                                    selectedRun.value?.status?.nodes[key].phase
-                                ) &&
-                                selectedRun.value?.status?.nodes[key].type ===
-                                    'Pod'
-                            ) {
-                                temp.push(selectedRun.value?.status?.nodes[key])
-                            }
+                    Object.keys(
+                        selectedRun?.value?.status?.nodes || {}
+                    ).forEach((key) => {
+                        if (
+                            ['Failed', 'Error'].includes(
+                                selectedRun.value?.status?.nodes[key].phase
+                            ) &&
+                            selectedRun.value?.status?.nodes[key].type === 'Pod'
+                        ) {
+                            temp.push(selectedRun.value?.status?.nodes[key])
                         }
-                    )
+                    })
                 }
                 return temp
             })

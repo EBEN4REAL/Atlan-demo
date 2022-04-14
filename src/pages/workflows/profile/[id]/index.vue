@@ -3,6 +3,7 @@
     import { useRoute, useRouter } from 'vue-router'
 
     export default defineComponent({
+        name: 'WFProfileId',
         setup() {
             const route = useRoute()
             const router = useRouter()

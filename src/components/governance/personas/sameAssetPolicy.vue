@@ -171,7 +171,7 @@
                                                 <div class="mr-1 text-gray-300">
                                                     •
                                                 </div>
-                                                Denied Query
+                                                Denied Permission
                                             </div>
                                         </div>
                                     </div>

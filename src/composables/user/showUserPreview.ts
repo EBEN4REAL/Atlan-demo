@@ -70,7 +70,6 @@ export function useUserPreview() {
         allowedTabs.value = [...tabs]
     }
     const setBlackListedTabs = (tabs) => {
-        debugger
         blacklistedTabs.value = [...tabs]
     }
     const setDefaultTab = (tab) => {

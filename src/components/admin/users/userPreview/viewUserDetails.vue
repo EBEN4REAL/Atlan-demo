@@ -61,7 +61,10 @@
                     />
                 </div>
             </div>
-            <div class="pb-6 border-b border-gray-200 border-solid">
+            <div
+                v-if="selectedUser.emailVerified"
+                class="pb-6 border-b border-gray-200 border-solid"
+            >
                 <p class="mt-6 text-sm tracking-wider text-gray-500 uppercase">
                     Ownership
                 </p>
@@ -96,8 +99,10 @@
                     "
                 >
                     <span class="mt-2"
-                        >{{ selectedUser?.firstName ?? selectedUser?.username }} doesn't own any
-                        assets.</span
+                        >{{
+                            selectedUser?.firstName ?? selectedUser?.username
+                        }}
+                        doesn't own any assets.</span
                     >
                 </div>
             </div>
@@ -116,7 +121,7 @@
                         {{ selectedUser.email }}
                     </a>
                 </div>
-                <div class="mb-5">
+                <div v-if="selectedUser.emailVerified" class="mb-5">
                     <div class="flex-1 mr-4">
                         <p class="mb-1 text-gray-500">Joined</p>
                         <a-tooltip placement="bottom">

@@ -265,10 +265,17 @@
             const personaSelected = ref({})
             const checkAsset = (policyAsset: any) => {
                 let result = false
-                assets.value.forEach((el) => {
-                    if (policyAsset.includes(el)) {
-                        result = true
-                    }
+                assets.value.forEach((el: any) => {
+                    policyAsset.forEach((elc) => {
+                        const elcSplited = elc.split('/')
+                        const elSplited = el
+                            .split('/')
+                            .slice(0, elcSplited.length)
+                            .join('/')
+                        if (elc === elSplited) {
+                            result = true
+                        }
+                    })
                 })
                 return result
             }

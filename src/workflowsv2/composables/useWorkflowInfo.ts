@@ -337,7 +337,6 @@ export default function useWorkflowInfo() {
     const connectorStore = useConnectionStore()
 
     const displayName = (item, workflowName) => {
-        // debugger
         let suffix = workflowName?.split(`${name(item)}-`).pop()
         if (packageType(item) === 'connector') {
             suffix = suffix.replaceAll('-', '/')
@@ -350,6 +349,21 @@ export default function useWorkflowInfo() {
             return suffix
         }
         return suffix ? suffix : workflowName
+    }
+
+    const connectorGuid = (item, workflowName) => {
+        // debugger
+        let suffix = workflowName?.split(`${name(item)}-`).pop()
+        if (packageType(item) === 'connector') {
+            suffix = suffix.replaceAll('-', '/')
+
+            const found = connectorStore.list.find(
+                (i) => i.attributes.qualifiedName === suffix
+            )
+
+            if (found) return found?.guid
+        }
+        return undefined
     }
 
     const getGlobalArguments = (item) => {
@@ -397,6 +411,7 @@ export default function useWorkflowInfo() {
         modifierUsername,
         packageType,
         displayName,
+        connectorGuid,
         packageName,
         phaseMessage,
         isStopped,

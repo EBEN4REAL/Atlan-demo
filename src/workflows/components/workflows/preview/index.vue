@@ -1,5 +1,12 @@
 <template>
     <div class="flex flex-col h-full overflow-y-hidden">
+        <AssetDrawer
+            :guid="selectedConnectionId"
+            :show-drawer="isDrawerVisible && !!selectedConnectionId"
+            :show-mask="false"
+            :show-close-btn="true"
+            @close-drawer="isDrawerVisible = false"
+        />
         <div class="flex flex-col px-4 py-4 border-b border-gray-200">
             <div class="flex items-center" style="padding-bottom: 1px">
                 <div class="flex items-center justify-between">
@@ -116,7 +123,11 @@
                 >
                 <template v-if="!prevConnLoading">
                     <template v-for="conn in previousConnectors" :key="conn.id">
-                        <span class="block font-medium">{{ conn.label }}</span>
+                        <span
+                            class="block font-medium cursor-pointer text-primary hover:underline"
+                            @click="handleConnectionSelect(conn.connector)"
+                            >{{ conn.label }}</span
+                        >
                     </template>
                 </template>
                 <a-skeleton
@@ -174,8 +185,9 @@
     } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 
-    import { useWorkflowDiscoverList } from '~/workflowsv2/composables/useWorkflowDiscoverList'
+    import AssetDrawer from '@/common/assets/preview/drawer.vue'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
+    import { useWorkflowDiscoverList } from '~/workflowsv2/composables/useWorkflowDiscoverList'
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
 
     export default defineComponent({
@@ -188,6 +200,7 @@
             Workflows: defineAsyncComponent(
                 () => import('./workflows/index.vue')
             ),
+            AssetDrawer,
         },
 
         props: {
@@ -205,8 +218,11 @@
         emits: ['assetMutation', 'closeDrawer'],
         setup(props, { emit }) {
             const activeKey = ref('detail')
+            const isDrawerVisible = ref(false)
+            const selectedConnectionId = ref(undefined)
             const { item, mode } = toRefs(props)
-            const { displayName, packageType, packageName } = useWorkflowInfo()
+            const { displayName, packageType, packageName, connectorGuid } =
+                useWorkflowInfo()
 
             if (mode.value === 'workflow') {
                 activeKey.value = 'workflow'
@@ -276,6 +292,10 @@
             const previousConnectors = computed(() =>
                 list.value.map((workflow) => ({
                     id: workflow.metadata.name,
+                    connector: connectorGuid(
+                        item.value,
+                        workflow.metadata.name
+                    ),
                     label: displayName(item.value, workflow.metadata.name),
                 }))
             )
@@ -289,6 +309,11 @@
                 }
             )
 
+            const handleConnectionSelect = (id: string) => {
+                selectedConnectionId.value = id
+                isDrawerVisible.value = true
+            }
+
             return {
                 filteredTabs,
                 activeKey,
@@ -301,6 +326,9 @@
                 previousConnectors,
                 prevConnLoading,
                 packageType,
+                isDrawerVisible,
+                selectedConnectionId,
+                handleConnectionSelect,
             }
         },
     })

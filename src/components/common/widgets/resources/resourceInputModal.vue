@@ -176,7 +176,7 @@
         return Promise.resolve()
     }
 
-    const isLinkValid = ref(false) // ? results of custom validation of link
+    const isLinkValid = ref(isEdit.value) // ? results of custom validation of link
     const formValidation = (name, status, errorMsgs) => {
         if (name[0] === 'link') isLinkValid.value = status
     }

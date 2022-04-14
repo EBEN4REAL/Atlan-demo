@@ -8,8 +8,7 @@
                 <AtlanIcon icon="WarningIcon" />
             </div>
             <div class="flex-1 ml-2 text-sm text-gray-700">
-                There are {{ listSameAssets.count }} other
-                {{ listSameAssets.count > 1 ? 'policies' : 'policy' }} for same
+                There are {{ listSameAssets.count }} other policies for same
                 assets
             </div>
 

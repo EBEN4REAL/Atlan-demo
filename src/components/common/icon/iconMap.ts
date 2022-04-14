@@ -410,6 +410,8 @@ import VqbVerified from '~/assets/images/icons/VqbVerified.svg'
 import VqbDeprecated from '~/assets/images/icons/VqbDeprecated.svg'
 import VqbDraft from '~/assets/images/icons/VqbDraft.svg'
 import Clock from '~/assets/images/icons/clock.svg'
+import ClockStart from '~/assets/images/icons/clock-start.svg'
+import ClockStop from '~/assets/images/icons/clock-stop.svg'
 import Mail from '~/assets/images/icons/mail.svg'
 import Collapsed from '~/assets/images/icons/Collapsed.svg'
 
@@ -851,6 +853,8 @@ export default {
     VqbDeprecated,
     VqbDraft,
     Clock,
+    ClockStart,
+    ClockStop,
     ClassificationShield,
     ClassificationAtlan,
     ClassificationPropagated,

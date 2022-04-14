@@ -7,137 +7,169 @@
         <AtlanLoader class="h-6" />
         <span>Loading Run</span>
     </div>
-    <a-tabs
-        v-else
-        v-model:activeKey="activeKey"
-        type="card"
-        :class="$style.previewtab"
-    >
-        <a-tab-pane key="summary" tab="Summary" class="shadow">
-            <div
-                class="flex flex-col px-3 py-2 bg-white border-b border-l border-r shadow"
-            >
-                <div class="flex mb-2 gap-x-3">
+    <a-tabs v-else v-model:activeKey="activeKey" :class="$style.previewtab">
+        <a-tab-pane key="summary" tab="Summary">
+            <div class="pt-2 space-y-2 bg-primary-light">
+                <div class="flex px-5 py-3 mb-2 bg-white gap-x-3">
                     <div class="flex flex-col w-full">
-                        <p class="text-gray-500">Status</p>
-                        <div class="flex justify-between w-full">
-                            <div class="flex items-center">
-                                <div
-                                    class="w-4 h-4 p-1 mr-1 bg-gray-200 rounded shadow"
-                                    :class="getRunClass(selectedRun)"
-                                ></div>
-                                <p
+                        <div class="flex items-center justify-between w-full">
+                            <div>
+                                <p class="mb-1 info-title">Status</p>
+
+                                <AtlanIcon
+                                    :icon="getRunIconByPhase(selectedRun)"
+                                    class="mb-0.5 mr-1"
+                                />
+
+                                <span
                                     :class="getRunTextClass(selectedRun)"
                                     class="font-semibold"
                                 >
                                     {{ phase(selectedRun) }}
-                                </p>
+                                </span>
                             </div>
 
-                            <a-button
-                                type="danger"
+                            <AtlanButton2
                                 v-if="['Running'].includes(phase(selectedRun))"
-                                @click="handleStop"
-                                >Stop</a-button
-                            >
-
-                            <a-button
                                 class="text-red-500"
+                                color="secondary"
+                                label="Stop"
+                                @click="handleStop"
+                            />
+
+                            <AtlanButton2
                                 v-if="
                                     ['Failed', 'Error'].includes(
                                         phase(selectedRun)
                                     )
                                 "
+                                class="text-red-500"
+                                label="Retry"
+                                color="secondary"
+                                prefixIcon="Retry"
                                 @click="handleRetry"
-                                >Retry</a-button
-                            >
+                            />
                         </div>
+                        <button
+                            v-if="
+                                ['Failed', 'Error'].includes(phase(selectedRun))
+                            "
+                            class="flex items-center justify-center py-2 mt-4 font-bold transition-colors rounded gap-x-1 text-new-red-400 bg-new-red-200 bg-opacity-20 hover:bg-opacity-30"
+                            @click="activeKey = 'failed'"
+                        >
+                            View Failed tasks
+                            <AtlanIcon icon="ArrowRight" />
+                        </button>
                     </div>
                 </div>
 
-                <p class="text-gray-500">Started At</p>
+                <!-- <p class="info-title">Started At</p>
                 <p class="mb-2 text-gray-700">
                     {{ startedAt(selectedRun, false) }}
-                </p>
-
-                <p class="text-gray-500" v-if="finishedAt(selectedRun, false)">
-                    Finished At
-                </p>
-                <p
-                    class="mb-2 text-gray-700"
-                    v-if="finishedAt(selectedRun, false)"
-                >
-                    {{ finishedAt(selectedRun, false) }}
-                </p>
-
-                <div class="flex items-center justify-between">
-                    <div class="flex flex-col">
-                        <p class="text-gray-500">Duration</p>
-                        <p class="mb-2 text-gray-700">
-                            {{ duration(selectedRun, false) }}
-                        </p>
+                </p> -->
+                <div class="px-5 py-4 space-y-4 bg-white">
+                    <div class="flex items-center gap-x-2">
+                        <AtlanIcon icon="ClockStart" />
+                        <span class="text-sm text-new-gray-800">
+                            {{ startedAt(selectedRun, false) }}
+                        </span>
                     </div>
 
-                    <!--   <a-button
-                            v-if="['Succeeded'].includes(phase(selectedRun))"
-                            @click="handleMetrics"
-                            >View Metrics</a-button
-                        >-->
-                    <a-modal
-                        width="100%"
-                        :centered="true"
-                        :bodyStyle="{
-                            height: 'calc(100vh - 100px)',
-                        }"
-                        :destroyOnClose="true"
-                        v-model:visible="isMetricVisible"
-                        :closable="false"
+                    <div
+                        v-if="finishedAt(selectedRun, false) !== 'N/A'"
+                        class="flex items-center gap-x-2"
                     >
-                        <div class="h-full px-6 py-3">
-                            <WorkflowMetrics
-                                :selectedPod="selectedPod"
-                                :selectedRun="selectedRun"
-                            ></WorkflowMetrics>
+                        <AtlanIcon icon="ClockStop" />
+                        <span class="text-sm text-new-gray-800">
+                            {{ finishedAt(selectedRun, false) }}
+                        </span>
+                    </div>
+
+                    <a-divider class="m-0" />
+
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center text-sm gap-x-2">
+                            <AtlanIcon icon="Clock" />
+                            <span class="text-new-gray-600">Duration:</span>
+                            <span class="text-new-gray-800">
+                                {{ duration(selectedRun) }}
+                            </span>
                         </div>
-                        <template #footer> </template>
-                    </a-modal>
+
+                        <!--   <a-button
+                v-if="['Succeeded'].includes(phase(selectedRun))"
+                @click="handleMetrics"
+                >View Metrics</a-button
+            >-->
+                        <a-modal
+                            width="100%"
+                            :centered="true"
+                            :bodyStyle="{
+                                height: 'calc(100vh - 100px)',
+                            }"
+                            :destroyOnClose="true"
+                            v-model:visible="isMetricVisible"
+                            :closable="false"
+                        >
+                            <div class="h-full px-6 py-3">
+                                <WorkflowMetrics
+                                    :selectedPod="selectedPod"
+                                    :selectedRun="selectedRun"
+                                ></WorkflowMetrics>
+                            </div>
+                            <template #footer> </template>
+                        </a-modal>
+                    </div>
                 </div>
 
-                <p class="text-gray-500">Run Mode</p>
-                <div class="mb-2 text-gray-700" v-if="isCronRun(selectedRun)">
-                    <span>via <span>Schedule</span></span>
-                </div>
-                <div
-                    class="mb-2 text-gray-700"
-                    v-else-if="creatorUsername(selectedRun)"
-                >
-                    via
+                <div class="px-5 py-4 bg-white">
+                    <div>
+                        <p class="info-title">Run Mode</p>
+                        <div
+                            class="mb-2 text-gray-700"
+                            v-if="isCronRun(selectedRun)"
+                        >
+                            Scheduled Run
+                        </div>
+                        <div
+                            class="mb-2 text-gray-700"
+                            v-else-if="creatorUsername(selectedRun)"
+                        >
+                            Manually Run by
+                            <template
+                                v-if="
+                                    creatorUsername(selectedRun)?.startsWith(
+                                        'service-account-apikey-'
+                                    )
+                                "
+                            >
+                                <AtlanIcon icon="Key" class="h-3" /> API key
+                            </template>
+                            <UserWrapper
+                                v-else
+                                :username="creatorUsername(selectedRun)"
+                            />
+                        </div>
+                    </div>
 
-                    <template
-                        v-if="
-                            creatorUsername(selectedRun)?.startsWith(
-                                'service-account-apikey-'
-                            )
-                        "
-                    >
-                        <AtlanIcon icon="Key" class="h-3" /> API key
-                    </template>
-                    <template v-else>
-                        {{ creatorUsername(selectedRun) }}
-                    </template>
+                    <div>
+                        <p class="info-title">Reference</p>
+                        <router-link
+                            :to="link"
+                            target="_blank"
+                            class="mb-2 font-medium text-primary"
+                        >
+                            {{ name(selectedRun) }}
+                        </router-link>
+                    </div>
+                    <!-- <div
+        v-if="error"
+        class="flex items-center w-full bg-white gap-x-1"
+    >
+        <AtlanIcon class="h-5" icon="Error" />
+        <span>{{ error.message }}</span>
+    </div> -->
                 </div>
-
-                <p class="text-gray-500">Reference</p>
-                <a :href="link" target="_blank" class="mb-2 text-primary">
-                    {{ name(selectedRun) }}
-                </a>
-                <!-- <div
-                    v-if="error"
-                    class="flex items-center w-full bg-white gap-x-1"
-                >
-                    <AtlanIcon class="h-5" icon="Error" />
-                    <span>{{ error.message }}</span>
-                </div> -->
             </div>
         </a-tab-pane>
         <a-tab-pane
@@ -242,18 +274,21 @@
         useTimeoutFn,
         watchOnce,
     } from '@vueuse/core'
-    import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
+    import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
     import useWorkflowLogsStream from '~/workflows/composables/package/useWorkflowLogsStream'
     import WorkflowLogs from './logs.vue'
     import WorkflowMetrics from './metrics.vue'
     import useWorkflowRunStop from '~/workflows/composables/package/useWorkflowRunStop'
     import useRunItem from '~/workflows/composables/package/useRunItem'
 
+    import UserWrapper from '~/workflowsv2/components/common/user.vue'
+
     export default defineComponent({
         // mixins: [WorkflowMixin],
         components: {
             WorkflowLogs,
             WorkflowMetrics,
+            UserWrapper,
         },
         props: {
             selectedRun: {
@@ -286,7 +321,7 @@
                 isCronRun,
                 creatorUsername,
                 phaseMessage,
-                getRunClass,
+                getRunIconByPhase,
                 getRunTextClass,
                 podFinishedAt,
                 difference,
@@ -425,7 +460,7 @@
                 creatorUsername,
                 isCronRun,
                 phaseMessage,
-                getRunClass,
+                getRunIconByPhase,
                 getRunTextClass,
                 failedPods,
                 podFinishedAt,
@@ -448,13 +483,30 @@
 
 <style lang="less" module>
     .previewtab {
-        &:global(.ant-tabs-card) {
-            :global(.ant-tabs-tab:not(.ant-tabs-tab-active)) {
-                @apply bg-transparent border-0 !important;
-            }
-            :global(.ant-tabs-tab:first-child) {
-                @apply ml-0 !important;
-            }
+        :global(.ant-tabs-tab:first-child) {
+            @apply ml-6;
         }
+
+        :global(.ant-tabs-tab-active) {
+            -webkit-text-stroke: 0.65px;
+            -moz-text-stroke: 0.65px;
+        }
+
+        :global(.ant-tabs-nav) {
+            @apply mb-0 !important;
+        }
+
+        :global(.ant-tabs-content-holder) {
+            @apply bg-primary-light overflow-y-auto !important;
+        }
+        :global(.ant-tabs-content) {
+            @apply min-h-full !important;
+        }
+    }
+</style>
+
+<style>
+    .info-title {
+        @apply text-sm text-new-gray-600 font-medium;
     }
 </style>

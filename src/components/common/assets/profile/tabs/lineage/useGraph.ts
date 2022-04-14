@@ -94,7 +94,11 @@ export default function useGraph(graph) {
         const img = getNodeSourceImage[source]
         const isBase = guid === baseEntityGuid
         const isVpNode = typeName === 'vpNode'
-        const isNodeWithColumns = ['Table', 'View'].includes(typeName)
+        const isNodeWithColumns = [
+            'Table',
+            'View',
+            'MaterialisedView',
+        ].includes(typeName)
 
         switch (certificateStatus) {
             case 'VERIFIED':
@@ -293,9 +297,7 @@ export default function useGraph(graph) {
                                     </div>
                                     <div class="node-meta__text node-schema">
                                         ${
-                                            ['Table', 'View'].includes(
-                                                typeName
-                                            ) && schemaName
+                                            isNodeWithColumns && schemaName
                                                 ? 'in'
                                                 : ''
                                         }
@@ -315,7 +317,7 @@ export default function useGraph(graph) {
                                                 data?.columnsCount ||
                                                 data?.columnsCount === 0
                                                     ? `${data?.columnsCount} columns`
-                                                    : 'view columns'
+                                                    : data?.highlightPorts ? 'columns' : 'view columns'
                                             }
                                         </span>
                                         <span>

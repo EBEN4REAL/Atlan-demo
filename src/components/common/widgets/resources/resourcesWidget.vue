@@ -175,10 +175,6 @@
             type: String,
             required: true,
         },
-        // headerCopy: {
-        //     type: String,
-        //     default: 'Resources',
-        // },
         updateStatus: {
             type: String,
             required: true,

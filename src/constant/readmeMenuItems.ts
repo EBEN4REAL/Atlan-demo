@@ -7,11 +7,14 @@ import {
     useTrackEvent,
 } from '~/modules/editor/analytics/useTrackEvent'
 
+const COMMAND_ITEM_GROUPS = ['Formatting', 'Media', 'Embeds', 'Basic Elements']
+
 export interface CommandItem {
     title: string
     key: string
     helpText: string
     searchKeys: string[]
+    group: keyof typeof COMMAND_ITEM_GROUPS
     icon?: keyof typeof iconMap
     level?: number
     border?: boolean
@@ -306,6 +309,24 @@ export const blockMenu: CommandItem[] = [
                 },
             })
         },
+    },
+    {
+        title: 'Equation',
+        key: 'equation',
+        helpText: 'Add an mathematical equation.',
+        icon: 'Equation',
+        border: true,
+        searchKeys: ['equation', 'latex', 'math', 'maths'],
+        disabled: () => false,
+        command: ({ editor, range }) =>
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .insertEquationBlock()
+                      .run()
+                : editor.chain().focus().insertEquationBlock().run(),
     },
     {
         title: 'Mention',
@@ -870,4 +891,5 @@ export const BLOCK_TIPPY_MENU = [
     'googleDoc',
     'iframe',
     'table',
+    'equation',
 ]

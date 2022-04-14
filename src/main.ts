@@ -15,7 +15,6 @@ import { getBasePath, getEnv } from './modules/__env'
 import { useAuthStore } from '~/store/auth'
 import { inputFocusDirective } from '~/utils/directives/input-focus'
 import { authDirective } from './utils/directives/auth'
-import { katexDirective } from './utils/directives/katex'
 import { Tenant } from '~/services/service/tenant'
 
 import {
@@ -113,7 +112,6 @@ keycloak
             }, 6000)
             inputFocusDirective(app)
             authDirective(app)
-            katexDirective(app)
             app.use(router).mount('#app')
             const redirectUrl = localStorage.getItem('redirectURL')
             if (redirectUrl) {

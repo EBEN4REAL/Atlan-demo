@@ -25,6 +25,7 @@
                     padding="compact"
                     class="py-0.5 text-sm border-none text-xs rounded custom-shadow cursor-pointer mr-2"
                     style="height: 24px"
+                    @mouseout="recordTooltipPresence"
                     @click="
                         useCopy(
                             activeInlineTab.playground.editor.columnList,
@@ -62,6 +63,7 @@
                     padding="compact"
                     class="py-0.5 text-sm border-none text-xs rounded custom-shadow cursor-pointer mr-2"
                     style="height: 24px"
+                    @mouseout="recordTooltipPresence"
                     @click="
                         useTableExport(
                             activeInlineTab?.queryId
@@ -100,6 +102,7 @@
                     size="sm"
                     color="secondary"
                     padding="compact"
+                    @mouseout="recordTooltipPresence"
                     class="py-0.5 mr-2 text-sm border-none text-xs rounded custom-shadow cursor-pointer"
                     style="height: 24px"
                 >
@@ -124,11 +127,18 @@
     } from '~/components/insights/common/composables/useTableExport'
     import { useUtils } from '~/components/insights/common/composables/useUtils'
     import Tooltip from '@common/ellipsis/index.vue'
+    import { useTooltipDelay } from '~/components/insights/common/composables/useTooltipDelay'
 
     export default defineComponent({
         components: { AtlanBtn, Tooltip, PreviewTabs },
         props: {},
         setup() {
+            const {
+                recordTooltipPresence,
+                MOUSE_ENTER_DELAY,
+                ADJACENT_TOOLTIP_DELAY,
+                lastTooltipPresence,
+            } = useTooltipDelay()
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
@@ -150,6 +160,10 @@
                 useTableExport,
                 useCopy,
                 getFormattedTimeFromMilliSeconds,
+                recordTooltipPresence,
+                MOUSE_ENTER_DELAY,
+                ADJACENT_TOOLTIP_DELAY,
+                lastTooltipPresence,
             }
         },
     })

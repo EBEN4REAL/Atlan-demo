@@ -38,8 +38,14 @@
                                 tooltip-text="Content of tab hello abckhsdfsdfkhjk djfgd"
                                 classes="text-new-gray-700"
                                 :placement="'topRight'"
+                                :mouseEnterDelay="
+                                    lastTooltipPresence !== undefined
+                                        ? ADJACENT_TOOLTIP_DELAY
+                                        : MOUSE_ENTER_DELAY
+                                "
                             />
                             <div
+                                @mouseout="recordTooltipPresence"
                                 class="absolute rounded opacity-0 right-2 group-hover:opacity-100 bg-new-gray-300 px-0.5"
                             >
                                 <AtlanIcon icon="Close" class="w-4 h-4" />
@@ -90,7 +96,10 @@
                 "
             >
                 <template #title>
-                    <div class="flex items-center">
+                    <div
+                        class="flex items-center"
+                        @mouseout="recordTooltipPresence"
+                    >
                         <span class="mr-1">
                             {{
                                 `${activeInlineTab.playground.resultsPane.result.totalRowsCount?.toLocaleString()} rows, `
@@ -137,11 +146,18 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import Tooltip from '@common/ellipsis/index.vue'
     import { useUtils } from '~/components/insights/common/composables/useUtils'
+    import { useTooltipDelay } from '~/components/insights/common/composables/useTooltipDelay'
 
     export default defineComponent({
         components: { Tooltip },
         props: {},
         setup(props, { emit }) {
+            const {
+                recordTooltipPresence,
+                MOUSE_ENTER_DELAY,
+                ADJACENT_TOOLTIP_DELAY,
+                lastTooltipPresence,
+            } = useTooltipDelay()
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
@@ -162,6 +178,10 @@
                 () => activeInlineTab.value.assetSidebar.isVisible
             )
             return {
+                recordTooltipPresence,
+                MOUSE_ENTER_DELAY,
+                ADJACENT_TOOLTIP_DELAY,
+                lastTooltipPresence,
                 selectActiveResultTab,
                 getFormattedTimeFromMilliSeconds,
                 activeInlineTab,

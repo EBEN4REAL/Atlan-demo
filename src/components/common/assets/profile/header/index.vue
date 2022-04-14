@@ -255,7 +255,7 @@
                                             databaseQualifiedName(item)
                                         )
                                     "
-                                    class="tracking-tight text-gray-500 border-b border-gray-500 border-dashed cursor-pointer hover:text-primary"
+                                    class="tracking-tight text-gray-500 border-b border-gray-400 border-dashed cursor-pointer hover:text-primary hover:border-gray-500"
                                 >
                                     {{ databaseName(item) }}
                                 </div>
@@ -279,7 +279,7 @@
                                             schemaQualifiedName(item)
                                         )
                                     "
-                                    class="tracking-tight text-gray-500 border-b border-gray-500 border-dashed cursor-pointer hover:text-primary"
+                                    class="tracking-tight text-gray-500 border-b border-gray-400 border-dashed cursor-pointer hover:text-primary hover:border-gray-500"
                                 >
                                     {{ schemaName(item) }}
                                 </div>
@@ -439,6 +439,7 @@
     import SlackAskButton from '~/components/common/assets/misc/slackAskButton.vue'
     import AssetDrawer from '@common/assets/preview/drawer.vue'
     import { disableSlackAsk } from '~/composables/integrations/slack/useAskAQuestion'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import useGTCPermissions, {
         fetchGlossaryPermission,
     } from '~/composables/glossary/useGTCPermissions'
@@ -514,7 +515,6 @@
 
             const goToInsights = (openVQB) => {
                 // router.push(getAssetQueryPath(asset))
-
                 const URL =
                     `http://` +
                     window.location.host +
@@ -522,11 +522,18 @@
                     `&openVQB=${openVQB}`
 
                 window.open(URL, '_blank')?.focus()
+                useAddEvent('discovery', 'cta_action', 'clicked', {
+                    action: !openVQB ? 'sql_query' : 'vqb_query',
+                    asset_type: item.value.typeName,
+                })
             }
 
             const handleClick = () => {
                 // router.push(getAssetQueryPath(asset))
-
+                useAddEvent('discovery', 'cta_action', 'clicked', {
+                    action: 'sql_query',
+                    asset_type: item.value.typeName,
+                })
                 const URL =
                     `http://` +
                     window.location.host +
@@ -560,6 +567,10 @@
                 } else {
                     window.open(sourceURL(item.value), '_blank').focus()
                 }
+                useAddEvent('discovery', 'cta_action', 'clicked', {
+                    action: 'open_in_source',
+                    asset_type: item.value.typeName,
+                })
             }
 
             /*  whenever(and(Escape, notUsingInput), (v) => {

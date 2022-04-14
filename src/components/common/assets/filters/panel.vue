@@ -213,9 +213,9 @@
                 activeKey.value.includes(componentParentKey?.value)
             )
 
-            const handleChange = () => {
+            const handleChange = (...args) => {
                 modelValue.value = facetMap.value
-                emit('change', item.value)
+                emit('change', item.value, ...args)
             }
 
             const handleClear = () => {

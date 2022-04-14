@@ -115,11 +115,13 @@
                             "
                             :link="l"
                             class="h-full"
+                            :assetType="assetType"
                         />
                         <SlackPreview
                             v-else
                             :ref="`SlackPreview-${x}`"
                             :link="l"
+                            :assetType="assetType"
                         />
                     </div>
                     <template
@@ -186,6 +188,11 @@
             required: true,
         },
         entityName: {
+            type: String,
+            required: false,
+            default: '',
+        },
+        assetType: {
             type: String,
             required: false,
             default: '',

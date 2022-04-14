@@ -68,14 +68,24 @@
         </template>
 
         <template #title="entity">
-            <GlossaryTreeItem
-                :item="entity"
-                :checkable="checkable"
-                :class="treeItemClass"
-                :is-animating="isTreeNodeAnimating"
-                @addSelectedKey="handleAddSelectedKey"
-                @changeEditMode="handleChangeEditMode"
-            />
+            <GlossaryPopover
+                :passing-fetched-term="true"
+                :fetched-term="entity"
+                :is-fetched-term-loading="false"
+                placement="right"
+                :mouse-enter-delay="mouseEnterDelay"
+            >
+                <GlossaryTreeItem
+                    :item="entity"
+                    :checkable="checkable"
+                    :class="treeItemClass"
+                    :is-animating="isTreeNodeAnimating"
+                    @addSelectedKey="handleAddSelectedKey"
+                    @changeEditMode="handleChangeEditMode"
+                    @mouseenter="enteredPill"
+                    @mouseleave="leftPill"
+                />
+            </GlossaryPopover>
         </template>
     </a-tree>
 </template>
@@ -103,9 +113,12 @@
     import useGlossaryTree from '~/composables/glossary2/useGlossaryTree'
     import useGlossaryStore from '~/store/glossary'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import GlossaryPopover from '@common/popover/glossary/index.vue'
+    import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
 
     export default defineComponent({
         components: {
+            GlossaryPopover,
             GlossaryTreeItem,
             Actions,
             AddGtcModal,
@@ -195,7 +208,7 @@
                 nodeToParentKeyMap,
                 allKeys,
                 checkDuplicateCategoryNames,
-                dragStart
+                dragStart,
             } = useGlossaryTree({
                 emit,
                 parentGlossaryQualifiedName: defaultGlossary,
@@ -323,10 +336,13 @@
                 isDraggable.value = !val
             }
 
-           provide('addGTCNode', addGTCNode)
+            provide('addGTCNode', addGTCNode)
             provide('deleteGTCNode', deleteGTCNode)
             provide('treeData', treeData)
             provide('checkDuplicateCategoryNames', checkDuplicateCategoryNames)
+            const { enteredPill, mouseEnterDelay, leftPill } =
+                useMouseEnterDelay()
+
             return {
                 onLoadData,
                 loadedKeys,
@@ -362,6 +378,9 @@
                 isDraggable,
                 handleChangeEditMode,
                 dragStart,
+                enteredPill,
+                mouseEnterDelay,
+                leftPill,
             }
         },
     })

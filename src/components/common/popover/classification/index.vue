@@ -4,6 +4,7 @@
         :mouse-enter-delay="mouseEnterDelay"
         @click="togglePreview"
         @mouseenter="$emit('mouseEntered')"
+        @mouseleave="$emit('mouseLeft')"
     >
         <template #content>
             <div class="max-w-sm">
@@ -70,7 +71,7 @@
                 default: 0,
             },
         },
-        emits: ['mouseEntered'],
+        emits: ['mouseEntered', 'mouseLeft'],
         setup(props) {
             const classification = ref<ClassificationInterface>(
                 props.classification

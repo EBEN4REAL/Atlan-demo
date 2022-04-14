@@ -31,7 +31,7 @@
                 <a-tab-pane v-for="i in 10" :key="i">
                     <template #tab>
                         <div
-                            class="flex items-center h-full px-2 text-sm text-new-gray-700"
+                            class="relative flex items-center h-full px-2 text-sm text-new-gray-700 group"
                             style="width: 148px"
                         >
                             <Tooltip
@@ -39,6 +39,11 @@
                                 classes="text-new-gray-700"
                                 :placement="'topRight'"
                             />
+                            <div
+                                class="absolute rounded opacity-0 right-2 group-hover:opacity-100 bg-new-gray-300 px-0.5"
+                            >
+                                <AtlanIcon icon="Close" class="w-4 h-4" />
+                            </div>
                         </div>
                     </template>
                 </a-tab-pane>

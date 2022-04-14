@@ -8,7 +8,9 @@
         placeholder="Resources is the place to document all knowledge
                     around the asset"
         :read-only="!linkEditPermission"
-        :entity-name="selectedAsset.displayText"
+        :entity-name="
+            selectedAsset.displayText || selectedAsset.attributes.qualifiedName
+        "
         @add="handleAdd"
         @update="handleUpdate"
         @remove="handleRemove"

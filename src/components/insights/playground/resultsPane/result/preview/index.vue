@@ -17,12 +17,10 @@
         </div>
         <div
             class="h-full rounded-tr bg-new-gray-200"
-            style="
-                width: 476px;
+            :style="`width: ${compactMode ? '340px' : '476px'};
                 box-shadow: inset 0px 0px 2px rgba(0, 0, 0, 0.12);
                 min-height: 33px;
-                padding-left: 1px;
-            "
+                padding-left: 1px;`"
         >
             <a-tabs
                 :class="$style.previewtab_footer"
@@ -46,7 +44,10 @@
                 </a-tab-pane>
             </a-tabs>
         </div>
-        <div class="flex items-center px-3 text-new-gray-800 mt-0.5">
+        <div
+            class="flex items-center px-3 text-new-gray-800 mt-0.5"
+            v-if="!compactMode"
+        >
             <span class="mr-1">
                 {{
                     `${activeInlineTab.playground.resultsPane.result.totalRowsCount?.toLocaleString()} rows, `
@@ -70,6 +71,58 @@
                 </span>
             </span>
             <!-- -------------------------------------------- -->
+        </div>
+        <div
+            class="flex items-center px-3 text-new-gray-800 mt-0.5"
+            v-else-if="compactMode"
+        >
+            <a-tooltip
+                color="#363636"
+                :mouseEnterDelay="
+                    lastTooltipPresence !== undefined
+                        ? ADJACENT_TOOLTIP_DELAY
+                        : MOUSE_ENTER_DELAY
+                "
+            >
+                <template #title>
+                    <div class="flex items-center">
+                        <span class="mr-1">
+                            {{
+                                `${activeInlineTab.playground.resultsPane.result.totalRowsCount?.toLocaleString()} rows, `
+                            }}
+                        </span>
+
+                        <span class="mr-1">
+                            {{
+                                activeInlineTab.playground.editor.columnList.length?.toLocaleString()
+                            }}
+                            cols
+                        </span>
+
+                        <!-- Execution Time will be shown when it is >0 -->
+                        <span
+                            v-if="queryExecutionTime > 0"
+                            class="flex items-center mr-1"
+                        >
+                            <span class="mr-1" style="color: #6b7692">
+                                in
+                                <span class="font-mono">{{
+                                    getFormattedTimeFromMilliSeconds(
+                                        queryExecutionTime
+                                    )
+                                }}</span>
+                            </span>
+                        </span>
+                        <!-- -------------------------------------------- -->
+                    </div>
+                </template>
+                <div class="p-1 rounded hover:bg-new-gray-200">
+                    <AtlanIcon
+                        icon="QueryMetadata"
+                        class="w-4 h-4 text-new-gray-800"
+                    />
+                </div>
+            </a-tooltip>
         </div>
     </div>
 </template>
@@ -100,6 +153,9 @@
             const selectActiveResultTab = () => {
                 activeResultTab.value = !activeResultTab.value
             }
+            const compactMode = computed(
+                () => activeInlineTab.value.assetSidebar.isVisible
+            )
             return {
                 selectActiveResultTab,
                 getFormattedTimeFromMilliSeconds,
@@ -108,6 +164,7 @@
                 activeKey,
                 queryExecutionTime,
                 activeResultTab,
+                compactMode,
             }
         },
     })

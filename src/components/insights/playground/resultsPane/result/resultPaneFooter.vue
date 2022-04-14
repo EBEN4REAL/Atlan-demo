@@ -37,9 +37,11 @@
                     >
                         <AtlanIcon
                             icon="CopyOutlined"
-                            class="w-4 h-4 mr-1 text-new-gray-800"
+                            class="w-4 h-4 text-new-gray-800"
                         />
-                        <span class="mt-0.5 text-new-gray-800 text-xs"
+                        <span
+                            class="mt-0.5 text-new-gray-800 text-xs ml-1"
+                            v-if="!compactMode"
                             >Copy</span
                         >
                     </div>
@@ -75,9 +77,13 @@
                     >
                         <AtlanIcon
                             icon="Download"
-                            class="w-4 h-4 mr-1 text-new-gray-800"
+                            class="w-4 h-4 text-new-gray-800"
                         />
-                        <span class="mt-1 text-new-gray-800">Download</span>
+                        <span
+                            class="mt-1 ml-1 text-new-gray-800"
+                            v-if="!compactMode"
+                            >Download</span
+                        >
                     </div>
                 </AtlanBtn>
             </a-tooltip>
@@ -134,7 +140,11 @@
                     activeInlineTab.value?.playground?.resultsPane?.result
                         ?.isQueryRunning
             )
+            const compactMode = computed(
+                () => activeInlineTab.value.assetSidebar.isVisible
+            )
             return {
+                compactMode,
                 activeInlineTab,
                 isQueryRunning,
                 useTableExport,

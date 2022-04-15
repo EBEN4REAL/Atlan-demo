@@ -466,7 +466,21 @@
             }
 
             const handleChildActivitySelect = () => {
-                console.log(childActivity.value)
+                if (childActivity.value) {
+                    facets.value = {
+                        ...facets.value,
+                        entityQualifiedName: childActivity.value,
+                    }
+                } else {
+                    facets.value = {
+                        ...facets.value,
+                        entityQualifiedName:
+                            item.value.attributes.qualifiedName,
+                    }
+                }
+
+                offset.value = 0
+                quickChange()
             }
 
             watch(isReady, () => {

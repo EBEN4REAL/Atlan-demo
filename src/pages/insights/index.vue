@@ -26,6 +26,7 @@
     } from '~/constant/projection'
     import { useDiscoverList as useAssetData } from '~/composables/discovery/useDiscoverList'
     import { useTrackPage } from '~/composables/eventTracking/useAddEvent'
+    import insightsStore from '~/store/insights/index'
 
     export default defineComponent({
         name: 'Insights Page',
@@ -35,6 +36,8 @@
             useHead({
                 title: 'Insights',
             })
+            // insights Store initialization
+            const store = insightsStore()
             const route = useRoute()
             const router = useRouter()
             const savedQueryGuidFromURL = computed(() => route.query?.id)

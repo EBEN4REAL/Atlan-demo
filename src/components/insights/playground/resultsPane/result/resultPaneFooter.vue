@@ -42,7 +42,7 @@
                         />
                         <span
                             class="mt-0.5 text-new-gray-800 text-xs ml-1"
-                            v-if="!compactMode"
+                            v-if="!compactMode || !previewModeActive"
                             >Copy</span
                         >
                     </div>
@@ -83,7 +83,7 @@
                         />
                         <span
                             class="mt-1 ml-1 text-new-gray-800"
-                            v-if="!compactMode"
+                            v-if="!compactMode || !previewModeActive"
                             >Download</span
                         >
                     </div>
@@ -128,6 +128,7 @@
     import { useUtils } from '~/components/insights/common/composables/useUtils'
     import Tooltip from '@common/ellipsis/index.vue'
     import { useTooltipDelay } from '~/components/insights/common/composables/useTooltipDelay'
+    import insightsStore from '~/store/insights/index'
 
     export default defineComponent({
         components: { AtlanBtn, Tooltip, PreviewTabs },
@@ -144,6 +145,7 @@
             ) as Ref<activeInlineTabInterface>
 
             const { getFormattedTimeFromMilliSeconds } = useUtils()
+            const insights_Store = insightsStore()
 
             const isQueryRunning = computed(
                 () =>
@@ -153,7 +155,12 @@
             const compactMode = computed(
                 () => activeInlineTab.value.assetSidebar.isVisible
             )
+            const previewModeActive = computed(
+                () => insights_Store.previewTabs.length > 0
+            )
+
             return {
+                previewModeActive,
                 compactMode,
                 activeInlineTab,
                 isQueryRunning,

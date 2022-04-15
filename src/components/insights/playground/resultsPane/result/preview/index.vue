@@ -5,6 +5,7 @@
             style="max-width: 85px"
             :class="activeResultTab ? 'tab-active' : 'not-active'"
             @click="selectActiveResultTab"
+            v-if="previewModeActive"
         >
             <div class="flex items-center text-sm">
                 <AtlanIcon icon="QueryOutputSuccess" class="mr-1 -mt-0.5" />
@@ -16,8 +17,11 @@
                 ></div> -->
         </div>
         <div
+            v-if="previewModeActive"
             class="h-full rounded-tr bg-new-gray-200"
-            :style="`width: ${compactMode ? '340px' : '476px'};
+            :style="`width: ${
+                compactMode && previewModeActive ? '340px' : '476px'
+            };
                 box-shadow: inset 0px 0px 2px rgba(0, 0, 0, 0.12);
                 min-height: 33px;
                 padding-left: 1px;`"
@@ -26,25 +30,43 @@
                 :class="$style.previewtab_footer"
                 :tab-position="mode"
                 :style="{ height: '32px' }"
-                v-model:activeKey="activeKey"
+                :activeKey="previewIndex"
             >
-                <a-tab-pane v-for="i in 10" :key="i">
+                <a-tab-pane
+                    v-for="(item, index) in insights_Store.previewTabs"
+                    :key="index"
+                >
                     <template #tab>
                         <div
+                            @click.stop="() => selectPreviewTab(item.guid)"
                             class="relative flex items-center h-full px-2 text-sm text-new-gray-700 group"
                             style="width: 148px"
                         >
-                            <Tooltip
-                                tooltip-text="Content of tab hello abckhsdfsdfkhjk djfgd"
-                                classes="text-new-gray-700"
-                                :placement="'topRight'"
-                                :mouseEnterDelay="
-                                    lastTooltipPresence !== undefined
-                                        ? ADJACENT_TOOLTIP_DELAY
-                                        : MOUSE_ENTER_DELAY
-                                "
-                            />
+                            <div class="flex items-center w-full text-sm">
+                                <AtlanIcon
+                                    :icon="
+                                        getEntityStatusIcon(
+                                            assetType(item.asset),
+                                            certificateStatus(item.asset)
+                                        )
+                                    "
+                                    class="w-4 h-4 mr-1 -mt-0.5 parent-ellipsis-container-extension"
+                                ></AtlanIcon>
+                                <Tooltip
+                                    :tooltip-text="item.asset.attributes.name"
+                                    classes="text-new-gray-700 w-full pr-1.5"
+                                    :placement="'topRight'"
+                                    :mouseEnterDelay="
+                                        lastTooltipPresence !== undefined
+                                            ? ADJACENT_TOOLTIP_DELAY
+                                            : MOUSE_ENTER_DELAY
+                                    "
+                                />
+                            </div>
                             <div
+                                @click.stop="
+                                    () => onPreviewTabClose(item.asset.guid)
+                                "
                                 @mouseout="recordTooltipPresence"
                                 class="absolute rounded opacity-0 right-2 group-hover:opacity-100 bg-new-gray-300 px-0.5"
                             >
@@ -57,7 +79,7 @@
         </div>
         <div
             class="flex items-center px-3 text-new-gray-800 mt-0.5"
-            v-if="!compactMode"
+            v-if="!compactMode || !previewModeActive"
         >
             <span class="mr-1">
                 {{
@@ -85,7 +107,7 @@
         </div>
         <div
             class="flex items-center px-3 text-new-gray-800 mt-0.5"
-            v-else-if="compactMode"
+            v-else-if="compactMode && previewModeActive"
         >
             <a-tooltip
                 color="#363636"
@@ -147,11 +169,16 @@
     import Tooltip from '@common/ellipsis/index.vue'
     import { useUtils } from '~/components/insights/common/composables/useUtils'
     import { useTooltipDelay } from '~/components/insights/common/composables/useTooltipDelay'
+    import insightsStore from '~/store/insights/index'
+    import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         components: { Tooltip },
         props: {},
         setup(props, { emit }) {
+            const insights_Store = insightsStore()
+            const { assetType, certificateStatus } = useAssetInfo()
             const {
                 recordTooltipPresence,
                 MOUSE_ENTER_DELAY,
@@ -170,6 +197,12 @@
                         ?.executionTime
             )
 
+            const previewIndex = computed(() =>
+                insights_Store.previewTabs.findIndex(
+                    (el) => el.asset.guid === insights_Store.activePreviewGuid
+                )
+            )
+
             const activeResultTab = ref(false)
             const selectActiveResultTab = () => {
                 activeResultTab.value = !activeResultTab.value
@@ -177,7 +210,38 @@
             const compactMode = computed(
                 () => activeInlineTab.value.assetSidebar.isVisible
             )
+            const previewModeActive = computed(
+                () => insights_Store.previewTabs.length > 0
+            )
+
+            const onPreviewTabClose = (guid: string) => {
+                const index = insights_Store.previewTabs.findIndex(
+                    (el) => el.asset.guid === guid
+                )
+                debugger
+                if (index > 0) {
+                    // select previous tab
+                    insights_Store.activePreviewGuid =
+                        insights_Store.previewTabs[index - 1].asset.guid
+                    insights_Store.previewTabs.splice(index, 1)
+                } else {
+                    insights_Store.activePreviewGuid = undefined
+                    insights_Store.previewTabs.splice(index, 1)
+                }
+            }
+            const selectPreviewTab = (guid: string) => {
+                insights_Store.activePreviewGuid = guid
+            }
+
             return {
+                onPreviewTabClose,
+                selectPreviewTab,
+                previewIndex,
+                getEntityStatusIcon,
+                assetType,
+                certificateStatus,
+                insights_Store,
+                previewModeActive,
                 recordTooltipPresence,
                 MOUSE_ENTER_DELAY,
                 ADJACENT_TOOLTIP_DELAY,

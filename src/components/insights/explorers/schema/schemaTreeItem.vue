@@ -613,6 +613,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
     import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
+    import usePreviewQueryRun from '~/components/insights/playground/common/composables/previewQueryRun'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import { useEditor } from '~/components/insights/common/composables/useEditor'
     import StatusBadge from '@common/badge/status/index.vue'
@@ -632,6 +633,7 @@
     import VQBThreeDotMenuForTable from '~/components/insights/explorers/schema/VQBThreeDotMenu/table.vue'
     import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
     import { generateSQLQuery } from '~/components/insights/playground/editor/vqb/composables/generateSQLQuery'
+    import insightsStore from '~/store/insights/index'
 
     export function getLastMappedKeyword(
         token_param: string[],
@@ -678,6 +680,7 @@
             },
         },
         setup(props) {
+            const insights_Store = insightsStore()
             const { hoverActions, treeData } = toRefs(props)
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
@@ -723,6 +726,7 @@
 
             const { item } = toRefs(props)
             const { queryRun } = useRunQuery()
+            const { previewRun } = usePreviewQueryRun()
             const showVQB = computed(() => {
                 return activeInlineTab?.value?.playground?.isVQB
             })
@@ -932,35 +936,12 @@
                                     // openContextModal()
                                     // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
                                     newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                    let newText = `${newQuery}`
-                                    const tabKey = handleAddNewTab(
-                                        newText,
-                                        {
-                                            attributeName:
-                                                'schemaQualifiedName',
-                                            attributeValue:
-                                                updatedEditorSchemaQualifiedName,
-                                        },
-                                        {
-                                            ...activeInlineTab.value.explorer
-                                                .schema.connectors,
-                                        },
-                                        item.value
-                                    )
-                                    const tabIndex = inlineTabs.value.findIndex(
-                                        (tab) => tab.key === tabKey
-                                    )
-                                    playQuery(newQuery, newQuery, tabIndex)
+
+                                    playQuery(newQuery, item.value)
 
                                     return
                                 } else {
-                                    const tabIndex = inlineTabs.value.findIndex(
-                                        (tab) =>
-                                            tab.key === activeInlineTabKey.value
-                                    )
-
-                                    const newText = `${newQuery}${prevText}`
-                                    playQuery(newQuery, newText, tabIndex)
+                                    playQuery(newQuery, item.value)
                                     return
                                 }
                                 break
@@ -991,26 +972,7 @@
                                         // openContextModal()
                                         // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
                                         newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                        let newText = `${newQuery}`
-                                        const tabKey = handleAddNewTab(
-                                            newText,
-                                            {
-                                                attributeName:
-                                                    'schemaQualifiedName',
-                                                attributeValue:
-                                                    updatedEditorSchemaQualifiedName,
-                                            },
-                                            {
-                                                ...activeInlineTab.value
-                                                    .explorer.schema.connectors,
-                                            },
-                                            item.value
-                                        )
-                                        const tabIndex =
-                                            inlineTabs.value.findIndex(
-                                                (tab) => tab.key === tabKey
-                                            )
-                                        playQuery(newQuery, newQuery, tabIndex)
+                                        playQuery(newQuery, item.value)
                                         return
                                     } else {
                                         if (
@@ -1024,12 +986,7 @@
                                                 )
                                             // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
                                             newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${databaseName}${assetQuoteType}.${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                            const newText = `${newQuery}${prevText}`
-                                            playQuery(
-                                                newQuery,
-                                                newText,
-                                                tabIndex
-                                            )
+                                            playQuery(newQuery, item.value)
                                             return
                                         }
                                     }
@@ -1037,12 +994,7 @@
                                 } else {
                                     // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
                                     newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                    const newText = `${newQuery}${prevText}`
-                                    const tabIndex = inlineTabs.value.findIndex(
-                                        (tab) =>
-                                            tab.key === activeInlineTabKey.value
-                                    )
-                                    playQuery(newQuery, newText, tabIndex)
+                                    playQuery(newQuery, item.value)
                                     return
                                 }
                                 break
@@ -1074,28 +1026,7 @@
                                         .join('/')
 
                                     if (cqn !== queryConnectionQualifiedName) {
-                                        // open in new tab
-                                        // openContextModal()
-                                        let newText = `${newQuery}`
-                                        const tabKey = handleAddNewTab(
-                                            newText,
-                                            {
-                                                attributeName:
-                                                    'schemaQualifiedName',
-                                                attributeValue:
-                                                    updatedEditorSchemaQualifiedName,
-                                            },
-                                            {
-                                                ...activeInlineTab.value
-                                                    .explorer.schema.connectors,
-                                            },
-                                            item.value
-                                        )
-                                        const tabIndex =
-                                            inlineTabs.value.findIndex(
-                                                (tab) => tab.key === tabKey
-                                            )
-                                        playQuery(newQuery, newQuery, tabIndex)
+                                        playQuery(newQuery, item.value)
                                         return
                                     } else {
                                         const tabIndex =
@@ -1109,13 +1040,7 @@
                                         ) {
                                             // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
                                             newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${databaseName}${assetQuoteType}.${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                            const newText = `${newQuery}${prevText}`
-
-                                            playQuery(
-                                                newQuery,
-                                                newText,
-                                                tabIndex
-                                            )
+                                            playQuery(newQuery, item.value)
                                             return
                                         } else {
                                             if (
@@ -1123,12 +1048,7 @@
                                             ) {
                                                 // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
                                                 newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                                const newText = `${newQuery}${prevText}`
-                                                playQuery(
-                                                    newQuery,
-                                                    newText,
-                                                    tabIndex
-                                                )
+                                                playQuery(newQuery, item.value)
                                                 return
                                             }
                                         }
@@ -1139,12 +1059,7 @@
                                     console.log('match here')
                                     // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
                                     newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                    const newText = `${newQuery}${prevText}`
-                                    const tabIndex = inlineTabs.value.findIndex(
-                                        (tab) =>
-                                            tab.key === activeInlineTabKey.value
-                                    )
-                                    playQuery(newQuery, newText, tabIndex)
+                                    playQuery(newQuery, item.value)
                                     return
                                 }
                                 break
@@ -1227,37 +1142,27 @@
                 }
             }
 
-            const playQuery = (newQuery, newText, tabIndex: number) => {
-                const { onRunCompletion, onQueryIdGeneration } =
-                    useRunQueryUtils(editorInstance, monacoInstance)
-                // debugger
-                if (!readOnly.value) {
-                    inlineTabs.value[tabIndex].playground.editor.text = newText
-                    selectionObject.value.startLineNumber = 2
-                    selectionObject.value.startColumnNumber = 1
-                    selectionObject.value.endLineNumber = 2
-                    selectionObject.value.endColumnNumber = newQuery.length + 1 // +1 for semicolon
-                    toRaw(editorInstanceRef.value).getModel().setValue(newText)
-                    // models[tabIndex].setValue(newText)
-                    setSelection(
-                        toRaw(editorInstanceRef.value),
-                        toRaw(monacoInstanceRef.value),
-                        selectionObject.value
-                    )
-                }
-
-                queryRun(
-                    tabIndex,
-                    getData,
-                    limitRows,
-                    onRunCompletion,
-                    onQueryIdGeneration,
-                    newText,
-                    editorInstance,
-                    monacoInstance,
-                    ref(false),
-                    inlineTabs
+            const playQuery = (newQuery, asset: assetInterface) => {
+                insights_Store.addPreviewTab(asset)
+                insights_Store.activePreviewGuid = asset.guid
+                // schema explorer context
+                const attributeValue =
+                    activeInlineTab.value.explorer.schema.connectors
+                        ?.attributeValue
+                const tabIndex = inlineTabs.value.findIndex(
+                    (tab) => tab.key === activeInlineTabKey.value
                 )
+
+                previewRun({
+                    previewTabIndex: insights_Store.previewTabs.length - 1,
+                    tabsArray: inlineTabs,
+                    queryText: newQuery,
+                    attributeValue,
+                    tabIndex,
+                    getData: insights_Store.getData,
+                    limitRows,
+                    inlineTabs,
+                })
             }
 
             let childCount = (item) => {

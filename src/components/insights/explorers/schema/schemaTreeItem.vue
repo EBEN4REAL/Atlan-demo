@@ -1286,9 +1286,6 @@
             )
 
             const previewVQBQuery = (item: any) => {
-                const { onRunCompletion, onQueryIdGeneration } =
-                    useRunQueryUtils(editorInstance, monacoInstance)
-
                 const activeInlineTabCopy = JSON.parse(
                     JSON.stringify(toRaw(activeInlineTab.value))
                 )
@@ -1331,23 +1328,28 @@
                     limitRows.value,
                     useSchemaExplorerContext
                 )
+
+                activeResultPreviewTab.value = false
+                insights_Store.addPreviewTab(item?.entity)
+                insights_Store.activePreviewGuid = item?.entity?.guid
+                // schema explorer context
+                const attributeValue =
+                    activeInlineTab.value.explorer.schema.connectors
+                        ?.attributeValue
                 const tabIndex = inlineTabs.value.findIndex(
-                    (tab) => tab.key === activeInlineTab.value.key
+                    (tab) => tab.key === activeInlineTabKey.value
                 )
 
-                queryRun(
+                previewRun({
+                    previewTabIndex: insights_Store.previewTabs.length - 1,
+                    tabsArray: inlineTabs,
+                    queryText: selectedText,
+                    attributeValue,
                     tabIndex,
-                    getData,
+                    getData: insights_Store.getData,
                     limitRows,
-                    onRunCompletion,
-                    onQueryIdGeneration,
-                    selectedText,
-                    editorInstance,
-                    monacoInstance,
-                    showVQB,
                     inlineTabs,
-                    useSchemaExplorerContext
-                )
+                })
             }
 
             return {

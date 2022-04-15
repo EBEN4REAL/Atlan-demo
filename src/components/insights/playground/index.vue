@@ -85,10 +85,10 @@
                                     @contextmenu.prevent="showContextMenu"
                                 >
                                     <div
-                                        class="flex items-center text-gray-700 w-full"
+                                        class="flex items-center w-full text-gray-700"
                                     >
                                         <span
-                                            class="text-sm truncate inline_tab_label w-full"
+                                            class="w-full text-sm truncate inline_tab_label"
                                             :class="[
                                                 tab.key !== activeInlineTabKey
                                                     ? tabHover === tab.key
@@ -96,14 +96,13 @@
                                                         : 'text-gray-500'
                                                     : '',
                                             ]"
-                                            >
+                                        >
                                             <Tooltip
                                                 clamp-percentage="99%"
                                                 :tooltip-text="tab.label"
                                                 :rows="1"
-                                                />
-                                                </span
-                                        >
+                                            />
+                                        </span>
                                     </div>
                                 </div>
                                 <template #overlay>
@@ -263,6 +262,7 @@
     import { useSpiltPanes } from '~/components/insights/common/composables/useSpiltPanes'
     import { useDebounceFn } from '@vueuse/core'
     import Tooltip from '@/common/ellipsis/index.vue'
+    import insightsStore from '~/store/insights/index'
 
     // import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
 
@@ -274,7 +274,7 @@
             UnsavedPopover,
             SaveQueryModal,
             ResultPaneFooter,
-            Tooltip
+            Tooltip,
         },
         props: {
             activeInlineTabKey: {
@@ -287,6 +287,7 @@
         },
         setup(props, { emit }) {
             const route = useRoute()
+            const insights_Store = insightsStore()
             const fullSreenState = inject('fullSreenState') as Ref<boolean>
             const router = useRouter()
             const isSaving = ref(false)
@@ -311,6 +312,9 @@
                 key: undefined,
             })
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
+            const activeResultPreviewTab = inject(
+                'activeResultPreviewTab'
+            ) as Ref<boolean>
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
@@ -343,6 +347,8 @@
             }
 
             const handleAdd = (isVQB) => {
+                activeResultPreviewTab.value = true
+                insights_Store.activePreviewGuid = undefined
                 // const key = String(new Date().getTime())
                 const { generateNewActiveTab } = useActiveTab()
                 const inlineTabData = generateNewActiveTab({

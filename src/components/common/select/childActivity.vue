@@ -18,9 +18,15 @@
                             :is="dataTypeCategoryImage(item)"
                             class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
                         ></component>
-                        <span class="mt-0.5 ml-1 text-gray-700 truncate">
+                        <span class="mt-px ml-1 text-gray-700 truncate">
                             {{ title(item) }}
                         </span>
+                        <CertificateBadge
+                            v-if="certificateStatus(item)"
+                            :status="certificateStatus(item)"
+                            :username="certificateUpdatedBy(item)"
+                            class="-mt-0.5 ml-1"
+                        ></CertificateBadge>
                     </div>
                     <div
                         v-if="
@@ -60,12 +66,14 @@
     import { useVModels } from '@vueuse/core'
     import ColumnKeys from '~/components/common/column/columnKeys.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import CertificateBadge from '@/common/badge/certificate/index.vue'
 
     export default defineComponent({
         name: 'AssetSelector',
         components: {
             Tooltip,
             ColumnKeys,
+            CertificateBadge,
         },
         props: {
             modelValue: {
@@ -97,8 +105,12 @@
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
 
-            const { certificateStatus, dataTypeCategoryImage, title } =
-                useAssetInfo()
+            const {
+                certificateStatus,
+                certificateUpdatedBy,
+                dataTypeCategoryImage,
+                title,
+            } = useAssetInfo()
 
             const queryText = ref('')
             const limit = ref(100)
@@ -208,6 +220,8 @@
                 localValue,
                 dataTypeCategoryImage,
                 title,
+                certificateStatus,
+                certificateUpdatedBy,
             }
         },
     })

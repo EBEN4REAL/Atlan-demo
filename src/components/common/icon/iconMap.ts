@@ -462,8 +462,12 @@ import Display from '~/assets/images/icons/display.svg'
 import FullScreenSquare from '~/assets/images/icons/full_screen_sqaure.svg'
 import QueryOutputSuccess from '~/assets/images/icons/query_output_success.svg'
 import QueryMetadata from '~/assets/images/icons/query_metadata.svg'
+import QueryOutputFail from '~/assets/images/icons/query_output_fail.svg'
+import QueryOutputNeutral from '~/assets/images/icons/query_output_neutral.svg'
 
 export default {
+    QueryOutputFail,
+    QueryOutputNeutral,
     QueryMetadata,
     QueryOutputSuccess,
     FullScreenSquare,

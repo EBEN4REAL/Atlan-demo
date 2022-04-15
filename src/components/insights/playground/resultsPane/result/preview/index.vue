@@ -8,7 +8,7 @@
             v-if="previewModeActive"
         >
             <div class="flex items-center text-sm">
-                <AtlanIcon icon="QueryOutputSuccess" class="mr-1 -mt-0.5" />
+                <AtlanIcon :icon="getResultsIcon()" class="mr-1 -mt-0.5" />
                 <span>Results</span>
             </div>
             <!-- <div
@@ -226,8 +226,14 @@
                         insights_Store.previewTabs[index - 1].asset.guid
                     insights_Store.previewTabs.splice(index, 1)
                 } else {
-                    insights_Store.activePreviewGuid = undefined
-                    insights_Store.previewTabs.splice(index, 1)
+                    if (insights_Store.previewTabs.length > 1) {
+                        insights_Store.previewTabs.splice(index, 1)
+                        insights_Store.activePreviewGuid =
+                            insights_Store.previewTabs[0].asset.guid
+                    } else {
+                        insights_Store.previewTabs.splice(index, 1)
+                        insights_Store.activePreviewGuid = undefined
+                    }
                 }
             }
             const selectPreviewTab = (guid: string) => {
@@ -274,7 +280,25 @@
                 }
             })
 
+            const getResultsIcon = () => {
+                if (
+                    activeInlineTab.value.playground.editor.columnList.length >
+                        0 &&
+                    activeInlineTab.value.playground.editor.dataList.length > 0
+                ) {
+                    return 'QueryOutputSuccess'
+                } else if (
+                    activeInlineTab.value.playground.resultsPane.result
+                        .isQueryRunning === 'error'
+                ) {
+                    return 'QueryOutputFail'
+                } else {
+                    return 'QueryOutputNeutral'
+                }
+            }
+
             return {
+                getResultsIcon,
                 columnsCount,
                 rowsCount,
                 onPreviewTabClose,

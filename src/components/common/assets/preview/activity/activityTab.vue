@@ -30,12 +30,13 @@
             v-if="['Table', 'View'].includes(selectedAsset.typeName)"
             class="px-5 pb-4 mt-0"
         >
-            <ActivityTypeSelect
-                v-model="activityType"
+            <ChildActivity
+                v-model="childActivity"
                 type-name="Column"
+                placeholder="Select a column for column level activity"
                 :selectedAsset="selectedAsset"
-                @change="handleActivityTypeChange"
-            ></ActivityTypeSelect>
+                @change="handleChildActivitySelect"
+            ></ChildActivity>
         </div>
         <div
             v-if="auditList.length === 0 && isLoading"
@@ -284,6 +285,8 @@
 
             const activityType = ref('all')
 
+            const childActivity = ref()
+
             const facets = ref()
             const facetsGTC = ref()
             const termAndCategoriesList = ref()
@@ -461,6 +464,11 @@
                     quickChange()
                 }
             }
+
+            const handleChildActivitySelect = () => {
+                console.log(childActivity.value)
+            }
+
             watch(isReady, () => {
                 // fetch children terms and categories for glossary wide activity
                 if (
@@ -484,6 +492,7 @@
                 limit,
                 offset,
                 preference,
+                childActivity,
                 facets,
                 auditList,
                 getAuditEventComponent,
@@ -496,6 +505,7 @@
                 activityType,
                 activityTypeMap,
                 handleActivityTypeChange,
+                handleChildActivitySelect,
                 glossaryLabel,
                 getTermsAndCategoriesDetail,
                 getEntityStatusIcon,

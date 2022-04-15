@@ -1,58 +1,47 @@
 <template>
-    <div class="flex items-center w-full">
-        <a-select
-            :placeholder="placeholder"
-            :value="modelValue"
-            :allowClear="true"
-            :showSearch="true"
-            class="w-full asset-select"
-            :dropdownMatchSelectWidth="true"
-            @change="handleChange"
-            :disabled="disabled"
-            :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-            dropdownClassName="connectorDropdown"
-            :loading="isLoading"
-            @search="handleSearch"
-        >
-            <template v-for="item in dropdownOption" :key="item.value">
-                <a-select-option :value="item.value">
-                    <div class="flex flex-col">
-                        <div class="flex items-center">
-                            <Tooltip
-                                :tooltip-text="item.label"
-                                placement="topLeft"
-                            />
-                        </div>
+    <a-select
+        :placeholder="placeholder"
+        v-model:value="localValue"
+        :allowClear="true"
+        :showSearch="true"
+        class="w-full"
+        :dropdownMatchSelectWidth="true"
+        @change="handleChange"
+        :disabled="disabled"
+        :loading="isValidating"
+        @search="handleSearch"
+    >
+        <template v-for="item in dropdownOption" :key="item.value">
+            <a-select-option :value="item.value">
+                <div class="flex flex-col">
+                    <div class="flex items-center">
+                        <Tooltip
+                            :tooltip-text="item.label"
+                            placement="topLeft"
+                        />
                     </div>
-                </a-select-option>
-            </template>
-            <template #suffixIcon>
-                <AtlanIcon icon="CaretDown" class="mb-0" />
-            </template>
-            <template v-if="isLoading" #notFoundContent>
-                <a-spin size="small" class="mr-1" />searching {{ typeName }}
-            </template>
-            <template v-if="error" #notFoundContent>
-                <AtlanIcon icon="Error"></AtlanIcon>
-            </template>
-        </a-select>
-    </div>
+                </div>
+            </a-select-option>
+        </template>
+        <template #suffixIcon>
+            <AtlanIcon icon="CaretDown" class="mb-0" />
+        </template>
+        <template v-if="isValidating" #notFoundContent>
+            <a-spin size="small" class="mr-1" />searching {{ typeName }}
+        </template>
+        <template v-if="error" #notFoundContent>
+            <AtlanIcon icon="Error"></AtlanIcon>
+        </template>
+    </a-select>
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        watch,
-        toRefs,
-        computed,
-        ref,
-        PropType,
-    } from 'vue'
+    import { defineComponent, toRefs, computed, ref, PropType } from 'vue'
     import { useDebounceFn } from '@vueuse/core'
-    import bodybuilder from 'bodybuilder'
     import Tooltip from '@common/ellipsis/index.vue'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import { useVModels } from '@vueuse/core'
 
     export default defineComponent({
         name: 'AssetSelector',
@@ -89,9 +78,13 @@
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
-            const { disabled, filters, typeName, modelValue } = toRefs(props)
+            const { disabled, typeName, selectedAsset } = toRefs(props)
 
-            const limit = ref(20)
+            const { modelValue } = useVModels(props, emit)
+            const localValue = ref(modelValue.value)
+
+            const queryText = ref('')
+            const limit = ref(100)
             const offset = ref(0)
             const facets = ref({
                 typeName: typeName.value,
@@ -100,16 +93,11 @@
             const postFacets = ref({})
             const dependentKey = ref('CHILD_ASSET_LIST')
 
-            const columnAttributes = ref([
+            const attributes = ref([
                 'name',
                 'displayName',
-                'description',
-                'displayDescription',
-                'userDescription',
                 'certificateStatus',
                 'certificateUpdatedBy',
-                'meanings',
-                'category',
                 'dataType',
                 'isPrimary',
                 'isCustom',
@@ -121,11 +109,11 @@
                 'order',
             ])
 
-            const defaultAttributes = ref([...columnAttributes.value])
+            const defaultAttributes = ref([...attributes.value])
             const preference = ref({
                 sort: 'order-asc',
             })
-            const relationAttributes = ref([...DefaultRelationAttributes])
+            const relationAttributes = ref([])
 
             const assetQualifiedName = computed(
                 () => selectedAsset.value?.attributes?.qualifiedName
@@ -152,9 +140,8 @@
             updateFacet()
 
             const {
-                freshList: list,
-                list: combinedList,
-                isLoading,
+                list,
+
                 quickChange,
                 totalCount,
                 error,
@@ -175,77 +162,16 @@
             })
 
             const handleSearch = useDebounceFn((searchText: string) => {
-                const base = bodybuilder()
-
-                if (searchText) {
-                    base.orQuery('match', 'name', {
-                        query: searchText,
-                        boost: 40,
-                    })
-
-                    base.orQuery('match', 'name', {
-                        query: searchText,
-                        operator: 'AND',
-                        boost: 40,
-                    })
-
-                    base.orQuery('match', 'name.keyword', {
-                        query: searchText,
-                        boost: 120,
-                    })
-
-                    base.orQuery('match_phrase', 'name', {
-                        query: searchText,
-                        boost: 70,
-                    })
-                    base.orQuery('wildcard', 'name', {
-                        value: `${searchText.toLowerCase()}*`,
-                    })
-                    base.queryMinimumShouldMatch(1)
-
-                    initialBody.dsl = {
-                        query: {
-                            bool: {
-                                ...base.build()?.query?.bool,
-                                ...filters.value?.query?.bool,
-                            },
-                        },
-                        size: 100,
-                    }
-                } else {
-                    initialBody.dsl = filters.value
-                }
-
-                replaceBody(initialBody)
+                offset.value = 0
+                queryText.value = searchText
+                quickChange()
             }, 200)
 
-            watch(error, () => {
-                if (error.value) {
-                    console.log(typeName.value)
-                    // message.error({
-                    //     content: `Failed to fetch ${typeName.value}s!`,
-                    //     duration: 3,
-                    // })
-                }
-            })
-            const totalCount = computed(() => data.value?.approximateCount || 0)
-            watch(
-                filters,
-                () => {
-                    if (!disabled.value) {
-                        if (!modelValue.value) {
-                            initialBody.dsl = filters.value
-                            replaceBody(initialBody)
-                        }
-                    }
-                },
-                { immediate: true }
-            )
-
-            const handleChange = (checkedValues: string) => {
-                emit('update:modelValue', checkedValues)
-                emit('change', checkedValues)
+            const handleChange = () => {
+                modelValue.value = localValue.value
+                emit('change')
             }
+
             const dropdownOption = computed(() =>
                 list.value.map((ls) => ({
                     label: ls.attributes?.displayName || ls.attributes?.name,
@@ -255,16 +181,14 @@
 
             return {
                 typeName,
-                list,
                 handleChange,
                 totalCount,
-                data,
-                isLoading,
-                modelValue,
+                isValidating,
+
                 dropdownOption,
-                immediate,
                 handleSearch,
                 error,
+                localValue,
             }
         },
     })

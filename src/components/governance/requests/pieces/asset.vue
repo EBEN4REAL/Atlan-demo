@@ -11,7 +11,8 @@
             <CertificateBadge
                 v-if="destinationEntity?.attributes?.certificateStatus"
                 :status="destinationEntity?.attributes?.certificateStatus"
-                class="mb-1 ml-2 mr-2"
+                class="mb-1  mr-2"
+                :class="size === 'small' ? '' : 'ml-2'"
                 :username="destinationEntity?.attributes?.certificateUpdatedBy"
                 :timestamp="timeAgo"
             />

@@ -10,7 +10,7 @@
         @click="$emit('select')"
     >
         <div
-            class="flex items-center overflow-hidden "
+            class="flex items-center overflow-hidden"
             :class="showRequestStatus ? 'col-span-4' : 'col-span-4'"
         >
             <!-- TODO: Uncomment for bulk selection -->
@@ -23,8 +23,8 @@
               
             </Popover> -->
             <div
-                class="cursor-pointer flex items-center "
-                :class="showRequestStatus?'w-full':''"
+                class="cursor-pointer flex items-center"
+                :class="showRequestStatus ? 'w-full' : ''"
                 @mouseenter="$emit('mouseEnterAsset')"
                 @click="handleShowAssetSidebar(item.guid)"
             >
@@ -36,34 +36,45 @@
                             'AtlasGlossary',
                         ].includes(request?.entityType)
                     "
-                    class="flex items-center"
                 >
-                    <atlan-icon
-                        :icon="
+                    <div class="flex items-center">
+                        <span>{{
+                            request?.destinationEntity?.attributes?.name
+                        }}</span>
+                        <CertificateBadge
+                            v-if="
+                                request?.destinationEntity?.attributes
+                                    ?.certificateStatus
+                            "
+                            :status="
+                                request?.destinationEntity?.attributes
+                                    ?.certificateStatus
+                            "
+                            class="mb-1 ml-1"
+                            :username="
+                                request?.destinationEntity?.attributes
+                                    ?.certificateUpdatedBy
+                            "
+                        />
+                    </div>
+                    <span
+                        class="flex items-center space-x-1 mt-1 text-gray-500"
+                    >
+                        <atlan-icon
+                            :icon="
+                                capitalizeFirstLetter(
+                                    glossaryLabel[request?.entityType]
+                                )
+                            "
+                            class="mr-1 mb-1"
+                        ></atlan-icon>
+
+                        {{
                             capitalizeFirstLetter(
                                 glossaryLabel[request?.entityType]
                             )
-                        "
-                        class="mr-1 mb-1"
-                    ></atlan-icon>
-                    <span class="text-primary">{{
-                        request?.destinationEntity?.attributes?.name
-                    }}</span>
-                    <CertificateBadge
-                        v-if="
-                            request?.destinationEntity?.attributes
-                                ?.certificateStatus
-                        "
-                        :status="
-                            request?.destinationEntity?.attributes
-                                ?.certificateStatus
-                        "
-                        class="mb-1 ml-1"
-                        :username="
-                            request?.destinationEntity?.attributes
-                                ?.certificateUpdatedBy
-                        "
-                    />
+                        }}
+                    </span>
                 </div>
                 <AssetPiece
                     v-else-if="request.destinationQualifiedName"
@@ -324,7 +335,11 @@
                             :avatar-shape="'circle'"
                             class="mr-2"
                         />
-                        <span class="text-gray-700">{{ nameUpdater }}</span>
+                        <span
+                            class="text-gray-700 truncate overflow-ellipsis"
+                            :style="'max-width: 100px'"
+                            >{{ nameUpdater }}</span
+                        >
                     </div>
                 </div>
             </div>

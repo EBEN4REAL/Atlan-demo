@@ -7,21 +7,18 @@
         class="w-full"
         :dropdownMatchSelectWidth="true"
         @change="handleChange"
-        :disabled="disabled"
         :loading="isValidating"
         @search="handleSearch"
     >
         <template v-for="item in list" :key="item?.attributes?.qualifiedName">
             <a-select-option :value="item?.attributes?.qualifiedName">
                 <div class="inline-flex items-center justify-between w-full">
-                    <div class="flex items-center parent-ellipsis-container">
+                    <div class="flex items-center">
                         <component
                             :is="dataTypeCategoryImage(item)"
-                            class="flex-none w-auto h-4 text-gray-500 -mt-0.5 parent-ellipsis-container-extension"
+                            class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
                         ></component>
-                        <span
-                            class="mb-0 ml-1 text-sm text-gray-700 truncate parent-ellipsis-container-base"
-                        >
+                        <span class="mt-0.5 ml-1 text-gray-700 truncate">
                             {{ title(item) }}
                         </span>
                     </div>
@@ -75,7 +72,6 @@
                 type: String,
                 required: false,
             },
-
             placeholder: {
                 type: String,
                 required: true,
@@ -89,10 +85,6 @@
                 required: false,
                 default: () => false,
             },
-            bgGrayForSelector: {
-                type: Boolean,
-                default: true,
-            },
             selectedAsset: {
                 type: Object as PropType<assetInterface>,
                 required: true,
@@ -100,7 +92,7 @@
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
-            const { disabled, typeName, selectedAsset } = toRefs(props)
+            const { typeName, selectedAsset } = toRefs(props)
 
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
@@ -220,18 +212,3 @@
         },
     })
 </script>
-<style lang="less" scoped>
-    .parent-ellipsis-container {
-        display: flex;
-        align-items: center;
-        min-width: 0;
-    }
-    .parent-ellipsis-container-base {
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
-    }
-    .parent-ellipsis-container-extension {
-        flex-shrink: 0;
-    }
-</style>

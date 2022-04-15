@@ -11,13 +11,32 @@
         :loading="isValidating"
         @search="handleSearch"
     >
-        <template v-for="item in dropdownOption" :key="item.value">
-            <a-select-option :value="item.value">
-                <div class="flex flex-col">
-                    <div class="flex items-center">
-                        <Tooltip
-                            :tooltip-text="item.label"
-                            placement="topLeft"
+        <template v-for="item in list" :key="item?.attributes?.qualifiedName">
+            <a-select-option :value="item?.attributes?.qualifiedName">
+                <div class="inline-flex items-center justify-between w-full">
+                    <div class="flex items-center parent-ellipsis-container">
+                        <component
+                            :is="dataTypeCategoryImage(item)"
+                            class="flex-none w-auto h-4 text-gray-500 -mt-0.5 parent-ellipsis-container-extension"
+                        ></component>
+                        <span
+                            class="mb-0 ml-1 text-sm text-gray-700 truncate parent-ellipsis-container-base"
+                        >
+                            {{ title(item) }}
+                        </span>
+                    </div>
+                    <div
+                        v-if="
+                            item.attributes?.isPrimary ||
+                            item.attributes?.isForeign ||
+                            item.attributes?.isPartition
+                        "
+                        class="relative flex items-center h-full"
+                    >
+                        <ColumnKeys
+                            :isPrimary="item.attributes?.isPrimary"
+                            :isForeign="item.attributes?.isForeign"
+                            :isPartition="item.attributes?.isPartition"
                         />
                     </div>
                 </div>
@@ -42,11 +61,14 @@
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { useVModels } from '@vueuse/core'
+    import ColumnKeys from '~/components/common/column/columnKeys.vue'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         name: 'AssetSelector',
         components: {
             Tooltip,
+            ColumnKeys,
         },
         props: {
             modelValue: {
@@ -82,6 +104,9 @@
 
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
+
+            const { certificateStatus, dataTypeCategoryImage, title } =
+                useAssetInfo()
 
             const queryText = ref('')
             const limit = ref(100)
@@ -184,32 +209,29 @@
                 handleChange,
                 totalCount,
                 isValidating,
-
+                list,
                 dropdownOption,
                 handleSearch,
                 error,
                 localValue,
+                dataTypeCategoryImage,
+                title,
             }
         },
     })
 </script>
-
-<style lang="less">
-    .asset-select {
-        .ant-select-selector {
-            @apply border-0 rounded-lg !important;
-            border-top-width: 0px !important;
-            border-right-width: 0px !important;
-            border-bottom-width: 1px !important;
-            border-left-width: 0px !important;
-            border-color: rgba(
-                243,
-                243,
-                243,
-                var(--tw-border-opacity)
-            ) !important;
-            box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
-                var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow) !important;
-        }
+<style lang="less" scoped>
+    .parent-ellipsis-container {
+        display: flex;
+        align-items: center;
+        min-width: 0;
+    }
+    .parent-ellipsis-container-base {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+    .parent-ellipsis-container-extension {
+        flex-shrink: 0;
     }
 </style>

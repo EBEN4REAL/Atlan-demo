@@ -155,7 +155,7 @@
         <div
             v-else-if="
                 (personaList === null || personaList?.length == 0) &&
-                isPersonaError === undefined
+                errorPersona === undefined
             "
             class="flex flex-col items-center h-full"
         >
@@ -187,7 +187,7 @@
                 </a>
             </div>
         </div>
-        <ErrorView v-else :error="isPersonaError">
+        <ErrorView v-else :error="errorPersona">
             <div class="mt-3">
                 <a-button
                     data-test-id="try-again"
@@ -227,7 +227,7 @@
         selectedPersona,
         selectedPersonaId,
         isPersonaLoading,
-        isPersonaError,
+        errorPersona,
         isPersonaListReady,
         personaList,
         facets,
@@ -442,7 +442,7 @@
                 modalVisible,
                 // createNewPersona,
                 isPersonaLoading,
-                isPersonaError,
+                errorPersona,
                 isEditing,
                 AddPersonaIllustration,
                 modalDetailPolicyVisible,

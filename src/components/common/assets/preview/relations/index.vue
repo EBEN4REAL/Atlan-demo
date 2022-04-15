@@ -16,7 +16,7 @@
             </div>
         </div>
 
-        <div class="px-5 pt-3 pb-0">
+        <div class="px-5 pb-0">
             <SearchAdvanced
                 v-model:value="queryText"
                 :autofocus="true"

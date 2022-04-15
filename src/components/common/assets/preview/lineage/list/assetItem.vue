@@ -345,6 +345,7 @@
                                 :entity-guid="item?.guid"
                                 :mouse-enter-delay="mouseEnterDelay"
                                 @mouse-entered="enteredPill"
+                                @mouse-left="leftPill"
                             >
                                 <ClassificationPill
                                     :name="classification.name"
@@ -505,7 +506,8 @@
                     )
                 )
             )
-            const { mouseEnterDelay, enteredPill } = useMouseEnterDelay()
+            const { mouseEnterDelay, enteredPill, leftPill } =
+                useMouseEnterDelay()
 
             return {
                 isChecked,
@@ -548,6 +550,9 @@
                 classifications,
                 getLineagePath,
                 // classificationPopoverMouseEnterDelay,
+                mouseEnterDelay,
+                leftPill,
+                enteredPill,
             }
         },
     })

@@ -104,6 +104,7 @@
                             :entity-guid="item?.guid"
                             :mouse-enter-delay="mouseEnterDelay"
                             @mouse-entered="enteredPill"
+                            @mouse-left="leftPill"
                         >
                             <ClassificationPill
                                 :name="classification.name"
@@ -265,7 +266,8 @@
                     shouldDrawerUpdate.value = false
                 }
             })
-            const { mouseEnterDelay, enteredPill } = useMouseEnterDelay()
+            const { mouseEnterDelay, enteredPill, leftPill } =
+                useMouseEnterDelay()
 
             return {
                 title,
@@ -302,6 +304,7 @@
                 setColumnToSelect,
                 showLineageGraphButton,
                 isLineageRoute,
+                leftPill,
             }
         },
     })

@@ -35,6 +35,9 @@
                         <component
                             :is="getPreviewComponent(item?.attributes?.link)"
                             :link="item"
+                            :asset-type="
+                                item?.attributes?.asset?.typeName || null
+                            "
                             :asset-subtitle="true"
                             class="border-none"
                         >

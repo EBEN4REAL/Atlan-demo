@@ -3,7 +3,7 @@
         <div
             class="relative flex items-center justify-center h-full px-2 ml-2 rounded-tl cursor-pointer text-new-gray-700"
             style="max-width: 85px"
-            :class="activeResultTab ? 'tab-active' : 'not-active'"
+            :class="activeResultPreviewTab ? 'tab-active' : 'not-active'"
             @click="selectActiveResultTab"
             v-if="previewModeActive"
         >
@@ -81,7 +81,10 @@
         </div>
         <div
             class="flex items-center px-3 text-new-gray-800 mt-0.5"
-            v-if="!compactMode || !previewModeActive"
+            v-if="
+                (!compactMode && Boolean(Number(columnsCount))) ||
+                (!previewModeActive && Boolean(Number(columnsCount)))
+            "
         >
             <span class="mr-1">
                 {{ `${rowsCount} rows, ` }}
@@ -158,7 +161,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, Ref, computed, inject, ref } from 'vue'
+    import { defineComponent, Ref, computed, inject, ref, watch } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import Tooltip from '@common/ellipsis/index.vue'
     import { useUtils } from '~/components/insights/common/composables/useUtils'
@@ -192,11 +195,14 @@
                 )
             )
 
-            const activeResultTab = ref(false)
+            const activeResultPreviewTab = inject(
+                'activeResultPreviewTab'
+            ) as Ref<boolean>
             const selectActiveResultTab = () => {
-                activeResultTab.value = !activeResultTab.value
+                activeResultPreviewTab.value = !activeResultPreviewTab.value
                 insights_Store.activePreviewGuid = undefined
             }
+
             const compactMode = computed(
                 () => activeInlineTab.value.assetSidebar.isVisible
             )
@@ -221,7 +227,7 @@
             }
             const selectPreviewTab = (guid: string) => {
                 insights_Store.activePreviewGuid = guid
-                activeResultTab.value = false
+                activeResultPreviewTab.value = false
             }
 
             const rowsCount = computed(() => {
@@ -284,7 +290,7 @@
                 mode,
                 activeKey,
                 queryExecutionTime,
-                activeResultTab,
+                activeResultPreviewTab,
                 compactMode,
             }
         },

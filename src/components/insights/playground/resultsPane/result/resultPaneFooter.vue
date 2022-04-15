@@ -3,8 +3,8 @@
         class="flex justify-between flex-shrink-0 w-full h-10 py-1 text-xs text-sm border-b bg-new-gray-100"
         style=""
         v-if="
-            activeInlineTab.playground.editor.columnList.length > 0 &&
-            isQueryRunning === 'success'
+            (columnsCount > 0 && isQueryRunning === 'success') ||
+            insights_Store.previewTabs.length
         "
     >
         <PreviewTabs />
@@ -16,6 +16,7 @@
                         ? ADJACENT_TOOLTIP_DELAY
                         : MOUSE_ENTER_DELAY
                 "
+                v-if="columnsCount"
             >
                 <template #title>Copy data</template>
 
@@ -50,6 +51,7 @@
                         ? ADJACENT_TOOLTIP_DELAY
                         : MOUSE_ENTER_DELAY
                 "
+                v-if="columnsCount"
             >
                 <template #title>Export data</template>
                 <AtlanBtn
@@ -83,6 +85,7 @@
                         ? ADJACENT_TOOLTIP_DELAY
                         : MOUSE_ENTER_DELAY
                 "
+                v-if="columnsCount"
             >
                 <template #title>Full screen</template>
                 <AtlanBtn
@@ -134,11 +137,18 @@
             const { getFormattedTimeFromMilliSeconds } = useUtils()
             const insights_Store = insightsStore()
 
-            const isQueryRunning = computed(
-                () =>
-                    activeInlineTab.value?.playground?.resultsPane?.result
-                        ?.isQueryRunning
-            )
+            const isQueryRunning = computed(() => {
+                if (insights_Store.activePreviewGuid !== undefined) {
+                    const _index = insights_Store.previewTabs.findIndex(
+                        (el) =>
+                            el.asset.guid === insights_Store.activePreviewGuid
+                    )
+                    return insights_Store.previewTabs[_index].isQueryRunning
+                } else {
+                    return activeInlineTab.value?.playground?.resultsPane
+                        ?.result?.isQueryRunning
+                }
+            })
             const compactMode = computed(
                 () => activeInlineTab.value.assetSidebar.isVisible
             )
@@ -184,8 +194,22 @@
                     )
                 }
             }
+            const columnsCount = computed(() => {
+                if (insights_Store.activePreviewGuid !== undefined) {
+                    const _index = insights_Store.previewTabs.findIndex(
+                        (el) =>
+                            el.asset.guid === insights_Store.activePreviewGuid
+                    )
+                    return insights_Store.previewTabs[_index].columns.length
+                } else {
+                    return activeInlineTab.value.playground.editor.columnList
+                        .length
+                }
+            })
 
             return {
+                insights_Store,
+                columnsCount,
                 useWrapperExport,
                 useWrapperCopy,
                 previewModeActive,

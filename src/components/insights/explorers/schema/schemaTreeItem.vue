@@ -688,6 +688,9 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+            const activeResultPreviewTab = inject(
+                'activeResultPreviewTab'
+            ) as Ref<boolean>
             const editorInstanceRef = inject('editorInstance') as Ref<any>
             const monacoInstanceRef = inject('monacoInstance') as Ref<any>
             const popoverAllowed = ['Column', 'Table', 'View']
@@ -1143,6 +1146,7 @@
             }
 
             const playQuery = (newQuery, asset: assetInterface) => {
+                activeResultPreviewTab.value = false
                 insights_Store.addPreviewTab(asset)
                 insights_Store.activePreviewGuid = asset.guid
                 // schema explorer context

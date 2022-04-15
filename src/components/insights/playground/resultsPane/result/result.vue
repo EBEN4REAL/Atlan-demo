@@ -1,7 +1,7 @@
 <template>
     <div
         class="h-full overflow-y-hidden"
-        v-if="!insights_Store.activePreviewGuid"
+        v-if="!insights_Store.activePreviewGuid || isQueryRunning === 'loading'"
     >
         <div
             class="flex flex-col h-full"
@@ -123,11 +123,23 @@
             />
         </div>
     </div>
-    <PreviewTabResult v-else />
+    <PreviewTabResult
+        v-else-if="
+            insights_Store.activePreviewGuid && isQueryRunning !== 'loading'
+        "
+    />
 </template>
 
 <script lang="ts">
-    import { defineComponent, Ref, inject, computed, PropType, ref } from 'vue'
+    import {
+        defineComponent,
+        Ref,
+        inject,
+        computed,
+        PropType,
+        ref,
+        watch,
+    } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import LoadingView from '@common/loaders/page.vue'
     import Tooltip from '@/common/ellipsis/index.vue'

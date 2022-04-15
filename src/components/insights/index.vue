@@ -186,6 +186,7 @@
                 'isCollectionCreated'
             ) as Ref<Boolean>
             const collectionSelectorChange = ref(false)
+            const activeResultPreviewTab = ref(false)
 
             const {
                 MIN_EXPLORER_WIDTH,
@@ -346,6 +347,7 @@
             */
 
             const provideData: provideDataInterface = {
+                activeResultPreviewTab,
                 activeExplorerTabId: activeTabId,
                 showcustomToolBar,
                 activeInlineTab,

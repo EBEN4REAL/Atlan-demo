@@ -93,7 +93,10 @@ export default function useRunQuery() {
             ]
         > = ref([])
         const dataList = ref([])
-        const { start, reset } = useTimer(activeInlineTab)
+        const { start, reset } = useTimer(
+            activeInlineTab,
+            insights_Store.activePreviewGuid
+        )
 
         insights_Store.previewTabs[previewTabIndex].isQueryRunning = 'loading'
         insights_Store.previewTabs[previewTabIndex].isQueryAborted = false

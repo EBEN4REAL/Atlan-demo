@@ -37,6 +37,7 @@ const actions: Actions = {
             buttonDisable: false,
             isQueryAborted: false,
             tabQueryState: false,
+            buttonDisable: false,
         }
         if (this.previewTabs.length === MAX_PREVIEW_TAB_QUEUE) {
             this.previewTabs.splice(0, 1)

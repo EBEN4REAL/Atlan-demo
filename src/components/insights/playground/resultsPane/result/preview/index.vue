@@ -38,7 +38,9 @@
                 >
                     <template #tab>
                         <div
-                            @click.stop="() => selectPreviewTab(item.guid)"
+                            @click.stop="
+                                () => selectPreviewTab(item.asset.guid)
+                            "
                             class="relative flex items-center h-full px-2 text-sm text-new-gray-700 group"
                             style="width: 148px"
                         >
@@ -82,15 +84,11 @@
             v-if="!compactMode || !previewModeActive"
         >
             <span class="mr-1">
-                {{
-                    `${activeInlineTab.playground.resultsPane.result.totalRowsCount?.toLocaleString()} rows, `
-                }}
+                {{ `${rowsCount} rows, ` }}
             </span>
 
             <span class="mr-1">
-                {{
-                    activeInlineTab.playground.editor.columnList.length?.toLocaleString()
-                }}
+                {{ columnsCount }}
                 cols
             </span>
 
@@ -123,15 +121,11 @@
                         @mouseout="recordTooltipPresence"
                     >
                         <span class="mr-1">
-                            {{
-                                `${activeInlineTab.playground.resultsPane.result.totalRowsCount?.toLocaleString()} rows, `
-                            }}
+                            {{ `${rowsCount} rows, ` }}
                         </span>
 
                         <span class="mr-1">
-                            {{
-                                activeInlineTab.playground.editor.columnList.length?.toLocaleString()
-                            }}
+                            {{ columnsCount }}
                             cols
                         </span>
 
@@ -191,11 +185,6 @@
             const { getFormattedTimeFromMilliSeconds } = useUtils()
             const mode = ref('top')
             const activeKey = ref('1')
-            const queryExecutionTime = computed(
-                () =>
-                    activeInlineTab.value?.playground?.resultsPane?.result
-                        ?.executionTime
-            )
 
             const previewIndex = computed(() =>
                 insights_Store.previewTabs.findIndex(
@@ -206,6 +195,7 @@
             const activeResultTab = ref(false)
             const selectActiveResultTab = () => {
                 activeResultTab.value = !activeResultTab.value
+                insights_Store.activePreviewGuid = undefined
             }
             const compactMode = computed(
                 () => activeInlineTab.value.assetSidebar.isVisible
@@ -218,7 +208,7 @@
                 const index = insights_Store.previewTabs.findIndex(
                     (el) => el.asset.guid === guid
                 )
-                debugger
+
                 if (index > 0) {
                     // select previous tab
                     insights_Store.activePreviewGuid =
@@ -231,9 +221,51 @@
             }
             const selectPreviewTab = (guid: string) => {
                 insights_Store.activePreviewGuid = guid
+                activeResultTab.value = false
             }
 
+            const rowsCount = computed(() => {
+                if (insights_Store.activePreviewGuid !== undefined) {
+                    const _index = insights_Store.previewTabs.findIndex(
+                        (el) =>
+                            el.asset.guid === insights_Store.activePreviewGuid
+                    )
+                    return insights_Store.previewTabs[_index].totalRowsCount
+                } else {
+                    return activeInlineTab.value.playground.resultsPane.result.totalRowsCount?.toLocaleString()
+                }
+            })
+
+            const columnsCount = computed(() => {
+                if (insights_Store.activePreviewGuid !== undefined) {
+                    const _index = insights_Store.previewTabs.findIndex(
+                        (el) =>
+                            el.asset.guid === insights_Store.activePreviewGuid
+                    )
+                    return insights_Store.previewTabs[
+                        _index
+                    ].columns.length?.toLocaleString()
+                } else {
+                    return activeInlineTab.value.playground.editor.columnList.length?.toLocaleString()
+                }
+            })
+
+            const queryExecutionTime = computed(() => {
+                if (insights_Store.activePreviewGuid !== undefined) {
+                    const _index = insights_Store.previewTabs.findIndex(
+                        (el) =>
+                            el.asset.guid === insights_Store.activePreviewGuid
+                    )
+                    return insights_Store.previewTabs[_index].executionTime
+                } else {
+                    return activeInlineTab.value?.playground?.resultsPane
+                        ?.result?.executionTime
+                }
+            })
+
             return {
+                columnsCount,
+                rowsCount,
                 onPreviewTabClose,
                 selectPreviewTab,
                 previewIndex,

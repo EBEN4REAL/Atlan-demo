@@ -26,12 +26,7 @@
                     class="py-0.5 text-sm border-none text-xs rounded custom-shadow cursor-pointer mr-2"
                     style="height: 24px"
                     @mouseout="recordTooltipPresence"
-                    @click="
-                        useCopy(
-                            activeInlineTab.playground.editor.columnList,
-                            activeInlineTab.playground.editor.dataList
-                        )
-                    "
+                    @click="useWrapperCopy"
                 >
                     <div
                         class="flex items-center cursor-pointer text-new-gray-800"
@@ -64,15 +59,7 @@
                     class="py-0.5 text-sm border-none text-xs rounded custom-shadow cursor-pointer mr-2"
                     style="height: 24px"
                     @mouseout="recordTooltipPresence"
-                    @click="
-                        useTableExport(
-                            activeInlineTab?.queryId
-                                ? activeInlineTab?.label
-                                : null,
-                            activeInlineTab.playground.editor.columnList,
-                            activeInlineTab.playground.editor.dataList
-                        )
-                    "
+                    @click="useWrapperExport"
                 >
                     <div
                         class="flex items-center text-xs cursor-pointer text-new-gray-800"
@@ -159,7 +146,48 @@
                 () => insights_Store.previewTabs.length > 0
             )
 
+            const useWrapperCopy = () => {
+                if (insights_Store.activePreviewGuid !== undefined) {
+                    const _index = insights_Store.previewTabs.findIndex(
+                        (el) =>
+                            el.asset.guid === insights_Store.activePreviewGuid
+                    )
+                    useCopy(
+                        insights_Store.previewTabs[_index].columns,
+                        insights_Store.previewTabs[_index].rows
+                    )
+                } else {
+                    useCopy(
+                        activeInlineTab.value.playground.editor.columnList,
+                        activeInlineTab.value.playground.editor.dataList
+                    )
+                }
+            }
+            const useWrapperExport = () => {
+                if (insights_Store.activePreviewGuid !== undefined) {
+                    const _index = insights_Store.previewTabs.findIndex(
+                        (el) =>
+                            el.asset.guid === insights_Store.activePreviewGuid
+                    )
+                    useTableExport(
+                        null,
+                        insights_Store.previewTabs[_index].columns,
+                        insights_Store.previewTabs[_index].rows
+                    )
+                } else {
+                    useTableExport(
+                        activeInlineTab.value?.queryId
+                            ? activeInlineTab.value?.label
+                            : null,
+                        activeInlineTab.value.playground.editor.columnList,
+                        activeInlineTab.value.playground.editor.dataList
+                    )
+                }
+            }
+
             return {
+                useWrapperExport,
+                useWrapperCopy,
                 previewModeActive,
                 compactMode,
                 activeInlineTab,

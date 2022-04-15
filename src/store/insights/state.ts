@@ -12,6 +12,7 @@ export interface PreviewTabs {
     eventSourceInstance: any
     isQueryAborted: boolean
     tabQueryState: boolean
+    buttonDisable: boolean
 }
 
 export interface State {

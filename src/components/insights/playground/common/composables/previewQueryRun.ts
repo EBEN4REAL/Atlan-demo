@@ -332,69 +332,65 @@ export default function useRunQuery() {
         })
     }
 
-    const abortQuery = (
-        tabIndex: number,
-        inlineTabs: Ref<activeInlineTabInterface[]>,
-        editorInstance: Ref<any>,
-        monacoInstance: Ref<any>
-    ) => {
-        let activeInlineTab = ref(inlineTabs.value[tabIndex])
+    const abortQuery = (previewTabIndex: number) => {
+        const insights_Store = insightsStore()
+
         if (
-            activeInlineTab.value.playground.resultsPane.result
-                .eventSourceInstance?.close
+            insights_Store.previewTabs[previewTabIndex].eventSourceInstance
+                ?.close
         ) {
-            activeInlineTab.value.playground.resultsPane.result.eventSourceInstance?.close()
+            insights_Store.previewTabs[
+                previewTabIndex
+            ].eventSourceInstance?.close()
             // debugger
         }
 
         // stop timer
 
-        if (activeInlineTab.value.playground.resultsPane.result.abortQueryFn) {
-            activeInlineTab.value.playground.resultsPane.result.abortQueryFn()
+        if (insights_Store.previewTabs[previewTabIndex].abortQueryFn) {
+            insights_Store.previewTabs[previewTabIndex].abortQueryFn()
             console.log('clock running abort timer stop 1')
         }
 
-        // activeInlineTab.value.playground.resultsPane.result.tabQueryState =
+        // insights_Store.previewTabs[previewTabIndex].tabQueryState =
         //     false
 
         if (
             canQueryAbort(
                 getConnectorName(
-                    activeInlineTab.value.playground.editor.context
-                        .attributeValue
+                    insights_Store.previewTabs[previewTabIndex].asset.attributes
+                        .qualifiedName
                 ) as string
             ) &&
-            activeInlineTab.value.playground.resultsPane.result.runQueryId
+            insights_Store.previewTabs[previewTabIndex].runQueryId
         ) {
             // stop timer
 
             /* Abort Query logic */
-            activeInlineTab.value.playground.resultsPane.result.buttonDisable =
-                true
+            insights_Store.previewTabs[previewTabIndex].buttonDisable = true
             const body = {
-                queryId:
-                    activeInlineTab.value.playground.resultsPane.result
-                        .runQueryId,
+                queryId: insights_Store.previewTabs[previewTabIndex].runQueryId,
                 dataSourceName: getConnectionQualifiedName(
-                    activeInlineTab.value.explorer.schema.connectors
-                        .attributeValue
+                    insights_Store.previewTabs[previewTabIndex].asset.attributes
+                        .qualifiedName
                 ),
             }
 
             /* Change loading state */
             Insights.AbortQuery(body)
                 .then(() => {
-                    activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
+                    insights_Store.previewTabs[previewTabIndex].isQueryRunning =
                         ''
-                    activeInlineTab.value.playground.resultsPane.result.isQueryAborted =
+                    insights_Store.previewTabs[previewTabIndex].isQueryAborted =
                         true
 
-                    activeInlineTab.value.playground.resultsPane.result.eventSourceInstance =
-                        undefined
+                    insights_Store.previewTabs[
+                        previewTabIndex
+                    ].eventSourceInstance = undefined
 
-                    activeInlineTab.value.playground.resultsPane.result.buttonDisable =
+                    insights_Store.previewTabs[previewTabIndex].buttonDisable =
                         false
-                    activeInlineTab.value.playground.resultsPane.result.runQueryId =
+                    insights_Store.previewTabs[previewTabIndex].runQueryId =
                         undefined
                 })
                 .catch((error) => {
@@ -420,46 +416,43 @@ export default function useRunQuery() {
                             errorMessage.slice(1)
                     }
 
-                    activeInlineTab.value.playground.resultsPane.result.queryErrorObj =
-                        activeInlineTab.value.playground.resultsPane.result.queryErrorObj =
-                            {
-                                requestId:
-                                    activeInlineTab.value.playground.resultsPane
-                                        .result.runQueryId,
-                                errorName: errorMessage,
-                                errorMessage: errorMessage,
-                                errorCode: errorCode,
-                                developerMessage: error.value?.statusText,
-                                errorDescription: '',
-                            }
-                    activeInlineTab.value.playground.resultsPane.result.totalRowsCount =
+                    insights_Store.previewTabs[previewTabIndex].queryErrorObj =
+                        insights_Store.previewTabs[
+                            previewTabIndex
+                        ].queryErrorObj = {
+                            requestId:
+                                insights_Store.previewTabs[previewTabIndex]
+                                    .runQueryId,
+                            errorName: errorMessage,
+                            errorMessage: errorMessage,
+                            errorCode: errorCode,
+                            developerMessage: error.value?.statusText,
+                            errorDescription: '',
+                        }
+                    insights_Store.previewTabs[previewTabIndex].totalRowsCount =
                         -1
-                    activeInlineTab.value.playground.resultsPane.result.executionTime =
+                    insights_Store.previewTabs[previewTabIndex].executionTime =
                         -1
-                    activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
+                    insights_Store.previewTabs[previewTabIndex].isQueryRunning =
                         'error'
                     /* ------------------- */
                     /* Setting it undefined for new run */
 
-                    activeInlineTab.value.playground.resultsPane.result.runQueryId =
+                    insights_Store.previewTabs[previewTabIndex].runQueryId =
                         undefined
-                    activeInlineTab.value.playground.resultsPane.result.buttonDisable =
+                    insights_Store.previewTabs[previewTabIndex].buttonDisable =
                         false
                 })
         } else {
             // FIXME: code repetetion
-            activeInlineTab.value.playground.resultsPane.result.isQueryRunning =
-                ''
-            activeInlineTab.value.playground.resultsPane.result.isQueryAborted =
-                true
+            insights_Store.previewTabs[previewTabIndex].isQueryRunning = ''
+            insights_Store.previewTabs[previewTabIndex].isQueryAborted = true
 
-            activeInlineTab.value.playground.resultsPane.result.eventSourceInstance =
+            insights_Store.previewTabs[previewTabIndex].eventSourceInstance =
                 undefined
 
-            activeInlineTab.value.playground.resultsPane.result.buttonDisable =
-                false
-            activeInlineTab.value.playground.resultsPane.result.runQueryId =
-                undefined
+            insights_Store.previewTabs[previewTabIndex].buttonDisable = false
+            insights_Store.previewTabs[previewTabIndex].runQueryId = undefined
         }
     }
 

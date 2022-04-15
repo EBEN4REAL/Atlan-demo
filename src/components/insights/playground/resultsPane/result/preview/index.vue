@@ -70,7 +70,12 @@
                                     () => onPreviewTabClose(item.asset.guid)
                                 "
                                 @mouseout="recordTooltipPresence"
-                                class="absolute rounded opacity-0 right-2 group-hover:opacity-100 bg-new-gray-300 px-0.5"
+                                class="absolute rounded opacity-0 right-2 group-hover:opacity-100 px-0.5"
+                                :class="
+                                    previewIndex === index
+                                        ? 'bg-white hover:bg-new-gray-200'
+                                        : 'bg-new-gray-200 hover:bg-new-gray-300'
+                                "
                             >
                                 <AtlanIcon icon="Close" class="w-4 h-4" />
                             </div>

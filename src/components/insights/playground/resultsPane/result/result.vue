@@ -93,7 +93,11 @@
             <!-- --------------- -->
 
             <!-- First screen -->
-            <QueryAbort v-else-if="isQueryRunning === '' && isQueryAborted" />
+            <QueryAbort
+                :isQueryAborted="isQueryAborted"
+                :isQueryRunning="isQueryRunning"
+                v-else-if="isQueryRunning === '' && isQueryAborted"
+            />
 
             <div
                 v-else-if="isQueryRunning === ''"
@@ -110,12 +114,15 @@
             </div>
 
             <QueryError
+                :queryErrorObj="queryErrorObj"
+                :isQueryRunning="isQueryRunning"
                 v-else-if="
                     isQueryRunning === 'error' && !haveLineNumber(queryErrorObj)
                 "
             />
 
             <LineError
+                :queryErrorObj="queryErrorObj"
                 :errorDecorations="errorDecorations"
                 v-else-if="
                     isQueryRunning === 'error' && haveLineNumber(queryErrorObj)

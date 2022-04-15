@@ -44,7 +44,6 @@
             </div>
 
             <!-- <a-spin v-if="isQueryRunning === 'loading'" /> -->
-
             <div
                 class="flex flex-col h-full m-2 mb-0 overflow-hidden border rounded-lg border-gray-light"
                 v-if="
@@ -76,7 +75,12 @@
             <!-- --------------- -->
 
             <!-- First screen -->
-            <QueryAbort v-else-if="isQueryRunning === '' && isQueryAborted" />
+
+            <QueryAbort
+                :isQueryRunning="isQueryRunning"
+                :isQueryAborted="isQueryAborted"
+                v-else-if="isQueryRunning === '' && isQueryAborted"
+            />
 
             <div
                 v-else-if="isQueryRunning === ''"
@@ -93,12 +97,15 @@
             </div>
 
             <QueryError
+                :queryErrorObj="queryErrorObj"
+                :isQueryRunning="isQueryRunning"
                 v-else-if="
                     isQueryRunning === 'error' && !haveLineNumber(queryErrorObj)
                 "
             />
 
             <LineError
+                :queryErrorObj="queryErrorObj"
                 :errorDecorations="errorDecorations"
                 v-else-if="
                     isQueryRunning === 'error' && haveLineNumber(queryErrorObj)
@@ -122,7 +129,7 @@
     // import { LINE_ERROR_NAMES, SOURCE_ACCESS_ERROR_NAMES } from '~/components/insights/common/constants'
     import AtlanBtn from '~/components/UI/button.vue'
     import AtlanPreviewTable from '@/common/table/previewTable/tablePreview.vue'
-    import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
+    import useRunQuery from '~/components/insights/playground/common/composables/previewQueryRun'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import { useError } from '~/components/insights/playground/common/composables/UseError'
     import { useResultPane } from '~/components/insights/playground/resultsPane/common/composables/useResultPane'
@@ -257,14 +264,11 @@
             // let isQueryAborted = ref(false)
 
             const abortRunningQuery = () => {
-                const activeInlineTabKeyCopy = activeInlineTabKey.value
-
-                const tabIndex = inlineTabs.value.findIndex(
-                    (tab) => tab.key === activeInlineTabKeyCopy
+                const index = insights_Store.previewTabs.findIndex(
+                    (el) => el.asset.guid === insights_Store.activePreviewGuid
                 )
 
-                abortQuery(tabIndex, inlineTabs, editorInstance, monacoInstance)
-                // isQueryAborted.value = true
+                abortQuery(index)
             }
 
             return {

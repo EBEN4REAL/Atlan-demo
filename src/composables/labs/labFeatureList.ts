@@ -1,3 +1,7 @@
+import { computed } from 'vue'
+import useTenantData from '~/composables/tenant/useTenantData'
+export const orgPrefrencesKey = 'orgLabPreferences'
+
 // 7 days in milliseconds
 const showNewTagRangeMs = 7 * 24 * 60 * 60 * 100
 export const INSIGHT_WORKSPACE_LEVEL_TAB = 'INSIGHT_WORKSPACE_TAB_ENABLED'
@@ -70,7 +74,7 @@ export const featureList = [
         description:
             'New enhanced workflow monitoring and discovery experience',
         // if the config isn't present in tenant/user preferences, default value will be picked up from here
-        defaultValue: true,
+        defaultValue: false,
         // only these users will be allowed
         allowedUsers: [],
         allowedGroups: [],
@@ -87,3 +91,12 @@ export const featureList = [
 
 export const showNewTagOnFeature = (feature) =>
     feature.releaseDate < Date.now() - showNewTagRangeMs
+
+export const featureEnabledMap = computed(() => {
+    const { tenantRaw } = useTenantData()
+    const attributes = tenantRaw.value.attributes || {}
+    console.log('featureEnabledMap attributes', attributes)
+    const preferences = JSON.parse(attributes[orgPrefrencesKey] || '{}') || {}
+    console.log('featureEnabledMap preferences', preferences)
+    return preferences
+})

@@ -36,7 +36,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, toRefs, watch } from 'vue'
+    import { computed, defineComponent, ref, toRefs, watch, h } from 'vue'
     import {
         featureList,
         orgPrefrencesKey,
@@ -46,6 +46,8 @@
     import useTenantUpdate from '~/composables/tenant/useTenantUpdate'
     import { Tenant } from '~/services/service/tenant'
     import { useTenantStore } from '~/store/tenant'
+    import { message } from 'ant-design-vue'
+    import SuccessToast from '@/common/assets/misc/customToasts/labFeatureEnabled.vue'
 
     export default defineComponent({
         name: 'AdminLabs',
@@ -74,12 +76,9 @@
                 const attributes = tenantRaw.value.attributes || {}
                 const preferences =
                     JSON.parse(attributes[orgPrefrencesKey] || '{}') || {}
-                preferences[feature.key] = !featureEnabledMap.value[feature.key]
-                console.log(
-                    'final preferences',
-                    !featureEnabledMap.value[feature.key],
-                    preferences
-                )
+                const finalStatus = !featureEnabledMap.value[feature.key]
+                preferences[feature.key] = finalStatus
+                console.log('final preferences', finalStatus, preferences)
                 const updatedTenant = {
                     ...tenantRaw.value,
                     attributes: {
@@ -100,6 +99,24 @@
                                 // updateStatus.value = 'success'
                                 setTimeout(() => {
                                     updateStatus.value = ''
+                                    if (finalStatus) {
+                                        message.success({
+                                            key: 'labsFeatureUpdated',
+                                            // content:
+                                            //     'Please send feedback to nearest Atlanian',
+                                            content: h(SuccessToast),
+                                            class: ['successToast-custom'],
+                                            duration: 4,
+                                        })
+                                    } else {
+                                        message.success({
+                                            key: 'labsFeatureUpdated',
+                                            // content:
+                                            //     'Please send feedback to nearest Atlanian',
+                                            content: `${feature.name} disabled`,
+                                            duration: 4,
+                                        })
+                                    }
                                 }, 1000)
                             } else {
                                 updateStatus.value = 'error'
@@ -126,4 +143,13 @@
     })
 </script>
 
-<style scoped></style>
+<style lang="less">
+    .successToast-custom {
+        .ant-message-success {
+            .anticon-check-circle {
+                display: none;
+            }
+            @apply flex items-center;
+        }
+    }
+</style>

@@ -95,7 +95,6 @@ export const showNewTagOnFeature = (feature) =>
 export const featureEnabledMap = computed(() => {
     const { tenantRaw } = useTenantData()
     const attributes = tenantRaw.value.attributes || {}
-    console.log('featureEnabledMap attributes', attributes)
     const preferences = JSON.parse(attributes[orgPrefrencesKey] || '{}') || {}
     console.log('featureEnabledMap preferences', preferences)
     return preferences

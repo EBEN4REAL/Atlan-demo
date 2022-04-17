@@ -118,7 +118,10 @@
                 }
             }
             const handleStatusFilterChange = (activeFilter) => {
-                filters.value.status = [activeFilter.status]
+                if (activeFilter?.status)
+                    filters.value.status = [activeFilter.status]
+                else
+                    delete filters.value.status
             }
 
             return {

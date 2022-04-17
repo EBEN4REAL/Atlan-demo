@@ -21,7 +21,7 @@
             <!-- <AssetLogo :selected="selected" :asset="assetWrappper" /> -->
             <img class="mb-0.5" :src="assetIcon" />
             <span
-                class="ml-1 overflow-hidden text-gray-500 overflow-ellipsis w-12"
+                class="ml-1 overflow-hidden text-gray-500 overflow-ellipsis"
                 >{{ entityType.toUpperCase() }}</span
             >
             <AtlanIcon class="mx-1 ml-2 icon-table" icon="Schema2" />

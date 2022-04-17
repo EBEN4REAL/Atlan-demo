@@ -23,7 +23,7 @@
             :mouse-enter="mouseEnter"
         />
 
-        <div class="ml-1">
+        <div class="ml-1 overflow-ellipsis truncate">
             {{ displayName || name }}
         </div>
 

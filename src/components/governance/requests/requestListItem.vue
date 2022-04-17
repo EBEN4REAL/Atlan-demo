@@ -72,23 +72,28 @@
                     :entity-type="request?.entityType"
                     :destination-entity="request.destinationEntity"
                 />
-                <div
+                <GlossaryPopover
                     v-else-if="
                         request?.requestType === 'create_term' ||
                         (request?.requestType === 'create_category' &&
                             request?.payload)
                     "
-                    >
-                    <span class="text-primary mb-1">{{
-                        request.payload?.relationshipAttributes?.anchor
-                            ?.attributes?.name
-                    }}</span>
-                    <div class="flex items-center text-gray-500">
-                        <atlan-icon icon="Glossary" class="mr-1 w-4" />
-                        <span>Glossary</span>
+                    :term="{ guid: request?.payload?.relationshipAttributes?.anchor?.guid }"
+                    placement="right"
+                    :mouse-enter-delay="1"
+                    :excludeFields="['terms','categories']"
+                >
+                    <div>
+                        <span class="text-primary mb-1">{{
+                            request.payload?.relationshipAttributes?.anchor
+                                ?.attributes?.name
+                        }}</span>
+                        <div class="flex items-center text-gray-500">
+                            <atlan-icon icon="Glossary" class="mr-1 w-4" />
+                            <span>Glossary</span>
+                        </div>
                     </div>
-                </div>
-
+                </GlossaryPopover>
                 <span v-else class="text-sm overflow-ellipsis">
                     {{
                         primaryText[request.requestType]
@@ -323,6 +328,7 @@
     import { message } from 'ant-design-vue'
     // import { useMagicKeys, whenever } from '@vueuse/core'
     import { useTimeAgo } from '@vueuse/core'
+    import GlossaryPopover from '@common/popover/glossary/index.vue'
     import atlanLogo from '~/assets/images/atlan-logo.png'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
 
@@ -371,6 +377,7 @@
             Popover,
             AssetDrawer,
             CategoryPiece,
+            GlossaryPopover
         },
         props: {
             request: {

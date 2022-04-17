@@ -1,10 +1,23 @@
 <template>
     <div class="request">
-        <Pill  class="pill" :label="data?.attributes?.name" :has-action="false">
-            <template #prefix>
-                <AtlanIcon icon="Category"></AtlanIcon>
-            </template>
-        </Pill>
+        <GlossaryPopover
+            :passing-fetched-term="true"
+            :showDrawerToggle="false"
+            :fetched-term="entity"
+            :is-fetched-term-loading="false"
+            placement="right"
+            :mouse-enter-delay="1"
+        >
+            <Pill
+                class="pill"
+                :label="data?.attributes?.name"
+                :has-action="false"
+            >
+                <template #prefix>
+                    <AtlanIcon icon="Category"></AtlanIcon>
+                </template>
+            </Pill>
+        </GlossaryPopover>
         <div
             v-if="requestType !== 'create_category'"
             class="pr-2 mt-1 text-gray-500"
@@ -18,9 +31,10 @@
 <script lang="ts">
     import { defineComponent } from 'vue'
     import Pill from '~/components/UI/pill/pill.vue'
+    import GlossaryPopover from '@common/popover/glossary/index.vue'
 
     export default defineComponent({
-        components: {  Pill },
+        components: { Pill, GlossaryPopover },
         props: {
             data: {
                 required: true,
@@ -36,7 +50,17 @@
             },
         },
         setup(props) {
-            return {}
+            const entity = {
+                displayText: props.data?.attributes?.name,
+                attributes: {
+                    ...props.data?.attributes,
+                    parentCategory: props.data?.relationshipAttributes?.parentCategory,
+                    anchor: props?.data.relationshipAttributes?.anchor,
+                },
+                typeName: props?.data?.typeName,
+            }
+
+            return { entity }
         },
     })
 </script>

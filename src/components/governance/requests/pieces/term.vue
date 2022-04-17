@@ -16,12 +16,26 @@
                 </template>
             </Pill>
         </TermPopover>
-        <Pill v-else class="term-pill" :label="data?.attributes?.name" :has-action="false">
-            <template #prefix>
-                <AtlanIcon icon="Term"></AtlanIcon>
-            </template>
-        </Pill>
 
+        <GlossaryPopover
+            v-else
+            :passing-fetched-term="true"
+            :showDrawerToggle="false"
+            :fetched-term="entity"
+            :is-fetched-term-loading="false"
+            placement="right"
+            :mouse-enter-delay="1"
+        >
+            <Pill
+                class="term-pill"
+                :label="data?.attributes?.name"
+                :has-action="false"
+            >
+                <template #prefix>
+                    <AtlanIcon icon="Term"></AtlanIcon>
+                </template>
+            </Pill>
+        </GlossaryPopover>
         <!-- <a-popover :mouse-enter-delay="0.3" placement="leftTop" trigger="hover">
             <template #content>
                 <div class="flex flex-col w-56 p-4">
@@ -71,19 +85,20 @@
         >
             Link Term
         </div>
-        <div v-else class="pr-2  text-gray-500">Create Term</div>
+        <div v-else class="pr-2 text-gray-500">Create Term</div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, computed } from 'vue'
     import TermPopover from '@/common/popover/term/term.vue'
     import PillGroup from '~/components/UI/pill/pillGroup.vue'
     import Pill from '~/components/UI/pill/pill.vue'
     import useTermPopover from '@/common/popover/term/useTermPopover'
+    import GlossaryPopover from '@common/popover/glossary/index.vue'
 
     export default defineComponent({
-        components: { PillGroup, Pill, TermPopover },
+        components: { PillGroup, Pill, TermPopover, GlossaryPopover },
         props: {
             data: {
                 required: true,
@@ -106,12 +121,22 @@
                 isReady,
                 termError,
             } = useTermPopover()
+            const entity = {
+                displayText: props.data?.attributes?.name,
+                attributes: {
+                    ...props.data?.attributes,
+                    categories: props.data?.relationshipAttributes?.categories,
+                anchor: props?.data.relationshipAttributes?.anchor,
+                },
+                typeName: props?.data?.typeName,
+            }
             return {
                 handleTermPopoverVisibility,
                 termLoading,
                 isReady,
                 termError,
                 getFetchedTerm,
+                entity,
             }
         },
     })

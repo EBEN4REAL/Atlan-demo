@@ -22,7 +22,7 @@
             <div
                 class="cursor-pointer flex items-center"
                 @mouseenter="$emit('mouseEnterAsset')"
-                @click="handleShowAssetSidebar(item.guid)"
+                @click="handleShowAssetSidebar(item)"
             >
                 <div
                     v-if="
@@ -78,10 +78,13 @@
                         (request?.requestType === 'create_category' &&
                             request?.payload)
                     "
-                    :term="{ guid: request?.payload?.relationshipAttributes?.anchor?.guid }"
+                    :term="{
+                        guid: request?.payload?.relationshipAttributes?.anchor
+                            ?.guid,
+                    }"
                     placement="right"
                     :mouse-enter-delay="1"
-                    :excludeFields="['terms','categories']"
+                    :excludeFields="['terms', 'categories']"
                 >
                     <div>
                         <span class="text-primary mb-1">{{
@@ -377,7 +380,7 @@
             Popover,
             AssetDrawer,
             CategoryPiece,
-            GlossaryPopover
+            GlossaryPopover,
         },
         props: {
             request: {
@@ -419,8 +422,17 @@
                 assetGuid.value = ''
                 showAssetSidebar.value = false
             }
-            const handleShowAssetSidebar = (guid) => {
-                assetGuid.value = guid
+            const handleShowAssetSidebar = (asset) => {
+                if (
+                    [
+                        'create_term',
+                        'create_category',
+                        'create_glossary',
+                    ].includes(request.value?.requestType)
+                )
+                    assetGuid.value =
+                        request.value?.payload?.relationshipAttributes?.anchor?.guid
+                else assetGuid.value = asset?.guid
                 showAssetSidebar.value = true
             }
 

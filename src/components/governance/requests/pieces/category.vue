@@ -1,5 +1,14 @@
 <template>
     <div class="request">
+        <div v-if="showLabel">
+            <div
+                v-if="requestType !== 'create_category'"
+                class="pr-2 mt-1 text-gray-500"
+            >
+                Link Term
+            </div>
+            <div v-else class="pr-2 text-gray-500">Create Category</div>
+        </div>
         <GlossaryPopover
             :passing-fetched-term="true"
             :showDrawerToggle="false"
@@ -18,13 +27,6 @@
                 </template>
             </Pill>
         </GlossaryPopover>
-        <div
-            v-if="requestType !== 'create_category'"
-            class="pr-2 mt-1 text-gray-500"
-        >
-            Link Term
-        </div>
-        <div v-else class="pr-2 text-gray-500">Create Category</div>
     </div>
 </template>
 
@@ -48,13 +50,19 @@
                 required: false,
                 default: () => 'link_term',
             },
+            showLabel: {
+                type: Boolean,
+                required: false,
+                default: () => true,
+            },
         },
         setup(props) {
             const entity = {
                 displayText: props.data?.attributes?.name,
                 attributes: {
                     ...props.data?.attributes,
-                    parentCategory: props.data?.relationshipAttributes?.parentCategory,
+                    parentCategory:
+                        props.data?.relationshipAttributes?.parentCategory,
                     anchor: props?.data.relationshipAttributes?.anchor,
                 },
                 typeName: props?.data?.typeName,

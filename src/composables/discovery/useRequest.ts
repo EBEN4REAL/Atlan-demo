@@ -4,7 +4,7 @@ import { getRequests } from '~/services/service/requests'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
 export function useRequest(guid,  pagination: Ref, type, filterStatus = {value: {}}) {
-    const payloadFilter = type === 'AtlasGlossaryTerm' ? {
+    const payloadFilter = type === 'AtlasGlossaryTerm' || type === 'AtlasGlossary'? {
         '$or': [{sourceGuid: guid}, {destinationGuid: guid}]
     } : {
         destinationGuid: guid,

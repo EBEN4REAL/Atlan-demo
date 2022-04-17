@@ -79,13 +79,15 @@
                 </template>
             </Pill>
         </a-popover> -->
-        <div
-            v-if="requestType !== 'create_term'"
-            class="pr-2 mt-1 text-gray-500"
-        >
-            Link Term
+        <div v-if="showLabel">
+            <div
+                v-if="requestType !== 'create_term'"
+                class="pr-2 mt-1 text-gray-500"
+            >
+                Link Term
+            </div>
+            <div v-else class="pr-2 text-gray-500">Create Term</div>
         </div>
-        <div v-else class="pr-2 text-gray-500">Create Term</div>
     </div>
 </template>
 
@@ -112,6 +114,11 @@
                 required: false,
                 default: () => 'link_term',
             },
+            showLabel: {
+                type: Boolean,
+                required: false,
+                default: () => true,
+            },
         },
         setup(props) {
             const {
@@ -126,7 +133,7 @@
                 attributes: {
                     ...props.data?.attributes,
                     categories: props.data?.relationshipAttributes?.categories,
-                anchor: props?.data.relationshipAttributes?.anchor,
+                    anchor: props?.data.relationshipAttributes?.anchor,
                 },
                 typeName: props?.data?.typeName,
             }

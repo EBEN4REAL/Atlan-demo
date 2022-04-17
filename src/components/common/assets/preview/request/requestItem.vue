@@ -236,12 +236,31 @@
                         </Pill>
                     </TermPopover>
                 </div>
+                <TermPiece
+                    v-else-if="
+                        item?.requestType === 'create_term' && item?.payload
+                    "
+                    :data="item.payload"
+                    :show-label="false"
+                    requestType="create_term"
+                />
+                <CategoryPiece
+                    v-else-if="
+                        item?.requestType === 'create_category' && item?.payload
+                    "
+                    :data="item.payload"
+                    :show-label="false"
+                    requestType="create_category"
+                />
+
                 <div v-else class="text-sm text-gray-700 truncate">
                     {{ item.destinationValue }}
                 </div>
             </div>
 
-            <div class="flex px-3 py-2 mt-2 border-t border-gray-200 text-gray-500">
+            <div
+                class="flex px-3 py-2 mt-2 border-t border-gray-200 text-gray-500"
+            >
                 <span class="mr-2">by</span>
                 <AtlanIcon
                     v-if="item.createdBy?.startsWith('service-account-apikey-')"
@@ -333,6 +352,8 @@
     import atlanLogo from '~/assets/images/atlan-logo.png'
     import Pill from '~/components/UI/pill/pill.vue'
     import ClassificationPill from '@/common/pills/classification.vue'
+    import TermPiece from '@/governance/requests/pieces/term.vue'
+    import CategoryPiece from '@/governance/requests/pieces/category.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import {
@@ -371,6 +392,8 @@
             RequestDropdown,
             UserPill,
             CertificatePill,
+            TermPiece,
+            CategoryPiece,
             // PopOverUser,
             // PopOverGroup,
         },

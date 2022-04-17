@@ -209,6 +209,7 @@ export function useCreateRequests({
                 approvalType: 'single',
                 entityType: 'AtlasGlossaryTerm',
                 sourceType: 'static',
+                sourceGuid: glossaryPayload?.relationshipAttributes?.anchor?.guid,
                 id: glossaryPayload?.attributes?.name,
                 payload: glossaryPayload,
             })
@@ -218,6 +219,7 @@ export function useCreateRequests({
                 requestType: 'create_category',
                 approvalType: 'single',
                 entityType: 'AtlasGlossaryCategory',
+                sourceGuid: glossaryPayload?.relationshipAttributes?.anchor?.guid,
                 sourceType: 'static',
                 id: glossaryPayload?.attributes?.name,
                 payload: glossaryPayload,

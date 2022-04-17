@@ -1,3 +1,5 @@
+
+
 import {
     NAME_OF_EVENTS,
     README_TRIGGERS,
@@ -58,6 +60,28 @@ const keyMap = {
                     ...props,
                 }),
             },
+        },
+        cta_action: {
+            clicked: {
+                action: 'discovery_cta_action_clicked',
+                properties: (props: {
+                    action: 'open_asset' | 'vqb_query' | 'sql_query' | 'copy_link' | 'open_in_source'
+                    asset_type: string
+                }) => ({
+                    ...props,
+                }),
+            },
+        },
+        view_preference: {
+            changed: {
+                action: 'discovery_view_preference_changed',
+                properties: (props: {
+                    visible: boolean
+                    preference: 'description' | 'terms' | 'classifications'
+                }) => ({
+                    ...props,
+                }),
+            }
         },
         global_context: {
             changed: {
@@ -191,6 +215,13 @@ const keyMap = {
                     asset_type: props.asset_type,
                 }),
             },
+            clicked: {
+                action: 'discovery_resource_clicked',
+                properties: (props) => ({
+                    domain: props.domain,
+                    asset_type: props.asset_type,
+                }),
+            },
             deleted: {
                 action: 'discovery_resource_deleted',
             },
@@ -237,7 +268,9 @@ const keyMap = {
         sort: {
             changed: {
                 action: 'discovery_sort_changed',
-                properties: (props: { sort_type: string }) => ({
+                properties: (props: {
+                    sort_type: string
+                }) => ({
                     ...props,
                 }),
             },
@@ -356,9 +389,15 @@ const keyMap = {
         persona: {
             created: {
                 action: 'governance_persona_created',
+                properties: (props) => ({
+                    title: props.title
+                })
             },
             deleted: {
                 action: 'governance_persona_deleted',
+                properties: (props) => ({
+                    title: props.title
+                })
             },
             policy_added: {
                 action: 'governance_persona_policy_added',
@@ -415,9 +454,15 @@ const keyMap = {
         purpose: {
             created: {
                 action: 'governance_purpose_created',
+                properties: (props) => ({
+                    title: props.title
+                })
             },
             deleted: {
                 action: 'governance_purpose_deleted',
+                properties: (props) => ({
+                    title: props.title
+                })
             },
             policy_added: {
                 action: 'governance_purpose_policy_added',
@@ -475,16 +520,26 @@ const keyMap = {
         custom_metadata: {
             created: {
                 action: 'governance_custom_metadata_created',
+                properties: (props) => ({
+                    title: props.title
+                })
             },
             updated: {
                 action: 'governance_custom_metadata_updated',
+                properties: (props) => ({
+                    title: props.title
+                })
             },
             deleted: {
                 action: 'governance_custom_metadata_deleted',
+                properties: (props) => ({
+                    title: props.title
+                })
             },
             property_added: {
                 action: 'governance_custom_metadata_property_added',
                 properties: (props) => ({
+                    title: props.title,
                     data_type: props.data_type,
                     multi_value: !!props.multi_value,
                     allow_filtering: !!props.allow_filtering,
@@ -494,6 +549,7 @@ const keyMap = {
             property_updated: {
                 action: 'governance_custom_metadata_property_updated',
                 properties: (props) => ({
+                    title: props.title,
                     data_type: props.data_type,
                     multi_value: !!props.multi_value,
                     allow_filtering: !!props.allow_filtering,
@@ -527,6 +583,21 @@ const keyMap = {
                 }),
             },
         },
+
+        options: {
+            created: {
+                action: 'governance_options_created',
+                properties: (props: { title: string }) => ({
+                    ...props,
+                }),
+            },
+            updated: {
+                action: 'governance_options_updated',
+                properties: (props: { title: string }) => ({
+                    ...props,
+                }),
+            },
+        }
     },
     admin: {
         api_key: {
@@ -565,6 +636,94 @@ const keyMap = {
                     ...props,
                 }),
             },
+
+        },
+        sso: {
+            added: {
+                action: 'admin_sso_added',
+                properties: (props: {
+                    alias: string
+                }) => ({
+                    ...props,
+                }),
+            },
+            updated: {
+                action: 'admin_sso_updated',
+                properties: (props: {
+                    enforced_sso: boolean
+                    enabled: boolean
+                }) => ({
+                    ...props,
+                }),
+            },
+            removed: {
+                action: 'admin_sso_removed',
+                properties: (props: {
+                    alias: string
+                }) => ({
+                    ...props,
+                }),
+            }
+        },
+        user: {
+            added: { // add invitation
+                action: 'admin_user_added',
+                properties: (props: {
+                    count: number
+                }) => ({
+                    ...props,
+                }),
+            },
+            enabled: { // enable user
+                action: 'admin_user_enabled',
+            },
+            removed: { // revoke invitation o disable users
+                action: 'admin_user_removed',
+                properties: (props: {
+                    status: string
+                }) => ({
+                    ...props,
+                }),
+            },
+            // updated: {
+            //     action: 'admin_user_updated',
+            //     properties: (props: {
+            //         action: 'enabled' | 'disabled' | 'groups_updated',
+            //         groups_count?: number
+            //     }) => ({
+            //         ...props,
+            //     }),
+            // },
+
+        },
+        group: {
+            created: { // create group
+                action: 'admin_group_created',
+                properties: (props: {
+                    users_count: number
+                    has_slack_channel_added: boolean
+                    is_default: boolean
+                    has_description: boolean
+                }) => ({
+                    ...props,
+                }),
+            },
+            deleted: {
+                action: 'admin_group_deleted',
+            },
+            updated: {
+                action: 'admin_group_updated',
+                properties: (props: {
+                    users_count: number,
+                    has_slack_channel_added: boolean,
+                    is_default: boolean
+                    has_description: boolean
+
+                }) => ({
+                    ...props,
+                }),
+            },
+
         },
     },
     integration: {

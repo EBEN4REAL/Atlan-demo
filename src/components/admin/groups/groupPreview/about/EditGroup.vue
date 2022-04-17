@@ -78,6 +78,7 @@
     import { useVModels } from '@vueuse/core'
     import { Groups } from '~/services/service/groups'
     import SlackInput from '@/admin/common/slackInput.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default {
         name: 'EditGroup',
@@ -182,6 +183,14 @@
                             setTimeout(() => {
                                 updateSuccess.value = false
                             }, 2000)
+                            // tracking for slack channel update event
+                            useAddEvent('admin', 'group', 'updated', {
+                                users_count: selectedGroup.value.memberCount,
+                                has_slack_channel_added: !!slackLink,
+                                is_default: formData.value.isDefault,
+                                has_description: !!formData.value.description,
+                            })
+
                             selectedGroup.value.name = formData.value.name
                             selectedGroup.value.alias = formData.value.alias
                             if (selectedGroup.value.attributes) {

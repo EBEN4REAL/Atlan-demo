@@ -1,6 +1,6 @@
 {
   "private": true,
-  "version": "2.38.0",
+  "version": "2.41.2",
   "scripts": {
     "dev": "vite --port 3333 --open",
     "build-dev": "vite build --mode development",
@@ -42,7 +42,7 @@
     "@tiptap/starter-kit": "^2.0.0-beta.183",
     "@tiptap/suggestion": "^2.0.0-beta.90",
     "@tiptap/vue-3": "^2.0.0-beta.90",
-    "@vueuse/core": "^7.6.1",
+    "@vueuse/core": "^8.2.5",
     "@vueuse/head": "^0.7.5",
     "ant-design-vue": "^3.0.0-beta.9",
     "axios": "^0.25.0",

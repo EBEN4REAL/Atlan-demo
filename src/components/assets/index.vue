@@ -479,9 +479,12 @@
             if (discoveryStore.preferences && page.value !== 'admin') {
                 preference.value.sort =
                     discoveryStore.preferences.sort || preference.value.sort
-                preference.value.display =
-                    discoveryStore.preferences.display ||
-                    preference.value.display
+                preference.value.display = JSON.parse(
+                    JSON.stringify(
+                        discoveryStore.preferences.display ||
+                            preference.value.display
+                    )
+                )
             }
             if (discoveryStore.activeFacetTab?.length > 0) {
                 activeKey.value = discoveryStore.activeFacetTab
@@ -707,11 +710,16 @@
 
             const handleBrowseAsset = (val, asset) => {
                 console.log('handleBrowseAsset', val, asset)
-                facets.value.connector = val.connector
-                facets.value.hierarchy.connectionQualifiedName =
-                    val.connectionQualifiedName
-                facets.value.hierarchy.attributeName = val.attributeName
-                facets.value.hierarchy.attributeValue = val.attributeValue
+                facets.value = {
+                    ...facets.value,
+                    connector: val.connector,
+                    hierarchy: {
+                        ...facets.value?.hierarchy,
+                        connectionQualifiedName: val.connectionQualifiedName,
+                        attributeName: val.attributeName,
+                        attributeValue: val.attributeValue,
+                    },
+                }
 
                 hierarchyDirtyTimestamp.value = `dirty_${Date.now().toString()}`
                 offset.value = 0
@@ -800,7 +808,11 @@
             }
 
             const handleDisplayChange = () => {
-                discoveryStore.setPreferences(preference.value)
+                // trackDisplayChange()
+
+                discoveryStore.setPreferences(
+                    JSON.parse(JSON.stringify(preference.value))
+                )
             }
 
             const handleResetEvent = () => {

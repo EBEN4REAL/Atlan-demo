@@ -3,14 +3,19 @@
         class="flex flex-col border border-gray-200 rounded requests-container"
     >
         <div
-            class="flex items-baseline py-2 pl-4 pr-5 mb-1 bg-gray-100 border-b"
+            class="flex items-baseline py-2 pl-4 pr-5 mb-1 bg-gray-100 border-b justify-between"
         >
             <span class="text-sm font-semibold text-gray-500">
                 My Requests
             </span>
+            <StatusFilter @change="handleStatusFilterChange" />
         </div>
+        <div v-if="listLoading" class="flex items-center justify-center h-64">
+            <AtlanLoader class="h-10" />
+        </div>
+
         <div
-            v-if="requestList?.length"
+            v-else-if="requestList?.length"
             class="py-4 overflow-x-hidden overflow-y-auto"
         >
             <template
@@ -65,10 +70,11 @@
     // components
     import AssetPiece from '@/governance/requests/pieces/asset.vue'
     import RequestListItem from '~/components/governance/requests/requestListItem.vue'
+    import StatusFilter from '@/common/assets/preview/request/statusFilter.vue'
 
     export default defineComponent({
         name: 'MyRequests',
-        components: { AssetPiece, RequestListItem },
+        components: { AssetPiece, RequestListItem, StatusFilter },
         setup() {
             // data
 
@@ -111,12 +117,17 @@
                     activeHover.value = itemId
                 }
             }
+            const handleStatusFilterChange = (activeFilter) => {
+                filters.value.status = [activeFilter.status]
+            }
 
             return {
                 requestList,
                 handleMouseEnter,
                 activeHover,
                 role,
+                handleStatusFilterChange,
+                listLoading,
             }
         },
     })

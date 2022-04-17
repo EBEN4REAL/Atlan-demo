@@ -18,6 +18,7 @@ function generateRequestListFilters(
             { destinationQualifiedName: { $ilike: `%${searchTerm}%` } },
         ]
     }
+    console.log(filters)
     for (const [key, value] of Object.entries(filters)) {
         if (value?.length ?? value)
             // Check if the value is valid or the length in case of array

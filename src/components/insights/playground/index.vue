@@ -218,6 +218,7 @@
                 </pane>
             </splitpanes>
         </div>
+
         <ResultPaneFooter
             v-if="activeInlineTabKey && queryExecutionTime > -1"
         />
@@ -567,16 +568,16 @@
             }
 
             const queryExecutionTime = computed(() => {
-                if (insights_Store.activePreviewGuid !== undefined) {
-                    const _index = insights_Store.previewTabs.findIndex(
-                        (el) =>
-                            el.asset.guid === insights_Store.activePreviewGuid
-                    )
-                    return insights_Store.previewTabs[_index].executionTime
-                } else {
-                    return activeInlineTab.value?.playground?.resultsPane
-                        ?.result?.executionTime
-                }
+                let _time = -1
+
+                const _index = insights_Store.previewTabs.findIndex(
+                    (el) => el.executionTime > -1
+                )
+                _time = _index > -1 ? 100 : -1
+                if (_time > -1) return _time
+
+                return activeInlineTab.value?.playground?.resultsPane?.result
+                    ?.executionTime
             })
 
             return {

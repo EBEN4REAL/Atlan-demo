@@ -1146,6 +1146,14 @@
             }
 
             const playQuery = (newQuery, asset: assetInterface) => {
+                if (
+                    insights_Store.previewTabs.findIndex(
+                        (el) => el.asset.guid === asset.guid
+                    ) > -1
+                ) {
+                    insights_Store.activePreviewGuid = asset.guid
+                    return
+                }
                 activeResultPreviewTab.value = false
                 insights_Store.addPreviewTab(asset)
                 insights_Store.activePreviewGuid = asset.guid

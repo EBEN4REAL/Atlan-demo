@@ -277,7 +277,11 @@
                         _index
                     ].columns.length?.toLocaleString()
                 } else {
-                    return activeInlineTab.value.playground.editor.columnList.length?.toLocaleString()
+                    return (
+                        activeInlineTab.value.playground.resultsPane.result
+                            .totalRowsCount >= 0 &&
+                        activeInlineTab.value.playground.editor.columnList.length?.toLocaleString()
+                    )
                 }
             })
 

@@ -10,8 +10,7 @@
     >
         <template #title>
             <span class="text-sm font-bold text-gray"
-                >{{ isEdit ? 'Edit' : 'New' }}
-                {{ isSlackTab ? 'Slack Resource' : 'Resource' }}</span
+                >{{ isEdit ? 'Edit' : 'New' }} Resource</span
             >
         </template>
         <template #footer>
@@ -155,19 +154,11 @@
     const validateLink = async (_rule: Rule, value: string) => {
         if (value === '') {
             // eslint-disable-next-line prefer-promise-reject-errors
-            return Promise.reject(
-                `Please provide a ${
-                    isSlackTab.value ? 'slack resource' : 'resource'
-                } link`
-            )
+            return Promise.reject(`Please provide a resource link`)
         }
         if (!isValidUrl.value) {
             // eslint-disable-next-line prefer-promise-reject-errors
-            return Promise.reject(
-                `Please provide a valid ${
-                    isSlackTab.value ? 'slack resource' : 'resource'
-                } link`
-            )
+            return Promise.reject(`Please provide a valid resource link`)
         }
         if (isSlackTab.value && getDomain(value) !== 'slack.com') {
             // eslint-disable-next-line prefer-promise-reject-errors
@@ -206,9 +197,7 @@
             // ! FIXME this watcher is running multiple times, ???!
             if (localResource.value.title)
                 message.success({
-                    content: `Successfully added new${
-                        isSlackLink.value ? ' slack ' : ''
-                    }resource "${localResource.value.title}"`,
+                    content: `Successfully added new resource "${localResource.value.title}"`,
                     duration: 1.5,
                     key: 'add',
                 })

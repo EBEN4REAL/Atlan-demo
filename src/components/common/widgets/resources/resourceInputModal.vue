@@ -105,6 +105,7 @@
     import { getDomain } from '~/utils/url'
     import whoami from '~/composables/user/whoami'
     import { Link } from '~/types/resources.interface'
+    import integrationStore from '~/store/integrations/index'
 
     const props = defineProps({
         isEdit: {
@@ -200,6 +201,8 @@
 
     watch(addStatus, (v) => {
         if (v === 'success') {
+            const store = integrationStore()
+            const { tenantSlackStatus } = toRefs(store)
             // ! FIXME this watcher is running multiple times, ???!
             if (localResource.value.title)
                 message.success({
@@ -209,7 +212,12 @@
                     duration: 1.5,
                     key: 'add',
                 })
-            if (isSlackLink.value && isTab.value && !isSlackTab.value) {
+            if (
+                isSlackLink.value &&
+                isTab.value &&
+                !isSlackTab.value &&
+                tenantSlackStatus.value.configured
+            ) {
                 message.info({
                     content: `Looks like you’ve added a slack link, you can find it here`,
                     duration: 4,

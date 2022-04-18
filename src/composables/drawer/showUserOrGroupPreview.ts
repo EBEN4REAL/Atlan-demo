@@ -37,12 +37,11 @@ export function useUserOrGroupPreview(previewType: string, userNameProp = '') {
                 uniqueAttribute.value === 'username'
                     ? {
                         $and: [
-                            { emailVerified: true },
                             { username: userNameUser.value },
                         ],
                     }
                     : {
-                        $and: [...(userStatus.value?.toLowerCase() === 'invited' ? [] : [{ emailVerified: true }]), { id: userId.value }],
+                        $and: [{ id: userId.value }],
                     },
         }))
         const { userList, getUserList, isLoading, error, mutate } = useUsers(

@@ -330,7 +330,6 @@
             const {
                 showPreview,
                 showUserPreview: openPreview,
-                setUserStatus,
                 setUserUniqueAttribute,
                 closePreview,
                 userId,
@@ -341,7 +340,6 @@
                     closePreview()
                 } else {
                     setUserUniqueAttribute(user.id)
-                    setUserStatus(user.status_object.status)
                     if (user.status_object.status.toLowerCase() === 'invited')
                         openPreview({ blacklisted: ['assets'] }, activeTab)
                     else openPreview({}, activeTab)

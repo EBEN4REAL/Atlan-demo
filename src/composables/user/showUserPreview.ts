@@ -5,7 +5,6 @@ import { useAuthStore } from '~/store/auth'
 
 const showPreview = ref(false)
 const userId = ref('')
-const userStatus = ref()
 const username = ref('')
 const uniqueAttribute = ref('')
 const defaultTab = ref('about')
@@ -49,10 +48,6 @@ export function useUserPreview() {
         blacklistedTabs.value = []
         allowedTabs.value = []
         showPreview.value = false
-        userStatus.value = null
-    }
-    const setUserStatus = (status) => {
-        userStatus.value = status
     }
     const setUserUniqueAttribute = (value, key = 'id') => {
         if (key === 'username') {
@@ -103,8 +98,6 @@ export function useUserPreview() {
     })
 
     return {
-        userStatus,
-        setUserStatus,
         showPreview,
         userId,
         setUserUniqueAttribute,

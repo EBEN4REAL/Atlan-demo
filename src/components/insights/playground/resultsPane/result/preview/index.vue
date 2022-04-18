@@ -19,9 +19,8 @@
         <div
             v-if="previewModeActive"
             class="h-full rounded-tr bg-new-gray-200"
-            :style="`width: ${
-                compactMode && previewModeActive ? '340px' : '476px'
-            };
+            :style="`width: ${Math.abs(width)}px;
+            transition:all ease 0.1s;
                 box-shadow: inset 0px 0px 2px rgba(0, 0, 0, 0.12);
                 min-height: 33px;
                 padding-left: 1px;`"
@@ -85,7 +84,7 @@
             </a-tabs>
         </div>
         <div
-            class="flex items-center px-3 text-new-gray-800 mt-0.5"
+            class="flex items-center pl-3 text-new-gray-800 mt-0.5"
             v-if="
                 (!compactMode && Boolean(Number(columnsCount))) ||
                 (!previewModeActive && Boolean(Number(columnsCount)))
@@ -112,7 +111,7 @@
             <!-- -------------------------------------------- -->
         </div>
         <div
-            class="flex items-center px-3 text-new-gray-800 mt-0.5"
+            class="flex items-center pl-3 text-new-gray-800 mt-0.5"
             v-else-if="compactMode && previewModeActive"
         >
             <a-tooltip
@@ -154,7 +153,7 @@
                         <!-- -------------------------------------------- -->
                     </div>
                 </template>
-                <div class="p-1 rounded hover:bg-new-gray-200">
+                <div class="p-1 px-1.5 rounded hover:bg-new-gray-200">
                     <AtlanIcon
                         icon="QueryMetadata"
                         class="w-4 h-4 text-new-gray-800"
@@ -166,7 +165,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, Ref, computed, inject, ref, watch } from 'vue'
+    import {
+        defineComponent,
+        Ref,
+        computed,
+        inject,
+        ref,
+        watch,
+        toRefs,
+    } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import Tooltip from '@common/ellipsis/index.vue'
     import { useUtils } from '~/components/insights/common/composables/useUtils'
@@ -177,8 +184,14 @@
 
     export default defineComponent({
         components: { Tooltip },
-        props: {},
+        props: {
+            width: {
+                type: Number,
+                required: true,
+            },
+        },
         setup(props, { emit }) {
+            const { width } = toRefs(props)
             const insights_Store = insightsStore()
             const { assetType, certificateStatus } = useAssetInfo()
             const {
@@ -298,6 +311,7 @@
             }
 
             return {
+                width,
                 getResultsIcon,
                 columnsCount,
                 rowsCount,

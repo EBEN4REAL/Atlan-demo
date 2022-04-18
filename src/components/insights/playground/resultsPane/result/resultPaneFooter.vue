@@ -1,13 +1,14 @@
 <template>
     <div
         class="flex justify-between flex-shrink-0 w-full h-10 py-1 text-xs text-sm border-b bg-new-gray-100"
-        style=""
+        style="z-index: 2"
+        ref="footerRef"
         v-if="
             (columnsCount > 0 && isQueryRunning === 'success') ||
             insights_Store.previewTabs.length
         "
     >
-        <PreviewTabs />
+        <PreviewTabs :width="previewTabsWidth" />
         <div class="flex items-center">
             <a-tooltip
                 color="#363636"
@@ -16,15 +17,14 @@
                         ? ADJACENT_TOOLTIP_DELAY
                         : MOUSE_ENTER_DELAY
                 "
-                v-if="columnsCount"
+                v-if="columnsCount && previewTabsWidth > 0"
             >
                 <template #title>Copy data</template>
 
                 <AtlanBtn
                     size="sm"
                     color="secondary"
-                    padding="compact"
-                    class="py-0.5 text-sm border-none text-xs rounded custom-shadow cursor-pointer mr-2"
+                    class="py-0.5 px-2 text-sm border-none text-xs rounded shadow cursor-pointer mr-2"
                     style="height: 24px"
                     @mouseout="recordTooltipPresence"
                     @click="useWrapperCopy"
@@ -51,14 +51,13 @@
                         ? ADJACENT_TOOLTIP_DELAY
                         : MOUSE_ENTER_DELAY
                 "
-                v-if="columnsCount"
+                v-if="columnsCount && previewTabsWidth > 0"
             >
                 <template #title>Export data</template>
                 <AtlanBtn
                     size="sm"
                     color="secondary"
-                    padding="compact"
-                    class="py-0.5 text-sm border-none text-xs rounded custom-shadow cursor-pointer mr-2"
+                    class="py-0.5 px-2 text-sm border-none text-xs rounded shadow cursor-pointer mr-2"
                     style="height: 24px"
                     @mouseout="recordTooltipPresence"
                     @click="useWrapperExport"
@@ -85,16 +84,15 @@
                         ? ADJACENT_TOOLTIP_DELAY
                         : MOUSE_ENTER_DELAY
                 "
-                v-if="columnsCount"
+                v-if="columnsCount && previewTabsWidth > 0"
                 @click="toggleFullScreenMode"
             >
                 <template #title>Full screen</template>
                 <AtlanBtn
                     size="sm"
                     color="secondary"
-                    padding="compact"
                     @mouseout="recordTooltipPresence"
-                    class="py-0.5 mr-2 text-sm border-none text-xs rounded custom-shadow cursor-pointer"
+                    class="py-0.5 px-2 mr-2 text-sm border-none text-xs rounded shadow cursor-pointer"
                     style="height: 24px"
                 >
                     <AtlanIcon
@@ -103,6 +101,47 @@
                     />
                 </AtlanBtn>
             </a-tooltip>
+            <a-dropdown
+                :trigger="['click']"
+                @click.stop="() => {}"
+                v-if="previewTabsWidth < 0"
+            >
+                <div class="">
+                    <AtlanBtn
+                        size="sm"
+                        color="secondary"
+                        class="py-0.5 px-2 text-sm border-none text-xs rounded shadow cursor-pointer mr-2"
+                        style="height: 24px"
+                    >
+                        <AtlanIcon
+                            icon="KebabMenuHorizontal"
+                            class="w-4 h-4 my-auto"
+                        ></AtlanIcon>
+                    </AtlanBtn>
+                </div>
+                <template #overlay>
+                    <a-menu class="py-2 text-gray-700" style="min-width: 180px">
+                        <a-menu-item
+                            class="px-4 py-2 text-sm"
+                            key="schedule"
+                            @click="useWrapperCopy"
+                            >Copy data</a-menu-item
+                        >
+                        <a-menu-item
+                            key="shareQuery"
+                            class="px-4 py-2 text-sm"
+                            @click="useWrapperExport"
+                            >Download</a-menu-item
+                        >
+                        <a-menu-item
+                            key="duplicate"
+                            class="px-4 py-2 text-sm"
+                            @click="toggleFullScreenMode"
+                            >Full screen</a-menu-item
+                        >
+                    </a-menu>
+                </template>
+            </a-dropdown>
         </div>
         <a-modal
             :destroyOnClose="true"
@@ -164,7 +203,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, inject, Ref, ref } from 'vue'
+    import {
+        defineComponent,
+        computed,
+        inject,
+        Ref,
+        ref,
+        onMounted,
+        onUnmounted,
+    } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import AtlanBtn from '~/components/UI/button.vue'
     import PreviewTabs from '~/components/insights/playground/resultsPane/result/preview/index.vue'
@@ -179,11 +226,15 @@
     import AtlanPreviewTable from '@/common/table/previewTable/tablePreview.vue'
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import { useDebounceFn } from '@vueuse/core'
 
     export default defineComponent({
         components: { AtlanBtn, Tooltip, PreviewTabs, AtlanPreviewTable },
         props: {},
         setup() {
+            const footerRef = ref()
+            const observer = ref()
+            const previewTabsWidth = ref(446)
             const {
                 recordTooltipPresence,
                 MOUSE_ENTER_DELAY,
@@ -330,7 +381,37 @@
                 }
             }
 
+            // BREAKPOINTS
+
+            const footerResizeHandler = (e) => {
+                const footerWidth = footerRef?.value?.offsetWidth
+                console.log(footerWidth, 'footerWidth')
+                if (footerWidth >= 1080) {
+                    previewTabsWidth.value = 476
+                } else if (footerWidth > 675) {
+                    previewTabsWidth.value = 446
+                } else if (footerWidth > 520) {
+                    previewTabsWidth.value = 300
+                } else {
+                    previewTabsWidth.value = -300
+                }
+            }
+            const debouncedFn = useDebounceFn(footerResizeHandler, 100)
+
+            onMounted(() => {
+                if (footerRef.value) {
+                    observer.value = new ResizeObserver(debouncedFn).observe(
+                        footerRef.value
+                    )
+                }
+            })
+            onUnmounted(() => {
+                observer?.value?.unobserve(footerRef?.value)
+            })
+
             return {
+                previewTabsWidth,
+                footerRef,
                 getResultsIcon,
                 assetType,
                 certificateStatus,
@@ -363,7 +444,7 @@
     .bg-gray-C4C4C4 {
         background: #c4c4c4;
     }
-    .custom-shadow {
+    .shadow {
         box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.12);
     }
     .tab-active {

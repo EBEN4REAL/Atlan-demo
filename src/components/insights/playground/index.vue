@@ -218,9 +218,11 @@
                 </pane>
             </splitpanes>
         </div>
-        <ResultPaneFooter v-if="activeInlineTabKey" />
+        <ResultPaneFooter
+            v-if="activeInlineTabKey && queryExecutionTime > -1"
+        />
 
-        <NoActiveInlineTab @handleAdd="handleAdd(false)" v-else />
+        <!-- <NoActiveInlineTab @handleAdd="handleAdd(false)" v-else /> -->
         <SaveQueryModal
             v-model:showSaveQueryModal="showSaveQueryModal"
             :saveQueryLoading="saveQueryLoading"
@@ -564,7 +566,21 @@
                 debouncdedHorizontalPane(e)
             }
 
+            const queryExecutionTime = computed(() => {
+                if (insights_Store.activePreviewGuid !== undefined) {
+                    const _index = insights_Store.previewTabs.findIndex(
+                        (el) =>
+                            el.asset.guid === insights_Store.activePreviewGuid
+                    )
+                    return insights_Store.previewTabs[_index].executionTime
+                } else {
+                    return activeInlineTab.value?.playground?.resultsPane
+                        ?.result?.executionTime
+                }
+            })
+
             return {
+                queryExecutionTime,
                 onHorizontalResize,
                 horizontalPaneResize,
                 fullSreenState,

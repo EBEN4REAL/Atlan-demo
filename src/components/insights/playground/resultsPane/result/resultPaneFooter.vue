@@ -32,11 +32,9 @@
             </span>
             <!-- -------------------------------------------- -->
         </div>
-        <div
-            v-if="featureEnabledMap[INSIGHT_DATA_DOWNLOAD]"
-            class="flex items-center"
-        >
+        <div class="flex items-center">
             <a-tooltip
+                v-if="featureEnabledMap[INSIGHT_DATA_DOWNLOAD]"
                 color="#363636"
                 :mouseEnterDelay="
                     lastTooltipPresence !== undefined
@@ -62,6 +60,7 @@
                 </div>
             </a-tooltip>
             <a-tooltip
+                v-if="featureEnabledMap[INSIGHT_DATA_DOWNLOAD]"
                 color="#363636"
                 :mouseEnterDelay="
                     lastTooltipPresence !== undefined

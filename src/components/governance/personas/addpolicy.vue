@@ -428,6 +428,11 @@
                                 {{ rules.assets.text }}
                             </div>
                         </div>
+                        <SameAssetPolicy
+                            :id="policy.id"
+                            :assets="policy.assets"
+                            :type="type"
+                        />
                     </div>
                     <div
                         v-if="
@@ -856,6 +861,7 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { useTimeAgo } from '@vueuse/core'
     import Avatar from '~/components/common/avatar/index.vue'
+    import SameAssetPolicy from './sameAssetPolicy.vue'
     export default defineComponent({
         name: 'AddPolicy',
         components: {
@@ -865,6 +871,7 @@
             ManagePermission,
             DataMaskingSelector,
             Avatar,
+            SameAssetPolicy,
         },
         props: {
             type: {
@@ -1322,6 +1329,11 @@
 </script>
 
 <style lang="less">
+    .wrapper-icon-warning {
+        width: fit-content;
+        background: #e5ebfb;
+        height: fit-content;
+    }
     .icon-annoucemnet {
         circle {
             fill: #3e4359;

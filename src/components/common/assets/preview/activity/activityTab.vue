@@ -27,13 +27,20 @@
             ></ActivityTypeSelect>
         </div>
         <div
-            v-if="['Table', 'View'].includes(selectedAsset.typeName)"
+            v-if="
+                [
+                    'Table',
+                    'View',
+                    'TablePartition',
+                    'MaterialisedView',
+                ].includes(selectedAsset.typeName)
+            "
             class="px-5 pb-4 mt-0"
         >
             <ChildActivity
                 v-model="childActivity"
                 type-name="Column"
-                placeholder="Select a column for column level activity"
+                placeholder="Select a column for column-level activity"
                 :selectedAsset="selectedAsset"
                 @change="handleChildActivitySelect"
             ></ChildActivity>
@@ -102,7 +109,12 @@
                     <div
                         v-if="
                             log.entityId !== item.guid &&
-                            ['Table', 'View'].includes(item.typeName)
+                            [
+                                'Table',
+                                'View',
+                                'TablePartition',
+                                'MaterialisedView',
+                            ].includes(item.typeName)
                         "
                         class="flex items-center mt-1 text-gray-700"
                     >
@@ -292,7 +304,14 @@
             const termAndCategoriesList = ref()
             const { certificateStatus, title } = useAssetInfo()
 
-            if (['Table', 'View'].includes(item.value.typeName)) {
+            if (
+                [
+                    'Table',
+                    'View',
+                    'TablePartition',
+                    'MaterialisedView',
+                ].includes(item.value.typeName)
+            ) {
                 facets.value = {
                     entityQualifiedName: item.value.attributes.qualifiedName,
                 }

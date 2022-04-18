@@ -66,6 +66,7 @@ import ViewDraft from '~/assets/images/icons/view_draft.svg'
 import ViewVerified from '~/assets/images/icons/view_verified.svg'
 import ViewGray from '~/assets/images/icons/view-gray.svg'
 import Connection from '~/assets/images/icons/connection.svg'
+import Process from '~/assets/images/icons/process.svg'
 import ChevronRight from '~/assets/images/icons/chevron-right.svg'
 import Union from '~/assets/images/icons/union.svg'
 import AddUser from '~/assets/images/icons/add-user.svg'
@@ -611,6 +612,7 @@ export default {
     NotificationDot,
     ArrowDown,
     Connection,
+    Process,
     ChevronRight,
     NoRelevantAsset,
     NoAssetOrganization,

@@ -1,5 +1,5 @@
 <template>
-    <div class="flex items-center h-full">
+    <div class="flex items-center w-full h-full">
         <div
             class="relative flex items-center justify-center h-full px-2 ml-2 rounded-tl cursor-pointer text-new-gray-700"
             style="max-width: 85px"
@@ -18,12 +18,13 @@
         </div>
         <div
             v-if="previewModeActive"
-            class="h-full rounded-tr bg-new-gray-200"
-            :style="`width: ${Math.abs(width)}px;
+            class="h-full pr-0.5 rounded-tr bg-new-gray-200 rounded-br"
+            :style="`width: auto;
             transition:all ease 0.1s;
                 box-shadow: inset 0px 0px 2px rgba(0, 0, 0, 0.12);
                 min-height: 33px;
-                padding-left: 1px;`"
+                padding-left: 1px;
+                max-width:${width}px`"
         >
             <a-tabs
                 :class="$style.previewtab_footer"

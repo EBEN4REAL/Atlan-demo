@@ -148,5 +148,5 @@ export const SlackResourcesTab = {
     tooltip: 'Slack',
     scrubbed: false,
     requiredInProfile: true,
-    analyticsKey: 'slack_resource',
+    analyticsKey: 'slack',
 }

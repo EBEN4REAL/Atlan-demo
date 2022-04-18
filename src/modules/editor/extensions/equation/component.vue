@@ -46,6 +46,7 @@
     import { computed, defineComponent, onMounted, ref, toRefs } from 'vue'
     import { nodeViewProps, NodeViewWrapper } from '@tiptap/vue-3'
     import katex from 'katex'
+    import { useI18nComposition } from '~/composables/i18n/useI18nComposition'
 
     export default defineComponent({
         components: {
@@ -62,6 +63,8 @@
                 editor,
             } = toRefs(props)
 
+            const { t } = useI18nComposition()
+
             const options = computed(() => extension.value?.options)
             const equationInput = ref<string>(
                 node.value?.attrs['data-equation'] || ''
@@ -73,7 +76,9 @@
             const renderEquation = () => {
                 try {
                     if (equationInput.value.length === 0) {
-                        renderSpace.value.innerHTML = `<p class='text-center text-gray-400'>Type in some math</p>`
+                        renderSpace.value.innerHTML = `<p class='text-center text-gray-400'>${t(
+                            'readme.equation-placeholder'
+                        )}</p>`
                     } else {
                         katex.render(equationInput.value, renderSpace.value, {
                             throwOnError: true,
@@ -90,7 +95,9 @@
                     } else {
                         error.value = e.message
                     }
-                    renderSpace.value.innerHTML = `<p class='text-center'>Invalid equation</p>`
+                    renderSpace.value.innerHTML = `<p class='text-center'>${t(
+                        'readme.invalid-equation'
+                    )}</p>`
                 }
             }
             onMounted(() => {

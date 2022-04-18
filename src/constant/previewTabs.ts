@@ -54,7 +54,6 @@ export const previewTabs = [
             'MaterialisedView',
             'PartitionTable',
             'Column',
-            'Process',
             'Procedure',
             'Collection',
         ],

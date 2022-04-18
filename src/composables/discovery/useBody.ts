@@ -788,6 +788,8 @@ export function useBody(
             'AtlasGlossaryCategory',
             'AtlasGlossaryTerm',
             'Connection',
+            'Process',
+            'ColumnProcess',
         ])
     }
 

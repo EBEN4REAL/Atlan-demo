@@ -245,7 +245,6 @@
                                 insights_Store.activePreviewGuid
                         )
                     ].isQueryRunning
-                debugger
                 return x
             })
             const isQueryAborted = computed(

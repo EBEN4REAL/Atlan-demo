@@ -86,6 +86,7 @@
                         : MOUSE_ENTER_DELAY
                 "
                 v-if="columnsCount"
+                @click="toggleFullScreenMode"
             >
                 <template #title>Full screen</template>
                 <AtlanBtn
@@ -103,6 +104,62 @@
                 </AtlanBtn>
             </a-tooltip>
         </div>
+        <a-modal
+            :destroyOnClose="true"
+            v-model:visible="fullScreenMode"
+            :footer="null"
+            :closable="false"
+            width="80%"
+            :centered="true"
+            :bodyStyle="{
+                height: 'calc(100vh - 100px)',
+            }"
+        >
+            <div class="h-full overflow-hidden rounded bg-new-gray-100 px-2.5">
+                <div class="text-sm py-2.5">
+                    <div
+                        v-if="selectedAsset"
+                        class="flex items-center h-full px-2 text-sm text-new-gray-700 group"
+                    >
+                        <div class="flex items-center w-full text-sm">
+                            <AtlanIcon
+                                :icon="
+                                    getEntityStatusIcon(
+                                        assetType(selectedAsset),
+                                        certificateStatus(selectedAsset)
+                                    )
+                                "
+                                class="w-4 h-4 mr-1 -mt-0.5 parent-ellipsis-container-extension"
+                            ></AtlanIcon>
+                            <Tooltip
+                                :tooltip-text="selectedAsset.attributes.name"
+                                classes="text-new-gray-700 w-full pr-1.5"
+                                :placement="'topRight'"
+                            />
+                        </div>
+                    </div>
+                    <div v-else class="flex items-center text-sm">
+                        <AtlanIcon
+                            :icon="getResultsIcon()"
+                            class="mr-1 -mt-0.5"
+                        />
+                        <span>Results</span>
+                    </div>
+                </div>
+                <div
+                    class="w-full overflow-hidden rounded"
+                    style="height: calc(100% - 50px)"
+                >
+                    <AtlanPreviewTable
+                        :dataList="dataList"
+                        :columns="columnsList"
+                        key="hello_world"
+                        class=""
+                        :tableIndex="1"
+                    />
+                </div>
+            </div>
+        </a-modal>
     </div>
 </template>
 
@@ -119,9 +176,12 @@
     import Tooltip from '@common/ellipsis/index.vue'
     import { useTooltipDelay } from '~/components/insights/common/composables/useTooltipDelay'
     import insightsStore from '~/store/insights/index'
+    import AtlanPreviewTable from '@/common/table/previewTable/tablePreview.vue'
+    import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
-        components: { AtlanBtn, Tooltip, PreviewTabs },
+        components: { AtlanBtn, Tooltip, PreviewTabs, AtlanPreviewTable },
         props: {},
         setup() {
             const {
@@ -130,6 +190,7 @@
                 ADJACENT_TOOLTIP_DELAY,
                 lastTooltipPresence,
             } = useTooltipDelay()
+            const { assetType, certificateStatus } = useAssetInfo()
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
@@ -206,8 +267,78 @@
                         .length
                 }
             })
+            const columnsList = computed(() => {
+                if (insights_Store.activePreviewGuid !== undefined) {
+                    return insights_Store.previewTabs[
+                        insights_Store.previewTabs.findIndex(
+                            (el) =>
+                                el.asset.guid ===
+                                insights_Store.activePreviewGuid
+                        )
+                    ].columns
+                } else {
+                    return activeInlineTab.value.playground.editor.columnList
+                }
+            })
+            const dataList = computed(() => {
+                if (insights_Store.activePreviewGuid !== undefined) {
+                    return insights_Store.previewTabs[
+                        insights_Store.previewTabs.findIndex(
+                            (el) =>
+                                el.asset.guid ===
+                                insights_Store.activePreviewGuid
+                        )
+                    ].rows
+                } else {
+                    return activeInlineTab.value.playground.editor.dataList
+                }
+            })
+
+            const selectedAsset = computed(() => {
+                if (insights_Store.activePreviewGuid !== undefined) {
+                    return insights_Store.previewTabs[
+                        insights_Store.previewTabs.findIndex(
+                            (el) =>
+                                el.asset.guid ===
+                                insights_Store.activePreviewGuid
+                        )
+                    ].asset
+                } else {
+                    return undefined
+                }
+            })
+
+            const fullScreenMode = ref(false)
+            const toggleFullScreenMode = () => {
+                fullScreenMode.value = !fullScreenMode.value
+            }
+
+            const getResultsIcon = () => {
+                if (
+                    activeInlineTab.value.playground.editor.columnList.length >
+                        0 &&
+                    activeInlineTab.value.playground.editor.dataList.length > 0
+                ) {
+                    return 'QueryOutputSuccess'
+                } else if (
+                    activeInlineTab.value.playground.resultsPane.result
+                        .isQueryRunning === 'error'
+                ) {
+                    return 'QueryOutputFail'
+                } else {
+                    return 'QueryOutputNeutral'
+                }
+            }
 
             return {
+                getResultsIcon,
+                assetType,
+                certificateStatus,
+                getEntityStatusIcon,
+                selectedAsset,
+                columnsList,
+                dataList,
+                fullScreenMode,
                 insights_Store,
                 columnsCount,
                 useWrapperExport,
@@ -220,6 +351,7 @@
                 useCopy,
                 getFormattedTimeFromMilliSeconds,
                 recordTooltipPresence,
+                toggleFullScreenMode,
                 MOUSE_ENTER_DELAY,
                 ADJACENT_TOOLTIP_DELAY,
                 lastTooltipPresence,

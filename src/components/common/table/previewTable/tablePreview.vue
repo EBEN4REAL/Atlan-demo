@@ -59,10 +59,16 @@
                 required: false,
                 default: '',
             },
+            tableIndex: {
+                // for determining which table to refer if there are more than one table present at DOM in same point of time
+                type: Number,
+                required: false,
+                default: 0,
+            },
         },
 
         setup(props) {
-            const { dataList, columns } = toRefs(props)
+            const { dataList, columns, tableIndex } = toRefs(props)
             const tableRef = ref(null)
             const tableHeightRef = ref(null)
             const variantTypeIndexes = ref<String[]>([])
@@ -90,7 +96,8 @@
             }
 
             watch([tableRef, dataList], () => {
-                const tbody = document.getElementsByTagName('tbody')[0]
+                const tbody =
+                    document.getElementsByTagName('tbody')[tableIndex.value]
 
                 tbody.onclick = function (e) {
                     const td = e.target.closest('td')
@@ -158,7 +165,8 @@
 
             watch([tableRef, columns], () => {
                 // init()
-                const thead = document.getElementsByTagName('thead')[0]
+                const thead =
+                    document.getElementsByTagName('thead')[tableIndex.value]
 
                 thead.onmouseover = function (e) {
                     const img = e.target.closest('img')
@@ -273,19 +281,26 @@
             })
 
             function handleResize() {
-                const table = document.getElementsByTagName('regular-table')[0]
+                const table =
+                    document.getElementsByTagName('regular-table')[
+                        tableIndex.value
+                    ]
                 const rows = dataList.value
                 table?.setDataListener(dataHere(rows))
                 table?.draw()
             }
             function init() {
-                const table = document.getElementsByTagName('regular-table')[0]
+                const table =
+                    document.getElementsByTagName('regular-table')[
+                        tableIndex.value
+                    ]
 
                 const rows = dataList.value
 
                 table?.setDataListener(dataHere(rows))
 
                 table?.addStyleListener(() => {
+                    if (!window?.regularTable?.querySelectorAll) return
                     // style all the table column headers
                     window?.regularTable
                         .querySelectorAll('thead th')

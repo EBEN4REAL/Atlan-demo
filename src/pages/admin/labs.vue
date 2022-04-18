@@ -1,7 +1,7 @@
 <template>
     <main class="mx-4 space-y-8 my-9">
         <h1 class="text-3xl">Labs</h1>
-        <div class="grid w-full p-5 border gap-y-5">
+        <div class="grid w-full p-5 border rounded-md gap-y-5">
             <div
                 v-for="feature in featureList"
                 :key="feature.key"
@@ -48,6 +48,7 @@
     import { useTenantStore } from '~/store/tenant'
     import { message } from 'ant-design-vue'
     import SuccessToast from '@/common/assets/misc/customToasts/labFeatureEnabled.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'AdminLabs',
@@ -102,12 +103,20 @@
                                     if (finalStatus) {
                                         message.success({
                                             key: 'labsFeatureUpdated',
-                                            // content:
-                                            //     'Please send feedback to nearest Atlanian',
-                                            content: h(SuccessToast),
+                                            content: h(SuccessToast, {
+                                                featureName: feature.name,
+                                            }),
                                             class: ['successToast-custom'],
                                             duration: 4,
                                         })
+                                        useAddEvent(
+                                            'admin',
+                                            'labs',
+                                            'feature_enabled',
+                                            {
+                                                feature: feature.key,
+                                            }
+                                        )
                                     } else {
                                         message.success({
                                             key: 'labsFeatureUpdated',
@@ -116,6 +125,14 @@
                                             content: `${feature.name} disabled`,
                                             duration: 4,
                                         })
+                                        useAddEvent(
+                                            'admin',
+                                            'labs',
+                                            'feature_disabled',
+                                            {
+                                                feature: feature.key,
+                                            }
+                                        )
                                     }
                                 }, 1000)
                             } else {

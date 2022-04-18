@@ -33,7 +33,7 @@ export const featureList = [
     },
     {
         name: 'Download data',
-        key: INSIGHT_TABLE_PREVIEW,
+        key: INSIGHT_DATA_DOWNLOAD,
         description:
             'Ability to download and copy results of a query in insights',
         // if the config isn't present in tenant/user preferences, default value will be picked up from here
@@ -50,43 +50,43 @@ export const featureList = [
         isUserLevel: true,
         isBeta: false,
     },
-    {
-        name: 'New table preview',
-        key: INSIGHT_DATA_DOWNLOAD,
-        description: 'View and compare multiple table previews at once',
-        // if the config isn't present in tenant/user preferences, default value will be picked up from here
-        defaultValue: true,
-        // only these users will be allowed
-        allowedUsers: [],
-        allowedGroups: [],
-        // these users will be deined even if its enabled for whole org
-        deniedUsers: [],
-        deniedGroups: [],
-        // should it show up in admin center to configure for organisation
-        isAdminLevel: true,
-        // should it show up in user preferences
-        isUserLevel: false,
-        isBeta: true,
-    },
-    {
-        name: 'New workflow center',
-        key: WORKFLOW_CENTER_V2,
-        description:
-            'New enhanced workflow monitoring and discovery experience',
-        // if the config isn't present in tenant/user preferences, default value will be picked up from here
-        defaultValue: false,
-        // only these users will be allowed
-        allowedUsers: [],
-        allowedGroups: [],
-        // these users will be deined even if its enabled for whole org
-        deniedUsers: [],
-        deniedGroups: [],
-        // should it show up in admin center to configure for organisation
-        isAdminLevel: true,
-        // should it show up in user preferences
-        isUserLevel: false,
-        isBeta: true,
-    },
+    // {
+    //     name: 'New table preview',
+    //     key: INSIGHT_TABLE_PREVIEW,
+    //     description: 'View and compare multiple table previews at once',
+    //     // if the config isn't present in tenant/user preferences, default value will be picked up from here
+    //     defaultValue: true,
+    //     // only these users will be allowed
+    //     allowedUsers: [],
+    //     allowedGroups: [],
+    //     // these users will be deined even if its enabled for whole org
+    //     deniedUsers: [],
+    //     deniedGroups: [],
+    //     // should it show up in admin center to configure for organisation
+    //     isAdminLevel: true,
+    //     // should it show up in user preferences
+    //     isUserLevel: false,
+    //     isBeta: true,
+    // },
+    // {
+    //     name: 'New workflow center',
+    //     key: WORKFLOW_CENTER_V2,
+    //     description:
+    //         'New enhanced workflow monitoring and discovery experience',
+    //     // if the config isn't present in tenant/user preferences, default value will be picked up from here
+    //     defaultValue: false,
+    //     // only these users will be allowed
+    //     allowedUsers: [],
+    //     allowedGroups: [],
+    //     // these users will be deined even if its enabled for whole org
+    //     deniedUsers: [],
+    //     deniedGroups: [],
+    //     // should it show up in admin center to configure for organisation
+    //     isAdminLevel: true,
+    //     // should it show up in user preferences
+    //     isUserLevel: false,
+    //     isBeta: true,
+    // },
 ]
 
 export const showNewTagOnFeature = (feature) =>

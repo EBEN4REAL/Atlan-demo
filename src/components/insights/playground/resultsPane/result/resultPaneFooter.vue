@@ -32,7 +32,10 @@
             </span>
             <!-- -------------------------------------------- -->
         </div>
-        <div class="flex items-center">
+        <div
+            v-if="featureEnabledMap[INSIGHT_DATA_DOWNLOAD]"
+            class="flex items-center"
+        >
             <a-tooltip
                 color="#363636"
                 :mouseEnterDelay="
@@ -98,6 +101,10 @@
         useCopy,
     } from '~/components/insights/common/composables/useTableExport'
     import { useUtils } from '~/components/insights/common/composables/useUtils'
+    import {
+        featureEnabledMap,
+        INSIGHT_DATA_DOWNLOAD,
+    } from '~/composables/labs/labFeatureList'
 
     export default defineComponent({
         components: {},
@@ -126,6 +133,8 @@
                 useTableExport,
                 useCopy,
                 getFormattedTimeFromMilliSeconds,
+                featureEnabledMap,
+                INSIGHT_DATA_DOWNLOAD,
             }
         },
     })

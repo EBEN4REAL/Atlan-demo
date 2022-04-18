@@ -361,12 +361,7 @@
             })
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
             // handle create permissions for gtc
-            const glossaryForPermission = computed(() => {
-                if (props.showGlossarySelect) {
-                    return getGlossaryByQF(parentGlossary.value)
-                }
-                return getGlossaryByQF(props.glossaryQualifiedName)
-            })
+            const glossaryForPermission = ref(getGlossaryByQF(anchorQf.value))
             const {
                 createPermission: hasCreatePermission,
                 fetch: fetchPermissions,
@@ -383,12 +378,6 @@
                 }
                 console.log(hasCreatePermission.value)
             }
-            /*
-            const showRequestElements = computed(() => {
-                if (role.value?.toLowerCase() === 'admin') return false
-                return !hasCreatePermission.value
-            })
-            */
             const showModal = async () => {
                 //               handleFetchPermission()
                 fetchPermissions()
@@ -611,6 +600,7 @@
 
             const handleSelectGlossary = (val) => {
                 // handleFetchPermission()
+                glossaryForPermission.value = getGlossaryByQF(anchorQf.value)
                 fetchPermissions()
             }
             const handleRequest = () => {
@@ -685,7 +675,6 @@
                 handleRequest,
                 createPermission,
                 hasCreatePermission,
-                glossaryForPermission,
                 role,
             }
         },

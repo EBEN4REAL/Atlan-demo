@@ -6,7 +6,7 @@
             :allowClear="true"
             :showSearch="true"
             class="w-full asset-select"
-            :dropdownMatchSelectWidth="true"
+            :dropdownMatchSelectWidth="false"
             @change="handleChange"
             :disabled="disabled"
             :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
@@ -16,14 +16,15 @@
         >
             <template v-for="item in dropdownOption" :key="item.value">
                 <a-select-option :value="item.value">
-                    <div class="flex flex-col">
+                    {{ item.label }}
+                    <!-- <div class="flex flex-col">
                         <div class="flex items-center">
                             <Tooltip
                                 :tooltip-text="item.label"
                                 placement="topLeft"
                             />
                         </div>
-                    </div>
+                    </div> -->
                 </a-select-option>
             </template>
             <template #suffixIcon>

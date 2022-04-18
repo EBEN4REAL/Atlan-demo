@@ -5,237 +5,167 @@
             v-if="logoUrl && !logoNotFound"
             class="flex items-center h-10 px-2 mb-1"
         >
-            <a-tooltip
-                placement="right"
-                color="#2A2F45"
-                :mouse-enter-delay="0.5"
-                :mouse-leave-delay="0"
+            <router-link
+                to="/"
+                class="flex items-center w-full mx-0"
+                :class="isCollapsed ? 'justify-center px-0 py-1' : ''"
             >
-                <template #title
-                    ><div class="text-sm font-semibold">Home</div></template
-                >
-                <router-link
-                    to="/"
-                    class="flex items-center w-full mx-0"
-                    :class="isCollapsed ? 'justify-center px-0 py-1' : ''"
-                >
-                    <img
-                        :src="logoUrl"
-                        class="rounded-sm cursor-pointer select-none"
-                        :alt="defaultLogo"
-                        :class="isCollapsed ? 'w-8' : 'h-4 mr-2'"
-                        @error="onLogoNotFound"
-                    />
-                    <span v-if="!isCollapsed" class="font-semibold">{{
-                        logoName
-                    }}</span>
-                </router-link>
-            </a-tooltip>
+                <img
+                    :src="logoUrl"
+                    class="rounded-sm cursor-pointer select-none"
+                    :alt="defaultLogo"
+                    :class="isCollapsed ? 'w-8' : 'h-4 mr-2'"
+                    @error="onLogoNotFound"
+                />
+                <span v-if="!isCollapsed" class="font-semibold">{{
+                    logoName
+                }}</span>
+            </router-link>
         </div>
 
         <div v-else class="flex items-center h-10 px-2 mb-1">
-            <a-tooltip
-                placement="right"
-                color="#2A2F45"
-                :mouse-enter-delay="0.5"
-                :mouse-leave-delay="0"
+            <router-link
+                to="/"
+                class="flex items-center w-full mx-0"
+                :class="isCollapsed ? 'justify-center px-0 py-1' : ''"
             >
-                <template #title
-                    ><div class="text-sm font-semibold">Home</div>
-                </template>
-                <router-link
-                    to="/"
-                    class="flex items-center w-full mx-0"
-                    :class="isCollapsed ? 'justify-center px-0 py-1' : ''"
-                >
-                    <atlan-icon
-                        icon="Home"
-                        :class="isCollapsed ? 'h-6' : 'h-4 mr-2'"
-                        class="text-gray-500"
-                    />
-                    <span v-if="!isCollapsed" class="font-semibold">{{
-                        logoName
-                    }}</span>
-                </router-link>
-            </a-tooltip>
+                <atlan-icon
+                    icon="Home"
+                    :class="isCollapsed ? 'h-6' : 'h-4 mr-2'"
+                    class="text-gray-500"
+                />
+                <span v-if="!isCollapsed" class="font-semibold">{{
+                    logoName
+                }}</span>
+            </router-link>
         </div>
 
         <div class="px-0">
             <template v-for="nav in workspaceList" :key="nav.label">
-                <a-tooltip
-                    placement="right"
-                    color="#2A2F45"
-                    :mouse-enter-delay="0.5"
-                    :mouse-leave-delay="0"
+                <router-link
+                    v-if="nav.isActive"
+                    v-slot="{ isActive }"
+                    v-auth="nav.auth"
+                    :to="nav.path"
+                    @click="closeNavDrawer"
                 >
-                    <template #title
-                        ><div class="text-sm font-semibold">
-                            {{ nav.label }}
-                        </div>
-                        <div v-if="nav?.description" class="text-xs mt-0.5">
-                            {{ nav?.description }}
-                        </div></template
+                    <div
+                        class="flex items-center w-full mx-0 menu-item"
+                        :class="[
+                            isCollapsed
+                                ? 'px-2 py-1 justify-center my-3  '
+                                : 'mt-1',
+                            isActive || isHovering === nav.path
+                                ? bgClass(nav.path)
+                                : '',
+                        ]"
+                        @mouseover="isHovering = nav.path"
+                        @mouseout="isHovering = ''"
                     >
-                    <router-link
-                        v-if="nav.isActive"
-                        v-slot="{ isActive }"
-                        v-auth="nav.auth"
-                        :to="nav.path"
-                        @click="closeNavDrawer"
-                    >
-                        <div
-                            class="flex items-center w-full mx-0 menu-item"
-                            :class="[
-                                isCollapsed
-                                    ? 'px-2 py-1 justify-center my-3  '
-                                    : 'mt-1',
-                                isActive || isHovering === nav.path
-                                    ? bgClass(nav.path)
-                                    : '',
-                            ]"
-                            @mouseover="isHovering = nav.path"
-                            @mouseout="isHovering = ''"
-                        >
-                            <span class="flex flex-col items-center">
-                                <atlan-icon
-                                    :icon="
-                                        isActive ? nav?.icon : nav?.inactiveIcon
-                                    "
-                                    :class="[
-                                        isCollapsed ? 'h-6' : 'h-4 mr-2',
-                                        isActive
-                                            ? 'text-primary'
-                                            : 'text-gray-500',
-                                    ]"
-                                />
-                                <span
-                                    class="mt-1 leading-none tracking-tight text-gray-500"
-                                    style="font-size: 11px"
-                                >
-                                    {{ nav.label }}</span
-                                >
-                            </span>
-                        </div>
-                    </router-link>
-                </a-tooltip>
+                        <span class="flex flex-col items-center">
+                            <atlan-icon
+                                :icon="isActive ? nav?.icon : nav?.inactiveIcon"
+                                :class="[
+                                    isCollapsed ? 'h-6' : 'h-4 mr-2',
+                                    isActive ? 'text-primary' : 'text-gray-500',
+                                ]"
+                            />
+                            <span
+                                class="mt-1 leading-none tracking-tight text-gray-500"
+                                style="font-size: 11px"
+                            >
+                                {{ nav.label }}</span
+                            >
+                        </span>
+                    </div>
+                </router-link>
             </template>
         </div>
         <div class="p-2"><hr /></div>
         <div class="px-0">
             <template v-for="nav in workspaceCentreList" :key="nav.label">
-                <a-tooltip
-                    placement="right"
-                    color="#2A2F45"
-                    :mouse-enter-delay="0.5"
-                    :mouse-leave-delay="0"
-                >
-                    <template #title
-                        ><div class="text-sm font-semibold">
-                            {{ nav.label }}
-                        </div>
-                        <div v-if="nav?.description" class="text-xs mt-0.5">
-                            {{ nav?.description }}
-                        </div></template
+                <router-link
+                    v-if="
+                        (nav.isActive &&
+                            nav.path === '/platform' &&
+                            role === 'Admin') ||
+                        (nav.isActive && nav.path !== '/platform')
+                    "
+                    v-slot="{ isActive }"
+                    v-auth.or="nav.auth"
+                    :to="nav.path"
+                    @click="closeNavDrawer"
+                    ><div
+                        class="flex items-center w-full mx-0 menu-item"
+                        :class="[
+                            isCollapsed ? 'p-2 justify-center my-1' : 'mt-1',
+                            isActive || isHovering === nav.path
+                                ? bgClass(nav.path)
+                                : '',
+                        ]"
+                        @mouseover="isHovering = nav.path"
+                        @mouseout="isHovering = ''"
                     >
-                    <router-link
-                        v-if="
-                            (nav.isActive &&
-                                nav.path === '/platform' &&
-                                role === 'Admin') ||
-                            (nav.isActive && nav.path !== '/platform')
-                        "
-                        v-slot="{ isActive }"
-                        v-auth.or="nav.auth"
-                        :to="nav.path"
-                        @click="closeNavDrawer"
-                        ><div
-                            class="flex items-center w-full mx-0 menu-item"
-                            :class="[
-                                isCollapsed
-                                    ? 'p-2 justify-center my-1'
-                                    : 'mt-1',
-                                isActive || isHovering === nav.path
-                                    ? bgClass(nav.path)
-                                    : '',
-                            ]"
-                            @mouseover="isHovering = nav.path"
-                            @mouseout="isHovering = ''"
-                        >
-                            <span class="flex flex-col items-center">
-                                <atlan-icon
-                                    :icon="
-                                        isActive
-                                            ? nav?.icon
-                                            : nav?.inactiveIcon || nav?.icon
-                                    "
-                                    :class="[
-                                        isCollapsed ? 'h-6' : 'h-4 mr-2',
-                                        isActive
-                                            ? 'text-primary'
-                                            : 'text-gray-500',
-                                    ]"
-                                />
+                        <span class="flex flex-col items-center">
+                            <atlan-icon
+                                :icon="
+                                    isActive
+                                        ? nav?.icon
+                                        : nav?.inactiveIcon || nav?.icon
+                                "
+                                :class="[
+                                    isCollapsed ? 'h-6' : 'h-4 mr-2',
+                                    isActive ? 'text-primary' : 'text-gray-500',
+                                ]"
+                            />
 
-                                <span
-                                    class="mt-1 leading-none tracking-tight text-gray-500"
-                                    style="font-size: 11px"
-                                >
-                                    {{ nav.label }}</span
-                                >
-                            </span>
-                        </div>
-                    </router-link>
-                </a-tooltip>
+                            <span
+                                class="mt-1 leading-none tracking-tight text-gray-500"
+                                style="font-size: 11px"
+                            >
+                                {{ nav.label }}</span
+                            >
+                        </span>
+                    </div>
+                </router-link>
             </template>
         </div>
 
         <div class="flex-grow"></div>
         <div class="px-2">
             <template v-for="nav in helpCenterList" :key="nav.id">
-                <a-tooltip
-                    placement="right"
-                    color="#2A2F45"
-                    :mouse-enter-delay="0.5"
-                    :mouse-leave-delay="0"
+                <div
+                    v-if="nav.isActive"
+                    class="flex items-center w-full mx-0 my-1 cursor-pointer menu-item hover:bg-primary-menu"
+                    :class="isCollapsed ? 'p-2 justify-center' : ''"
+                    @click="
+                        () => {
+                            nav.id === 'support' ? toggleHelpWidget() : null
+                        }
+                    "
                 >
-                    <template #title
-                        ><div class="text-sm font-semibold">
-                            {{ nav.label }}
-                        </div>
-                    </template>
-                    <div
-                        v-if="nav.isActive"
-                        class="flex items-center w-full mx-0 my-1 cursor-pointer menu-item hover:bg-primary-menu"
-                        :class="isCollapsed ? 'p-2 justify-center' : ''"
-                        @click="
-                            () => {
-                                nav.id === 'support' ? toggleHelpWidget() : null
-                            }
-                        "
+                    <a
+                        v-if="nav.link"
+                        :target="nav.openInANewTab ? '_blank' : 'self'"
+                        :href="nav.link"
+                        class="flex items-center"
                     >
-                        <a
-                            v-if="nav.link"
-                            :target="nav.openInANewTab ? '_blank' : 'self'"
-                            :href="nav.link"
-                            class="flex items-center"
-                        >
-                            <atlan-icon
-                                :icon="nav?.icon"
-                                class="text-gray-500"
-                                :class="isCollapsed ? 'h-6' : 'h-4 mr-2'"
-                            />
-                            <span v-if="!isCollapsed"> {{ nav.label }}</span>
-                        </a>
-                        <span v-else class="flex items-center">
-                            <atlan-icon
-                                :icon="nav?.icon"
-                                class="text-gray-500"
-                                :class="isCollapsed ? 'h-6' : 'h-4 mr-2'"
-                            />
-                            <span v-if="!isCollapsed"> {{ nav.label }}</span>
-                        </span>
-                    </div></a-tooltip
-                >
+                        <atlan-icon
+                            :icon="nav?.icon"
+                            class="text-gray-500"
+                            :class="isCollapsed ? 'h-6' : 'h-4 mr-2'"
+                        />
+                        <span v-if="!isCollapsed"> {{ nav.label }}</span>
+                    </a>
+                    <span v-else class="flex items-center">
+                        <atlan-icon
+                            :icon="nav?.icon"
+                            class="text-gray-500"
+                            :class="isCollapsed ? 'h-6' : 'h-4 mr-2'"
+                        />
+                        <span v-if="!isCollapsed"> {{ nav.label }}</span>
+                    </span>
+                </div>
             </template>
         </div>
 

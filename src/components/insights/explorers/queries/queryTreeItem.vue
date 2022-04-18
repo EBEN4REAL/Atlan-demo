@@ -1366,13 +1366,13 @@
                                     // props.refetchTreeData()
 
                                     setTimeout(async () => {
-                                        await refetchNode(
+                                        await refetchNodeLocally(
                                             previousParentGuId,
                                             'Folder'
                                         )
                                     }, 1000)
                                     setTimeout(async () => {
-                                        await refetchNode(
+                                        await refetchNodeLocally(
                                             selectedParentGuid,
                                             'Folder'
                                         )
@@ -1401,13 +1401,13 @@
                                 isUpdating.value = false
                                 if (error.value == undefined) {
                                     setTimeout(async () => {
-                                        await refetchNode(
+                                        await refetchNodeLocally(
                                             previousParentGuId,
                                             'query'
                                         )
                                     }, 1000)
                                     setTimeout(async () => {
-                                        await refetchNode(
+                                        await refetchNodeLocally(
                                             selectedParentGuid,
                                             'query'
                                         )

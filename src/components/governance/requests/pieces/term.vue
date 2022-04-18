@@ -24,7 +24,7 @@
             :fetched-term="entity"
             :is-fetched-term-loading="false"
             placement="right"
-            :mouse-enter-delay="1"
+            :mouse-enter-delay="0"
         >
             <Pill
                 class="term-pill"

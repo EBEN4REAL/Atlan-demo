@@ -194,7 +194,7 @@ export function useBody(
                 //     )
                 //     connectorName = filterObject.connectorName
                 // }
-                if (filterObject.connectionQualifiedName) {
+                if (filterObject && filterObject.connectionQualifiedName) {
                     base.filter('bool', (q) => {
                         q.orFilter(
                             'term',
@@ -212,6 +212,7 @@ export function useBody(
                     })
 
                     if (
+                        filterObject &&
                         filterObject.attributeName &&
                         filterObject.attributeValue
                     ) {
@@ -240,7 +241,7 @@ export function useBody(
                 break
             }
             case 'connector': {
-                if (filterObject == '__glossary') {
+                if (filterObject && filterObject === '__glossary') {
                     base.filter('terms', '__typeName.keyword', [
                         'AtlasGlossaryTerm',
                         'AtlasGlossaryCategory',
@@ -368,7 +369,7 @@ export function useBody(
                             )
                         }
 
-                        if (filterObject.empty === true) {
+                        if (filterObject && filterObject.empty === true) {
                             q.orFilter('bool', (query) =>
                                 query.filter('bool', (query2) => {
                                     query2.notFilter('exists', '__traitNames')

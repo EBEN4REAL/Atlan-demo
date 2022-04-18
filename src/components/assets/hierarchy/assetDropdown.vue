@@ -1,7 +1,7 @@
 <template>
     <div class="flex w-full gap-x-3">
         <template v-for="(item, index) in list" :key="item.typeName">
-            <div class="flex" style="width: 150px">
+            <div class="flex" style="width: 170px">
                 <AssetSelector
                     :key="`${index}_${filter.connectionQualifiedName}`"
                     :modelValue="asset[item.attribute]"

@@ -1127,6 +1127,7 @@
                                             :entity-guid="item.guid"
                                             :mouse-enter-delay="mouseEnterDelay"
                                             @mouse-entered="enteredPill"
+                                            @mouse-left="leftPill"
                                         >
                                             <ClassificationPill
                                                 :name="classification.name"
@@ -1168,23 +1169,35 @@
                                         >
                                             <TermPopover
                                                 :term="term"
-                                                :loading="termLoading"
+                                                :is-fetched-term-loading="
+                                                    termLoading
+                                                "
                                                 :fetched-term="
                                                     getFetchedTerm(
                                                         term?.guid ??
                                                             term?.termGuid
                                                     )
                                                 "
-                                                :error="termError"
+                                                :mouse-enter-delay="
+                                                    termMouseEnterDelay
+                                                "
                                                 trigger="hover"
-                                                :ready="isReady"
                                                 @visible="
-                                                    handleTermPopoverVisibility
+                                                    () => {
+                                                        handleTermPopoverVisibility(
+                                                            true,
+                                                            term
+                                                        )
+                                                    }
                                                 "
                                             >
                                                 <TermPill
                                                     :term="term"
                                                     :allow-delete="false"
+                                                    @mouseenter="
+                                                        termEnteredPill
+                                                    "
+                                                    @mouseleave="termLeftPill"
                                                 />
                                             </TermPopover>
                                         </div>
@@ -1319,7 +1332,7 @@
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import Truncate from '@/common/ellipsis/index.vue'
-    import TermPopover from '@/common/popover/term/term.vue'
+    import TermPopover from '@/common/popover/glossary/index.vue'
     import TermPill from '@/common/pills/term.vue'
     import useTermPopover from '@/common/popover/term/useTermPopover'
     import ContextMenu from '../misc/contextmenu.vue'
@@ -1631,7 +1644,13 @@
                 termError,
             } = useTermPopover()
 
-            const { mouseEnterDelay, enteredPill } = useMouseEnterDelay()
+            const { mouseEnterDelay, enteredPill, leftPill } =
+                useMouseEnterDelay()
+            const {
+                mouseEnterDelay: termMouseEnterDelay,
+                enteredPill: termEnteredPill,
+                leftPill: termLeftPill,
+            } = useMouseEnterDelay()
 
             return {
                 getFetchedTerm,
@@ -1714,6 +1733,10 @@
                 connectionQualifiedName,
                 handleBrowseAsset,
                 schemaQualifiedName,
+                leftPill,
+                termMouseEnterDelay,
+                termEnteredPill,
+                termLeftPill,
             }
         },
     })

@@ -2,6 +2,7 @@ import { ref, watch } from "vue"
 import { Form, message } from 'ant-design-vue'
 import enumDef from '@/governance/enums/enum.interface'
 import { useAddEnums } from '@/governance/enums/composables/useModifyEnums'
+import useAddEvent from "~/composables/eventTracking/useAddEvent"
 
 const { newEnum, addEnum, reset } = useAddEnums()
 export const { error, isReady, state, isLoading } = addEnum
@@ -29,6 +30,9 @@ export const executeCreateEnum = async () => {
         }))
         newEnum.value = tempForm
         await addEnum.execute()
+        useAddEvent('governance', 'options', 'created', {
+            alias: tempForm.name,
+        })
     } catch { reset() }
 }
 

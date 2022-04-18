@@ -131,10 +131,12 @@ export function useQuery() {
         assetGuidFromURL,
         tabsArray,
         key,
+        cb,
     }: {
         assetGuidFromURL: any
         tabsArray: Ref<activeInlineTabInterface[]>
         key: string
+        cb?: Function
     }) {
         if (!assetGuidFromURL) return
         const defaultAttributes = ref([
@@ -169,6 +171,9 @@ export function useQuery() {
                             .value[0] as any
                         tabsArray.value[_index].assetSidebar.isVisible = true
                         console.log(list.value)
+                        if (cb) {
+                            cb(list.value[0])
+                        }
                     }
                 })
                 watchOnce(error, () => {

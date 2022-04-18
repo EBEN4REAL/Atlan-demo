@@ -9,6 +9,7 @@
                     around the asset"
         :read-only="!linkEditPermission"
         :entity-name="selectedAsset.displayText"
+        :assetType="selectedAsset.typeName"
         @add="handleAdd"
         @update="handleUpdate"
         @remove="handleRemove"
@@ -49,10 +50,6 @@
 
     const { selectedAsset, isDrawer } = toRefs(props)
     const resourcesWidget = ref()
-    const hhh = () => {
-        console.log(resourcesWidget.value)
-        resourcesWidget?.addModalRef?.showModal()
-    }
 
     const { links, selectedAssetUpdatePermission, assetPermission } =
         useAssetInfo()

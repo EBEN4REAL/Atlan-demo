@@ -194,7 +194,7 @@
                         :columns="columnsList"
                         key="hello_world"
                         class=""
-                        :tableIndex="1"
+                        :table-instance-i-d="'query-result-full-screen'"
                     />
                 </div>
             </div>

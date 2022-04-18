@@ -1,7 +1,7 @@
 <template>
     <div ref="tableHeightRef" class="table_height">
         <regular-table
-            id="regularTable"
+            :id="tableInstanceID || 'regularTable'"
             ref="tableRef"
             :class="$style.regular_table"
         ></regular-table>
@@ -59,16 +59,15 @@
                 required: false,
                 default: '',
             },
-            tableIndex: {
-                // for determining which table to refer if there are more than one table present at DOM in same point of time
-                type: Number,
-                required: false,
-                default: 0,
+            tableInstanceID: {
+                type: String,
+                required: true,
+                default: 'regularTable',
             },
         },
 
         setup(props) {
-            const { dataList, columns, tableIndex } = toRefs(props)
+            const { dataList, columns, tableInstanceID } = toRefs(props)
             const tableRef = ref(null)
             const tableHeightRef = ref(null)
             const variantTypeIndexes = ref<String[]>([])
@@ -96,9 +95,9 @@
             }
 
             watch([tableRef, dataList], () => {
-                const tbody =
-                    document.getElementsByTagName('tbody')[tableIndex.value]
-
+                const tbody = document.querySelector(
+                    `#${tableInstanceID.value}  tbody`
+                )
                 tbody.onclick = function (e) {
                     const td = e.target.closest('td')
                     if (!td) return
@@ -165,8 +164,9 @@
 
             watch([tableRef, columns], () => {
                 // init()
-                const thead =
-                    document.getElementsByTagName('thead')[tableIndex.value]
+                const thead = document.querySelector(
+                    `#${tableInstanceID.value}  thead`
+                )
 
                 thead.onmouseover = function (e) {
                     const img = e.target.closest('img')
@@ -189,7 +189,7 @@
                     hoverTH.value.innerHTML = tooltipContent
 
                     // calculate tooltip position
-                    const table = document.getElementById('regularTable')
+                    const table = document.getElementById(tableInstanceID.value)
                     const tableRect = table.getBoundingClientRect()
                     const elemRect = img.parentElement.getBoundingClientRect()
                     const offsetTop = elemRect.top - tableRect.top
@@ -281,20 +281,13 @@
             })
 
             function handleResize() {
-                const table =
-                    document.getElementsByTagName('regular-table')[
-                        tableIndex.value
-                    ]
+                const table = document.getElementById(tableInstanceID.value)
                 const rows = dataList.value
                 table?.setDataListener(dataHere(rows))
                 table?.draw()
             }
             function init() {
-                const table =
-                    document.getElementsByTagName('regular-table')[
-                        tableIndex.value
-                    ]
-
+                const table = document.getElementById(tableInstanceID.value)
                 const rows = dataList.value
 
                 table?.setDataListener(dataHere(rows))
@@ -302,32 +295,25 @@
                 table?.addStyleListener(() => {
                     if (!window?.regularTable?.querySelectorAll) return
                     // style all the table column headers
-                    window?.regularTable
-                        .querySelectorAll('thead th')
-                        .forEach((th) => {
-                            setRowHeaderStyle(th, columns)
-                        })
+                    table.querySelectorAll('thead th').forEach((th) => {
+                        setRowHeaderStyle(th, columns, table)
+                    })
 
                     // style all the column cells
-                    window?.regularTable
-                        .querySelectorAll('tbody tr')
-                        .forEach((row) => {
-                            setCellTextStyle(row, columns)
-                        })
+                    table.querySelectorAll('tbody tr').forEach((row) => {
+                        setCellTextStyle(row, columns, table)
+                    })
 
                     // style all variant type cells
-                    window?.regularTable
-                        .querySelectorAll('thead tr th')
-                        .forEach((th) => {
-                            setVariantCellStyle(
-                                th,
-                                columns,
-                                window.regularTable.querySelectorAll(
-                                    'tbody tr'
-                                ),
-                                variantTypeIndexes.value
-                            )
-                        })
+                    table.querySelectorAll('thead tr th').forEach((th) => {
+                        setVariantCellStyle(
+                            th,
+                            columns,
+                            table.querySelectorAll('tbody tr'),
+                            variantTypeIndexes.value,
+                            table
+                        )
+                    })
                 })
                 // hide tooltips (if visible) on hover
                 table?.addEventListener('scroll', () => {

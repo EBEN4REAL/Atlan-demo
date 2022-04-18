@@ -66,7 +66,7 @@
                     class="relative flex content-center w-full h-12 py-1 my-auto overflow-hidden text-sm leading-5 text-gray-700"
                 >
                     <div class="w-full">
-                        <div class="flex w-11/12">
+                        <div v-if="hasWritePermission" class="flex w-11/12">
                             <span
                                 class="text-sm text-gray-700 text-new-gray-600"
                                 >empty folder, create a
@@ -92,6 +92,37 @@
                                 class="absolute top-0 right-0 flex items-center h-full text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
                             ></div> -->
                         </div>
+                        <a-tooltip v-else color="#363636" placement="right">
+                            <template #title
+                                ><div>
+                                    You have view only access, cannot create
+                                    queries and folders.
+                                </div>
+                            </template>
+                            <div class="flex w-11/12 cursor-not-allowed">
+                                <span
+                                    class="text-sm text-gray-700 text-new-gray-600"
+                                    >empty folder, create a
+                                    <span
+                                        class="text-new-blue-400 hover:underline"
+                                        >query</span
+                                    >,
+                                    <span
+                                        class="text-new-blue-400 hover:underline"
+                                        >visual query</span
+                                    >
+                                    or a
+                                    <span
+                                        class="text-new-blue-400 hover:underline"
+                                        >folder
+                                    </span></span
+                                >
+                                <!-- <div
+                                :id="`${item.qualifiedName}-menu`"
+                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
+                            ></div> -->
+                            </div>
+                        </a-tooltip>
                     </div>
                     <!-- {{ item.title }} -->
                 </div>

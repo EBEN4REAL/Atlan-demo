@@ -266,12 +266,12 @@
                 let result = false
                 assets.value.forEach((el: any) => {
                     policyAsset.forEach((elc) => {
-                        const elcSplited = elc.split('/')
-                        const elSplited = el
+                        const elcSplitted = elc.split('/')
+                        const elSplitted = el
                             .split('/')
-                            .slice(0, elcSplited.length)
+                            .slice(0, elcSplitted.length)
                             .join('/')
-                        if (elc === elSplited) {
+                        if (elc === elSplitted) {
                             result = true
                         }
                     })

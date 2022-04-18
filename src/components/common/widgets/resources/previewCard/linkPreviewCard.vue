@@ -1,8 +1,10 @@
 <template>
-    <div class="p-2 border rounded cursor-pointer hover:bg-gray-100">
-        <div class="flex justify-between h-full">
+    <div
+        class="flex flex-col flex-grow p-2 overflow-hidden border rounded cursor-pointer hover:bg-gray-100"
+    >
+        <div class="flex justify-between flex-grow h-full overflow-hidden">
             <div
-                class="flex items-center flex-1"
+                class="flex items-center flex-1 overflow-hidden"
                 style=""
                 @click="openLink(link.attributes.link)"
             >
@@ -30,7 +32,7 @@
                         />
                     </div>
                 </div>
-                <div class="flex flex-col w-full">
+                <div class="flex flex-col w-full overflow-hidden">
                     <Tooltip
                         :tooltip-text="
                             link.attributes.name || link.attributes.link

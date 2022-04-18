@@ -141,11 +141,11 @@ export const JiraPreviewTab = {
 }
 
 export const SlackResourcesTab = {
-    name: 'Slack Resources',
+    name: 'Slack',
     component: 'SlackResourcesTab',
     icon: 'Slack',
     activeIcon: 'Slack',
-    tooltip: 'Slack Resources',
+    tooltip: 'Slack',
     scrubbed: false,
     requiredInProfile: true,
     analyticsKey: 'slack_resource',

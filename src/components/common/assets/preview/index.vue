@@ -679,7 +679,7 @@
 
                     if (resourceId.value) {
                         if (tenantSlackStatus.value.configured)
-                            switchTab(selectedAsset.value, 'Slack Resources')
+                            switchTab(selectedAsset.value, 'Slack')
                         else switchTab(selectedAsset.value, 'Resources')
                     }
                 })

@@ -93,7 +93,7 @@
                 watchOnce(
                     () => links(selectedAsset.value),
                     () => {
-                        switchTab(selectedAsset.value, 'Slack Resources')
+                        switchTab(selectedAsset.value, 'Slack')
                     }
                 )
         } catch (error) {

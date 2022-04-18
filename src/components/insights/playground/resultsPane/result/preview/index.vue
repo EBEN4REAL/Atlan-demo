@@ -24,7 +24,7 @@
                 box-shadow: inset 0px 0px 2px rgba(0, 0, 0, 0.12);
                 min-height: 33px;
                 padding-left: 1px;
-                max-width:${width}px`"
+                max-width:${Math.abs(width)}px`"
         >
             <a-tabs
                 :class="$style.previewtab_footer"

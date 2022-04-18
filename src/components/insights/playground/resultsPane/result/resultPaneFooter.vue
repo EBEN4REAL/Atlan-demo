@@ -390,7 +390,7 @@
                     previewTabsWidth.value = 476
                 } else if (footerWidth > 675) {
                     previewTabsWidth.value = 446
-                } else if (footerWidth > 520) {
+                } else if (footerWidth > 560) {
                     previewTabsWidth.value = 300
                 } else {
                     previewTabsWidth.value = -300

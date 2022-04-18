@@ -20,48 +20,30 @@
                         placeholder="E = mc ^ 2"
                         :disabled="!editor.isEditable"
                         @change="handleInputChange"
-                        @keydown.esc="deleteNode"
+                        @keydown.esc.stop="deleteNode"
                         @keydown.enter="handleEnter"
                     />
-                    <p v-if="error" class="text-red-600 mt-2">{{ error }}</p>
+                    <p v-if="error" class="text-red-600 mt-2 break-words">
+                        {{ error }}
+                    </p>
                 </div>
             </template>
             <div
-                v-if="equationInput && !error"
                 ref="renderSpace"
                 class="w-full px-3 py-3 text-center rounded"
-                :class="selected ? 'bg-blue-100' : 'bg-gray-100'"
+                :class="{
+                    'bg-blue-100':
+                        editor?.isEditable && selected && error.length === 0,
+                    'bg-red-100': error.length > 0,
+                    'bg-gray-100': error.length === 0,
+                }"
             />
-            <div
-                v-else-if="error"
-                ref="renderSpace"
-                class="w-full px-3 py-3 text-center rounded bg-red-100"
-            >
-                <p class="text-center">{{ $t('readme.invalid-equation') }}</p>
-            </div>
-            <div
-                v-else
-                ref="renderSpace"
-                class="w-full px-3 py-3 text-center rounded bg-gray-100"
-            >
-                <p class="text-center text-gray-400">
-                    {{ $t('readme.equation-placeholder') }}
-                </p>
-            </div>
         </a-popover>
     </node-view-wrapper>
 </template>
 
 <script lang="ts">
-    import {
-        computed,
-        defineComponent,
-        nextTick,
-        onMounted,
-        ref,
-        toRefs,
-        watch,
-    } from 'vue'
+    import { computed, defineComponent, onMounted, ref, toRefs } from 'vue'
     import { nodeViewProps, NodeViewWrapper } from '@tiptap/vue-3'
     import katex from 'katex'
 
@@ -82,17 +64,21 @@
 
             const options = computed(() => extension.value?.options)
             const equationInput = ref<string>(
-                node.value?.attrs['data-equation']
+                node.value?.attrs['data-equation'] || ''
             )
             const renderSpace = ref(null)
             const inputSpace = ref(null)
             const error = ref('')
-            const popoverVisible = ref(true)
+            const popoverVisible = ref(editor?.value?.isEditable)
             const renderEquation = () => {
                 try {
-                    katex.render(equationInput.value, renderSpace.value, {
-                        throwOnError: true,
-                    })
+                    if (equationInput.value.length === 0) {
+                        renderSpace.value.innerHTML = `<p class='text-center text-gray-400'>Type in some math</p>`
+                    } else {
+                        katex.render(equationInput.value, renderSpace.value, {
+                            throwOnError: true,
+                        })
+                    }
                     error.value = ''
                 } catch (e) {
                     if (e instanceof katex.ParseError) {
@@ -104,13 +90,20 @@
                     } else {
                         error.value = e.message
                     }
+                    renderSpace.value.innerHTML = `<p class='text-center'>Invalid equation</p>`
                 }
             }
             onMounted(() => {
-                setTimeout(inputSpace?.value.focus, 100)
+                if (editor?.value?.isEditable)
+                    setTimeout(() => {
+                        inputSpace?.value?.focus()
+                    }, 100)
+                renderEquation()
             })
+
             const handleVisibleChange = (visible) => {
-                if (visible) setTimeout(inputSpace?.value.focus, 100)
+                if (visible && editor?.value?.isEditable)
+                    setTimeout(inputSpace?.value?.focus, 100)
             }
 
             const handleInputChange = () => {
@@ -122,7 +115,7 @@
 
             const handleEnter = () => {
                 popoverVisible.value = false
-                editor?.value.commands.focus('end')
+                editor?.value?.commands.focus('end')
             }
 
             return {

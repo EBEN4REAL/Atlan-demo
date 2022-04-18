@@ -55,8 +55,6 @@
                         @blur="handleBlur"
                         @keyup.esc="handleCancel"
                     ></a-textarea>
-                    <div v-katex="'\\frac{a_i}{1+x}e^\\frac{2}{2+y}'"></div>
-                    
                 </div>
             </div>
             <div

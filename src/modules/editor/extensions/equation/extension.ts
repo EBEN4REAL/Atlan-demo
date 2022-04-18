@@ -2,6 +2,7 @@ import { Node } from '@tiptap/core'
 import { VueNodeViewRenderer } from '@tiptap/vue-3'
 import Equation from './component.vue'
 import {
+    NAME_OF_EVENTS,
     README_TRIGGERS,
     TYPE_OF_EVENTS,
     useTrackEvent,
@@ -59,6 +60,12 @@ export default Node.create({
                     if (dispatch) {
                         tr.replaceRangeWith(selection.from, selection.to, node)
                     }
+
+                    useTrackEvent({
+                        type: TYPE_OF_EVENTS.NODE,
+                        trigger: README_TRIGGERS.SLASH_MENU,
+                        name: NAME_OF_EVENTS.EQUATION_ADDED,
+                    })
 
                     return true
                 },

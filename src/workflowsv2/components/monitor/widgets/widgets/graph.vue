@@ -11,6 +11,7 @@
         computed,
         defineAsyncComponent,
         defineComponent,
+        inject,
         ref,
         toRefs,
     } from 'vue'
@@ -43,6 +44,7 @@
         },
         setup(props, { emit }) {
             const { data } = toRefs(props)
+            const filters = inject<Ref<Record<string, any>>>('monitorFilters')!
 
             const componentType = computed(() => {
                 if (
@@ -55,9 +57,9 @@
             })
 
             const dataAPI = useIndexSearch(
-                data.value?.componentData.query,
-                data.value?.id,
-                true
+                computed(() => ({
+                    dsl: data.value?.componentData.query,
+                }))
             )
 
             const { aggregations } = dataAPI

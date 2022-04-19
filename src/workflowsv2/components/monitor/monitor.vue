@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref } from 'vue'
+    import { defineComponent, provide, ref } from 'vue'
     import { Metadata } from '~/workflowsv2/constants/widgets'
 
     import FilterStrip from './filterStrip.vue'
@@ -24,6 +24,7 @@
         emits: [],
         setup() {
             const filters = ref({})
+            provide('monitorFilters', filters)
             return { filters, Metadata }
         },
     })

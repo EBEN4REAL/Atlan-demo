@@ -1,3 +1,12 @@
+import bodybuilder from 'bodybuilder'
+import { useWorkflowStore } from '~/workflowsv2/store'
+import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
+import { usePackageInfo } from '~/workflowsv2/composables/usePackageInfo'
+
+const workflowStore = useWorkflowStore()
+const { packageType, name } = useWorkflowInfo()
+const { source } = usePackageInfo()
+
 export interface WidgetData {
     id: string
     label?: string
@@ -39,12 +48,33 @@ export const Metadata: WidgetData[] = [
                 sumAggregationValue: 'sum_state',
                 sumAggregationValueDataType: 'int',
             },
+            filterQuery: (filters) => {
+                const query = bodybuilder()
+                if (filters?.packageId) {
+                    const pkg = workflowStore.packageMeta?.[filters.packageId]
+                    if (packageType(pkg) === 'connector') {
+                        if (filters.workflowId) {
+                            let prefix = filters.workflowId
+                                ?.split(`${name(pkg)}-`)
+                                .pop()
+                            prefix = prefix.replaceAll('-', '/')
+                            query.query('prefix', 'qualifiedName', prefix)
+                        } else
+                            query.filter('term', 'connectorName', source(pkg))
+                    }
+                }
+                if (filters?.dateRange) {
+                    query.filter('range', 'lastSyncRunAt', filters.dateRange)
+                }
+
+                return query.build()
+            },
         },
     },
     {
         id: 'connector-assets',
         label: 'Top 5 Sources',
-        info: 'Asset Types',
+        info: 'Sources having the most number of assets',
         showHeader: true,
         class: 'col-span-8 border border-light px-5 py-3 rounded h-48 rounded-lg bg-white',
 

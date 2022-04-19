@@ -11,6 +11,7 @@
         :entity-name="
             selectedAsset.displayText || selectedAsset.attributes.qualifiedName
         "
+        :asset-type="selectedAsset.typeName"
         @add="handleAdd"
         @update="handleUpdate"
         @remove="handleRemove"

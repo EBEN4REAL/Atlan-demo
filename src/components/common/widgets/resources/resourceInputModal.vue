@@ -206,29 +206,30 @@
         if (v === 'success') {
             // ! FIXME this watcher is running multiple times, ???!
             if (localResource.value.title)
-                message.success({
-                    content: `Successfully added new ${
-                        tenantSlackStatus.value.configured &&
-                        isSlackLink.value &&
-                        isTab.value
-                            ? 'Slack thread'
-                            : 'resource'
-                    } "${localResource.value.title}"`,
-                    duration: 1.5,
-                    key: 'add',
-                })
-            if (
-                isSlackLink.value &&
-                isTab.value &&
-                !isSlackTab.value &&
-                tenantSlackStatus.value.configured
-            ) {
-                message.info({
-                    content: `Looks like you’ve added a Slack link, you can find it here`,
-                    duration: 4,
-                    key: 'slackAdd',
-                })
-            }
+                if (
+                    isSlackLink.value &&
+                    isTab.value &&
+                    !isSlackTab.value &&
+                    tenantSlackStatus.value.configured
+                ) {
+                    message.success({
+                        content: `Looks like you’ve added a Slack link, you can find it here`,
+                        duration: 4,
+                        key: 'slackAdd',
+                    })
+                } else
+                    message.success({
+                        content: `Successfully added new ${
+                            tenantSlackStatus.value.configured &&
+                            isSlackLink.value &&
+                            isTab.value
+                                ? 'Slack thread'
+                                : 'resource'
+                        } "${localResource.value.title}"`,
+                        duration: 1.5,
+                        key: 'add',
+                    })
+
             reset()
             visible.value = false
         } else if (v === 'error') {

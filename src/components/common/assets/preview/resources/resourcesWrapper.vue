@@ -32,6 +32,7 @@
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
     import { getDomain } from '~/utils/url'
     import integrationStore from '~/store/integrations/index'
+    import { resourceId } from '~/composables/integrations/slack/useAskAQuestion'
 
     const props = defineProps({
         selectedAsset: {
@@ -86,7 +87,8 @@
         try {
             localResource.value.title = link.attributes.name
             localResource.value.link = link.attributes.link
-            await handleAddResource()
+            debugger
+            const res = await handleAddResource()
             addStatus.value = 'success'
             // ? if the created link is slack , redirect to slack tab
             if (getDomain(link.attributes.link) === 'slack.com')
@@ -94,6 +96,10 @@
                     () => links(selectedAsset.value),
                     () => {
                         switchTab(selectedAsset.value, 'Slack')
+                        const createdResourceGuid =
+                            res?.mutatedEntities?.CREATE[0]?.guid
+                        if (createdResourceGuid)
+                            resourceId.value = createdResourceGuid
                     }
                 )
         } catch (error) {

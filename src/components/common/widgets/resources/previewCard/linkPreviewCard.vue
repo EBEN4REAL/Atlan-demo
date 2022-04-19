@@ -1,6 +1,7 @@
 <template>
     <div
         class="flex flex-col flex-grow p-2 overflow-hidden border rounded cursor-pointer hover:bg-gray-100"
+        :class="shouldHighlight ? 'animate-yellow' : ''"
     >
         <div class="flex justify-between flex-grow h-full overflow-hidden">
             <div
@@ -80,13 +81,14 @@
 </template>
 
 <script setup lang="ts">
-    import { PropType, ref, provide, toRefs, inject } from 'vue'
-    import { useTimeAgo } from '@vueuse/core'
+    import { PropType, ref, computed, toRefs, inject } from 'vue'
+    import { useTimeAgo, whenever } from '@vueuse/core'
     import { getDomain } from '~/utils/url'
     import { Link } from '~/types/resources.interface'
     import Tooltip from '@/common/ellipsis/index.vue'
     import CardActions from '@/common/widgets/resources/misc/cardActionMenu.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import { resourceId } from '~/composables/integrations/slack/useAskAQuestion'
 
     const props = defineProps({
         link: {
@@ -101,8 +103,8 @@
     })
 
     const defaultIcon = ref(false)
-
     const readOnly = inject('readOnly')
+    const { link } = toRefs(props)
 
     const openLink = (url) => {
         if (url) window.open(url)
@@ -111,6 +113,29 @@
             asset_type: props.assetType,
         })
     }
+
+    const shouldHighlight = computed(() => resourceId.value === link.value.guid)
+
+    whenever(shouldHighlight, () =>
+        setTimeout(() => {
+            resourceId.value = ''
+        }, 3000)
+    )
 </script>
 
-<style scoped></style>
+<style lang="less" scoped>
+    .animate-yellow {
+        animation: animateYellow 3s ease;
+    }
+    @keyframes animateYellow {
+        0% {
+            @apply bg-yellow-100;
+        }
+        20% {
+            @apply bg-yellow-100;
+        }
+        100% {
+            @apply bg-white;
+        }
+    }
+</style>

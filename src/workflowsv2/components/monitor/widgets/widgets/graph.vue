@@ -1,9 +1,11 @@
 <template>
+    <AtlanLoader v-if="isLoading" class="h-10 my-auto" />
     <component
         :is="componentType"
+        v-else
         :data="testData"
         :options="data?.componentData.graphOptions"
-    ></component>
+    />
 </template>
 
 <script lang="ts">
@@ -12,8 +14,9 @@
         defineAsyncComponent,
         defineComponent,
         inject,
-        ref,
+        Ref,
         toRefs,
+        watch,
     } from 'vue'
 
     import { Chart, registerables } from 'chart.js'
@@ -46,6 +49,13 @@
             const { data } = toRefs(props)
             const filters = inject<Ref<Record<string, any>>>('monitorFilters')!
 
+            const body = computed(() => ({
+                dsl: {
+                    ...data.value?.componentData.query,
+                    ...data.value?.componentData?.filterQuery?.(filters?.value),
+                },
+            }))
+
             const componentType = computed(() => {
                 if (
                     data.value?.componentData.graphType &&
@@ -56,13 +66,7 @@
                 return 'default'
             })
 
-            const dataAPI = useIndexSearch(
-                computed(() => ({
-                    dsl: data.value?.componentData.query,
-                }))
-            )
-
-            const { aggregations } = dataAPI
+            const { aggregations, refresh, isLoading } = useIndexSearch(body)
 
             const testData = computed(() => {
                 const agg =
@@ -89,7 +93,7 @@
                         ],
                     }
                 }
-                const keyMap = buckets?.map((i, index) => {
+                const keyMap = buckets?.map((i) => {
                     if (
                         data.value.componentData.dataOptions.keyConfig?.type?.toUpperCase() ===
                         'DATE'
@@ -132,7 +136,10 @@
                     ],
                 }
             })
-            return { data, componentType, testData }
+
+            watch(filters, () => refresh(), { deep: true })
+
+            return { data, componentType, testData, isLoading }
         },
     })
 </script>

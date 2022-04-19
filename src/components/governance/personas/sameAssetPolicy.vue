@@ -54,7 +54,10 @@
                                         </div>
                                     </div>
                                     <div class="flex items-center ml-4">
-                                        <AtlanIcon icon="Group" class="mr-1" />
+                                        <AtlanIcon
+                                            icon="Group"
+                                            class="mr-1 icon-group-same-asset"
+                                        />
                                         <div class="mt-1 text-sm text-gray-500">
                                             {{ persona.groups?.length || '-' }}
                                         </div>
@@ -506,6 +509,9 @@
     })
 </script>
 <style lang="less">
+    .icon-group-same-asset {
+        transform: scale(1.1);
+    }
     .icon-warning-same-assets {
         path {
             fill: white;

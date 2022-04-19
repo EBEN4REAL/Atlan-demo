@@ -87,6 +87,27 @@
                                     </div>
 
                                     <Tooltip
+                                        v-if="
+                                            [
+                                                'process',
+                                                'columnprocess',
+                                            ].includes(
+                                                item.typeName?.toLowerCase()
+                                            )
+                                        "
+                                        :clamp-percentage="
+                                            assetNameTruncatePercentage
+                                        "
+                                        :tooltip-text="`${title(item)}`"
+                                        :classes="
+                                            isScrubbed(item)
+                                                ? 'mb-0 font-semibold text-gray-500 opacity-80 tracking-wide'
+                                                : 'font-bold mb-0 text-gray-500 tracking-wide'
+                                        "
+                                    />
+
+                                    <Tooltip
+                                        v-else
                                         :clamp-percentage="
                                             assetNameTruncatePercentage
                                         "

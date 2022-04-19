@@ -32,7 +32,6 @@ export const previewTabs = [
             'Database',
             'Schema',
             'Connection',
-            'Process',
             'Procedure',
         ],
         icon: 'Lineage',

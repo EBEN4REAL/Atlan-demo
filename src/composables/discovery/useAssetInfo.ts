@@ -424,6 +424,11 @@ export default function useAssetInfo() {
             return `/insights?id=${asset.guid}`
         } else if (assetType(asset) === 'Collection') {
             return `/insights?col_id=${asset.guid}`
+        } else if (
+            assetType(asset) === 'Process' ||
+            assetType(asset) === 'ColumnProcess'
+        ) {
+            return null
         } else if (appendOverview) {
             return `/assets/${asset.guid}/overview`
         }

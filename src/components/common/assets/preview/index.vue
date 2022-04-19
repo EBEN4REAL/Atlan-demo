@@ -31,6 +31,20 @@
                     />
                 </div>
                 <Tooltip
+                    v-if="
+                        ['process', 'columnprocess'].includes(
+                            selectedAsset.typeName?.toLowerCase()
+                        )
+                    "
+                    :tooltip-text="`${title(selectedAsset)}`"
+                    :classes="
+                        isScrubbed(selectedAsset)
+                            ? 'mb-0 font-semibold text-gray-500 opacity-80 '
+                            : 'font-bold mb-0 text-gray-500 '
+                    "
+                />
+                <Tooltip
+                    v-else
                     :tooltip-text="`${title(selectedAsset)}`"
                     :route-to="getProfilePath(selectedAsset)"
                     :classes="
@@ -41,7 +55,6 @@
                     :should-open-in-new-tab="true"
                     @click="() => $emit('closeDrawer')"
                 />
-
                 <CertificateBadge
                     v-if="certificateStatus(selectedAsset)"
                     :status="certificateStatus(selectedAsset)"
@@ -163,6 +176,9 @@
                                     isDrawer &&
                                     route?.params?.id &&
                                     assetType(selectedAsset) === 'Column'
+                                ) &&
+                                !['Process', 'ColumnProcess'].includes(
+                                    selectedAsset.typeName
                                 )
                             "
                             class="flex items-center justify-center p-2"

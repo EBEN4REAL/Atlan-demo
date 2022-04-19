@@ -19,7 +19,33 @@
                         />
                         {{ dName }}
                     </p>
-                    <p class="mt-1 text-sm truncate">{{ run.metadata.name }}</p>
+                    <div
+                        class="flex items-center overflow-hidden flex-nowrap gap-x-1"
+                    >
+                        <template v-if="isCronRun(run)">
+                            <span class="lg:whitespace-nowrap"
+                                >Scheduled Run</span
+                            >
+                            <AtlanIcon
+                                icon="Schedule"
+                                class="mx-1 text-success"
+                            />
+                            <span
+                                class="text-sm truncate text-new-gray-800 lg:whitespace-nowrap"
+                                :title="cronString(workflow) || 'No info'"
+                                >{{ cronString(workflow) || 'No info' }}</span
+                            >
+                        </template>
+                        <template v-else>
+                            <span class="lg:whitespace-nowrap"
+                                >Manually Run by</span
+                            >
+                            <UserWrapper
+                                :username="creatorUsername(run)"
+                                @click.stop
+                            />
+                        </template>
+                    </div>
                 </div>
             </div>
 
@@ -37,7 +63,7 @@
                 </span>
             </div>
 
-            <div class="col-span-1 truncate text-new-gray-600">
+            <!-- <div class="col-span-1 truncate text-new-gray-600">
                 <template v-if="isCronRun(run)">
                     <p class="lg:whitespace-nowrap">Scheduled Run</p>
                     <div class="flex items-center overflow-hidden flex-nowrap">
@@ -57,7 +83,7 @@
                         @click.stop
                     />
                 </template>
-            </div>
+            </div> -->
 
             <a-tooltip :title="startedAt(run, false)">
                 <div class="flex items-center justify-end col-span-1">
@@ -67,12 +93,13 @@
 
             <div class="flex items-center justify-end col-span-1 gap-x-4">
                 <span>{{ duration(run) }}</span>
+            </div>
+            <div class="flex justify-center col-span-1">
                 <IconButton
                     icon="ArrowRight"
                     class="-mr-12 opacity-0 group-hover:opacity-100 text-primary"
                 />
             </div>
-            <!-- <div class="col-span-2">Output</div> -->
         </div>
     </router-link>
 </template>
@@ -156,7 +183,7 @@
 </script>
 <style lang="less" scoped>
     .run-list-item {
-        padding: 14px 64px 14px 16px;
+        padding: 14px 16px 14px 16px;
         @apply cursor-pointer;
         @apply grid grid-cols-8 items-center gap-x-4;
         @apply text-sm;

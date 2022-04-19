@@ -14,7 +14,7 @@
             class="flex flex-col overflow-hidden border divide-y divide-gray-300 rounded-lg border-new-gray-300"
         >
             <div
-                class="grid items-center h-10 grid-cols-8 pl-4 pr-16 bg-new-gray-100 gap-x-4"
+                class="grid items-center h-10 grid-cols-8 px-4 bg-new-gray-100 gap-x-4"
             >
                 <div
                     v-for="head in tableHeaders"
@@ -27,7 +27,7 @@
             </div>
             <div
                 class="flex overflow-y-scroll"
-                style="height: calc(100vh - 600px)"
+                style="height: calc(100vh - 500px)"
             >
                 <AtlanLoader
                     v-if="isLoading"
@@ -146,7 +146,7 @@
                     title: 'Status',
                     style: 'grid-column: span 1 / span 1; justify-content: center; display:flex',
                 },
-                { title: 'Run Type', style: 'grid-column: span 1 / span 1' },
+                // { title: 'Run Type', style: 'grid-column: span 1 / span 1' },
                 {
                     title: 'Started',
                     style: 'grid-column: span 1 / span 1; justify-content: flex-end; display:flex',

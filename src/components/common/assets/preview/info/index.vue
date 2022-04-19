@@ -704,7 +704,7 @@
                 "
                 class="flex flex-col px-5"
             >
-                <div class="mb-1 text-sm text-gray-500">Owner</div>
+                <div class="mb-1 text-sm text-gray-500">Created by</div>
                 <div class="flex">
                     <PopOverUser :item="createdBy(selectedAsset)">
                         <UserPill
@@ -792,6 +792,7 @@
                         'AtlasGlossary',
                         'AtlasGlossaryCategory',
                         'Connection',
+                        'Collection',
                     ].includes(selectedAsset.typeName)
                 "
                 class="flex flex-col"

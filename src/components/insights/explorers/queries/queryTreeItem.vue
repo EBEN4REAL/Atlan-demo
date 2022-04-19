@@ -1358,6 +1358,7 @@
                                 {}
                             )
                         watch([error, data, isLoading], (newError) => {
+                            debugger
                             // if (newError) {
 
                             if (isLoading.value == false) {
@@ -1376,6 +1377,12 @@
                                             selectedParentGuid,
                                             'Folder'
                                         )
+                                        // Fetching the data of the folder moved after it has moved - First the queries and then the folders, so as to check for empty state if necessary
+                                        await refetchNodeLocally(
+                                            item.guid,
+                                            'query'
+                                        )
+                                        refetchNodeLocally(item.guid, 'Folder')
                                     }, 2000)
 
                                     message.success(`Folder moved successfully`)

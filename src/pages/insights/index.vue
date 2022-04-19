@@ -1,6 +1,6 @@
 <template>
     <InsightsComponent v-if="featureEnabledMap[INSIGHT_WORKSPACE_LEVEL_TAB]" />
-    <div class="flex items-center justify-around w-full h-full">
+    <div v-else class="flex items-center justify-around w-full h-full">
         <div class="flex flex-col items-center">
             <AtlanIcon icon="LockedFile" class="h-32" />
             <span class="mt-5 text-2xl font-bold">Insights is disabled</span>

@@ -103,7 +103,7 @@
                             class="w-full h-full"
                         />
                     </div>
-                    <p class="w-1/3 text-sm text-center">
+                    <p class="w-3/4 text-sm text-center">
                         {{ placeholder }}
                     </p>
                 </div>

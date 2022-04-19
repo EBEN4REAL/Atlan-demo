@@ -116,10 +116,14 @@
 
     const shouldHighlight = computed(() => resourceId.value === link.value.guid)
 
-    whenever(shouldHighlight, () =>
-        setTimeout(() => {
-            resourceId.value = ''
-        }, 3000)
+    whenever(
+        shouldHighlight,
+        () => {
+            setTimeout(() => {
+                resourceId.value = ''
+            }, 3000)
+        },
+        { immediate: true }
     )
 </script>
 

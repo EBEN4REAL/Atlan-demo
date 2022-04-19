@@ -569,12 +569,12 @@
 
             provide('switchTab', switchTab)
 
-            watch(
+            debouncedWatch(
                 drawerActiveKey,
                 (newVal) => {
                     switchTab(selectedAsset.value, newVal)
                 },
-                { immediate: true }
+                { debounce: 200, immediate: true }
             )
 
             const router = useRouter()
@@ -584,6 +584,10 @@
                 switch (key) {
                     case 'open':
                         router.push(getProfilePath(selectedAsset.value))
+                        useAddEvent('discovery', 'cta_action', 'clicked', {
+                            action: 'open_asset',
+                            asset_type: selectedAsset.value.typeName,
+                        })
                         break
                     case 'query':
                         // router.push(getAssetQueryPath(selectedAsset.value))
@@ -600,6 +604,10 @@
                         selectedAsset.value
                     )}&openVQB=${openVQB}`
                 )
+                useAddEvent('discovery', 'cta_action', 'clicked', {
+                    action: !openVQB ? 'sql_query' : 'vqb_query',
+                    asset_type: selectedAsset.value.typeName,
+                })
             }
 
             const showCTA = (action) =>

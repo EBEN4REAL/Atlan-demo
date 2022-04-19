@@ -139,7 +139,7 @@
             const facets = ref({})
             const inputBox: Ref<null | HTMLInputElement> = ref(null)
             const dependentKey: Ref<undefined | String> =
-                ref('DEFAULT_ASSET_LIST') // 'DEFAULT_CMD_KEY'
+                ref('CMD_KEY_ASSET_LIST')
             const aggregations = ref(['typeName'])
             const postFacets = ref({
                 typeName: '__all',

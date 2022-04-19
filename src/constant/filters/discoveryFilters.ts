@@ -265,6 +265,25 @@ export const discoveryFilters = [
         exclude: false,
         analyticsKey: 'table',
     },
+    {
+        id: 'process',
+        label: 'PROCESS',
+        component: 'properties',
+        includes: ['Process', 'ColumnProcess'],
+        attributes: [
+            {
+                name: 'sql',
+                displayName: 'Query',
+                description: 'SQL query of the process',
+                typeName: 'string',
+            },
+        ],
+        overallCondition: 'OR',
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+        analyticsKey: 'process',
+    },
 ]
 
 export const glossaryFilters = [

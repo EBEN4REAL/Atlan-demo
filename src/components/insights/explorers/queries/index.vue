@@ -1422,7 +1422,7 @@
                         class: 'border-b border-gray-300',
                         disabled: false,
                         component: MenuItem,
-                        hide: !hasWritePermission.value,
+                        hide: computed(() => !hasWritePermission.value),
                         handleClick: () => {
                             toggleCreateQueryModal(currentSelectedNode, true)
                         },

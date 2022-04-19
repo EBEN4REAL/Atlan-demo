@@ -40,7 +40,7 @@
             <ChildActivity
                 v-model="childActivity"
                 type-name="Column"
-                placeholder="Select a column for column-level activity"
+                placeholder="Filter by column"
                 :selectedAsset="selectedAsset"
                 @change="handleChildActivitySelect"
             ></ChildActivity>

@@ -49,7 +49,7 @@
             <AtlanIcon icon="CaretDown" class="mb-0" />
         </template>
         <template v-if="isValidating" #notFoundContent>
-            <a-spin size="small" class="mr-1" />searching {{ typeName }}
+            <a-spin size="small" class="mr-1" />searching {{ typeName }}s
         </template>
         <template v-if="error" #notFoundContent>
             <AtlanIcon icon="Error"></AtlanIcon>

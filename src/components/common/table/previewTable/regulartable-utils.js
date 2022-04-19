@@ -43,7 +43,7 @@ export const getColumnAlignment = (data_type) => {
     }
 }
 
-export const setRowHeaderStyle = (th, columns) => {
+export const setRowHeaderStyle = (th, columns, regularTableInstance) => {
     // add default # to first row as default symbol
     if (th.classList.contains('rt-group-corner')) {
         th.innerText = '#'
@@ -51,7 +51,7 @@ export const setRowHeaderStyle = (th, columns) => {
     }
 
     // get column data type for reach column and figure out the alignment style based on data type
-    const { x } = window.regularTable.getMeta(th)
+    const { x } = regularTableInstance.getMeta(th)
     const column = columns.value[x]
 
     if (column?.data_type) {
@@ -79,10 +79,10 @@ export const setRowHeaderStyle = (th, columns) => {
     }
 }
 
-export const setCellTextStyle = (rows, columns) => {
+export const setCellTextStyle = (rows, columns, regularTableInstance) => {
     rows.childNodes.forEach((td, i) => {
         if (i !== 0) {
-            const { x } = window.regularTable.getMeta(td)
+            const { x } = regularTableInstance.getMeta(td)
             if (columns?.value[x]?.data_type) {
                 td.style.setProperty(
                     'text-align',
@@ -95,9 +95,15 @@ export const setCellTextStyle = (rows, columns) => {
 }
 
 // set data-key and key attribute for each cell that has variant type data - this enables hovering and clicking on these cells so variantModal can be triggered on click
-export const setVariantCellStyle = (th, columns, rows, variantTypeIndexes) => {
+export const setVariantCellStyle = (
+    th,
+    columns,
+    rows,
+    variantTypeIndexes,
+    regularTableInstance
+) => {
     // get column index
-    const { x } = window.regularTable.getMeta(th)
+    const { x } = regularTableInstance.getMeta(th)
     // get column data from index
     const column = columns.value[x]
     // check if the column data is any of the variant data types

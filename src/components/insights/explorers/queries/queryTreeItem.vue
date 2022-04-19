@@ -1377,6 +1377,11 @@
                                             selectedParentGuid,
                                             'Folder'
                                         )
+                                        // Fetching the queries in the node where a folder has been moved to
+                                        await refetchNodeLocally(
+                                            selectedParentGuid,
+                                            'query'
+                                        )
                                         // Fetching the data of the folder moved after it has moved - First the queries and then the folders, so as to check for empty state if necessary
                                         await refetchNodeLocally(
                                             item.guid,

@@ -89,7 +89,6 @@
                 }"
                 @click="
                     () => {
-                        if (!user.emailVerified) return
                         emit('showUserPreviewDrawer', user)
                     }
                 "
@@ -102,10 +101,7 @@
                     avatar-shape="circle"
                     class="mr-2"
                 />
-                <div
-                    class="max-w-full truncate"
-                    :class="!user.emailVerified ? '' : 'cursor-pointer'"
-                >
+                <div class="max-w-full truncate cursor-pointer">
                     <span v-if="user.emailVerified" class="text-primary">{{
                         nameCase(user.name) || '-'
                     }}</span>

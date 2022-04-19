@@ -1,4 +1,6 @@
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+import { outputPaneSize } from '~/components/insights/common/composables/useSpiltPanes'
+
 export const inlineTabsDemoData: activeInlineTabInterface[] = [
     {
         key: '1',
@@ -14,7 +16,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         parentQualifiedName: '',
         isSQLSnippet: false,
         savedQueryParentFolderTitle: undefined,
-        classifications:[],
+        classifications: [],
         explorer: {
             schema: {
                 connectors: {
@@ -80,7 +82,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
             },
             resultsPane: {
                 activeTab: 0,
-                outputPaneSize: 27.9,
+                outputPaneSize: outputPaneSize.value,
                 result: {
                     title: `Result`,
                     runQueryId: undefined,

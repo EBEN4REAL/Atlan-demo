@@ -6,7 +6,7 @@ export const explorerPaneSize = ref(24.5)
 export const minExplorerSize = ref(0)
 export const maxExplorerSize = ref(24.5)
 export const currentNormalExplorerSize = ref(24.5)
-export const outputPaneSize = ref(27.3)
+export const outputPaneSize = ref(42)
 const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
 
 export function useSpiltPanes(activeInlineTab?: activeInlineTabInterface) {

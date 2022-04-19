@@ -220,7 +220,11 @@
         </div>
 
         <ResultPaneFooter
-            v-if="activeInlineTabKey && queryExecutionTime > -1"
+            v-if="
+                activeInlineTabKey &&
+                queryExecutionTime > -1 &&
+                activeInlineTab.playground.resultsPane.outputPaneSize > 0
+            "
         />
 
         <!-- <NoActiveInlineTab @handleAdd="handleAdd(false)" v-else /> -->

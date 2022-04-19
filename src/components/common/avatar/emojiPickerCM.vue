@@ -22,7 +22,7 @@
                         <a-upload
                             class="relative block w-full mb-3 metadata-avatar-uploader"
                             name="file"
-                            accept="image/*"
+                            accept=".png, .jpg, .jpeg"
                             :multiple="false"
                             :file-list="fileList"
                             :show-upload-list="false"

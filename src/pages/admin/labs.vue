@@ -5,7 +5,7 @@
             <div
                 v-for="feature in featureList"
                 :key="feature.key"
-                class="flex flex-col pb-5 border-b last:border-b-0 last:pb-0"
+                class="flex flex-col pb-5 border-b last:border-b-0 last:pb-0 lab-card"
             >
                 <div class="flex justify-between gap-y-8">
                     <div class="flex flex-col">
@@ -168,5 +168,8 @@
             }
             @apply flex items-center;
         }
+    }
+    .lab-card:last-of-type {
+        padding-bottom: 0px !important;
     }
 </style>

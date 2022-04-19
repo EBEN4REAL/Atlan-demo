@@ -1331,6 +1331,7 @@
 <style lang="less">
     .wrapper-icon-warning {
         width: fit-content;
+        width: -moz-fit-content;
         background: #e5ebfb;
         height: fit-content;
     }

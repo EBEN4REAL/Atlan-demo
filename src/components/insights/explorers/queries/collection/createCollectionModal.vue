@@ -294,7 +294,6 @@
         components: {
             AtlanBtn,
             UserSelectWidget,
-            Picker,
             AtlanIcon,
             Popover,
             UserList,

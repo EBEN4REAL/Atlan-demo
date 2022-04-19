@@ -1093,7 +1093,7 @@
                         },
                     },
                     {
-                        title: 'New Folder',
+                        title: 'New folder',
                         key: 'newFolder',
                         component: MenuItem,
                         class: '',
@@ -1102,7 +1102,7 @@
                         handleClick: createFolderInput,
                     },
                     {
-                        title: 'New Collection',
+                        title: 'New collection',
 
                         key: 'collection',
                         component: MenuItem,

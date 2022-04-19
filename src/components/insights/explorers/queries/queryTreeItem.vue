@@ -1345,6 +1345,14 @@
 
             const dropdownQueryOptions = [
                 {
+                    title: 'Schedule',
+                    key: 'schedule',
+                    class: '',
+                    component: MenuItem,
+                    disabled: false,
+                    handleClick: toggleScheduleQueryModal,
+                },
+                {
                     title: 'Copy link',
                     key: 'copyLink',
                     class: 'border-b border-gray-300',

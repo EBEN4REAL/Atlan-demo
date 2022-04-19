@@ -8,19 +8,17 @@
         style="height: 34px"
         @click="handleChange(item.guid)"
     >
-        <div class="flex items-center overflow-x-hidden">
-            <span
-                v-if="item?.attributes?.icon"
-                class="w-5 h-5 mr-2 -mt-1 text-lg"
-                >{{
+        <div class="flex items-center overflow-hidden">
+            <div class="w-5 h-5 mr-2 -mt-1">
+                <span v-if="item?.attributes?.icon" class="text-lg">{{
                     item?.attributes?.icon ? item?.attributes?.icon : '🗃'
-                }}</span
-            >
-            <AtlanIcon
-                v-else
-                icon="CollectionIconSmall"
-                class="w-5 h-4 my-auto mr-2"
-            ></AtlanIcon>
+                }}</span>
+                <AtlanIcon
+                    v-else
+                    icon="CollectionIconSmall"
+                    class="w-5 h-4 my-auto mr-2"
+                ></AtlanIcon>
+            </div>
 
             <div class="truncate" style="max-width: 210px">
                 <span class="mr-1 text-sm text-gray-700">{{

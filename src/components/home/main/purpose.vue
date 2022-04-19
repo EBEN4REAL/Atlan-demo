@@ -34,7 +34,6 @@
             const router = useRouter()
 
             const handleClick = (id) => {
-                console.log(id)
                 assetStore.setGlobalState(['purpose', id])
                 router.push('/assets')
             }

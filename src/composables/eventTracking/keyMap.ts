@@ -505,6 +505,12 @@ const keyMap = {
             resource_deleted: {
                 action: 'purpose_resource_deleted',
             },
+            purpose_enable: {
+                action: 'governance_purpose_enabled',
+            },
+            purpose_disable: {
+                action: 'governance_purpose_disabled',
+            },
         },
         classification: {
             created: {

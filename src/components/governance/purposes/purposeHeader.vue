@@ -62,6 +62,50 @@
             </div>
             <a-button-group>
                 <!-- Edit -->
+                <a-popover
+                    v-model:visible="visibleEnable"
+                    :align="{ offset: [persona.enabled ? 22 : 15, -10] }"
+                    trigger="click"
+                    placement="bottomRight"
+                >
+                    <template #content>
+                        <div
+                            @click="
+                                () => {
+                                    visibleEnable = false
+                                    $emit('updateStatus', !persona.enabled)
+                                }
+                            "
+                            :class="`flex p-2 py-2.5 text-sm font-bold ${
+                                !persona.enabled
+                                    ? 'text-success'
+                                    : 'text-gray-700'
+                            } cursor-pointer btn-status shadow-box  hover:bg-gray-100`"
+                        >
+                            <AtlanIcon
+                                :icon="!persona.enabled ? 'Check' : 'NoAllow'"
+                                class="mr-1"
+                            />{{ !persona.enabled ? 'Enable' : 'Disable' }}
+                            purpose
+                        </div>
+                    </template>
+
+                    <div
+                        class="flex text-sm font-bold cursor-pointer btn-status hover:bg-gray-100 py-1.5 px-2.5 border-gray-300 border mr-3 rounded items-center"
+                        :class="`${
+                            persona.enabled ? 'text-success' : 'text-gray-700'
+                        } `"
+                    >
+                        <AtlanIcon
+                            :icon="persona.enabled ? 'Check' : 'NoAllow'"
+                            class="mr-1.5"
+                        />{{ persona.enabled ? 'Enabled' : 'Disabled' }}
+                        <AtlanIcon
+                            icon="ChevronDown"
+                            class="ml-2 text-gray-500"
+                        />
+                    </div>
+                </a-popover>
                 <a-tooltip v-auth="map.UPDATE_PURPOSE" placement="bottom">
                     <template #title>
                         <span>Edit Purpose</span>
@@ -94,7 +138,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, computed, toRefs, h, watch } from 'vue'
+    import {
+        defineComponent,
+        PropType,
+        computed,
+        toRefs,
+        h,
+        watch,
+        ref,
+    } from 'vue'
     import { message, Modal } from 'ant-design-vue'
     import { useTimeAgo, useVModels } from '@vueuse/core'
     import CreationModal from '@/admin/common/addModal.vue'
@@ -134,6 +186,7 @@
         setup(props, { emit }) {
             const { persona } = toRefs(props)
             const { openEditModal } = useVModels(props, emit)
+            const visibleEnable = ref(false)
             const deletePurpose = () => {
                 Modal.confirm({
                     title: `Delete purpose`,
@@ -261,6 +314,7 @@
                 handleCancel,
                 map,
                 deletePurpose,
+                visibleEnable,
             }
         },
     })

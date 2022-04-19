@@ -120,12 +120,13 @@
                 if (!personaStore.list || personaStore.list?.length == 0) {
                     persona.disabled = true
                 }
-
                 personaStore.list?.forEach((item) => {
-                    persona.children.push({
-                        value: item.id,
-                        label: capitalizeFirstLetter(item.displayName),
-                    })
+                    if (item.enabled) {
+                        persona.children.push({
+                            value: item.id,
+                            label: capitalizeFirstLetter(item.displayName),
+                        })
+                    }
                 })
 
                 persona.children = persona.children.sort(
@@ -147,12 +148,16 @@
                 }
 
                 purposeStore.list?.forEach((item) => {
-                    purpose.children.push({
-                        value: item.id,
-                        label: capitalizeFirstLetter(item.displayName),
-                    })
+                    if (item.enabled) {
+                        purpose.children.push({
+                            value: item.id,
+                            label: capitalizeFirstLetter(item.displayName),
+                        })
+                    }
                 })
-                temp.push(purpose)
+                if (purpose.children.length) {
+                    temp.push(purpose)
+                }
 
                 const all = {
                     value: 'all',

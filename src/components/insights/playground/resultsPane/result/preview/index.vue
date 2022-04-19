@@ -34,6 +34,7 @@
                 :tab-position="mode"
                 :style="{ height: '32px' }"
                 :activeKey="previewIndex"
+                @change="handleTabChange"
             >
                 <a-tab-pane
                     v-for="(item, index) in insights_Store.previewTabs"
@@ -41,9 +42,6 @@
                 >
                     <template #tab>
                         <div
-                            @click.stop="
-                                () => selectPreviewTab(item.asset.guid)
-                            "
                             class="relative flex items-center h-full px-2 text-sm text-new-gray-700 group insights_preview_tabs"
                             style="width: 148px"
                         >
@@ -322,6 +320,12 @@
                 ]?.isQueryRunning
             })
 
+            const handleTabChange = (index: any) => {
+                const guid =
+                    insights_Store.previewTabs[Number(index)].asset.guid
+                selectPreviewTab(guid)
+            }
+
             // WATCHERS
             watch(
                 () => insights_Store.activePreviewGuid,
@@ -383,6 +387,7 @@
             )
 
             return {
+                handleTabChange,
                 width,
                 getResultsIcon,
                 columnsCount,

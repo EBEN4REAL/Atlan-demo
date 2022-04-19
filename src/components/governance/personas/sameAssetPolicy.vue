@@ -54,10 +54,7 @@
                                         </div>
                                     </div>
                                     <div class="flex items-center ml-4">
-                                        <AtlanIcon
-                                            icon="Group"
-                                            class="mr-1 icon-group-same-asset"
-                                        />
+                                        <AtlanIcon icon="Group" class="mr-1" />
                                         <div class="mt-1 text-sm text-gray-500">
                                             {{ persona.groups?.length || '-' }}
                                         </div>
@@ -414,14 +411,14 @@
             const personaSelected = ref({})
             const checkAsset = (policyAsset: any) => {
                 let result = false
-                assets.value.forEach((el: any) => {
-                    policyAsset.forEach((elc) => {
-                        const elcSplited = elc.split('/')
-                        const elSplited = el
+                assets.value.forEach((assetValue: any) => {
+                    policyAsset.forEach((policy) => {
+                        const splittedPolicy = policy.split('/')
+                        const formattedpolicy = assetValue
                             .split('/')
-                            .slice(0, elcSplited.length)
+                            .slice(0, splittedPolicy.length)
                             .join('/')
-                        if (elc === elSplited) {
+                        if (policy === formattedpolicy) {
                             result = true
                         }
                     })
@@ -509,9 +506,6 @@
     })
 </script>
 <style lang="less">
-    .icon-group-same-asset {
-        transform: scale(1.1);
-    }
     .icon-warning-same-assets {
         path {
             fill: white;

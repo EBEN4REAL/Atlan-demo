@@ -1,6 +1,14 @@
 <template>
-    <InsightsComponent />
-    <div></div>
+    <InsightsComponent v-if="featureEnabledMap[INSIGHT_WORKSPACE_LEVEL_TAB]" />
+    <div class="flex items-center justify-around w-full h-full">
+        <div class="flex flex-col items-center">
+            <AtlanIcon icon="LockedFile" class="h-32" />
+            <span class="mt-5 text-2xl font-bold">Insights is disabled</span>
+            <span class="text-base text-gray-500"
+                >Insights workspace is disabled by your admin.</span
+            >
+        </div>
+    </div>
 </template>
 
 <script lang="ts">
@@ -26,6 +34,10 @@
     } from '~/constant/projection'
     import { useDiscoverList as useAssetData } from '~/composables/discovery/useDiscoverList'
     import { useTrackPage } from '~/composables/eventTracking/useAddEvent'
+    import {
+        featureEnabledMap,
+        INSIGHT_WORKSPACE_LEVEL_TAB,
+    } from '~/composables/labs/labFeatureList'
 
     export default defineComponent({
         name: 'Insights Page',
@@ -181,6 +193,10 @@
                 }
                 sendPageTrack()
             })
+            return {
+                featureEnabledMap,
+                INSIGHT_WORKSPACE_LEVEL_TAB,
+            }
         },
     })
 </script>

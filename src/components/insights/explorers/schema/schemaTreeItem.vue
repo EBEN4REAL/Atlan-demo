@@ -917,7 +917,7 @@
                             activeInlineTabCopy.playground.editor.text
                         // new text
                         let editorContext =
-                            activeInlineTabCopy.playground.editor.context
+                            activeInlineTabCopy.explorer.schema.connectors
                         let editorContextType = editorContext?.attributeName
                         let editorContextValue = editorContext?.attributeValue
 

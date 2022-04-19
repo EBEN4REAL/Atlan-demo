@@ -26,5 +26,5 @@ export const state: State = {
     activePreviewGuid: undefined,
     previewTabs: [],
     isNewTabAdded: -1,
-    insertionType: 'LIFO',
+    insertionType: 'FILO',
 }

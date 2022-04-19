@@ -39,17 +39,18 @@ const actions: Actions = {
             tabQueryState: false,
             buttonDisable: false,
         }
+        this.isNewTabAdded = Math.abs(Number(this.isNewTabAdded))
         if (this.previewTabs.length === MAX_PREVIEW_TAB_QUEUE) {
             this.previewTabs.splice(this.previewTabs.length - 1, 1)
             this.previewTabs.unshift(previewTab)
         } else {
             this.previewTabs.unshift(previewTab)
         }
-        this.isNewTabAdded = Math.abs(Number(this.isNewTabAdded))
+
         const x = setTimeout(() => {
             this.isNewTabAdded = -Number(this.isNewTabAdded)
             clearTimeout(x)
-        }, 1000)
+        }, 3000)
     },
     getData({ rows, columns, executionTime, previewTabIndex }) {
         this.previewTabs[previewTabIndex].rows = rows

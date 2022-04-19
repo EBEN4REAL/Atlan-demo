@@ -323,7 +323,7 @@
                 [isQueryRunning],
                 ([newIsQueryRunning]) => {
                     if (
-                        insights_Store.insertionType === 'LIFO' &&
+                        insights_Store.insertionType === 'FILO' &&
                         insights_Store.previewTabs.length > 0 &&
                         newIsQueryRunning !== '' &&
                         insights_Store.isNewTabAdded > 0

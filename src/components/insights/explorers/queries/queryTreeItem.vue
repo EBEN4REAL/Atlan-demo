@@ -40,7 +40,7 @@
                                 >
                                     <template #menuTrigger>
                                         <div
-                                            class="px-2"
+                                            class="pl-1"
                                             v-if="hasWritePermission"
                                         >
                                             <div
@@ -168,7 +168,7 @@
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
                                         : 'bg-gradient-to-l from-tree-light-color via-tree-light-color',
-                                    hasWritePermission ? 'right-8' : 'right-0',
+                                    hasWritePermission ? 'right-7' : 'right-0',
                                 ]"
                             >
                                 <div
@@ -212,7 +212,7 @@
                             </div>
                             <div
                                 :id="`${item.qualifiedName}-menu`"
-                                class="absolute top-0 flex items-center h-full text-gray-500 opacity-0 right-1.5 margin-align-top group-hover:opacity-100"
+                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
                                 @click.stop="() => {}"
                             >
                                 <InsightsThreeDotMenu
@@ -222,7 +222,7 @@
                                 >
                                     <template #menuTrigger>
                                         <div
-                                            class="pl-2"
+                                            class="pl-1"
                                             v-if="hasWritePermission"
                                         >
                                             <div

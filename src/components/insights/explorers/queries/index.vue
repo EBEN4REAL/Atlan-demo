@@ -1443,7 +1443,7 @@
                         component: MenuItem,
                         class: '',
                         disabled: false,
-                        hide: !hasWritePermission.value,
+                        hide: false,
                         handleClick: toggleCollectionModal,
                     },
                 ]

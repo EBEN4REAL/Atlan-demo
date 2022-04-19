@@ -88,8 +88,8 @@
                         </a-menu-item>
                     </div>
                 </component>
+                <slot name="menuFooter"> </slot>
             </a-menu>
-            <slot name="menuFooter"> </slot>
         </template>
     </a-dropdown>
 </template>

@@ -54,7 +54,7 @@
                             </div>
                             <div
                                 v-if="hoverActions"
-                                class="absolute right-0 flex items-center pr-2 text-gray-500 transition duration-300 opacity-0 h-7 margin-align-top group-hover:opacity-100"
+                                class="absolute right-0 flex items-center text-gray-500 transition opacity-0 h-7 margin-align-top group-hover:opacity-100"
                                 style="width: "
                                 :class="
                                     item?.selected
@@ -193,7 +193,7 @@
 
                             <div
                                 v-if="hoverActions"
-                                class="absolute right-0 flex items-center pr-2 text-gray-500 transition duration-300 opacity-0 h-7 margin-align-top group-hover:opacity-100"
+                                class="absolute right-0 flex items-center text-gray-500 transition opacity-0 h-7 margin-align-top group-hover:opacity-100"
                                 @click.stop="() => {}"
                                 :class="
                                     item?.selected
@@ -222,15 +222,7 @@
                                     </a-tooltip>
                                 </div>
 
-                                <div
-                                    class="pl-2"
-                                    v-if="showVQB"
-                                    :class="
-                                        item?.selected
-                                            ? 'tree-light-color'
-                                            : 'bg-gray-light-color'
-                                    "
-                                >
+                                <div class="pl-2" v-if="showVQB">
                                     <VQBThreeDotMenuForTable
                                         v-if="showVQB"
                                         :item="item"
@@ -376,7 +368,7 @@
 
                     <div
                         v-if="hoverActions"
-                        class="absolute right-0 flex items-center pr-2 text-gray-500 transition duration-300 opacity-0 h-7 margin-align-top group-hover:opacity-100"
+                        class="absolute right-0 flex items-center text-gray-500 transition opacity-0 h-7 margin-align-top group-hover:opacity-100"
                         :class="
                             item?.selected
                                 ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
@@ -451,7 +443,7 @@
                         </span>
                         <div
                             v-if="hoverActions"
-                            class="absolute right-0 flex items-center text-gray-500 transition duration-300 opacity-0 h-7 margin-align-top group-hover:opacity-100"
+                            class="absolute right-0 flex items-center text-gray-500 transition opacity-0 h-7 margin-align-top group-hover:opacity-100"
                             @click.stop="() => {}"
                             :class="
                                 item?.selected

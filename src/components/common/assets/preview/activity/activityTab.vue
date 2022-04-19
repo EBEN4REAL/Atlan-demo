@@ -27,6 +27,25 @@
             ></ActivityTypeSelect>
         </div>
         <div
+            v-if="
+                [
+                    'Table',
+                    'View',
+                    'TablePartition',
+                    'MaterialisedView',
+                ].includes(selectedAsset.typeName)
+            "
+            class="px-5 pb-4 mt-0"
+        >
+            <ChildActivity
+                v-model="childActivity"
+                type-name="Column"
+                placeholder="Filter by column"
+                :selectedAsset="selectedAsset"
+                @change="handleChildActivitySelect"
+            ></ChildActivity>
+        </div>
+        <div
             v-if="auditList.length === 0 && isLoading"
             class="flex items-center justify-center text-sm leading-none"
         >
@@ -90,7 +109,12 @@
                     <div
                         v-if="
                             log.entityId !== item.guid &&
-                            ['Table', 'View'].includes(item.typeName)
+                            [
+                                'Table',
+                                'View',
+                                'TablePartition',
+                                'MaterialisedView',
+                            ].includes(item.typeName)
                         "
                         class="flex items-center mt-1 text-gray-700"
                     >
@@ -229,6 +253,7 @@
     import ActivityType from './activityType.vue'
     import { useAssetAuditSearch } from '~/composables/discovery/useAssetAuditSearch'
     import ActivityTypeSelect from '@/common/select/activityType.vue'
+    import ChildActivity from '@/common/select/childActivity.vue'
     import { activityTypeMap } from '~/constant/activityType'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import { default as glossaryLabel } from '@/glossary/constants/assetTypeLabel'
@@ -246,6 +271,7 @@
             ActivityTypeSelect,
             Tooltip,
             PreviewTabsIcon,
+            ChildActivity,
         },
 
         props: {
@@ -271,12 +297,21 @@
 
             const activityType = ref('all')
 
+            const childActivity = ref()
+
             const facets = ref()
             const facetsGTC = ref()
             const termAndCategoriesList = ref()
             const { certificateStatus, title } = useAssetInfo()
 
-            if (['Table', 'View'].includes(item.value.typeName)) {
+            if (
+                [
+                    'Table',
+                    'View',
+                    'TablePartition',
+                    'MaterialisedView',
+                ].includes(item.value.typeName)
+            ) {
                 facets.value = {
                     entityQualifiedName: item.value.attributes.qualifiedName,
                 }
@@ -448,6 +483,25 @@
                     quickChange()
                 }
             }
+
+            const handleChildActivitySelect = () => {
+                if (childActivity.value) {
+                    facets.value = {
+                        ...facets.value,
+                        entityQualifiedName: childActivity.value,
+                    }
+                } else {
+                    facets.value = {
+                        ...facets.value,
+                        entityQualifiedName:
+                            item.value.attributes.qualifiedName,
+                    }
+                }
+
+                offset.value = 0
+                quickChange()
+            }
+
             watch(isReady, () => {
                 // fetch children terms and categories for glossary wide activity
                 if (
@@ -471,6 +525,7 @@
                 limit,
                 offset,
                 preference,
+                childActivity,
                 facets,
                 auditList,
                 getAuditEventComponent,
@@ -483,6 +538,7 @@
                 activityType,
                 activityTypeMap,
                 handleActivityTypeChange,
+                handleChildActivitySelect,
                 glossaryLabel,
                 getTermsAndCategoriesDetail,
                 getEntityStatusIcon,

@@ -38,7 +38,7 @@ export function useUserPreview() {
     ) => {
         defaultTab.value = activeTab || 'about'
         blacklistedTabs.value = [...(config?.blacklisted || [])]
-        //?  hide Integrations tab if preview user is not me
+        // ?  hide Integrations tab if preview user is not me
         if (!isPreviewUserMyself.value)
             blacklistedTabs.value.push('Integrations')
         allowedTabs.value = [...(config?.allowed || [])]

@@ -213,7 +213,6 @@
     import { storeToRefs } from 'pinia'
     import { useRoute, useRouter } from 'vue-router'
     import { message, Modal } from 'ant-design-vue'
-    import AtlanBtn from '@/UI/button.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ExplorerLayout from '@/admin/explorerLayout.vue'
     import PersonaBody from './personaBody.vue'
@@ -242,7 +241,7 @@
     import { personaFilter } from '~/constant/filters/logsFilter'
     import NewPolicyIllustration from '~/assets/images/illustrations/new_policy.svg'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
-
+    import useAssetStore from '~/store/asset'
     export default defineComponent({
         name: 'PersonaView',
         components: {
@@ -259,6 +258,7 @@
             AssetFilters,
         },
         setup() {
+            const assetStore = useAssetStore()
             const router = useRouter()
             const route = useRoute()
             const modalVisible = ref(false)
@@ -387,8 +387,18 @@
                         duration: 1.5,
                         key: messageKey,
                     })
+
+                    // assetStore.setGlobalState(['persona', id])
                     const keyObj = val ? 'persona_enable' : 'persona_disable'
                     useAddEvent('governance', 'persona', keyObj)
+                    if (
+                        assetStore.globalState[0] === 'persona' &&
+                        selectedPersona.value.id ===
+                            assetStore.globalState[1] &&
+                        !val
+                    ) {
+                        assetStore.setGlobalState(['all'])
+                    }
                     // enableDisableLoading.value = false
                 } catch (e) {
                     message.error({

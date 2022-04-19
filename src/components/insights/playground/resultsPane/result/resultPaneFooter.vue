@@ -11,6 +11,7 @@
         <PreviewTabs :width="previewTabsWidth" :compactMode="compactMode" />
         <div class="flex items-center">
             <a-tooltip
+                v-if="featureEnabledMap[INSIGHT_DATA_DOWNLOAD]"
                 color="#363636"
                 :mouseEnterDelay="
                     lastTooltipPresence !== undefined
@@ -45,6 +46,7 @@
                 </AtlanBtn>
             </a-tooltip>
             <a-tooltip
+                v-if="featureEnabledMap[INSIGHT_DATA_DOWNLOAD]"
                 color="#363636"
                 :mouseEnterDelay="
                     lastTooltipPresence !== undefined
@@ -288,6 +290,10 @@
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { useDebounceFn } from '@vueuse/core'
+    import {
+        featureEnabledMap,
+        INSIGHT_DATA_DOWNLOAD,
+    } from '~/composables/labs/labFeatureList'
 
     export default defineComponent({
         components: { AtlanBtn, Tooltip, PreviewTabs, AtlanPreviewTable },
@@ -511,6 +517,8 @@
                 MOUSE_ENTER_DELAY,
                 ADJACENT_TOOLTIP_DELAY,
                 lastTooltipPresence,
+                featureEnabledMap,
+                INSIGHT_DATA_DOWNLOAD,
             }
         },
     })

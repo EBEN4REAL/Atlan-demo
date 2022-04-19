@@ -1,22 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-nested-ternary */
 export default function useUpdateGraph(graph) {
-    const updateIconStroke = (node, color) => {
-        const hoPaCTAIdRight = `${node.id}-ctaPortRight-hoPa`
-        const hoPaCTAIdLeft = `${node.id}-ctaPortLeft-hoPa`
-        const colCTAIdRight = `${node.id}-ctaPortRight-col`
-        const colCTAIdLeft = `${node.id}-ctaPortLeft-col`
-        const arr = [hoPaCTAIdRight, hoPaCTAIdLeft, colCTAIdRight, colCTAIdLeft]
-
-        arr.forEach((portId) => {
-            if (node.hasPort(portId))
-                node.setPortProp(portId, 'attrs/portBody/stroke', color)
-        })
-    }
-
     const highlightNode = (nodeId, state: string) => {
-        const node = graph.value.getNodes().find((x) => x.id === nodeId)
-        const isBase = node.store.data?.isBase
         const graphNodeElement = document.querySelectorAll(
             `[data-cell-id="${nodeId}"]`
         )[0]
@@ -30,16 +15,11 @@ export default function useUpdateGraph(graph) {
             'isGrayed'
         )
 
-        if (!isBase) updateIconStroke(node, '#B2B8C7')
-
-        if (state === 'highlight') {
+        if (state === 'highlight')
             lineageNodeElement?.classList.add('isHighlightedNode')
-            if (!isBase) updateIconStroke(node, '#3c71df')
-        }
-        if (state === 'select') {
+
+        if (state === 'select')
             lineageNodeElement?.classList.add('isSelectedNode')
-            updateIconStroke(node, '#3c71df')
-        }
     }
 
     const highlightNodes = (selectedNodeId, nodesToHighlight) => {
@@ -47,7 +27,6 @@ export default function useUpdateGraph(graph) {
 
         graph.value.freeze('highlightNodes')
         graphNodes.forEach((x) => {
-            const isBase = x.store.data?.isBase
             const graphNodeElement = document.querySelectorAll(
                 `[data-cell-id="${x.id}"]`
             )[0]
@@ -68,39 +47,27 @@ export default function useUpdateGraph(graph) {
                 'isGrayed'
             )
 
-            if (!isBase) {
-                updateIconStroke(x, '#B2B8C7')
-                cell.updateData({ isSelectedNode: null })
-                cell.updateData({ isHighlightedNode: null })
-                cell.updateData({ isGrayed: null })
-            }
-            if (!selectedNodeId?.value && !nodesToHighlight.length) return
-            cell.setZIndex(0)
+            cell.updateData({ isSelectedNode: false })
+            cell.updateData({ isHighlightedNode: false })
+            cell.updateData({ isGrayed: false })
 
-            if (isSelectedNode) {
+            if (!selectedNodeId?.value && !nodesToHighlight.length) return
+
+            cell.setZIndex(20)
+
+            cell.updateData({ isSelectedNode })
+            cell.updateData({
+                isHighlightedNode: isHighlightedNode && !isSelectedNode,
+            })
+            cell.updateData({ isGrayed })
+
+            if (isSelectedNode)
                 lineageNodeElement?.classList.add('isSelectedNode')
-                cell.setZIndex(10)
-                cell.updateData({ isSelectedNode: x.id })
-                cell.updateData({ isHighlightedNode: null })
-                cell.updateData({ isGrayed: null })
-                updateIconStroke(x, '#3c71df')
-            }
-            if (isHighlightedNode && !isSelectedNode) {
+
+            if (isHighlightedNode && !isSelectedNode)
                 lineageNodeElement?.classList.add('isHighlightedNode')
-                cell.setZIndex(10)
-                cell.updateData({ isSelectedNode: null })
-                cell.updateData({ isHighlightedNode: x.id })
-                cell.updateData({ isGrayed: null })
-                if (!isBase) updateIconStroke(x, '#3c71df')
-            }
-            if (isGrayed) {
-                lineageNodeElement?.classList.add('isGrayed')
-                cell.setZIndex(0)
-                cell.updateData({ isSelectedNode: null })
-                cell.updateData({ isHighlightedNode: null })
-                cell.updateData({ isGrayed: x.id })
-                if (!isBase) updateIconStroke(x, '#e0e4eb')
-            }
+
+            if (isGrayed) lineageNodeElement?.classList.add('isGrayed')
         })
         graph.value.unfreeze('highlightNodes')
     }
@@ -142,6 +109,7 @@ export default function useUpdateGraph(graph) {
     const dimNodesEdges = (dim) => {
         graph.value.freeze('dimNodesEdges')
         graph.value.getEdges().forEach((edge) => {
+            if (edge.id.includes('port')) return
             const _isCyclicEdge = edge.store.data.data?.isCyclicEdge
             const defaultStateColor = _isCyclicEdge ? '#ff4848' : '#B2B8C7'
 

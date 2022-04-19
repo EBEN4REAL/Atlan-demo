@@ -128,6 +128,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
     import SchemaFilter from './schemaFilter.vue'
+    import { watchOnce, watchAtMost, watchPausable } from '@vueuse/core'
 
     export default defineComponent({
         components: { Connector, SchemaTree, SchemaFilter },
@@ -141,6 +142,9 @@
             const { getFirstQueryConnection, checkConnection } = useUtils()
             const tables: tableInterface[] = tablesData
             const fullSreenState = inject('fullSreenState') as Ref<boolean>
+            const UrlDetectedAsset = inject(
+                'UrlDetectedAsset'
+            ) as Ref<assetInterface>
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
@@ -435,6 +439,149 @@
                 },
                 { immediate: true, deep: true }
             )
+
+            function returnTreeDataItemAttributes(
+                item: Database | Schema | Table | Column
+            ) {
+                return {
+                    attributes: item.attributes,
+                    entity: item,
+                    key: item.attributes.qualifiedName,
+                    guid: item.guid,
+                    title: item.attributes.name,
+                    typeName: item.typeName,
+                    classifications: item.classifications,
+                    ...item.attributes,
+                    meanings: item.meanings,
+                    isLeaf: item.typeName === 'Column',
+                }
+            }
+
+            watchOnce(
+                UrlDetectedAsset,
+                () => {
+                    debugger
+                    if (!UrlDetectedAsset.value?.attributes?.qualifiedName)
+                        return
+
+                    const { stop, pause, resume } = watchPausable(
+                        treeData,
+                        () => {
+                            if (
+                                treeData.value.length &&
+                                UrlDetectedAsset.value?.attributes
+                            ) {
+                                // check if schema explorer tree have this asset at 20 limit
+                                const _index = treeData.value.findIndex(
+                                    (el) =>
+                                        el.guid === UrlDetectedAsset.value.guid
+                                )
+                                if (_index === -1) {
+                                    // treeData.value.pop()
+                                    // treeData.value.push(UrlDetectedAsset.value);
+
+                                    if (
+                                        treeData.value[
+                                            treeData.value.length - 1
+                                        ]?.title
+                                            ?.toLowerCase()
+                                            ?.includes('load more')
+                                    ) {
+                                        treeData.value.splice(
+                                            treeData.value.length - 2,
+                                            1,
+                                            returnTreeDataItemAttributes(
+                                                UrlDetectedAsset.value
+                                            )
+                                        )
+                                    } else {
+                                        treeData.value.splice(
+                                            treeData.value.length - 1,
+                                            1,
+                                            returnTreeDataItemAttributes(
+                                                UrlDetectedAsset.value
+                                            )
+                                        )
+                                    }
+                                }
+                                const _fields =
+                                    UrlDetectedAsset.value?.attributes?.qualifiedName?.split(
+                                        '/'
+                                    )
+                                // if fields.length == 6 ->> table
+                                // if fields.length == 7 ->> column
+                                if (_fields.length < 7) {
+                                    expandedKeys.value = [
+                                        ...expandedKeys.value,
+                                        UrlDetectedAsset.value.attributes
+                                            .qualifiedName,
+                                    ]
+                                    selectedKeys.value = [
+                                        UrlDetectedAsset.value.attributes
+                                            .qualifiedName,
+                                    ]
+                                    let isExecuted = false
+                                    const _intervalId = setInterval(() => {
+                                        if (isExecuted) {
+                                            clearInterval(_intervalId)
+                                            return
+                                        }
+                                        const element =
+                                            document.getElementsByClassName(
+                                                'ant-tree-treenode-selected'
+                                            )[0]
+                                        if (element?.scrollIntoView) {
+                                            isExecuted = true
+                                            element.scrollIntoView(true)
+                                            pause()
+                                        }
+                                    }, 1000)
+                                    const _timeout = setTimeout(() => {
+                                        clearInterval(_intervalId)
+                                        clearTimeout(_timeout)
+                                    }, 3 * 60 * 1000)
+                                } else if (_fields.length > 6) {
+                                    const tableQualifiedName = _fields
+                                        .slice(0, _fields.length - 1)
+                                        .join('/')
+                                    expandedKeys.value = [
+                                        ...expandedKeys.value,
+                                        tableQualifiedName,
+                                        UrlDetectedAsset.value.attributes
+                                            .qualifiedName,
+                                    ]
+                                    selectedKeys.value = [
+                                        UrlDetectedAsset.value.attributes
+                                            .qualifiedName,
+                                    ]
+                                    let isExecuted = false
+                                    const _intervalId = setInterval(() => {
+                                        if (isExecuted) {
+                                            clearInterval(_intervalId)
+                                            return
+                                        }
+                                        const element =
+                                            document.getElementsByClassName(
+                                                'ant-tree-treenode-selected'
+                                            )[0]
+                                        if (element?.scrollIntoView) {
+                                            isExecuted = true
+                                            element.scrollIntoView(true)
+                                            pause()
+                                        }
+                                    }, 1000)
+                                    const _timeout = setTimeout(() => {
+                                        clearInterval(_intervalId)
+                                        clearTimeout(_timeout)
+                                    }, 3 * 60 * 1000)
+                                }
+                            }
+                        }
+                    )
+                },
+                { immediate: true }
+            )
+
             console.log(selectedKeys.value, 'out')
 
             return {
@@ -461,15 +608,15 @@
         },
     })
     /*
-    {
-                connection: 'default/snowflake/bvscezvng',
-                connector: 'snowflake',
-                databaseQualifiedName:
-                    'default/snowflake/vqaqufvr-i/SNOWFLAKE_SAMPLE_DATA',
-                schemaQualifiedName:
-                    'default/snowflake/bvscezvng/SNOWFLAKE_SAMPLE_DATA/TPCDS_SF10TCL',
-            }
-    */
+        {
+                    connection: 'default/snowflake/bvscezvng',
+                    connector: 'snowflake',
+                    databaseQualifiedName:
+                        'default/snowflake/vqaqufvr-i/SNOWFLAKE_SAMPLE_DATA',
+                    schemaQualifiedName:
+                        'default/snowflake/bvscezvng/SNOWFLAKE_SAMPLE_DATA/TPCDS_SF10TCL',
+                }
+        */
 </script>
 <style lang="less" scoped>
     .placeholder {

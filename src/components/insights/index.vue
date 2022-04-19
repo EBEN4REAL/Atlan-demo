@@ -155,6 +155,7 @@
     import { useConnector } from '~/components/insights/common/composables/useConnector'
     import { getDialectInfo } from '~/components/insights/common/composables/getDialectInfo'
     import { useQuery } from '~/components/insights/common/composables/useQuery'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     import { useRunQueryUtils } from '~/components/insights/common/composables/useRunQueryUtils'
     import { instances } from '~/components/insights/playground/editor/monaco/useMonaco'
@@ -184,6 +185,7 @@
         },
         props: {},
         setup(props) {
+            const UrlDetectedAsset = ref()
             const refreshSchedulesWorkflowTab = ref()
             const activeKey = ref(0)
             const observer = ref()
@@ -365,6 +367,7 @@
             */
 
             const provideData: provideDataInterface = {
+                activeExplorerTabId: activeTabId,
                 showcustomToolBar,
                 activeInlineTab,
                 queryCollections,
@@ -396,6 +399,7 @@
                 collectionSelectorChange,
                 refetchQueryNode,
                 refreshSchedulesWorkflowTab,
+                UrlDetectedAsset,
             }
             useProvide(provideData)
             /*-------------------------------------*/
@@ -547,10 +551,19 @@
                 })
 
                 inlineTabAdd(queryTab, tabsArray, activeInlineTabKey)
+                const callbackFunc = (asset: assetInterface) => {
+                    UrlDetectedAsset.value = asset
+                    // setting tab to schema explorer
+
+                    if (activeTabId.value !== 'schema') {
+                        activeTabId.value = 'schema'
+                    }
+                }
                 getAssetInfo({
                     assetGuidFromURL,
                     tabsArray,
                     key: queryTab.key,
+                    cb: callbackFunc,
                 })
                 let vqb = openVQB === 'true' ? true : false
                 const activeInlineTabKeyCopy = activeInlineTabKey.value

@@ -411,6 +411,7 @@
                     message.success('Request approved')
                     handleEvent('approve')
                 } catch (error) {
+                    console.log(error)
                     raiseErrorMessage()
                 }
                 state.isApprovalLoading = false

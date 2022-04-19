@@ -73,6 +73,7 @@
                 <ResourcesWidget
                     placeholder="Resources is the place to document all knowledge around the persona"
                     :entity-name="persona.name"
+                    :asset-type="persona.type"
                     :read-only="false"
                     :resources="persona?.resources?.links ?? []"
                     :add-status="addStatus"
@@ -106,7 +107,7 @@
                           (activeTabFilter === 'glossaryPolicy' &&
                               glossaryPolicyComputed.length === 0)
                         ? 'bg-white rounded-lg pb-14'
-                        : ''
+                        : 'h-full'
                 "
             >
                 <div class="p-4" :class="!isEmpty && 'border-b'">

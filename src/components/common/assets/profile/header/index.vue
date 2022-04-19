@@ -249,7 +249,14 @@
                                     icon="DatabaseGray"
                                     class="mr-1 mb-0.5"
                                 />
-                                <div class="tracking-tight text-gray-500">
+                                <div
+                                    @click="
+                                        handleOpenDrawer(
+                                            databaseQualifiedName(item)
+                                        )
+                                    "
+                                    class="tracking-tight text-gray-500 border-b border-gray-400 border-dashed cursor-pointer hover:text-primary hover:border-gray-500"
+                                >
                                     {{ databaseName(item) }}
                                 </div>
                             </div>
@@ -266,7 +273,14 @@
                                     icon="SchemaGray"
                                     class="mr-1 mb-0.5"
                                 />
-                                <div class="tracking-tight text-gray-500">
+                                <div
+                                    @click="
+                                        handleOpenDrawer(
+                                            schemaQualifiedName(item)
+                                        )
+                                    "
+                                    class="tracking-tight text-gray-500 border-b border-gray-400 border-dashed cursor-pointer hover:text-primary hover:border-gray-500"
+                                >
                                     {{ schemaName(item) }}
                                 </div>
                             </div>
@@ -367,15 +381,7 @@
                     @edit="handleEdit"
                 >
                     <a-button
-                        v-if="
-                            isGTC(item) &&
-                            (selectedAssetUpdatePermission(item) ||
-                                selectedAssetUpdatePermission(
-                                    item,
-                                    false,
-                                    'ENTITY_DELETE'
-                                ))
-                        "
+                        v-if="isGTC(item)"
                         block
                         class="flex items-center justify-center p-2"
                     >
@@ -399,6 +405,12 @@
             </a-button-group>
         </div>
     </div>
+    <AssetDrawer
+        :show-drawer="drawerVisible"
+        :qualifiedName="qfToFetch"
+        @closeDrawer="handleCloseDrawer"
+        :drawerActiveKey="drawerActiveKey"
+    />
 </template>
 
 <script lang="ts">
@@ -425,7 +437,9 @@
     import QueryDropdown from '@/common/query/queryDropdown.vue'
     import Name from '@/glossary/common/name.vue'
     import SlackAskButton from '~/components/common/assets/misc/slackAskButton.vue'
+    import AssetDrawer from '@common/assets/preview/drawer.vue'
     import { disableSlackAsk } from '~/composables/integrations/slack/useAskAQuestion'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import useGTCPermissions, {
         fetchGlossaryPermission,
     } from '~/composables/glossary/useGTCPermissions'
@@ -441,6 +455,7 @@
             Tooltip,
             QueryDropdown,
             Name,
+            AssetDrawer,
         },
         props: {
             item: {
@@ -490,14 +505,16 @@
                 isCustom,
                 isPublished,
                 assetPermission,
+                databaseQualifiedName,
+                schemaQualifiedName,
             } = useAssetInfo()
 
             const entityTitle = ref(title(item.value))
             const router = useRouter()
+            const drawerActiveKey = ref('Relations')
 
             const goToInsights = (openVQB) => {
                 // router.push(getAssetQueryPath(asset))
-
                 const URL =
                     `http://` +
                     window.location.host +
@@ -505,11 +522,18 @@
                     `&openVQB=${openVQB}`
 
                 window.open(URL, '_blank')?.focus()
+                useAddEvent('discovery', 'cta_action', 'clicked', {
+                    action: !openVQB ? 'sql_query' : 'vqb_query',
+                    asset_type: item.value.typeName,
+                })
             }
 
             const handleClick = () => {
                 // router.push(getAssetQueryPath(asset))
-
+                useAddEvent('discovery', 'cta_action', 'clicked', {
+                    action: 'sql_query',
+                    asset_type: item.value.typeName,
+                })
                 const URL =
                     `http://` +
                     window.location.host +
@@ -543,6 +567,10 @@
                 } else {
                     window.open(sourceURL(item.value), '_blank').focus()
                 }
+                useAddEvent('discovery', 'cta_action', 'clicked', {
+                    action: 'open_in_source',
+                    asset_type: item.value.typeName,
+                })
             }
 
             /*  whenever(and(Escape, notUsingInput), (v) => {
@@ -559,6 +587,19 @@
             const handleNameUpdate = (val) => {
                 entityTitle.value = val
                 console.log(val)
+            }
+
+            const drawerVisible = ref(false)
+            const qfToFetch = ref('')
+
+            const handleOpenDrawer = (qfName) => {
+                drawerVisible.value = true
+                qfToFetch.value = qfName
+            }
+
+            const handleCloseDrawer = () => {
+                drawerVisible.value = false
+                qfToFetch.value = ''
             }
 
             // * permissions for glossary to check against the glossary and not category or term,
@@ -631,6 +672,13 @@
                 handleNameUpdate,
                 entityTitle,
                 isPublished,
+                databaseQualifiedName,
+                schemaQualifiedName,
+                handleOpenDrawer,
+                drawerVisible,
+                qfToFetch,
+                handleCloseDrawer,
+                drawerActiveKey,
             }
         },
     })

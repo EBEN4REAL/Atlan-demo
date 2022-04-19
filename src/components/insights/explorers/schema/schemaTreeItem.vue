@@ -388,59 +388,23 @@
                             <div
                                 class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
                             >
-                                <a-dropdown :trigger="['click']">
-                                    <AtlanIcon
-                                        icon="KebabMenuHorizontal"
-                                        class="w-4 h-4 my-auto -mr-1.5 outline-none"
-                                    />
-                                    <template #overlay>
-                                        <a-menu>
-                                            <a-menu-item
-                                                @click="
-                                                    setContextInEditor(item)
-                                                "
-                                                :class="
-                                                    readOnly
-                                                        ? ' bg-gray-100 cursor-not-allowed pointer-events-none'
-                                                        : ''
-                                                "
-                                            >
-                                                <div
-                                                    class="flex items-center h-8"
-                                                >
-                                                    <AtlanIcon
-                                                        icon="Add"
-                                                        class="w-4 h-4 my-auto mr-1.5"
-                                                    ></AtlanIcon>
-                                                    <span
-                                                        >Set in editor
-                                                        context</span
-                                                    >
-                                                </div>
-                                            </a-menu-item>
-                                            <a-menu-item
-                                                v-if="!showVQB"
-                                                @click="
-                                                    () =>
-                                                        actionClick('add', item)
-                                                "
-                                            >
-                                                <div
-                                                    class="flex items-center h-8"
-                                                >
-                                                    <AtlanIcon
-                                                        icon="AddAssetName"
-                                                        class="w-4 h-4 my-auto mr-1.5 focus:outline-none"
-                                                    ></AtlanIcon>
-                                                    <span
-                                                        >Place name in
-                                                        editor</span
-                                                    >
-                                                </div>
-                                            </a-menu-item>
-                                        </a-menu>
+                                <InsightsThreeDotMenu
+                                    :options="dropdownOptions"
+                                    :item="item"
+                                    class="w-4 h-4 my-auto -mr-1.5 outline-none"
+                                >
+                                    <template #menuTrigger>
+                                        <AtlanIcon
+                                            icon="KebabMenu"
+                                            class="w-4 h-4 my-auto -mr-1.5 outline-none"
+                                            :class="
+                                                item?.selected
+                                                    ? 'tree-light-color'
+                                                    : 'bg-gray-light-color'
+                                            "
+                                        />
                                     </template>
-                                </a-dropdown>
+                                </InsightsThreeDotMenu>
                             </div>
                         </div>
                     </div>

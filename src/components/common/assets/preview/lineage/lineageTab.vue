@@ -149,7 +149,7 @@
             const defaultLineageConfig = computed(() => ({
                 depth: depth.value,
                 guid: guid.value,
-                hideProcess: true,
+                hideProcess: false,
                 entityFilters: {
                     attributeName: '__state',
                     operator: 'eq',

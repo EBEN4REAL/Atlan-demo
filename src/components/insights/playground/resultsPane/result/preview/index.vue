@@ -248,7 +248,7 @@
             const selectPreviewTab = (guid: string) => {
                 insights_Store.activePreviewGuid = guid
                 activeResultPreviewTab.value = false
-                lastElement.value.style.background = ''
+                if (lastElement.value) lastElement.value.style.background = ''
             }
 
             const rowsCount = computed(() => {

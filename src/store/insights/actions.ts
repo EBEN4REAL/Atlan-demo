@@ -40,10 +40,10 @@ const actions: Actions = {
             buttonDisable: false,
         }
         if (this.previewTabs.length === MAX_PREVIEW_TAB_QUEUE) {
-            this.previewTabs.splice(0, 1)
-            this.previewTabs.push(previewTab)
+            this.previewTabs.splice(this.previewTabs.length - 1, 1)
+            this.previewTabs.unshift(previewTab)
         } else {
-            this.previewTabs.push(previewTab)
+            this.previewTabs.unshift(previewTab)
         }
         this.isNewTabAdded = Math.abs(Number(this.isNewTabAdded))
         const x = setTimeout(() => {

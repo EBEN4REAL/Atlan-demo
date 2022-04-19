@@ -1166,7 +1166,7 @@
                 )
 
                 previewRun({
-                    previewTabIndex: insights_Store.previewTabs.length - 1,
+                    previewTabIndex: 0,
                     tabsArray: inlineTabs,
                     queryText: newQuery,
                     attributeValue,

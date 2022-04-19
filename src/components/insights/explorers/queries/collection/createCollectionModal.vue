@@ -76,13 +76,8 @@
                                 class="w-full mt-3 -ml-6 border-gray-300 rounded-lg box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
                             >
                                 <template #content>
-                                    <Picker
-                                        :data="emojiIndex"
-                                        set="apple"
-                                        auto-focus
-                                        :show-preview="false"
-                                        :emoji-tooltip="false"
-                                        :infinite-scroll="true"
+                                    <EmojiPicker
+                                        :picker-element-id="'create-collection-emoji-picker'"
                                         @select="handleEmojiSelect"
                                     />
                                 </template>
@@ -264,7 +259,6 @@
 </template>
 
 <script lang="ts">
-    import emojiData from 'emoji-mart-vue-fast/data/apple.json'
     import {
         inject,
         defineComponent,
@@ -278,11 +272,9 @@
         computed,
         toRaw,
     } from 'vue'
-    import { Picker, EmojiIndex } from 'emoji-mart-vue-fast/src'
     import Tooltip from '@common/ellipsis/index.vue'
     import AtlanBtn from '~/components/UI/button.vue'
     import UserSelectWidget from '~/components/common/input/owner/index.vue'
-    import 'emoji-mart-vue-fast/css/emoji-mart.css'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import useQueryCollection from '~/components/insights/explorers/queries/composables/useQueryCollection'
     import { EditorState } from 'prosemirror-state'
@@ -294,8 +286,8 @@
     import Owners from './owner.vue'
     import whoami from '~/composables/user/whoami'
     import Avatar from '~/components/common/avatar/index.vue'
+    import EmojiPicker from '~/components/common/avatar/EmojiPickerWrapper.vue'
 
-    const emojiIndex = new EmojiIndex(emojiData)
 
     export default defineComponent({
         name: 'CreateCollectionModal',
@@ -311,6 +303,8 @@
             Owners,
             Avatar,
             Tooltip,
+            EmojiPicker
+
         },
         props: {
             showCollectionModal: {
@@ -434,10 +428,10 @@
 
             const { createCollection, updateCollection } = useQueryCollection()
 
-            const handleEmojiSelect = (emoji) => {
-                selectedEmoji.value = emoji.native
+            const handleEmojiSelect = (emojiObject) => {
+                selectedEmoji.value = emojiObject.unicode
                 toggleEmojiPicker()
-                console.log('emoji data', emoji)
+                console.log('emoji data', emojiObject)
             }
 
             const toggleEmojiPicker = () => {
@@ -663,7 +657,6 @@
                 isShareable,
                 // editors,
                 // viewers,
-                emojiIndex,
                 handleEmojiSelect,
                 popOverVisible,
                 toggleEmojiPicker,

@@ -395,13 +395,8 @@
                                 >
                                     <template #menuTrigger>
                                         <AtlanIcon
-                                            icon="KebabMenu"
+                                            icon="KebabMenuHorizontal"
                                             class="w-4 h-4 my-auto -mr-1.5 outline-none"
-                                            :class="
-                                                item?.selected
-                                                    ? 'tree-light-color'
-                                                    : 'bg-gray-light-color'
-                                            "
                                         />
                                     </template>
                                 </InsightsThreeDotMenu>

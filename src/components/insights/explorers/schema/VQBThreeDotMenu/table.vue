@@ -4,7 +4,7 @@
             <template #title>Start a visual query</template>
 
             <div
-                class="flex items-center mt-0.5"
+                class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
                 @click="addTablePanel"
                 :class="[isBaseTableAdded ? 'cursor-not-allowed' : '']"
             >

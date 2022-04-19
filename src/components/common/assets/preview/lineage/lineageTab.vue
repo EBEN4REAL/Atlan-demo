@@ -19,20 +19,28 @@
                 <span class="ml-1 font-semibold text-gray-500">Lineage</span>
             </span>
 
-            <div
-                class="flex items-center cursor-pointer text-primary"
-                v-if="isWithGraph"
-                @click="showImpactedAssets = true"
-                :disabled="!allEntities?.downstream?.length"
+            <template
+                v-if="
+                    !['Process', 'ColumnProcess'].includes(
+                        selectedAsset.typeName
+                    )
+                "
             >
-                <AtlanIcon icon="External" class="mr-1" /> Download Impact
-            </div>
-
-            <router-link v-else :to="getLineagePath(selectedAsset)">
-                <div class="flex items-center cursor-pointer text-primary">
-                    <AtlanIcon icon="External" class="mr-1" /> View Graph
+                <div
+                    class="flex items-center cursor-pointer text-primary"
+                    v-if="isWithGraph"
+                    @click="showImpactedAssets = true"
+                    :disabled="!allEntities?.downstream?.length"
+                >
+                    <AtlanIcon icon="External" class="mr-1" /> Download Impact
                 </div>
-            </router-link>
+
+                <router-link v-else :to="getLineagePath(selectedAsset)">
+                    <div class="flex items-center cursor-pointer text-primary">
+                        <AtlanIcon icon="External" class="mr-1" /> View Graph
+                    </div>
+                </router-link>
+            </template>
         </div>
 
         <RaisedTab
@@ -72,17 +80,6 @@
     } from 'vue'
     import { useRoute } from 'vue-router'
 
-    // Components
-    // import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-    // import AssetList from './LineagePreviewTabAssetList.vue'
-    // import Preferences from './preferences.vue'
-
-    // import SearchAdvanced from '@/common/input/searchAdvanced.vue'
-    // import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
-
-    // import AssetFilters from '@/common/assets/filters/index.vue'
-    // import AssetList from '@/common/assets/list/index.vue'
-    // import AssetItem from '@/common/assets/list/assetItem.vue'
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
     import RaisedTab from '@/UI/raisedTab.vue'

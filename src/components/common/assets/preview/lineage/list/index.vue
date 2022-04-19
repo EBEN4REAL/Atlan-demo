@@ -1,14 +1,14 @@
 <template>
     <div class="px-5 pb-0 mt-1">
-        <SearchAndFilter
+        <SearchAdvanced
             v-model:value="queryText"
             :placeholder="getPlaceholder"
-            size="minimal"
+            :autofocus="true"
         >
-            <template #filter>
+            <template #postFilter>
                 <Preferences v-model:display="preference.display" />
             </template>
-        </SearchAndFilter>
+        </SearchAdvanced>
     </div>
 
     <AggregationTabs
@@ -37,8 +37,8 @@
 
 <script lang="ts">
     import { computed, defineComponent, PropType, ref, toRefs } from 'vue'
-    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import Preferences from '../preferences.vue'
+    import SearchAdvanced from '@/common/input/searchAdvanced.vue'
 
     // import AssetList from './assetList.vue'
     // import AssetItem from './assetItem.vue'
@@ -54,7 +54,7 @@
     export default defineComponent({
         name: 'LineageList',
         components: {
-            SearchAndFilter,
+            SearchAdvanced,
             Preferences,
             AggregationTabs,
             AssetList,

@@ -2,10 +2,7 @@
     <div class="flex w-full h-full">
         <div class="flex flex-col items-stretch flex-1 mb-1 w-80">
             <div class="flex flex-col">
-                <div
-                    v-if="showAggrs && !isLoading && list.length > 0"
-                    class="w-full"
-                >
+                <div v-if="showAggrs && list.length > 0" class="w-full">
                     <AggregationTabs
                         v-model="postFacets.typeName"
                         class="mt-3"
@@ -15,20 +12,15 @@
                     </AggregationTabs>
                 </div>
             </div>
+
             <div
-                v-if="isLoading"
-                class="flex items-center justify-center flex-grow"
-            >
-                <AtlanLoader class="h-10" />
-            </div>
-            <div
-                v-if="!isLoading && error"
+                v-if="!isValidating && error"
                 class="flex items-center justify-center flex-grow"
             >
                 <ErrorView />
             </div>
             <div
-                v-else-if="list.length === 0 && !isLoading"
+                v-else-if="list.length === 0 && !isValidating"
                 class="flex items-center justify-center flex-grow"
             >
                 <EmptyView
@@ -37,10 +29,12 @@
                     :desc="emptyText"
                 />
             </div>
-
-            <!--                             :show-check-box="
-                                preference?.display?.includes('enableCheckbox')
-                            " -->
+            <div
+                v-else-if="list.length === 0 && isValidating"
+                class="flex items-center justify-center flex-grow"
+            >
+                <AtlanLoader class="h-10" />
+            </div>
             <AssetList
                 v-else
                 ref="assetlistRef"
@@ -54,6 +48,7 @@
                     <AssetItem
                         :item="item"
                         :preference="preference"
+                        :is-loading="isValidating"
                         class="hover:bg-primary-menu"
                         :enable-sidebar-drawer="true"
                         @updateDrawer="updateCurrentList"
@@ -65,22 +60,10 @@
 </template>
 
 <script lang="ts">
-    import {
-        toRaw,
-        PropType,
-        defineComponent,
-        ref,
-        toRefs,
-        Ref,
-        computed,
-        inject,
-        watch,
-    } from 'vue'
+    import { toRaw, PropType, defineComponent, ref, toRefs, watch } from 'vue'
 
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
-
-    import { useDebounceFn } from '@vueuse/core'
 
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
 
@@ -94,27 +77,16 @@
 
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
 
-    import useAssetStore from '~/store/asset'
-    import { discoveryFilters } from '~/constant/filters/discoveryFilters'
-
-    import useAddEvent from '~/composables/eventTracking/useAddEvent'
-
     export default defineComponent({
         name: 'AssetDiscovery',
         components: {
             AssetList,
             AggregationTabs,
-
             EmptyView,
             ErrorView,
             AssetItem,
         },
         props: {
-            showFilters: {
-                type: Boolean,
-                required: false,
-                default: true,
-            },
             initialFilters: {
                 type: Object,
                 required: false,
@@ -133,35 +105,7 @@
                 required: false,
                 default: true,
             },
-            showCheckBox: {
-                type: Boolean,
-                required: false,
-                default: false,
-            },
-            checkedCriteria: {
-                type: String,
-                required: false,
-                default: 'guid',
-            },
-            staticUse: {
-                type: Boolean,
-                required: false,
-                default: false,
-            },
-            page: {
-                type: String,
-                required: false,
-                default: 'assets',
-            },
-            enableSidebarDrawer: {
-                type: Boolean,
-                required: false,
-                default: false,
-            },
-            emptyViewText: {
-                type: String,
-                default: '',
-            },
+
             dependentKey: {
                 type: String,
                 required: false,
@@ -175,11 +119,7 @@
         },
         emits: ['listLoaded'],
         setup(props, { emit }) {
-            const {
-                preference: preferenceProp,
-                checkedCriteria,
-                dependentKey,
-            } = toRefs(props)
+            const { preference: preferenceProp, dependentKey } = toRefs(props)
             const limit = ref(20)
             const offset = ref(0)
             const queryText = ref('')
@@ -195,29 +135,8 @@
             const defaultAttributes = ref([...MinimalAttributes])
             const relationAttributes = ref([...DefaultRelationAttributes])
 
-            const activeKey: Ref<string[]> = ref([])
-            const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
-            const searchDirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
-            const { initialFilters, page, projection } = toRefs(props)
-            const discoveryStore = useAssetStore()
+            const { initialFilters } = toRefs(props)
 
-            // if (discoveryStore.activeFacet && page.value === 'assets') {
-            //     facets.value = discoveryStore.activeFacet
-            // }
-            // if (discoveryStore.activePostFacet && page.value === 'assets') {
-            //     postFacets.value = discoveryStore.activePostFacet
-            // }
-            // if (discoveryStore.preferences.sort) {
-            //     preference.value.sort = discoveryStore.preferences.sort
-            // }
-            // if (discoveryStore.preferences.display) {
-            //     preference.value.display = discoveryStore.preferences.display
-            // }
-            // if (discoveryStore.activeFacetTab?.length > 0) {
-            //     activeKey.value = discoveryStore.activeFacetTab
-            // } else {
-            //     activeKey.value = ['hierarchy']
-            // }
             if (props.initialFilters) {
                 facets.value = {
                     ...facets.value,
@@ -239,7 +158,6 @@
                 assetTypeAggregationList,
                 isLoadMore,
                 isValidating,
-                fetch,
                 error,
                 quickChange,
                 updateList,
@@ -262,26 +180,9 @@
                 updateList(asset)
             }
 
-            const sendSearchEvent = useDebounceFn(() => {
-                useAddEvent('discovery', 'search', 'changed')
-            }, 600)
-
-            const handleSearchChange = useDebounceFn(() => {
-                offset.value = 0
-                sendSearchEvent()
-                quickChange()
-            }, 100)
-
-            const handleFilterChange = () => {
-                offset.value = 0
-                quickChange()
-                discoveryStore.setActiveFacet(facets.value)
-            }
-
             const handleAssetTypeChange = () => {
                 offset.value = 0
                 quickChange()
-                discoveryStore.setActivePostFacet(postFacets.value)
             }
 
             const handleLoadMore = () => {
@@ -291,44 +192,13 @@
                 quickChange()
             }
 
-            const handleChangePreference = () => {
-                quickChange()
-                discoveryStore.setPreferences(preference.value)
-            }
-
-            const handleDisplayChange = () => {
-                discoveryStore.setPreferences(preference.value)
-            }
-
-            const handleResetEvent = () => {
-                facets.value = {}
-                queryText.value = ''
-                handleFilterChange()
-                dirtyTimestamp.value = `dirty_${Date.now().toString()}`
-                searchDirtyTimestamp.value = `dirty_${Date.now().toString()}`
-            }
-
-            const placeholder = computed(() => {
-                const found = assetTypeAggregationList.value.find(
-                    (item) => item.id === postFacets.value.typeName
-                )
-
-                if (found) {
-                    console.log(found)
-                    return `Search ${found.label.toLowerCase()} assets`
-                }
-                return 'Search all assets'
-            })
-
-            watch(isLoading, () => {
-                if (!isLoading.value) {
+            watch(isValidating, () => {
+                if (!isValidating.value) {
                     emit('listLoaded', list.value.length)
                 }
             })
 
             return {
-                projection,
-                handleFilterChange,
                 isLoading,
                 queryText,
                 assetTypeAggregationList,
@@ -338,22 +208,10 @@
                 postFacets,
                 handleLoadMore,
                 handleAssetTypeChange,
-                fetch,
-                placeholder,
-                handleSearchChange,
                 isValidating,
                 preference,
-                handleChangePreference,
-                handleResetEvent,
-                dirtyTimestamp,
-                handleDisplayChange,
-
-                activeKey,
-                discoveryFilters,
                 error,
-
                 updateCurrentList,
-                searchDirtyTimestamp,
             }
         },
     })

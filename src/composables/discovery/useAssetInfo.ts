@@ -184,11 +184,20 @@ export default function useAssetInfo() {
     const databaseName = (asset: assetInterface) =>
         attributes(asset)?.databaseName ?? ''
 
+    const databaseQualifiedName = (asset: assetInterface) =>
+        attributes(asset)?.databaseQualifiedName
+
+    const schemaQualifiedName = (asset: assetInterface) =>
+        attributes(asset)?.schemaQualifiedName
+
     const parentDatabase = (asset: assetInterface) =>
         attributes(asset)?.database
 
     const schemaName = (asset: assetInterface) =>
         attributes(asset)?.schemaName ?? ''
+
+    const parentSchema = (asset: assetInterface) =>
+        attributes(asset)?.atlanSchema
 
     const tableName = (asset: assetInterface) =>
         attributes(asset)?.tableName ?? ''
@@ -289,7 +298,7 @@ export default function useAssetInfo() {
             customTabList = cmList(assetType(asset)).map((i) => {
                 return {
                     component: 'customMetadata',
-                    excludes: ['Query', 'Folder'],
+                    excludes: ['Query', 'Folder', 'Collection'],
                     image: i.options?.imageId || i.options?.logoUrl,
                     emoji: i.options?.emoji,
                     name: i.label,
@@ -413,6 +422,8 @@ export default function useAssetInfo() {
             return `/glossary/${asset?.guid}`
         } else if (assetType(asset) === 'Query') {
             return `/insights?id=${asset.guid}`
+        } else if (assetType(asset) === 'Collection') {
+            return `/insights?col_id=${asset.guid}`
         } else if (appendOverview) {
             return `/assets/${asset.guid}/overview`
         }
@@ -450,13 +461,13 @@ export default function useAssetInfo() {
                     : viewName(asset)
             const columnName = attributes(asset).name
 
-            queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${name}&columnNameFromURL=${columnName}`
+            queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${name}&columnNameFromURL=${columnName}&guid=${asset.guid}`
         } else if (
             assetType(asset) === 'Table' ||
             assetType(asset) === 'View'
         ) {
             const tableName = attributes(asset).name
-            queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}`
+            queryPath = `/insights?databaseQualifiedNameFromURL=${databaseQualifiedName}&schemaNameFromURL=${schema}&tableNameFromURL=${tableName}&guid=${asset.guid}`
         } else if (assetType(asset) === 'Query') {
             queryPath = `/insights?id=${asset.guid}`
         } else if (assetType(asset) === 'Collection') {
@@ -759,6 +770,12 @@ export default function useAssetInfo() {
 
     const adminUsers = (asset: assetInterface) =>
         attributes(asset)?.adminUsers || []
+
+    const viewerGroups = (asset: assetInterface) =>
+        attributes(asset)?.viewerGroups || []
+
+    const viewerUsers = (asset: assetInterface) =>
+        attributes(asset)?.viewerUsers || []
 
     const certificateStatus = (asset: assetInterface) => {
         return attributes(asset)?.certificateStatus
@@ -1319,6 +1336,8 @@ export default function useAssetInfo() {
         assignedEntities,
         adminGroups,
         adminUsers,
+        viewerGroups,
+        viewerUsers,
         connectionRowLimit,
         allowQuery,
         allowQueryPreview,
@@ -1352,6 +1371,7 @@ export default function useAssetInfo() {
         parentFolder,
         parentModel,
         parentDatabase,
+        parentSchema,
         sourceChildCount,
         tableCount,
         viewCount,
@@ -1368,5 +1388,7 @@ export default function useAssetInfo() {
         getConnectorLabelByName,
         isIndexed,
         isPublished,
+        databaseQualifiedName,
+        schemaQualifiedName,
     }
 }

@@ -22,6 +22,7 @@
         >
             <span>SQL Query</span>
             <span
+                v-if="editPermission"
                 class="cursor-pointer text-primary hover:underline"
                 @click="handleOpenModal"
                 >Edit</span

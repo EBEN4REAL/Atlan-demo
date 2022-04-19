@@ -18,3 +18,22 @@ export const mainTabs = [
         tooltip: 'Atlan package marketplace',
     },
 ]
+
+export const workflowPreviewTabs = [
+    {
+        name: 'Overview',
+        component: 'info',
+        icon: 'Overview',
+        activeIcon: 'OverviewActive',
+        tooltip: 'Overview',
+        analyticsKey: 'info',
+    },
+    {
+        name: 'Runs',
+        component: 'runs',
+        icon: 'Workflow',
+        activeIcon: 'Workflow',
+        tooltip: 'Workflow runs',
+        analyticsKey: 'runs',
+    },
+]

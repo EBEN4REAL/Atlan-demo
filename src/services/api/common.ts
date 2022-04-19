@@ -60,7 +60,7 @@ export const fetcher = <T>(
 ): Promise<AxiosResponse<T>['data']> =>
     // replacing params:{...params} with params
     // params won't necessarily be a destructurable object ex- URLSearchParams - getting used in ~/components/admin/users/userPreview/accessLogs.vue
-    getAxiosClient().get(url, { params, ...options })
+    getAxiosClient()?.get(url, { params, ...options })
 
 export const fetcherPost = <T>(
     url,

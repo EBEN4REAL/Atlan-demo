@@ -149,7 +149,10 @@
                 if (props.isEdit) {
                     store.updateCustomMetadata(serviceResponse[0])
                     store.tickForceRevalidate()
-                    message.success('Metadata updated')
+                    message.success({
+                        content: 'Metadata updated',
+                        duration: 2,
+                    })
                 } else {
                     store.appendCustomMetadata(serviceResponse)
                     store.tickForceRevalidate()
@@ -158,7 +161,9 @@
                 }
                 console.log('analytics props.isEdit', props.isEdit)
                 const eventName = props.isEdit ? 'updated' : 'created'
-                useAddEvent('governance', 'custom_metadata', eventName)
+                useAddEvent('governance', 'custom_metadata', eventName, {
+                    title: serviceResponse[0].displayName,
+                })
             }
 
             const handleUpdateBMResponse = (apiResponse: Ref) => {

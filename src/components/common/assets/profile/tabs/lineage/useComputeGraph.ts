@@ -10,7 +10,10 @@ import useLineageStore from '~/store/lineage'
 /** COMPOSABLES */
 import useGraph from './useGraph'
 
+/** UTILS */
 import { isCyclicEdge, getFilteredRelations } from './util.js'
+import { iconMinusB64, iconPlusB64 } from './iconsBase64'
+import useGetNodes from './useGetNodes'
 
 export default async function useComputeGraph({
     graph,
@@ -19,7 +22,6 @@ export default async function useComputeGraph({
     currZoom,
     isComputeDone,
 }) {
-    // const { DagreLayout } = window.layout
     const lineageStore = useLineageStore()
     lineageStore.cyclicRelations = []
     lineageStore.columnToSelect = {}
@@ -65,7 +67,7 @@ export default async function useComputeGraph({
     const createNodesFromEntityMap = (data, hasBase = true) => {
         const lineageData = { ...data }
 
-        const { relations, childrenCounts, baseEntityGuid } = lineageData
+        const { relations, baseEntityGuid } = lineageData
 
         const getAsset = (id) => lineageData.guidEntityMap[id]
 
@@ -200,8 +202,6 @@ export default async function useComputeGraph({
 
             const { nodeData } = createNodeData(
                 ent,
-                relations,
-                childrenCounts,
                 hasBase ? baseEntityGuid : null
             )
 
@@ -283,8 +283,92 @@ export default async function useComputeGraph({
 
     createNodeEdges(lineage.value)
 
+    /* createColCTAPorts */
+    const createColCTAPorts = () => {
+        const { relations, baseEntityGuid } = mergedLineageData.value
+
+        const { predecessors, successors } = useGetNodes(graph, baseEntityGuid)
+
+        const isCollapsible = (id) =>
+            !!relations.find((x) => x.fromEntityId === id) &&
+            !!relations.find((x) => x.toEntityId === id)
+
+        graph.value.freeze('createColCTAPorts')
+        graph.value.getNodes().forEach((node) => {
+            const isColNode = isCollapsible(node.id)
+
+            if (
+                (isColNode && successors.includes(node.id)) ||
+                (baseEntityGuid === node.id && successors.length)
+            ) {
+                const id = `${node.id}-ctaPortRight-coll`
+                node.updateData({
+                    ctaPortRightIcon: 'col',
+                    ctaPortRightId: id,
+                })
+            }
+
+            if (
+                (isColNode && predecessors.includes(node.id)) ||
+                (baseEntityGuid === node.id && predecessors.length)
+            ) {
+                const id = `${node.id}-ctaPortLeft-coll`
+                node.updateData({
+                    ctaPortLeftIcon: 'col',
+                    ctaPortLeftId: id,
+                })
+            }
+        })
+        graph.value.unfreeze('createColCTAPorts')
+    }
+
+    /* createHoPaCTAPorts */
+    const createHoPaCTAPorts = () => {
+        const { relations, childrenCounts } = mergedLineageData.value
+
+        const checkNode = (id, prop) => {
+            let res = true
+            relations.forEach((x) => {
+                if (x[prop] === id) res = false
+            })
+            return res
+        }
+
+        const hasHoPa = (id) => {
+            let res = false
+            const isRootNode = checkNode(id, 'toEntityId')
+            const isLeafNode = checkNode(id, 'fromEntityId')
+            if (isRootNode) res = !!childrenCounts?.[id]?.INPUT
+            if (isLeafNode) res = !!childrenCounts?.[id]?.OUTPUT
+            return res
+        }
+
+        graph.value.freeze('createHoPaCTAPorts')
+        graph.value.getNodes().forEach((node) => {
+            const isHoPaNode = hasHoPa(node.id)
+            const isRootNode = checkNode(node.id, 'toEntityId')
+            const isLeafNode = checkNode(node.id, 'fromEntityId')
+
+            if ((isRootNode || isLeafNode) && isHoPaNode) {
+                const pos = isLeafNode ? 'ctaPortRight' : 'ctaPortLeft'
+                const id = `${node.id}-${pos}-hoPa`
+                if (pos === 'ctaPortRight')
+                    node.updateData({
+                        ctaPortRightIcon: 'exp',
+                        ctaPortRightId: id,
+                    })
+                if (pos === 'ctaPortLeft')
+                    node.updateData({
+                        ctaPortLeftIcon: 'exp',
+                        ctaPortLeftId: id,
+                    })
+            }
+        })
+        graph.value.unfreeze('createHoPaCTAPorts')
+    }
+
     /* Render */
-    const renderLayout = (registerAllListeners) => {
+    const renderLayout = () => {
         model.value = graphLayout.value?.layout({
             edges: edges.value,
             nodes: nodes.value,
@@ -296,7 +380,7 @@ export default async function useComputeGraph({
             rankdir: 'LR',
             controlPoints: true,
             nodesepFunc() {
-                return 20
+                return 40
             },
             ranksepFunc() {
                 return 250
@@ -309,18 +393,10 @@ export default async function useComputeGraph({
             },
         })
 
-        graph.value.getNodes().forEach((n) => {
-            const ctaEle = document.getElementById(`node-${n.id}-hoPaCTA`)
-            const cell = graph.value.getCellById(n.id)
-            const isRootNode = graph.value.isRootNode(cell)
-            const isLeafNode = graph.value.isLeafNode(cell)
-            if (isRootNode || isLeafNode) return
-            ctaEle?.remove()
-        })
-
-        if (typeof registerAllListeners === 'function') registerAllListeners()
+        createColCTAPorts()
+        createHoPaCTAPorts()
     }
-    renderLayout(null)
+    renderLayout()
     isComputeDone.value = true
 
     /* Transformations */
@@ -331,7 +407,7 @@ export default async function useComputeGraph({
     currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
 
     /* addSubGraph */
-    const addSubGraph = (data, registerAllListeners) => {
+    const addSubGraph = (data) => {
         if (!Object.keys(mergedLineageData.value).length)
             mergedLineageData.value = lineage.value
 
@@ -382,7 +458,7 @@ export default async function useComputeGraph({
 
         createNodesFromEntityMap(newData, false)
         createNodeEdges(newData)
-        renderLayout(registerAllListeners)
+        renderLayout()
 
         const assetGuidToFit = Object.keys(newData.guidEntityMap).find(
             (x) =>

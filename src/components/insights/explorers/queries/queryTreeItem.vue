@@ -220,6 +220,21 @@
         </template>
     </a-popover> -->
 
+    <a-modal
+        :visible="scheduleQueryModal"
+        :footer="null"
+        :closable="false"
+        width="700px"
+        :destroyOnClose="true"
+    >
+        <ScheduleQuery
+            :item="item"
+            v-model:scheduleQueryModal="scheduleQueryModal"
+            style="min-height: 610px"
+            class="rounded-lg"
+        />
+    </a-modal>
+
     <a-popover :visible="showFolderPopover" placement="rightTop">
         <template #content>
             <div>
@@ -291,6 +306,8 @@
     import { copyToClipboard } from '~/utils/clipboard'
     import { QueryCollection } from '~/types/insights/savedQuery.interface'
     import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
+    import Tooltip from '@common/ellipsis/index.vue'
+    import ScheduleQuery from '~/components/insights/explorers/queries/schedule/index.vue'
 
     // vqb icons
     import Vqb from '~/assets/images/icons/Vqb.svg?raw'
@@ -327,6 +344,7 @@
             AtlanBtn,
             Tooltip,
             InsightsThreeDotMenu,
+            ScheduleQuery,
         },
         props: {
             item: {
@@ -1430,6 +1448,8 @@
             return {
                 dropdownFolderOptions,
                 dropdownQueryOptions,
+                scheduleQueryModal,
+                toggleScheduleQueryModal,
                 evaluatePermisson,
                 permissions,
                 canUserDeleteFolder,

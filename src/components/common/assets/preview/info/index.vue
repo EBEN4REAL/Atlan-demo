@@ -1,8 +1,6 @@
 <template>
     <div class="flex flex-col w-full h-full">
-        <div
-            class="flex items-center justify-between px-5 py-2 border-b border-gray-200 bg-gray-50"
-        >
+        <div class="flex items-center justify-between px-5 py-4">
             <span class="flex items-center">
                 <PreviewTabsIcon
                     :icon="tab.icon"
@@ -25,7 +23,7 @@
                 Saving</span
             >
         </div>
-        <div class="flex flex-col py-4 overflow-y-auto gap-y-4">
+        <div class="flex flex-col pb-4 overflow-y-auto p gap-y-4">
             <AnnouncementWidget
                 class="mx-5"
                 :selected-asset="selectedAsset"
@@ -36,7 +34,8 @@
                     isGTC(selectedAsset) ||
                     selectedAsset.typeName === 'Connection' ||
                     selectedAsset.typeName === 'Process' ||
-                    selectedAsset.typeName === 'Query'
+                    selectedAsset.typeName === 'Query' ||
+                    selectedAsset.typeName === 'Collection'
                 "
                 class="flex flex-col"
             >
@@ -221,7 +220,7 @@
                             class="w-auto h-4 mb-0.5 mr-1"
                         />
                         <router-link
-                            class="cursor-pointer text-primary hover:underline"
+                            class="text-gray-700 border-b border-gray-500 border-dashed cursor-pointer hover:text-primary"
                             :to="`/assets/${selectedAsset?.attributes?.table?.guid}`"
                             target="_blank"
                         >
@@ -253,6 +252,7 @@
                             class="w-auto h-4 mb-0.5 break-all mr-1"
                         />
                         <router-link
+                            class="text-gray-700 border-b border-gray-500 border-dashed cursor-pointer hover:text-primary"
                             :to="`/assets/${selectedAsset?.attributes?.view?.guid}`"
                             target="_blank"
                             >{{ viewName(selectedAsset) }}</router-link
@@ -361,15 +361,16 @@
 
             <div
                 v-if="
-                    (isBiAsset(selectedAsset) || isSaasAsset(selectedAsset)) &&
-                    ![
-                        'PowerBIWorkspace',
-                        'TableauSite',
-                        'LookerFolder',
-                        'LookerProject',
-                        'LookerQuery',
-                        'SalesforceOrganization',
-                    ].includes(selectedAsset?.typeName)
+                    ((isBiAsset(selectedAsset) || isSaasAsset(selectedAsset)) &&
+                        ![
+                            'PowerBIWorkspace',
+                            'TableauSite',
+                            'LookerFolder',
+                            'LookerProject',
+                            'LookerQuery',
+                            'SalesforceOrganization',
+                        ].includes(selectedAsset?.typeName)) ||
+                    ['Schema'].includes(selectedAsset?.typeName)
                 "
                 class="flex px-5"
             >
@@ -674,7 +675,9 @@
             <div
                 v-if="
                     selectedAsset.guid &&
-                    !['Column', 'Connection'].includes(selectedAsset.typeName)
+                    !['Column', 'Connection', 'Collection'].includes(
+                        selectedAsset.typeName
+                    )
                 "
                 class="flex flex-col"
             >
@@ -696,6 +699,24 @@
 
             <div
                 v-if="
+                    selectedAsset.guid &&
+                    ['Collection'].includes(selectedAsset.typeName)
+                "
+                class="flex flex-col px-5"
+            >
+                <div class="mb-1 text-sm text-gray-500">Created by</div>
+                <div class="flex">
+                    <PopOverUser :item="createdBy(selectedAsset)">
+                        <UserPill
+                            :username="createdBy(selectedAsset)"
+                            @click="handleClickUser(createdBy(selectedAsset))"
+                        ></UserPill
+                    ></PopOverUser>
+                </div>
+            </div>
+
+            <div
+                v-if="
                     selectedAsset.guid && selectedAsset.typeName == 'Connection'
                 "
                 class="flex flex-col"
@@ -703,7 +724,7 @@
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
                 >
-                    <span> Admins</span>
+                    <span>Admins</span>
                 </div>
 
                 <Admins
@@ -717,10 +738,61 @@
 
             <div
                 v-if="
+                    selectedAsset.guid &&
+                    selectedAsset.typeName == 'Collection' &&
+                    (localAdmins?.adminUsers?.length > 0 ||
+                        localAdmins?.adminGroups?.length > 0)
+                "
+                class="flex flex-col"
+            >
+                <div
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+                >
+                    <span>Editors</span>
+                </div>
+
+                <Admins
+                    v-model="localAdmins"
+                    class="px-5"
+                    :selected-asset="selectedAsset"
+                    :edit-permission="false"
+                    :showAddButton="false"
+                    @change="handleChangeAdmins"
+                />
+            </div>
+
+            <div
+                v-if="
+                    selectedAsset.guid &&
+                    selectedAsset.typeName == 'Collection' &&
+                    (localViewers?.viewerUsers?.length > 0 ||
+                        localViewers?.viewerGroups?.length > 0)
+                "
+                class="flex flex-col"
+            >
+                <div
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+                >
+                    <span>Viewers</span>
+                </div>
+
+                <Viewers
+                    v-model="localViewers"
+                    class="px-5"
+                    :selected-asset="selectedAsset"
+                    :edit-permission="false"
+                    :showAddButton="false"
+                    @change="handleChangeViewers"
+                />
+            </div>
+
+            <div
+                v-if="
                     ![
                         'AtlasGlossary',
                         'AtlasGlossaryCategory',
                         'Connection',
+                        'Collection',
                     ].includes(selectedAsset.typeName)
                 "
                 class="flex flex-col"
@@ -776,7 +848,7 @@
                             isDrawer,
                             'RELATIONSHIP_ADD',
                             'AtlasGlossaryTerm'
-                        ) || editPermission
+                        )
                     "
                     :allow-delete="
                         selectedAssetUpdatePermission(
@@ -784,7 +856,7 @@
                             isDrawer,
                             'RELATIONSHIP_REMOVE',
                             'AtlasGlossaryTerm'
-                        ) || editPermission
+                        )
                     "
                     @change="handleMeaningsUpdate"
                 >
@@ -851,7 +923,12 @@
             </div>
 
             <CustomMetadataPreview
-                v-if="readPermission"
+                v-if="
+                    readPermission &&
+                    !['Query', 'Folder', 'Collection'].includes(
+                        selectedAsset?.typeName
+                    )
+                "
                 :selected-asset="selectedAsset"
                 class="px-5"
                 :edit-permission="editPermission"
@@ -902,6 +979,7 @@
     import Name from '@/common/input/name/index.vue'
     import Owners from '@/common/input/owner/index.vue'
     import Admins from '@/common/input/admin/index.vue'
+    import Viewers from '@/common/input/viewer/index.vue'
     import Certificate from '@/common/input/certificate/index.vue'
     import Classification from '@/common/input/classification/index.vue'
     import TermsWidget from '@/common/input/terms/index.vue'
@@ -909,6 +987,7 @@
     import Categories2 from '@/common/input/categories/categories2.vue'
     import RelatedTerms from '@/common/input/relatedTerms/relatedTerms.vue'
     import Connection from './connection.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
     import SourceCreated from '@/common/widgets/summary/types/sourceCreated.vue'
     import SourceUpdated from '@/common/widgets/summary/types/sourceUpdated.vue'
@@ -921,6 +1000,9 @@
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import ColumnKeys from '~/components/common/column/columnKeys.vue'
     import CustomMetadataPreview from '@/common/input/customMetadata/index.vue'
+    import { useUserPreview } from '~/composables/user/showUserPreview'
+    import UserPill from '@/common/pills/user.vue'
+    import PopOverUser from '@/common/popover/user/user.vue'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -945,12 +1027,15 @@
             SourceCreated,
             SourceUpdated,
             Admins,
+            Viewers,
             SourceViewCount,
             SubFolderCount,
             ParentContext,
             FieldCount,
             DetailsContainer,
             PreviewTabsIcon,
+            UserPill,
+            PopOverUser,
             SampleDataTable: defineAsyncComponent(
                 () =>
                     import(
@@ -1035,6 +1120,7 @@
                 picklistValues,
                 sourceId,
                 formula,
+                createdBy,
             } = useAssetInfo()
 
             const {
@@ -1045,6 +1131,7 @@
                 localCertificate,
                 localOwners,
                 localAdmins,
+                localViewers,
                 localClassifications,
                 localMeanings,
                 localCategories,
@@ -1056,6 +1143,7 @@
                 handleChangeDescription,
                 handleOwnersChange,
                 handleChangeAdmins,
+                handleChangeViewers,
                 handleChangeCertificate,
                 handleClassificationChange,
                 isLoadingClassification,
@@ -1093,6 +1181,10 @@
                         .open(sourceURL(selectedAsset.value), '_blank')
                         .focus()
                 }
+                useAddEvent('discovery', 'cta_action', 'clicked', {
+                    action: 'open_in_source',
+                    asset_type: selectedAsset.value.typeName,
+                })
             }
 
             // route to go to insights and select the collection
@@ -1105,6 +1197,13 @@
             const handleCopyValue = async (value, type) => {
                 await copyToClipboard(value)
                 message.success(`${type} copied!`)
+            }
+
+            const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
+
+            const handleClickUser = (username: string) => {
+                setUserUniqueAttribute(username, 'username')
+                showUserPreview({ allowed: ['about', 'assets', 'groups'] })
             }
 
             return {
@@ -1162,6 +1261,8 @@
                 localSeeAlso,
                 handleChangeAdmins,
                 localAdmins,
+                localViewers,
+                handleChangeViewers,
                 selectedAssetUpdatePermission,
                 localSQLQuery,
                 handleSQLQueryUpdate,
@@ -1183,6 +1284,8 @@
                 picklistValues,
                 sourceId,
                 formula,
+                handleClickUser,
+                createdBy,
             }
         },
     })

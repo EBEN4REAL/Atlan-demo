@@ -1,13 +1,11 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
     <div
-        class="flex flex-col"
+        class="flex flex-col pb-0.5"
         @mouseenter="showLineageGraphButton = true"
         @mouseleave="showLineageGraphButton = false"
     >
-        <div
-            class="flex items-start flex-1 px-3 py-1 transition-all duration-300"
-        >
+        <div class="flex items-start flex-1 px-3 transition-all duration-300">
             <div
                 class="box-border flex flex-col flex-1 overflow-hidden gap-y-1"
             >
@@ -106,6 +104,7 @@
                             :entity-guid="item?.guid"
                             :mouse-enter-delay="mouseEnterDelay"
                             @mouse-entered="enteredPill"
+                            @mouse-left="leftPill"
                         >
                             <ClassificationPill
                                 :name="classification.name"
@@ -122,6 +121,7 @@
                 </div>
             </div>
         </div>
+        <hr class="mx-3" :class="list?.length > 0 ? 'mt-3' : 'mt-2'" />
         <AssetDrawer
             :guid="item?.guid"
             :show-drawer="showColumnDrawer"
@@ -266,7 +266,8 @@
                     shouldDrawerUpdate.value = false
                 }
             })
-            const { mouseEnterDelay, enteredPill } = useMouseEnterDelay()
+            const { mouseEnterDelay, enteredPill, leftPill } =
+                useMouseEnterDelay()
 
             return {
                 title,
@@ -303,6 +304,7 @@
                 setColumnToSelect,
                 showLineageGraphButton,
                 isLineageRoute,
+                leftPill,
             }
         },
     })

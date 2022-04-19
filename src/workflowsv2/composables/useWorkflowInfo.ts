@@ -3,11 +3,12 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import parser from 'cron-parser'
 import cronstrue from 'cronstrue'
 import { useConnectionStore } from '~/store/connection'
+import { getDurationStringFromSec } from '~/utils/time'
 
 dayjs.extend(relativeTime)
 
 export default function useWorkflowInfo() {
-    const name = (item: any): string => item.metadata?.name
+    const name = (item: any): string => item?.metadata?.name
 
     const creationTimestamp = (item: any, relative: any) => {
         if (relative) {
@@ -63,12 +64,15 @@ export default function useWorkflowInfo() {
     const phaseMessage = (item: any) => item.status?.message
 
     const startedAt = (item: any, relative: any) => {
-        if (relative) {
-            return dayjs().from(item.status?.startedAt, true)
-        }
-        return dayjs(item.status?.startedAt).format(
-            'dddd, MMMM D YYYY, HH:mm:ss'
-        )
+        if (phase(item) === 'Pending') return 'Yet to start'
+        else
+            return (
+                (relative
+                    ? dayjs().from(item.status?.startedAt, true)
+                    : dayjs(item.status?.startedAt).format(
+                          'dddd, MMMM D YYYY, HH:mm:ss'
+                      )) + ' ago'
+            )
     }
     const finishedAt = (item: any, relative: any) => {
         if (!item?.status?.finishedAt) {
@@ -111,7 +115,7 @@ export default function useWorkflowInfo() {
                 item.status.startedAt,
                 'second'
             )
-            return `${Math.floor(sec / 60)} mins, ${sec % 60} secs`
+            return getDurationStringFromSec(sec)
         }
         return ''
     }
@@ -173,12 +177,15 @@ export default function useWorkflowInfo() {
         return false
     }
 
+    const isCronWorkflow = (workflow) =>
+        !!workflow?.metadata?.annotations?.['orchestration.atlan.com/schedule']
+
     const getRunClassByPhase = (tempStatus) => {
         switch (tempStatus) {
             case 'Succeeded':
                 return 'bg-green-500 bg-opacity-10'
             case 'Running':
-                return 'bg-primary bg-opacity-10 animate-pulse'
+                return 'bg-yellow-300 bg-opacity-10'
             case 'Failed':
             case 'Error':
             case 'Stopped':
@@ -193,9 +200,10 @@ export default function useWorkflowInfo() {
             case 'Succeeded':
                 return 'text-green-500'
             case 'Running':
-                return 'text-blue-500'
-            case 'Failed':
+                return 'text-yellow-500'
             case 'Error':
+                return 'text-warning'
+            case 'Failed':
             case 'Stopped':
                 return 'text-red-500'
             default:
@@ -206,9 +214,10 @@ export default function useWorkflowInfo() {
     const getRunBorderClassByPhase = (tempStatus) => {
         if (tempStatus === 'Succeeded')
             return 'border-green-500 border-opacity-75'
-        if (tempStatus === 'Failed' || tempStatus === 'Error')
-            return 'border-red-500 border-opacity-75'
-        if (tempStatus === 'Running') return 'border-blue-500 border-opacity-75'
+        if (tempStatus === 'Failed') return 'border-red-500 border-opacity-75'
+        if (tempStatus === 'Error') return 'border-warning border-opacity-75'
+        if (tempStatus === 'Running')
+            return 'border-yellow-500 border-opacity-75'
         return 'border-gray-400'
     }
 
@@ -249,6 +258,7 @@ export default function useWorkflowInfo() {
 
     const getRunTooltip = (item) => {
         const tempStatus = phase(item)
+        if (tempStatus === 'Pending') return 'Yet to start'
         if (tempStatus === 'Succeeded') {
             return `${tempStatus}, ${finishedAt(item, true)} ago (${duration(
                 item
@@ -258,7 +268,7 @@ export default function useWorkflowInfo() {
                 item
             )})`
         } else if (tempStatus === 'Running') {
-            return `${tempStatus}, started ${startedAt(item, true)} ago`
+            return `${tempStatus}, started ${startedAt(item, true)}`
         }
         return `${tempStatus}, ${finishedAt(item, true)} ago (${duration(
             item
@@ -331,6 +341,7 @@ export default function useWorkflowInfo() {
         cronString,
         cron,
         isCronRun,
+        isCronWorkflow,
         getRunClass,
         getRunTooltip,
         getRunBorderClass,

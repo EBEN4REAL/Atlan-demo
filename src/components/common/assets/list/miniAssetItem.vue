@@ -612,6 +612,7 @@
                                 :entity-guid="item?.guid"
                                 :mouse-enter-delay="mouseEnterDelay"
                                 @mouse-entered="enteredPill"
+                                @mouse-left="leftPill"
                             >
                                 <ClassificationPill
                                     :name="classification.name"
@@ -779,7 +780,8 @@
             const last = useTimeAgo(
                 item.value.attributes.__modificationTimestamp
             )
-            const { mouseEnterDelay, enteredPill } = useMouseEnterDelay()
+            const { mouseEnterDelay, enteredPill, leftPill } =
+                useMouseEnterDelay()
             return {
                 isChecked,
                 showCheckBox,
@@ -823,6 +825,7 @@
                 last,
                 mouseEnterDelay,
                 enteredPill,
+                leftPill,
             }
         },
     })

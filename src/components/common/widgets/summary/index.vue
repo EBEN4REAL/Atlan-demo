@@ -115,7 +115,7 @@
             Rows: defineAsyncComponent(() => import('./types/rows.vue')),
             Columns: defineAsyncComponent(() => import('./types/columns.vue')),
             Categories: defineAsyncComponent(
-                () => import('@common/input/categories/categories.vue')
+                () => import('@common/input/categories/categories2.vue')
             ),
             Definition: defineAsyncComponent(
                 () => import('./types/definition.vue')

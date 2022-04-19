@@ -19,61 +19,62 @@
             >
               
             </Popover> -->
-              <div
-                    class="cursor-pointer flex items-center"
-                    @mouseenter="$emit('mouseEnterAsset')"
+            <div
+                class="cursor-pointer flex items-center"
+                @mouseenter="$emit('mouseEnterAsset')"
+                @click="handleShowAssetSidebar(item.guid)"
+            >
+                <div
+                    v-if="
+                        [
+                            'AtlasGlossaryTerm',
+                            'AtlasGlossaryCategory',
+                            'AtlasGlossary',
+                        ].includes(request?.entityType)
+                    "
+                    class="flex items-center"
                 >
-                    <div
-                        v-if="
-                            [
-                                'AtlasGlossaryTerm',
-                                'AtlasGlossaryCategory',
-                                'AtlasGlossary',
-                            ].includes(request?.entityType)
+                    <atlan-icon
+                        :icon="
+                            capitalizeFirstLetter(
+                                glossaryLabel[request?.entityType]
+                            )
                         "
-                        class="flex items-center"
-                    >
-                        <atlan-icon
-                            :icon="
-                                capitalizeFirstLetter(
-                                    glossaryLabel[request?.entityType]
-                                )
-                            "
-                            class="mr-1 mb-1"
-                        ></atlan-icon>
-                        <span class="text-primary">{{
-                            request?.destinationEntity?.attributes?.name
-                        }}</span>
-                        <CertificateBadge
-                            v-if="
-                                request?.destinationEntity?.attributes
-                                    ?.certificateStatus
-                            "
-                            :status="
-                                request?.destinationEntity?.attributes
-                                    ?.certificateStatus
-                            "
-                            class="mb-1 ml-1"
-                            :username="
-                                request?.destinationEntity?.attributes
-                                    ?.certificateUpdatedBy
-                            "
-                        />
-                    </div>
-                    <AssetPiece
-                        v-else-if="request.destinationQualifiedName"
-                        :asset-qf-name="request.destinationQualifiedName"
-                        :entity-type="request?.entityType"
-                        :destination-entity="request.destinationEntity"
+                        class="mr-1 mb-1"
+                    ></atlan-icon>
+                    <span class="text-primary">{{
+                        request?.destinationEntity?.attributes?.name
+                    }}</span>
+                    <CertificateBadge
+                        v-if="
+                            request?.destinationEntity?.attributes
+                                ?.certificateStatus
+                        "
+                        :status="
+                            request?.destinationEntity?.attributes
+                                ?.certificateStatus
+                        "
+                        class="mb-1 ml-1"
+                        :username="
+                            request?.destinationEntity?.attributes
+                                ?.certificateUpdatedBy
+                        "
                     />
-                    <span v-else class="text-sm overflow-ellipsis">
-                        {{
-                            primaryText[request.requestType]
-                                ? primaryText[request.requestType](request)
-                                : ''
-                        }}
-                    </span>
                 </div>
+                <AssetPiece
+                    v-else-if="request.destinationQualifiedName"
+                    :asset-qf-name="request.destinationQualifiedName"
+                    :entity-type="request?.entityType"
+                    :destination-entity="request.destinationEntity"
+                />
+                <span v-else class="text-sm overflow-ellipsis">
+                    {{
+                        primaryText[request.requestType]
+                            ? primaryText[request.requestType](request)
+                            : ''
+                    }}
+                </span>
+            </div>
         </div>
         <div class="flex items-center col-span-3 ml-24">
             <ClassificationPiece
@@ -314,7 +315,11 @@
         approveRequest,
         declineRequest,
     } from '~/composables/requests/useRequests'
-    import { primaryText, requestTypeIcon } from './requestType'
+    import {
+        primaryText,
+        requestTypeIcon,
+        requestTypeEventMap,
+    } from './requestType'
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
 
     export default defineComponent({
@@ -378,6 +383,24 @@
                 assetGuid.value = guid
                 showAssetSidebar.value = true
             }
+
+            const handleEvent = (action) => {
+                let request_type
+                if (request.value?.destinationAttribute)
+                    request_type =
+                        requestTypeEventMap[request.value?.destinationAttribute]
+                            .requestType
+                else
+                    request_type =
+                        requestTypeEventMap[request.value?.requestType]
+                            .requestType
+
+                useAddEvent('governance', 'requests', 'resolved', {
+                    action,
+                    request_type,
+                    widget_type:'table'
+                })
+            }
             async function handleApproval(messageProp = '') {
                 state.isApprovalLoading = true
                 try {
@@ -386,10 +409,9 @@
                     request.value.status = 'approved'
                     emit('action', request.value)
                     message.success('Request approved')
-                    useAddEvent('governance', 'requests', 'resolved', {
-                        action: 'approve',
-                    })
+                    handleEvent('approve')
                 } catch (error) {
+                    console.log(error)
                     raiseErrorMessage()
                 }
                 state.isApprovalLoading = false
@@ -403,9 +425,8 @@
                     request.value.status = 'rejected'
                     emit('action', request.value)
                     message.success('Request declined')
-                    useAddEvent('governance', 'requests', 'resolved', {
-                        action: 'decline',
-                    })
+                    console.log(request.value)
+                    handleEvent('decline')
                 } catch (error) {
                     raiseErrorMessage()
                 }

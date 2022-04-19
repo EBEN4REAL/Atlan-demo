@@ -25,6 +25,7 @@ export const previewTabs = [
         excludes: [
             'Query',
             'Folder',
+            'Collection',
             'AtlasGlossary',
             'AtlasGlossaryTerm',
             'AtlasGlossaryCategory',
@@ -55,6 +56,7 @@ export const previewTabs = [
             'Column',
             'Process',
             'Procedure',
+            'Collection',
         ],
         icon: 'Relation',
         activeIcon: 'RelationActive',
@@ -64,7 +66,7 @@ export const previewTabs = [
         analyticsKey: 'relations',
     },
     {
-        name: 'Linked Assets',
+        name: 'Assets',
         component: 'linkedAssets',
         icon: 'AssetsInactiveLight',
         activeIcon: 'AssetsActiveLight',
@@ -87,7 +89,7 @@ export const previewTabs = [
     {
         name: 'Queries',
         component: 'queries',
-        includes: ['Table', 'Column', 'View'],
+        includes: ['Table', 'Column', 'View', 'Collection'],
         icon: 'QueryDiscovery',
         tooltip: 'Queries',
         scrubbed: false,
@@ -124,7 +126,7 @@ export const previewTabs = [
         scrubbed: false,
         requiredInProfile: true,
         analyticsKey: 'property',
-    }
+    },
 ]
 
 export const JiraPreviewTab = {

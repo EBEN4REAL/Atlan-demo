@@ -1,6 +1,6 @@
 <template>
     <div
-        class="w-full pt-2 pb-2 pl-2 pr-2 rounded dropdown-schema-explorer hover:bg-gray-200"
+        class="w-full pt-2 pb-2 pl-2 pr-2 rounded dropdown-schema-explorer hover:bg-new-gray-200"
     >
         <!-- New Design using Popovers instead of menu items -->
         <a-dropdown
@@ -15,9 +15,7 @@
         >
             <div class="flex items-center w-full cursor-pointer">
                 <div
-                    v-if="
-                        getContextName(`database`) === 'Select database context'
-                    "
+                    v-if="getContextName(`database`) === 'Select database'"
                     class="flex flex-row items-center w-full"
                 >
                     <div class="flex flex-col w-full bg">
@@ -35,7 +33,7 @@
                         </div>
 
                         <span class="mr-1 text-sm text-gray-500 truncate"
-                            >Select database context</span
+                            >Select database</span
                         >
                     </div>
                     <div class="w-4">
@@ -63,8 +61,7 @@
                             :tooltip-text="getContextName(`database`)"
                             classes="cursor-pointer text-base  text-gray-700 w-full"
                             :class="[
-                                getContextName(`database`) ===
-                                'Select database context'
+                                getContextName(`database`) === 'Select database'
                                     ? `${$style.empty_db_state}`
                                     : `${$style.filled_db_state}`,
                             ]"
@@ -72,8 +69,7 @@
                         </Tooltip>
                         <span
                             :class="[
-                                getContextName(`schema`) ===
-                                'Select schema context'
+                                getContextName(`schema`) === 'Select schema'
                                     ? `text-gray-500`
                                     : ``,
                             ]"
@@ -258,13 +254,13 @@
                                 <button
                                     v-if="
                                         getContextName(`database`) !==
-                                        'Select database context'
+                                        'Select database'
                                     "
                                     @click="clearStateDBHandle"
                                     class="hover:text-primary"
                                     :class="[
                                         getContextName(`database`) ===
-                                        'Select database context'
+                                        'Select database'
                                             ? `${$style.clear_btn_invisible}`
                                             : `${$style.clear_btn_visible}`,
                                     ]"
@@ -331,7 +327,7 @@
                                     <br />
                                     <span class="text-base">{{
                                         getContextName(`schema`) === ''
-                                            ? 'Select schema context'
+                                            ? 'Select schema'
                                             : getContextName(`schema`)
                                     }}</span>
                                 </span>
@@ -341,12 +337,12 @@
                                     <button
                                         v-if="
                                             getContextName(`schema`) !==
-                                                'Select schema context' &&
+                                                'Select schema' &&
                                             getContextName(`schema`) !== ''
                                         "
                                         :class="[
                                             getContextName(`schema`) ===
-                                            'Select schema context'
+                                            'Select schema'
                                                 ? `${$style.clear_btn_invisible}`
                                                 : `${$style.clear_btn_visible}`,
                                         ]"
@@ -796,12 +792,12 @@
 
                 if (item === 'database') {
                     if (chunks?.length > 3) return chunks[3]
-                    if (chunks?.length > 2) return 'Select database context'
+                    if (chunks?.length > 2) return 'Select database'
                     return ''
                 }
                 if (item === 'schema') {
                     if (chunks?.length > 4) return chunks[4]
-                    if (chunks?.length > 3) return 'Select schema context'
+                    if (chunks?.length > 3) return 'Select schema'
                     return ''
                 }
                 return ''

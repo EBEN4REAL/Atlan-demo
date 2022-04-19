@@ -1,33 +1,5 @@
 <template>
     <div id="fullScreenId" class="flex h-full overflow-x-hidden">
-        <!--Sidebar navigation pane start -->
-        <div class="bg-white border-r sidebar-nav">
-            <template v-for="tab in tabsList" :key="tab.id">
-                <a-tooltip placement="right" color="#363636">
-                    <template #title> {{ tab.title }} </template>
-
-                    <div
-                        class="relative flex flex-col items-center text-xs sidebar-nav-icon"
-                        @click="() => changeTab(tab)"
-                    >
-                        <AtlanIcon
-                            v-if="tab?.icon"
-                            :icon="`${tab.icon}`"
-                            class="w-6 h-6"
-                            :color="
-                                activeTabId === tab.id ? '#5277D7' : '#6f7590'
-                            "
-                        />
-                        <div
-                            class="absolute top-0 right-0 h-full"
-                            style="width: 3px"
-                            :class="activeTabId === tab.id ? 'bg-primary' : ''"
-                        ></div>
-                    </div>
-                </a-tooltip>
-            </template>
-        </div>
-        <!--Sidebar navigation pane end -->
         <div ref="splitpaneRef" :class="$style.splitpane_insights">
             <splitpanes
                 class="parent_splitpanes"
@@ -45,41 +17,46 @@
                     :min-size="minExplorerSize"
                     class="relative explorer_splitpane vertical_pane"
                 >
-                    <!--explorer pane start -->
-                    <div
-                        :class="
-                            activeTab?.component === 'schema' ? 'z-30' : 'z-10'
-                        "
-                        class="absolute h-full full-width"
+                    <a-tabs
+                        v-model:activeKey="activeTabId"
+                        :class="$style.previewtab"
+                        :style="'height: calc(100%)'"
+                        tab-position="right"
                     >
-                        <Schema />
-                    </div>
-                    <div
-                        :class="
-                            activeTab?.component === 'queries' ? 'z-30' : 'z-10'
-                        "
-                        class="absolute h-full full-width"
-                    >
-                        <Queries
-                            :reset="resetTree"
-                            :reset-query-tree="resetQueryTree"
-                            :reset-parent-guid="resetParentGuid"
-                            :reset-type="resetType"
-                            :refresh-query-tree="refreshQueryTree"
-                        />
-                    </div>
-                    <div
-                        :class="
-                            activeTab?.component === 'variables'
-                                ? 'z-30'
-                                : 'z-10'
-                        "
-                        class="absolute h-full full-width"
-                    >
-                        <!-- <Variables /> -->
-                        <History />
-                    </div>
-                    <!--explorer pane end -->
+                        <a-tab-pane
+                            v-for="tab in tabsList"
+                            :key="tab.id"
+                            :destroy-inactive-tab-pane="false"
+                            :class="
+                                tab.id === activeTabId ? 'flex flex-col' : ''
+                            "
+                        >
+                            <template #tab>
+                                <AtlanIcon
+                                    v-if="tab?.icon"
+                                    :icon="`${tab.icon}`"
+                                    class="w-6 h-6"
+                                    :color="
+                                        activeTabId === tab.id
+                                            ? '#5277D7'
+                                            : '#6f7590'
+                                    "
+                                    @click="() => changeTab(tab)"
+                                />
+                            </template>
+                            <keep-alive>
+                                <component
+                                    :is="tab.component"
+                                    :key="tab.id"
+                                    :reset="resetTree"
+                                    :reset-query-tree="resetQueryTree"
+                                    :reset-parent-guid="resetParentGuid"
+                                    :reset-type="resetType"
+                                    :refresh-query-tree="refreshQueryTree"
+                                ></component>
+                            </keep-alive>
+                        </a-tab-pane>
+                    </a-tabs>
                 </pane>
                 <pane
                     :size="
@@ -117,6 +94,7 @@
 <script lang="ts">
     import {
         defineComponent,
+        defineAsyncComponent,
         ref,
         computed,
         watch,
@@ -131,10 +109,6 @@
     import { useRoute, useRouter } from 'vue-router'
     import Playground from '~/components/insights/playground/index.vue'
     import AssetSidebar from '~/components/insights/assetSidebar/index.vue'
-    import Schema from './explorers/schema/index.vue'
-    import Queries from './explorers/queries/index.vue'
-    import History from './explorers/history/index.vue'
-    import Schedule from './explorers/schedule.vue'
 
     import useInsightsTabList from './common/composables/useTabList'
     import { useLocalStorageSync } from './common/composables/useLocalStorageSync'
@@ -162,6 +136,7 @@
     import { useConnector } from '~/components/insights/common/composables/useConnector'
     import { getDialectInfo } from '~/components/insights/common/composables/getDialectInfo'
     import { useQuery } from '~/components/insights/common/composables/useQuery'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     import { useRunQueryUtils } from '~/components/insights/common/composables/useRunQueryUtils'
     import { instances } from '~/components/insights/playground/editor/monaco/useMonaco'
@@ -176,13 +151,24 @@
         components: {
             Playground,
             AssetSidebar,
-            Schema,
-            Queries,
-            History,
-            Schedule,
+            schema: defineAsyncComponent(
+                () => import('./explorers/schema/index.vue')
+            ),
+            queries: defineAsyncComponent(
+                () => import('./explorers/queries/index.vue')
+            ),
+            schedule: defineAsyncComponent(
+                () => import('./explorers/schedule/index.vue')
+            ),
+            history: defineAsyncComponent(
+                () => import('./explorers/history/index.vue')
+            ),
         },
         props: {},
         setup(props) {
+            const UrlDetectedAsset = ref()
+            const refreshSchedulesWorkflowTab = ref()
+            const activeKey = ref(0)
             const observer = ref()
             const splitpaneRef = ref()
             const showcustomToolBar = ref(false) // custom variables toolbar
@@ -211,7 +197,7 @@
                 assetSidebarPaneSize,
                 paneResize,
             } = useSpiltPanes()
-            const { getDetectQueryTab } = useQuery()
+            const { getDetectQueryTab, getAssetInfo } = useQuery()
             const route = useRoute()
             // TODO: will be used for HOTKEYs
             const {
@@ -240,6 +226,7 @@
             const schemaNameFromURL = inject('schemaNameFromURL')
             const tableNameFromURL = inject('tableNameFromURL')
             const columnNameFromURL = inject('columnNameFromURL')
+            const assetGuidFromURL = inject('assetGuidFromURL')
 
             const openVQB = inject('openVQB')
 
@@ -361,6 +348,7 @@
             */
 
             const provideData: provideDataInterface = {
+                activeExplorerTabId: activeTabId,
                 showcustomToolBar,
                 activeInlineTab,
                 queryCollections,
@@ -391,6 +379,8 @@
                 updateAssetCheck,
                 collectionSelectorChange,
                 refetchQueryNode,
+                refreshSchedulesWorkflowTab,
+                UrlDetectedAsset,
             }
             useProvide(provideData)
             /*-------------------------------------*/
@@ -542,6 +532,20 @@
                 })
 
                 inlineTabAdd(queryTab, tabsArray, activeInlineTabKey)
+                const callbackFunc = (asset: assetInterface) => {
+                    UrlDetectedAsset.value = asset
+                    // setting tab to schema explorer
+
+                    if (activeTabId.value !== 'schema') {
+                        activeTabId.value = 'schema'
+                    }
+                }
+                getAssetInfo({
+                    assetGuidFromURL,
+                    tabsArray,
+                    key: queryTab.key,
+                    cb: callbackFunc,
+                })
                 let vqb = openVQB === 'true' ? true : false
                 const activeInlineTabKeyCopy = activeInlineTabKey.value
 
@@ -736,6 +740,7 @@
             // provide('resetQueryTree', resetQueryTree)
 
             return {
+                activeKey,
                 minExplorerSize,
                 maxExplorerSize,
                 splitpaneRef,
@@ -763,13 +768,15 @@
 <style lang="less" module>
     .splitpane_insights {
         :global(.splitpanes__splitter) {
-            background-color: #fff;
+            @apply bg-new-gray-100;
+            // background-color: #fff;
             -webkit-box-sizing: border-box;
             box-sizing: border-box;
             position: relative;
             -ms-flex-negative: 0;
             z-index: 3 !important;
             flex-shrink: 0;
+            @apply border-new-gray-300;
         }
         :global(.splitpanes--vertical .splitpanes__pane) {
             transition: none;
@@ -830,6 +837,55 @@
             }
         }
     }
+    .previewtab {
+        &:global(.ant-tabs-right) {
+            :global(.ant-tabs-nav .ant-tabs-ink-bar) {
+                right: 0 !important;
+                left: unset !important;
+            }
+            :global(.ant-tabs-nav) {
+                order: 0 !important;
+                min-width: 60px !important;
+                @apply border-r border-b border-gray-300  !important;
+            }
+            :global(.ant-tabs-nav-container) {
+                @apply ml-0 !important;
+            }
+            :global(.ant-tabs-tab) {
+                padding: 3px 8px !important;
+
+                @apply justify-center;
+            }
+
+            :global(.ant-tabs-tab:first-child) {
+                padding: 3px 8px !important;
+                @apply mt-3 !important;
+
+                @apply justify-center;
+            }
+
+            :global(.ant-tabs-content) {
+                @apply px-0 h-full !important;
+
+                :global(.ant-tabs-tab:first-child) {
+                    @apply mt-0 !important;
+                }
+            }
+            :global(.ant-tabs-ink-bar) {
+                @apply rounded-t-sm;
+                margin-bottom: 1px;
+            }
+            :global(.ant-tabs-tabpane) {
+                @apply px-0 !important;
+                @apply pb-0 !important;
+                @apply h-full !important;
+            }
+
+            :global(.ant-tabs-content-holder) {
+                @apply h-full !important;
+            }
+        }
+    }
 </style>
 <style lang="less" scoped>
     // .placeholder {
@@ -842,10 +898,10 @@
         height: calc(100vh - 3rem);
     }
     .parent_splitpanes {
-        width: calc(100vw - 3.75rem - 60px);
+        width: calc(100vw - 3.75rem);
     }
     .explorer_splitpane {
-        background-color: white;
+        @apply bg-new-gray-100;
     }
     .sidebar-nav-icon {
         padding-top: 16px;
@@ -853,7 +909,7 @@
     }
     .sidebar-nav {
         /* 60px */
-        width: 3.75rem;
+        width: 120px;
     }
     .show-assetsidebar {
         // width: calc(100vw - 3.75rem - 420px);

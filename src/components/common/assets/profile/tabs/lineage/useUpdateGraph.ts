@@ -17,6 +17,7 @@ export default function useUpdateGraph(graph) {
 
         if (state === 'highlight')
             lineageNodeElement?.classList.add('isHighlightedNode')
+
         if (state === 'select')
             lineageNodeElement?.classList.add('isSelectedNode')
     }
@@ -34,6 +35,7 @@ export default function useUpdateGraph(graph) {
             ).find((y) => y.classList.contains('lineage-node'))
 
             const itExists = nodesToHighlight.includes(x.id)
+            const cell = graph.value.getCellById(x.id)
 
             const isSelectedNode = selectedNodeId?.value === x.id ? x.id : null
             const isHighlightedNode = itExists ? x.id : null
@@ -45,12 +47,26 @@ export default function useUpdateGraph(graph) {
                 'isGrayed'
             )
 
+            cell.updateData({ isSelectedNode: false })
+            cell.updateData({ isHighlightedNode: false })
+            cell.updateData({ isGrayed: false })
+
             if (!selectedNodeId?.value && !nodesToHighlight.length) return
+
+            cell.setZIndex(20)
+
+            cell.updateData({ isSelectedNode })
+            cell.updateData({
+                isHighlightedNode: isHighlightedNode && !isSelectedNode,
+            })
+            cell.updateData({ isGrayed })
 
             if (isSelectedNode)
                 lineageNodeElement?.classList.add('isSelectedNode')
+
             if (isHighlightedNode && !isSelectedNode)
                 lineageNodeElement?.classList.add('isHighlightedNode')
+
             if (isGrayed) lineageNodeElement?.classList.add('isGrayed')
         })
         graph.value.unfreeze('highlightNodes')
@@ -80,11 +96,10 @@ export default function useUpdateGraph(graph) {
                 itExists ? highlightStateColor : gray
             )
 
-            if (itExists) cell.setZIndex(50)
-            else {
-                cell.setZIndex(15)
-                cell.attr('line/strokeWidth', 1.6)
-            }
+            cell.setZIndex(0)
+
+            if (itExists) cell.setZIndex(10)
+            else cell.setZIndex(0)
         })
         graph.value.unfreeze('highlightEdges')
 
@@ -94,6 +109,7 @@ export default function useUpdateGraph(graph) {
     const dimNodesEdges = (dim) => {
         graph.value.freeze('dimNodesEdges')
         graph.value.getEdges().forEach((edge) => {
+            if (edge.id.includes('port')) return
             const _isCyclicEdge = edge.store.data.data?.isCyclicEdge
             const defaultStateColor = _isCyclicEdge ? '#ff4848' : '#B2B8C7'
 

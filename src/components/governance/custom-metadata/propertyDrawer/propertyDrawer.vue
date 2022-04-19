@@ -221,6 +221,7 @@
                     dataType = tempForm?.options.customType
                 }
                 const properties = {
+                    title: tempForm.displayName,
                     data_type: dataType,
                     multi_value: tempForm?.options.multiValueSelect,
                     allow_filtering: tempForm?.options.allowFiltering,
@@ -232,7 +233,6 @@
             const handleUpdateProperty = async () => {
                 // before create or update, check if is in createEnum, first create enum then enum will continue property flow if successful
                 // validate first
-
                 const isCreatingEnum =
                     [true, 'true'].includes(form.value.options.isEnum) &&
                     form.value.options.enumType === 'New Option'
@@ -242,7 +242,7 @@
                         formRef.value.validate(),
                         enumFormValidate(),
                     ]
-                    await Promise.allSettled(promises)
+                    await Promise.all(promises)
                     await executeCreateEnum()
                 } else await formRef.value.validate()
 
@@ -286,7 +286,7 @@
 
                     watch([isReady, error], ([newValue, newError]) => {
                         if (newValue) {
-                            message.success('Attribute edited')
+                            message.success('Attribute updated')
                             loading.value = false
                             const returnSome = (oldData) => {
                                 console.log(oldData)

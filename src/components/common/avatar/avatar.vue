@@ -40,15 +40,7 @@
                         class="absolute bottom-0 p-1 bg-white rounded-full left-20"
                     >
                         <div
-                            class="
-                                p-1
-                                bg-gray-100
-                                border border-gray-300
-                                rounded-full
-                                px-1
-                                py-0.5
-                                text-gray-500
-                            "
+                            class="p-1 bg-gray-100 border border-gray-300 rounded-full px-1 py-0.5 text-gray-500"
                         >
                             <AtlanIcon icon="Pencil" />
                         </div>
@@ -95,7 +87,7 @@
                 default: 'square',
             },
             avatarSize: {
-                type: String as PropType<Number | String>,
+                type: [String, Number] as PropType<Number | String>,
                 default: 56,
             },
         },

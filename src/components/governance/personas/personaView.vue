@@ -51,6 +51,7 @@
                 <PersonaHeader
                     v-model:openEditModal="openEditModal"
                     :persona="selectedPersona"
+                    @updateStatus="handleEnableDisablePersona"
                 />
             </template>
             <!-- <template #footer>
@@ -154,7 +155,7 @@
         <div
             v-else-if="
                 (personaList === null || personaList?.length == 0) &&
-                isPersonaError === undefined
+                errorPersona === undefined
             "
             class="flex flex-col items-center h-full"
         >
@@ -186,7 +187,7 @@
                 </a>
             </div>
         </div>
-        <ErrorView v-else :error="isPersonaError">
+        <ErrorView v-else :error="errorPersona">
             <div class="mt-3">
                 <a-button
                     data-test-id="try-again"
@@ -207,10 +208,11 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, onMounted, computed } from 'vue'
+    import { defineComponent, ref, watch, onMounted, h } from 'vue'
     import ErrorView from '@common/error/index.vue'
     import { storeToRefs } from 'pinia'
     import { useRoute, useRouter } from 'vue-router'
+    import { message, Modal } from 'ant-design-vue'
     import AtlanBtn from '@/UI/button.vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ExplorerLayout from '@/admin/explorerLayout.vue'
@@ -225,12 +227,12 @@
         selectedPersona,
         selectedPersonaId,
         isPersonaLoading,
-        isPersonaError,
+        errorPersona,
         isPersonaListReady,
         personaList,
         facets,
     } from './composables/usePersonaList'
-    import { isEditing } from './composables/useEditPersona'
+    import { isEditing, enablePersona } from './composables/useEditPersona'
     import AddPersonaIllustration from '~/assets/images/empty_state_personaV2.svg'
     import DetailPolicy from './overview/detailPolicy.vue'
     import usePermissions from '~/composables/auth/usePermissions'
@@ -239,6 +241,7 @@
     import AssetFilters from '@/common/assets/filters/index.vue'
     import { personaFilter } from '~/constant/filters/logsFilter'
     import NewPolicyIllustration from '~/assets/images/illustrations/new_policy.svg'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'PersonaView',
@@ -364,6 +367,72 @@
                     deep: true,
                 }
             )
+            const enableDisablePersona = async (val) => {
+                const messageKey = Date.now()
+                // enableDisableLoading.value = true
+                message.loading({
+                    content: `${val ? 'Enabling' : 'Disabling'} persona ${
+                        selectedPersona.value.displayName
+                    }`,
+                    duration: 0,
+                    key: messageKey,
+                })
+                try {
+                    await enablePersona(selectedPersona.value.id, val)
+                    selectedPersona.value.enabled = val
+                    message.success({
+                        content: `Persona ${
+                            selectedPersona.value.displayName
+                        } ${val ? 'Enabled' : 'Disabled'} `,
+                        duration: 1.5,
+                        key: messageKey,
+                    })
+                    const keyObj = val ? 'persona_enable' : 'persona_disable'
+                    useAddEvent('governance', 'persona', keyObj)
+                    // enableDisableLoading.value = false
+                } catch (e) {
+                    message.error({
+                        content: `Failed to ${
+                            val ? 'enable' : 'disable'
+                        } persona ${selectedPersona.value.displayName}`,
+                        duration: 1.5,
+                        key: messageKey,
+                    })
+                    // enableDisableLoading.value = false
+                }
+            }
+            const handleEnableDisablePersona = (val) => {
+                selectedPersona.value.enabled = !val
+                if (!selectedPersona.value.enabled) enableDisablePersona(val)
+                else
+                    Modal.confirm({
+                        title: 'Disable persona',
+                        class: 'disable-persona-modal',
+                        content: () =>
+                            h('div', [
+                                'Are you sure you want to disable persona',
+                                h('span', [' ']),
+                                h(
+                                    'span',
+                                    {
+                                        class: ['font-bold'],
+                                    },
+                                    [`${selectedPersona.value.displayName}`]
+                                ),
+                                h('span', '?'),
+                            ]),
+                        okType: 'danger',
+                        autoFocusButton: null,
+                        okButtonProps: {
+                            type: 'primary',
+                        },
+                        okText: 'Disable',
+                        cancelText: 'Cancel',
+                        async onOk() {
+                            enableDisablePersona(val)
+                        },
+                    })
+            }
             return {
                 reFetchList,
                 filteredPersonas,
@@ -373,7 +442,7 @@
                 modalVisible,
                 // createNewPersona,
                 isPersonaLoading,
-                isPersonaError,
+                errorPersona,
                 isEditing,
                 AddPersonaIllustration,
                 modalDetailPolicyVisible,
@@ -394,6 +463,7 @@
                 handleResetEvent,
                 NewPolicyIllustration,
                 personaList,
+                handleEnableDisablePersona,
             }
         },
     })

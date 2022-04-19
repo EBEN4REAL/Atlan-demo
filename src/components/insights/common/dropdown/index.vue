@@ -24,7 +24,9 @@
                 > -->
 
                 <component
-                    v-for="option in options.filter((e) => !e?.hide)"
+                    v-for="option in options.filter(
+                        (e) => !e?.hide?.value || !e?.hide
+                    )"
                     :is="option.component"
                     :key="option.key"
                     class="text-sm"

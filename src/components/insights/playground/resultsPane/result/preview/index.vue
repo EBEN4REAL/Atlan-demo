@@ -1,8 +1,11 @@
 <template>
     <div class="flex items-center w-full h-full">
         <div
-            class="relative flex items-center justify-center h-full px-2 ml-2 rounded-tl cursor-pointer text-new-gray-700"
-            style="max-width: 85px"
+            class="relative flex items-center justify-center h-full px-2 ml-2 rounded-tl cursor-pointer"
+            style="
+                max-width: 85px;
+                box-shadow: inset 0px 0px 2px rgba(0, 0, 0, 0.12);
+            "
             :class="activeResultPreviewTab ? 'tab-active' : 'not-active'"
             @click="selectActiveResultTab"
             v-if="previewModeActive"

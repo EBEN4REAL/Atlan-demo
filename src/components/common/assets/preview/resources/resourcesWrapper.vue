@@ -87,7 +87,6 @@
         try {
             localResource.value.title = link.attributes.name
             localResource.value.link = link.attributes.link
-            debugger
             const res = await handleAddResource()
             addStatus.value = 'success'
             // ? if the created link is slack , redirect to slack tab

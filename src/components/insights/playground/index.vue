@@ -222,7 +222,6 @@
         <ResultPaneFooter
             v-if="
                 activeInlineTabKey &&
-                queryExecutionTime > -1 &&
                 activeInlineTab.playground.resultsPane.outputPaneSize > 0
             "
         />

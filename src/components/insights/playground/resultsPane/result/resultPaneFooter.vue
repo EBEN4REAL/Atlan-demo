@@ -157,7 +157,7 @@
             <div
                 class="h-full overflow-hidden rounded-lg bg-new-gray-100 px-2.5"
             >
-                <div class="text-sm py-2.5">
+                <div class="text-sm py-2.5 flex items-center justify-between">
                     <div
                         v-if="selectedAsset"
                         class="flex items-center h-full pl-2 text-sm text-new-gray-700 group"
@@ -178,66 +178,6 @@
                                 :placement="'topRight'"
                             />
                         </div>
-                        <div class="flex items-center">
-                            <a-tooltip color="#363636">
-                                <template #title>Copy data</template>
-
-                                <AtlanBtn
-                                    size="sm"
-                                    color="secondary"
-                                    class="py-0.5 px-2 text-sm border-none text-xs rounded shadow cursor-pointer mr-2"
-                                    style="height: 24px"
-                                    @mouseout="recordTooltipPresence"
-                                    @click="useWrapperCopy"
-                                >
-                                    <div
-                                        class="flex items-center cursor-pointer text-new-gray-800"
-                                    >
-                                        <AtlanIcon
-                                            icon="CopyOutlined"
-                                            class="w-4 h-4 text-new-gray-800"
-                                        />
-                                        <span
-                                            class="mt-0.5 text-new-gray-800 text-xs ml-1"
-                                            >Copy</span
-                                        >
-                                    </div>
-                                </AtlanBtn>
-                            </a-tooltip>
-                            <a-tooltip color="#363636">
-                                <template #title>Export data</template>
-                                <AtlanBtn
-                                    size="sm"
-                                    color="secondary"
-                                    class="py-0.5 px-2 text-sm border-none text-xs rounded shadow cursor-pointer mr-2"
-                                    style="height: 24px"
-                                    @click="useWrapperExport"
-                                >
-                                    <div
-                                        class="flex items-center text-xs cursor-pointer text-new-gray-800"
-                                    >
-                                        <AtlanIcon
-                                            icon="Download"
-                                            class="w-4 h-4 text-new-gray-800"
-                                        />
-                                        <span
-                                            class="mt-1 ml-1 text-new-gray-800"
-                                            >Download</span
-                                        >
-                                    </div>
-                                </AtlanBtn>
-                            </a-tooltip>
-                            <div
-                                class="py-0.5 px-1 rounded hover:bg-new-gray-200 cursor-pointer"
-                                @click="handleCloseFullScreen"
-                            >
-                                <AtlanIcon
-                                    icon="Close"
-                                    class="w-4 h-4 text-new-gray-600"
-                                    style="min-width: 24px; min-height: 24px"
-                                />
-                            </div>
-                        </div>
                     </div>
                     <div v-else class="flex items-center text-sm">
                         <AtlanIcon
@@ -245,6 +185,65 @@
                             class="mr-1 -mt-0.5"
                         />
                         <span>Results</span>
+                    </div>
+                    <div class="flex items-center">
+                        <a-tooltip color="#363636">
+                            <template #title>Copy data</template>
+
+                            <AtlanBtn
+                                size="sm"
+                                color="secondary"
+                                class="py-0.5 px-2 text-sm border-none text-xs rounded shadow cursor-pointer mr-2"
+                                style="height: 24px"
+                                @mouseout="recordTooltipPresence"
+                                @click="useWrapperCopy"
+                            >
+                                <div
+                                    class="flex items-center cursor-pointer text-new-gray-800"
+                                >
+                                    <AtlanIcon
+                                        icon="CopyOutlined"
+                                        class="w-4 h-4 text-new-gray-800"
+                                    />
+                                    <span
+                                        class="mt-0.5 text-new-gray-800 text-xs ml-1"
+                                        >Copy</span
+                                    >
+                                </div>
+                            </AtlanBtn>
+                        </a-tooltip>
+                        <a-tooltip color="#363636">
+                            <template #title>Export data</template>
+                            <AtlanBtn
+                                size="sm"
+                                color="secondary"
+                                class="py-0.5 px-2 text-sm border-none text-xs rounded shadow cursor-pointer mr-2"
+                                style="height: 24px"
+                                @click="useWrapperExport"
+                            >
+                                <div
+                                    class="flex items-center text-xs cursor-pointer text-new-gray-800"
+                                >
+                                    <AtlanIcon
+                                        icon="Download"
+                                        class="w-4 h-4 text-new-gray-800"
+                                    />
+                                    <span class="mt-1 ml-1 text-new-gray-800"
+                                        >Download</span
+                                    >
+                                </div>
+                            </AtlanBtn>
+                        </a-tooltip>
+                        <div
+                            class="py-0.5 px-1 rounded hover:bg-new-gray-200 cursor-pointer"
+                            @click="handleCloseFullScreen"
+                        >
+                            <AtlanIcon
+                                icon="Close"
+                                class="w-4 h-4 text-new-gray-600"
+                                style="min-width: 24px; min-height: 24px"
+                            />
+                        </div>
                     </div>
                 </div>
                 <div

@@ -11,8 +11,8 @@
             v-if="previewModeActive"
         >
             <div class="flex items-center text-sm">
-                <AtlanIcon :icon="getResultsIcon()" class="mr-1 -mt-0.5" />
-                <span>Results</span>
+                <AtlanIcon :icon="getResultsIcon" class="mr-1 -mt-0.5" />
+                <span>Results </span>
             </div>
             <!-- <div
                     class="absolute right-0 h-full bg-gray-300"
@@ -231,14 +231,18 @@
 
                 if (index > 0) {
                     // select previous tab
-                    insights_Store.activePreviewGuid =
-                        insights_Store.previewTabs[index - 1].asset.guid
                     insights_Store.previewTabs.splice(index, 1)
+                    if (insights_Store.activePreviewGuid) {
+                        insights_Store.activePreviewGuid =
+                            insights_Store.previewTabs[index - 1].asset.guid
+                    }
                 } else {
                     if (insights_Store.previewTabs.length > 1) {
                         insights_Store.previewTabs.splice(index, 1)
-                        insights_Store.activePreviewGuid =
-                            insights_Store.previewTabs[0].asset.guid
+                        if (insights_Store.activePreviewGuid) {
+                            insights_Store.activePreviewGuid =
+                                insights_Store.previewTabs[0].asset.guid
+                        }
                     } else {
                         insights_Store.previewTabs.splice(index, 1)
                         insights_Store.activePreviewGuid = undefined
@@ -294,11 +298,10 @@
                 }
             })
 
-            const getResultsIcon = () => {
+            const getResultsIcon = computed(() => {
                 if (
-                    activeInlineTab.value.playground.editor.columnList.length >
-                        0 &&
-                    activeInlineTab.value.playground.editor.dataList.length > 0
+                    activeInlineTab.value.playground.resultsPane.result
+                        .isQueryRunning === 'success'
                 ) {
                     return 'QueryOutputSuccess'
                 } else if (
@@ -309,7 +312,7 @@
                 } else {
                     return 'QueryOutputNeutral'
                 }
-            }
+            })
             const isQueryRunning = computed(() => {
                 return insights_Store.previewTabs[
                     insights_Store.previewTabs.findIndex(
@@ -319,9 +322,24 @@
                 ]?.isQueryRunning
             })
 
+            // WATCHERS
             watch(
-                [isQueryRunning],
-                ([newIsQueryRunning]) => {
+                () => insights_Store.activePreviewGuid,
+                (newId) => {
+                    if (newId) {
+                        activeResultPreviewTab.value = false
+                    }
+                    if (lastElement.value) {
+                        lastElement.value.style.background = ''
+                    }
+                },
+                { immediate: true }
+            )
+
+            watch(
+                isQueryRunning,
+                (newIsQueryRunning) => {
+                    if (!newIsQueryRunning) return
                     if (
                         insights_Store.insertionType === 'FILO' &&
                         insights_Store.previewTabs.length > 0 &&

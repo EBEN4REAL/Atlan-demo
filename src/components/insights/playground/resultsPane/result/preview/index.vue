@@ -1,7 +1,7 @@
 <template>
     <div class="flex items-center w-full h-full">
         <div
-            class="relative flex items-center justify-center h-full px-2 ml-2 rounded-tl cursor-pointer"
+            class="relative flex items-center justify-center h-full px-2 ml-2 rounded-tl rounded-bl cursor-pointer"
             style="
                 max-width: 85px;
                 box-shadow: inset 0px 0px 2px rgba(0, 0, 0, 0.12);
@@ -407,6 +407,9 @@
 
     .not-active {
         @apply bg-new-gray-200;
+    }
+    .tab-active {
+        @apply bg-white;
     }
 </style>
 <style lang="less" module>

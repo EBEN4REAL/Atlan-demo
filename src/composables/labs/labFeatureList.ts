@@ -13,7 +13,8 @@ export const featureList = [
     {
         name: 'Insights',
         key: INSIGHT_WORKSPACE_LEVEL_TAB,
-        description: 'You can toggle the Insights tab for all users',
+        description:
+            'You can enable/disable the Insights workspace for all users',
         // if the config isn't present in tenant/user preferences, default value will be picked up from here
         defaultValue: true,
         // only these users will be allowed

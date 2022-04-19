@@ -25,7 +25,6 @@ export function useUserOrGroupPreview(previewType: string, userNameProp = '') {
             finalTabs,
             defaultTab,
             userUpdated,
-            userStatus,
         } = useUserPreview()
         const userNameUser = computed(() => userNameProp || username.value)
         // Params for obtaining that one user.

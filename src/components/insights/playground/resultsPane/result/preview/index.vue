@@ -183,9 +183,13 @@
                 type: Number,
                 required: true,
             },
+            compactMode: {
+                type: Boolean,
+                required: true,
+            },
         },
         setup(props, { emit }) {
-            const { width } = toRefs(props)
+            const { width, compactMode } = toRefs(props)
             const insights_Store = insightsStore()
             const lastElement = ref()
             const { assetType, certificateStatus } = useAssetInfo()
@@ -216,9 +220,6 @@
                 insights_Store.activePreviewGuid = undefined
             }
 
-            const compactMode = computed(
-                () => activeInlineTab.value.assetSidebar.isVisible
-            )
             const previewModeActive = computed(
                 () => insights_Store.previewTabs.length > 0
             )

@@ -8,7 +8,7 @@
             insights_Store.previewTabs.length
         "
     >
-        <PreviewTabs :width="previewTabsWidth" />
+        <PreviewTabs :width="previewTabsWidth" :compactMode="compactMode" />
         <div class="flex items-center">
             <a-tooltip
                 color="#363636"
@@ -323,9 +323,13 @@
                         ?.result?.isQueryRunning
                 }
             })
-            const compactMode = computed(
-                () => activeInlineTab.value.assetSidebar.isVisible
-            )
+            const compactMode = computed(() => {
+                return activeInlineTab.value.assetSidebar.isVisible
+                // if (activeInlineTab.value.assetSidebar.isVisible)
+                // if (footerRef?.value?.offsetWidth < 580) return true
+                // return false
+            })
+
             const previewModeActive = computed(
                 () => insights_Store.previewTabs.length > 0
             )
@@ -473,9 +477,11 @@
                         footerRef.value
                     )
                 }
+                window.addEventListener('resize', debouncedFn)
             })
             onUnmounted(() => {
                 observer?.value?.unobserve(footerRef?.value)
+                window.removeEventListener('resize', debouncedFn)
             })
 
             return {

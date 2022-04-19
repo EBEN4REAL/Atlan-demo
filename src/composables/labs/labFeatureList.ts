@@ -96,6 +96,11 @@ export const featureEnabledMap = computed(() => {
     const { tenantRaw } = useTenantData()
     const attributes = tenantRaw.value.attributes || {}
     const preferences = JSON.parse(attributes[orgPrefrencesKey] || '{}') || {}
+    featureList.forEach((feature) => {
+        if (!(feature.key in preferences)) {
+            preferences[feature.key] = feature.defaultValue
+        }
+    })
     console.log('featureEnabledMap preferences', preferences)
     return preferences
 })

@@ -115,19 +115,9 @@
             class="flex items-center pl-3 text-new-gray-800 mt-0.5"
             v-else-if="compactMode && previewModeActive"
         >
-            <a-tooltip
-                color="#363636"
-                :mouseEnterDelay="
-                    lastTooltipPresence !== undefined
-                        ? ADJACENT_TOOLTIP_DELAY
-                        : MOUSE_ENTER_DELAY
-                "
-            >
+            <a-tooltip color="#363636">
                 <template #title>
-                    <div
-                        class="flex items-center"
-                        @mouseout="recordTooltipPresence"
-                    >
+                    <div class="flex items-center text-white">
                         <span class="mr-1">
                             {{ `${rowsCount} rows, ` }}
                         </span>
@@ -142,7 +132,7 @@
                             v-if="queryExecutionTime > 0"
                             class="flex items-center mr-1"
                         >
-                            <span class="mr-1" style="color: #6b7692">
+                            <span class="mr-1">
                                 in
                                 <span class="font-mono">{{
                                     getFormattedTimeFromMilliSeconds(

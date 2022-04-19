@@ -18,9 +18,13 @@ export interface PreviewTabs {
 export interface State {
     activePreviewGuid: undefined | string
     previewTabs: PreviewTabs[]
+    isNewTabAdded: Number
+    insertionType: 'LIFO' | 'FILO'
 }
 
 export const state: State = {
     activePreviewGuid: undefined,
     previewTabs: [],
+    isNewTabAdded: -1,
+    insertionType: 'LIFO',
 }

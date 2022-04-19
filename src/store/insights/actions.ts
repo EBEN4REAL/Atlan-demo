@@ -45,6 +45,11 @@ const actions: Actions = {
         } else {
             this.previewTabs.push(previewTab)
         }
+        this.isNewTabAdded = Math.abs(Number(this.isNewTabAdded))
+        const x = setTimeout(() => {
+            this.isNewTabAdded = -Number(this.isNewTabAdded)
+            clearTimeout(x)
+        }, 1000)
     },
     getData({ rows, columns, executionTime, previewTabIndex }) {
         this.previewTabs[previewTabIndex].rows = rows

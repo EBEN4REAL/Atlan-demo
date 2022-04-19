@@ -181,6 +181,7 @@
         "emoji-mart-vue-fast/src",
         "event-source-polyfill",
         "json-2-csv",
+        "katex",
         "keycloak-js",
         "pinia",
         "prosemirror-image-plugin",

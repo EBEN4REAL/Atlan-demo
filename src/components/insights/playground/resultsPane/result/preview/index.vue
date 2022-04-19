@@ -41,7 +41,7 @@
                             @click.stop="
                                 () => selectPreviewTab(item.asset.guid)
                             "
-                            class="relative flex items-center h-full px-2 text-sm text-new-gray-700 group"
+                            class="relative flex items-center h-full px-2 text-sm text-new-gray-700 group insights_preview_tabs"
                             style="width: 148px"
                         >
                             <div class="flex items-center w-full text-sm">
@@ -194,6 +194,7 @@
         setup(props, { emit }) {
             const { width } = toRefs(props)
             const insights_Store = insightsStore()
+            const lastElement = ref()
             const { assetType, certificateStatus } = useAssetInfo()
             const {
                 recordTooltipPresence,
@@ -253,6 +254,7 @@
             const selectPreviewTab = (guid: string) => {
                 insights_Store.activePreviewGuid = guid
                 activeResultPreviewTab.value = false
+                lastElement.value.style.background = ''
             }
 
             const rowsCount = computed(() => {
@@ -314,6 +316,59 @@
                     return 'QueryOutputNeutral'
                 }
             }
+            const isQueryRunning = computed(() => {
+                return insights_Store.previewTabs[
+                    insights_Store.previewTabs.findIndex(
+                        (el) =>
+                            el.asset.guid === insights_Store.activePreviewGuid
+                    )
+                ]?.isQueryRunning
+            })
+
+            watch(
+                [isQueryRunning],
+                ([newIsQueryRunning]) => {
+                    if (
+                        insights_Store.insertionType === 'LIFO' &&
+                        insights_Store.previewTabs.length > 0 &&
+                        newIsQueryRunning !== '' &&
+                        insights_Store.isNewTabAdded > 0
+                    ) {
+                        const x = setTimeout(() => {
+                            const elements = document.getElementsByClassName(
+                                'ant-tabs-tab-active'
+                            )
+                            const tabElements = document.getElementsByClassName(
+                                'insights_preview_tabs'
+                            )
+                            Array.from(tabElements).forEach((el) => {
+                                el.style.background = ''
+                            })
+                            if (elements.length) {
+                                if (lastElement.value) {
+                                    lastElement.value.style.background = ''
+                                }
+                                lastElement.value =
+                                    elements[elements.length - 1]
+                                lastElement.value.style.background =
+                                    'rgba(254, 247, 228, 1)'
+                                const t = setTimeout(() => {
+                                    if (
+                                        lastElement.value.style.background !==
+                                        ''
+                                    ) {
+                                        lastElement.value.style.background =
+                                            'white'
+                                    }
+                                    clearTimeout(t)
+                                }, 1500)
+                            }
+                            clearTimeout(x)
+                        }, 50)
+                    }
+                },
+                { immediate: true }
+            )
 
             return {
                 width,
@@ -344,6 +399,11 @@
         },
     })
 </script>
+<style lang="less">
+    .recent-preview-tab-add-insights {
+        background: rgba(254, 247, 228, 1);
+    }
+</style>
 <style lang="less" scoped>
     .bg-gray-C4C4C4 {
         background: #c4c4c4;
@@ -351,12 +411,7 @@
     .custom-shadow {
         box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.12);
     }
-    .tab-active {
-        background: white;
-        @apply shadow !important;
-        padding: 4px 8px;
-        @apply rounded;
-    }
+
     .not-active {
         @apply bg-new-gray-200;
     }
@@ -365,10 +420,14 @@
     .previewtab_footer {
         height: 32px !important;
         :global(.ant-tabs-nav .ant-tabs-tab-active) {
-            background: white;
             @apply shadow !important;
+            background: white;
             padding: 4px 8px;
             @apply rounded;
+            -webkit-transition: background 0.5s ease-in-out !important;
+            -moz-transition: background 0.5s ease-in-out !important;
+            -o-transition: background 0.5s ease-in-out !important;
+            transition: background 0.5s ease-in-out !important;
         }
         :global(.ant-tabs-tab) {
             @apply p-0 !important;

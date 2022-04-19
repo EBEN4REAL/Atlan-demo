@@ -27,7 +27,7 @@
             </div>
             <div
                 class="flex overflow-y-scroll"
-                style="height: calc(100vh - 400px)"
+                style="height: calc(100vh - 600px)"
             >
                 <AtlanLoader
                     v-if="isLoading"
@@ -78,7 +78,7 @@
     import { useRunDiscoverList } from '~/workflowsv2/composables/useRunDiscoverList'
 
     import Pagination from '@/common/list/pagination.vue'
-    import RunListItem from '~/workflowsv2/components/monitor/runListItem.vue'
+    import RunListItem from './runListItem.vue'
 
     import EmptyLogsIllustration from '~/assets/images/illustrations/empty_logs.svg'
     import { useWorkflowStore } from '~/workflowsv2/store'

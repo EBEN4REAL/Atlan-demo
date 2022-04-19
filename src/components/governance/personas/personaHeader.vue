@@ -228,6 +228,7 @@
                     async onOk() {
                         const msgId = Date.now()
                         try {
+                            const title = persona.value.name
                             await deletePersonaById(persona.value.id)
                             message.success({
                                 content: 'Persona deleted',
@@ -235,7 +236,9 @@
                                 key: msgId,
                             })
                             selectedPersonaId.value = ''
-                            useAddEvent('governance', 'persona', 'deleted')
+                            useAddEvent('governance', 'persona', 'deleted', {
+                                title,
+                            })
                         } catch (error) {
                             message.error({
                                 content: 'Failed to delete persona',

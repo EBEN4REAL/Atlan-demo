@@ -239,8 +239,11 @@
                 } else if (localValue.value.ownerGroups?.length === 0) {
                     delete localValue.value.ownerGroups
                 }
-                modelValue.value = localValue.value
-                emit('change', localValue.value)
+
+                if (modelValue.value !== localValue.value) {
+                    modelValue.value = localValue.value
+                    emit('change', localValue.value)
+                }
             })
             const ownerSearchRef: Ref<null | HTMLInputElement> = ref(null)
             const { start } = useTimeoutFn(() => {
@@ -258,8 +261,10 @@
             }
             const handleChange = () => {
                 modelValue.value = localValue.value
+                console.log('change')
                 emit('change')
             }
+
             return {
                 groupRef,
                 usersRef,

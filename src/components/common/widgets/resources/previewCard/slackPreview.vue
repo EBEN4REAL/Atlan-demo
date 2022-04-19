@@ -139,10 +139,17 @@
     import Truncate from '@/common/ellipsis/index.vue'
     import { resourceId } from '~/composables/integrations/slack/useAskAQuestion'
     import { whenever } from '@vueuse/core'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import { getDomain } from '~/utils/url'
     const props = defineProps({
         link: {
             type: Object as PropType<Link>,
             required: true,
+        },
+        assetType: {
+            type: String,
+            required: false,
+            default: '',
         },
     })
 
@@ -198,6 +205,10 @@
     const openLink = (url) => {
         if (url) {
             window.open(url)
+            useAddEvent('discovery', 'resource', 'clicked', {
+                domain: getDomain(url),
+                asset_type: props.assetType,
+            })
         }
     }
 </script>

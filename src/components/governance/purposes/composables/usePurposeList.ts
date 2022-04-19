@@ -4,7 +4,7 @@ import usePurpose from '~/composables/purpose/usePurpose'
 import { Purpose } from '~/services/service/purpose'
 
 const purposeStore = usePurposeStore()
-const { updatePurpose: handleUpdateList } = purposeStore
+const { updatePurpose: handleUpdateList, errorPurpose } = purposeStore
 const { getList: purposeList } = toRefs(purposeStore)
 
 const {
@@ -32,6 +32,7 @@ export {
     isPurposeLoading,
     isPurposeError,
     handleUpdateList,
+    errorPurpose
 }
 
 // Selected purpose Details

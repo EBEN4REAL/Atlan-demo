@@ -54,13 +54,17 @@ export const requestTypeEventMap = {
     ownerGroups:{
         requestType:'ownerGroups',
         action:'add'
+    },
+    name:{
+        requestType:'name',
+        action:'edit'
     }
-
 }
 
 export const attributeCopyMapping: Record<string, string> = {
     certificateStatus: 'Certificate',
     userDescription: 'Description',
+    name:'Name'
 }
 
 export const typeCopyMapping: Record<string, string> = {
@@ -75,11 +79,13 @@ export const typeCopyMapping: Record<string, string> = {
     certificateStatus: 'Certificate',
     ownerUsers: 'Owner',
     userDescription: 'Description',
+    name:'Name'
 }
 
 export const destinationAttributeMapping: Record<string, string> = {
     ownerUsers: 'Owner',
     userDescription: 'Description',
+    name:'Name',
     certificateStatus: 'Certificate',
 }
 

@@ -142,6 +142,7 @@ export const JiraPreviewTab = {
 
 export const SlackResourcesTab = {
     name: 'Slack',
+    title: "Slack Conversations",
     component: 'SlackResourcesTab',
     icon: 'Slack',
     activeIcon: 'Slack',

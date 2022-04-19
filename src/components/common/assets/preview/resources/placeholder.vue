@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex flex-col items-center justify-center h-full my-2 text-center text-gray-700"
+        class="flex flex-col items-center justify-center h-full text-center text-gray-700"
     >
         <p class="mb-2 text-xl font-bold">Resources</p>
         <p class="text-sm">

@@ -10,7 +10,8 @@
     >
         <template #title>
             <span class="text-sm font-bold text-gray"
-                >{{ isEdit ? 'Edit' : 'New' }} Resource</span
+                >{{ isEdit ? 'Edit' : 'Add' }}
+                {{ isSlackTab ? 'Slack Thread' : 'Resource' }}</span
             >
         </template>
         <template #footer>
@@ -53,7 +54,11 @@
                         ref="titleBar"
                         v-model:value="localResource.link"
                         type="url"
-                        placeholder="Paste resource link"
+                        :placeholder="
+                            isSlackTab
+                                ? 'https://company.slack.com'
+                                : 'Paste resource link'
+                        "
                         class="text-lg font-bold text-gray-700"
                         allow-clear
                         @change="handleUrlChange"
@@ -68,7 +73,11 @@
                         <div class="flex items-center gap-x-2">
                             <a-input
                                 v-model:value="localResource.title"
-                                placeholder="Resource title"
+                                :placeholder="
+                                    isSlackTab
+                                        ? 'What is this thread about'
+                                        : 'Resource title'
+                                "
                                 class="text-lg font-bold text-gray-700"
                                 allow-clear
                             >
@@ -152,17 +161,18 @@
     )
 
     const validateLink = async (_rule: Rule, value: string) => {
-        if (value === '') {
+        if (value === '' || !isValidUrl.value) {
             // eslint-disable-next-line prefer-promise-reject-errors
-            return Promise.reject(`Please provide a resource link`)
+            return Promise.reject(
+                `Please provide a valid ${
+                    isSlackTab.value ? 'Slack' : 'resource'
+                } link`
+            )
         }
-        if (!isValidUrl.value) {
-            // eslint-disable-next-line prefer-promise-reject-errors
-            return Promise.reject(`Please provide a valid resource link`)
-        }
+
         if (isSlackTab.value && getDomain(value) !== 'slack.com') {
             // eslint-disable-next-line prefer-promise-reject-errors
-            return Promise.reject('Resource link must be of slack domain')
+            return Promise.reject('Please provide a valid Slack link')
         }
 
         return Promise.resolve()
@@ -184,20 +194,26 @@
         title: [
             {
                 required: true,
-                message: 'Please provide a title for this resource',
+                message: 'Please provide a title',
                 trigger: ['submit', 'change'],
             },
         ],
     }
 
+    const store = integrationStore()
+    const { tenantSlackStatus } = toRefs(store)
     watch(addStatus, (v) => {
         if (v === 'success') {
-            const store = integrationStore()
-            const { tenantSlackStatus } = toRefs(store)
             // ! FIXME this watcher is running multiple times, ???!
             if (localResource.value.title)
                 message.success({
-                    content: `Successfully added new resource "${localResource.value.title}"`,
+                    content: `Successfully added new ${
+                        tenantSlackStatus.value.configured &&
+                        isSlackLink.value &&
+                        isTab.value
+                            ? 'Slack thread'
+                            : 'resource'
+                    } "${localResource.value.title}"`,
                     duration: 1.5,
                     key: 'add',
                 })
@@ -208,7 +224,7 @@
                 tenantSlackStatus.value.configured
             ) {
                 message.info({
-                    content: `Looks like you’ve added a slack link, you can find it here`,
+                    content: `Looks like you’ve added a Slack link, you can find it here`,
                     duration: 4,
                     key: 'slackAdd',
                 })
@@ -219,7 +235,13 @@
             // ! FIXME this watcher is running multiple times, ???!
             if (localResource.value.title)
                 message.error({
-                    content: `Failed to add new resource "${localResource.value.title}"`,
+                    content: `Failed to add new ${
+                        tenantSlackStatus.value.configured &&
+                        isSlackLink.value &&
+                        isTab.value
+                            ? 'Slack thread'
+                            : 'resource'
+                    } "${localResource.value.title}"`,
                     duration: 1.5,
                     key: 'errorAdd',
                 })
@@ -231,7 +253,9 @@
             // ! FIXME this watcher is running multiple times, ???!
             if (localResource.value.title)
                 message.success({
-                    content: `Successfully updated resource "${localResource.value.title}"`,
+                    content: `Successfully updated ${
+                        isSlackTab.value ? 'Slack thread' : 'resource'
+                    } "${localResource.value.title}"`,
                     duration: 1.5,
                     key: 'update',
                 })
@@ -241,7 +265,9 @@
             // ! FIXME this watcher is running multiple times, ???!
             if (localResource.value.title)
                 message.error({
-                    content: `Failed to update resource "${localResource.value.title}"`,
+                    content: `Failed to update ${
+                        isSlackTab.value ? 'Slack thread' : 'resource'
+                    } "${localResource.value.title}"`,
                     duration: 1.5,
                     key: 'errorUpdate',
                 })

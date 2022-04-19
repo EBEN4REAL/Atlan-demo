@@ -313,11 +313,11 @@ export default function useAssetInfo() {
 
         let allTabs = [
             ...getTabs(previewTabs, assetType(asset)),
-            ...(tenantJiraStatus.value.configured
-                ? getTabs([JiraPreviewTab], assetType(asset))
-                : []),
             ...(tenantSlackStatus.value.configured
                 ? getTabs([SlackResourcesTab], assetType(asset))
+                : []),
+            ...(tenantJiraStatus.value.configured
+                ? getTabs([JiraPreviewTab], assetType(asset))
                 : []),
             ...getTabs(customTabList, assetType(asset)),
         ]

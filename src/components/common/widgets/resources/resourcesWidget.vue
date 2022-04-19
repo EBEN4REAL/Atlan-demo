@@ -14,7 +14,7 @@
                             class="mb-0.5"
                         />
                         <span class="ml-1 font-semibold text-gray-500">
-                            {{ tab.name }}
+                            {{ tab.title || tab.name }}
                         </span>
                     </span>
                     <div class="flex-grow"></div>
@@ -63,20 +63,33 @@
                 </AddResource>
             </div>
         </template>
-        <section :class="{ 'overflow-y-auto': resources?.length }">
+        <section
+            :class="{
+                'overflow-y-auto': resources?.length,
+                'flex items-center justify-center flex-grow':
+                    !resources?.length,
+            }"
+            class=""
+        >
             <template v-if="!resources?.length">
                 <template v-if="$slots?.placeholder">
-                    <slot name="placeholder" />
                     <div>
-                        <AddResource @add="addCallback">
-                            <template #trigger>
-                                <AtlanButton2
-                                    class="mx-auto"
-                                    size="large"
-                                    label="Add Resource"
-                                />
-                            </template>
-                        </AddResource>
+                        <slot name="placeholder" />
+                        <div class="mt-10">
+                            <AddResource @add="addCallback">
+                                <template #trigger>
+                                    <AtlanButton2
+                                        class="mx-auto"
+                                        size="large"
+                                        :label="
+                                            isSlackTab
+                                                ? 'Add Slack thread'
+                                                : 'Add Resource'
+                                        "
+                                    />
+                                </template>
+                            </AddResource>
+                        </div>
                     </div>
                 </template>
                 <div
@@ -237,6 +250,9 @@
     provide('entityName', entityName)
     provide('readOnly', readOnly)
     provide('tab', tab)
+    const isSlackTab = computed(
+        () => tab.value.component === 'SlackResourcesTab'
+    )
 
     const store = integrationStore()
     const { tenantSlackStatus, userSlackStatus } = toRefs(store)

@@ -5,8 +5,8 @@
         :add-status="addStatus"
         :update-status="updateStatus"
         :remove-status="removeStatus"
-        placeholder="Resources is the place to document all knowledge
-                    around the asset"
+        placeholder="  This is the place to document all your Slack conversations for
+            this asset"
         :read-only="!linkEditPermission"
         :entity-name="
             selectedAsset.displayText || selectedAsset.attributes.qualifiedName
@@ -25,7 +25,7 @@
     import { PropType, computed, toRefs, ref } from 'vue'
     import { whenever } from '@vueuse/core'
     import ResourcesWidget from '@/common/widgets/resources/resourcesWidget.vue'
-    import Placeholder from '@/common/assets/preview/resources/placeholder.vue'
+    import Placeholder from '@/common/assets/preview/resources/slackPlaceholder.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'

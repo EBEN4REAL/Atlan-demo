@@ -1087,7 +1087,7 @@
                         class: '',
                         disabled: false,
                         component: MenuItem,
-                        hide: !hasWritePermission.value,
+                        hide: computed(() => !hasWritePermission.value),
                         handleClick: () => {
                             toggleCreateQueryModal(currentSelectedNode)
                         },
@@ -1098,7 +1098,7 @@
                         component: MenuItem,
                         class: '',
                         disabled: false,
-                        hide: !hasWritePermission.value,
+                        hide: computed(() => !hasWritePermission.value),
                         handleClick: createFolderInput,
                     },
                     {

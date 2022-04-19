@@ -44,6 +44,10 @@
                         >
                             Integrations
                         </a-menu-item>
+                        <a-menu-item key="labs" v-auth="[map.UPDATE_SSO]">
+                            <!-- TODO: @rohan - change permission to Labs -->
+                            Labs
+                        </a-menu-item>
                     </a-menu-item-group>
                     <a-menu-item-group title="Logs">
                         <a-menu-item

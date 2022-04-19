@@ -16,6 +16,7 @@ interface requestPayload {
     sourceQualifiedName?: String
     destinationAttribute?: String
     destinationValue?: String
+    destinationValueAction?: 'append' | 'replace'
     payload?: any
     destinationValueType?: String
 }
@@ -168,6 +169,7 @@ export function useCreateRequests({
                     destinationGuid: assetGuid,
                     destinationQualifiedName: assetQf,
                     destinationValue: JSON.stringify(ownerUsers),
+                    destinationValueAction: 'append',
                     destinationValueType: 'array',
                     entityType: assetType,
                     sourceType: 'static',
@@ -184,6 +186,7 @@ export function useCreateRequests({
                     destinationGuid: assetGuid,
                     destinationQualifiedName: assetQf,
                     destinationValue: JSON.stringify(ownerGroups),
+                    destinationValueAction: 'append',
                     destinationValueType: 'array',
                     entityType: assetType,
                     sourceType: 'static',

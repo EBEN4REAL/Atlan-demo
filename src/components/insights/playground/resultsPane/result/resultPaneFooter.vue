@@ -11,14 +11,17 @@
         <PreviewTabs :width="previewTabsWidth" :compactMode="compactMode" />
         <div class="flex items-center">
             <a-tooltip
-                v-if="featureEnabledMap[INSIGHT_DATA_DOWNLOAD]"
+                v-if="
+                    featureEnabledMap[INSIGHT_DATA_DOWNLOAD] &&
+                    columnsCount &&
+                    previewTabsWidth > 0
+                "
                 color="#363636"
                 :mouseEnterDelay="
                     lastTooltipPresence !== undefined
                         ? ADJACENT_TOOLTIP_DELAY
                         : MOUSE_ENTER_DELAY
                 "
-                v-if="columnsCount && previewTabsWidth > 0"
             >
                 <template #title>Copy data</template>
 
@@ -46,14 +49,17 @@
                 </AtlanBtn>
             </a-tooltip>
             <a-tooltip
-                v-if="featureEnabledMap[INSIGHT_DATA_DOWNLOAD]"
+                v-if="
+                    featureEnabledMap[INSIGHT_DATA_DOWNLOAD] &&
+                    columnsCount &&
+                    previewTabsWidth > 0
+                "
                 color="#363636"
                 :mouseEnterDelay="
                     lastTooltipPresence !== undefined
                         ? ADJACENT_TOOLTIP_DELAY
                         : MOUSE_ENTER_DELAY
                 "
-                v-if="columnsCount && previewTabsWidth > 0"
             >
                 <template #title>Export data</template>
                 <AtlanBtn
@@ -383,6 +389,7 @@
                         (el) =>
                             el.asset.guid === insights_Store.activePreviewGuid
                     )
+                    if (_index < 0) return 0
                     return insights_Store.previewTabs[_index].columns.length
                 } else {
                     return (
@@ -395,26 +402,24 @@
             })
             const columnsList = computed(() => {
                 if (insights_Store.activePreviewGuid !== undefined) {
-                    return insights_Store.previewTabs[
-                        insights_Store.previewTabs.findIndex(
-                            (el) =>
-                                el.asset.guid ===
-                                insights_Store.activePreviewGuid
-                        )
-                    ].columns
+                    const index = insights_Store.previewTabs.findIndex(
+                        (el) =>
+                            el.asset.guid === insights_Store.activePreviewGuid
+                    )
+                    if (index < 0) return []
+                    return insights_Store.previewTabs[index]?.columns ?? []
                 } else {
                     return activeInlineTab.value.playground.editor.columnList
                 }
             })
             const dataList = computed(() => {
                 if (insights_Store.activePreviewGuid !== undefined) {
-                    return insights_Store.previewTabs[
-                        insights_Store.previewTabs.findIndex(
-                            (el) =>
-                                el.asset.guid ===
-                                insights_Store.activePreviewGuid
-                        )
-                    ].rows
+                    const index = insights_Store.previewTabs.findIndex(
+                        (el) =>
+                            el.asset.guid === insights_Store.activePreviewGuid
+                    )
+                    if (index < 0) return []
+                    return insights_Store.previewTabs[index]?.rows ?? {}
                 } else {
                     return activeInlineTab.value.playground.editor.dataList
                 }
@@ -428,7 +433,7 @@
                                 el.asset.guid ===
                                 insights_Store.activePreviewGuid
                         )
-                    ].asset
+                    ]?.asset
                 } else {
                     return undefined
                 }

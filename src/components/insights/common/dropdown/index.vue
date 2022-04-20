@@ -1,5 +1,5 @@
 <template>
-    <a-dropdown trigger="click">
+    <a-dropdown :trigger="[`${trigger}`]">
         <slot name="menuTrigger"> </slot>
 
         <template #overlay>
@@ -128,10 +128,15 @@
                 required: false,
                 default: () => 'bottomCenter',
             },
+            trigger: {
+                type: String,
+                default: () => 'click',
+                required: false,
+            },
         },
         emits: ['addBackground'],
         setup(props, { emit }) {
-            const { options, item, placement } = props
+            const { options, item, placement, trigger } = props
 
             const handleMenuItemClick = (option: any) => {
                 option.handleClick(option)
@@ -141,6 +146,7 @@
             }
 
             return {
+                trigger,
                 item,
                 options,
                 addBackground,

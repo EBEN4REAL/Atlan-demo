@@ -33,54 +33,77 @@
                 :class="$style.previewtab_footer"
                 :tab-position="mode"
                 :style="{ height: '32px' }"
-                :activeKey="previewIndex"
+                :activeKey="`${previewIndex}.${insights_Store.activePreviewGuid}`"
                 @change="handleTabChange"
             >
                 <a-tab-pane
                     v-for="(item, index) in insights_Store.previewTabs"
-                    :key="index"
+                    :key="`${index}.${item.asset.guid}`"
                 >
                     <template #tab>
-                        <div
-                            class="relative flex items-center h-full px-2 text-sm text-new-gray-700 group insights_preview_tabs"
-                            style="width: 148px"
+                        <InsightsThreeDotMenu
+                            trigger="contextmenu"
+                            :options="dropdownOptions"
+                            :item="item"
+                            :key="`${index}.${item.asset.guid}`"
                         >
-                            <div class="flex items-center w-full text-sm">
-                                <AtlanIcon
-                                    :icon="
-                                        getEntityStatusIcon(
-                                            assetType(item.asset),
-                                            certificateStatus(item.asset)
-                                        )
-                                    "
-                                    class="w-4 h-4 mr-1 -mt-0.5 parent-ellipsis-container-extension"
-                                ></AtlanIcon>
-                                <Tooltip
-                                    :tooltip-text="item.asset.attributes.name"
-                                    classes="text-new-gray-700 w-full pr-1.5"
-                                    :placement="'topRight'"
-                                    :mouseEnterDelay="
-                                        lastTooltipPresence !== undefined
-                                            ? ADJACENT_TOOLTIP_DELAY
-                                            : MOUSE_ENTER_DELAY
-                                    "
-                                />
-                            </div>
-                            <div
-                                @click.stop="
-                                    () => onPreviewTabClose(item.asset.guid)
-                                "
-                                @mouseout="recordTooltipPresence"
-                                class="absolute rounded opacity-0 right-2 group-hover:opacity-100 px-0.5"
-                                :class="
-                                    previewIndex === index
-                                        ? 'bg-white hover:bg-new-gray-200'
-                                        : 'bg-new-gray-200 hover:bg-new-gray-300'
-                                "
-                            >
-                                <AtlanIcon icon="Close" class="w-4 h-4" />
-                            </div>
-                        </div>
+                            <template #menuTrigger>
+                                <div
+                                    class="relative flex items-center h-full px-2 text-sm text-new-gray-700 group insights_preview_tabs"
+                                    style="width: 148px"
+                                >
+                                    <div
+                                        class="flex items-center w-full text-sm"
+                                    >
+                                        <AtlanIcon
+                                            :icon="
+                                                getEntityStatusIcon(
+                                                    assetType(item.asset),
+                                                    certificateStatus(
+                                                        item.asset
+                                                    )
+                                                )
+                                            "
+                                            class="w-4 h-4 mr-1 -mt-0.5 parent-ellipsis-container-extension"
+                                        ></AtlanIcon>
+                                        <Tooltip
+                                            :tooltip-text="
+                                                item.asset.attributes.name
+                                            "
+                                            classes="text-new-gray-700 w-full pr-1.5"
+                                            :placement="'topRight'"
+                                            :mouseEnterDelay="
+                                                lastTooltipPresence !==
+                                                undefined
+                                                    ? ADJACENT_TOOLTIP_DELAY
+                                                    : MOUSE_ENTER_DELAY
+                                            "
+                                        />
+                                    </div>
+                                    <div
+                                        @click.stop="
+                                            () =>
+                                                onPreviewTabClose(
+                                                    item.asset.guid
+                                                )
+                                        "
+                                        @mouseout="recordTooltipPresence"
+                                        class="absolute rounded opacity-0 right-2 group-hover:opacity-100 px-0.5"
+                                        :class="
+                                            Number(previewIndex) ==
+                                            Number(index)
+                                                ? 'bg-white hover:bg-new-gray-200'
+                                                : 'bg-new-gray-200 hover:bg-new-gray-300'
+                                        "
+                                    >
+                                        <AtlanIcon
+                                            icon="Close"
+                                            class="w-4 h-4"
+                                        />
+                                    </div>
+                                </div>
+                            </template>
+                        </InsightsThreeDotMenu>
                     </template>
                 </a-tab-pane>
             </a-tabs>
@@ -173,9 +196,11 @@
     import insightsStore from '~/store/insights/index'
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import { MenuItem } from 'ant-design-vue'
+    import InsightsThreeDotMenu from '~/components/insights/common/dropdown/index.vue'
 
     export default defineComponent({
-        components: { Tooltip },
+        components: { Tooltip, InsightsThreeDotMenu },
         props: {
             width: {
                 type: Number,
@@ -271,6 +296,7 @@
                         (el) =>
                             el.asset.guid === insights_Store.activePreviewGuid
                     )
+                    if (_index < 0) return 0
                     return insights_Store.previewTabs[
                         _index
                     ].columns.length?.toLocaleString()
@@ -321,8 +347,9 @@
             })
 
             const handleTabChange = (index: any) => {
+                const _index = Number(index.split('.')[0])
                 const guid =
-                    insights_Store.previewTabs[Number(index)].asset.guid
+                    insights_Store.previewTabs[Number(_index)].asset.guid
                 selectPreviewTab(guid)
             }
 
@@ -386,7 +413,80 @@
                 { immediate: true }
             )
 
+            const getIndexById = (id: string) => {
+                return insights_Store.previewTabs.findIndex(
+                    (el) => el.asset.guid === id
+                )
+            }
+
+            // POWER FEATURES
+            const closeAllOtherTabs = ({ item }) => {
+                debugger
+                insights_Store.previewTabs = insights_Store.previewTabs.filter(
+                    (el) => el.asset.guid === item.asset.guid
+                )
+                insights_Store.activePreviewGuid =
+                    insights_Store.previewTabs[0].asset.guid
+            }
+            const closeAllTabsOnLeft = ({ item }) => {
+                const _index = getIndexById(item.asset.guid)
+                insights_Store.previewTabs = insights_Store.previewTabs.filter(
+                    (el, index) => index >= _index
+                )
+            }
+            const closeAllTabs = ({ item }) => {
+                insights_Store.activePreviewGuid = undefined
+                insights_Store.isNewTabAdded = -1
+                insights_Store.previewTabs = []
+            }
+
+            const dropdownOptions = computed(() => {
+                return [
+                    {
+                        title: 'Close all other tabs',
+                        key: 'Close all other tabs',
+                        class: '',
+                        disabled: false,
+                        component: MenuItem,
+                        hide: false,
+                        handleClick: closeAllOtherTabs,
+                    },
+                    {
+                        title: 'Close all tabs on left',
+                        key: 'Close all tabs on left',
+                        component: MenuItem,
+                        class: '',
+                        disabled: false,
+                        hide: false,
+                        handleClick: closeAllTabsOnLeft,
+                    },
+                    {
+                        title: 'Close all tabs',
+
+                        key: 'Close all tabs',
+                        component: MenuItem,
+                        class: '',
+                        disabled: false,
+                        hide: false,
+                        handleClick: closeAllTabs,
+                    },
+                    {
+                        title: 'Close tab',
+
+                        key: 'Close tab',
+                        component: MenuItem,
+                        class: '',
+                        disabled: false,
+                        hide: false,
+                        handleClick: ({ item }) => {
+                            onPreviewTabClose(item.asset.guid)
+                        },
+                    },
+                ]
+            })
+
             return {
+                dropdownOptions,
                 handleTabChange,
                 width,
                 getResultsIcon,

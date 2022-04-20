@@ -192,7 +192,7 @@
                                 el.asset.guid ===
                                 insights_Store.activePreviewGuid
                         )
-                    ].rows
+                    ]?.rows ?? []
             )
             const columnList = computed(
                 () =>
@@ -202,7 +202,7 @@
                                 el.asset.guid ===
                                 insights_Store.activePreviewGuid
                         )
-                    ].columns
+                    ]?.columns ?? []
             )
             const buttonDisable = computed(
                 () =>
@@ -223,7 +223,7 @@
                                 el.asset.guid ===
                                 insights_Store.activePreviewGuid
                         )
-                    ].queryErrorObj
+                    ]?.queryErrorObj
             )
             const rowCountErrObj = ref()
             const queryExecutionTime = computed(
@@ -234,7 +234,7 @@
                                 el.asset.guid ===
                                 insights_Store.activePreviewGuid
                         )
-                    ].executionTime
+                    ]?.executionTime
             )
             const isQueryRunning = computed(() => {
                 const x =
@@ -244,7 +244,7 @@
                                 el.asset.guid ===
                                 insights_Store.activePreviewGuid
                         )
-                    ].isQueryRunning
+                    ]?.isQueryRunning
                 return x
             })
             const isQueryAborted = computed(
@@ -255,7 +255,7 @@
                                 el.asset.guid ===
                                 insights_Store.activePreviewGuid
                         )
-                    ].isQueryAborted
+                    ]?.isQueryAborted
             )
             const errorDecorations = []
 

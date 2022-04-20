@@ -66,6 +66,7 @@
     import CustomImage from './extensions/image/extension'
     import IFrame from './extensions/iframe/extension'
     import mentionSuggestion from './extensions/mentions/suggestion'
+    import Equation from './extensions/equation/extension'
 
     import LinkPreview from './extensions/linkPreview/linkPreview'
     import { BLOCK_TIPPY_MENU } from '~/constant/readmeMenuItems'
@@ -192,6 +193,7 @@
                         },
                         suggestion: mentionSuggestion,
                     }),
+                    Equation,
                 ],
                 onUpdate({ editor: currEditor }) {
                     const content = currEditor.getHTML()

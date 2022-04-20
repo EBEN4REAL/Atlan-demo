@@ -75,6 +75,7 @@ specifiers:
   https-localhost: ^4.7.0
   husky: ^7.0.4
   json-2-csv: ^3.17.0
+  katex: ^0.15.3
   keycloak-js: ^16.1.1
   less: ^4.1.2
   monaco-editor: 0.32.1
@@ -176,6 +177,7 @@ dependencies:
   event-source-polyfill: github.com/atlanhq/EventSource/f12e560428065c00f61c7eb2a8ae773115e6e7c7
   highlight.js: 11.4.0
   json-2-csv: 3.17.0
+  katex: 0.15.3
   keycloak-js: 16.1.1
   less: 4.1.2
   monaco-editor: 0.32.1
@@ -3513,7 +3515,6 @@ packages:
   /commander/8.3.0:
     resolution: {integrity: sha512-OkTL9umf+He2DZkUq8f8J9of7yL6RJKI24dVITBmNfZBmri9zYZQrKkuXiKhyfPSu8tUhnVBB1iKXevvnlR4Ww==}
     engines: {node: '>= 12'}
-    dev: true
 
   /commander/9.0.0:
     resolution: {integrity: sha512-JJfP2saEKbQqvW+FI93OYUB4ByV5cizMpFMiiJI8xDbBvQvSkIk0VvQdn1CZ8mqAO8Loq2h0gYTYtDFUZUeERw==}
@@ -5581,6 +5582,13 @@ packages:
       is-promise: 2.2.2
       promise: 7.3.1
     dev: true
+
+  /katex/0.15.3:
+    resolution: {integrity: sha512-Al6V7RJsmjklT9QItyHWGaQCt+NYTle1bZwB1e9MR/tLoIT1MXaHy9UpfGSB7eaqDgjjqqRxQOaQGrALCrEyBQ==}
+    hasBin: true
+    dependencies:
+      commander: 8.3.0
+    dev: false
 
   /keycloak-js/16.1.1:
     resolution: {integrity: sha512-AkRNIJFSMLfQKIBKK31UL4FGI59MQFf68Bf8I+PFbOSKNtnfGVPYLiZeJgy03Kv5ddswHBjVZOY5T0f5RpZpLw==}

@@ -1,5 +1,5 @@
 <template>
-    <a-dropdown :trigger="[`${trigger}`]">
+    <a-dropdown :trigger="[`${trigger}`]" @visibleChange="visibleChange">
         <slot name="menuTrigger"> </slot>
 
         <template #overlay>
@@ -134,7 +134,7 @@
                 required: false,
             },
         },
-        emits: ['addBackground'],
+        emits: ['addBackground', 'visibleChange'],
         setup(props, { emit }) {
             const { options, item, placement, trigger } = props
 
@@ -144,8 +144,12 @@
             const addBackground = () => {
                 emit('addBackground')
             }
+            const visibleChange = (visible) => {
+                emit('visibleChange', visible)
+            }
 
             return {
+                visibleChange,
                 trigger,
                 item,
                 options,

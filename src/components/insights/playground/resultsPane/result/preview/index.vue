@@ -46,6 +46,7 @@
                             :options="dropdownOptions"
                             :item="item"
                             :key="`${index}.${item.asset.guid}`"
+                            @visibleChange="onDropdownVisibleChange"
                         >
                             <template #menuTrigger>
                                 <div
@@ -67,6 +68,7 @@
                                             class="w-4 h-4 mr-1 -mt-0.5 parent-ellipsis-container-extension"
                                         ></AtlanIcon>
                                         <Tooltip
+                                            v-if="!hideTabsToolTips"
                                             :tooltip-text="
                                                 item.asset.attributes.name
                                             "
@@ -79,6 +81,12 @@
                                                     : MOUSE_ENTER_DELAY
                                             "
                                         />
+                                        <span
+                                            v-else
+                                            class="overflow-hidden truncate"
+                                        >
+                                            {{ item.asset.attributes.name }}
+                                        </span>
                                     </div>
                                     <div
                                         @click.stop="
@@ -212,6 +220,7 @@
             },
         },
         setup(props, { emit }) {
+            const hideTabsToolTips = ref(false)
             const { width, compactMode } = toRefs(props)
             const insights_Store = insightsStore()
             const lastElement = inject('lastPreviewTabElement') as Ref<any>
@@ -221,7 +230,7 @@
                 MOUSE_ENTER_DELAY,
                 ADJACENT_TOOLTIP_DELAY,
                 lastTooltipPresence,
-            } = useTooltipDelay()
+            } = useTooltipDelay(2)
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
@@ -428,10 +437,10 @@
                 insights_Store.activePreviewGuid =
                     insights_Store.previewTabs[0].asset.guid
             }
-            const closeAllTabsOnLeft = ({ item }) => {
+            const closeAllTabsOnRight = ({ item }) => {
                 const _index = getIndexById(item.asset.guid)
                 insights_Store.previewTabs = insights_Store.previewTabs.filter(
-                    (el, index) => index >= _index
+                    (el, index) => index <= _index
                 )
                 insights_Store.activePreviewGuid = item.asset.guid
             }
@@ -453,13 +462,13 @@
                         handleClick: closeAllOtherTabs,
                     },
                     {
-                        title: 'Close all tabs on left',
-                        key: 'Close all tabs on left',
+                        title: 'Close all tabs on right',
+                        key: 'Close all tabs on right',
                         component: MenuItem,
                         class: '',
                         disabled: false,
                         hide: false,
-                        handleClick: closeAllTabsOnLeft,
+                        handleClick: closeAllTabsOnRight,
                     },
                     {
                         title: 'Close all tabs',
@@ -486,7 +495,17 @@
                 ]
             })
 
+            const onDropdownVisibleChange = (visible) => {
+                if (visible) {
+                    hideTabsToolTips.value = true
+                } else {
+                    hideTabsToolTips.value = false
+                }
+            }
+
             return {
+                hideTabsToolTips,
+                onDropdownVisibleChange,
                 dropdownOptions,
                 handleTabChange,
                 width,

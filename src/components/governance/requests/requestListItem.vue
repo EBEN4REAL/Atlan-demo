@@ -295,52 +295,82 @@
             v-if="showRequestStatus"
             class="flex items-center col-span-3 text-sm ml-10"
         >
-            <div v-if="request.status === 'active'" class="flex flex-col">
-                <span class="text-yellow-500 flex items-center mb-2">
-                    Pending</span
-                >
-                <a-popover placement="rightBottom">
-                    <template #content>
-                        <AdminList></AdminList>
-                    </template>
-                    <span class="cursor-pointer"
-                        >Reviewers<atlan-icon
-                            icon="CaretDown"
-                            class="mx-0.5 h-3"
-                    /></span>
-                </a-popover>
-            </div>
-            <div
-                :class="
-                    request.status === 'approved'
-                        ? 'text-success'
-                        : 'text-error'
-                "
-                v-else
-            >
-                {{
-                    request.status === 'approved'
-                        ? 'Approved by'
-                        : 'Rejected by'
-                }}
-
+            <div v-if="activeHover === request.id" class="flex items-center">
+                <div v-if="request.status === 'active'" class="flex flex-col">
+                    <span class="text-yellow-500 flex items-center mb-1">
+                        Pending</span
+                    >
+                    <a-popover placement="rightBottom">
+                        <template #content>
+                            <AdminList></AdminList>
+                        </template>
+                        <span class="cursor-pointer"
+                            >Reviewers<atlan-icon
+                                icon="CaretDown"
+                                class="mx-0.5 h-3"
+                        /></span>
+                    </a-popover>
+                </div>
                 <div
-                    class="flex items-center font-light whitespace-nowrap mt-2"
+                    :class="
+                        request.status === 'approved'
+                            ? 'text-success'
+                            : 'text-error'
+                    "
+                    v-else
                 >
-                    <div class="flex items-center truncate">
-                        <Avatar
-                            :allow-upload="false"
-                            :avatar-name="nameUpdater"
-                            :avatar-size="18"
-                            :avatar-shape="'circle'"
-                            class="mr-2"
-                        />
-                        <span
-                            class="text-gray-700 truncate overflow-ellipsis"
-                            :style="'max-width: 100px'"
-                            >{{ nameUpdater }}</span
-                        >
+                    {{
+                        request.status === 'approved'
+                            ? 'Approved by'
+                            : 'Rejected by'
+                    }}
+
+                    <div
+                        class="flex items-center font-light whitespace-nowrap mt-1"
+                    >
+                        <div class="flex items-center truncate">
+                            <Avatar
+                                :allow-upload="false"
+                                :avatar-name="nameUpdater"
+                                :avatar-size="18"
+                                :avatar-shape="'circle'"
+                                class="mr-2"
+                            />
+                            <span
+                                class="text-gray-700 truncate overflow-ellipsis"
+                                :style="'max-width: 100px'"
+                                >{{ nameUpdater }}</span
+                            >
+                        </div>
                     </div>
+                </div>
+            </div>
+            <div v-else>
+                <div v-if="request.status === 'active'" class="flex flex-col">
+                    <span class="text-yellow-500 flex items-center mb-1">
+                        Pending</span
+                    >
+                    <span class="text-gray-500">
+                        <DatePiece
+                            :no-popover="true"
+                            class=" text-gray-500"
+                            :date="request?.createdAt"
+                        />
+                    </span>
+                </div>
+                <div
+                    :class="
+                        request.status === 'approved'
+                            ? 'text-success'
+                            : 'text-error'
+                    "
+                    v-else
+                >
+                    {{
+                        request.status === 'approved'
+                            ? 'Approved'
+                            : 'Rejected'
+                    }}
                 </div>
             </div>
         </div>

@@ -1,6 +1,7 @@
 <template>
     <div
         class="flex flex-col border border-gray-200 rounded requests-container"
+        @mouseleave="handleMouseLeave"
     >
         <div
             class="flex items-baseline py-2 pl-4 pr-5 mb-1 bg-gray-100 border-b justify-between"
@@ -24,6 +25,7 @@
             >
                 <RequestListItem
                     :request="request"
+                    :active-hover="activeHover"
                     :showActions="false"
                     :showRequestStatus="true"
                     @mouseenter="handleMouseEnter(request.id, index)"
@@ -117,11 +119,13 @@
                     activeHover.value = itemId
                 }
             }
+            const handleMouseLeave=()=>{
+                activeHover.value=""
+            }
             const handleStatusFilterChange = (activeFilter) => {
                 if (activeFilter?.status)
                     filters.value.status = [activeFilter.status]
-                else
-                    delete filters.value.status
+                else delete filters.value.status
             }
 
             return {
@@ -131,6 +135,7 @@
                 role,
                 handleStatusFilterChange,
                 listLoading,
+                handleMouseLeave
             }
         },
     })

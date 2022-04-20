@@ -422,7 +422,6 @@
 
             // POWER FEATURES
             const closeAllOtherTabs = ({ item }) => {
-                debugger
                 insights_Store.previewTabs = insights_Store.previewTabs.filter(
                     (el) => el.asset.guid === item.asset.guid
                 )
@@ -434,6 +433,7 @@
                 insights_Store.previewTabs = insights_Store.previewTabs.filter(
                     (el, index) => index >= _index
                 )
+                insights_Store.activePreviewGuid = item.asset.guid
             }
             const closeAllTabs = ({ item }) => {
                 insights_Store.activePreviewGuid = undefined

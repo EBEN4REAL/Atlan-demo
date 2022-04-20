@@ -23,7 +23,7 @@
             <div class="flex" @click="openLink(link.attributes.link)">
                 <template v-if="data">
                     <div
-                        class="flex mt-1.5 items-start w-16"
+                        class="flex mt-1.5 items-start w-16 overflow-hidden"
                         style="max-width: 40px"
                     >
                         <div class="relative w-10">

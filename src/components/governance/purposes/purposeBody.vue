@@ -459,7 +459,7 @@
                         denied: !id.allow,
                         user_count: id.users.length,
                         group_count: id.groups.length,
-                        allUsers: Boolean(id.allUsers),
+                        all_users_enabled: Boolean(id.allUsers),
                     }
                     useAddEvent(
                         'governance',

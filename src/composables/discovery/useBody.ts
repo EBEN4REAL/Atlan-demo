@@ -84,6 +84,10 @@ export function useBody(
             base.orQuery('match', 'userDescription', {
                 query: tempQuery,
             })
+            base.orQuery('match', 'sql', {
+                query: tempQuery,
+                boost: 40,
+            })
             base.orQuery('match', '__meaningsText', {
                 query: tempQuery,
                 boost: 20,

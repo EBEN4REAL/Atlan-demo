@@ -116,6 +116,7 @@
                 </a-tab-pane>
             </a-tabs>
         </div>
+
         <div
             class="flex items-center pl-3 text-new-gray-800 mt-0.5"
             v-if="
@@ -145,7 +146,11 @@
         </div>
         <div
             class="flex items-center pl-3 text-new-gray-800 mt-0.5"
-            v-else-if="compactMode && previewModeActive"
+            v-else-if="
+                compactMode &&
+                previewModeActive &&
+                Boolean(Number(columnsCount))
+            "
         >
             <a-tooltip color="#363636">
                 <template #title>

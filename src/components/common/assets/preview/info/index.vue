@@ -219,7 +219,7 @@
                             :icon="
                                 getEntityStatusIcon(
                                     'Table',
-                                    parentTable(selectedAsset).attributes
+                                    parentTable(selectedAsset)?.attributes
                                         ?.certificateStatus
                                 )
                             "
@@ -257,7 +257,7 @@
                             :icon="
                                 getEntityStatusIcon(
                                     'View',
-                                    parentView(selectedAsset).attributes
+                                    parentView(selectedAsset)?.attributes
                                         ?.certificateStatus
                                 )
                             "

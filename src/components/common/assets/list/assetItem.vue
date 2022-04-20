@@ -435,7 +435,7 @@
                                                     getEntityStatusIcon(
                                                         'Table',
                                                         parentTable(item)
-                                                            .attributes
+                                                            ?.attributes
                                                             ?.certificateStatus
                                                     )
                                                 "
@@ -467,7 +467,7 @@
                                                     getEntityStatusIcon(
                                                         'View',
                                                         parentView(item)
-                                                            .attributes
+                                                            ?.attributes
                                                             ?.certificateStatus
                                                     )
                                                 "

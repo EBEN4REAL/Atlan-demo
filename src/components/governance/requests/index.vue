@@ -472,6 +472,9 @@
                     createdBy,
                     // typeName,
                 }
+                if(!status?.length){
+                    delete filterMerge.status
+                }
                 delete filterMerge.destinationQualifiedName
                 if (facetsValue?.hierarchy?.connectorName) {
                     filterMerge.destinationQualifiedName =
@@ -503,7 +506,6 @@
             }
             const handleResetEvent = () => {
                 filters.value = {
-                    status: 'active' as RequestStatus,
                     request_type: [],
                 }
                 connectorsData.value = {

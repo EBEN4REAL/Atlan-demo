@@ -3,32 +3,63 @@
         <div class="flex items-center gap-x-2">
             <PackageIcon :package="workflow" />
             <div class="truncate">
-                <div class="flex items-center gap-x-1">
-                    <span class="text-gray-500 truncate">{{
-                        name(workflow)
-                    }}</span>
-                    <div v-if="type(workflow)" class="badge">
-                        <span style="margin-top: 1px">{{
-                            type(workflow)
-                        }}</span>
-                    </div>
-                </div>
+                <template v-if="minimal">
+                    <p class="text-sm font-bold truncate text-new-gray-700">
+                        {{ name(workflow) }}
+                        <AtlanIcon
+                            v-if="dName"
+                            icon="CaretRight"
+                            class="-ml-1 -mr-0.5 mb-0.5"
+                        />
+                        <span class="text-primary">{{ dName }}</span>
+                    </p>
 
-                <div class="flex items-center mt-1 gap-x-1">
-                    <router-link :to="`/workflows/profile/${wfName(workflow)}`">
-                        <span
-                            class="font-bold tracking-wide truncate cursor-pointer text-primary hover:underline"
-                            >{{ dName }}</span
+                    <div
+                        class="flex items-center mt-1 text-sm leading-none text-gray-500 gap-x-1"
+                    >
+                        <template v-if="isCronWorkflow(workflow)">
+                            <AtlanIcon icon="Schedule" class="text-success" />
+                            <span class="ml-1 pt-0.5">{{
+                                cronString(workflow)
+                            }}</span>
+                        </template>
+                        <template v-else>
+                            <AtlanIcon icon="User" />
+                            <span class="ml-1 pt-0.5">Manual Run</span>
+                        </template>
+                    </div>
+                </template>
+                <template v-else>
+                    <div class="flex items-center gap-x-1">
+                        <span class="text-gray-500 truncate">{{
+                            name(workflow)
+                        }}</span>
+                        <div v-if="type(workflow)" class="badge">
+                            <span style="margin-top: 1px">{{
+                                type(workflow)
+                            }}</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center mt-1 gap-x-1">
+                        <router-link
+                            :to="`/workflows/profile/${wfName(workflow)}`"
                         >
-                    </router-link>
-                    <span class="italic truncate text-grey-500">
-                        ({{ wfName(workflow) }})
-                    </span>
-                </div>
+                            <span
+                                class="font-bold tracking-wide truncate cursor-pointer text-primary hover:underline"
+                                >{{ dName }}</span
+                            >
+                        </router-link>
+                        <span class="italic truncate text-grey-500">
+                            ({{ wfName(workflow) }})
+                        </span>
+                    </div>
+                </template>
             </div>
         </div>
 
         <div
+            v-if="!minimal"
             class="flex items-center mt-3 text-sm leading-none text-gray-500 gap-x-1"
         >
             <template v-if="isCronWorkflow(workflow)">
@@ -83,6 +114,10 @@
                 default: () => false,
             },
             isRunLoading: {
+                type: Boolean,
+                default: () => false,
+            },
+            minimal: {
                 type: Boolean,
                 default: () => false,
             },

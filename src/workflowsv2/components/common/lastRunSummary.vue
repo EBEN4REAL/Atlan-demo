@@ -12,8 +12,10 @@
                 <AtlanIcon :icon="getRunIconByPhase(run)" class="mb-0.5" />
                 Last run
                 <span class="text-gray"> {{ startedAt(run, true) }} </span>
-                by
-                <UserWrapper :username="creatorUsername(run)" />
+                <template v-if="creatorUsername(run) !== 'argo'">
+                    by
+                    <UserWrapper :username="creatorUsername(run)" />
+                </template>
             </span>
 
             <div class="flex items-center text-sm text-gray gap-x-1">

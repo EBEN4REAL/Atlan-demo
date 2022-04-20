@@ -10,6 +10,7 @@
             :workflow="workflow"
             :runs="runs(workflow)"
             :isRunLoading="idx >= runMapLength ? isRunLoading : false"
+            minimal
             @click="$emit('update:selectedId', workflow?.metadata?.uid)"
         />
         <div

@@ -21,10 +21,17 @@ function generateRequestListFilters(
     for (const [key, value] of Object.entries(filters)) {
         if (value?.length ?? value)
             // Check if the value is valid or the length in case of array
-            filter[key] = (Array.isArray(value) && key !== '$or') ? { $in: value } : value
+            filter[key] =
+                Array.isArray(value) && key !== '$or' ? { $in: value } : value
     }
-  
-    return {"$and": [{"isDuplicate": false},filter]}
+    const payload = { $and: [{ isDuplicate: false }] }
+    if (Object.keys(filter)?.length) {
+        payload.$and.push({
+            ...filter
+        })
+    }
+
+    return payload
 }
 
 export function useRequestList(

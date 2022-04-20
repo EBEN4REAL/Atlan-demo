@@ -845,6 +845,7 @@
         computed,
         onMounted,
     } from 'vue'
+    import { useTimeAgo } from '@vueuse/core'
     import AtlanBtn from '@/UI/button.vue'
     import Connector from './policies/connector.vue'
     import { selectedPersonaDirty } from './composables/useEditPersona'
@@ -859,9 +860,9 @@
     import useGlossaryStore from '~/store/glossary'
     import useGlossaryData from '~/composables/glossary2/useGlossaryData'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import { useTimeAgo } from '@vueuse/core'
     import Avatar from '~/components/common/avatar/index.vue'
     import SameAssetPolicy from './sameAssetPolicy.vue'
+
     export default defineComponent({
         name: 'AddPolicy',
         components: {
@@ -1330,9 +1331,10 @@
 
 <style lang="less">
     .wrapper-icon-warning {
-        width: fit-content;
+        // width: fit-content;
+        // width: -moz-fit-content;
         background: #e5ebfb;
-        height: fit-content;
+        // height: fit-content;
     }
     .icon-annoucemnet {
         circle {

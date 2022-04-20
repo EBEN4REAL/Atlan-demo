@@ -90,7 +90,10 @@
             const res = await handleAddResource()
             addStatus.value = 'success'
             // ? if the created link is slack , redirect to slack tab
-            if (getDomain(link.attributes.link) === 'slack.com')
+            if (
+                getDomain(link.attributes.link) === 'slack.com' &&
+                tenantSlackStatus.value.configured
+            )
                 watchOnce(
                     () => links(selectedAsset.value),
                     () => {

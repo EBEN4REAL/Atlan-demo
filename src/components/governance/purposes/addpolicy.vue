@@ -144,10 +144,10 @@
                                 :edit-permission="true"
                                 :read-only="false"
                                 :destroy-tooltip-on-hide="true"
+                                :show-add-btn="!allUser"
+                                :show-empty-owner="false"
                                 @change="handleOwnersChange"
                                 @changeData="allUser = ''"
-                                :showAddBtn="!allUser"
-                                :showEmptyOwner="false"
                             >
                                 <template #users>
                                     <div
@@ -430,6 +430,7 @@
         toRefs,
         computed,
     } from 'vue'
+    import { useTimeAgo } from '@vueuse/core'
     import AtlanBtn from '@/UI/button.vue'
     import { selectedPersonaDirty } from './composables/useEditPurpose'
     import Owners from '~/components/common/input/owner/index.vue'
@@ -439,8 +440,8 @@
     // import DataMaskingSelector from './policies/dataMaskingSelector.vue'
     import { IPersona } from '~/types/accessPolicies/personas'
     // import useScopeService from './composables/useScopeService'
-    import { useTimeAgo } from '@vueuse/core'
     import Avatar from '~/components/common/avatar/index.vue'
+
     export default defineComponent({
         name: 'AddPolicy',
         components: {
@@ -563,8 +564,9 @@
                     }
                     selectedOwnersData.value = objOwner
                     if (
-                        selectedPolicy?.value?.users?.length !== 1 ||
-                        selectedPolicy?.value?.users[0] !== 'all-users'
+                        (selectedPolicy?.value?.users?.length !== 1 ||
+                            selectedPolicy?.value?.users[0] !== 'all-users') &&
+                        !selectedPolicy?.value?.allUsers
                     ) {
                         allUser.value = ''
                     }
@@ -660,10 +662,9 @@
                 } else {
                     const newPayload = {
                         ...policy.value,
-                        users: allUser.value
-                            ? [allUser.value]
-                            : policy.value.users,
+                        users: allUser.value ? [] : policy.value.users,
                         groups: allUser.value ? [] : policy.value.groups,
+                        allUsers: !!allUser.value,
                     }
                     emit('save', policyType.value, newPayload, isEdit.value)
                 }

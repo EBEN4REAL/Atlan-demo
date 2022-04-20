@@ -340,7 +340,9 @@
                     closePreview()
                 } else {
                     setUserUniqueAttribute(user.id)
-                    openPreview(null, activeTab)
+                    if (user.status_object.status.toLowerCase() === 'invited')
+                        openPreview({ blacklisted: ['assets'] }, activeTab)
+                    else openPreview({}, activeTab)
                     selectedUserId.value = user.id
                 }
             }

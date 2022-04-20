@@ -13,7 +13,10 @@ export default function useTenantUpdate(body: any) {
     })
     const tenantStore = useTenantStore()
     watch(data, () => {
-        tenantStore.setTenant(data.value)
+        console.log('setting tenant', data.value)
+        if (data.value) {
+            tenantStore.setTenant(data.value)
+        }
     })
     return {
         data,

@@ -27,7 +27,6 @@ export function useUserOrGroupPreview(previewType: string, userNameProp = '') {
             userUpdated,
         } = useUserPreview()
         const userNameUser = computed(() => userNameProp || username.value)
-
         // Params for obtaining that one user.
         const params = computed(() => ({
             limit: 1,
@@ -37,12 +36,11 @@ export function useUserOrGroupPreview(previewType: string, userNameProp = '') {
                 uniqueAttribute.value === 'username'
                     ? {
                         $and: [
-                            { emailVerified: true },
                             { username: userNameUser.value },
                         ],
                     }
                     : {
-                        $and: [{ emailVerified: true }, { id: userId.value }],
+                        $and: [{ id: userId.value }],
                     },
         }))
         const { userList, getUserList, isLoading, error, mutate } = useUsers(

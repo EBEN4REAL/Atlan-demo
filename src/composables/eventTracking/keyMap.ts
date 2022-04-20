@@ -1,5 +1,3 @@
-
-
 import {
     NAME_OF_EVENTS,
     README_TRIGGERS,
@@ -51,12 +49,11 @@ const keyMap = {
             changed: {
                 action: 'discovery_filter_changed',
                 properties: (props: {
-                    type: string,
-                    property?: string,
-                    value?: string,
-                    operator?: string,
-                }
-                ) => ({
+                    type: string
+                    property?: string
+                    value?: string
+                    operator?: string
+                }) => ({
                     ...props,
                 }),
             },
@@ -65,7 +62,12 @@ const keyMap = {
             clicked: {
                 action: 'discovery_cta_action_clicked',
                 properties: (props: {
-                    action: 'open_asset' | 'vqb_query' | 'sql_query' | 'copy_link' | 'open_in_source'
+                    action:
+                        | 'open_asset'
+                        | 'vqb_query'
+                        | 'sql_query'
+                        | 'copy_link'
+                        | 'open_in_source'
                     asset_type: string
                 }) => ({
                     ...props,
@@ -81,7 +83,7 @@ const keyMap = {
                 }) => ({
                     ...props,
                 }),
-            }
+            },
         },
         global_context: {
             changed: {
@@ -268,9 +270,7 @@ const keyMap = {
         sort: {
             changed: {
                 action: 'discovery_sort_changed',
-                properties: (props: {
-                    sort_type: string
-                }) => ({
+                properties: (props: { sort_type: string }) => ({
                     ...props,
                 }),
             },
@@ -390,14 +390,14 @@ const keyMap = {
             created: {
                 action: 'governance_persona_created',
                 properties: (props) => ({
-                    title: props.title
-                })
+                    title: props.title,
+                }),
             },
             deleted: {
                 action: 'governance_persona_deleted',
                 properties: (props) => ({
-                    title: props.title
-                })
+                    title: props.title,
+                }),
             },
             policy_added: {
                 action: 'governance_persona_policy_added',
@@ -455,14 +455,14 @@ const keyMap = {
             created: {
                 action: 'governance_purpose_created',
                 properties: (props) => ({
-                    title: props.title
-                })
+                    title: props.title,
+                }),
             },
             deleted: {
                 action: 'governance_purpose_deleted',
                 properties: (props) => ({
-                    title: props.title
-                })
+                    title: props.title,
+                }),
             },
             policy_added: {
                 action: 'governance_purpose_policy_added',
@@ -505,6 +505,12 @@ const keyMap = {
             resource_deleted: {
                 action: 'purpose_resource_deleted',
             },
+            purpose_enable: {
+                action: 'governance_purpose_enabled',
+            },
+            purpose_disable: {
+                action: 'governance_purpose_disabled',
+            },
         },
         classification: {
             created: {
@@ -521,20 +527,20 @@ const keyMap = {
             created: {
                 action: 'governance_custom_metadata_created',
                 properties: (props) => ({
-                    title: props.title
-                })
+                    title: props.title,
+                }),
             },
             updated: {
                 action: 'governance_custom_metadata_updated',
                 properties: (props) => ({
-                    title: props.title
-                })
+                    title: props.title,
+                }),
             },
             deleted: {
                 action: 'governance_custom_metadata_deleted',
                 properties: (props) => ({
-                    title: props.title
-                })
+                    title: props.title,
+                }),
             },
             property_added: {
                 action: 'governance_custom_metadata_property_added',
@@ -597,7 +603,7 @@ const keyMap = {
                     ...props,
                 }),
             },
-        }
+        },
     },
     admin: {
         api_key: {
@@ -636,14 +642,11 @@ const keyMap = {
                     ...props,
                 }),
             },
-
         },
         sso: {
             added: {
                 action: 'admin_sso_added',
-                properties: (props: {
-                    alias: string
-                }) => ({
+                properties: (props: { alias: string }) => ({
                     ...props,
                 }),
             },
@@ -658,30 +661,27 @@ const keyMap = {
             },
             removed: {
                 action: 'admin_sso_removed',
-                properties: (props: {
-                    alias: string
-                }) => ({
+                properties: (props: { alias: string }) => ({
                     ...props,
                 }),
-            }
+            },
         },
         user: {
-            added: { // add invitation
+            added: {
+                // add invitation
                 action: 'admin_user_added',
-                properties: (props: {
-                    count: number
-                }) => ({
+                properties: (props: { count: number }) => ({
                     ...props,
                 }),
             },
-            enabled: { // enable user
+            enabled: {
+                // enable user
                 action: 'admin_user_enabled',
             },
-            removed: { // revoke invitation o disable users
+            removed: {
+                // revoke invitation o disable users
                 action: 'admin_user_removed',
-                properties: (props: {
-                    status: string
-                }) => ({
+                properties: (props: { status: string }) => ({
                     ...props,
                 }),
             },
@@ -694,10 +694,10 @@ const keyMap = {
             //         ...props,
             //     }),
             // },
-
         },
         group: {
-            created: { // create group
+            created: {
+                // create group
                 action: 'admin_group_created',
                 properties: (props: {
                     users_count: number
@@ -714,16 +714,28 @@ const keyMap = {
             updated: {
                 action: 'admin_group_updated',
                 properties: (props: {
-                    users_count: number,
-                    has_slack_channel_added: boolean,
+                    users_count: number
+                    has_slack_channel_added: boolean
                     is_default: boolean
                     has_description: boolean
-
                 }) => ({
                     ...props,
                 }),
             },
-
+        },
+        labs: {
+            feature_enabled: {
+                action: 'admin_labs_feature_enabled',
+                properties: (props) => ({
+                    feature: props.feature,
+                }),
+            },
+            feature_disabled: {
+                action: 'admin_labs_feature_disabled',
+                properties: (props) => ({
+                    feature: props.feature,
+                }),
+            },
         },
     },
     integration: {

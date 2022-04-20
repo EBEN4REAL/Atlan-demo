@@ -369,6 +369,7 @@
     import {
         computed,
         defineComponent,
+        onMounted,
         PropType,
         ref,
         Ref,
@@ -815,6 +816,7 @@
             const onDropdownIsVisibleChange = (e) => {
                 dropdownIsVisible.value = e
                 if (!e) expandedKeys.value = []
+                if (e) expandedKeys?.value?.push(connector.value)
             }
 
             // Does nothing at the moment but can be used for future enhancements

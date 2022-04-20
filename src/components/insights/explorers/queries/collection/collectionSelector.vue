@@ -12,7 +12,7 @@
                 class="flex flex-col pt-4 mt-0"
                 style="
                     width: 315px !important;
-                    height: 338px;
+                    height: 350px;
                     /* z-index: 100 !important; */
                 "
             >
@@ -36,7 +36,7 @@
                 <div class="pt-3">
                     <div
                         class="overflow-x-hidden overflow-y-auto"
-                        style="height: 242px"
+                        style="height: 254px"
                     >
                         <div
                             v-for="collection in [

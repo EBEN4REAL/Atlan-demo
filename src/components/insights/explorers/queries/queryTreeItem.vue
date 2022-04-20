@@ -1423,6 +1423,10 @@
                                             selectedParentGuid,
                                             'query'
                                         )
+                                        await refetchNodeLocally(
+                                            selectedParentGuid,
+                                            'Folder'
+                                        )
                                     }, 2000)
 
                                     message.success('Query moved successfully')

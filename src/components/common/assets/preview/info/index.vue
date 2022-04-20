@@ -216,7 +216,13 @@
                     </div>
                     <div class="text-sm text-gray-700 break-all">
                         <AtlanIcon
-                            icon="TableGray"
+                            :icon="
+                                getEntityStatusIcon(
+                                    'Table',
+                                    parentTable(selectedAsset).attributes
+                                        ?.certificateStatus
+                                )
+                            "
                             class="w-auto h-4 mb-0.5 mr-1"
                         />
                         <router-link
@@ -248,7 +254,13 @@
                     </div>
                     <div class="text-sm text-gray-700">
                         <AtlanIcon
-                            icon="ViewGray"
+                            :icon="
+                                getEntityStatusIcon(
+                                    'View',
+                                    parentView(selectedAsset).attributes
+                                        ?.certificateStatus
+                                )
+                            "
                             class="w-auto h-4 mb-0.5 break-all mr-1"
                         />
                         <router-link
@@ -1003,6 +1015,7 @@
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import UserPill from '@/common/pills/user.vue'
     import PopOverUser from '@/common/popover/user/user.vue'
+    import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -1121,6 +1134,8 @@
                 sourceId,
                 formula,
                 createdBy,
+                parentTable,
+                parentView,
             } = useAssetInfo()
 
             const {
@@ -1286,6 +1301,9 @@
                 formula,
                 handleClickUser,
                 createdBy,
+                getEntityStatusIcon,
+                parentTable,
+                parentView,
             }
         },
     })

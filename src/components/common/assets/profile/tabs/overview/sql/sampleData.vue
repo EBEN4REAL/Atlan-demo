@@ -60,7 +60,11 @@
             </div>
         </div>
         <div v-else class="w-full h-full">
-            <AtlanPreviewTable :data-list="results" :columns="tableColumns" />
+            <AtlanPreviewTable
+                :data-list="results"
+                :columns="tableColumns"
+                :table-instance-i-d="'asset-profile-sample-data'"
+            />
         </div>
     </div>
 </template>

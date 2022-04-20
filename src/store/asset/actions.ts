@@ -26,7 +26,6 @@ export const actions: Actions = {
         this.activePostFacet = value
     },
     setGlobalState(value) {
-        console.log('set global state', value)
         this.globalState = value
     },
 }

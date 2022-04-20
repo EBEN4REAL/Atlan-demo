@@ -33,7 +33,6 @@
             const router = useRouter()
 
             const handleClick = (id) => {
-                console.log(id)
                 assetStore.setGlobalState(['persona', id])
                 router.push('/assets')
             }

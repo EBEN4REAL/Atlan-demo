@@ -639,6 +639,7 @@
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
+            const lastElement = inject('lastPreviewTabElement') as Ref<any>
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
@@ -1099,13 +1100,45 @@
                 }
             }
 
+            const hightLightCurrentActivePreviewTab = () => {
+                const x = setTimeout(() => {
+                    const elements = document.getElementsByClassName(
+                        'ant-tabs-tab-active'
+                    )
+                    const tabElements = document.getElementsByClassName(
+                        'insights_preview_tabs'
+                    )
+                    Array.from(tabElements).forEach((el) => {
+                        el.style.background = ''
+                    })
+                    if (elements.length) {
+                        if (lastElement.value) {
+                            lastElement.value.style.background = ''
+                        }
+                        lastElement.value = elements[elements.length - 1]
+                        lastElement.value.style.background =
+                            'rgba(254, 247, 228, 1)'
+                        const t = setTimeout(() => {
+                            if (lastElement.value.style.background !== '') {
+                                lastElement.value.style.background = 'white'
+                            }
+                            clearTimeout(t)
+                        }, 1500)
+                    }
+                    clearTimeout(x)
+                }, 50)
+            }
+
             const playQuery = (newQuery, asset: assetInterface) => {
-                if (
-                    insights_Store.previewTabs.findIndex(
-                        (el) => el.asset.guid === asset.guid
-                    ) > -1
-                ) {
+                const index = insights_Store.previewTabs.findIndex(
+                    (el) => el.asset.guid === asset.guid
+                )
+                if (index > -1) {
+                    if (insights_Store.activePreviewGuid === asset.guid) {
+                        hightLightCurrentActivePreviewTab()
+                    }
                     insights_Store.activePreviewGuid = asset.guid
+
                     return
                 }
                 activeResultPreviewTab.value = false
@@ -1290,6 +1323,19 @@
                     limitRows.value,
                     useSchemaExplorerContext
                 )
+                const index = insights_Store.previewTabs.findIndex(
+                    (el) => el.asset.guid === item?.entity?.guid
+                )
+                if (index > -1) {
+                    if (
+                        insights_Store.activePreviewGuid === item?.entity?.guid
+                    ) {
+                        hightLightCurrentActivePreviewTab()
+                    }
+                    insights_Store.activePreviewGuid = item?.entity?.guid
+
+                    return
+                }
 
                 activeResultPreviewTab.value = false
                 insights_Store.addPreviewTab(item?.entity)
@@ -1303,7 +1349,7 @@
                 )
 
                 previewRun({
-                    previewTabIndex: insights_Store.previewTabs.length - 1,
+                    previewTabIndex: 0,
                     tabsArray: inlineTabs,
                     queryText: selectedText,
                     attributeValue,

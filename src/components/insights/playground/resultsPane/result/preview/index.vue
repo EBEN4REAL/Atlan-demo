@@ -214,7 +214,7 @@
         setup(props, { emit }) {
             const { width, compactMode } = toRefs(props)
             const insights_Store = insightsStore()
-            const lastElement = ref()
+            const lastElement = inject('lastPreviewTabElement') as Ref<any>
             const { assetType, certificateStatus } = useAssetInfo()
             const {
                 recordTooltipPresence,
@@ -370,6 +370,7 @@
             watch(
                 isQueryRunning,
                 (newIsQueryRunning) => {
+                    debugger
                     if (!newIsQueryRunning) return
                     if (
                         insights_Store.insertionType === 'FILO' &&

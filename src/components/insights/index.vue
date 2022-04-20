@@ -170,6 +170,7 @@
             // insights Store initialization
             const store = insightsStore()
             const UrlDetectedAsset = ref()
+            const lastPreviewTabElement = ref()
             const refreshSchedulesWorkflowTab = ref()
             const activeKey = ref(0)
             const observer = ref()
@@ -352,6 +353,7 @@
             */
 
             const provideData: provideDataInterface = {
+                lastPreviewTabElement,
                 activeResultPreviewTab,
                 activeExplorerTabId: activeTabId,
                 showcustomToolBar,

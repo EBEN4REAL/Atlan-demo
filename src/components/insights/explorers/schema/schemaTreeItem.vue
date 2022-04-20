@@ -1323,41 +1323,8 @@
                     limitRows.value,
                     useSchemaExplorerContext
                 )
-                const index = insights_Store.previewTabs.findIndex(
-                    (el) => el.asset.guid === item?.entity?.guid
-                )
-                if (index > -1) {
-                    if (
-                        insights_Store.activePreviewGuid === item?.entity?.guid
-                    ) {
-                        hightLightCurrentActivePreviewTab()
-                    }
-                    insights_Store.activePreviewGuid = item?.entity?.guid
 
-                    return
-                }
-
-                activeResultPreviewTab.value = false
-                insights_Store.addPreviewTab(item?.entity)
-                insights_Store.activePreviewGuid = item?.entity?.guid
-                // schema explorer context
-                const attributeValue =
-                    activeInlineTab.value.explorer.schema.connectors
-                        ?.attributeValue
-                const tabIndex = inlineTabs.value.findIndex(
-                    (tab) => tab.key === activeInlineTabKey.value
-                )
-
-                previewRun({
-                    previewTabIndex: 0,
-                    tabsArray: inlineTabs,
-                    queryText: selectedText,
-                    attributeValue,
-                    tabIndex,
-                    getData: insights_Store.getData,
-                    limitRows,
-                    inlineTabs,
-                })
+                playQuery(selectedText, item?.entity)
             }
 
             const dropdownOptions = [

@@ -289,10 +289,10 @@
                 isTermDrawerVisible.value = false
             }
             const handleDrawerVisible = (term) => {
-                isTermDrawerVisible.value = true
                 if (term) {
                     drawerAssetGuid.value = term?.guid
-               }
+                    isTermDrawerVisible.value = true
+                }
             }
             const handleListUpdate = (asset) => {
                 drawerAsset.value = asset

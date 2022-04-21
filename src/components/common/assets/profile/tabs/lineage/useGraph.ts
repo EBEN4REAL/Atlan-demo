@@ -112,7 +112,7 @@ export default function useGraph(graph) {
         const displayText = title(entity)
         const source = getSource(entity)
         const schemaName = getSchema(entity)
-        const img = getNodeSourceImage['mysql'] // getNodeSourceImage[source]
+        const img = getNodeSourceImage[source]
         const isBase = guid === baseEntityGuid
         const isVpNode = typeName === 'vpNode'
         const isNodeWithPorts = [

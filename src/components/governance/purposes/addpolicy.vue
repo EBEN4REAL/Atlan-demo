@@ -534,6 +534,8 @@
                 allUser.value = 'all-users'
                 selectedOwnersData.value = objOwner
                 rules.value.users.show = false
+                policy.value.users = []
+                policy.value.groups = []
             }
             const initPolicy = () => {
                 rules.value = {

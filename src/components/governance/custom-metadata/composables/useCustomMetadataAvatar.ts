@@ -37,7 +37,7 @@ export default function useCustomMetadataAvatar(metadata, immediate = true) {
     } = useUploadImage()
 
     watch([imageUploadData, imageUploadError], ([newImage, newError]) => {
-        if (newImage) {
+        if (newImage?.id) {
             imageResponse.value = newImage
             isUploading.value = false
             popOverVisible.value = false
@@ -47,7 +47,7 @@ export default function useCustomMetadataAvatar(metadata, immediate = true) {
             message.success('Image uploaded.')
             fileList.value = []
         }
-        if (newError) {
+        else if (newError) {
             message.error(' Error updating image.')
             fileList.value = []
         }

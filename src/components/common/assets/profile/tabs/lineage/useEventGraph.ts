@@ -504,6 +504,7 @@ export default function useEventGraph({
             guid,
             direction: isLeafNode ? 'OUTPUT' : 'INPUT',
             hideProcess: true,
+            allowDeletedProcess: false,
             entityFilters: {
                 attributeName: '__state',
                 operator: 'eq',

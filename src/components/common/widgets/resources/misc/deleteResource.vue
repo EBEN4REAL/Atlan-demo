@@ -10,11 +10,14 @@
         :footer="null"
     >
         <div class="p-3">
-            <p class="mb-1 font-bold text-md">Delete Resource</p>
+            <p class="mb-1 font-bold text-md">
+                Delete {{ isSlackTab ? 'Slack thread' : 'Resource' }}
+            </p>
             <p class="text-md">
-                Are you sure you want to delete the resource "{{
-                    link.attributes.name
-                }}" of <span class="font-bold">{{ entityName }} </span>?
+                Are you sure you want to delete
+                {{ isSlackTab ? 'Slack thread' : 'resource' }}
+                "{{ link.attributes.name }}" of
+                <span class="font-bold">{{ entityName }} </span>?
             </p>
         </div>
 
@@ -47,9 +50,11 @@
         inject,
         Ref,
         watch,
+        computed,
     } from 'vue'
     import { message } from 'ant-design-vue'
     import { Link } from '~/types/resources.interface'
+    import { getDomain } from '~/utils/url'
 
     export default defineComponent({
         name: 'DeleteResourceModal',
@@ -68,13 +73,23 @@
             const remove: Function = inject('remove') as Function
             const removeStatus: Ref = inject('removeStatus') ?? ref('')
             const entityName = inject('entityName')
+            const tab = inject('tab') as Ref
+            const isTab = computed(() => !!tab?.value?.component)
+            const isSlackTab = computed(
+                () => tab.value.component === 'SlackResourcesTab'
+            )
+            const isSlackLink = computed(
+                () => getDomain(link.value.attributes.link) === 'slack.com'
+            )
 
             watch(removeStatus, (v) => {
                 // FIXME this watcher is running multiple times, ???!
                 if (v === 'success') {
                     if (link.value?.attributes?.name)
                         message.success({
-                            content: `Successfully removed resource "${link.value.attributes.name}"`,
+                            content: `Successfully removed ${
+                                isSlackTab.value ? 'Slack thread' : 'resource'
+                            } "${link.value.attributes.name}"`,
                             duration: 1.5,
                             key: 'update',
                         })
@@ -82,7 +97,9 @@
                 } else if (v === 'error') {
                     if (link.value?.attributes?.name)
                         message.error({
-                            content: `Failed to removed resource "${link.value.attributes.name}"`,
+                            content: `Failed to removed ${
+                                isSlackTab.value ? 'Slack thread' : 'resource'
+                            } "${link.value.attributes.name}"`,
                             duration: 1.5,
                             key: 'error',
                         })
@@ -90,6 +107,7 @@
             })
 
             return {
+                isSlackTab,
                 remove,
                 removeStatus,
                 visible,

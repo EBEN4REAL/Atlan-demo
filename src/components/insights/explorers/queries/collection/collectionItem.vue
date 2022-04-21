@@ -8,19 +8,17 @@
         style="height: 34px"
         @click="handleChange(item.guid)"
     >
-        <div class="flex items-center overflow-x-hidden">
-            <span
-                v-if="item?.attributes?.icon"
-                class="w-5 h-5 mr-2 -mt-1 text-lg"
-                >{{
+        <div class="flex items-center overflow-hidden">
+            <div class="w-5 h-5 mr-2 -mt-1">
+                <span v-if="item?.attributes?.icon" class="text-lg">{{
                     item?.attributes?.icon ? item?.attributes?.icon : '🗃'
-                }}</span
-            >
-            <AtlanIcon
-                v-else
-                icon="CollectionIconSmall"
-                class="w-5 h-4 my-auto mr-2"
-            ></AtlanIcon>
+                }}</span>
+                <AtlanIcon
+                    v-else
+                    icon="CollectionIconSmall"
+                    class="w-5 h-4 my-auto mr-2"
+                ></AtlanIcon>
+            </div>
 
             <div class="truncate" style="max-width: 210px">
                 <span class="mr-1 text-sm text-gray-700">{{
@@ -36,34 +34,19 @@
             </div>
         </div>
         <div class="absolute opacity-100 group right-3 y-center">
-            <a-dropdown :trigger="['click']" @click.stop="() => {}">
-                <div v-if="username === item?.createdBy" class="pl-5">
-                    <AtlanIcon
-                        icon="KebabMenu"
-                        class="w-4 h-4 my-auto"
-                    ></AtlanIcon>
-                </div>
-                <template #overlay>
-                    <a-menu>
-                        <!-- RENAME FOLDER PERMISSIONS -->
-                        <a-menu-item key="share" @click="toggleShareQueryModal"
-                            >Invite</a-menu-item
-                        >
-                        <a-menu-item
-                            key="edit"
-                            @click="toggleShowCollectionModal"
-                            >Edit collection</a-menu-item
-                        >
-                        <a-menu-item
-                            v-if="username === item?.createdBy"
-                            key="delete"
-                            class="text-red-600"
-                            @click="toggleDeleteCollectionModal"
-                            >Delete collection</a-menu-item
-                        >
-                    </a-menu>
+            <InsightsThreeDotMenu
+                @click.stop="() => {}"
+                :options="dropdownOptions"
+            >
+                <template #menuTrigger>
+                    <div v-if="username === item?.createdBy" class="pl-5">
+                        <AtlanIcon
+                            icon="KebabMenu"
+                            class="w-4 h-4 my-auto"
+                        ></AtlanIcon>
+                    </div>
                 </template>
-            </a-dropdown>
+            </InsightsThreeDotMenu>
         </div>
         <!-- <ShareCollectionModal
             v-model:showShareModal="showShareQueryModal"
@@ -117,9 +100,12 @@
     import { isCollectionPrivate } from '~/components/insights/explorers/queries/composables/useQueryCollection'
     import TreeDeletePopover from '~/components/insights/common/treeDeletePopover.vue'
     import { Insights } from '~/services/meta/insights/index'
+    import { MenuItem } from 'ant-design-vue'
+    import InsightsThreeDotMenu from '~/components/insights/common/dropdown/index.vue'
 
     export default defineComponent({
         components: {
+            InsightsThreeDotMenu,
             AtlanIcon,
             TreeDeletePopover,
             ShareCollectionModal: defineAsyncComponent(
@@ -223,7 +209,35 @@
                 })
             }
 
+            const dropdownOptions = [
+                {
+                    title: 'Invite',
+                    key: 'Invite',
+                    class: '',
+                    disabled: false,
+                    component: MenuItem,
+                    handleClick: toggleShareQueryModal,
+                },
+                {
+                    title: 'Edit collection',
+                    key: 'Edit collection',
+                    component: MenuItem,
+                    class: 'border-b border-gray-300',
+                    disabled: false,
+                    handleClick: toggleShowCollectionModal,
+                },
+                {
+                    title: 'Delete collection',
+                    key: 'Delete collection',
+                    component: MenuItem,
+                    class: 'text-red-600',
+                    disabled: false,
+                    handleClick: toggleDeleteCollectionModal,
+                },
+            ]
+
             return {
+                dropdownOptions,
                 item,
                 handleChange,
                 showShareQueryModal,

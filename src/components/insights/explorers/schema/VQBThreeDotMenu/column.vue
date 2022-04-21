@@ -1,10 +1,16 @@
 <template>
     <a-dropdown :trigger="['click']">
-        <AtlanIcon
-            icon="KebabMenu"
-            class="w-4 h-4 my-auto -mr-1.5 outline-none pl-2"
-            :class="item?.selected ? 'tree-light-color' : 'bg-gray-light-color'"
-        />
+        <div
+            class="flex items-center w-6 h-6 p-1 ml-1 rounded hover:bg-new-gray-300"
+        >
+            <AtlanIcon
+                icon="KebabMenuHorizontal"
+                class="w-4 h-4 my-auto outline-none"
+                :class="
+                    item?.selected ? 'tree-light-color' : 'bg-gray-light-color'
+                "
+            />
+        </div>
         <template #overlay>
             <a-menu>
                 <!-- <a-menu-item

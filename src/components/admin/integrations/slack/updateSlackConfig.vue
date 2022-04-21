@@ -179,6 +179,7 @@
             const removeChannel = (i) => {
                 const index = i
                 channels.value.splice(index, 1)
+                unsavedChanges.value = true
                 emit('change', channels.value)
             }
 

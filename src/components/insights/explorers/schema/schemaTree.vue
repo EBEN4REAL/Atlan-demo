@@ -322,7 +322,7 @@
             // background-color: red !important;
         }
         :global(.ant-tree span.ant-tree-switcher.ant-tree-switcher-noop) {
-            width: 3px !important;
+            // width: 3px !important;
             // background-color: red !important;
         }
     }

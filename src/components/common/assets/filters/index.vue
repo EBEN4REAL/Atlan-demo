@@ -239,6 +239,7 @@
     .facetfilter {
         :global(.ant-collapse-item) {
             :global(.ant-collapse-header) {
+                display: block !important;
                 padding-left: 1rem !important;
                 padding-right: 1rem !important;
             }

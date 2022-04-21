@@ -216,6 +216,10 @@
                     </div>
                     <div class="text-sm text-gray-700 break-all">
                         <AtlanIcon
+                            v-if="
+                                parentTable(selectedAsset)?.attributes
+                                    ?.certificateStatus
+                            "
                             :icon="
                                 getEntityStatusIcon(
                                     'Table',
@@ -223,6 +227,11 @@
                                         ?.certificateStatus
                                 )
                             "
+                            class="w-auto h-4 mb-0.5 mr-1"
+                        />
+                        <AtlanIcon
+                            v-else
+                            icon="TableGray"
                             class="w-auto h-4 mb-0.5 mr-1"
                         />
                         <router-link
@@ -254,6 +263,10 @@
                     </div>
                     <div class="text-sm text-gray-700">
                         <AtlanIcon
+                            v-if="
+                                parentView(selectedAsset)?.attributes
+                                    ?.certificateStatus
+                            "
                             :icon="
                                 getEntityStatusIcon(
                                     'View',
@@ -262,6 +275,11 @@
                                 )
                             "
                             class="w-auto h-4 mb-0.5 break-all mr-1"
+                        />
+                        <AtlanIcon
+                            v-else
+                            icon="ViewGray"
+                            class="w-auto h-4 mb-0.5 mr-1"
                         />
                         <router-link
                             class="text-gray-700 border-b border-gray-500 border-dashed cursor-pointer hover:text-primary"

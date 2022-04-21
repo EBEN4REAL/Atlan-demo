@@ -431,6 +431,11 @@
                                             class="flex items-center text-gray-500"
                                         >
                                             <AtlanIcon
+                                                v-if="
+                                                    parentTable(item)
+                                                        ?.attributes
+                                                        ?.certificateStatus
+                                                "
                                                 :icon="
                                                     getEntityStatusIcon(
                                                         'Table',
@@ -439,6 +444,11 @@
                                                             ?.certificateStatus
                                                     )
                                                 "
+                                                class="mr-1 mb-0.5"
+                                            />
+                                            <AtlanIcon
+                                                v-else
+                                                icon="TableGray"
                                                 class="mr-1 mb-0.5"
                                             />
                                             <div
@@ -463,6 +473,10 @@
                                             class="flex items-center text-gray-500"
                                         >
                                             <AtlanIcon
+                                                v-if="
+                                                    parentView(item)?.attributes
+                                                        ?.certificateStatus
+                                                "
                                                 :icon="
                                                     getEntityStatusIcon(
                                                         'View',
@@ -471,6 +485,11 @@
                                                             ?.certificateStatus
                                                     )
                                                 "
+                                                class="mr-1 mb-0.5"
+                                            />
+                                            <AtlanIcon
+                                                v-else
+                                                icon="ViewGray"
                                                 class="mr-1 mb-0.5"
                                             />
                                             <div

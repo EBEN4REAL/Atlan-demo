@@ -103,7 +103,7 @@
                     :excludeFields="['terms', 'categories']"
                 >
                     <div>
-                        <span class="text-primary mb-1">{{
+                        <span class=" mb-1">{{
                             request.payload?.relationshipAttributes?.anchor
                                 ?.attributes?.name
                         }}</span>

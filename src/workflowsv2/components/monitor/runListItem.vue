@@ -160,7 +160,11 @@
             })
 
             const dName = computed(() =>
-                displayName(pkg.value, name(workflow.value))
+                displayName(
+                    pkg.value,
+                    name(workflow.value),
+                    workflow.value?.spec
+                )
             )
 
             return {

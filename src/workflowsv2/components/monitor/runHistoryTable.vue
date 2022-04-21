@@ -129,7 +129,6 @@
                 offset,
                 queryText,
                 preference,
-                source: ref({ excludes: ['spec'] }),
             })
 
             const totalRuns = computed(
@@ -183,6 +182,7 @@
                         'metadata.annotations.package.argoproj.io/name',
                         'metadata.annotations.orchestration.atlan.com/schedule',
                         'metadata.annotations.orchestration.atlan.com/timezone',
+                        'spec.templates',
                     ],
                 }),
                 immediate: false,

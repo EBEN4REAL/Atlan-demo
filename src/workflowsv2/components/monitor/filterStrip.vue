@@ -9,7 +9,8 @@
                 :package-name="packageId"
                 :disabled="!packageId"
             />
-            <CreatorSelector v-model:value="creators" />
+
+            <TabbedDateRangePicker v-model:value="runDateRange" />
         </div>
         <div class="flex items-center px-5 py-4 gap-x-3">
             <!-- <PackageWorkflowSelector
@@ -19,9 +20,7 @@
             <!-- <StatusSelector v-model:value="status" /> -->
             <span>Run Status</span>
             <TabbedStatusSelector v-model:value="status" />
-
-            <span class="ml-1">Run Start Time</span>
-            <TabbedDateRangePicker v-model:value="runDateRange" />
+            <CreatorSelector v-model:value="creators" />
         </div>
     </div>
 </template>

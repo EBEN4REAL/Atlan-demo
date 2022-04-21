@@ -152,9 +152,6 @@
                     queryText,
                     limit,
                     offset,
-                    source: ref({
-                        excludes: ['spec'],
-                    }),
                     preference,
                 })
 

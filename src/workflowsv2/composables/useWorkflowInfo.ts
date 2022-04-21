@@ -342,7 +342,11 @@ export default function useWorkflowInfo() {
 
     const connectorStore = useConnectionStore()
 
-    const displayName = (item, workflowName) => {
+    const displayName = (
+        item: Record<string, any>,
+        workflowName: string,
+        spec?: Record<string, any>
+    ) => {
         let suffix = workflowName?.split(`${name(item)}-`).pop()
         if (packageType(item) === 'connector') {
             suffix = suffix.replaceAll('-', '/')
@@ -354,7 +358,16 @@ export default function useWorkflowInfo() {
             }
             return suffix
         }
-        return suffix ? suffix : workflowName
+        if (packageType(item) === 'schedule-query') {
+            return (
+                spec?.templates[0]?.dag?.tasks?.[0]?.arguments?.parameters?.find(
+                    (prm) => prm.name === 'report-name'
+                )?.value ||
+                suffix ||
+                workflowName
+            )
+        }
+        return suffix || workflowName
     }
 
     const connectorGuid = (item, workflowName) => {

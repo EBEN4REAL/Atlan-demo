@@ -78,6 +78,7 @@
                         'metadata.name',
                         'metadata.annotations.package.argoproj.io/name',
                         'metadata.annotations.orchestration.atlan.com/schedule',
+                        'spec.templates',
                     ],
                 }),
                 preference: ref({
@@ -89,7 +90,11 @@
             whenever(list, () => {
                 workflowList.value = list.value.map((workflow) => ({
                     id: workflow.metadata.name,
-                    label: displayName(pkg.value, workflow.metadata.name),
+                    label: displayName(
+                        pkg.value,
+                        workflow.metadata.name,
+                        workflow?.spec
+                    ),
                 }))
             })
 

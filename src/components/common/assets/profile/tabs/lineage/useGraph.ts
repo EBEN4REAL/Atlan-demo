@@ -23,7 +23,7 @@ import {
     array,
     boolean,
     date,
-    empty,
+    noIcon,
     expand,
     float1,
     geography,
@@ -47,11 +47,23 @@ interface EdgeStyle {
     arrowSize?: number
 }
 
-const columnDataTypeIcons = {
+const announcementTypeIcons = {
+    information: iconInformation,
+    issue: iconIssue,
+    warning: iconWarning,
+}
+
+const certificateStatusIcons = {
+    VERIFIED: iconVerified,
+    DRAFT: iconDraft,
+    DEPRECATED: iconDeprecated,
+}
+
+const portDataTypeIcons = {
     array,
     boolean,
     date,
-    empty,
+    noIcon,
     expand,
     float1,
     geography,
@@ -68,15 +80,24 @@ const columnDataTypeIcons = {
     percent,
 }
 
-const columnAnnouncementTypeIcons = {
-    information: iconInformation,
-    issue: iconIssue,
-    warning: iconWarning,
-}
-
 const columnKeyTypeIcons = {
     isPrimary: iconPrimary,
     isForeign: iconForeign,
+}
+
+const portsLabelMap = {
+    Table: 'columns',
+    View: 'columns',
+    TableauDatasource: 'fields',
+}
+
+const getPortsCTALabel = (typeName, portsCount, highlightPorts) => {
+    const label = portsLabelMap[typeName]
+    return portsCount || portsCount === 0
+        ? `${portsCount} ${label}`
+        : // : highlightPorts
+          // ? `${label}`
+          `view ${label}`
 }
 
 export default function useGraph(graph) {
@@ -86,56 +107,29 @@ export default function useGraph(graph) {
         const typeNameComputed = getNodeTypeText[typeName] || typeName
         const certificateStatus = attributes?.certificateStatus
         const announcementType = attributes?.announcementType
-        let status = ''
-        let flag = ''
+        const status = certificateStatusIcons[certificateStatus] || ''
+        const flag = announcementTypeIcons[announcementType] || ''
         const displayText = title(entity)
         const source = getSource(entity)
         const schemaName = getSchema(entity)
-        const img = getNodeSourceImage[source]
+        const img = getNodeSourceImage['mysql'] // getNodeSourceImage[source]
         const isBase = guid === baseEntityGuid
         const isVpNode = typeName === 'vpNode'
-        const isNodeWithColumns = [
+        const isNodeWithPorts = [
             'Table',
             'View',
             'MaterialisedView',
+            'TableauDatasource',
         ].includes(typeName)
-
-        switch (certificateStatus) {
-            case 'VERIFIED':
-                status = iconVerified
-                break
-            case 'DRAFT':
-                status = iconDraft
-                break
-            case 'DEPRECATED':
-                status = iconDeprecated
-                break
-            default:
-                status = ''
-        }
-
-        switch (announcementType) {
-            case 'information':
-                flag = iconInformation
-                break
-            case 'issue':
-                flag = iconIssue
-                break
-            case 'warning':
-                flag = iconWarning
-                break
-            default:
-                flag = ''
-        }
 
         const computedData = {
             id: guid,
-            columns: [],
-            columnsCount: null,
-            columnsListExpanded: false,
-            columnListLoading: false,
-            columnItemLoading: false,
-            columnShowMoreLoading: false,
+            ports: [],
+            portsCount: null,
+            portsListExpanded: false,
+            portsListLoading: false,
+            portItemLoading: false,
+            portShowMoreLoading: false,
             selectedPortId: '',
             isSelectedNode: false,
             isHighlightedNode: false,
@@ -169,39 +163,39 @@ export default function useGraph(graph) {
                         ? data?.hiddenCount || entity.attributes.hiddenCount
                         : 0
 
-                    const columnsList = () => {
+                    const portsList = () => {
                         let res = ''
-                        data?.columns.forEach((column) => {
-                            if (column.typeName !== 'showMorePort') {
+                        data?.ports.forEach((port) => {
+                            if (port.typeName !== 'showMorePort') {
                                 const {
                                     isPrimary,
                                     isForeign,
                                     announcementType: aType,
-                                } = column.attributes
+                                } = port.attributes
 
                                 const text =
-                                    column.displayText.charAt(0).toUpperCase() +
-                                    column.displayText.slice(1).toLowerCase()
+                                    port.displayText.charAt(0).toUpperCase() +
+                                    port.displayText.slice(1).toLowerCase()
 
                                 const dataType = dataTypeCategoryList.find(
                                     (d) =>
                                         d.type.includes(
-                                            column.attributes?.dataType?.toUpperCase()
+                                            port.attributes?.dataType?.toUpperCase()
                                         )
                                 )?.imageText
 
                                 const isSelectedPort =
-                                    data?.selectedPortId === column.guid
+                                    data?.selectedPortId === port.guid
                                 const isHighlightedPort = data?.highlightPorts
 
                                 res += `
-                                <div id="${column.guid}" iscolitem="${
-                                    column.guid
-                                }" class="node-column flex justify-between items-center relative 
+                                <div id="${port.guid}" iscolitem="${
+                                    port.guid
+                                }" class="node-port flex justify-between items-center relative 
                                 ${isSelectedPort ? 'selected-port' : ''}
                                 ${isHighlightedPort ? 'highlighted-port' : ''}">
                                     <div class="flex items-center truncate">
-                                        ${columnDataTypeIcons[dataType]}
+                                        ${portDataTypeIcons[dataType] || ''}
                                         <span title="${text}" class="truncate flex-grow-0 flex-shrink">${text}</span> 
                                     </div>
                                     <div class="flex items-center">
@@ -222,14 +216,13 @@ export default function useGraph(graph) {
                                         ${
                                             aType
                                                 ? `<span class="ml-2">
-                                                    ${columnAnnouncementTypeIcons[aType]}
+                                                    ${announcementTypeIcons[aType]}
                                                    </span>`
                                                 : ''
                                         }
                                     </div>
                                     ${
-                                        data?.columnItemLoading &&
-                                        isSelectedPort
+                                        data?.portItemLoading && isSelectedPort
                                             ? `<div class="absolute right-2 w-5 h-5">
                                             ${iconLoader}
                                         </div>`
@@ -238,10 +231,12 @@ export default function useGraph(graph) {
                                 </div>`
                             } else
                                 res += `
-                                <div iscolshowmore="true" class="node-column flex justify-center text-new-blue-400 items-center pl-2">
-                                    <span> Show more columns </span>
+                                <div iscolshowmore="true" class="node-port flex justify-center text-new-blue-400 items-center pl-2">
+                                    <span> Show more ${
+                                        portsLabelMap[typeName]
+                                    } </span>
                                     ${
-                                        data?.columnShowMoreLoading
+                                        data?.portShowMoreLoading
                                             ? `<div class="w-5 h-5 ml-2">
                                         ${iconLoader}
                                     </div>`
@@ -259,8 +254,8 @@ export default function useGraph(graph) {
                         id="node-${guid}"
                         class="lineage-node 
                         ${isVpNode ? 'isVpNode' : ''}   
-                        ${isNodeWithColumns ? 'isNodeWithColumns' : ''}
-                        ${data?.columnsListExpanded ? 'isExpandedNode' : ''}
+                        ${isNodeWithPorts ? 'isNodeWithPorts' : ''}
+                        ${data?.portsListExpanded ? 'isExpandedNode' : ''}
                         ${isBase ? 'isBase' : ''} 
                         ${data?.isSelectedNode ? 'isSelectedNode' : ''}
                         ${data?.isHighlightedNode ? 'isHighlightedNode' : ''}
@@ -297,32 +292,30 @@ export default function useGraph(graph) {
                                     </div>
                                     <div class="node-meta__text node-schema">
                                         ${
-                                            isNodeWithColumns && schemaName
+                                            isNodeWithPorts && schemaName
                                                 ? 'in'
                                                 : ''
                                         }
                                     </div>
                                     <div class="node-meta__text node-schema text-gray  truncate 
-                                        ${isNodeWithColumns ? '' : 'hidden'}">
+                                        ${isNodeWithPorts ? '' : 'hidden'}">
                                         ${schemaName || ''}
                                     </div>
                                 </div>  
                             </div>
-                            <div class="lineage-node__columns 
-                                    ${isNodeWithColumns ? '' : 'hidden'}">
-                                <div iscollist="true" class="lineage-node__columns-cta">
+                            <div class="lineage-node__ports 
+                                    ${isNodeWithPorts ? '' : 'hidden'}">
+                                <div iscollist="true" class="lineage-node__ports-cta">
                                     <div class="flex items-center">
                                         <span class="mr-2">
-                                            ${
-                                                data?.columnsCount ||
-                                                data?.columnsCount === 0
-                                                    ? `${data?.columnsCount} columns`
-                                                    : data?.highlightPorts ? 'columns' : 'view columns'
-                                            }
+                                            ${getPortsCTALabel(
+                                                typeName, data?.portsCount,
+                                                data?.highlightPorts
+                                            )}
                                         </span>
                                         <span>
                                             ${
-                                                data?.columnsListExpanded
+                                                data?.portsListExpanded
                                                     ? iconCaretUp
                                                     : iconCaretDown
                                             } 
@@ -330,15 +323,15 @@ export default function useGraph(graph) {
                                     </div>
                                     <div class="w-5 h-5">
                                         ${
-                                            data?.columnListLoading
+                                            data?.portsListLoading
                                                 ? iconLoader
                                                 : ''
                                         }
                                     </div>
                                 </div>
-                                <div class="lineage-node__columns-list 
-                                    ${data?.columns.length ? '' : 'hidden'}">
-                                        ${columnsList()}
+                                <div class="lineage-node__ports-list 
+                                    ${data?.ports.length ? '' : 'hidden'}">
+                                        ${portsList()}
                                 </div>
                             </div>
                             ${
@@ -439,7 +432,7 @@ export default function useGraph(graph) {
                             },
                         },
                     },
-                    columnList: {
+                    portsList: {
                         markup: [
                             {
                                 tagName: 'rect',
@@ -469,7 +462,7 @@ export default function useGraph(graph) {
             },
         }
 
-        if (!isNodeWithColumns) nodeData.ports.items = [nodeData.ports.items[0]]
+        if (!isNodeWithPorts) nodeData.ports.items = [nodeData.ports.items[0]]
 
         return { nodeData }
     }

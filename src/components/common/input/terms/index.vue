@@ -95,7 +95,7 @@
             </template>
         </div>
         <AssetDrawer
-            :data="drawerAsset"
+            :guid="drawerAssetGuid"
             :show-drawer="isTermDrawerVisible"
             @closeDrawer="handleCloseDrawer"
             @update="handleListUpdate"
@@ -182,6 +182,7 @@
             const isEdit = ref(false)
             const isTermDrawerVisible = ref(false)
             const drawerAsset = ref()
+            const drawerAssetGuid = ref()
             const list = computed(() =>
                 localValue.value.filter(
                     (term) => term.attributes?.__state === 'ACTIVE'
@@ -280,7 +281,7 @@
                 getFetchedTerm,
                 handleTermPopoverVisibility,
                 termLoading,
-                isReady,
+                isReady: isFetchedTermReady,
                 termError,
             } = useTermPopover()
 
@@ -288,10 +289,9 @@
                 isTermDrawerVisible.value = false
             }
             const handleDrawerVisible = (term) => {
-                isTermDrawerVisible.value = true
                 if (term) {
-                    handleTermPopoverVisibility(true, term)
-                    drawerAsset.value = getFetchedTerm(term.guid)
+                    drawerAssetGuid.value = term?.guid
+                    isTermDrawerVisible.value = true
                 }
             }
             const handleListUpdate = (asset) => {
@@ -362,7 +362,7 @@
 
             return {
                 getFetchedTerm,
-                isReady,
+                isFetchedTermReady,
                 termError,
                 termLoading,
                 handleTermPopoverVisibility,
@@ -388,6 +388,7 @@
                 termMouseEnterDelay,
                 termLeftPill,
                 termEnteredPill,
+                drawerAssetGuid,
             }
         },
     })

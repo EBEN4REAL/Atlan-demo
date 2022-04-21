@@ -3,6 +3,7 @@
         <!-- !typeName && data.length
                     ? formattedClassifications
                     : localClassification -->
+        <span class="pt-1 pr-2 text-gray-500">Link Classification</span>
         <Popover
             v-if="
                 localClassification?.length &&
@@ -20,7 +21,6 @@
             <template #popover="{ item }">
                 <ClassificationInfoCard :classification="item" class="w-32" />
             </template> -->
-
             <ClassificationPill
                 :name="localClassification[0].name"
                 :display-name="localClassification[0]?.displayName"
@@ -38,7 +38,6 @@
                 Classification deleted
             </div>
         </template>
-        <span class="pt-1 pr-2 text-gray-500">Link Classification</span>
     </div>
 </template>
 

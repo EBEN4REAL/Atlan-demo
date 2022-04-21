@@ -428,6 +428,11 @@
                                 {{ rules.assets.text }}
                             </div>
                         </div>
+                        <SameAssetPolicy
+                            :id="policy.id"
+                            :assets="policy.assets"
+                            :type="type"
+                        />
                     </div>
                     <div
                         v-if="
@@ -840,6 +845,7 @@
         computed,
         onMounted,
     } from 'vue'
+    import { useTimeAgo } from '@vueuse/core'
     import AtlanBtn from '@/UI/button.vue'
     import Connector from './policies/connector.vue'
     import { selectedPersonaDirty } from './composables/useEditPersona'
@@ -854,8 +860,9 @@
     import useGlossaryStore from '~/store/glossary'
     import useGlossaryData from '~/composables/glossary2/useGlossaryData'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import { useTimeAgo } from '@vueuse/core'
     import Avatar from '~/components/common/avatar/index.vue'
+    import SameAssetPolicy from './sameAssetPolicy.vue'
+
     export default defineComponent({
         name: 'AddPolicy',
         components: {
@@ -865,6 +872,7 @@
             ManagePermission,
             DataMaskingSelector,
             Avatar,
+            SameAssetPolicy,
         },
         props: {
             type: {
@@ -1322,6 +1330,9 @@
 </script>
 
 <style lang="less">
+    .wrapper-icon-warning {
+        background: #e5ebfb;
+    }
     .icon-annoucemnet {
         circle {
             fill: #3e4359;

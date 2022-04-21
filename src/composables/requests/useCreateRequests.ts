@@ -6,12 +6,12 @@ import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
 interface requestPayload {
     requestType: String
-    approvalType: String
-    entityType: String
-    id: String
-    sourceType: String
-    destinationQualifiedName: String
-    destinationGuid: String
+    approvalType?: String
+    entityType?: String
+    id?: String
+    sourceType?: String
+    destinationQualifiedName?: String
+    destinationGuid?: String
     sourceGuid?: String
     sourceQualifiedName?: String
     destinationAttribute?: String
@@ -21,9 +21,9 @@ interface requestPayload {
     destinationValueType?: String
 }
 interface params {
-    assetGuid: String
-    assetQf: String
-    assetType: String
+    assetGuid?: String
+    assetQf?: String
+    assetType?: String
     requestType?: String
     terms?: Array<any>
     certificate?: String
@@ -32,6 +32,7 @@ interface params {
     name?: String
     ownerUsers?: Array<any>
     ownerGroups?: Array<any>
+    glossaryPayload?: any
 }
 interface eventPayload {
     request_type:
@@ -59,6 +60,7 @@ export function useCreateRequests({
     name = '',
     ownerUsers = [],
     ownerGroups = [],
+    glossaryPayload,
 }: params) {
     const requests = ref<requestPayload[]>([])
     const eventPayload = ref<eventPayload>({
@@ -193,6 +195,39 @@ export function useCreateRequests({
                 })
             }
         }
+        if (requestType === 'create_glossary') {
+            requests.value.push({
+                requestType: 'create_glossary',
+                approvalType: 'single',
+                entityType: 'Glossary',
+                sourceType: 'static',
+                id: glossaryPayload?.name,
+                payload: glossaryPayload,
+            })
+        }
+        if (requestType === 'create_term') {
+            requests.value.push({
+                requestType: 'create_term',
+                approvalType: 'single',
+                entityType: 'AtlasGlossaryTerm',
+                sourceType: 'static',
+                sourceGuid: glossaryPayload?.relationshipAttributes?.anchor?.guid,
+                id: glossaryPayload?.attributes?.name,
+                payload: glossaryPayload,
+            })
+        }
+        if (requestType === 'create_category') {
+            requests.value.push({
+                requestType: 'create_category',
+                approvalType: 'single',
+                entityType: 'AtlasGlossaryCategory',
+                sourceGuid: glossaryPayload?.relationshipAttributes?.anchor?.guid,
+                sourceType: 'static',
+                id: glossaryPayload?.attributes?.name,
+                payload: glossaryPayload,
+            })
+        }
+
         console.log(requests.value)
     }
     constructPayload()

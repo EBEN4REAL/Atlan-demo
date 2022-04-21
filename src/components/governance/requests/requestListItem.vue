@@ -26,7 +26,7 @@
                 class="cursor-pointer flex items-center"
                 :class="showRequestStatus ? 'w-full' : ''"
                 @mouseenter="$emit('mouseEnterAsset')"
-                @click="handleShowAssetSidebar(item.guid)"
+                @click="handleShowAssetSidebar(item)"
             >
                 <div
                     v-if="
@@ -34,7 +34,12 @@
                             'AtlasGlossaryTerm',
                             'AtlasGlossaryCategory',
                             'AtlasGlossary',
-                        ].includes(request?.entityType)
+                        ].includes(request?.entityType) &&
+                        ![
+                            'create_term',
+                            'create_category',
+                            'create_glossary',
+                        ].includes(request?.requestType)
                     "
                 >
                     <div class="flex items-center">
@@ -83,6 +88,31 @@
                     :destination-entity="request.destinationEntity"
                     :size="size"
                 />
+                <GlossaryPopover
+                    v-else-if="
+                        request?.requestType === 'create_term' ||
+                        (request?.requestType === 'create_category' &&
+                            request?.payload)
+                    "
+                    :term="{
+                        guid: request?.payload?.relationshipAttributes?.anchor
+                            ?.guid,
+                    }"
+                    placement="right"
+                    :mouse-enter-delay="1"
+                    :excludeFields="['terms', 'categories']"
+                >
+                    <div>
+                        <span class="text-primary mb-1">{{
+                            request.payload?.relationshipAttributes?.anchor
+                                ?.attributes?.name
+                        }}</span>
+                        <div class="flex items-center text-gray-500">
+                            <atlan-icon icon="Glossary" class="mr-1 w-4" />
+                            <span>Glossary</span>
+                        </div>
+                    </div>
+                </GlossaryPopover>
                 <span v-else class="text-sm overflow-ellipsis">
                     {{
                         primaryText[request.requestType]
@@ -113,6 +143,15 @@
                     request?.requestType === 'create_term' && request?.payload
                 "
                 :data="request.payload"
+                requestType="create_term"
+            />
+            <CategoryPiece
+                v-else-if="
+                    request?.requestType === 'create_category' &&
+                    request?.payload
+                "
+                :data="request.payload"
+                requestType="create_category"
             />
 
             <TermPiece
@@ -353,7 +392,7 @@
                     <span class="text-gray-500">
                         <DatePiece
                             :no-popover="true"
-                            class=" text-gray-500"
+                            class="text-gray-500"
                             :date="request?.createdAt"
                         />
                     </span>
@@ -367,9 +406,7 @@
                     v-else
                 >
                     {{
-                        request.status === 'approved'
-                            ? 'Approved'
-                            : 'Rejected'
+                        request.status === 'approved' ? 'Approved' : 'Rejected'
                     }}
                 </div>
             </div>
@@ -398,6 +435,7 @@
     import { message } from 'ant-design-vue'
     // import { useMagicKeys, whenever } from '@vueuse/core'
     import { useTimeAgo } from '@vueuse/core'
+    import GlossaryPopover from '@common/popover/glossary/index.vue'
     import atlanLogo from '~/assets/images/atlan-logo.png'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
 
@@ -410,6 +448,7 @@
     import UserPiece from './pieces/user.vue'
     import DatePiece from './pieces/date.vue'
     import TermPiece from './pieces/term.vue'
+    import CategoryPiece from './pieces/category.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import IconStatus from './iconStatus.vue'
     import Popover from '@/common/popover/assets/index.vue'
@@ -444,6 +483,8 @@
             IconStatus,
             Popover,
             AssetDrawer,
+            CategoryPiece,
+            GlossaryPopover,
             AdminList: defineAsyncComponent(
                 () => import('@/common/info/adminList.vue')
             ),
@@ -503,8 +544,17 @@
                 assetGuid.value = ''
                 showAssetSidebar.value = false
             }
-            const handleShowAssetSidebar = (guid) => {
-                assetGuid.value = guid
+            const handleShowAssetSidebar = (asset) => {
+                if (
+                    [
+                        'create_term',
+                        'create_category',
+                        'create_glossary',
+                    ].includes(request.value?.requestType)
+                )
+                    assetGuid.value =
+                        request.value?.payload?.relationshipAttributes?.anchor?.guid
+                else assetGuid.value = asset?.guid
                 showAssetSidebar.value = true
             }
 

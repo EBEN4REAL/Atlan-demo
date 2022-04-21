@@ -55,10 +55,22 @@ export const requestTypeEventMap = {
         requestType: 'ownerGroups',
         action: 'add',
     },
-    name: {
-        requestType: 'name',
-        action: 'edit',
+    create_term:{
+        requestType:'create_term',
+        action:'create'
     },
+    create_glossary:{
+        requestType:'create_glossary',
+        action:'create'
+    },
+    create_category:{
+        requestType:'create_category',
+        action:'create'
+    },
+    name:{
+        requestType:'name',
+        action:'edit'
+    }
 }
 
 export const attributeCopyMapping: Record<string, string> = {

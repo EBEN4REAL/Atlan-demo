@@ -1,9 +1,9 @@
 <template>
     <div class="mb-3">
         <div
-            class="relative p-3 mx-1 border border-gray-200 rounded-lg cursor-pointer hover:border-primary card-container"
+            class="relative mx-1 border border-gray-200 rounded-lg cursor-pointer hover:border-primary card-container"
         >
-            <div class="flex items-center">
+            <div class="flex items-center bg-gray-100 px-3 py-3">
                 <div
                     v-if="item.requestType === 'term_link' && isGlossary"
                     class="text-sm font-bold text-gray-500"
@@ -157,7 +157,7 @@
                 </div> -->
             </div>
 
-            <div v-else class="flex items-center justify-between mt-2">
+            <div v-else class="flex items-center justify-between p-3">
                 <div
                     v-if="item.requestType === 'attach_classification'"
                     class="w-fit"
@@ -276,12 +276,32 @@
                         </Pill>
                     </TermPopover>
                 </div>
+                <TermPiece
+                    v-else-if="
+                        item?.requestType === 'create_term' && item?.payload
+                    "
+                    :data="item.payload"
+                    :show-label="false"
+                    requestType="create_term"
+                />
+                <CategoryPiece
+                    v-else-if="
+                        item?.requestType === 'create_category' && item?.payload
+                    "
+                    :data="item.payload"
+                    :show-label="false"
+                    requestType="create_category"
+                />
+
                 <div v-else class="text-sm text-gray-700 truncate">
                     {{ item.destinationValue }}
                 </div>
             </div>
 
-            <div class="flex mt-3">
+            <div
+                class="flex px-3 py-2 mt-2 border-t border-gray-200 text-gray-500"
+            >
+                <span class="mr-2">by</span>
                 <AtlanIcon
                     v-if="item.createdBy?.startsWith('service-account-apikey-')"
                     class="h-3 mt-1"
@@ -296,7 +316,7 @@
                     :avatar-shape="'circle'"
                     :image-url="item.createdBy ? '' : atlanLogo"
                 />
-                <span class="ml-2 text-gray-700">{{
+                <span class="ml-2 text-gray-500">{{
                     item.createdBy?.startsWith('service-account-apikey-')
                         ? 'API key'
                         : item.createdBy
@@ -372,6 +392,8 @@
     import atlanLogo from '~/assets/images/atlan-logo.png'
     import Pill from '~/components/UI/pill/pill.vue'
     import ClassificationPill from '@/common/pills/classification.vue'
+    import TermPiece from '@/governance/requests/pieces/term.vue'
+    import CategoryPiece from '@/governance/requests/pieces/category.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import {
@@ -410,6 +432,8 @@
             RequestDropdown,
             UserPill,
             CertificatePill,
+            TermPiece,
+            CategoryPiece,
             // PopOverUser,
             // PopOverGroup,
         },

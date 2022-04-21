@@ -5,7 +5,10 @@
             class="flex items-center px-3 py-3 bg-primary-light"
         >
             <div class="px-1 rounded-full wrapper-icon-warning">
-                <AtlanIcon icon="WarningIcon" />
+                <AtlanIcon
+                    icon="WarningIcon"
+                    class="icon-warning-same-assets"
+                />
             </div>
             <div class="flex-1 ml-2 text-sm text-gray-700">
                 There are {{ listSameAssets.count }} other policies for same
@@ -19,12 +22,14 @@
                 overlay-class-name="popover-same-assets"
             >
                 <template #content>
-                    <div class="py-1 content-popover">
+                    <div
+                        class="py-1 content-popover"
+                        @mouseleave="handleMouseLeave"
+                    >
                         <div
-                            class="flex items-center px-4 py-3 border-gray-200 cursor-pointer w-80 hover:bg-gray-100"
                             v-for="(persona, idx) in listSameAssets.result"
                             :key="persona.id"
-                            @click="handleClickPersona(persona)"
+                            class="flex items-center px-4 py-3 border-gray-200 cursor-pointer w-80 hover:bg-gray-100"
                             :class="`${
                                 persona.id === personaSelected.id &&
                                 'bg-gray-100'
@@ -32,6 +37,8 @@
                                 idx !== listSameAssets.result.length - 1 &&
                                 'border-b'
                             }`"
+                            @click="handleClickPersona(persona)"
+                            @mouseenter="handleClickPersona(persona)"
                         >
                             <div class="flex-1 mr-2">
                                 <div
@@ -40,37 +47,47 @@
                                     {{ persona.name }}
                                 </div>
                                 <div class="flex items-center mt-2">
-                                    <div
-                                        class="flex items-center text-sm text-gray-500"
-                                    >
+                                    <div class="flex items-center">
                                         <AtlanIcon icon="User" class="mr-1" />
-                                        {{ persona.users?.length || '-' }}
+                                        <div class="mt-1 text-sm text-gray-500">
+                                            {{ persona.users?.length || '-' }}
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center ml-4">
+                                        <AtlanIcon
+                                            icon="Group"
+                                            class="mr-1 scale-110"
+                                        />
+                                        <div class="mt-1 text-sm text-gray-500">
+                                            {{ persona.groups?.length || '-' }}
+                                        </div>
                                     </div>
                                     <div
-                                        class="flex items-center ml-4 text-sm text-gray-500"
-                                    >
-                                        <AtlanIcon icon="Group" class="mr-1" />
-                                        {{ persona.groups?.length || '-' }}
-                                    </div>
-                                    <div
-                                        class="flex items-center ml-4 text-sm text-gray-500"
                                         v-if="persona.dataPolicies?.length"
+                                        class="flex items-center ml-4"
                                     >
                                         <AtlanIcon
                                             icon="QueryGrey"
                                             class="mr-1"
                                         />
+                                        <div
+                                            class="mt-1 text-sm text-gray-500"
+                                        ></div>
                                         {{ persona.dataPolicies.length }}
                                     </div>
                                     <div
-                                        class="flex items-center ml-4 text-sm text-gray-500"
                                         v-if="persona.metadataPolicies?.length"
+                                        class="flex items-center ml-4"
                                     >
                                         <AtlanIcon
                                             icon="Policies"
                                             class="mr-1 icon-gray"
                                         />
-                                        {{ persona.metadataPolicies.length }}
+                                        <div class="mt-1 text-sm text-gray-500">
+                                            {{
+                                                persona.metadataPolicies.length
+                                            }}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -83,14 +100,18 @@
                 </div>
             </a-popover>
             <a-popover
+                v-model:visible="visible"
                 overlay-class-name="popover-same-assets"
-                :align="{ offset: [-320, 137] }"
+                :align="{ offset: [-323, 138] }"
                 trigger="click"
                 placement="left"
-                v-model:visible="visible"
             >
                 <template #content>
-                    <div class="w-80">
+                    <div
+                        class="w-80"
+                        @mouseleave="handleMouseLeave"
+                        @mouseenter="handleEnterMouse"
+                    >
                         <div class="p-4">
                             <div
                                 class="text-base font-bold text-gray-700 truncate"
@@ -117,11 +138,13 @@
                             </div>
                         </div>
                         <div class="p-3 bg-gray-100 content-popover-policy">
-                            <div class="border border-gray-300 rounded">
+                            <div
+                                class="bg-white border border-gray-300 rounded"
+                            >
                                 <div
-                                    class="py-3.5 px-3 flex items-center"
                                     v-for="meta in personaSelected.metadataPolicies"
                                     :key="meta.id"
+                                    class="py-3.5 px-3 flex items-center"
                                 >
                                     <div
                                         class="flex items-center justify-center w-8 h-8 rounded-full bg-primary-light"
@@ -135,34 +158,105 @@
                                             {{ meta.name }}
                                         </div>
                                         <div class="flex items-center mt-1">
-                                            <div class="text-xs text-gray-500">
-                                                <AtlanIcon
-                                                    icon="AssetsInactiveLight"
-                                                    class="icon-gray-stroke"
-                                                />
-                                                {{
-                                                    isAllAssets(meta.assets[0])
-                                                        ? 'All'
-                                                        : meta.assets.length
-                                                }}
-                                            </div>
-                                            <div
-                                                v-if="meta.actions"
-                                                class="flex items-center ml-2 text-xs text-gray-500"
-                                            >
-                                                <div class="mr-1 text-gray-300">
-                                                    •
+                                            <a-tooltip placement="top">
+                                                <template #title>
+                                                    <div
+                                                        v-if="
+                                                            meta.assets
+                                                                .length === 1 &&
+                                                            isAllAssets(
+                                                                meta.assets[0]
+                                                            )
+                                                        "
+                                                    >
+                                                        All Assets
+                                                    </div>
+                                                    <div v-else>
+                                                        {{ meta.assets.length }}
+                                                        {{
+                                                            meta.assets.length >
+                                                            1
+                                                                ? 'assets'
+                                                                : 'asset'
+                                                        }}
+                                                    </div>
+                                                </template>
+                                                <div class="flex items-center">
+                                                    <AtlanIcon
+                                                        icon="AssetsInactiveLight"
+                                                        class="mr-1 icon-gray-stroke"
+                                                    />
+                                                    <div
+                                                        class="mt-0.5 text-xs text-gray-500"
+                                                    >
+                                                        {{
+                                                            isAllAssets(
+                                                                meta.assets[0]
+                                                            )
+                                                                ? 'All'
+                                                                : meta.assets
+                                                                      .length
+                                                        }}
+                                                    </div>
                                                 </div>
-                                                <AtlanIcon
-                                                    icon="ShieldBlank"
-                                                    class="mr-1 icon-gray"
-                                                />
-                                                {{
-                                                    meta.actions.length > 9
-                                                        ? 'All'
-                                                        : meta.actions.length
-                                                }}
-                                            </div>
+                                            </a-tooltip>
+                                            <a-tooltip
+                                                v-if="meta.actions"
+                                                placement="top"
+                                            >
+                                                <template #title>
+                                                    <div
+                                                        v-if="
+                                                            meta.actions
+                                                                .length < 9
+                                                        "
+                                                    >
+                                                        {{
+                                                            meta.actions.length
+                                                        }}
+                                                        {{
+                                                            meta.actions
+                                                                .length > 1
+                                                                ? 'permissions'
+                                                                : 'permission'
+                                                        }}
+                                                    </div>
+                                                    <div v-else>
+                                                        All permissions
+                                                    </div>
+                                                </template>
+                                                <div
+                                                    v-if="meta.actions"
+                                                    class="flex items-center ml-2 text-xs text-gray-500"
+                                                >
+                                                    <div
+                                                        class="mr-1 text-gray-300"
+                                                    >
+                                                        •
+                                                    </div>
+                                                    <div
+                                                        class="flex items-center"
+                                                    >
+                                                        <AtlanIcon
+                                                            icon="ShieldBlank"
+                                                            class="mr-1 icon-gray"
+                                                        />
+                                                        <div
+                                                            class="text-xs text-gray-500 mt-0.5"
+                                                        >
+                                                            {{
+                                                                meta.actions
+                                                                    .length > 9
+                                                                    ? 'All'
+                                                                    : meta
+                                                                          .actions
+                                                                          .length
+                                                            }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </a-tooltip>
+
                                             <div
                                                 v-if="!meta.allow"
                                                 class="flex items-center ml-2 text-xs text-red-500"
@@ -176,9 +270,9 @@
                                     </div>
                                 </div>
                                 <div
-                                    class="py-3.5 px-3 flex items-center"
                                     v-for="data in personaSelected.dataPolicies"
                                     :key="data.id"
+                                    class="py-3.5 px-3 flex items-center"
                                 >
                                     <div
                                         class="flex items-center justify-center w-8 h-8 rounded-full bg-primary-light"
@@ -192,25 +286,79 @@
                                             {{ data.name }}
                                         </div>
                                         <div class="flex items-center mt-1">
-                                            <div class="text-xs text-gray-500">
-                                                <AtlanIcon
-                                                    icon="AssetsInactiveLight"
-                                                    class="mt-1"
-                                                />
-                                                {{
-                                                    isAllAssets(data.assets[0])
-                                                        ? 'All'
-                                                        : data.assets.length
-                                                }}
-                                            </div>
+                                            <a-tooltip placement="top">
+                                                <template #title>
+                                                    <div
+                                                        v-if="
+                                                            data.assets
+                                                                .length === 1 &&
+                                                            isAllAssets(
+                                                                data.assets[0]
+                                                            )
+                                                        "
+                                                    >
+                                                        All Assets
+                                                    </div>
+                                                    <div v-else>
+                                                        {{ data.assets.length }}
+                                                        {{
+                                                            data.assets.length >
+                                                            1
+                                                                ? 'assets'
+                                                                : 'asset'
+                                                        }}
+                                                    </div>
+                                                </template>
+                                                <div class="flex items-center">
+                                                    <AtlanIcon
+                                                        icon="AssetsInactiveLight"
+                                                        class="mr-1"
+                                                    />
+                                                    <div
+                                                        class="text-xs text-gray-500 mt-0.5"
+                                                    >
+                                                        {{
+                                                            isAllAssets(
+                                                                data.assets[0]
+                                                            )
+                                                                ? 'All'
+                                                                : data.assets
+                                                                      .length
+                                                        }}
+                                                    </div>
+                                                </div>
+                                            </a-tooltip>
+
                                             <div
                                                 class="flex items-center ml-2 text-xs text-gray-500"
                                             >
                                                 <div class="mr-1 text-gray-300">
                                                     •
                                                 </div>
-                                                <AtlanIcon icon="Number" />
-                                                {{ maskLabel(data.type) }}
+                                                <a-tooltip placement="top">
+                                                    <template #title>
+                                                        {{
+                                                            maskLabel(data.type)
+                                                        }}
+                                                    </template>
+                                                    <div
+                                                        class="flex items-center"
+                                                    >
+                                                        <AtlanIcon
+                                                            icon="Number"
+                                                            class="mr-1"
+                                                        />
+                                                        <div
+                                                            class="mt-0.5 text-xs text-gray-500"
+                                                        >
+                                                            {{
+                                                                maskLabel(
+                                                                    data.type
+                                                                )
+                                                            }}
+                                                        </div>
+                                                    </div>
+                                                </a-tooltip>
                                             </div>
                                             <div
                                                 v-if="!data.allow"
@@ -235,10 +383,11 @@
 
 <script lang="ts">
     import { defineComponent, toRefs, computed, ref, watch } from 'vue'
-    import { usePersonaStore } from '~/store/persona'
     import { useTimeAgo } from '@vueuse/core'
+    import { usePersonaStore } from '~/store/persona'
     import Avatar from '~/components/common/avatar/index.vue'
     import { maskPersona } from '~/constant/policy'
+
     export default defineComponent({
         name: 'SameAssetPolicy',
         components: { Avatar },
@@ -259,19 +408,20 @@
         emits: ['updateStatus'],
         setup(props) {
             const { assets, id, type } = toRefs(props)
+            const refPopover = ref<any>(null)
             const visible = ref(false)
             const personaStore = usePersonaStore()
             const personaSelected = ref({})
             const checkAsset = (policyAsset: any) => {
                 let result = false
-                assets.value.forEach((el: any) => {
-                    policyAsset.forEach((elc) => {
-                        const elcSplitted = elc.split('/')
-                        const elSplitted = el
+                assets.value.forEach((assetValue: any) => {
+                    policyAsset.forEach((policy) => {
+                        const splittedPolicy = policy.split('/')
+                        const formattedpolicy = assetValue
                             .split('/')
-                            .slice(0, elcSplitted.length)
+                            .slice(0, splittedPolicy.length)
                             .join('/')
-                        if (elc === elSplitted) {
+                        if (policy === formattedpolicy) {
                             result = true
                         }
                     })
@@ -320,6 +470,7 @@
                 }
             })
             const handleClickPersona = (prop) => {
+                clearTimeout(refPopover.value)
                 personaSelected.value = prop
                 visible.value = true
             }
@@ -334,7 +485,14 @@
             }
             const maskLabel = (type) =>
                 maskPersona.find((el) => el.value === type)?.label
-
+            const handleMouseLeave = () => {
+                refPopover.value = setTimeout(() => {
+                    visible.value = false
+                }, 300)
+            }
+            const handleEnterMouse = () => {
+                clearTimeout(refPopover.value)
+            }
             return {
                 listSameAssets,
                 visible,
@@ -344,11 +502,19 @@
                 imageUrl,
                 isAllAssets,
                 maskLabel,
+                handleMouseLeave,
+                handleEnterMouse,
             }
         },
     })
 </script>
 <style lang="less">
+    .icon-warning-same-assets {
+        path {
+            fill: white;
+            stroke: #5277d7;
+        }
+    }
     .popover-same-assets {
         .content-popover-policy {
             border-bottom-left-radius: 8px;

@@ -786,11 +786,8 @@
 </script>
 <style lang="less" module>
     html {
-        // box-sizing: border-box ;
         --duration: 0.1s;
-        --cubic: cubic-bezier(0.4, 0, 0.2, 1);
-        // --color-1: #d5dadd ;
-        // --color-2: #51d5c2 ;
+        --durationAnimation: 0.2s;
     }
 
     .splitpane_insights {
@@ -976,6 +973,9 @@
                 bottom: 6px;
                 z-index: -1;
                 box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.16);
+                transition: width var(--durationAnimation),
+                    left var(--durationAnimation),
+                    right var(--durationAnimation);
             }
 
             :global(.ant-tabs-tab) {
@@ -1050,7 +1050,7 @@
     }
 
     .nav-text {
-        animation: fadeIn ease 0.4s;
+        animation: fadeIn ease var(--durationAnimation);
         // -webkit-animation: fadeIn ease 10s;
         // -moz-animation: fadeIn ease 10s;
         // -o-animation: fadeIn ease 10s;

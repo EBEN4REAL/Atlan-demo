@@ -14,7 +14,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
         parentQualifiedName: '',
         isSQLSnippet: false,
         savedQueryParentFolderTitle: undefined,
-        classifications:[],
+        classifications: [],
         explorer: {
             schema: {
                 connectors: {
@@ -28,7 +28,10 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
             },
             queries: {
                 connectors: {
-                    connector: undefined,
+                    connector: {
+                        attributeName: 'connectionQualifiedName',
+                        attributeValue: '',
+                    },
                 },
                 collection: {
                     guid: '',

@@ -1,7 +1,7 @@
 <template>
     <div data-test-id="owners-popover">
         <a-popover
-            v-if="showPopover && editPermission"
+            v-if="showPopover"
             v-model:visible="isEdit"
             :placement="placementPos"
             :overlay-class-name="$style.ownerPopover"
@@ -12,53 +12,53 @@
         >
             <template #content>
                 <div v-if="showPopover">
-                    <!-- Uncomment for request creation -->
-                    <!-- <div -->
-                    <!--     v-if="!editPermission && role !== 'Guest'" -->
-                    <!--     class="px-3 py-2 mx-4 mb-3 bg-gray-100" -->
-                    <!-- > -->
-                    <!--     You don't have edit access. Suggest owners and -->
-                    <!--     <span class="cursor-pointer text-primary"> -->
-                    <!--         <a-popover placement="rightBottom"> -->
-                    <!--             <template #content> -->
-                    <!--                 <AdminList></AdminList> -->
-                    <!--             </template> -->
-                    <!--             <span>Admins</span> -->
-                    <!--         </a-popover> -->
-                    <!--     </span> -->
-                    <!--     can review your request. -->
-                    <!-- </div> -->
+                    <div
+                        v-if="!editPermission && role !== 'Guest'"
+                        class="px-3 py-2 mx-4 mb-3 bg-gray-100"
+                    >
+                        You don't have edit access. Suggest owners and
+                        <span class="cursor-pointer text-primary">
+                            <a-popover placement="rightBottom">
+                                <template #content>
+                                    <AdminList></AdminList>
+                                </template>
+                                <span>Admins</span>
+                            </a-popover>
+                        </span>
+                        can review your request.
+                    </div>
 
-                    <!-- Uncomment for request creation -->
                     <div class="">
                         <OwnerFacets
+                            v-if="editPermission"
                             ref="ownerInputRef"
                             v-model="localValue"
                             :show-none="false"
                         ></OwnerFacets>
 
-                        <!-- <OwnerFacets -->
-                        <!--     v-else -->
-                        <!--     ref="ownerInputRef" -->
-                        <!--     v-model="newOwners" -->
-                        <!--     :show-none="false" -->
-                        <!-- ></OwnerFacets> -->
+                        <OwnerFacets
+                            v-else
+                            ref="ownerInputRef"
+                            v-model="newOwners"
+                            :show-none="false"
+                            :disabledValues="localValue"
+                        ></OwnerFacets>
                     </div>
 
                     <!-- Uncomment for request creation -->
-                    <!-- <div -->
-                    <!--     v-if="!editPermission && role !== 'Guest'" -->
-                    <!--     class="flex items-center justify-end mx-2 mt-5 space-x-2" -->
-                    <!-- > -->
-                    <!--     <a-button @click="handleCancelRequest">Cancel</a-button> -->
-                    <!--     <a-button -->
-                    <!--         type="primary" -->
-                    <!--         :loading="requestLoading" -->
-                    <!--         @click="handleRequest" -->
-                    <!--         class="bg-primary" -->
-                    <!--         >Submit Request</a-button -->
-                    <!--     > -->
-                    <!-- </div> -->
+                    <div
+                        v-if="!editPermission && role !== 'Guest'"
+                        class="flex items-center justify-end mx-2 mt-5 space-x-2"
+                    >
+                        <a-button @click="handleCancelRequest">Cancel</a-button>
+                        <a-button
+                            type="primary"
+                            :loading="requestLoading"
+                            @click="handleRequest"
+                            class="bg-primary"
+                            >Submit Request</a-button
+                        >
+                    </div>
                 </div>
             </template>
         </a-popover>
@@ -70,7 +70,7 @@
                 v-if="showAddBtn"
                 placement="left"
                 :title="
-                    !editPermission
+                    !editPermission && role === 'Guest'
                         ? `You don't have permission to add owners to this asset`
                         : ''
                 "
@@ -84,7 +84,7 @@
                 >
                     <a-button
                         v-if="showAddBtn"
-                        :disabled="!editPermission"
+                        :disabled="role === 'Guest' && !editPermission"
                         shape="circle"
                         size="small"
                         class="text-center shadow"
@@ -289,13 +289,9 @@
 
             const handleChange = () => {
                 modelValue.value = localValue.value
-                emit('change')
-                /*
-                    Uncomment for request creation
                 if (!props.editPermission) {
                     handleRequest()
                 } else emit('change')
-                */
             }
 
             const handleDeleteUser = (username) => {

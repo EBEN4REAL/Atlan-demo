@@ -1,38 +1,48 @@
-export const workspaceList = [
-    {
-        path: '/assets',
-        label: 'Assets',
-        icon: 'AssetsActive',
-        isActive: true,
-        inactiveIcon: 'AssetsInactive',
-        description: 'Discover & enrich all data assets in your organization',
-    },
-    {
-        path: '/glossary',
-        label: 'Glossary',
-        icon: 'Glossary',
-        isActive: true,
-        inactiveIcon: 'GlossaryInactive',
-        description: ` Define and organize all your data terms and metrics`,
-        activeBackground: '#FFECF1',
-    },
-    {
-        path: '/insights',
-        label: 'Insights',
-        icon: 'InsightsActive',
-        isActive: true,
-        inactiveIcon: 'InsightsInactive',
-        description: `Query your data and derive business insights`,
-        activeBackground: '#FFF5C6',
-    },
-    // {
-    //     path: '/workflows',
-    //     label: 'Workflows',
-    //     icon: 'WorkflowsActive',
-    //     isActive: true,
-    //     inactiveIcon: 'WorkflowsInactive',
-    // },
-]
+import { computed } from 'vue'
+import {
+    featureEnabledMap,
+    INSIGHT_WORKSPACE_LEVEL_TAB,
+} from '~/composables/labs/labFeatureList'
+
+export const workspaceList = computed(() => {
+    const list = [
+        {
+            path: '/assets',
+            label: 'Assets',
+            icon: 'AssetsActive',
+            isActive: true,
+            inactiveIcon: 'AssetsInactive',
+            description:
+                'Discover & enrich all data assets in your organization',
+        },
+        {
+            path: '/glossary',
+            label: 'Glossary',
+            icon: 'Glossary',
+            isActive: true,
+            inactiveIcon: 'GlossaryInactive',
+            description: ` Define and organize all your data terms and metrics`,
+            activeBackground: '#FFECF1',
+        },
+        {
+            path: '/insights',
+            label: 'Insights',
+            icon: 'InsightsActive',
+            isActive: featureEnabledMap.value[INSIGHT_WORKSPACE_LEVEL_TAB],
+            inactiveIcon: 'InsightsInactive',
+            description: `Query your data and derive business insights`,
+            activeBackground: '#FFF5C6',
+        },
+        // {
+        //     path: '/workflows',
+        //     label: 'Workflows',
+        //     icon: 'WorkflowsActive',
+        //     isActive: true,
+        //     inactiveIcon: 'WorkflowsInactive',
+        // },
+    ]
+    return list
+})
 
 export const topNavKeys = [
     {

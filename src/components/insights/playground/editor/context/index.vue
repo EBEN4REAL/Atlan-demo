@@ -208,7 +208,12 @@
                             class="w-4 h-4 mr-1"
                         />
                         <img
-                            v-if="connectionName"
+                            v-if="
+                                connectionName &&
+                                getConnectorImage(connectorAsset?.id).includes(
+                                    '/'
+                                )
+                            "
                             :src="getConnectorImage(connectorAsset?.id)"
                             class="w-4 h-4 mr-1"
                             style="min-width: 1rem"

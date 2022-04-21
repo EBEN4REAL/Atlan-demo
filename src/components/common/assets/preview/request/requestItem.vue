@@ -208,7 +208,47 @@
                 </div>
                 <div v-else-if="item.destinationAttribute === 'ownerUsers'">
                     <!-- <PopOverUser :item="item.destinationValue"> -->
+                    <div v-if="item?.destinationValueArray?.length" class=" flex items-center">
+                        <UserPill
+                            class="classification-pill"
+                            :username="item.destinationValueArray[0]"
+                        />
+                        <a-popover
+                            v-if="item?.destinationValueArray?.length > 1"
+                        >
+                            <template #content>
+                                <div class="flex flex-col">
+                                    <template
+                                        v-for="i in item?.destinationValueArray.slice(
+                                            1
+                                        )"
+                                        :key="i"
+                                    >
+                                        <span
+                                            class="border-gray-200 px-2 py-1 flex items-center"
+                                            ><atlan-icon
+                                                icon="User"
+                                                class="mr-1 h-3"
+                                            />{{ i }}</span
+                                        >
+                                    </template>
+                                </div>
+                            </template>
+
+                            <span
+                                v-if="item?.destinationValueArray?.length > 1"
+                                class="text-primary flex items-center cursor-pointer"
+                                >+
+                                {{
+                                    item?.destinationValueArray?.length - 1
+                                }}
+                                more</span
+                            >
+                        </a-popover>
+                    </div>
+
                     <UserPill
+                        v-else
                         class="classification-pill"
                         :username="item.destinationValue"
                     />

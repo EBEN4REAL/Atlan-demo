@@ -43,17 +43,17 @@ export const requestTypeEventMap = {
         requestType: 'certificateStatus',
         action: 'edit',
     },
-    term_link:{
-        requestType:'term',
-        action:'add'
+    term_link: {
+        requestType: 'term',
+        action: 'add',
     },
-    ownerUsers:{
-        requestType:'ownerUsers',
-        action:'add',
+    ownerUsers: {
+        requestType: 'ownerUsers',
+        action: 'add',
     },
-    ownerGroups:{
-        requestType:'ownerGroups',
-        action:'add'
+    ownerGroups: {
+        requestType: 'ownerGroups',
+        action: 'add',
     },
     create_term:{
         requestType:'create_term',
@@ -76,7 +76,7 @@ export const requestTypeEventMap = {
 export const attributeCopyMapping: Record<string, string> = {
     certificateStatus: 'Certificate',
     userDescription: 'Description',
-    name:'Name'
+    name: 'Name',
 }
 
 export const typeCopyMapping: Record<string, string> = {
@@ -91,13 +91,13 @@ export const typeCopyMapping: Record<string, string> = {
     certificateStatus: 'Certificate',
     ownerUsers: 'Owner',
     userDescription: 'Description',
-    name:'Name'
+    name: 'Name',
 }
 
 export const destinationAttributeMapping: Record<string, string> = {
     ownerUsers: 'Owner',
     userDescription: 'Description',
-    name:'Name',
+    name: 'Name',
     certificateStatus: 'Certificate',
 }
 
@@ -118,4 +118,32 @@ export const requestTypeTabList: { id: string; value: RequestType[] }[] = [
         value: ['create_typedef', 'attach_classification'],
     },
     { id: 'Business metadata', value: ['bm_attribute'] },
+]
+
+export const listStatus = [
+    {
+        name: 'All',
+        key: 'all',
+        color: '#6D6DDA',
+    },
+    {
+        name: 'Pending',
+        key: 'active',
+        color: '#FFB119',
+        icon: 'Clock',
+        class: 'text-yellow-500',
+    },
+    {
+        name: 'Approved',
+        key: 'approved',
+        color: '#6D6DDA',
+        icon: 'Check',
+        class: 'text-success check-icon',
+    },
+    {
+        name: 'Rejected',
+        key: 'rejected',
+        color: '#DC5252',
+        icon: 'CrossCircle',
+    },
 ]

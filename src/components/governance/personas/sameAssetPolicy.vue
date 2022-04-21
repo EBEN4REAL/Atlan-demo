@@ -372,10 +372,10 @@
 <style lang="less" scoped>
     .content-popover-policy {
         height: 152px;
-        overflow-y: scroll;
+        overflow-y: auto;
     }
     .content-popover {
         max-height: 240px;
-        overflow-y: scroll;
+        overflow-y: auto;
     }
 </style>

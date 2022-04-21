@@ -927,9 +927,7 @@
                 top: -1px;
                 width: 100%;
             }
-            :global(.ant-tabs-ink-bar) {
-                display: none;
-            }
+
             :global(.ant-tabs-nav::before) {
                 @apply border-new-gray-300 !important;
             }
@@ -946,6 +944,40 @@
                 width: 100%;
                 @apply px-8;
             }
+            // REMOVE if navigation experience is seamless
+            // :global(.ant-tabs-nav-list) {
+            //     :global(.ant-tabs-tab.ant-tabs-tab-active):nth-child(1)
+            //         ~ :global(.ant-tabs-ink-bar) {
+            //         background-color: red;
+            //         width: 108px !important;
+            //     }
+            //     :global(.ant-tabs-tab.ant-tabs-tab-active):nth-child(2)
+            //         ~ :global(.ant-tabs-ink-bar) {
+            //         background-color: yellow;
+            //         width: 122px !important;
+            //     }
+            //     :global(.ant-tabs-tab.ant-tabs-tab-active):nth-child(3)
+            //         ~ :global(.ant-tabs-ink-bar) {
+            //         background-color: green;
+            //         width: 100px !important;
+            //         left:
+            //     }
+            //     :global(.ant-tabs-tab.ant-tabs-tab-active):nth-child(4)
+            //         ~ :global(.ant-tabs-ink-bar) {
+            //         background-color: blue;
+            //         width: 119px !important;
+            //     }
+            // }
+
+            :global(.ant-tabs-ink-bar) {
+                // display: none;
+                @apply bg-white rounded-md;
+                height: 28px;
+                bottom: 6px;
+                z-index: -1;
+                box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.16);
+            }
+
             :global(.ant-tabs-tab) {
                 flex-grow: 1;
                 display: flex;
@@ -999,8 +1031,8 @@
         z-index: 51 !important;
     }
     .active-tab-indicator {
-        @apply bg-white rounded-md;
-        box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.16);
+        // @apply bg-white rounded-md;
+        // box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.16);
     }
     .active-tab {
         display: block;

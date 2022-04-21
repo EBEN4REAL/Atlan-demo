@@ -14,7 +14,10 @@
                 </div>
             </div>
             <div v-else style="max-width: 374px">
-                <GlossaryPopoverHeader :term="fetchedTerm" />
+                <GlossaryPopoverHeader
+                    :term="fetchedTerm"
+                    :showDrawerToggle="showDrawerToggle"
+                />
                 <GlossaryPopoverBody
                     :attributes="attributes"
                     :term="fetchedTerm"
@@ -93,6 +96,11 @@
             required: false,
             default: [],
         },
+        showDrawerToggle: {
+            type: Boolean,
+            required: false,
+            default: ()=>true,
+        },
     })
 
     const emit = defineEmits(['visible'])
@@ -106,6 +114,7 @@
         trigger,
         mouseEnterDelay,
         excludeFields,
+        showDrawerToggle
     } = toRefs(props)
 
     const attributes = ref({})
@@ -124,11 +133,9 @@
             // Syncing the loading states
             isLocalLoading.value = isFetchedTermLoading?.value
             // If the value is already loaded
-            if (
-                !isFetchedTermLoading?.value &&
-                initialFetchedTerm?.value &&
-                initialFetchedTerm?.value?.guid
-            ) {
+            if (!isFetchedTermLoading?.value && initialFetchedTerm?.value) {
+                console.log('visible ', initialFetchedTerm.value)
+                console.log(initialFetchedTerm)
                 fetchedTerm.value = initialFetchedTerm?.value
                 attributes.value = updateAssetAttributes(initialFetchedTerm)
 

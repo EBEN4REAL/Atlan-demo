@@ -9,6 +9,7 @@ import {
     bigquery,
     looker,
     mysql,
+    mssql,
     glue,
 } from './icons'
 
@@ -42,8 +43,8 @@ export const getNodeTypeText = {
     LookerProject: 'Project',
     // Tableau
     TableauDatasource: 'Datasource',
-    TableauCalculatedField: 'Calculated Field',
-    TableauDatasourceField: 'Datasource Field',
+    TableauCalculatedField: 'CalculatedField',
+    TableauDatasourceField: 'DatasourceField',
     TableauDashboard: 'Dashboard',
     TableauWorksheet: 'Worksheet',
     TableauWorkbook: 'Workbook',
@@ -65,6 +66,7 @@ export const getNodeSourceImage = {
     bigquery,
     looker,
     mysql,
+    mssql,
     glue,
 }
 

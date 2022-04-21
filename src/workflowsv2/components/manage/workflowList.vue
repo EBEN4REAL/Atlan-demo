@@ -1,7 +1,7 @@
 <template>
     <div
         :class="{ 'animate-pulse': loading }"
-        class="flex flex-col h-full px-4 pb-4 overflow-y-scroll gap-y-2"
+        class="flex flex-col h-full px-6 pb-4 overflow-y-scroll gap-y-2"
     >
         <WorkflowListItem
             v-for="(workflow, idx) in workflows"

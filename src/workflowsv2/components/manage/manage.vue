@@ -6,13 +6,14 @@
             :filter-list="workflowFilterRef"
             :allow-custom-filters="false"
             no-filter-title="Filters"
-            class="drawer-request"
+            class="filter-sidebar"
             @reset="handleResetEvent"
             @change="refetch()"
         />
 
         <div
             class="flex flex-col flex-1 h-full overflow-x-hidden border-l border-r border-gray-300 gap-y-4"
+            style="background-color: #fcfcff"
         >
             <div class="flex items-center mx-4 mt-4 gap-x-4">
                 <div
@@ -308,7 +309,7 @@
 </script>
 
 <style lang="less" scoped>
-    .drawer-request {
+    .filter-sidebar {
         @apply bg-gray-100 flex-none w-64;
         .ant-collapse-content {
             background: none !important;

@@ -1,23 +1,3 @@
-export const runFilter = [
-    {
-        id: 'creators',
-        label: 'CREATED BY',
-        component: 'Owners',
-        overallCondition: 'OR',
-        attributes: [],
-        isDeleted: false,
-        isDisabled: false,
-        exclude: false,
-        propsToComponent: {
-            showNone: false,
-            hideDisabledTabs: true,
-            enableTabs: ['users'],
-        },
-        // selectUserKey: 'id',
-        class: 'bg-transparent',
-    },
-]
-
 export const workflowFilter = [
     {
         id: 'creators',
@@ -62,10 +42,13 @@ export const workflowFilter = [
             {
                 id: 'scheduled',
                 label: 'Scheduled',
+                icon: 'Schedule',
+                iconClass: 'text-success',
             },
             {
                 id: 'manual',
                 label: 'Unscheduled',
+                icon: 'Unscheduled',
             },
         ],
     },

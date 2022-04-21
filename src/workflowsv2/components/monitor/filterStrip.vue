@@ -35,7 +35,6 @@
     import TabbedDateRangePicker from '~/workflowsv2/components/common/selectors/tabbedDateRangePicker.vue'
     import TabbedStatusSelector from '~/workflowsv2/components/common/selectors/tabbedStatusSelector.vue'
     import CreatorSelector from '~/workflowsv2/components/common/selectors/creatorSelector.vue'
-    import { runFilter } from '~/workflowsv2/constants/filters'
 
     export default defineComponent({
         name: 'FilterStrip',
@@ -81,7 +80,6 @@
                 runDateRange,
                 packageId,
                 workflowId,
-                runFilter,
                 creators,
                 activeKey,
                 status,

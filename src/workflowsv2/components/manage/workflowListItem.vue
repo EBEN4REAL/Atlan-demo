@@ -19,13 +19,11 @@
                     >
                         <template v-if="isCronWorkflow(workflow)">
                             <AtlanIcon icon="Schedule" class="text-success" />
-                            <span class="ml-1 pt-0.5">{{
-                                cronString(workflow)
-                            }}</span>
+                            <span class="ml-1">{{ cronString(workflow) }}</span>
                         </template>
                         <template v-else>
-                            <AtlanIcon icon="User" />
-                            <span class="ml-1 pt-0.5">Manual Run</span>
+                            <AtlanIcon icon="Unscheduled" />
+                            <span class="ml-1">Manually Run</span>
                         </template>
                     </div>
                 </template>
@@ -64,11 +62,11 @@
         >
             <template v-if="isCronWorkflow(workflow)">
                 <AtlanIcon icon="Schedule" class="text-success" />
-                <span class="ml-1 pt-0.5">{{ cronString(workflow) }}</span>
+                <span class="ml-1">{{ cronString(workflow) }}</span>
             </template>
             <template v-else>
-                <AtlanIcon icon="User" />
-                <span class="ml-1 pt-0.5">Manually Run</span>
+                <AtlanIcon icon="Unscheduled" />
+                <span class="ml-1">Manually Run</span>
             </template>
             <CreateUpdateInfo
                 :created-at="workflow.metadata?.creationTimestamp"
@@ -76,8 +74,8 @@
             />
         </div>
         <a-divider class="my-3" />
-        <RunIndicators :workflow="wfName(workflow)" :runs="runs" />
-        <LastRunSummary :runs="runs" :loading="isRunLoading" class="mt-2" />
+        <LastRunSummary :runs="runs" :loading="isRunLoading" />
+        <RunIndicators :workflow="wfName(workflow)" :runs="runs" class="mt-3" />
     </div>
 </template>
 
@@ -168,7 +166,8 @@
         @apply bg-white rounded-lg p-4;
         @apply cursor-pointer;
         @apply transition-colors duration-300;
-        @apply border border-transparent;
+        @apply border border-new-gray-200;
+        box-shadow: 1px 2px 3px 0px rgba(0, 0, 0, 0.05);
 
         .badge {
             @apply flex items-center justify-center;

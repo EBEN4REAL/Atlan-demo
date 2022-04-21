@@ -197,6 +197,7 @@ import ExplorerTriggerFilled from '~/assets/images/icons/explorer-trigger-filled
 import EmptySearchQuery from '~/assets/images/icons/empty_search_query.svg'
 import EmptyResult from '~/assets/images/icons/empty_result.svg'
 import Schedule from '~/assets/images/icons/schedule.svg'
+import Unscheduled from '~/assets/images/icons/unscheduled.svg'
 import Minimap from '~/assets/images/icons/minimap.svg'
 import FullScreenBoth from '~/assets/images/icons/fullscreen-both.svg'
 import Minus from '~/assets/images/icons/minus.svg'
@@ -700,6 +701,7 @@ export default {
     EmptyResult,
     Flash,
     Schedule,
+    Unscheduled,
     Minimap,
     FullScreenBoth,
     Minus,

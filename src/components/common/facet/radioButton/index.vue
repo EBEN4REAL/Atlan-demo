@@ -16,6 +16,12 @@
                             :style="`background-color: ${el.colorDot}`"
                             class="dot"
                         />
+                        <AtlanIcon
+                            v-if="el.icon"
+                            class="mt-1"
+                            :class="el.iconClass"
+                            :icon="el.icon"
+                        />
                         <span class="pt-1 mb-0 text-sm text-gray">
                             {{ el.label }}
                         </span>

@@ -9,9 +9,10 @@
         <div class="flex items-center mt-3 text-gray-500 gap-x-1">
             <template v-if="isCronRun(run)">
                 <AtlanIcon icon="Schedule" class="text-success" />
-                <span class="pt-0.5">Scheduled Run</span>
+                <span>Scheduled Run</span>
             </template>
             <template v-else>
+                <AtlanIcon icon="Unscheduled" />
                 <span>Manually Run by</span>
                 <UserWrapper :username="creatorUsername(run)" />
             </template>

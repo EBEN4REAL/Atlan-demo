@@ -17,6 +17,7 @@
                             {{ tab.title || tab.name }}
                         </span>
                     </span>
+
                     <div class="flex-grow"></div>
 
                     <AddResource v-if="!readOnly" @add="addCallback">
@@ -29,6 +30,10 @@
                         </template>
                     </AddResource>
                 </div>
+                <SwitchSlackTabBanner
+                    v-if="showSlackSwitchBanner"
+                    @switchTab="$emit('switchTab')"
+                />
             </template>
         </template>
 
@@ -114,6 +119,7 @@
                     :class="{
                         'grid-cols-1': minimal,
                         'grid-cols-2': !minimal,
+                        'pt-2': showSlackSwitchBanner,
                     }"
                 >
                     <div
@@ -128,13 +134,13 @@
                             "
                             :link="l"
                             class="h-full"
-                            :assetType="assetType"
+                            :asset-type="assetType"
                         />
                         <SlackPreview
                             v-else
                             :ref="`SlackPreview-${x}`"
                             :link="l"
-                            :assetType="assetType"
+                            :asset-type="assetType"
                         />
                     </div>
                     <template
@@ -154,16 +160,7 @@
 </template>
 
 <script setup lang="ts">
-    import {
-        defineComponent,
-        PropType,
-        computed,
-        toRefs,
-        defineAsyncComponent,
-        ref,
-        provide,
-        inject,
-    } from 'vue'
+    import { PropType, computed, toRefs, ref, provide, inject } from 'vue'
     import SlackUserLoginTrigger from '@common/integrations/slack/slackUserLoginTriggerCard.vue'
     import {
         isSlackLink,
@@ -175,6 +172,7 @@
     import SlackPreview from '@/common/widgets/resources/previewCard/slackPreview.vue'
     import AddResource from '@/common/widgets/resources/resourceInputModal.vue'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
+    import SwitchSlackTabBanner from '@/common/widgets/resources/misc/switchSlackTabBanner.vue'
 
     import integrationStore from '~/store/integrations/index'
     import { Link } from '~/types/resources.interface'
@@ -210,6 +208,10 @@
             type: String,
             required: true,
         },
+        showSlackSwitchBanner: {
+            type: Boolean,
+            default: false,
+        },
         readOnly: {
             type: Boolean,
             required: false,
@@ -221,7 +223,7 @@
             default: () => ({}),
         },
     })
-    const emit = defineEmits(['add', 'update', 'remove'])
+    const emit = defineEmits(['add', 'update', 'remove', 'switchTab'])
 
     const wrapper = ref()
 

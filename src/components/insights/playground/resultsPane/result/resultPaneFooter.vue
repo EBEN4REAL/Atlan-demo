@@ -159,6 +159,7 @@
             :closable="false"
             width="80%"
             :centered="true"
+            @change="onModalVisibleChange"
             :bodyStyle="{
                 height: 'calc(100vh - 100px)',
             }"
@@ -168,19 +169,19 @@
             >
                 <div class="text-sm py-2.5 flex items-center justify-between">
                     <div
-                        class="flex items-center h-8 border rounded rounded-r bg-new-gray-200 border-new-gray-300"
-                        style="padding: 0px"
-                        v-if="isResultTabPopulated && selectedAsset"
+                        class="flex items-center h-8 rounded rounded-r"
+                        style="padding: 0px; max-width: 65%; width: auto"
                     >
                         <div
-                            class="relative flex items-center justify-center h-full px-2 rounded-tl rounded-bl cursor-pointer"
-                            style="max-width: 85px"
+                            class="relative flex items-center justify-center h-full px-2 border-t border-b border-l border-r rounded-tl rounded-bl cursor-pointer border-new-gray-300"
+                            style="max-width: 105px"
+                            v-if="isResultTabPopulated"
                             :class="
-                                fullScreenTabActive === 0
+                                fullScreenTabActive === -1
                                     ? 'tab-active'
                                     : 'not-active'
                             "
-                            @click="() => changeFullScreenTabActive(0)"
+                            @click="() => changeFullScreenTabActive(-1)"
                         >
                             <div class="flex items-center text-sm">
                                 <AtlanIcon
@@ -191,65 +192,80 @@
                             </div>
                         </div>
                         <div
-                            :class="
-                                fullScreenTabActive === 1
-                                    ? 'tab-active'
-                                    : 'not-active'
-                            "
-                            @click="() => changeFullScreenTabActive(1)"
-                            class="flex items-center h-full pl-2 text-sm rounded rounded-r cursor-pointer text-new-gray-700 group"
+                            class="flex items-center w-full h-full text-sm border-t border-b border-r rounded-r cursor-pointer text-new-gray-700 bg-new-gray-200 border-new-gray-300"
                         >
-                            <div class="flex items-center w-full text-sm">
-                                <AtlanIcon
-                                    :icon="
-                                        getEntityStatusIcon(
-                                            assetType(selectedAsset),
-                                            certificateStatus(selectedAsset)
-                                        )
-                                    "
-                                    class="w-4 h-4 mr-1 -mt-0.5 parent-ellipsis-container-extension"
-                                ></AtlanIcon>
-                                <Tooltip
-                                    :tooltip-text="
-                                        selectedAsset.attributes.name
-                                    "
-                                    classes="text-gray-700 w-full pr-1.5"
-                                    :placement="'topRight'"
-                                />
-                            </div>
+                            <a-tabs
+                                :class="$style.previewtab_footer"
+                                :tab-position="mode"
+                                :style="{ height: '32px' }"
+                                :activeKey="`${fullScreenTabActive}.${
+                                    fullScreenTabActive > -1
+                                        ? insights_Store.previewTabs[
+                                              fullScreenTabActive
+                                          ].asset.guid
+                                        : ''
+                                }`"
+                                @change="handleTabChange"
+                            >
+                                <a-tab-pane
+                                    v-for="(
+                                        item, index
+                                    ) in insights_Store.previewTabs"
+                                    :key="`${index}.${insights_Store.previewTabs[index].asset.guid}`"
+                                >
+                                    <template #tab>
+                                        <div
+                                            class="relative flex items-center h-full px-2 text-sm text-new-gray-700 group insights_preview_tabs"
+                                            style="width: 148px"
+                                        >
+                                            <div
+                                                class="flex items-center w-full text-sm"
+                                            >
+                                                <AtlanIcon
+                                                    :icon="
+                                                        getEntityStatusIcon(
+                                                            assetType(
+                                                                item.asset
+                                                            ),
+                                                            certificateStatus(
+                                                                item.asset
+                                                            )
+                                                        )
+                                                    "
+                                                    class="w-4 h-4 mr-1 -mt-0.5 parent-ellipsis-container-extension"
+                                                ></AtlanIcon>
+                                                <Tooltip
+                                                    v-if="!hideTabsToolTips"
+                                                    :tooltip-text="
+                                                        item.asset.attributes
+                                                            .name
+                                                    "
+                                                    classes="text-new-gray-700 w-full pr-1.5"
+                                                    :placement="'topRight'"
+                                                    :mouseEnterDelay="
+                                                        lastTooltipPresence !==
+                                                        undefined
+                                                            ? ADJACENT_TOOLTIP_DELAY
+                                                            : MOUSE_ENTER_DELAY
+                                                    "
+                                                />
+                                                <span
+                                                    v-else
+                                                    class="overflow-hidden truncate"
+                                                >
+                                                    {{
+                                                        item.asset.attributes
+                                                            .name
+                                                    }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </a-tab-pane>
+                            </a-tabs>
                         </div>
                     </div>
-                    <div
-                        v-else-if="selectedAsset && !isResultTabPopulated"
-                        class="flex items-center h-full pl-2 text-sm text-new-gray-700 group"
-                    >
-                        <div class="flex items-center w-full text-sm">
-                            <AtlanIcon
-                                :icon="
-                                    getEntityStatusIcon(
-                                        assetType(selectedAsset),
-                                        certificateStatus(selectedAsset)
-                                    )
-                                "
-                                class="w-4 h-4 mr-1 -mt-0.5 parent-ellipsis-container-extension"
-                            ></AtlanIcon>
-                            <Tooltip
-                                :tooltip-text="selectedAsset.attributes.name"
-                                classes="text-gray-700 w-full pr-1.5"
-                                :placement="'topRight'"
-                            />
-                        </div>
-                    </div>
-                    <div
-                        v-else-if="!selectedAsset && isResultTabPopulated"
-                        class="flex items-center text-sm"
-                    >
-                        <AtlanIcon
-                            :icon="getResultsIcon"
-                            class="mr-1 -mt-0.5"
-                        />
-                        <span>Results</span>
-                    </div>
+
                     <div class="flex items-center">
                         <a-tooltip color="#363636">
                             <template #title>Copy data</template>
@@ -329,6 +345,7 @@
 
 <script lang="ts">
     import {
+        watch,
         defineComponent,
         computed,
         inject,
@@ -362,7 +379,11 @@
         props: {},
         setup() {
             const fullScreenMode = ref(false)
-            const fullScreenTabActive = ref(1)
+            const insights_Store = insightsStore()
+            const index = insights_Store.previewTabs.findIndex(
+                (el) => el.asset.guid === insights_Store.activePreviewGuid
+            )
+            const fullScreenTabActive = ref(index)
             const footerRef = ref()
             const observer = ref()
             const previewTabsWidth = ref(446)
@@ -378,7 +399,6 @@
             ) as Ref<activeInlineTabInterface>
 
             const { getFormattedTimeFromMilliSeconds } = useUtils()
-            const insights_Store = insightsStore()
 
             const isQueryRunning = computed(() => {
                 if (insights_Store.activePreviewGuid !== undefined) {
@@ -404,21 +424,20 @@
             )
 
             const useWrapperCopy = () => {
-                if (fullScreenMode.value && selectedAsset.value) {
-                    if (fullScreenTabActive.value === 0) {
-                        const _index = insights_Store.previewTabs.findIndex(
-                            (el) =>
-                                el.asset.guid ===
-                                insights_Store.activePreviewGuid
-                        )
-                        useCopy(
-                            insights_Store.previewTabs[_index].columns,
-                            insights_Store.previewTabs[_index].rows
-                        )
-                    } else if (fullScreenTabActive.value === 1) {
+                if (fullScreenMode.value) {
+                    if (fullScreenTabActive.value === -1) {
                         useCopy(
                             activeInlineTab.value.playground.editor.columnList,
                             activeInlineTab.value.playground.editor.dataList
+                        )
+                    } else {
+                        useCopy(
+                            insights_Store.previewTabs[
+                                fullScreenTabActive.value
+                            ].columns,
+                            insights_Store.previewTabs[
+                                fullScreenTabActive.value
+                            ].rows
                         )
                     }
                 } else {
@@ -441,25 +460,24 @@
                 }
             }
             const useWrapperExport = () => {
-                if (fullScreenMode.value && selectedAsset.value) {
-                    if (fullScreenTabActive.value === 0) {
-                        const _index = insights_Store.previewTabs.findIndex(
-                            (el) =>
-                                el.asset.guid ===
-                                insights_Store.activePreviewGuid
-                        )
-                        useTableExport(
-                            null,
-                            insights_Store.previewTabs[_index].columns,
-                            insights_Store.previewTabs[_index].rows
-                        )
-                    } else if (fullScreenTabActive.value === 1) {
+                if (fullScreenMode.value) {
+                    if (fullScreenTabActive.value === -1) {
                         useTableExport(
                             activeInlineTab.value?.queryId
                                 ? activeInlineTab.value?.label
                                 : null,
                             activeInlineTab.value.playground.editor.columnList,
                             activeInlineTab.value.playground.editor.dataList
+                        )
+                    } else {
+                        useTableExport(
+                            null,
+                            insights_Store.previewTabs[
+                                fullScreenTabActive.value
+                            ].columns,
+                            insights_Store.previewTabs[
+                                fullScreenTabActive.value
+                            ].rows
                         )
                     }
                 } else {
@@ -513,17 +531,15 @@
             })
             const columnsList = computed(() => {
                 if (fullScreenMode.value && selectedAsset.value) {
-                    if (fullScreenTabActive.value === 0) {
-                        const index = insights_Store.previewTabs.findIndex(
-                            (el) =>
-                                el.asset.guid ===
-                                insights_Store.activePreviewGuid
-                        )
-                        if (index < 0) return []
-                        return insights_Store.previewTabs[index]?.columns ?? []
-                    } else if (fullScreenTabActive.value === 1) {
+                    if (fullScreenTabActive.value === -1) {
                         return activeInlineTab.value.playground.editor
                             .columnList
+                    } else {
+                        return (
+                            insights_Store.previewTabs[
+                                fullScreenTabActive.value
+                            ]?.columns ?? []
+                        )
                     }
                 } else {
                     if (insights_Store.activePreviewGuid !== undefined) {
@@ -542,16 +558,14 @@
             })
             const dataList = computed(() => {
                 if (fullScreenMode.value && selectedAsset.value) {
-                    if (fullScreenTabActive.value === 0) {
-                        const index = insights_Store.previewTabs.findIndex(
-                            (el) =>
-                                el.asset.guid ===
-                                insights_Store.activePreviewGuid
-                        )
-                        if (index < 0) return []
-                        return insights_Store.previewTabs[index]?.rows ?? []
-                    } else if (fullScreenTabActive.value === 1) {
+                    if (fullScreenTabActive.value === -1) {
                         return activeInlineTab.value.playground.editor.dataList
+                    } else {
+                        return (
+                            insights_Store.previewTabs[
+                                fullScreenTabActive.value
+                            ]?.rows ?? []
+                        )
                     }
                 } else {
                     if (insights_Store.activePreviewGuid !== undefined) {
@@ -634,12 +648,45 @@
                 }
                 window.addEventListener('resize', debouncedFn)
             })
+
+            const setFullScreenIndex = (newVal) => {
+                if (!newVal) {
+                    fullScreenTabActive.value = -1
+                } else {
+                    const index = insights_Store.previewTabs.findIndex(
+                        (el) => el.asset.guid === newVal
+                    )
+                    fullScreenTabActive.value = index
+                }
+            }
             onUnmounted(() => {
                 observer?.value?.unobserve(footerRef?.value)
                 window.removeEventListener('resize', debouncedFn)
             })
+            const onModalVisibleChange = (visibility) => {
+                if (!visibility) {
+                    setFullScreenIndex(
+                        insights_Store.activePreviewGuid
+                            ? insights_Store.activePreviewGuid
+                            : -1
+                    )
+                }
+            }
+            const handleTabChange = (key: string) => {
+                const index = key.split('.')[0]
+                fullScreenTabActive.value = Number(index)
+            }
+            watch(
+                () => insights_Store.activePreviewGuid,
+                (newVal) => {
+                    setFullScreenIndex(newVal)
+                },
+                { immediate: true }
+            )
 
             return {
+                onModalVisibleChange,
+                handleTabChange,
                 changeFullScreenTabActive,
                 isResultTabPopulated,
                 fullScreenTabActive,
@@ -696,7 +743,34 @@
         @apply bg-white;
     }
 </style>
-<style lang="less" module></style>
+<style lang="less" module>
+    .previewtab_footer {
+        height: 32px !important;
+        :global(.ant-tabs-nav .ant-tabs-tab-active) {
+            @apply shadow !important;
+            background: white;
+            padding: 4px 8px;
+            @apply rounded;
+        }
+        :global(.ant-tabs-tab) {
+            @apply p-0 !important;
+            margin-top: 2.5px;
+
+            margin-left: 0;
+
+            height: 28px !important;
+        }
+        :global(.ant-tabs-ink-bar) {
+            display: none !important;
+        }
+        :global(.ant-tabs > .ant-tabs-nav .ant-tabs-nav-list, .ant-tabs
+                > div
+                > .ant-tabs-nav
+                .ant-tabs-nav-list) {
+            align-items: center;
+        }
+    }
+</style>
 
 <route lang="yaml">
 meta:

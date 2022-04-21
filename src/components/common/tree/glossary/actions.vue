@@ -82,6 +82,30 @@
                         key="add"
                         @click="closeMenu"
                     >
+                        <template
+                            v-if="
+                                role?.toLowerCase() === 'guest' &&
+                                !createPermission
+                            "
+                        >
+                            <a-tooltip
+                                placement="right"
+                                title="You don't have permission to perform this action"
+                            >
+                                <div
+                                    :class="'cursor-not-allowed text-gray-500'"
+                                    class="flex items-center"
+                                >
+                                    <AtlanIcon
+                                        icon="Category"
+                                        class="m-0 mr-2"
+                                    />
+                                    <p class="p-0 m-0">Add Category</p>
+                                </div>
+                            </a-tooltip>
+                        </template>
+
+                        <template v-else>
                             <AddGtcModal
                                 entityType="AtlasGlossaryCategory"
                                 :glossaryName="glossaryName"
@@ -101,6 +125,7 @@
                                     </div>
                                 </template>
                             </AddGtcModal>
+                        </template>
                     </a-menu-item>
                 </div>
                 <!-- entity create -->
@@ -113,6 +138,26 @@
                         key="add"
                         @click="closeMenu"
                     >
+                        <template
+                            v-if="
+                                role?.toLowerCase() === 'guest' &&
+                                !createPermission
+                            "
+                        >
+                            <a-tooltip
+                                placement="right"
+                                title="You don't have permission to perform this action"
+                            >
+                                <div
+                                    :class="'cursor-not-allowed text-gray-500'"
+                                    class="flex items-center"
+                                >
+                                    <AtlanIcon icon="Term" class="m-0 mr-2" />
+                                    <p class="p-0 m-0">Add Term</p>
+                                </div>
+                            </a-tooltip>
+                        </template>
+                        <template v-else>
                             <AddGtcModal
                                 entityType="AtlasGlossaryTerm"
                                 :glossaryName="glossaryName"
@@ -132,6 +177,7 @@
                                     </div>
                                 </template>
                             </AddGtcModal>
+                        </template>
                     </a-menu-item>
                 </div>
                 <!-- entity delete -->

@@ -7,9 +7,14 @@
             v-if="item?.typeName === 'cta'"
             class="flex flex-wrap items-center w-full"
         >
-            <span v-if="!checkable" class="pr-1"> Add a </span>
+            <span
+                v-if="!checkable && role.toLowerCase() !== 'guest'"
+                class="pr-1"
+            >
+                Add a
+            </span>
             <AddGtcModal
-                v-if="!checkable"
+                v-if="!checkable && role.toLowerCase() !== 'guest'"
                 entityType="AtlasGlossaryTerm"
                 :glossaryName="item?.glossaryName"
                 :categoryName="item?.categoryName"
@@ -32,10 +37,14 @@
                     </div>
                 </template>
             </AddGtcModal>
-            <span v-if="!checkable" class="px-1">or </span>
+            <span
+                v-if="!checkable && role.toLowerCase() !== 'guest'"
+                class="px-1"
+                >or
+            </span>
 
             <AddGtcModal
-                v-if="!checkable"
+                v-if="!checkable && role.toLowerCase() !== 'guest'"
                 entityType="AtlasGlossaryCategory"
                 :glossaryName="item?.glossaryName"
                 :categoryName="item?.categoryName"
@@ -59,7 +68,7 @@
                 </template>
             </AddGtcModal>
 
-            <div v-if="checkable">
+            <div v-if="checkable || role.toLowerCase() === 'guest'">
                 This
                 <span v-if="item.categoryName">category</span>
                 <span v-else-if="item.glossaryName">glossary</span>
@@ -178,6 +187,7 @@
     import AddGtcModal from '@/glossary/modal/addGtcModal.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
     import Name from '@/glossary/common/name.vue'
+    import whoami from '~/composables/user/whoami'
 
     import {
         Glossary,
@@ -213,6 +223,7 @@
         setup(props, { emit }) {
             // data
             const { item } = toRefs(props)
+            const { role } = whoami()
             const route = useRoute()
             const router = useRouter()
             const profileId = computed(() => route?.params?.id || null)
@@ -394,6 +405,7 @@
                 hasCreatePermission,
                 hasTermAddPermission,
                 hasCategoryAddPermission,
+                role,
             }
         },
     })

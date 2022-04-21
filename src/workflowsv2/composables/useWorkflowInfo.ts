@@ -172,9 +172,15 @@ export default function useWorkflowInfo() {
                 use24HourTimeFormat: true,
                 verbose,
             })
-            str += verbose
-                ? ` (${cronTimezone(item)})`
-                : ` (${dayjs().tz(cronTimezone(item)).format('z')})`
+
+            if (
+                dayjs().tz(cronTimezone(item)).format('z') !==
+                dayjs.tz(Date.now(), dayjs.tz.guess()).format('z')
+            )
+                str += verbose
+                    ? ` (${cronTimezone(item)})`
+                    : ` (${dayjs().tz(cronTimezone(item)).format('z')})`
+
             return str
         }
         return undefined

@@ -222,5 +222,9 @@
             "updated-details": "The details have been updated.",
             "failed-update": "Failed to update details."
         }
+    },
+    "readme": {
+        "invalid-equation": "Invalid equation",
+        "equation-placeholder": "Type in some math"
     }
 }

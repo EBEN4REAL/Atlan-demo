@@ -1,5 +1,6 @@
 <template>
     <div class="term-request">
+        <div class="pr-2 mt-1 text-gray-500">Link Term</div>
         <TermPopover
             :loading="termLoading"
             :fetched-term="getFetchedTerm(request.sourceGuid)"
@@ -58,7 +59,6 @@
                 </template>
             </Pill>
         </a-popover> -->
-        <div class="pr-2 mt-1 text-gray-500">Link Term</div>
     </div>
 </template>
 

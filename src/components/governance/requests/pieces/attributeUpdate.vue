@@ -39,7 +39,7 @@
                         <span
                             v-if="valueArray?.length > 1"
                             class="text-primary flex items-center cursor-pointer ml-1"
-                            >+ {{ valueArray?.length - 1 }} more</span
+                            >+ {{ valueArray?.length - 1 }} </span
                         >
                     </a-popover>
                 </div>

@@ -94,6 +94,7 @@
                 "
                 v-if="columnsCount && previewTabsWidth > 0"
                 @click="toggleFullScreenMode"
+                placement="topRight"
             >
                 <template #title>Full screen</template>
                 <AtlanBtn

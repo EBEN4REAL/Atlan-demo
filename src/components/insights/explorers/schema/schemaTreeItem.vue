@@ -1153,7 +1153,7 @@
                 )
 
                 previewRun({
-                    previewTabIndex: 0,
+                    guid: asset.guid,
                     tabsArray: inlineTabs,
                     queryText: newQuery,
                     attributeValue,

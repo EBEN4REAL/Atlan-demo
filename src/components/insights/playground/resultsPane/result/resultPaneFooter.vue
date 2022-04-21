@@ -94,6 +94,7 @@
                 "
                 v-if="columnsCount && previewTabsWidth > 0"
                 @click="toggleFullScreenMode"
+                placement="topRight"
             >
                 <template #title>Full screen</template>
                 <AtlanBtn
@@ -167,7 +168,59 @@
             >
                 <div class="text-sm py-2.5 flex items-center justify-between">
                     <div
-                        v-if="selectedAsset"
+                        class="flex items-center h-8 border rounded rounded-r bg-new-gray-200 border-new-gray-300"
+                        style="padding: 0px"
+                        v-if="isResultTabPopulated && selectedAsset"
+                    >
+                        <div
+                            class="relative flex items-center justify-center h-full px-2 rounded-tl rounded-bl cursor-pointer"
+                            style="max-width: 85px"
+                            :class="
+                                fullScreenTabActive === 0
+                                    ? 'tab-active'
+                                    : 'not-active'
+                            "
+                            @click="() => changeFullScreenTabActive(0)"
+                        >
+                            <div class="flex items-center text-sm">
+                                <AtlanIcon
+                                    :icon="getResultsIcon"
+                                    class="mr-1 -mt-0.5"
+                                />
+                                <span>Results </span>
+                            </div>
+                        </div>
+                        <div
+                            :class="
+                                fullScreenTabActive === 1
+                                    ? 'tab-active'
+                                    : 'not-active'
+                            "
+                            @click="() => changeFullScreenTabActive(1)"
+                            class="flex items-center h-full pl-2 text-sm rounded rounded-r cursor-pointer text-new-gray-700 group"
+                        >
+                            <div class="flex items-center w-full text-sm">
+                                <AtlanIcon
+                                    :icon="
+                                        getEntityStatusIcon(
+                                            assetType(selectedAsset),
+                                            certificateStatus(selectedAsset)
+                                        )
+                                    "
+                                    class="w-4 h-4 mr-1 -mt-0.5 parent-ellipsis-container-extension"
+                                ></AtlanIcon>
+                                <Tooltip
+                                    :tooltip-text="
+                                        selectedAsset.attributes.name
+                                    "
+                                    classes="text-gray-700 w-full pr-1.5"
+                                    :placement="'topRight'"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        v-else-if="selectedAsset && !isResultTabPopulated"
                         class="flex items-center h-full pl-2 text-sm text-new-gray-700 group"
                     >
                         <div class="flex items-center w-full text-sm">
@@ -187,9 +240,12 @@
                             />
                         </div>
                     </div>
-                    <div v-else class="flex items-center text-sm">
+                    <div
+                        v-else-if="!selectedAsset && isResultTabPopulated"
+                        class="flex items-center text-sm"
+                    >
                         <AtlanIcon
-                            :icon="getResultsIcon()"
+                            :icon="getResultsIcon"
                             class="mr-1 -mt-0.5"
                         />
                         <span>Results</span>
@@ -261,7 +317,7 @@
                     <AtlanPreviewTable
                         :dataList="dataList"
                         :columns="columnsList"
-                        key="hello_world"
+                        :key="`hello_world${fullScreenTabActive}`"
                         class=""
                         :table-instance-i-d="'query-result-full-screen'"
                     />
@@ -305,6 +361,8 @@
         components: { AtlanBtn, Tooltip, PreviewTabs, AtlanPreviewTable },
         props: {},
         setup() {
+            const fullScreenMode = ref(false)
+            const fullScreenTabActive = ref(1)
             const footerRef = ref()
             const observer = ref()
             const previewTabsWidth = ref(446)
@@ -346,43 +404,96 @@
             )
 
             const useWrapperCopy = () => {
-                if (insights_Store.activePreviewGuid !== undefined) {
-                    const _index = insights_Store.previewTabs.findIndex(
-                        (el) =>
-                            el.asset.guid === insights_Store.activePreviewGuid
-                    )
-                    useCopy(
-                        insights_Store.previewTabs[_index].columns,
-                        insights_Store.previewTabs[_index].rows
-                    )
+                if (fullScreenMode.value && selectedAsset.value) {
+                    if (fullScreenTabActive.value === 0) {
+                        const _index = insights_Store.previewTabs.findIndex(
+                            (el) =>
+                                el.asset.guid ===
+                                insights_Store.activePreviewGuid
+                        )
+                        useCopy(
+                            insights_Store.previewTabs[_index].columns,
+                            insights_Store.previewTabs[_index].rows
+                        )
+                    } else if (fullScreenTabActive.value === 1) {
+                        useCopy(
+                            activeInlineTab.value.playground.editor.columnList,
+                            activeInlineTab.value.playground.editor.dataList
+                        )
+                    }
                 } else {
-                    useCopy(
-                        activeInlineTab.value.playground.editor.columnList,
-                        activeInlineTab.value.playground.editor.dataList
-                    )
+                    if (insights_Store.activePreviewGuid !== undefined) {
+                        const _index = insights_Store.previewTabs.findIndex(
+                            (el) =>
+                                el.asset.guid ===
+                                insights_Store.activePreviewGuid
+                        )
+                        useCopy(
+                            insights_Store.previewTabs[_index].columns,
+                            insights_Store.previewTabs[_index].rows
+                        )
+                    } else {
+                        useCopy(
+                            activeInlineTab.value.playground.editor.columnList,
+                            activeInlineTab.value.playground.editor.dataList
+                        )
+                    }
                 }
             }
             const useWrapperExport = () => {
-                if (insights_Store.activePreviewGuid !== undefined) {
-                    const _index = insights_Store.previewTabs.findIndex(
-                        (el) =>
-                            el.asset.guid === insights_Store.activePreviewGuid
-                    )
-                    useTableExport(
-                        null,
-                        insights_Store.previewTabs[_index].columns,
-                        insights_Store.previewTabs[_index].rows
-                    )
+                if (fullScreenMode.value && selectedAsset.value) {
+                    if (fullScreenTabActive.value === 0) {
+                        const _index = insights_Store.previewTabs.findIndex(
+                            (el) =>
+                                el.asset.guid ===
+                                insights_Store.activePreviewGuid
+                        )
+                        useTableExport(
+                            null,
+                            insights_Store.previewTabs[_index].columns,
+                            insights_Store.previewTabs[_index].rows
+                        )
+                    } else if (fullScreenTabActive.value === 1) {
+                        useTableExport(
+                            activeInlineTab.value?.queryId
+                                ? activeInlineTab.value?.label
+                                : null,
+                            activeInlineTab.value.playground.editor.columnList,
+                            activeInlineTab.value.playground.editor.dataList
+                        )
+                    }
                 } else {
-                    useTableExport(
-                        activeInlineTab.value?.queryId
-                            ? activeInlineTab.value?.label
-                            : null,
-                        activeInlineTab.value.playground.editor.columnList,
-                        activeInlineTab.value.playground.editor.dataList
-                    )
+                    if (insights_Store.activePreviewGuid !== undefined) {
+                        const _index = insights_Store.previewTabs.findIndex(
+                            (el) =>
+                                el.asset.guid ===
+                                insights_Store.activePreviewGuid
+                        )
+                        useTableExport(
+                            null,
+                            insights_Store.previewTabs[_index].columns,
+                            insights_Store.previewTabs[_index].rows
+                        )
+                    } else {
+                        useTableExport(
+                            activeInlineTab.value?.queryId
+                                ? activeInlineTab.value?.label
+                                : null,
+                            activeInlineTab.value.playground.editor.columnList,
+                            activeInlineTab.value.playground.editor.dataList
+                        )
+                    }
                 }
             }
+
+            const isResultTabPopulated = computed(
+                () =>
+                    activeInlineTab.value.playground.resultsPane.result
+                        .totalRowsCount >= 0 &&
+                    activeInlineTab.value.playground.editor.columnList.length >
+                        0
+            )
+
             const columnsCount = computed(() => {
                 if (insights_Store.activePreviewGuid !== undefined) {
                     const _index = insights_Store.previewTabs.findIndex(
@@ -401,27 +512,59 @@
                 }
             })
             const columnsList = computed(() => {
-                if (insights_Store.activePreviewGuid !== undefined) {
-                    const index = insights_Store.previewTabs.findIndex(
-                        (el) =>
-                            el.asset.guid === insights_Store.activePreviewGuid
-                    )
-                    if (index < 0) return []
-                    return insights_Store.previewTabs[index]?.columns ?? []
+                if (fullScreenMode.value && selectedAsset.value) {
+                    if (fullScreenTabActive.value === 0) {
+                        const index = insights_Store.previewTabs.findIndex(
+                            (el) =>
+                                el.asset.guid ===
+                                insights_Store.activePreviewGuid
+                        )
+                        if (index < 0) return []
+                        return insights_Store.previewTabs[index]?.columns ?? []
+                    } else if (fullScreenTabActive.value === 1) {
+                        return activeInlineTab.value.playground.editor
+                            .columnList
+                    }
                 } else {
-                    return activeInlineTab.value.playground.editor.columnList
+                    if (insights_Store.activePreviewGuid !== undefined) {
+                        const index = insights_Store.previewTabs.findIndex(
+                            (el) =>
+                                el.asset.guid ===
+                                insights_Store.activePreviewGuid
+                        )
+                        if (index < 0) return []
+                        return insights_Store.previewTabs[index]?.columns ?? []
+                    } else {
+                        return activeInlineTab.value.playground.editor
+                            .columnList
+                    }
                 }
             })
             const dataList = computed(() => {
-                if (insights_Store.activePreviewGuid !== undefined) {
-                    const index = insights_Store.previewTabs.findIndex(
-                        (el) =>
-                            el.asset.guid === insights_Store.activePreviewGuid
-                    )
-                    if (index < 0) return []
-                    return insights_Store.previewTabs[index]?.rows ?? {}
+                if (fullScreenMode.value && selectedAsset.value) {
+                    if (fullScreenTabActive.value === 0) {
+                        const index = insights_Store.previewTabs.findIndex(
+                            (el) =>
+                                el.asset.guid ===
+                                insights_Store.activePreviewGuid
+                        )
+                        if (index < 0) return []
+                        return insights_Store.previewTabs[index]?.rows ?? []
+                    } else if (fullScreenTabActive.value === 1) {
+                        return activeInlineTab.value.playground.editor.dataList
+                    }
                 } else {
-                    return activeInlineTab.value.playground.editor.dataList
+                    if (insights_Store.activePreviewGuid !== undefined) {
+                        const index = insights_Store.previewTabs.findIndex(
+                            (el) =>
+                                el.asset.guid ===
+                                insights_Store.activePreviewGuid
+                        )
+                        if (index < 0) return []
+                        return insights_Store.previewTabs[index]?.rows ?? []
+                    } else {
+                        return activeInlineTab.value.playground.editor.dataList
+                    }
                 }
             })
 
@@ -439,16 +582,14 @@
                 }
             })
 
-            const fullScreenMode = ref(false)
             const toggleFullScreenMode = () => {
                 fullScreenMode.value = !fullScreenMode.value
             }
 
-            const getResultsIcon = () => {
+            const getResultsIcon = computed(() => {
                 if (
-                    activeInlineTab.value.playground.editor.columnList.length >
-                        0 &&
-                    activeInlineTab.value.playground.editor.dataList.length > 0
+                    activeInlineTab.value.playground.resultsPane.result
+                        .isQueryRunning === 'success'
                 ) {
                     return 'QueryOutputSuccess'
                 } else if (
@@ -459,7 +600,7 @@
                 } else {
                     return 'QueryOutputNeutral'
                 }
-            }
+            })
 
             // BREAKPOINTS
 
@@ -479,6 +620,10 @@
             const handleCloseFullScreen = () => {
                 fullScreenMode.value = false
             }
+
+            const changeFullScreenTabActive = (tabIndex) => {
+                fullScreenTabActive.value = tabIndex
+            }
             const debouncedFn = useDebounceFn(footerResizeHandler, 100)
 
             onMounted(() => {
@@ -495,6 +640,9 @@
             })
 
             return {
+                changeFullScreenTabActive,
+                isResultTabPopulated,
+                fullScreenTabActive,
                 handleCloseFullScreen,
                 previewTabsWidth,
                 footerRef,
@@ -538,8 +686,14 @@
     .tab-active {
         background: white;
         @apply shadow !important;
-        padding: 4px 8px;
+
         @apply rounded;
+    }
+    .not-active {
+        @apply bg-new-gray-200;
+    }
+    .tab-active {
+        @apply bg-white;
     }
 </style>
 <style lang="less" module></style>

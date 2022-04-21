@@ -384,7 +384,6 @@
             watch(
                 isQueryRunning,
                 (newIsQueryRunning) => {
-                    debugger
                     if (!newIsQueryRunning) return
                     if (
                         insights_Store.insertionType === 'FILO' &&

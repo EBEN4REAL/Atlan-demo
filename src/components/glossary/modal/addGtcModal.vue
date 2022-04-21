@@ -13,7 +13,7 @@
         :footer="null"
     >
         <div
-            v-if="!hasCreatePermission"
+            v-if="hasCreatePermission !== undefined && !hasCreatePermission"
             class="px-3 py-2 mb-3 bg-gray-100 fixed top-14 rounded text-gray-500 text-xs"
             style="width: 40%"
         >
@@ -190,20 +190,20 @@
                 </div>
             </div>
             <a-button
-                v-if="hasCreatePermission"
-                type="primary"
-                @click="handleSave"
-                :loading="isLoading"
-                class="self-end bg-primary"
-                >Create</a-button
-            >
-            <a-button
-                v-else
+                v-if="hasCreatePermission !== undefined && !hasCreatePermission"
                 type="primary"
                 @click="handleRequest"
                 :loading="isLoading"
                 class="self-end bg-primary"
                 >Request</a-button
+            >
+            <a-button
+                v-else
+                type="primary"
+                @click="handleSave"
+                :loading="isLoading"
+                class="self-end bg-primary"
+                >Create</a-button
             >
         </div>
     </a-modal>

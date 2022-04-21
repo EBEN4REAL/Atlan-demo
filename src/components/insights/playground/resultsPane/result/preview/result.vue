@@ -267,7 +267,7 @@
                     (el) => el.asset.guid === insights_Store.activePreviewGuid
                 )
 
-                abortQuery(index)
+                abortQuery(insights_Store.previewTabs[index].asset.guid)
             }
 
             return {

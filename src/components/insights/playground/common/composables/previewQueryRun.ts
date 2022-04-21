@@ -1,4 +1,11 @@
-import { ref, toRaw, Ref, watch, callWithAsyncErrorHandling } from 'vue'
+import {
+    ref,
+    toRaw,
+    Ref,
+    watch,
+    callWithAsyncErrorHandling,
+    computed,
+} from 'vue'
 import { useSSE } from '~/modules/useSSE'
 import { map } from '~/services/sql/query/key'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
@@ -47,14 +54,15 @@ export default function useRunQuery() {
     }
 
     const previewRun = ({
+        guid,
         queryText,
         attributeValue,
         tabIndex,
         tabsArray,
         getData,
         limitRows,
-        previewTabIndex,
     }: {
+        guid: string
         queryText: string
         attributeValue: string
         getData: ({
@@ -71,9 +79,11 @@ export default function useRunQuery() {
         limitRows?: Ref<{ checked: boolean; rowsCount: number }>
         tabsArray: Ref<activeInlineTabInterface[]>
         tabIndex: number
-        previewTabIndex: number
     }) => {
         const insights_Store = insightsStore()
+        const previewTabIndex = computed(() =>
+            insights_Store.previewTabs.findIndex((el) => el.asset.guid === guid)
+        )
         // do not change this. This is a workaround for the issue
         //FIXME:
         let activeInlineTab = ref(tabsArray.value[tabIndex])
@@ -98,12 +108,14 @@ export default function useRunQuery() {
             insights_Store.activePreviewGuid
         )
 
-        insights_Store.previewTabs[previewTabIndex].isQueryRunning = 'loading'
-        insights_Store.previewTabs[previewTabIndex].isQueryAborted = false
+        insights_Store.previewTabs[previewTabIndex.value].isQueryRunning =
+            'loading'
+        insights_Store.previewTabs[previewTabIndex.value].isQueryAborted = false
 
         /* Setting it undefined for new run */
-        if (insights_Store.previewTabs[previewTabIndex]?.runQueryId) {
-            insights_Store.previewTabs[previewTabIndex].runQueryId = undefined
+        if (insights_Store.previewTabs[previewTabIndex.value]?.runQueryId) {
+            insights_Store.previewTabs[previewTabIndex.value].runQueryId =
+                undefined
         }
 
         // console.log('selected query: ', queryText)
@@ -149,7 +161,7 @@ export default function useRunQuery() {
         // start timer
         start()
 
-        insights_Store.previewTabs[previewTabIndex].abortQueryFn = reset
+        insights_Store.previewTabs[previewTabIndex.value].abortQueryFn = reset
 
         const {
             eventSource,
@@ -162,15 +174,16 @@ export default function useRunQuery() {
             pathVariables,
             body: sqlBody,
         })
-        insights_Store.previewTabs[previewTabIndex].eventSourceInstance =
+        insights_Store.previewTabs[previewTabIndex.value].eventSourceInstance =
             eventSource.value
 
         watch([isLoading, error], () => {
             try {
                 if (!isLoading.value && error.value === undefined) {
+                    // debugger
                     // if query aborted then don't show the midway fetched data
                     if (
-                        insights_Store.previewTabs[previewTabIndex]
+                        insights_Store.previewTabs[previewTabIndex.value]
                             .isQueryAborted
                     )
                         return
@@ -180,11 +193,11 @@ export default function useRunQuery() {
                         /* Saving the queryId */
                         if (
                             message?.queryId &&
-                            !insights_Store.previewTabs[previewTabIndex]
+                            !insights_Store.previewTabs[previewTabIndex.value]
                                 .runQueryId
                         ) {
                             insights_Store.previewTabs[
-                                previewTabIndex
+                                previewTabIndex.value
                             ].runQueryId = message?.queryId
                         }
                         // debugger
@@ -199,39 +212,39 @@ export default function useRunQuery() {
                                 rows: toRaw(dataList.value),
                                 columns: toRaw(columnList.value),
                                 executionTime: message?.details.executionTime,
-                                previewTabIndex,
+                                previewTabIndex: previewTabIndex.value,
                             })
                             if (eventSource.value?.close) {
                                 eventSource.value.close()
                             }
                             /* Query related data */
                             insights_Store.previewTabs[
-                                previewTabIndex
+                                previewTabIndex.value
                             ].isQueryRunning = 'success'
                             insights_Store.previewTabs[
-                                previewTabIndex
+                                previewTabIndex.value
                             ].executionTime = message?.details.executionTime
                             insights_Store.previewTabs[
-                                previewTabIndex
+                                previewTabIndex.value
                             ].totalRowsCount =
                                 message?.details.totalRowsStreamed
                             insights_Store.previewTabs[
-                                previewTabIndex
+                                previewTabIndex.value
                             ].queryErrorObj = {}
                             /* Setting it undefined for new run */
 
                             insights_Store.previewTabs[
-                                previewTabIndex
+                                previewTabIndex.value
                             ].runQueryId = undefined
 
-                            // insights_Store.previewTabs[previewTabIndex].tabQueryState =
+                            // insights_Store.previewTabs[previewTabIndex.value].tabQueryState =
                             //     activeTabKey.value === tabsArray.value[tabIndex].key
                             //         ? false
                             //         : true
 
                             let endTime = new Date()
                             insights_Store.previewTabs[
-                                previewTabIndex
+                                previewTabIndex.value
                             ].executionTime = endTime - startTime
                             //IMP: connection need to be closed here
                             if (eventSource.value?.close) {
@@ -247,20 +260,20 @@ export default function useRunQuery() {
                             }
                             /* Query related data */
                             insights_Store.previewTabs[
-                                previewTabIndex
+                                previewTabIndex.value
                             ].queryErrorObj = message
                             insights_Store.previewTabs[
-                                previewTabIndex
+                                previewTabIndex.value
                             ].totalRowsCount = -1
                             insights_Store.previewTabs[
-                                previewTabIndex
+                                previewTabIndex.value
                             ].executionTime = -1
                             insights_Store.previewTabs[
-                                previewTabIndex
+                                previewTabIndex.value
                             ].isQueryRunning = 'error'
                             /* Setting it undefined for new run */
                             insights_Store.previewTabs[
-                                previewTabIndex
+                                previewTabIndex.value
                             ].runQueryId = undefined
                             //IMP: connection need to be closed here
                             if (eventSource.value?.close) {
@@ -272,21 +285,26 @@ export default function useRunQuery() {
                 } else if (
                     !isLoading.value &&
                     error.value !== undefined &&
-                    !insights_Store.previewTabs[previewTabIndex].isQueryAborted
+                    !insights_Store.previewTabs[previewTabIndex.value]
+                        .isQueryAborted
                 ) {
-                    insights_Store.previewTabs[previewTabIndex].runQueryId =
-                        undefined
-                    insights_Store.previewTabs[previewTabIndex].totalRowsCount =
-                        -1
-                    insights_Store.previewTabs[previewTabIndex].executionTime =
-                        -1
-                    insights_Store.previewTabs[previewTabIndex].isQueryRunning =
-                        'error'
+                    insights_Store.previewTabs[
+                        previewTabIndex.value
+                    ].runQueryId = undefined
+                    insights_Store.previewTabs[
+                        previewTabIndex.value
+                    ].totalRowsCount = -1
+                    insights_Store.previewTabs[
+                        previewTabIndex.value
+                    ].executionTime = -1
+                    insights_Store.previewTabs[
+                        previewTabIndex.value
+                    ].isQueryRunning = 'error'
                     /* ------------------- */
                     /* USE SSE ERROR */
                     if (error.value?.statusText) {
                         insights_Store.previewTabs[
-                            previewTabIndex
+                            previewTabIndex.value
                         ].queryErrorObj = {
                             requestId: '',
                             errorName: '',
@@ -299,7 +317,7 @@ export default function useRunQuery() {
                         }
                     } else if (error.value?.error) {
                         insights_Store.previewTabs[
-                            previewTabIndex
+                            previewTabIndex.value
                         ].queryErrorObj = {
                             requestId: '',
                             errorName: '',
@@ -314,8 +332,9 @@ export default function useRunQuery() {
 
                     /* Setting it undefined for new run */
 
-                    insights_Store.previewTabs[previewTabIndex].runQueryId =
-                        undefined
+                    insights_Store.previewTabs[
+                        previewTabIndex.value
+                    ].runQueryId = undefined
 
                     //IMP: connection need to be closed here
                     if (eventSource.value?.close) {
@@ -324,6 +343,7 @@ export default function useRunQuery() {
                     reset()
                 }
             } catch (e) {
+                debugger
                 if (eventSource.value?.close) {
                     eventSource.value.close()
                 }
@@ -332,66 +352,76 @@ export default function useRunQuery() {
         })
     }
 
-    const abortQuery = (previewTabIndex: number) => {
+    const abortQuery = (guid: string) => {
         const insights_Store = insightsStore()
+        const previewTabIndex = computed(() =>
+            insights_Store.previewTabs.findIndex((el) => el.asset.guid === guid)
+        )
 
         if (
-            insights_Store.previewTabs[previewTabIndex].eventSourceInstance
-                ?.close
+            insights_Store.previewTabs[previewTabIndex.value]
+                .eventSourceInstance?.close
         ) {
             insights_Store.previewTabs[
-                previewTabIndex
+                previewTabIndex.value
             ].eventSourceInstance?.close()
             // debugger
         }
 
         // stop timer
 
-        if (insights_Store.previewTabs[previewTabIndex].abortQueryFn) {
-            insights_Store.previewTabs[previewTabIndex].abortQueryFn()
+        if (insights_Store.previewTabs[previewTabIndex.value].abortQueryFn) {
+            insights_Store.previewTabs[previewTabIndex.value].abortQueryFn()
             console.log('clock running abort timer stop 1')
         }
 
-        // insights_Store.previewTabs[previewTabIndex].tabQueryState =
+        // insights_Store.previewTabs[previewTabIndex.value].tabQueryState =
         //     false
 
         if (
             canQueryAbort(
                 getConnectorName(
-                    insights_Store.previewTabs[previewTabIndex].asset.attributes
-                        .qualifiedName
+                    insights_Store.previewTabs[previewTabIndex.value].asset
+                        .attributes.qualifiedName
                 ) as string
             ) &&
-            insights_Store.previewTabs[previewTabIndex].runQueryId
+            insights_Store.previewTabs[previewTabIndex.value].runQueryId
         ) {
             // stop timer
 
             /* Abort Query logic */
-            insights_Store.previewTabs[previewTabIndex].buttonDisable = true
+            insights_Store.previewTabs[previewTabIndex.value].buttonDisable =
+                true
             const body = {
-                queryId: insights_Store.previewTabs[previewTabIndex].runQueryId,
+                queryId:
+                    insights_Store.previewTabs[previewTabIndex.value]
+                        .runQueryId,
                 dataSourceName: getConnectionQualifiedName(
-                    insights_Store.previewTabs[previewTabIndex].asset.attributes
-                        .qualifiedName
+                    insights_Store.previewTabs[previewTabIndex.value].asset
+                        .attributes.qualifiedName
                 ),
             }
 
             /* Change loading state */
             Insights.AbortQuery(body)
                 .then(() => {
-                    insights_Store.previewTabs[previewTabIndex].isQueryRunning =
-                        ''
-                    insights_Store.previewTabs[previewTabIndex].isQueryAborted =
-                        true
+                    insights_Store.previewTabs[
+                        previewTabIndex.value
+                    ].isQueryRunning = ''
+                    insights_Store.previewTabs[
+                        previewTabIndex.value
+                    ].isQueryAborted = true
 
                     insights_Store.previewTabs[
-                        previewTabIndex
+                        previewTabIndex.value
                     ].eventSourceInstance = undefined
 
-                    insights_Store.previewTabs[previewTabIndex].buttonDisable =
-                        false
-                    insights_Store.previewTabs[previewTabIndex].runQueryId =
-                        undefined
+                    insights_Store.previewTabs[
+                        previewTabIndex.value
+                    ].buttonDisable = false
+                    insights_Store.previewTabs[
+                        previewTabIndex.value
+                    ].runQueryId = undefined
                 })
                 .catch((error) => {
                     /* Query related data */
@@ -416,43 +446,54 @@ export default function useRunQuery() {
                             errorMessage.slice(1)
                     }
 
-                    insights_Store.previewTabs[previewTabIndex].queryErrorObj =
-                        insights_Store.previewTabs[
-                            previewTabIndex
-                        ].queryErrorObj = {
-                            requestId:
-                                insights_Store.previewTabs[previewTabIndex]
-                                    .runQueryId,
-                            errorName: errorMessage,
-                            errorMessage: errorMessage,
-                            errorCode: errorCode,
-                            developerMessage: error.value?.statusText,
-                            errorDescription: '',
-                        }
-                    insights_Store.previewTabs[previewTabIndex].totalRowsCount =
-                        -1
-                    insights_Store.previewTabs[previewTabIndex].executionTime =
-                        -1
-                    insights_Store.previewTabs[previewTabIndex].isQueryRunning =
-                        'error'
+                    insights_Store.previewTabs[
+                        previewTabIndex.value
+                    ].queryErrorObj = insights_Store.previewTabs[
+                        previewTabIndex.value
+                    ].queryErrorObj = {
+                        requestId:
+                            insights_Store.previewTabs[previewTabIndex.value]
+                                .runQueryId,
+                        errorName: errorMessage,
+                        errorMessage: errorMessage,
+                        errorCode: errorCode,
+                        developerMessage: error.value?.statusText,
+                        errorDescription: '',
+                    }
+                    insights_Store.previewTabs[
+                        previewTabIndex.value
+                    ].totalRowsCount = -1
+                    insights_Store.previewTabs[
+                        previewTabIndex.value
+                    ].executionTime = -1
+                    insights_Store.previewTabs[
+                        previewTabIndex.value
+                    ].isQueryRunning = 'error'
                     /* ------------------- */
                     /* Setting it undefined for new run */
 
-                    insights_Store.previewTabs[previewTabIndex].runQueryId =
-                        undefined
-                    insights_Store.previewTabs[previewTabIndex].buttonDisable =
-                        false
+                    insights_Store.previewTabs[
+                        previewTabIndex.value
+                    ].runQueryId = undefined
+                    insights_Store.previewTabs[
+                        previewTabIndex.value
+                    ].buttonDisable = false
                 })
         } else {
             // FIXME: code repetetion
-            insights_Store.previewTabs[previewTabIndex].isQueryRunning = ''
-            insights_Store.previewTabs[previewTabIndex].isQueryAborted = true
+            insights_Store.previewTabs[previewTabIndex.value].isQueryRunning =
+                ''
+            insights_Store.previewTabs[previewTabIndex.value].isQueryAborted =
+                true
 
-            insights_Store.previewTabs[previewTabIndex].eventSourceInstance =
+            insights_Store.previewTabs[
+                previewTabIndex.value
+            ].eventSourceInstance = undefined
+
+            insights_Store.previewTabs[previewTabIndex.value].buttonDisable =
+                false
+            insights_Store.previewTabs[previewTabIndex.value].runQueryId =
                 undefined
-
-            insights_Store.previewTabs[previewTabIndex].buttonDisable = false
-            insights_Store.previewTabs[previewTabIndex].runQueryId = undefined
         }
     }
 

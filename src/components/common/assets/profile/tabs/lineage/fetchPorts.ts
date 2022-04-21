@@ -2,17 +2,16 @@ import { computed, ref } from 'vue'
 import bodybuilder from 'bodybuilder'
 import { assetInterface } from '~/types/assets/asset.interface'
 import useIndexSearch from '~/composables/discovery/useIndexSearch'
+import { getNodeTypeText } from './util'
 
-export default function fetchColumns(
-    typeName,
-    qualifiedName,
-    offset,
-    limit = 5
-) {
-    const computedTypeName = ['view', 'materialisedview'].includes(typeName)
-        ? 'view'
-        : 'table'
-
+export default function fetchPorts(typeName, qualifiedName, offset, limit = 5) {
+    const portTypeNameMap = {
+        Table: 'Column',
+        View: 'Column',
+        MaterialisedView: 'Column',
+        TableauDatasource: 'TableauDatasourceField',
+    }
+    const base = bodybuilder()
     const attributes = [
         'dataType',
         'qualifiedName',
@@ -23,55 +22,52 @@ export default function fetchColumns(
         'isForeign',
         'announcementType',
     ]
-    const relationAttributes = []
-    const base = bodybuilder()
-    const preference = { sort: 'order-asc' }
-    const [name, type] = preference.sort.split('-')
     const facets = [
         {
+            id: 'active',
             key: '__state',
             value: 'ACTIVE',
             type: 'must',
             prop: 'term',
         },
         {
+            id: 'typename',
             key: '__typeName.keyword',
-            value: 'Column',
+            value: portTypeNameMap[typeName],
             type: 'must',
             prop: 'term',
         },
         {
+            id: 'haslineage',
             key: 'field',
             value: '__hasLineage',
             type: 'must',
             prop: 'exists',
         },
         {
-            key: `${computedTypeName}QualifiedName`,
+            id: 'parent',
+            key: `${getNodeTypeText[typeName].toLowerCase()}QualifiedName`,
             value: qualifiedName,
-            type: 'should',
-            prop: 'terms',
+            type: 'must',
+            prop:
+                typeName === 'TableauDatasource'
+                    ? 'match_phrase_prefix'
+                    : 'term',
         },
     ]
 
-    facets.push({
-        key: `${computedTypeName === 'view' ? 'table' : 'view'}QualifiedName`,
-        value: ['def'],
-        type: 'should',
-        prop: 'terms',
-    })
-
-    base.sort(name, type)
+    base.sort('order', 'asc')
     base.from(offset)
     base.size(limit)
     base.filterMinimumShouldMatch(1)
+
     facets.forEach((x) => {
-        const { key, value, type: t, prop } = x
-        const filterType = t === 'should' ? 'orFilter' : 'filter'
+        const { key, value, type, prop } = x
+        const filterType = type === 'should' ? 'orFilter' : 'filter'
         base[filterType](prop, key, value)
     })
 
-    const localKey = ref('LINEAGE_COLUMNS_TWO')
+    const localKey = ref('LINEAGE_PORTS')
     const isCache = false
     const tempQuery = base.build()
     const dsl = {
@@ -81,7 +77,7 @@ export default function fetchColumns(
     const body = {
         dsl,
         attributes,
-        relationAttributes,
+        relationAttributes: [],
         suppressLogs: true,
     }
     const { data, error } = useIndexSearch<assetInterface>(

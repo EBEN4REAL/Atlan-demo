@@ -160,13 +160,13 @@
 
                     <div>
                         <p class="info-title">Reference</p>
-                        <router-link
-                            :to="link"
+                        <a
+                            :href="link"
                             target="_blank"
                             class="mb-2 font-medium text-primary"
                         >
                             {{ name(selectedRun) }}
-                        </router-link>
+                        </a>
                     </div>
                     <!-- <div
         v-if="error"

@@ -1,5 +1,7 @@
 import { copyToClipboard } from '~/utils/clipboard'
 import { message } from 'ant-design-vue'
+import dayjs from 'dayjs'
+
 const getDate = () => {
     const now = new Date()
     let day = now.toLocaleDateString('en-US', { day: 'numeric' })
@@ -43,7 +45,11 @@ const formatColumns = (data, index, seperator) => {
 }
 
 export const useTableExport = (name, columnList, rows) => {
-    let filename = name ? `${getDate()}_${name}` : 'atlan_analysis.csv'
+    let filename = name
+        ? `${getDate()}_${name}`
+        : `atlan-analysis-${dayjs().format('YYYY-MM-DD')}-at-${dayjs().format(
+              'hh:mm A'
+          )}.csv`
 
     // list all the headers in array
     let headers = columnList.map((el) => el.title)

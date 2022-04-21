@@ -193,6 +193,11 @@
                         </div>
                         <div
                             class="flex items-center w-full h-full text-sm border-t border-b border-r rounded-r cursor-pointer text-new-gray-700 bg-new-gray-200 border-new-gray-300"
+                            :class="
+                                !isResultTabPopulated
+                                    ? 'border-l rounded-l'
+                                    : ''
+                            "
                         >
                             <a-tabs
                                 :class="$style.previewtab_footer"

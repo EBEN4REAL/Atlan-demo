@@ -7,6 +7,16 @@ const workflowStore = useWorkflowStore()
 const { packageType, name } = useWorkflowInfo()
 const { source } = usePackageInfo()
 
+const findIntervalByDate = (gt: number, lt = Date.now()) => {
+    if (gt) {
+        const days = Math.round((lt - gt) / (1000 * 60 * 60 * 24)) // ms * seconds * minutes * hours
+        if (days < 2) return '1h'
+        if (days < 20) return '1d'
+        return '1w'
+    }
+    return 'day'
+}
+
 export interface WidgetData {
     id: string
     label?: string
@@ -80,17 +90,6 @@ export const Metadata: WidgetData[] = [
         componentData: {
             query: {
                 size: 0,
-                aggs: {
-                    group_by_date: {
-                        date_histogram: {
-                            field: '__timestamp.date',
-                            calendar_interval: 'day',
-                            time_zone:
-                                Intl.DateTimeFormat().resolvedOptions()
-                                    .timeZone,
-                        },
-                    },
-                },
             },
             graphType: 'line',
             graphOptions: {
@@ -114,6 +113,9 @@ export const Metadata: WidgetData[] = [
                         title: {
                             display: false,
                             text: 'Date',
+                        },
+                        ticks: {
+                            maxTicksLimit: 12,
                         },
                     },
                     y: {
@@ -168,6 +170,20 @@ export const Metadata: WidgetData[] = [
                 if (filters?.dateRange) {
                     query.filter('range', '__timestamp.date', filters.dateRange)
                 }
+
+                query.aggregation(
+                    'date_histogram',
+                    {
+                        field: '__timestamp.date',
+                        calendar_interval: findIntervalByDate(
+                            filters?.dateRange?.gt,
+                            filters?.dateRange?.lt
+                        ),
+                        time_zone:
+                            Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    },
+                    'group_by_date'
+                )
 
                 return query.build()
             },

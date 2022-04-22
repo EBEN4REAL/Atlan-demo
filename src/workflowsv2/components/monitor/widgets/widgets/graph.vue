@@ -18,6 +18,10 @@
         toRefs,
         watch,
     } from 'vue'
+    import dayjs from 'dayjs'
+    import utc from 'dayjs/plugin/utc'
+    import timezone from 'dayjs/plugin/timezone'
+    import advanced from 'dayjs/plugin/advancedFormat'
 
     import { Chart, registerables } from 'chart.js'
 
@@ -34,6 +38,10 @@
     // Setting defaults
     Chart.defaults.backgroundColor = '#4A7ADF22'
     Chart.defaults.borderColor = '#225BD2'
+
+    dayjs.extend(utc)
+    dayjs.extend(timezone)
+    dayjs.extend(advanced)
 
     const Bar = defineAsyncComponent({
         loader: () => import('../graph/bar.vue'),
@@ -82,38 +90,31 @@
                     aggregations.value[
                         data.value?.componentData.dataOptions?.aggregationKey
                     ]
-                const buckets = agg?.buckets
+                const buckets = agg?.buckets as any[]
+                const keyMap: string[] = []
 
-                const keyMap = buckets?.map((i) => {
-                    if (
-                        data.value.componentData.dataOptions.keyConfig?.type?.toUpperCase() ===
-                        'DATE'
-                    ) {
-                        return formatDateTime(i.key, {
-                            month: 'short',
-                            day: 'numeric',
-                            timeZone:
-                                Intl.DateTimeFormat().resolvedOptions()
-                                    .timeZone,
-                        })
-                    }
-                    if (
-                        data.value.componentData.dataOptions.keyConfig?.type?.toUpperCase() ===
-                        'RANGE'
-                    ) {
-                        if (
-                            data.value.componentData.dataOptions.keyConfig
-                                ?.interval
-                        ) {
-                            // const diff =
-                            //     i.key -
-                            //     data?.value?.componentData.dataOptions.keyConfig
-                            //         ?.interval
-                            return `${i.key}`
-                        }
-                    }
-                    return i.key
-                })
+                if (
+                    data.value.componentData.dataOptions.keyConfig?.type?.toUpperCase() ===
+                    'DATE'
+                ) {
+                    const days = Math.round(
+                        (buckets[buckets.length - 1].key - buckets[0].key) /
+                            (1000 * 60 * 60 * 24)
+                    ) // ms * seconds * minutes * hours
+
+                    let formatter = ''
+                    if (days < 2) formatter = 'h a'
+                    else if (days < 20) formatter = 'MMM D'
+                    else formatter = 'MMM D'
+
+                    buckets?.forEach((i) =>
+                        keyMap.push(
+                            dayjs.tz(i.key, dayjs.tz.guess()).format(formatter)
+                        )
+                    )
+                } else {
+                    buckets?.forEach((i) => keyMap.push(i.key))
+                }
 
                 const valueMap = buckets?.map((i) => i.doc_count)
 

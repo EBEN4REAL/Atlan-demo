@@ -27,17 +27,26 @@
     import useIndexSearch from '~/workflowsv2/composables/useIndexSearch'
 
     Chart.register(...registerables)
-    Chart.register(ChartDataLabels)
+    // Chart.register(ChartDataLabels)
 
     // import useLogSearch from '~/composables/reporting/useLogSearch'
+
+    // Setting defaults
+    Chart.defaults.backgroundColor = '#4A7ADF22'
+    Chart.defaults.borderColor = '#225BD2'
 
     const Bar = defineAsyncComponent({
         loader: () => import('../graph/bar.vue'),
     })
 
+    const Line = defineAsyncComponent({
+        loader: () => import('../graph/line.vue'),
+    })
+
     export default defineComponent({
         components: {
             Bar,
+            Line,
         },
         props: {
             data: {
@@ -75,24 +84,6 @@
                     ]
                 const buckets = agg?.buckets
 
-                if (data.value?.componentData.graphType === 'scatter') {
-                    const temp = []
-                    buckets?.forEach((element) => {
-                        temp.push({
-                            x: element.doc_count,
-                            y: element.key,
-                        })
-                    })
-
-                    return {
-                        labels: 'keyMap',
-                        datasets: [
-                            {
-                                data: temp,
-                            },
-                        ],
-                    }
-                }
                 const keyMap = buckets?.map((i) => {
                     if (
                         data.value.componentData.dataOptions.keyConfig?.type?.toUpperCase() ===
@@ -123,15 +114,15 @@
                     }
                     return i.key
                 })
+
                 const valueMap = buckets?.map((i) => i.doc_count)
+
                 return {
                     labels: keyMap,
                     datasets: [
                         {
                             data: valueMap,
-                            backgroundColor: ['#f4f6fd'],
-                            borderColor: ['#5277d7'],
-                            borderWidth: 1,
+                            // borderWidth: 2,
                         },
                     ],
                 }

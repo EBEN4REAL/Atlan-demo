@@ -92,35 +92,14 @@ export const Metadata: WidgetData[] = [
                     },
                 },
             },
-            graphType: 'bar',
+            graphType: 'line',
             graphOptions: {
                 responsive: true,
                 maintainAspectRatio: false,
+
                 plugins: {
                     legend: {
                         display: false,
-                    },
-                    datalabels: {
-                        backgroundColor: '#fff',
-
-                        borderColor: '#f4f6fd',
-                        borderRadius: 25,
-                        borderWidth: 0.5,
-                        color: '#5277d7',
-                        // backgroundColor: function (context) {
-                        //     return context.dataset.backgroundColor
-                        // },
-
-                        clamp: true,
-                        padding: {
-                            top: 0,
-                            bottom: 0,
-                        },
-
-                        formatter: Math.round,
-                        offset: 20,
-
-                        anchor: 'center',
                     },
                     title: {
                         display: false,
@@ -130,8 +109,8 @@ export const Metadata: WidgetData[] = [
                     x: {
                         grid: {
                             display: false,
+                            borderColor: '#EFF1F5',
                         },
-
                         title: {
                             display: false,
                             text: 'Date',
@@ -139,13 +118,30 @@ export const Metadata: WidgetData[] = [
                     },
                     y: {
                         grid: {
-                            display: false,
+                            display: true,
                             drawBorder: false,
+                            borderColor: '#EFF1F5',
+                            color: '#EFF1F5',
                         },
                         ticks: {
+                            maxTicksLimit: 5,
                             display: false,
                         },
                     },
+                },
+                datasets: {},
+                elements: {
+                    line: {
+                        borderColor: '#225BD2',
+                        backgroundColor: '#4A7ADF22',
+                        borderWidth: 2,
+                        fill: true,
+                    },
+                    point: { pointRadius: 0 },
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index',
                 },
             },
             dataOptions: {

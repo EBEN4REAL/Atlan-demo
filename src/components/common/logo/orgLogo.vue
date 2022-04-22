@@ -40,8 +40,8 @@
                         >{{ getNameInitials(getNameInTitleCase(avatarName)) }}
                     </a-avatar>
                     <div
-                        :class="`absolute top-0 flex items-center justify-center w-full h-full transition-opacity bg-gray-700 opacity-0 bg-opacity-70 group-hover:opacity-100 ${
-                            avatarShape && 'rounded-full'
+                        :class="`overlay-edit-avatar absolute top-0 flex items-center justify-center w-full h-full transition-opacity bg-gray-700 opacity-0 bg-opacity-70 group-hover:opacity-100 ${
+                            avatarShape === 'circle' && 'rounded-full'
                         }`"
                     >
                         <span class="font-bold text-white">Edit</span>

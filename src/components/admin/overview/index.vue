@@ -58,7 +58,6 @@
                         :avatar-size="100"
                         :bordered="false"
                         class="mt-2 avatar-logo"
-                        avatar-shape="circle"
                     />
                     <div
                         class="absolute bottom-0 p-1 bg-white rounded-full left-20"
@@ -296,10 +295,13 @@
 </script>
 <style lang="less">
     .avatar-logo {
+        .overlay-edit-avatar {
+            border-radius: 8px !important;
+        }
         .ant-avatar-image {
             img {
-                border-radius: 50% !important;
-                padding: 2px !important;
+                border-radius: 8px !important;
+                padding: 0px !important;
             }
         }
     }

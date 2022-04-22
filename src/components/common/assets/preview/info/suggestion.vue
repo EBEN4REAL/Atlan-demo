@@ -3,7 +3,21 @@
         <div
             class="flex items-center justify-between text-sm text-gray-500 text-muted"
         >
-            Auto-Suggestion
+            <div class="flex text-gray-500">
+                Auto-Suggestion
+                <AtlanIcon
+                    icon="CaretLeft"
+                    class="pl-1 hover:text-primary-500"
+                    @click="handleNext(-1)"
+                    v-if="list.length > 1"
+                ></AtlanIcon>
+                <AtlanIcon
+                    icon="CaretRight"
+                    class="hover:text-primary-500"
+                    @click="handleNext(1)"
+                    v-if="list.length > 1"
+                ></AtlanIcon>
+            </div>
 
             <a-button
                 shape="round"
@@ -17,21 +31,6 @@
         </div>
         <div class="line-clamp-3">
             {{ list[currentIndex]?.key }}
-        </div>
-
-        <div class="flex text-gray-500">
-            <AtlanIcon
-                icon="CaretLeft"
-                class="hover:text-primary-500"
-                @click="handleNext(-1)"
-                v-if="currentIndex > 0 && list.length > 1"
-            ></AtlanIcon>
-            <AtlanIcon
-                icon="CaretRight"
-                class="hover:text-primary-500"
-                @click="handleNext(1)"
-                v-if="list.length > 1"
-            ></AtlanIcon>
         </div>
     </div>
 </template>

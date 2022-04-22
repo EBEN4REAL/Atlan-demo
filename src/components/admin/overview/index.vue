@@ -150,6 +150,7 @@
 </template>
 <script lang="ts">
     import { defineComponent, computed, Ref, ref, watch, toRefs } from 'vue'
+    import { message } from 'ant-design-vue'
     import DefaultLayout from '~/components/admin/layout.vue'
     import OrgLogo from '~/components/common/logo/orgLogo.vue'
     import useTenantData from '~/composables/tenant/useTenantData'
@@ -158,7 +159,6 @@
     import useOverviewCards from '~/components/admin/overview/composables/useOverviewCards'
     import AddCompanyAnnouncement from '~/components/admin/overview/addCompanyAnnouncement.vue'
     import CompanyAnnouncement from '~/components/common/widgets/announcement/companyAnnouncement.vue'
-
     import useUserData from '~/composables/user/useUserData'
     import { useTenantStore } from '~/store/tenant'
 
@@ -185,7 +185,7 @@
 
             const { logoUrl } = toRefs(tenant)
 
-            const updateTenant = (payload) => {
+            const updateTenant = (payload, cb = () => {}) => {
                 try {
                     updateStatus.value = 'loading'
                     const { data, error, isLoading } = useTenantUpdate(payload)
@@ -197,10 +197,12 @@
                                 updateStatus.value = 'success'
                                 showEditTenantNameModal.value = false
                                 announcementModalVisible.value = false
+                                cb(true)
                                 setTimeout(() => {
                                     updateStatus.value = ''
                                 }, 2500)
                             } else {
+                                cb(false)
                                 updateStatus.value = 'error'
                                 showEditTenantNameModal.value = false
                                 announcementModalVisible.value = false
@@ -238,7 +240,27 @@
                 tenantLocal.attributes.announcementUpdatedAt =
                     Date.now().toString()
                 tenantLocal.attributes.announcementUpdatedBy = username
-                updateTenant(tenantLocal)
+                const messageKey = Date.now()
+                message.loading({
+                    content: 'Deleting announcement',
+                    duration: 0,
+                    key: messageKey,
+                })
+                updateTenant(tenantLocal, (isSuccess: boolean) => {
+                    if (isSuccess) {
+                        message.success({
+                            content: 'Announcement deleted',
+                            duration: 1.5,
+                            key: messageKey,
+                        })
+                    } else {
+                        message.error({
+                            content: 'Failed to delete announcement',
+                            duration: 1.5,
+                            key: messageKey,
+                        })
+                    }
+                })
             }
             const getStatusIcon = (state) => {
                 if (state === 'loading') return 'CircleLoader'

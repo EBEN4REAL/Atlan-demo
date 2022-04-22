@@ -16,7 +16,7 @@
                     class="hidden text-center bg-primary-light sm:block"
                     :class="[
                         bordered ? 'mb-2' : '',
-                        avatarShape === 'circle' ? '' : '',
+                        avatarShape === 'circle' ? 'rounded-full' : '',
                     ]"
                     :style="{
                         width: avatarSize + 'px',
@@ -40,7 +40,9 @@
                         >{{ getNameInitials(getNameInTitleCase(avatarName)) }}
                     </a-avatar>
                     <div
-                        class="absolute top-0 flex items-center justify-center w-full h-full transition-opacity bg-gray-700 opacity-0 bg-opacity-70 group-hover:opacity-100"
+                        :class="`absolute top-0 flex items-center justify-center w-full h-full transition-opacity bg-gray-700 opacity-0 bg-opacity-70 group-hover:opacity-100 ${
+                            avatarShape && 'rounded-full'
+                        }`"
                     >
                         <span class="font-bold text-white">Edit</span>
                     </div>
@@ -110,7 +112,6 @@
 
             const { upload, isReady, uploadKey } = uploadLogo()
             const handleUploadAvatar = async (uploaded) => {
-                console.log('handle Upload', uploaded)
                 upload(uploaded.file)
                 uploadStarted.value = true
 

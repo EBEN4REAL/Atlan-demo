@@ -9,6 +9,8 @@
                 :footer="null"
             >
                 <AddCompanyAnnouncement
+                    :visible-modal="announcementModalVisible"
+                    :new-annoucement="newAnnoucement"
                     class="p-4"
                     @updateAnnouncement="updateAnnouncement"
                     @close="announcementModalVisible = false"
@@ -36,12 +38,12 @@
                         <AtlanButton2
                             :disabled="updateStatus === 'loading'"
                             :loading="updateStatus === 'loading'"
-                            @click="updateTenantDisplayName"
                             :label="
                                 updateStatus !== 'loading'
                                     ? 'Update'
                                     : 'Updating'
                             "
+                            @click="updateTenantDisplayName"
                         />
                     </div>
                 </div>
@@ -54,32 +56,45 @@
                         :avatar-name="name"
                         :avatar-size="100"
                         :bordered="false"
-                        class="mt-2"
+                        class="mt-2 avatar-logo"
+                        avatar-shape="circle"
                     />
-                    <div class="absolute bottom-0 p-1 bg-white left-20">
+                    <div
+                        class="absolute bottom-0 p-1 bg-white rounded-full left-20"
+                    >
                         <div
-                            class="p-1 bg-gray-100 border border-gray-300 px-1 py-0.5 text-gray-500"
+                            class="p-1 bg-gray-100 border border-gray-300 px-1 py-0.5 text-gray-500 rounded-full"
                         >
-                            <AtlanIcon icon="Pencil"></AtlanIcon>
+                            <AtlanIcon icon="Camera" />
                         </div>
                     </div>
-                    <div class="ml-5 text-2xl text-gray-700">
+                    <div class="ml-5 mr-1 text-2xl text-gray-700">
                         {{ name }}
                     </div>
+                    <AtlanIcon
+                        icon="Pencil"
+                        class="cursor-pointer"
+                        @click="showEditTenantNameModal = true"
+                    />
                 </div>
                 <div class="flex items-center gap-x-3">
-                    <AtlanButton2
+                    <!-- <AtlanButton2
                         size="large"
                         color="secondary"
                         label="Edit"
                         @click="showEditTenantNameModal = true"
-                    />
+                    /> -->
 
                     <AtlanButton2
                         size="large"
-                        prefixIcon="Megaphone"
+                        prefix-icon="Megaphone"
                         label="New Announcement"
-                        @click="announcementModalVisible = true"
+                        @click="
+                            () => {
+                                newAnnoucement = true
+                                announcementModalVisible = true
+                            }
+                        "
                     />
                 </div>
             </div>
@@ -158,6 +173,7 @@
             const { overviewCards } = useOverviewCards()
             const showEditTenantNameModal = ref(false)
             const announcementModalVisible = ref(false)
+            const newAnnoucement = ref(true)
             const { name, tenantRaw } = useTenantData()
             const newTenantName: Ref<string> = ref('')
             newTenantName.value = name.value
@@ -210,6 +226,7 @@
                 updateTenant(payload)
             }
             const editAnnouncement = () => {
+                newAnnoucement.value = false
                 announcementModalVisible.value = true
             }
             const deleteAnnouncement = () => {
@@ -249,11 +266,20 @@
                 updateAnnouncement,
                 editAnnouncement,
                 deleteAnnouncement,
+                newAnnoucement,
             }
         },
     })
 </script>
-<style lang="less" scoped>
+<style lang="less">
+    .avatar-logo {
+        .ant-avatar-image {
+            img {
+                border-radius: 50% !important;
+                padding: 2px !important;
+            }
+        }
+    }
     .overview-card {
         // width: 20.1875rem;
 

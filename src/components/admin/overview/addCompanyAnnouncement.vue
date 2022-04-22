@@ -52,21 +52,43 @@
                 @click="handleCancel"
             />
 
-            <AtlanButton2 label="Update" @click="handleUpdate" />
+            <AtlanButton2
+                :label="newAnnoucement ? 'Save' : 'Update'"
+                @click="handleUpdate"
+            />
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, Ref } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        ref,
+        Ref,
+        toRefs,
+        watch,
+        onMounted,
+    } from 'vue'
     import AnnouncementList from '~/constant/announcement'
     import useTenantData from '~/composables/tenant/useTenantData'
     import useUserData from '~/composables/user/useUserData'
 
     export default defineComponent({
         name: 'AddCompanyAnnouncement',
+        props: {
+            visibleModal: {
+                type: Boolean,
+                default: false,
+            },
+            newAnnoucement: {
+                type: Boolean,
+                default: false,
+            },
+        },
         emits: ['updateAnnouncement', 'deleteAnnouncement', 'close'],
         setup(props, { emit }) {
+            const { visibleModal, newAnnoucement } = toRefs(props)
             const {
                 announcementTitle,
                 announcementMessage,
@@ -79,13 +101,33 @@
             const annTitle = ref(announcementTitle.value || '')
 
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
-
+            const initInput = () => {
+                annTitle.value = announcementTitle.value
+                description.value = announcementMessage.value
+                type.value = announcementType.value || 'information'
+            }
             const resetInput = () => {
                 annTitle.value = ''
                 description.value = ''
                 type.value = 'information'
             }
 
+            watch(visibleModal, () => {
+                if (visibleModal.value) {
+                    if (newAnnoucement.value) {
+                        resetInput()
+                    } else {
+                        initInput()
+                    }
+                }
+            })
+            onMounted(() => {
+                if (newAnnoucement.value) {
+                    resetInput()
+                } else {
+                    initInput()
+                }
+            })
             const icon = computed(() => {
                 switch (type.value) {
                     case 'information':
@@ -127,7 +169,7 @@
                 handleUpdate,
                 handleCancel,
                 handleMenuClick,
-
+                resetInput,
                 tenantRaw,
             }
         },

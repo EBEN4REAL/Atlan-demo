@@ -4,9 +4,21 @@
             <div class="py-1 mb-3 text-base font-bold text-gray-500">
                 Group Info
             </div>
-            <div v-auth="map.UPDATE_GROUP" class="ml-auto">
+            <div v-auth="map.UPDATE_GROUP" class="flex items-center ml-auto">
+                <MemberPopover
+                    :selected-group="selectedGroup"
+                    @members-added="$emit('changeTab', 'members')"
+                >
+                    <template #label>
+                        <AtlanButton2
+                            color="secondary"
+                            prefix-icon="Add"
+                            label="Add Member"
+                        />
+                    </template>
+                </MemberPopover>
                 <a-button
-                    class="flex items-center content-center px-2"
+                    class="flex items-center content-center px-2 ml-2"
                     @click="$emit('toggleEdit')"
                 >
                     <AtlanIcon icon="Edit" class="mr-1" /> Edit
@@ -113,6 +125,7 @@
     import ViewPurposes from '@/admin/users/userPreview/about/viewPurposes.vue'
     import map from '~/constant/accessControl/map'
     import PopOverUser from '@/common/popover/user/user.vue'
+    import MemberPopover from '@/admin/groups/groupPreview/memberPopover.vue'
 
     export default defineComponent({
         name: 'ViewUser',
@@ -120,6 +133,7 @@
             PopOverUser,
             ViewPersonas,
             ViewPurposes,
+            MemberPopover,
         },
         props: {
             selectedGroup: {

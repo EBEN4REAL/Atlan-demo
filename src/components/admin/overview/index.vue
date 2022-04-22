@@ -12,6 +12,7 @@
                     :visible-modal="announcementModalVisible"
                     :new-annoucement="newAnnoucement"
                     class="p-4"
+                    :update-status="updateStatus"
                     @updateAnnouncement="updateAnnouncement"
                     @close="announcementModalVisible = false"
                 />

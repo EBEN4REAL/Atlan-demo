@@ -53,7 +53,17 @@
             />
 
             <AtlanButton2
-                :label="newAnnoucement ? 'Save' : 'Update'"
+                :label="
+                    newAnnoucement
+                        ? updateStatus !== 'loading'
+                            ? 'Save'
+                            : 'Saving'
+                        : updateStatus !== 'loading'
+                        ? 'Update'
+                        : 'Updating'
+                "
+                :disabled="updateStatus === 'loading'"
+                :loading="updateStatus === 'loading'"
                 @click="handleUpdate"
             />
         </div>
@@ -84,6 +94,10 @@
             newAnnoucement: {
                 type: Boolean,
                 default: false,
+            },
+            updateStatus: {
+                type: String,
+                default: '',
             },
         },
         emits: ['updateAnnouncement', 'deleteAnnouncement', 'close'],

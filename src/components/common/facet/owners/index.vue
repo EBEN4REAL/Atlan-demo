@@ -68,6 +68,7 @@
                 :query-text="queryText"
                 :select-user-key="selectUserKey"
                 :group-id="groupId"
+                :disabledKeys="disabledValues?.ownerUsers"
                 @change="handleChange"
             ></Users>
             <Groups
@@ -76,6 +77,7 @@
                 v-model="localValue.ownerGroups"
                 :query-text="queryText"
                 :select-group-key="selectGroupKey"
+                :disabledKeys="disabledValues?.ownerGroups"
                 :user-id="userId"
             ></Groups>
         </div>
@@ -178,6 +180,10 @@
                 type: Boolean,
                 default: false,
                 required: false,
+            },
+            disabledValues: {
+                type: Object,
+                required:false,
             },
         },
         emits: ['change', 'update:modelValue'],

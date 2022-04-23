@@ -185,7 +185,11 @@ export const AssetRelationAttributes = [
     '__createdBy',
 ]
 
-export const DefaultRelationAttributes = ['name', 'qualifiedName']
+export const DefaultRelationAttributes = [
+    'name',
+    'qualifiedName',
+    'certificateStatus',
+]
 
 // For just asset list display
 export const MinimalAttributes = [

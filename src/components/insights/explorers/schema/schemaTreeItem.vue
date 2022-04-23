@@ -1273,9 +1273,9 @@
             const readOnly = computed(() =>
                 activeInlineTab?.value?.qualifiedName?.length === 0
                     ? false
-                    : isQueryCreatedByCurrentUser.value
+                    : isQueryCreatedByCurrentUser?.value
                     ? false
-                    : hasQueryWritePermission.value
+                    : hasQueryWritePermission?.value
                     ? false
                     : true
             )

@@ -1,6 +1,6 @@
 <template>
     <div
-        class="grid items-center justify-between grid-cols-10 pl-4 bg-white border-t border-gray-light border-style-500 group gap-x-4 request-card"
+        class="grid items-center justify-between grid-cols-10 bg-white border-t border-gray-light border-style-500 group gap-x-4 request-card pl-4"
         style="height: 72px"
         :class="{
             'bg-primary-light': selected,
@@ -9,7 +9,10 @@
         }"
         @click="$emit('select')"
     >
-        <div class="flex items-center col-span-4 overflow-hidden">
+        <div
+            class="flex items-center overflow-hidden"
+            :class="showRequestStatus ? 'col-span-4' : 'col-span-4'"
+        >
             <!-- TODO: Uncomment for bulk selection -->
             <!-- <a-checkbox :checked="selected" class="mr-4" /> -->
             <!-- <Popover
@@ -21,8 +24,9 @@
             </Popover> -->
             <div
                 class="cursor-pointer flex items-center"
+                :class="showRequestStatus ? 'w-full' : ''"
                 @mouseenter="$emit('mouseEnterAsset')"
-                @click="handleShowAssetSidebar(item.guid)"
+                @click="handleShowAssetSidebar(item)"
             >
                 <div
                     v-if="
@@ -30,43 +34,85 @@
                             'AtlasGlossaryTerm',
                             'AtlasGlossaryCategory',
                             'AtlasGlossary',
-                        ].includes(request?.entityType)
+                        ].includes(request?.entityType) &&
+                        ![
+                            'create_term',
+                            'create_category',
+                            'create_glossary',
+                        ].includes(request?.requestType)
                     "
-                    class="flex items-center"
                 >
-                    <atlan-icon
-                        :icon="
+                    <div class="flex items-center">
+                        <span>{{
+                            request?.destinationEntity?.attributes?.name
+                        }}</span>
+                        <CertificateBadge
+                            v-if="
+                                request?.destinationEntity?.attributes
+                                    ?.certificateStatus
+                            "
+                            :status="
+                                request?.destinationEntity?.attributes
+                                    ?.certificateStatus
+                            "
+                            class="mb-1 ml-1"
+                            :username="
+                                request?.destinationEntity?.attributes
+                                    ?.certificateUpdatedBy
+                            "
+                        />
+                    </div>
+                    <span
+                        class="flex items-center space-x-1 mt-1 text-gray-500"
+                    >
+                        <atlan-icon
+                            :icon="
+                                capitalizeFirstLetter(
+                                    glossaryLabel[request?.entityType]
+                                )
+                            "
+                            class="mr-1 mb-1"
+                        ></atlan-icon>
+
+                        {{
                             capitalizeFirstLetter(
                                 glossaryLabel[request?.entityType]
                             )
-                        "
-                        class="mr-1 mb-1"
-                    ></atlan-icon>
-                    <span class="text-primary">{{
-                        request?.destinationEntity?.attributes?.name
-                    }}</span>
-                    <CertificateBadge
-                        v-if="
-                            request?.destinationEntity?.attributes
-                                ?.certificateStatus
-                        "
-                        :status="
-                            request?.destinationEntity?.attributes
-                                ?.certificateStatus
-                        "
-                        class="mb-1 ml-1"
-                        :username="
-                            request?.destinationEntity?.attributes
-                                ?.certificateUpdatedBy
-                        "
-                    />
+                        }}
+                    </span>
                 </div>
                 <AssetPiece
                     v-else-if="request.destinationQualifiedName"
                     :asset-qf-name="request.destinationQualifiedName"
                     :entity-type="request?.entityType"
                     :destination-entity="request.destinationEntity"
+                    :size="size"
                 />
+                <GlossaryPopover
+                    v-else-if="
+                        request?.requestType === 'create_term' ||
+                        (request?.requestType === 'create_category' &&
+                            request?.payload)
+                    "
+                    :term="{
+                        guid: request?.payload?.relationshipAttributes?.anchor
+                            ?.guid,
+                    }"
+                    placement="right"
+                    :mouse-enter-delay="1"
+                    :excludeFields="['terms', 'categories']"
+                >
+                    <div>
+                        <span class=" mb-1">{{
+                            request.payload?.relationshipAttributes?.anchor
+                                ?.attributes?.name
+                        }}</span>
+                        <div class="flex items-center text-gray-500">
+                            <atlan-icon icon="Glossary" class="mr-1 w-4" />
+                            <span>Glossary</span>
+                        </div>
+                    </div>
+                </GlossaryPopover>
                 <span v-else class="text-sm overflow-ellipsis">
                     {{
                         primaryText[request.requestType]
@@ -76,7 +122,10 @@
                 </span>
             </div>
         </div>
-        <div class="flex items-center col-span-3 ml-24">
+        <div
+            class="flex items-center col-span-3"
+            :class="showActions || showRequestStatus ? '' : 'w-full ml-24'"
+        >
             <ClassificationPiece
                 v-if="
                     request?.requestType === 'create_typedef' &&
@@ -94,6 +143,15 @@
                     request?.requestType === 'create_term' && request?.payload
                 "
                 :data="request.payload"
+                requestType="create_term"
+            />
+            <CategoryPiece
+                v-else-if="
+                    request?.requestType === 'create_category' &&
+                    request?.payload
+                "
+                :data="request.payload"
+                requestType="create_category"
             />
 
             <TermPiece
@@ -101,11 +159,11 @@
                 :data="request?.sourceEntity?.attributes"
                 :request="request"
             />
-
             <AttrPiece
                 v-else-if="request.destinationAttribute"
                 :name="request.destinationAttribute"
                 :value="request.destinationValue"
+                :value-array="request?.destinationValueArray"
             />
 
             <AssetPiece
@@ -115,7 +173,10 @@
             />
         </div>
 
-        <div class="flex items-center justify-end col-span-3">
+        <div
+            v-if="showActions"
+            class="flex items-center justify-end col-span-3"
+        >
             <!-- <AtlanIcon
                 v-if="state.isLoading"
                 icon="CircleLoader"
@@ -269,6 +330,87 @@
                 </div>
             </div>
         </div>
+        <div
+            v-if="showRequestStatus"
+            class="flex items-center col-span-3 text-sm ml-10"
+        >
+            <div v-if="activeHover === request.id" class="flex items-center">
+                <div v-if="request.status === 'active'" class="flex flex-col">
+                    <span class="text-yellow-500 flex items-center mb-1">
+                        Pending</span
+                    >
+                    <a-popover placement="rightBottom">
+                        <template #content>
+                            <AdminList></AdminList>
+                        </template>
+                        <span class="cursor-pointer"
+                            >Reviewers<atlan-icon
+                                icon="CaretDown"
+                                class="mx-0.5 h-3"
+                        /></span>
+                    </a-popover>
+                </div>
+                <div
+                    :class="
+                        request.status === 'approved'
+                            ? 'text-success'
+                            : 'text-error'
+                    "
+                    v-else
+                >
+                    {{
+                        request.status === 'approved'
+                            ? 'Approved by'
+                            : 'Rejected by'
+                    }}
+
+                    <div
+                        class="flex items-center font-light whitespace-nowrap mt-1"
+                    >
+                        <div class="flex items-center truncate">
+                            <Avatar
+                                :allow-upload="false"
+                                :avatar-name="nameUpdater"
+                                :avatar-size="18"
+                                :avatar-shape="'circle'"
+                                class="mr-2"
+                            />
+                            <span
+                                class="text-gray-700 truncate overflow-ellipsis"
+                                :style="'max-width: 100px'"
+                                >{{ nameUpdater }}</span
+                            >
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div v-else>
+                <div v-if="request.status === 'active'" class="flex flex-col">
+                    <span class="text-yellow-500 flex items-center mb-1">
+                        Pending</span
+                    >
+                    <span class="text-gray-500">
+                        <DatePiece
+                            :no-popover="true"
+                            class="text-gray-500"
+                            :date="request?.createdAt"
+                        />
+                    </span>
+                </div>
+                <div
+                    :class="
+                        request.status === 'approved'
+                            ? 'text-success'
+                            : 'text-error'
+                    "
+                    v-else
+                >
+                    {{
+                        request.status === 'approved' ? 'Approved' : 'Rejected'
+                    }}
+                </div>
+            </div>
+        </div>
         <AssetDrawer
             key="asset-sidebar-asset-popover"
             :guid="assetGuid"
@@ -288,10 +430,12 @@
         watch,
         ref,
         computed,
+        defineAsyncComponent,
     } from 'vue'
     import { message } from 'ant-design-vue'
     // import { useMagicKeys, whenever } from '@vueuse/core'
     import { useTimeAgo } from '@vueuse/core'
+    import GlossaryPopover from '@common/popover/glossary/index.vue'
     import atlanLogo from '~/assets/images/atlan-logo.png'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
 
@@ -304,6 +448,7 @@
     import UserPiece from './pieces/user.vue'
     import DatePiece from './pieces/date.vue'
     import TermPiece from './pieces/term.vue'
+    import CategoryPiece from './pieces/category.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import IconStatus from './iconStatus.vue'
     import Popover from '@/common/popover/assets/index.vue'
@@ -338,6 +483,11 @@
             IconStatus,
             Popover,
             AssetDrawer,
+            CategoryPiece,
+            GlossaryPopover,
+            AdminList: defineAsyncComponent(
+                () => import('@/common/info/adminList.vue')
+            ),
         },
         props: {
             request: {
@@ -359,6 +509,21 @@
                 default: () => '',
                 required: false,
             },
+            showActions: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
+            size: {
+                type: String,
+                required: false,
+                default: () => 'default',
+            },
+            showRequestStatus: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['select', 'action'],
         setup(props, { emit }) {
@@ -379,8 +544,17 @@
                 assetGuid.value = ''
                 showAssetSidebar.value = false
             }
-            const handleShowAssetSidebar = (guid) => {
-                assetGuid.value = guid
+            const handleShowAssetSidebar = (asset) => {
+                if (
+                    [
+                        'create_term',
+                        'create_category',
+                        'create_glossary',
+                    ].includes(request.value?.requestType)
+                )
+                    assetGuid.value =
+                        request.value?.payload?.relationshipAttributes?.anchor?.guid
+                else assetGuid.value = asset?.guid
                 showAssetSidebar.value = true
             }
 
@@ -398,7 +572,7 @@
                 useAddEvent('governance', 'requests', 'resolved', {
                     action,
                     request_type,
-                    widget_type:'table'
+                    widget_type: 'table',
                 })
             }
             async function handleApproval(messageProp = '') {

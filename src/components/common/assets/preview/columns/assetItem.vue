@@ -72,7 +72,7 @@
                                 <AtlanIcon
                                     icon="Play"
                                     class="w-4 h-4 my-auto text-gray-500 outline-none cursor-pointer"
-                                    @click="setColumnToSelect(item)"
+                                    @click="setPortToSelect(item)"
                                 ></AtlanIcon>
                             </a-tooltip>
                         </div>
@@ -183,8 +183,8 @@
         setup(props, { emit }) {
             const lineageStore = useLineageStore()
 
-            const setColumnToSelect = (item) => {
-                lineageStore.setColumnToSelect(item)
+            const setPortToSelect = (item) => {
+                lineageStore.setPortToSelect(item)
             }
 
             const showLineageGraphButton = ref(false)
@@ -301,7 +301,7 @@
                 isIndexed,
                 mouseEnterDelay,
                 enteredPill,
-                setColumnToSelect,
+                setPortToSelect,
                 showLineageGraphButton,
                 isLineageRoute,
                 leftPill,

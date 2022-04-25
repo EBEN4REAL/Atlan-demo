@@ -94,7 +94,6 @@
                 "
                 v-if="columnsCount && previewTabsWidth > 0"
                 @click="toggleFullScreenMode"
-                placement="topRight"
             >
                 <template #title>Full screen</template>
                 <AtlanBtn
@@ -110,6 +109,39 @@
                     />
                 </AtlanBtn>
             </a-tooltip>
+            <SlackShareModal
+                :dataList="dataList"
+                :columns="columnsList"
+                v-if="
+                    tenantSlackStatus?.configured &&
+                    tenantSlackStatus?.channels?.length
+                "
+            >
+                <a-tooltip
+                    color="#363636"
+                    :mouseEnterDelay="
+                        lastTooltipPresence !== undefined
+                            ? ADJACENT_TOOLTIP_DELAY
+                            : MOUSE_ENTER_DELAY
+                    "
+                    v-if="columnsCount && previewTabsWidth > 0"
+                    placement="topRight"
+                >
+                    <template #title>Share Results</template>
+                    <AtlanBtn
+                        size="sm"
+                        color="secondary"
+                        @mouseout="recordTooltipPresence"
+                        class="py-0.5 px-2 mr-2 text-sm border-none text-xs rounded shadow cursor-pointer"
+                        style="height: 24px"
+                    >
+                        <AtlanIcon
+                            icon="Slack"
+                            class="w-4 h-4 text-xs text-new-gray-800"
+                        />
+                    </AtlanBtn>
+                </a-tooltip>
+            </SlackShareModal>
             <a-dropdown
                 :trigger="['click']"
                 @click.stop="() => {}"
@@ -148,6 +180,27 @@
                             @click="toggleFullScreenMode"
                             >Full screen</a-menu-item
                         >
+                        <a-menu-item
+                            key="slack"
+                            class="px-4 py-2 text-sm"
+                            v-if="
+                                tenantSlackStatus?.configured &&
+                                tenantSlackStatus?.channels?.length
+                            "
+                        >
+                            <SlackShareModal
+                                :dataList="dataList"
+                                :columns="columnsList"
+                            >
+                                <div class="flex items-center">
+                                    <AtlanIcon
+                                        icon="Slack"
+                                        class="w-4 h-4 mr-2"
+                                    />
+                                    <span>Share Results</span>
+                                </div>
+                            </SlackShareModal>
+                        </a-menu-item>
                     </a-menu>
                 </template>
             </a-dropdown>
@@ -354,6 +407,7 @@
         defineComponent,
         computed,
         inject,
+        toRefs,
         Ref,
         ref,
         onMounted,
@@ -378,11 +432,22 @@
         featureEnabledMap,
         INSIGHT_DATA_DOWNLOAD,
     } from '~/composables/labs/labFeatureList'
+    import SlackShareModal from '~/components/insights/playground/resultsPane/result/share/index.vue'
+    import intStore from '~/store/integrations/index'
 
     export default defineComponent({
-        components: { AtlanBtn, Tooltip, PreviewTabs, AtlanPreviewTable },
+        components: {
+            AtlanBtn,
+            Tooltip,
+            PreviewTabs,
+            AtlanPreviewTable,
+            SlackShareModal,
+        },
         props: {},
         setup() {
+            const store = intStore()
+
+            const { tenantSlackStatus } = toRefs(store)
             const fullScreenMode = ref(false)
             const insights_Store = insightsStore()
             const index = insights_Store.previewTabs.findIndex(
@@ -643,6 +708,7 @@
             const changeFullScreenTabActive = (tabIndex) => {
                 fullScreenTabActive.value = tabIndex
             }
+            const slackShareToggle = () => {}
             const debouncedFn = useDebounceFn(footerResizeHandler, 100)
 
             onMounted(() => {
@@ -690,11 +756,13 @@
             )
 
             return {
+                tenantSlackStatus,
                 onModalVisibleChange,
                 handleTabChange,
                 changeFullScreenTabActive,
                 isResultTabPopulated,
                 fullScreenTabActive,
+                slackShareToggle,
                 handleCloseFullScreen,
                 previewTabsWidth,
                 footerRef,

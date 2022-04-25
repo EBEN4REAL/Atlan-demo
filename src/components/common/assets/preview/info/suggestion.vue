@@ -48,6 +48,8 @@
         ref,
         toRefs,
     } from 'vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
+
     export default defineComponent({
         components: {},
         props: {
@@ -68,6 +70,7 @@
             const { list, editPermission } = toRefs(props)
 
             const currentIndex = ref(0)
+            const selectedAsset = inject('selectedAsset')
 
             const handleNext = (step) => {
                 if (step === 1) {
@@ -91,6 +94,17 @@
                     key: 'description',
                     value: list.value[currentIndex.value]?.key,
                 })
+                const properties = {
+                    asset_type: selectedAsset.value.typeName,
+                    index: currentIndex.value,
+                }
+                console.log('properties suggestion event', properties)
+                useAddEvent(
+                    'discovery',
+                    'metadata',
+                    'suggestion_applied',
+                    properties
+                )
             }
 
             return {

@@ -182,6 +182,13 @@ const keyMap = {
                     asset_type: props.asset_type,
                 }),
             },
+            suggestion_applied: {
+                action: 'discovery_metadata_suggestion_applied',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
+                    suggestion_index: props.index,
+                }),
+            },
         },
         announcement: {
             created: {

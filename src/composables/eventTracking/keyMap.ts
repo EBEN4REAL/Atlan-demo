@@ -472,6 +472,7 @@ const keyMap = {
                     denied: !!props.denied,
                     user_count: props.user_count,
                     group_count: props.group_count,
+                    all_users_enabled: !!props.all_users_enabled,
                 }),
             },
             policy_updated: {
@@ -482,6 +483,7 @@ const keyMap = {
                     denied: !!props.denied,
                     user_count: props.user_count,
                     group_count: props.group_count,
+                    all_users_enabled: !!props.all_users_enabled,
                 }),
             },
             policy_deleted: {

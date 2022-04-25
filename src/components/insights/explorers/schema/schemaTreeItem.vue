@@ -317,8 +317,8 @@
                                                 : MOUSE_ENTER_DELAY
                                         "
                                     >
-                                        <template #title>
-                                            <span>{{ tooltipText }}</span>
+                                        <template #title
+                                            >Preview this
                                             <span class="lowercase">{{
                                                 assetType(item)
                                             }}</span></template
@@ -339,12 +339,6 @@
                                 <div
                                     :data-test-id="'run-table-query'"
                                     v-if="!showVQB"
-                                    :class="
-                                        activeInlineTab.playground.resultsPane
-                                            .result.isQueryRunning === 'loading'
-                                            ? 'opacity-50 cursor-not-allowed'
-                                            : ''
-                                    "
                                     @click="() => previewData(item)"
                                 >
                                     <a-tooltip
@@ -356,12 +350,12 @@
                                                 : MOUSE_ENTER_DELAY
                                         "
                                     >
-                                        <template #title>
-                                            <span>{{ tooltipText }}</span>
+                                        <template #title
+                                            >Preview this
                                             <span class="lowercase">{{
                                                 assetType(item)
-                                            }}</span>
-                                        </template>
+                                            }}</span></template
+                                        >
                                         <div
                                             class="flex items-center w-6 h-6 p-1 rounded text-new-gray-700 hover:bg-new-gray-300"
                                             @mouseout="recordTooltipPresence"
@@ -376,6 +370,12 @@
                                 <div
                                     class="pl-1"
                                     :data-test-id="'preview-table-query'"
+                                    :class="
+                                        activeInlineTab.playground.resultsPane
+                                            .result.isQueryRunning === 'loading'
+                                            ? 'opacity-50 cursor-not-allowed'
+                                            : ''
+                                    "
                                     @click="
                                         () =>
                                             actionClick(
@@ -394,12 +394,12 @@
                                                 : MOUSE_ENTER_DELAY
                                         "
                                     >
-                                        <template #title
-                                            >Query this
+                                        <template #title>
+                                            <span>{{ tooltipText }}</span>
                                             <span class="lowercase">{{
                                                 assetType(item)
-                                            }}</span></template
-                                        >
+                                            }}</span>
+                                        </template>
                                         <div
                                             class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
                                             @mouseout="recordTooltipPresence"
@@ -704,7 +704,25 @@
 
             const editorInstance = inject('editorInstance') as Ref<any>
             const monacoInstance = inject('monacoInstance') as Ref<any>
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasQueryReadPermission = inject(
+                'hasQueryReadPermission'
+            ) as ComputedRef
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
 
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser?.value
+                    ? false
+                    : hasQueryWritePermission?.value
+                    ? false
+                    : true
+            )
             const selectionObject: Ref<any> = ref({
                 startLineNumber: 1,
                 startColumnNumber: 1,
@@ -831,7 +849,7 @@
                 ) {
                     return 'Another query is running'
                 } else {
-                    return 'Preview this '
+                    return 'Query this '
                 }
             })
 
@@ -1343,8 +1361,34 @@
             }
 
             const previewQuery = (queryText: string, tabIndex: number) => {
-                inlineTabs.value[tabIndex].playground.editor.text = queryText
-                toRaw(editorInstanceRef.value).getModel().setValue(queryText)
+                activeResultPreviewTab.value = true
+                insights_Store.activePreviewGuid = undefined
+                const { onRunCompletion, onQueryIdGeneration } =
+                    useRunQueryUtils(editorInstance, monacoInstance)
+                if (!readOnly.value) {
+                    inlineTabs.value[tabIndex].playground.editor.text =
+                        queryText
+                    selectionObject.value.startLineNumber = 2
+                    selectionObject.value.startColumnNumber = 1
+                    selectionObject.value.endLineNumber = 2
+                    selectionObject.value.endColumnNumber = queryText.length + 1 // +1 for semicolon
+                    toRaw(editorInstanceRef.value)
+                        .getModel()
+                        .setValue(queryText)
+                    // models[tabIndex].setValue(newText)
+                }
+                queryRun(
+                    tabIndex,
+                    getData,
+                    limitRows,
+                    onRunCompletion,
+                    onQueryIdGeneration,
+                    queryText,
+                    editorInstance,
+                    monacoInstance,
+                    ref(false),
+                    inlineTabs
+                )
             }
 
             let childCount = (item) => {
@@ -1447,26 +1491,6 @@
                 setVQBInInlineTab(activeInlineTabCopy, inlineTabs)
             }
 
-            const isQueryCreatedByCurrentUser = inject(
-                'isQueryCreatedByCurrentUser'
-            ) as ComputedRef
-            const hasQueryReadPermission = inject(
-                'hasQueryReadPermission'
-            ) as ComputedRef
-            const hasQueryWritePermission = inject(
-                'hasQueryWritePermission'
-            ) as ComputedRef
-
-            const readOnly = computed(() =>
-                activeInlineTab?.value?.qualifiedName?.length === 0
-                    ? false
-                    : isQueryCreatedByCurrentUser?.value
-                    ? false
-                    : hasQueryWritePermission?.value
-                    ? false
-                    : true
-            )
-
             const previewVQBQuery = (item: any) => {
                 const activeInlineTabCopy = JSON.parse(
                     JSON.stringify(toRaw(activeInlineTab.value))
@@ -1524,7 +1548,7 @@
                                                         ? ' bg-gray-100 cursor-not-allowed pointer-events-none'
                                                         : 'cursor-pointer'
                                                 }
-                                                    
+
                                             `,
                     disabled: false,
                     icon: 'Add',

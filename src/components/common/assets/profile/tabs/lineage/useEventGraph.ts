@@ -17,7 +17,10 @@ import useGraph from './useGraph'
 import fetchPorts from './fetchPorts'
 
 /** CONSTANTS */
-import { LineageAttributes } from '~/constant/projection'
+import {
+    LineageAttributes,
+    LineageAttributesPortLevel,
+} from '~/constant/projection'
 
 /** UTILS */
 import { isCyclicEdge, getFilteredRelations } from './util.js'
@@ -848,7 +851,7 @@ export default function useEventGraph({
             depth: depthCounter.value,
             guid: portId,
             direction: 'BOTH',
-            attributes: ['dataType', 'qualifiedName', 'certificateStatus'],
+            attributes: LineageAttributesPortLevel,
             hideProcess: true,
         }))
 

@@ -3,6 +3,7 @@ import bodybuilder from 'bodybuilder'
 import { assetInterface } from '~/types/assets/asset.interface'
 import useIndexSearch from '~/composables/discovery/useIndexSearch'
 import { getNodeTypeText } from './util'
+import { LineageAttributesPortLevel } from '~/constant/projection'
 
 export default function fetchPorts(typeName, qualifiedName, offset, limit = 5) {
     const portTypeNameMap = {
@@ -12,16 +13,7 @@ export default function fetchPorts(typeName, qualifiedName, offset, limit = 5) {
         TableauDatasource: ['TableauDatasourceField', 'TableauCalculatedField'],
     }
     const base = bodybuilder()
-    const attributes = [
-        'dataType',
-        'qualifiedName',
-        'certificateStatus',
-        'table',
-        'view',
-        'isPrimary',
-        'isForeign',
-        'announcementType',
-    ]
+    const attributes = LineageAttributesPortLevel
     const facets = [
         {
             id: 'active',

@@ -357,6 +357,28 @@ const keyMap = {
                 }),
             },
         },
+        previewTabs: {
+            previewTabClose: {
+                action: 'insights_preview_tabs_closed',
+                properties: (props) => ({
+                    query_tab_id: props?.query_tab_id,
+                    click_index: props?.click_index,
+                }),
+            },
+            previewTabSwitched: {
+                action: 'insights_preview_tabs_switched',
+                properties: (props) => ({
+                    click_index: props?.click_index,
+                    previous_index: props?.previous_index,
+                }),
+            },
+            previewTabRightClickAction: {
+                action: 'insights_preview_tabs_right_click_action',
+                properties: (props) => ({
+                    action: props?.action,
+                }),
+            },
+        },
         collection: {
             created: {
                 action: 'insights_collection_created',

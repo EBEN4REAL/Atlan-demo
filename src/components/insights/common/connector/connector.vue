@@ -30,16 +30,22 @@
                     @click="toggleVisibilityOfChildren(node.title)"
                 >
                     <img
+                        v-if="getConnectorImage(node.connector)?.includes('/')"
                         :src="getConnectorImage(node.connector)"
                         class="w-4 h-4 mr-1"
                         style="min-width: 1rem"
                     />
                     <div class="flex flex-col" v-if="!node?.connection">
-                        {{
-                            node.title?.length > 1
-                                ? `${capitalizeFirstLetter(node.title)}`
-                                : node.title
-                        }}
+                        <span v-if="treeData.length > 0">
+                            {{
+                                node.title?.length > 1
+                                    ? `${capitalizeFirstLetter(node.title)}`
+                                    : node.title
+                            }}
+                        </span>
+                        <span v-else class="text-gray-400"
+                            >Select Connector</span
+                        >
                     </div>
                     <div class="flex flex-col" v-else>
                         {{ node.title }}

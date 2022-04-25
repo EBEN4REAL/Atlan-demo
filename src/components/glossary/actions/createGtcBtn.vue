@@ -91,7 +91,7 @@
                     </AddGTCModal>
                 </a-menu-item>
                 <a-menu-item
-                    v-if="role.toLowerCase() === 'admin'"
+                    v-if="role?.toLowerCase()==='admin'"
                     @click="closeMenu"
                 >
                     <AddGTCModal

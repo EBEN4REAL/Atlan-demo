@@ -82,27 +82,12 @@
                         key="add"
                         @click="closeMenu"
                     >
-                        <template v-if="createPermission">
-                            <AddGtcModal
-                                entityType="AtlasGlossaryCategory"
-                                :glossaryName="glossaryName"
-                                :categoryName="categoryName"
-                                @add="handleAdd"
-                                :glossary-qualified-name="glossaryQualifiedName"
-                                :categoryGuid="categoryId"
-                            >
-                                <template #trigger>
-                                    <div class="flex items-center">
-                                        <AtlanIcon
-                                            icon="Category"
-                                            class="m-0 mr-2"
-                                        />
-                                        <p class="p-0 m-0">Add Category</p>
-                                    </div>
-                                </template>
-                            </AddGtcModal>
-                        </template>
-                        <template v-else>
+                        <template
+                            v-if="
+                                role?.toLowerCase() === 'guest' &&
+                                !createPermission
+                            "
+                        >
                             <a-tooltip
                                 placement="right"
                                 title="You don't have permission to perform this action"
@@ -119,6 +104,28 @@
                                 </div>
                             </a-tooltip>
                         </template>
+
+                        <template v-else>
+                            <AddGtcModal
+                                entityType="AtlasGlossaryCategory"
+                                :glossaryName="glossaryName"
+                                :categoryName="categoryName"
+                                @add="handleAdd"
+                                :glossary-qualified-name="glossaryQualifiedName"
+                                :categoryGuid="categoryId"
+                                :createPermission="createPermission"
+                            >
+                                <template #trigger>
+                                    <div class="flex items-center">
+                                        <AtlanIcon
+                                            icon="Category"
+                                            class="m-0 mr-2"
+                                        />
+                                        <p class="p-0 m-0">Add Category</p>
+                                    </div>
+                                </template>
+                            </AddGtcModal>
+                        </template>
                     </a-menu-item>
                 </div>
                 <!-- entity create -->
@@ -131,27 +138,12 @@
                         key="add"
                         @click="closeMenu"
                     >
-                        <template v-if="createPermission">
-                            <AddGtcModal
-                                entityType="AtlasGlossaryTerm"
-                                :glossaryName="glossaryName"
-                                :categoryName="categoryName"
-                                @add="handleAdd"
-                                :glossary-qualified-name="glossaryQualifiedName"
-                                :categoryGuid="categoryId"
-                            >
-                                <template #trigger>
-                                    <div class="flex items-center">
-                                        <AtlanIcon
-                                            icon="Term"
-                                            class="m-0 mr-2"
-                                        />
-                                        <p class="p-0 m-0">Add Term</p>
-                                    </div>
-                                </template>
-                            </AddGtcModal>
-                        </template>
-                        <template v-else>
+                        <template
+                            v-if="
+                                role?.toLowerCase() === 'guest' &&
+                                !createPermission
+                            "
+                        >
                             <a-tooltip
                                 placement="right"
                                 title="You don't have permission to perform this action"
@@ -164,6 +156,27 @@
                                     <p class="p-0 m-0">Add Term</p>
                                 </div>
                             </a-tooltip>
+                        </template>
+                        <template v-else>
+                            <AddGtcModal
+                                entityType="AtlasGlossaryTerm"
+                                :glossaryName="glossaryName"
+                                :categoryName="categoryName"
+                                @add="handleAdd"
+                                :glossary-qualified-name="glossaryQualifiedName"
+                                :categoryGuid="categoryId"
+                                :createPermission="createPermission"
+                            >
+                                <template #trigger>
+                                    <div class="flex items-center">
+                                        <AtlanIcon
+                                            icon="Term"
+                                            class="m-0 mr-2"
+                                        />
+                                        <p class="p-0 m-0">Add Term</p>
+                                    </div>
+                                </template>
+                            </AddGtcModal>
                         </template>
                     </a-menu-item>
                 </div>

@@ -80,6 +80,16 @@
                                 <span class="ml-1">{{ details }}</span>
                             </span>
                             <span
+                                v-if="
+                                    previewType === 'user' &&
+                                    selectedUser?.emailVerified === false
+                                "
+                                class="mr-1 text-sm"
+                            >
+                                <span class="text-gray-300">&bull;</span>
+                                <span class="ml-1">Invited</span>
+                            </span>
+                            <span
                                 v-if="selectedUser?.last_active_time"
                                 class="text-sm"
                             >

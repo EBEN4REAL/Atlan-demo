@@ -165,7 +165,8 @@
     import useAssetStore from '~/store/asset'
     import useHelpWidget from '~/composables/helpCenter/useHelpWidget'
     import { helpCenterList } from '~/constant/navigation/helpCentre'
-
+    import { usePersonaStore } from '~/store/persona'
+    import { usePurposeStore } from '~/store/purpose'
     export default defineComponent({
         name: 'Navigation Menu',
         components: {
@@ -184,6 +185,8 @@
         },
         emits: ['toggleNavbar', 'openNavbar'],
         setup(props, { emit }) {
+            const personaStore = usePersonaStore()
+            const purposeStore = usePurposeStore()
             const { page } = useVModels(props, emit)
             const tenantStore = useTenantStore()
             const currentRoute = useRoute()
@@ -229,9 +232,33 @@
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
 
             watch(
-                () => assetStore.globalState,
-                (newValue) => {
-                    globalState.value = newValue
+                () => [
+                    assetStore.globalState,
+                    personaStore.list,
+                    purposeStore.list,
+                ],
+                ([newValue, persona, purpose]) => {
+                    let payload = newValue
+                    if (payload[0] === 'persona') {
+                        const finded = persona.find(
+                            (el) => el.id === payload[1]
+                        )
+                        const enable = finded?.enabled || false
+                        if (!enable) {
+                            assetStore.setGlobalState(['all'])
+                        }
+                    }
+                    if (payload[0] === 'purpose') {
+                        const finded = purpose.find(
+                            (el) => el.id === payload[1]
+                        )
+                        const enable = finded?.enabled || false
+                        if (!enable) {
+                            assetStore.setGlobalState(['all'])
+                        }
+                    }
+                    // console.log(personaStore.list, ' <sdsdsdsd')
+                    globalState.value = payload
                     dirtyTimestamp.value = `dirty_${Date.now().toString()}`
                 },
                 {

@@ -56,10 +56,6 @@ export const workflowFilter = [
 
 export const runStatuses = [
     {
-        label: 'All',
-        value: undefined,
-    },
-    {
         value: 'Succeeded',
         label: 'Success',
         colorDot: '#00B28A',
@@ -72,7 +68,7 @@ export const runStatuses = [
     {
         value: ['Failed', 'Error'],
         label: 'Failed',
-        colorDot: '#BF1B1B',
+        colorDot: '#CC4747',
     },
     {
         value: 'Pending',

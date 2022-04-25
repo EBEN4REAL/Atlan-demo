@@ -10,7 +10,9 @@
             <div class="flex items-center col-span-4 text-new-gray-600 gap-x-3">
                 <PackageIcon :package="pkg" />
                 <div class="overflow-x-hidden">
-                    <p class="text-sm font-bold truncate text-new-gray-700">
+                    <p
+                        class="text-sm font-bold truncate text-new-gray-700 group-hover:underline"
+                    >
                         {{ pkgName(pkg) || run.metadata.name }}
                         <AtlanIcon
                             v-if="dName"
@@ -38,11 +40,11 @@
                         </template>
                         <template v-else>
                             <span class="lg:whitespace-nowrap"
-                                >Manually Run by</span
+                                >Manual Run by</span
                             >
                             <UserWrapper
                                 :username="creatorUsername(run)"
-                                @click.stop
+                                @click.stop="() => {}"
                             />
                         </template>
                     </div>
@@ -76,7 +78,7 @@
                     </div>
                 </template>
                 <template v-else>
-                    <p class="lg:whitespace-nowrap">Manually Run by</p>
+                    <p class="lg:whitespace-nowrap">Manual Run by</p>
                     <UserWrapper
                         class="flex items-center flex-nowrap gap-x-1"
                         :username="creatorUsername(run)"

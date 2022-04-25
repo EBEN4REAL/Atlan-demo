@@ -130,7 +130,7 @@
         }
 
         &.selected {
-            @apply bg-primary;
+            @apply bg-new-blue-400;
             @apply text-white;
         }
 

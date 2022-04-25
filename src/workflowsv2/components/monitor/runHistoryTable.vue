@@ -43,16 +43,21 @@
                 </div>
                 <div
                     v-else
-                    class="flex flex-col items-center mx-auto text-center gap-y-3 w-72 place-self-center"
+                    class="flex flex-col items-center mx-auto text-center gap-y-1 w-96 place-self-center"
                 >
                     <component :is="EmptyLogsIllustration" />
                     <span class="text-sm text-gray">
-                        Oops… we couldn't find any workflow runs matching your
-                        filters.
+                        Oops... No workflow runs found matching your filters
                     </span>
                     <span class="text-sm text-gray-500">
                         Try modifying your filters or resetting them.
                     </span>
+                    <AtlanButton2
+                        label="Reset Filters"
+                        class="mt-3"
+                        color="secondary"
+                        @click="resetFilter"
+                    />
                 </div>
             </div>
         </div>
@@ -104,6 +109,10 @@
         emits: ['update:filters'],
         setup(props, { emit }) {
             const { filters } = toRefs(props)
+
+            const resetFilter = () => {
+                emit('update:filters', {})
+            }
 
             const setFilter = (key: string, value: any) => {
                 const tmpFilter = filters.value
@@ -244,6 +253,7 @@
                 isWFLoading,
                 workflowMap,
                 workflowTemplateName,
+                resetFilter,
             }
         },
     })

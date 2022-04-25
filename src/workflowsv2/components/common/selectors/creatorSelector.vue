@@ -37,7 +37,7 @@
                         v-if="selected === 'other' && value?.ownerUsers?.length"
                         class="h-3 ml-1 text-gray-500 hover:text-gray"
                         icon="Cancel"
-                        @click="reset"
+                        @click.stop="reset"
                     />
                     <AtlanIcon v-else icon="CaretDown" class="ml-1" />
                 </span>

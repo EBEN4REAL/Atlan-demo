@@ -9,7 +9,7 @@
             :class="{ selected: selected === item.label }"
             :style="
                 selected === item.label
-                    ? `background-color:${item.colorDot || '#3C71DF'}`
+                    ? `background-color:${item.colorDot}`
                     : ''
             "
             @click="handleSelect(item.label, item.value)"
@@ -38,11 +38,16 @@
         },
         emits: ['update:value'],
         setup(_, { emit }) {
-            const selected = ref('All')
+            const selected = ref<string | undefined>(undefined)
 
             const handleSelect = (sel, val) => {
-                emit('update:value', val)
-                selected.value = sel
+                if (sel === selected.value) {
+                    emit('update:value', undefined)
+                    selected.value = undefined
+                } else {
+                    emit('update:value', val)
+                    selected.value = sel
+                }
             }
 
             return { selected, runStatuses, handleSelect }

@@ -6,7 +6,7 @@
                 class="flex items-center justify-between px-4 mb-3"
             >
                 <div class="text-base font-bold text-gray-500">Members</div>
-                <MemberPopover
+                <!-- <MemberPopover
                     :selected-group="selectedGroup"
                     @members-added="addMembersToGroup"
                 >
@@ -17,7 +17,7 @@
                             label="Add Member"
                         />
                     </template>
-                </MemberPopover>
+                </MemberPopover> -->
             </div>
             <div
                 class="flex flex-row items-center justify-between px-4 gap-x-1"

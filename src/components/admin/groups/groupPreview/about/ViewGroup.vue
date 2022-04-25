@@ -4,7 +4,7 @@
             <div class="py-1 mb-3 text-base font-bold text-gray-500">
                 Group Info
             </div>
-            <div v-auth="map.UPDATE_GROUP" class="flex items-center ml-auto">
+            <div v-auth="map.UPDATE_GROUP" class="ml-auto">
                 <a-button-group>
                     <MemberPopover
                         :selected-group="selectedGroup"
@@ -14,16 +14,15 @@
                             <AtlanButton2
                                 color="secondary"
                                 prefix-icon="Add"
-                                class="rounded-r-none"
+                                class="rounded-md rounded-r-none py-2 px-1.5 text-sm"
                                 label="Add Users"
                             />
                         </template>
                     </MemberPopover>
                     <AtlanButton2
-                        class="border-l-0 rounded-l-none"
+                        class="rounded-md border-l-0 rounded-l-none py-2 px-1.5"
                         color="secondary"
                         prefix-icon="Edit"
-                        label="Edit"
                         @click="$emit('toggleEdit')"
                     />
                 </a-button-group>

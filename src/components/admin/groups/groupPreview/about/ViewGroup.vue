@@ -4,7 +4,7 @@
             <div class="py-1 mb-3 text-base font-bold text-gray-500">
                 Group Info
             </div>
-            <div v-auth="map.UPDATE_GROUP" class="ml-auto">
+            <!-- <div v-auth="map.UPDATE_GROUP" class="ml-auto">
                 <a-button-group>
                     <MemberPopover
                         :selected-group="selectedGroup"
@@ -26,7 +26,7 @@
                         @click="$emit('toggleEdit')"
                     />
                 </a-button-group>
-            </div>
+            </div> -->
         </div>
         <div class="profile-wrapper">
             <div class="pb-6 border-b border-gray-200 border-solid">

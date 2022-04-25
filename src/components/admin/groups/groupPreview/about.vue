@@ -33,6 +33,7 @@
         watch,
     } from 'vue'
     import useOwnedAssetsAggregation from '@/composables/common/useOwnedAssetsAggregation'
+    import { useGroupPreview } from '~/composables/group/showGroupPreview'
 
     export default defineComponent({
         name: 'GroupPreviewAboutComponent',
@@ -57,8 +58,12 @@
         },
         emits: ['updatedUser', 'success', 'imageUpdated', 'changeTab'],
         setup(props, { emit }) {
+            const { toogleEdit } = useGroupPreview()
+            watch(toogleEdit, () => {
+                isEditing.value = toogleEdit.value
+            })
             const { selectedGroup, isLoading } = toRefs(props)
-            const isEditing = ref(false)
+            const isEditing = ref(toogleEdit.value)
             const toggleEdit = () => {
                 // emit('success')
                 isEditing.value = !isEditing.value

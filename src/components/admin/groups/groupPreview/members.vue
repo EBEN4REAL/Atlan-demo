@@ -13,7 +13,7 @@
                     <template #label>
                         <AtlanButton2
                             color="secondary"
-                            prefixIcon="Add"
+                            prefix-icon="Add"
                             label="Add Member"
                         />
                     </template>

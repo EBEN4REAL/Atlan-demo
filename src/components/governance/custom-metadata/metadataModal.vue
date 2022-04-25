@@ -68,6 +68,7 @@
                             :emoji="form.options.emoji"
                             :image="imageFile"
                             :picker-element-id="'update-CM-emoji-picker'"
+                            :allow-image-upload="true"
                             @select="emojiSelect"
                             @remove="emojiRemove"
                             @upload="handleUpload"

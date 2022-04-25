@@ -63,7 +63,7 @@
                                 <AtlanIcon
                                     v-else
                                     class="w-4 h-4 ml-0.5"
-                                    :icon="'NoAvatar'"
+                                    icon="NoAvatar"
                                 ></AtlanIcon>
                             </div>
                             <a-popover
@@ -77,8 +77,10 @@
                             >
                                 <template #content>
                                     <EmojiPicker
-                                        :picker-element-id="'create-collection-emoji-picker'"
+                                        :emoji="selectedEmoji"
+                                        picker-element-id="create-collection-emoji-picker"
                                         @select="handleEmojiSelect"
+                                        @remove="handleEmojiRemove"
                                     />
                                 </template>
                             </a-popover>
@@ -286,8 +288,7 @@
     import Owners from './owner.vue'
     import whoami from '~/composables/user/whoami'
     import Avatar from '~/components/common/avatar/index.vue'
-    import EmojiPicker from '~/components/common/avatar/EmojiPickerWrapper.vue'
-
+    import EmojiPicker from '~/components/common/avatar/emojiPickerCM.vue'
 
     export default defineComponent({
         name: 'CreateCollectionModal',
@@ -302,8 +303,7 @@
             Owners,
             Avatar,
             Tooltip,
-            EmojiPicker
-
+            EmojiPicker,
         },
         props: {
             showCollectionModal: {
@@ -427,14 +427,18 @@
 
             const { createCollection, updateCollection } = useQueryCollection()
 
-            const handleEmojiSelect = (emojiObject) => {
-                selectedEmoji.value = emojiObject.unicode
-                toggleEmojiPicker()
-                console.log('emoji data', emojiObject)
-            }
-
             const toggleEmojiPicker = () => {
                 popOverVisible.value = !popOverVisible.value
+            }
+
+            const handleEmojiSelect = ({ native }) => {
+                selectedEmoji.value = native
+                toggleEmojiPicker()
+            }
+
+            const handleEmojiRemove = () => {
+                selectedEmoji.value = null
+                toggleEmojiPicker()
             }
 
             onMounted(async () => {
@@ -657,6 +661,7 @@
                 // editors,
                 // viewers,
                 handleEmojiSelect,
+                handleEmojiRemove,
                 popOverVisible,
                 toggleEmojiPicker,
                 selectedEmoji,

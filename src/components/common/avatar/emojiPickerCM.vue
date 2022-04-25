@@ -16,8 +16,13 @@
                     @select="emitSelectedEmoji"
                 />
             </a-tab-pane>
-            <a-tab-pane key="2" tab="Upload Image" force-render>
-                <div class="p-3">
+            <a-tab-pane
+                v-if="allowImageUpload"
+                key="2"
+                tab="Upload Image"
+                force-render
+            >
+                <div class="p-3" style="width: 375px">
                     <div class="p-3 text-center border border-dashed rounded">
                         <a-upload
                             class="relative block w-full mb-3 metadata-avatar-uploader"
@@ -62,6 +67,11 @@
         pickerElementId: {
             type: String,
             default: 'emoji-picker',
+        },
+        allowImageUpload: {
+            type: Boolean,
+            default: false,
+            required: false,
         },
     })
     const fileList = ref<FileItem[]>([])

@@ -22,6 +22,7 @@
                     :image="metadata.options.imageId"
                     :loading="isUpdating"
                     :picker-element-id="'CM-emoji-picker'"
+                    :allow-image-upload="true"
                     @select="handleEmojiSelect"
                     @remove="removeAvatar"
                     @upload="handleUploadImage"

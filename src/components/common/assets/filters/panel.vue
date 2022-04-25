@@ -355,7 +355,13 @@
                     facetMap.value[id]?.length &&
                     typeof facetMap.value[id][0] !== 'object'
                 ) {
-                    return `${facetMap.value[id]?.length} selected`
+                    return facetMap.value[id]?.length === 1
+                        ? facetMap.value[id][0]
+                        : `${facetMap.value[id]?.length} selected`
+                }
+
+                if (typeof facetMap.value[id] === 'string') {
+                    return facetMap.value[id]
                 }
 
                 let numOfAttributes = 0

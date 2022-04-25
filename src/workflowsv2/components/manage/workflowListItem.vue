@@ -3,8 +3,10 @@
         <div class="flex items-center gap-x-2">
             <PackageIcon :package="workflow" />
             <div class="truncate">
-                <template v-if="minimal">
-                    <p class="text-sm font-bold truncate text-new-gray-700">
+                <router-link :to="`/workflows/profile/${wfName(workflow)}`">
+                    <p
+                        class="text-sm font-bold truncate text-new-gray-700 hover:underline"
+                    >
                         {{ name(workflow) }}
                         <AtlanIcon
                             v-if="dName"
@@ -13,65 +15,21 @@
                         />
                         <span class="text-primary">{{ dName }}</span>
                     </p>
+                </router-link>
 
-                    <div
-                        class="flex items-center mt-1 text-sm leading-none text-gray-500 gap-x-1"
-                    >
-                        <template v-if="isCronWorkflow(workflow)">
-                            <AtlanIcon icon="Schedule" class="text-success" />
-                            <span class="ml-1">{{ cronString(workflow) }}</span>
-                        </template>
-                        <template v-else>
-                            <AtlanIcon icon="Unscheduled" />
-                            <span class="ml-1">Manually Run</span>
-                        </template>
-                    </div>
-                </template>
-                <template v-else>
-                    <div class="flex items-center gap-x-1">
-                        <span class="text-gray-500 truncate">{{
-                            name(workflow)
-                        }}</span>
-                        <div v-if="type(workflow)" class="badge">
-                            <span style="margin-top: 1px">{{
-                                type(workflow)
-                            }}</span>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center mt-1 gap-x-1">
-                        <router-link
-                            :to="`/workflows/profile/${wfName(workflow)}`"
-                        >
-                            <span
-                                class="font-bold tracking-wide truncate cursor-pointer text-primary hover:underline"
-                                >{{ dName }}</span
-                            >
-                        </router-link>
-                        <span class="italic truncate text-grey-500">
-                            ({{ wfName(workflow) }})
-                        </span>
-                    </div>
-                </template>
+                <div
+                    class="flex items-center mt-1 text-sm leading-none text-gray-500 gap-x-1"
+                >
+                    <template v-if="isCronWorkflow(workflow)">
+                        <AtlanIcon icon="Schedule" class="text-success" />
+                        <span class="ml-1">{{ cronString(workflow) }}</span>
+                    </template>
+                    <template v-else>
+                        <AtlanIcon icon="Unscheduled" />
+                        <span class="ml-1">Manually Run</span>
+                    </template>
+                </div>
             </div>
-        </div>
-
-        <div
-            v-if="!minimal"
-            class="flex items-center mt-3 text-sm leading-none text-gray-500 gap-x-1"
-        >
-            <template v-if="isCronWorkflow(workflow)">
-                <AtlanIcon icon="Schedule" class="text-success" />
-                <span class="ml-1">{{ cronString(workflow) }}</span>
-            </template>
-            <template v-else>
-                <AtlanIcon icon="Unscheduled" />
-                <span class="ml-1">Manually Run</span>
-            </template>
-            <CreateUpdateInfo
-                :created-at="workflow.metadata?.creationTimestamp"
-                :created-by="creatorUsername(workflow)"
-            />
         </div>
         <a-divider class="my-3" />
         <LastRunSummary :runs="runs" :loading="isRunLoading" />
@@ -112,10 +70,6 @@
                 default: () => false,
             },
             isRunLoading: {
-                type: Boolean,
-                default: () => false,
-            },
-            minimal: {
                 type: Boolean,
                 default: () => false,
             },

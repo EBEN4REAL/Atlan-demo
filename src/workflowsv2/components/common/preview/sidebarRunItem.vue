@@ -1,5 +1,14 @@
 <template>
-    <div class="px-5 pt-3 cursor-pointer hover:bg-primary-menu">
+    <div
+        class="px-5 pt-3 cursor-pointer hover:bg-primary-menu"
+        @click="
+            $router.push(
+                `/workflows/profile/${workflowTemplateName(
+                    run
+                )}/runs?name=${name(run)}`
+            )
+        "
+    >
         <div class="flex items-center gap-x-2">
             <span class="font-bold tracking-wide truncate text-primary">{{
                 startedAt(run, false)
@@ -14,7 +23,7 @@
             <template v-else>
                 <AtlanIcon icon="Unscheduled" />
                 <span>Manually Run by</span>
-                <UserWrapper :username="creatorUsername(run)" />
+                <UserWrapper :username="creatorUsername(run)" @click.stop="" />
             </template>
         </div>
         <div class="flex items-center text-sm text-gray gap-x-1 mt-1.5">
@@ -56,6 +65,8 @@
                 isCronRun,
                 phase,
                 getRunIconByPhase,
+                workflowTemplateName,
+                name,
             } = useWorkflowInfo()
 
             return {
@@ -66,6 +77,8 @@
                 cronString,
                 isCronRun,
                 getRunIconByPhase,
+                workflowTemplateName,
+                name,
             }
         },
     })

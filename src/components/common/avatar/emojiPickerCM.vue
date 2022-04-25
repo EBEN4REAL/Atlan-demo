@@ -1,13 +1,10 @@
 <template>
     <div>
-        <EmojiPicker
-            v-if="!allowImageUpload"
-            :picker-element-id="pickerElementId"
-            @select="emitSelectedEmoji"
-        />
         <a-tabs
-            v-else
-            :class="$style.emojiPicker"
+            :class="[
+                $style.emojiPicker,
+                allowImageUpload ? '' : $style['hide-nav-tabs-emoji-picker'],
+            ]"
             default-active-key="1"
             size="small"
         >
@@ -26,7 +23,12 @@
                     @select="emitSelectedEmoji"
                 />
             </a-tab-pane>
-            <a-tab-pane key="2" tab="Upload Image" force-render>
+            <a-tab-pane
+                v-if="allowImageUpload"
+                key="2"
+                tab="Upload Image"
+                force-render
+            >
                 <div class="p-3" style="width: 375px">
                     <div class="p-3 text-center border border-dashed rounded">
                         <a-upload
@@ -93,6 +95,12 @@
         }
         :global(.ant-upload.ant-upload-select) {
             display: block;
+        }
+    }
+
+    .hide-nav-tabs-emoji-picker {
+        :global(.ant-tabs-nav) {
+            display: none !important;
         }
     }
 </style>

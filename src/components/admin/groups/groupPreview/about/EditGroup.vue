@@ -61,13 +61,13 @@
                 >
                     Cancel
                 </a-button>
-                <a-button
+                <AtlanButton2
                     type="primary"
                     :loading="isRequestLoading"
                     @click="onSubmit"
                 >
                     Save
-                </a-button>
+                </AtlanButton2>
             </div>
         </div>
     </div>

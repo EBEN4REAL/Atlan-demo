@@ -1521,6 +1521,17 @@ export default function useEventGraph({
         })
     }
 
+    // controlAnnouncementToggle
+    const controlAnnouncementToggle = () => {
+        const val = preferences.value.showAnnouncement
+        const nodesList = document.querySelectorAll('.node-announcement')
+        const nodesArr = Array.from(nodesList)
+        nodesArr.forEach((n) => {
+            if (val) n?.classList.remove('hidden')
+            else n?.classList.add('hidden')
+        })
+    }
+
     /** Resets */
     // resetSelectedNode
     const resetSelectedNode = () => {
@@ -1822,6 +1833,12 @@ export default function useEventGraph({
         () => preferences.value.showSchema,
         () => {
             controlSchemaToggle()
+        }
+    )
+    watch(
+        () => preferences.value.showAnnouncement,
+        () => {
+            controlAnnouncementToggle()
         }
     )
 }

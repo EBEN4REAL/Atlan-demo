@@ -90,6 +90,7 @@
             const preferences = ref({
                 showArrow: false,
                 showSchema: true,
+                showAnnouncement: true,
                 showLegend: false,
             })
             const config = computed(() => ({

@@ -31,7 +31,7 @@
             </ErrorView>
         </div>
         <template v-else-if="!isLoading && isValidEntity">
-            <div class="relative flex items-center py-3">
+            <div class="relative flex items-center py-4">
                 <Avatar
                     v-if="isValidUser"
                     :image-url="updatedImageUrl || imageUrl"

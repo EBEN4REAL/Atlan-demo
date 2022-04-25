@@ -1,5 +1,25 @@
 <template>
     <div v-if="(showVQB && activeInlineTab?.queryId) || !showVQB">
+        <!-- :FIXME -  tranform this menu to common dropdown -->
+        <!-- <InsightsThreeDotMenu
+            :options="dropdownOptions"
+            style="
+                min-width: 264px;
+                margin-right: 10px !important;
+                margin-top: 2px !important;
+            "
+            :class="$style.menu_class"
+            class="py-2"
+        >
+            <template #menuTrigger>
+                <div
+                    @click.prevent="toggleButtonState"
+                    class="flex items-center justify-center h-6 p-1 text-gray-500 border-white rounded cursor-pointer hover:bg-gray-light"
+                >
+                    <AtlanIcon class icon="KebabMenuHorizontal" />
+                </div>
+            </template>
+        </InsightsThreeDotMenu> -->
         <a-dropdown :trigger="['click']" placement="bottomRight">
             <div
                 @click.prevent="toggleButtonState"
@@ -587,9 +607,16 @@
     import TreeDeletePopover from '~/components/insights/common/treeDeletePopover.vue'
     import { Insights } from '~/services/meta/insights/index'
     import { useActiveTab } from '~/components/insights/common/composables/useActiveTab'
+    import InsightsThreeDotMenu from '~/components/insights/common/dropdown/index.vue'
+    import { MenuItem, SubMenu } from 'ant-design-vue'
 
     export default defineComponent({
-        components: { SlackModal, EditQuery, TreeDeletePopover },
+        components: {
+            SlackModal,
+            EditQuery,
+            TreeDeletePopover,
+            InsightsThreeDotMenu,
+        },
         props: {},
         setup(props, { emit }) {
             const router = useRouter()
@@ -876,8 +903,34 @@
                     }
                 })
             }
+            /* To be used in common dropdown later */
+
+            const dropdownOptions = computed(() => {
+                return [
+                    {
+                        title: 'Themes',
+                        key: 'Themes',
+                        component: SubMenu,
+                        class: '',
+                        disabled: false,
+                        hide: showVQB.value,
+                        handleClick: () => {},
+                        submenu: themes.map((theme) => {
+                            return {
+                                item: theme,
+                                title: theme.label,
+                                key: theme.name,
+                            }
+                        }),
+                        selectedOption: getThemeLabelFromName(
+                            editorConfig.value.theme
+                        ),
+                    },
+                ]
+            })
 
             return {
+                dropdownOptions,
                 tenantSlackStatus,
                 link,
                 vqbQueryRoute,

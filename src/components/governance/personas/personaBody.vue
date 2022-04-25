@@ -107,7 +107,7 @@
                           (activeTabFilter === 'glossaryPolicy' &&
                               glossaryPolicyComputed.length === 0)
                         ? 'bg-white rounded-lg pb-14'
-                        : ''
+                        : 'h-full'
                 "
             >
                 <div class="p-4" :class="!isEmpty && 'border-b'">

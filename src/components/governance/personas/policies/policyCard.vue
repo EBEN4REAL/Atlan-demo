@@ -10,15 +10,35 @@
             <div class="flex items-center flex-1">
                 <div
                     v-if="type === 'meta'"
-                    class="flex items-center justify-center mr-2 bg-gray-100 border border-gray-200 rounded-full w-9 h-9"
+                    :class="`relative flex items-center justify-center mr-2 ${
+                        connectorName
+                            ? 'bg-gray-100 border-gray-200'
+                            : 'bg-yellow-100 border-yellow-10'
+                    } border rounded-full w-9 h-9`"
                 >
-                    <AtlanIcon v-if="type === 'meta'" icon="Policies" />
+                    <AtlanIcon icon="Policies" />
+                    <div
+                        v-if="!connectorName"
+                        class="absolute flex items-center justify-center w-4 h-4 bg-white rounded-full warning-no-connection"
+                    >
+                        <AtlanIcon icon="Warning" />
+                    </div>
                 </div>
                 <div
                     v-if="type === 'data'"
-                    class="flex items-center justify-center mr-2 bg-gray-100 border border-gray-200 rounded-full w-9 h-9"
+                    :class="`relative flex items-center justify-center mr-2 ${
+                        connectorName
+                            ? 'bg-gray-100 border-gray-200'
+                            : 'bg-yellow-100 border-yellow-100'
+                    } border rounded-full w-9 h-9`"
                 >
                     <AtlanIcon icon="QueryGrey" />
+                    <div
+                        v-if="!connectorName"
+                        class="absolute flex items-center justify-center w-4 h-4 bg-white rounded-full warning-no-connection"
+                    >
+                        <AtlanIcon icon="Warning" />
+                    </div>
                 </div>
                 <div
                     v-if="type === 'glossaryPolicy'"
@@ -31,18 +51,46 @@
                         <div class="flex items-center">
                             <div class="flex items-center">
                                 <img
-                                    v-if="type !== 'glossaryPolicy'"
+                                    v-if="
+                                        type !== 'glossaryPolicy' &&
+                                        connectorName
+                                    "
                                     :src="`${getImage(
                                         connectionQfName?.split('/')[1]
                                     )}`"
                                     class="w-auto h-4 pr-1 rounded-tl rounded-bl"
                                 />
 
-                                <span v-if="type !== 'glossaryPolicy'"
-                                    >{{ connectorName }}/{{
-                                        connectionName
-                                    }}</span
-                                >
+                                <span v-if="type !== 'glossaryPolicy'">
+                                    {{
+                                        connectorName
+                                            ? `${connectorName}/${connectionName}`
+                                            : ''
+                                    }}
+                                    <div
+                                        v-if="!connectorName"
+                                        class="px-2 py-0.5 text-xs text-gray-700 bg-gray-200 rounded flex"
+                                    >
+                                        This policy is not active.
+                                        <a-tooltip
+                                            overlay-class-name="tooltip-no-connetion"
+                                        >
+                                            <template #title>
+                                                <div>
+                                                    Looks like the connection
+                                                    used in this policy is
+                                                    deleted.  Feel free to delete the policy.
+                                                    <!--You can edit the
+                                                    policy with a new connection
+                                                    or delete it -->
+                                                </div>
+                                            </template>
+                                            <div class="ml-1 text-primary">
+                                                Learn more
+                                            </div>
+                                        </a-tooltip>
+                                    </div>
+                                </span>
                                 <span v-else>
                                     {{ policy?.name }}
                                 </span>
@@ -468,6 +516,7 @@
             const canDelete = computed(() => {
                 // all admins can have edit n delete access to the glossary policy
                 if (type.value === 'glossaryPolicy') return true
+                if (!connectorName.value) return true
                 return props.whitelistedConnectionIds.includes(
                     policy?.value?.connectionId
                 )
@@ -521,6 +570,18 @@
 </script>
 
 <style lang="less">
+    .warning-no-connection {
+        bottom: 0px;
+        right: -6px;
+        svg {
+            transform: scale(0.6);
+        }
+    }
+    .tooltip-no-connetion {
+        .ant-tooltip-inner {
+            width: 395px;
+        }
+    }
     .allow-icon {
         path {
             fill: #00a680 !important;

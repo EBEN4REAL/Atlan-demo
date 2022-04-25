@@ -7,6 +7,8 @@ import {
     useTrackEvent,
 } from '~/modules/editor/analytics/useTrackEvent'
 
+const COMMAND_ITEM_GROUPS = ['Formatting', 'Media', 'Embeds', 'Basic Elements']
+
 export interface CommandItem {
     title: string
     key: string
@@ -215,33 +217,22 @@ export const blockMenu: CommandItem[] = [
         },
     },
     {
-        title: 'Quote',
-        key: 'blockquote',
-        helpText: 'A quote to emphasise a segment',
-        icon: 'Quotes',
-        searchKeys: ['quote', 'blockquote'],
+        title: 'Formula',
+        key: 'formula',
+        helpText: 'Add an mathematical formula.',
+        icon: 'Equation',
+        border: true,
+        searchKeys: ['equation', 'latex', 'math', 'maths', 'formula'],
         disabled: () => false,
-        command: ({ editor, range }) => {
+        command: ({ editor, range }) =>
             range
                 ? editor
                       .chain()
                       .focus()
                       .deleteRange(range)
-                      .toggleBlockquote()
+                      .insertEquationBlock()
                       .run()
-                : editor.chain().focus().toggleBlockquote().run()
-            useTrackEvent({
-                type: TYPE_OF_EVENTS.NODE,
-                name: NAME_OF_EVENTS.QUOTE_INSERTED,
-                trigger: README_TRIGGERS.SLASH_MENU,
-                properties: {
-                    assetType:
-                        editor.options?.editorProps?.attributes?.[
-                            'data-asset-type'
-                        ],
-                },
-            })
-        },
+                : editor.chain().focus().insertEquationBlock().run(),
     },
     {
         title: 'Code',
@@ -297,6 +288,36 @@ export const blockMenu: CommandItem[] = [
             useTrackEvent({
                 type: TYPE_OF_EVENTS.NODE,
                 name: NAME_OF_EVENTS.IMAGE_NODE_INSERTED,
+                trigger: README_TRIGGERS.SLASH_MENU,
+                properties: {
+                    assetType:
+                        editor.options?.editorProps?.attributes?.[
+                            'data-asset-type'
+                        ],
+                },
+            })
+        },
+    },
+
+    {
+        title: 'Quote',
+        key: 'blockquote',
+        helpText: 'A quote to emphasise a segment',
+        icon: 'Quotes',
+        searchKeys: ['quote', 'blockquote'],
+        disabled: () => false,
+        command: ({ editor, range }) => {
+            range
+                ? editor
+                      .chain()
+                      .focus()
+                      .deleteRange(range)
+                      .toggleBlockquote()
+                      .run()
+                : editor.chain().focus().toggleBlockquote().run()
+            useTrackEvent({
+                type: TYPE_OF_EVENTS.NODE,
+                name: NAME_OF_EVENTS.QUOTE_INSERTED,
                 trigger: README_TRIGGERS.SLASH_MENU,
                 properties: {
                     assetType:
@@ -870,4 +891,5 @@ export const BLOCK_TIPPY_MENU = [
     'googleDoc',
     'iframe',
     'table',
+    'equation',
 ]

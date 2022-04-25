@@ -10,7 +10,8 @@
     >
         <template #title>
             <span class="text-sm font-bold text-gray"
-                >{{ isEdit ? 'Edit' : 'New' }} Resource</span
+                >{{ isEdit ? 'Edit' : 'Add' }}
+                {{ isSlackTab ? 'Slack Thread' : 'Resource' }}</span
             >
         </template>
         <template #footer>
@@ -33,36 +34,64 @@
                 />
             </div>
         </template>
-        <div class="px-4 pt-0 pb-4">
-            <span class="font-bold">Link</span>
-            <a-input
-                id="linkURL"
-                ref="titleBar"
-                v-model:value="localResource.link"
-                type="url"
-                placeholder="Paste resource link"
-                class="text-lg font-bold text-gray-700"
-                allow-clear
-                @change="handleUrlChange"
-            />
-            <div v-if="localResource.link" class="mt-3">
-                <span class="font-bold">Title</span>
-                <div class="flex items-center gap-x-2">
+        <a-form
+            ref="formRef"
+            layout="vertical"
+            :class="$style.form"
+            :rules="formRules"
+            :model="localResource"
+            :validate-trigger="['click', 'submit']"
+            @validate="formValidation"
+        >
+            <div class="px-4 pt-0 pb-4">
+                <a-form-item
+                    label="Link"
+                    :name="['link']"
+                    class="mb-0 font-bold"
+                >
                     <a-input
-                        v-model:value="localResource.title"
-                        placeholder="Resource title"
+                        id="link"
+                        ref="titleBar"
+                        v-model:value="localResource.link"
+                        type="url"
+                        :placeholder="
+                            isSlackTab
+                                ? 'https://company.slack.com'
+                                : 'Paste resource link'
+                        "
                         class="text-lg font-bold text-gray-700"
                         allow-clear
+                        @change="handleUrlChange"
+                    />
+                </a-form-item>
+                <div v-if="localResource.link" class="mt-3">
+                    <a-form-item
+                        label="Title"
+                        :name="['title']"
+                        class="mb-0 font-bold"
                     >
-                        <template v-if="faviconLink" #prefix>
-                            <div class="relative flex w-5 h-5 mr-2">
-                                <img :src="faviconLink" alt="" />
-                            </div>
-                        </template>
-                    </a-input>
+                        <div class="flex items-center gap-x-2">
+                            <a-input
+                                v-model:value="localResource.title"
+                                :placeholder="
+                                    isSlackTab
+                                        ? 'What is this thread about'
+                                        : 'Resource title'
+                                "
+                                class="text-lg font-bold text-gray-700"
+                                allow-clear
+                            >
+                                <template v-if="faviconLink" #prefix>
+                                    <div class="relative flex w-5 h-5 mr-2">
+                                        <img :src="faviconLink" alt="" />
+                                    </div>
+                                </template>
+                            </a-input>
+                        </div>
+                    </a-form-item>
                 </div>
             </div>
-        </div>
+        </a-form>
     </a-modal>
 </template>
 
@@ -79,10 +108,12 @@
     } from 'vue'
     import { message } from 'ant-design-vue'
     import { useDebounceFn, useTimestamp } from '@vueuse/core'
+    import type { Rule } from 'ant-design-vue/es/form'
     import { generateUUID } from '~/utils/helper/generator'
     import { getDomain } from '~/utils/url'
     import whoami from '~/composables/user/whoami'
     import { Link } from '~/types/resources.interface'
+    import integrationStore from '~/store/integrations/index'
 
     const props = defineProps({
         isEdit: {
@@ -119,23 +150,99 @@
     const addStatus: Ref = inject('addStatus') as Ref
     const update: Function = inject('update') as Function
     const updateStatus = inject('updateStatus') as Ref
+    const tab = inject('tab') as Ref
+    const isTab = computed(() => !!tab?.value?.component)
 
+    const isSlackTab = computed(
+        () => tab.value.component === 'SlackResourcesTab'
+    )
+    const isSlackLink = computed(
+        () => getDomain(localResource.value.link) === 'slack.com'
+    )
+
+    const validateLink = async (_rule: Rule, value: string) => {
+        if (value === '' || !isValidUrl.value) {
+            // eslint-disable-next-line prefer-promise-reject-errors
+            return Promise.reject(
+                `Please provide a valid ${
+                    isSlackTab.value ? 'Slack' : 'resource'
+                } link`
+            )
+        }
+
+        if (isSlackTab.value && getDomain(value) !== 'slack.com') {
+            // eslint-disable-next-line prefer-promise-reject-errors
+            return Promise.reject('Please provide a valid Slack link')
+        }
+
+        return Promise.resolve()
+    }
+
+    const isLinkValid = ref(isEdit.value) // ? results of custom validation of link
+    const formValidation = (name, status, errorMsgs) => {
+        if (name[0] === 'link') isLinkValid.value = status
+    }
+
+    const formRules = {
+        link: [
+            {
+                required: true,
+                validator: validateLink,
+                trigger: ['submit', 'change'],
+            },
+        ],
+        title: [
+            {
+                required: true,
+                message: 'Please provide a title',
+                trigger: ['submit', 'change'],
+            },
+        ],
+    }
+
+    const store = integrationStore()
+    const { tenantSlackStatus } = toRefs(store)
     watch(addStatus, (v) => {
         if (v === 'success') {
             // ! FIXME this watcher is running multiple times, ???!
             if (localResource.value.title)
-                message.success({
-                    content: `Successfully added new resource "${localResource.value.title}"`,
-                    duration: 1.5,
-                    key: 'add',
-                })
+                if (
+                    isSlackLink.value &&
+                    isTab.value &&
+                    !isSlackTab.value &&
+                    tenantSlackStatus.value.configured
+                ) {
+                    message.success({
+                        content: `Looks like you’ve added a Slack link, you can find it here`,
+                        duration: 4,
+                        key: 'slackAdd',
+                    })
+                } else
+                    message.success({
+                        content: `Successfully added new ${
+                            tenantSlackStatus.value.configured &&
+                            isSlackLink.value &&
+                            isTab.value
+                                ? 'Slack thread'
+                                : 'resource'
+                        } "${localResource.value.title}"`,
+                        duration: 1.5,
+                        key: 'add',
+                    })
+
             reset()
             visible.value = false
         } else if (v === 'error') {
             // ! FIXME this watcher is running multiple times, ???!
             if (localResource.value.title)
                 message.error({
-                    content: `Failed to add new resource "${localResource.value.title}"`,
+                    content: `Failed to add new ${
+                        tenantSlackStatus.value.configured &&
+                        isSlackLink.value &&
+                        isTab.value
+                            ? 'Slack thread'
+                            : 'resource'
+                    } "${localResource.value.title}"`,
                     duration: 1.5,
                     key: 'errorAdd',
                 })
@@ -147,7 +254,9 @@
             // ! FIXME this watcher is running multiple times, ???!
             if (localResource.value.title)
                 message.success({
-                    content: `Successfully updated resource "${localResource.value.title}"`,
+                    content: `Successfully updated ${
+                        isSlackTab.value ? 'Slack thread' : 'resource'
+                    } "${localResource.value.title}"`,
                     duration: 1.5,
                     key: 'update',
                 })
@@ -157,7 +266,9 @@
             // ! FIXME this watcher is running multiple times, ???!
             if (localResource.value.title)
                 message.error({
-                    content: `Failed to update resource "${localResource.value.title}"`,
+                    content: `Failed to update ${
+                        isSlackTab.value ? 'Slack thread' : 'resource'
+                    } "${localResource.value.title}"`,
                     duration: 1.5,
                     key: 'errorUpdate',
                 })
@@ -200,7 +311,8 @@
         () =>
             !localResource.value.link ||
             !localResource.value.title ||
-            !isValidUrl.value
+            !isValidUrl.value ||
+            !isLinkValid.value
     )
 
     const handleUrlChange = (e) => {
@@ -260,6 +372,16 @@
         }
         :global(.ant-input) {
             @apply shadow-none outline-none px-0 border-0 !important;
+        }
+    }
+
+    .form {
+        :global(.ant-form-item-explain) {
+            @apply font-normal text-xs  pt-1 !important;
+        }
+        :global(.ant-form-item-label
+                > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::after) {
+            @apply hidden !important;
         }
     }
 </style>

@@ -216,6 +216,21 @@
                     </div>
                     <div class="text-sm text-gray-700 break-all">
                         <AtlanIcon
+                            v-if="
+                                parentTable(selectedAsset)?.attributes
+                                    ?.certificateStatus
+                            "
+                            :icon="
+                                getEntityStatusIcon(
+                                    'Table',
+                                    parentTable(selectedAsset)?.attributes
+                                        ?.certificateStatus
+                                )
+                            "
+                            class="w-auto h-4 mb-0.5 mr-1"
+                        />
+                        <AtlanIcon
+                            v-else
                             icon="TableGray"
                             class="w-auto h-4 mb-0.5 mr-1"
                         />
@@ -248,8 +263,23 @@
                     </div>
                     <div class="text-sm text-gray-700">
                         <AtlanIcon
-                            icon="ViewGray"
+                            v-if="
+                                parentView(selectedAsset)?.attributes
+                                    ?.certificateStatus
+                            "
+                            :icon="
+                                getEntityStatusIcon(
+                                    'View',
+                                    parentView(selectedAsset)?.attributes
+                                        ?.certificateStatus
+                                )
+                            "
                             class="w-auto h-4 mb-0.5 break-all mr-1"
+                        />
+                        <AtlanIcon
+                            v-else
+                            icon="ViewGray"
+                            class="w-auto h-4 mb-0.5 mr-1"
                         />
                         <router-link
                             class="text-gray-700 border-b border-gray-500 border-dashed cursor-pointer hover:text-primary"
@@ -1003,6 +1033,7 @@
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import UserPill from '@/common/pills/user.vue'
     import PopOverUser from '@/common/popover/user/user.vue'
+    import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -1121,6 +1152,8 @@
                 sourceId,
                 formula,
                 createdBy,
+                parentTable,
+                parentView,
             } = useAssetInfo()
 
             const {
@@ -1286,6 +1319,9 @@
                 formula,
                 handleClickUser,
                 createdBy,
+                getEntityStatusIcon,
+                parentTable,
+                parentView,
             }
         },
     })

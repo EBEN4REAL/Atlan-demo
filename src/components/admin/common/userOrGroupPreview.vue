@@ -111,7 +111,7 @@
                             </span>
                         </div>
                         <div v-auth="map.UPDATE_GROUP" class="ml-auto">
-                            <a-button-group>
+                            <a-button-group v-if="previewType === 'group'">
                                 <MemberPopover
                                     :selected-group="selectedGroup"
                                     @members-added="handleChangeTab('members')"

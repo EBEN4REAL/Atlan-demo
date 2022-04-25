@@ -52,15 +52,23 @@
                     </span>
                 </a-tooltip>
             </a-checkbox>
-            <a-button
-                block
-                class="w-1/3"
-                type="primary"
-                :loading="isRequestLoading"
-                @click="onSubmit"
-            >
-                Save
-            </a-button>
+            <div class="flex items-center">
+                <a-button
+                    type="secondary"
+                    class="mr-2"
+                    :disabled="isRequestLoading"
+                    @click="$emit('toggleEdit')"
+                >
+                    Cancel
+                </a-button>
+                <a-button
+                    type="primary"
+                    :loading="isRequestLoading"
+                    @click="onSubmit"
+                >
+                    Save
+                </a-button>
+            </div>
         </div>
     </div>
 </template>

@@ -249,6 +249,35 @@
                                     </a-tooltip>
                                 </div>
                                 <div
+                                    class="pr-1"
+                                    :data-test-id="'preview-table-query'"
+                                    @click="
+                                        () =>
+                                            actionClick(
+                                                'play',
+                                                item,
+                                                (isPreview = true)
+                                            )
+                                    "
+                                >
+                                    <a-tooltip color="#363636" placement="top">
+                                        <template #title
+                                            >Preview this
+                                            <span class="lowercase"
+                                                >table/view</span
+                                            ></template
+                                        >
+                                        <div
+                                            class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                        >
+                                            <AtlanIcon
+                                                icon="Play"
+                                                class="w-4 h-4 my-auto outline-none"
+                                            ></AtlanIcon>
+                                        </div>
+                                    </a-tooltip>
+                                </div>
+                                <div
                                     :data-test-id="'run-table-query'"
                                     v-if="showVQB"
                                     :class="
@@ -268,7 +297,7 @@
                                             class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
                                         >
                                             <AtlanIcon
-                                                icon="Play"
+                                                icon="Query"
                                                 class="w-4 h-4 my-auto outline-none"
                                             ></AtlanIcon>
                                         </div>
@@ -295,7 +324,7 @@
                                             class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
                                         >
                                             <AtlanIcon
-                                                icon="Play"
+                                                icon="Query"
                                                 class="w-4 h-4 my-auto outline-none"
                                             ></AtlanIcon>
                                         </div>
@@ -442,79 +471,6 @@
                                 {{ childCount(item) }}</span
                             >
                         </span>
-                        <div
-                            v-if="hoverActions"
-                            class="absolute right-0 flex items-center text-gray-500 transition opacity-0 h-7 margin-align-top group-hover:opacity-100"
-                            @click.stop="() => {}"
-                            :class="
-                                item?.selected
-                                    ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
-                                    : 'bg-gradient-to-l from-tree-light-color via-tree-light-color'
-                            "
-                        >
-                            <div
-                                :data-test-id="'insert-in-editor'"
-                                class="pl-2 ml-24"
-                                @click="() => actionClick('add', item)"
-                            >
-                                <a-tooltip color="#363636" placement="top">
-                                    <template #title
-                                        >Place name in editor</template
-                                    >
-                                    <div
-                                        class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
-                                    >
-                                        <AtlanIcon
-                                            icon="AddAssetName"
-                                            class="w-4 h-4 my-auto focus:outline-none"
-                                        ></AtlanIcon>
-                                    </div>
-                                </a-tooltip>
-                            </div>
-                            <div
-                                class="pl-1 pr-1"
-                                :data-test-id="'preview'"
-                                @click="() => actionClick('info', item)"
-                            >
-                                <a-tooltip color="#363636" placement="top">
-                                    <template #title
-                                        >Open preview sidebar</template
-                                    >
-                                    <div
-                                        class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
-                                    >
-                                        <AtlanIcon
-                                            icon="SidebarSwitch"
-                                            class="w-4 h-4 my-auto outline-none"
-                                        ></AtlanIcon>
-                                    </div>
-                                </a-tooltip>
-                            </div>
-                            <div
-                                :data-test-id="'run-table-query'"
-                                :class="
-                                    activeInlineTab.playground.resultsPane
-                                        .result.isQueryRunning === 'loading'
-                                        ? 'opacity-50 cursor-not-allowed pointer-events-none'
-                                        : ''
-                                "
-                                @click="() => previewData(item)"
-                            >
-                                <a-tooltip color="#363636" placement="top">
-                                    <template #title>{{
-                                        tooltipText
-                                    }}</template>
-                                    <div
-                                        class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
-                                    >
-                                        <AtlanIcon
-                                            icon="Play"
-                                            class="w-4 h-4 my-auto outline-none"
-                                        ></AtlanIcon>
-                                    </div>
-                                </a-tooltip>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -782,11 +738,15 @@
                 ) {
                     return 'Another query is running'
                 } else {
-                    return 'Preview data'
+                    return 'Query this table/view'
                 }
             })
 
-            const actionClick = (action: string, t: assetInterface) => {
+            const actionClick = (
+                action: string,
+                t: assetInterface,
+                isPreview?: boolean
+            ) => {
                 // for assetQuote Info of different sources
                 const assetQuoteType = getDialectInfo(
                     getConnectorName(
@@ -837,6 +797,7 @@
 
                         break
                     }
+                    // This case is used for preview & Play
                     case 'play': {
                         const activeInlineTabCopy: activeInlineTabInterface =
                             JSON.parse(
@@ -871,35 +832,65 @@
                         const prevText =
                             activeInlineTabCopy.playground.editor.text
                         // new text
-                        let editorContext =
+                        let context =
                             activeInlineTabCopy.explorer.schema.connectors
-                        let editorContextType = editorContext?.attributeName
-                        let editorContextValue = editorContext?.attributeValue
+                        if (isPreview) {
+                            // select context from editor
+                            context =
+                                activeInlineTabCopy.playground.editor.context
+                        }
+                        let contextType = context?.attributeName
+                        let contextValue = context?.attributeValue
 
-                        console.log('editorContextType', editorContextType)
+                        console.log('contextType', contextType)
 
                         // 1st missing context in editor:
                         // 2nd context mismatch in editor and query
 
                         // console.log('run query')
 
-                        switch (editorContextType) {
+                        switch (contextType) {
                             case 'connectionQualifiedName': {
                                 // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
                                 newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${databaseName}${assetQuoteType}.${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
                                 if (
-                                    editorContextValue !==
+                                    contextValue !==
                                     queryConnectionQualifiedName
                                 ) {
                                     // openContextModal()
                                     // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
                                     newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
 
-                                    playQuery(newQuery, item.value)
+                                    if (isPreview) {
+                                        handleAddNewTab(
+                                            newQuery,
+                                            {
+                                                attributeName:
+                                                    'schemaQualifiedName',
+                                                attributeValue:
+                                                    updatedEditorSchemaQualifiedName,
+                                            },
+                                            {
+                                                ...activeInlineTab.value
+                                                    .explorer.schema.connectors,
+                                            },
+                                            item.value
+                                        )
+                                    } else playQuery(newQuery, item.value)
 
                                     return
                                 } else {
-                                    playQuery(newQuery, item.value)
+                                    if (isPreview) {
+                                        const tabIndex =
+                                            inlineTabs.value.findIndex(
+                                                (tab) =>
+                                                    tab.key ===
+                                                    activeInlineTabKey.value
+                                            )
+                                        const newText = `${newQuery}${prevText}`
+                                        previewQuery(newText, tabIndex)
+                                        //REMAINS
+                                    } else playQuery(newQuery, item.value)
                                     return
                                 }
                                 break
@@ -909,11 +900,10 @@
                                 newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
 
                                 if (
-                                    editorContextValue !==
-                                    queryDatabaseQualifiedName
+                                    contextValue !== queryDatabaseQualifiedName
                                 ) {
                                     let editorContextValueArray =
-                                        editorContextValue?.split('/')
+                                        contextValue?.split('/')
                                     let cqn = editorContextValueArray
                                         ?.slice(0, 3)
                                         .join('/')
@@ -922,29 +912,42 @@
                                         .join('/')
 
                                     if (cqn !== queryConnectionQualifiedName) {
-                                        // console.log('cqn: ', {
-                                        //     cqn,
-                                        //     queryConnectionQualifiedName,
-                                        // })
-                                        // open in new tab
-                                        // openContextModal()
-                                        // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
                                         newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                        playQuery(newQuery, item.value)
+                                        if (isPreview) {
+                                            handleAddNewTab(
+                                                newQuery,
+                                                {
+                                                    attributeName:
+                                                        'schemaQualifiedName',
+                                                    attributeValue:
+                                                        updatedEditorSchemaQualifiedName,
+                                                },
+                                                {
+                                                    ...activeInlineTab.value
+                                                        .explorer.schema
+                                                        .connectors,
+                                                },
+                                                item.value
+                                            )
+                                        } else playQuery(newQuery, item.value)
                                         return
                                     } else {
                                         if (
                                             dbqn !== queryDatabaseQualifiedName
                                         ) {
-                                            const tabIndex =
-                                                inlineTabs.value.findIndex(
-                                                    (tab) =>
-                                                        tab.key ===
-                                                        activeInlineTabKey.value
-                                                )
-                                            // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
                                             newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${databaseName}${assetQuoteType}.${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                            playQuery(newQuery, item.value)
+                                            if (isPreview) {
+                                                const tabIndex =
+                                                    inlineTabs.value.findIndex(
+                                                        (tab) =>
+                                                            tab.key ===
+                                                            activeInlineTabKey.value
+                                                    )
+                                                const newText = `${newQuery}${prevText}`
+                                                previewQuery(newText, tabIndex)
+                                                //REMAINS
+                                            } else
+                                                playQuery(newQuery, item.value)
                                             return
                                         }
                                     }
@@ -952,7 +955,17 @@
                                 } else {
                                     // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
                                     newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                    playQuery(newQuery, item.value)
+                                    if (isPreview) {
+                                        const tabIndex =
+                                            inlineTabs.value.findIndex(
+                                                (tab) =>
+                                                    tab.key ===
+                                                    activeInlineTabKey.value
+                                            )
+                                        const newText = `${newQuery}${prevText}`
+                                        previewQuery(newText, tabIndex)
+                                        //REMAINS
+                                    } else playQuery(newQuery, item.value)
                                     return
                                 }
                                 break
@@ -967,12 +980,9 @@
                                 // )
 
                                 // console.log('run in schema')
-                                if (
-                                    editorContextValue !==
-                                    querySchemaQualifiedName
-                                ) {
+                                if (contextValue !== querySchemaQualifiedName) {
                                     let editorContextValueArray =
-                                        editorContextValue?.split('/')
+                                        contextValue?.split('/')
                                     let cqn = editorContextValueArray
                                         ?.slice(0, 3)
                                         .join('/')
@@ -984,21 +994,42 @@
                                         .join('/')
 
                                     if (cqn !== queryConnectionQualifiedName) {
-                                        playQuery(newQuery, item.value)
+                                        if (isPreview) {
+                                            handleAddNewTab(
+                                                newQuery,
+                                                {
+                                                    attributeName:
+                                                        'schemaQualifiedName',
+                                                    attributeValue:
+                                                        updatedEditorSchemaQualifiedName,
+                                                },
+                                                {
+                                                    ...activeInlineTab.value
+                                                        .explorer.schema
+                                                        .connectors,
+                                                },
+                                                item.value
+                                            )
+                                        } else playQuery(newQuery, item.value)
                                         return
                                     } else {
-                                        const tabIndex =
-                                            inlineTabs.value.findIndex(
-                                                (tab) =>
-                                                    tab.key ===
-                                                    activeInlineTabKey.value
-                                            )
                                         if (
                                             dbqn !== queryDatabaseQualifiedName
                                         ) {
                                             // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
                                             newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${databaseName}${assetQuoteType}.${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                            playQuery(newQuery, item.value)
+                                            if (isPreview) {
+                                                const tabIndex =
+                                                    inlineTabs.value.findIndex(
+                                                        (tab) =>
+                                                            tab.key ===
+                                                            activeInlineTabKey.value
+                                                    )
+                                                const newText = `${newQuery}${prevText}`
+                                                previewQuery(newText, tabIndex)
+                                                //REMAINS
+                                            } else
+                                                playQuery(newQuery, item.value)
                                             return
                                         } else {
                                             if (
@@ -1006,7 +1037,24 @@
                                             ) {
                                                 // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
                                                 newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                                playQuery(newQuery, item.value)
+                                                if (isPreview) {
+                                                    const tabIndex =
+                                                        inlineTabs.value.findIndex(
+                                                            (tab) =>
+                                                                tab.key ===
+                                                                activeInlineTabKey.value
+                                                        )
+                                                    const newText = `${newQuery}${prevText}`
+                                                    previewQuery(
+                                                        newText,
+                                                        tabIndex
+                                                    )
+                                                    //REMAINS
+                                                } else
+                                                    playQuery(
+                                                        newQuery,
+                                                        item.value
+                                                    )
                                                 return
                                             }
                                         }
@@ -1017,7 +1065,17 @@
                                     console.log('match here')
                                     // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
                                     newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                    playQuery(newQuery, item.value)
+                                    if (isPreview) {
+                                        const tabIndex =
+                                            inlineTabs.value.findIndex(
+                                                (tab) =>
+                                                    tab.key ===
+                                                    activeInlineTabKey.value
+                                            )
+                                        const newText = `${newQuery}${prevText}`
+                                        previewQuery(newText, tabIndex)
+                                        //REMAINS
+                                    } else playQuery(newQuery, item.value)
                                     return
                                 }
                                 break
@@ -1162,6 +1220,11 @@
                     limitRows,
                     inlineTabs,
                 })
+            }
+
+            const previewQuery = (queryText: string, tabIndex: number) => {
+                inlineTabs.value[tabIndex].playground.editor.text = queryText
+                toRaw(editorInstanceRef.value).getModel().setValue(queryText)
             }
 
             let childCount = (item) => {
@@ -1433,7 +1496,7 @@
     .via-tree-light-color {
         // --tw-gradient-stops: var(--tw-gradient-from), #dbe9fe,
         --tw-gradient-stops: var(--tw-gradient-from), #eff1f5,
-            var(--tw-gradient-to, rgba(244, 246, 253, 0)) !important;
+            var(--tw-gradient-to, rgba(244, 246, 253, 0.7)) !important;
     }
     .from-tree-light-color {
         // --tw-gradient-from: #dbe9fe !important;

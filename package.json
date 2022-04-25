@@ -72,7 +72,7 @@
     "regular-table": "^0.5.5",
     "short-unique-id": "^4.4.4",
     "smooth-scroll-into-view-if-needed": "^1.1.33",
-    "splitpanes": "^3.0.6",
+    "splitpanes": "^3.1.1",
     "sql-formatter": "^4.0.2",
     "sql-highlight": "^4.0.1",
     "squel": "^5.13.0",

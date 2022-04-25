@@ -295,6 +295,7 @@
                     direction,
                     guid: guid.value,
                     hideProcess: true,
+                    allowDeletedProcess: false,
                     attributes: AssetAttributes,
                 }))
             )

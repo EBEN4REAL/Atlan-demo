@@ -9,7 +9,7 @@ export default function fetchPorts(typeName, qualifiedName, offset, limit = 5) {
         Table: 'Column',
         View: 'Column',
         MaterialisedView: 'Column',
-        TableauDatasource: 'TableauDatasourceField',
+        TableauDatasource: ['TableauDatasourceField', 'TableauCalculatedField'],
     }
     const base = bodybuilder()
     const attributes = [
@@ -35,7 +35,7 @@ export default function fetchPorts(typeName, qualifiedName, offset, limit = 5) {
             key: '__typeName.keyword',
             value: portTypeNameMap[typeName],
             type: 'must',
-            prop: 'term',
+            prop: Array.isArray(portTypeNameMap[typeName]) ? 'terms' : 'term',
         },
         {
             id: 'haslineage',

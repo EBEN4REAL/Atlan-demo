@@ -35,7 +35,7 @@ export default function useInsightsTabList(): {
             name: 'History',
             component: 'history',
             icon: 'History',
-            isVisible: true,
+            isVisible: false,
             title: 'History',
         },
         {

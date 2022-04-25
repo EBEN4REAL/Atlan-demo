@@ -984,9 +984,10 @@
                 position: relative;
                 align-items: center;
                 justify-content: center;
-                min-width: 20%;
-                // transition: flex-grow var(--duration) var(--cubic);
-                // transition: flex-grow var(--duration) var(--cubic);
+                min-width: 30%;
+
+                // When query history tab or any other tab comes in to make total tab count 4
+                // min-width: 20%;
             }
             :global(.ant-tabs-tab-active) {
                 flex-grow: 2.2;

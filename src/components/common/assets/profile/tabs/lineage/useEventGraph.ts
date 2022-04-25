@@ -207,7 +207,11 @@ export default function useEventGraph({
 
     // isPortTypeName
     const isPortTypeName = (typeName) => {
-        const typeNames = ['Column', 'TableauDatasourceField']
+        const typeNames = [
+            'Column',
+            'TableauDatasourceField',
+            'TableauCalculatedField',
+        ]
         return typeNames.includes(typeName)
     }
 

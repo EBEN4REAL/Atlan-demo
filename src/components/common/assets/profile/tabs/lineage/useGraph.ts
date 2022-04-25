@@ -215,7 +215,7 @@ export default function useGraph(graph) {
                                         }
                                         ${
                                             aType
-                                                ? `<span class="ml-2">
+                                                ? `<span class="ml-2 node-announcement">
                                                     ${announcementTypeIcons[aType]}
                                                    </span>`
                                                 : ''
@@ -281,7 +281,7 @@ export default function useGraph(graph) {
                                     <div class="flex items-center gap-x-1">
                                         <span title="${displayText}" class="truncate node-title">${displayText}</span>
                                         <span class="flex-none ml-1">${status}</span>
-                                        <span class="flex-none ml-1">${flag}</span>
+                                        <span class="flex-none ml-1 node-announcement">${flag}</span>
 
                                     </div>
                                 </div>
@@ -309,7 +309,8 @@ export default function useGraph(graph) {
                                     <div class="flex items-center">
                                         <span class="mr-2">
                                             ${getPortsCTALabel(
-                                                typeName, data?.portsCount,
+                                                typeName,
+                                                data?.portsCount,
                                                 data?.highlightPorts
                                             )}
                                         </span>

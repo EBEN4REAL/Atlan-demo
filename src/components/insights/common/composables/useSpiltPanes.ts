@@ -12,10 +12,10 @@ const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
 export function useSpiltPanes(activeInlineTab?: activeInlineTabInterface) {
     /* ---- Panes  ----- */
     /* TODO: Collapse panes if it reach  threshold */
-    const EXPLORER_WIDTH = 393 // in px
+    const EXPLORER_WIDTH = 350 // in px
     const ASSET_SIDEBAR_WIDTH = 420 // in px
-    const MIN_EXPLORER_WIDTH = 360 // in px
-    const MAX_EXPLORER_WIDTH = 450 // in px
+    const MIN_EXPLORER_WIDTH = 320 // in px
+    const MAX_EXPLORER_WIDTH = 530 // in px
     const explorerThreshold = 10
     const explorerPaneCollapsed = ref(false)
     const assetSidebarThreshold = 10

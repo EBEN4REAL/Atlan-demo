@@ -292,11 +292,11 @@
                                             tooltipText
                                         }}</template>
                                         <div
-                                            class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                            class="flex items-center w-6 h-6 p-1 rounded text-new-gray-700 hover:bg-new-gray-300"
                                         >
                                             <AtlanIcon
                                                 icon="PreviewQuery"
-                                                class="w-4 h-4 my-auto outline-none"
+                                                class="w-4 h-4 my-auto outline-none text-new-gray-700"
                                             ></AtlanIcon>
                                         </div>
                                     </a-tooltip>
@@ -315,7 +315,7 @@
                                 >
                                     <a-tooltip color="#363636" placement="top">
                                         <template #title
-                                            >Preview this
+                                            >Query this
                                             <span class="lowercase"
                                                 >table/view</span
                                             ></template
@@ -740,7 +740,7 @@
                 ) {
                     return 'Another query is running'
                 } else {
-                    return 'Query this table/view'
+                    return 'Preview this table/view'
                 }
             })
 

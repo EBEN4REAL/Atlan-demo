@@ -1,10 +1,14 @@
 <template>
-    <div class="px-4 py-2 mx-4 bg-gray-100 rounded-sm">
+    <div class="px-4 py-2 mx-4 bg-yellow-100 rounded-lg">
         <div
             class="flex items-center justify-between text-sm text-gray-500 text-muted"
         >
             <div class="flex text-gray-500">
-                Auto-Suggestion
+                <AtlanIcon
+                    icon="Trident"
+                    class="pr-1 text-sm text-yellow-500"
+                ></AtlanIcon>
+                Suggestion
                 <AtlanIcon
                     icon="CaretLeft"
                     class="pl-1 hover:text-primary-500"
@@ -22,7 +26,7 @@
             <a-button
                 shape="round"
                 size="small"
-                class="mt-1"
+                class="mt-1 text-yellow-500 border-yellow-500"
                 @click="handleApply"
                 v-if="editPermission"
             >

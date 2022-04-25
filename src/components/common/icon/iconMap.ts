@@ -461,6 +461,7 @@ import Workflow from '~/assets/images/icons/workflows.svg'
 import Package from '~/assets/images/icons/package.svg'
 
 import Display from '~/assets/images/icons/display.svg'
+import Trident from '~/assets/images/icons/trident.svg'
 
 export default {
     LegendExpand,
@@ -905,4 +906,5 @@ export default {
     Workflow,
     Package,
     Display,
+    Trident,
 }

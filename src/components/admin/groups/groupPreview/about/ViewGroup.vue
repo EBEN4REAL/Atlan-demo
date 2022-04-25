@@ -5,24 +5,28 @@
                 Group Info
             </div>
             <div v-auth="map.UPDATE_GROUP" class="flex items-center ml-auto">
-                <MemberPopover
-                    :selected-group="selectedGroup"
-                    @members-added="$emit('changeTab', 'members')"
-                >
-                    <template #label>
-                        <AtlanButton2
-                            color="secondary"
-                            prefix-icon="Add"
-                            label="Add Member"
-                        />
-                    </template>
-                </MemberPopover>
-                <a-button
-                    class="flex items-center content-center px-2 ml-2"
-                    @click="$emit('toggleEdit')"
-                >
-                    <AtlanIcon icon="Edit" class="mr-1" /> Edit
-                </a-button>
+                <a-button-group>
+                    <MemberPopover
+                        :selected-group="selectedGroup"
+                        @members-added="$emit('changeTab', 'members')"
+                    >
+                        <template #label>
+                            <AtlanButton2
+                                color="secondary"
+                                prefix-icon="Add"
+                                class="rounded-r-none"
+                                label="Add Users"
+                            />
+                        </template>
+                    </MemberPopover>
+                    <AtlanButton2
+                        class="border-l-0 rounded-l-none"
+                        color="secondary"
+                        prefix-icon="Edit"
+                        label="Edit"
+                        @click="$emit('toggleEdit')"
+                    />
+                </a-button-group>
             </div>
         </div>
         <div class="profile-wrapper">

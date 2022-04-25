@@ -30,7 +30,10 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
             },
             queries: {
                 connectors: {
-                    connector: undefined,
+                    connector: {
+                        attributeName: 'connectionQualifiedName',
+                        attributeValue: '',
+                    },
                 },
                 collection: {
                     guid: '',

@@ -54,7 +54,7 @@
                             </div>
                             <div
                                 v-if="hoverActions"
-                                class="absolute right-0 flex items-center text-gray-500 transition opacity-0 h-7 margin-align-top group-hover:opacity-100"
+                                class="absolute right-0 flex items-center text-gray-500 opacity-0 h-7 margin-align-top group-hover:opacity-100"
                                 style="width: "
                                 :class="
                                     item?.selected
@@ -193,7 +193,7 @@
 
                             <div
                                 v-if="hoverActions"
-                                class="absolute right-0 flex items-center text-gray-500 transition opacity-0 h-7 margin-align-top group-hover:opacity-100"
+                                class="absolute right-0 flex items-center text-gray-500 opacity-0 h-7 margin-align-top group-hover:opacity-100"
                                 @click.stop="() => {}"
                                 :class="
                                     item?.selected
@@ -397,7 +397,7 @@
 
                     <div
                         v-if="hoverActions"
-                        class="absolute right-0 flex items-center text-gray-500 transition opacity-0 h-7 margin-align-top group-hover:opacity-100"
+                        class="absolute right-0 flex items-center text-gray-500 opacity-0 h-7 margin-align-top group-hover:opacity-100"
                         :class="
                             item?.selected
                                 ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
@@ -1336,9 +1336,9 @@
             const readOnly = computed(() =>
                 activeInlineTab?.value?.qualifiedName?.length === 0
                     ? false
-                    : isQueryCreatedByCurrentUser.value
+                    : isQueryCreatedByCurrentUser?.value
                     ? false
-                    : hasQueryWritePermission.value
+                    : hasQueryWritePermission?.value
                     ? false
                     : true
             )

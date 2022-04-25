@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="flex items-center justify-between px-5 py-4">
+        <div class="flex items-center justify-between px-5 py-2 bg-gray-100">
             <span class="flex items-center">
                 <PreviewTabsIcon
                     :icon="tab.icon"
@@ -122,34 +122,7 @@
     import RequestItem from './requestItem.vue'
     import AtlanButton from '@/UI/button.vue'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
-
-    const listStatus = [
-        // {
-        //     name: 'All',
-        //     key: 'all',
-        //     color: '#6D6DDA',
-        // },
-        {
-            name: 'Pending',
-            key: 'active',
-            color: '#FFB119',
-            icon: 'Clock',
-            class: 'icon-warning',
-        },
-        {
-            name: 'Approved',
-            key: 'approved',
-            color: '#6D6DDA',
-            icon: 'Check',
-            class: 'text-success check-icon',
-        },
-        {
-            name: 'Rejected',
-            key: 'rejected',
-            color: '#DC5252',
-            icon: 'CrossCircle',
-        },
-    ]
+    import { listStatus } from '@/governance/requests/requestType'
 
     export default defineComponent({
         name: 'RequestTab',
@@ -166,7 +139,7 @@
         },
         setup(props) {
             const { selectedAsset } = toRefs(props)
-            const selectedFilter = ref(listStatus[0])
+            const selectedFilter = ref(listStatus[1])
             const list = ref([])
             const resPagination = ref({
                 filterRecord: 0,

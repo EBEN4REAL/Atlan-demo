@@ -283,6 +283,7 @@ import DBDiagram from '~/assets/images/readme/dbdiagram.svg'
 import MicrosoftWord from '~/assets/images/readme/microsoftWord.svg'
 import MicrosoftExcel from '~/assets/images/readme/microsoftExcel.svg'
 import MicrosoftPowerpoint from '~/assets/images/readme/microsoftPowerpoint.svg'
+import Equation from '~/assets/images/readme/equation.svg'
 
 import Running from '~/assets/images/icons/running.svg'
 import ExclaimCircle from '~/assets/images/icons/exclaimCircle.svg'
@@ -777,6 +778,7 @@ export default {
     MicrosoftWord,
     MicrosoftExcel,
     MicrosoftPowerpoint,
+    Equation,
     Running,
     Refresh,
     ErrorLogs,

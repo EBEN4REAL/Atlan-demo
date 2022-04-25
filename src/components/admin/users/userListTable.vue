@@ -206,9 +206,7 @@
                         </div>
                     </div>
                 </template>
-                <div
-                    class="text-left cursor-pointer text-primary hover:underline"
-                >
+                <div class="text-left cursor-pointer text-primary">
                     {{
                         user?.personas?.length > 1
                             ? user?.personas?.length + ' personas'

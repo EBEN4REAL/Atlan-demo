@@ -54,7 +54,7 @@
                             </div>
                             <div
                                 v-if="hoverActions"
-                                class="absolute right-0 flex items-center text-gray-500 opacity-0 h-7 margin-align-top group-hover:opacity-100"
+                                class="absolute right-0 flex items-center opacity-0 text-new-gray-700 h-7 margin-align-top group-hover:opacity-100"
                                 style="width: "
                                 :class="
                                     item?.selected
@@ -193,7 +193,7 @@
 
                             <div
                                 v-if="hoverActions"
-                                class="absolute right-0 flex items-center text-gray-500 opacity-0 h-7 margin-align-top group-hover:opacity-100"
+                                class="absolute right-0 flex items-center opacity-0 text-new-gray-700 h-7 margin-align-top group-hover:opacity-100"
                                 @click.stop="() => {}"
                                 :class="
                                     item?.selected
@@ -249,7 +249,60 @@
                                     </a-tooltip>
                                 </div>
                                 <div
-                                    class="pr-1"
+                                    :data-test-id="'run-table-query'"
+                                    v-if="showVQB"
+                                    :class="
+                                        (activeInlineTab.playground.resultsPane
+                                            .result.isQueryRunning === 'loading'
+                                            ? 'opacity-50 cursor-not-allowed'
+                                            : '',
+                                        '')
+                                    "
+                                    @click="() => previewVQBQuery(item)"
+                                >
+                                    <a-tooltip color="#363636" placement="top">
+                                        <template #title>{{
+                                            tooltipText
+                                        }}</template>
+                                        <div
+                                            class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                        >
+                                            <AtlanIcon
+                                                icon="PreviewQuery"
+                                                class="w-4 h-4 my-auto outline-none"
+                                            ></AtlanIcon>
+                                        </div>
+                                    </a-tooltip>
+                                </div>
+
+                                <!-- Add pr-2 for next icon -->
+                                <div
+                                    :data-test-id="'run-table-query'"
+                                    v-if="!showVQB"
+                                    :class="
+                                        activeInlineTab.playground.resultsPane
+                                            .result.isQueryRunning === 'loading'
+                                            ? 'opacity-50 cursor-not-allowed'
+                                            : ''
+                                    "
+                                    @click="() => previewData(item)"
+                                >
+                                    <a-tooltip color="#363636" placement="top">
+                                        <template #title>{{
+                                            tooltipText
+                                        }}</template>
+                                        <div
+                                            class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                        >
+                                            <AtlanIcon
+                                                icon="PreviewQuery"
+                                                class="w-4 h-4 my-auto outline-none"
+                                            ></AtlanIcon>
+                                        </div>
+                                    </a-tooltip>
+                                </div>
+                                <div
+                                    class="pl-1"
                                     :data-test-id="'preview-table-query'"
                                     @click="
                                         () =>
@@ -277,59 +330,7 @@
                                         </div>
                                     </a-tooltip>
                                 </div>
-                                <div
-                                    :data-test-id="'run-table-query'"
-                                    v-if="showVQB"
-                                    :class="
-                                        (activeInlineTab.playground.resultsPane
-                                            .result.isQueryRunning === 'loading'
-                                            ? 'opacity-50 cursor-not-allowed'
-                                            : '',
-                                        '')
-                                    "
-                                    @click="() => previewVQBQuery(item)"
-                                >
-                                    <a-tooltip color="#363636" placement="top">
-                                        <template #title>{{
-                                            tooltipText
-                                        }}</template>
-                                        <div
-                                            class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
-                                        >
-                                            <AtlanIcon
-                                                icon="Query"
-                                                class="w-4 h-4 my-auto outline-none"
-                                            ></AtlanIcon>
-                                        </div>
-                                    </a-tooltip>
-                                </div>
 
-                                <!-- Add pr-2 for next icon -->
-                                <div
-                                    :data-test-id="'run-table-query'"
-                                    v-if="!showVQB"
-                                    :class="
-                                        activeInlineTab.playground.resultsPane
-                                            .result.isQueryRunning === 'loading'
-                                            ? 'opacity-50 cursor-not-allowed'
-                                            : ''
-                                    "
-                                    @click="() => previewData(item)"
-                                >
-                                    <a-tooltip color="#363636" placement="top">
-                                        <template #title>{{
-                                            tooltipText
-                                        }}</template>
-                                        <div
-                                            class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
-                                        >
-                                            <AtlanIcon
-                                                icon="Query"
-                                                class="w-4 h-4 my-auto outline-none"
-                                            ></AtlanIcon>
-                                        </div>
-                                    </a-tooltip>
-                                </div>
                                 <!-- <div
                                     class="bg-gray-light-color"
                                     @click.stop="
@@ -397,7 +398,7 @@
 
                     <div
                         v-if="hoverActions"
-                        class="absolute right-0 flex items-center text-gray-500 opacity-0 h-7 margin-align-top group-hover:opacity-100"
+                        class="absolute right-0 flex items-center opacity-0 text-new-gray-700 h-7 margin-align-top group-hover:opacity-100"
                         :class="
                             item?.selected
                                 ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
@@ -543,6 +544,7 @@
     import insightsStore from '~/store/insights/index'
     import InsightsThreeDotMenu from '~/components/insights/common/dropdown/index.vue'
     import { MenuItem } from 'ant-design-vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export function getLastMappedKeyword(
         token_param: string[],
@@ -794,11 +796,32 @@
                                 }
                             )
                         }
+                        useAddEvent('insights', 'schemaTree', 'itemClick', {
+                            action: 'place_name_in_editor',
+                            trigger: 'quick_action',
+                            query_tab_id: activeInlineTab.value.key,
+                            asset_type: t.typeName,
+                        })
 
                         break
                     }
                     // This case is used for preview & Play
                     case 'play': {
+                        if (isPreview) {
+                            useAddEvent('insights', 'schemaTree', 'itemClick', {
+                                action: 'preview',
+                                trigger: 'quick_action',
+                                query_tab_id: activeInlineTab.value.key,
+                                asset_type: t.typeName,
+                            })
+                        } else {
+                            useAddEvent('insights', 'schemaTree', 'itemClick', {
+                                action: 'query_run',
+                                trigger: 'quick_action',
+                                query_tab_id: activeInlineTab.value.key,
+                                asset_type: t.typeName,
+                            })
+                        }
                         const activeInlineTabCopy: activeInlineTabInterface =
                             JSON.parse(
                                 JSON.stringify(toRaw(activeInlineTab.value))
@@ -1085,6 +1108,12 @@
                         break
                     }
                     case 'info': {
+                        useAddEvent('insights', 'schemaTree', 'itemClick', {
+                            action: 'open_sidebar',
+                            trigger: 'quick_action',
+                            query_tab_id: activeInlineTab.value.key,
+                            asset_type: t.typeName,
+                        })
                         // i button clicked on the same node -> close the sidebar
                         console.log('info: ', activeInlineTab)
                         if (
@@ -1408,6 +1437,12 @@
                     wrapperClass: 'flex items-center ',
                     component: MenuItem,
                     handleClick: ({ item }) => {
+                        useAddEvent('insights', 'schemaTree', 'itemClick', {
+                            action: 'set_editor_context',
+                            trigger: 'kebab_menu',
+                            query_tab_id: activeInlineTab.value.key,
+                            asset_type: item.typeName,
+                        })
                         setContextInEditor(item)
                     },
                 },
@@ -1422,6 +1457,12 @@
                     hide: showVQB.value,
                     disabled: false,
                     handleClick: ({ item }) => {
+                        useAddEvent('insights', 'schemaTree', 'itemClick', {
+                            action: 'place_name_in_editor',
+                            trigger: 'kebab_menu',
+                            query_tab_id: activeInlineTab.value.key,
+                            asset_type: item.typeName,
+                        })
                         actionClick('add', item)
                     },
                 },

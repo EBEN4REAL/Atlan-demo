@@ -357,6 +357,17 @@ const keyMap = {
                 }),
             },
         },
+        schemaTree: {
+            itemClick: {
+                action: 'insights_schema_explorer_tree_item_clicked',
+                properties: (props) => ({
+                    action: props?.action,
+                    trigger: props?.trigger,
+                    query_tab_id: props?.query_tab_id,
+                    asset_type: props?.asset_type,
+                }),
+            },
+        },
         previewTabs: {
             previewTabClose: {
                 action: 'insights_preview_tabs_closed',

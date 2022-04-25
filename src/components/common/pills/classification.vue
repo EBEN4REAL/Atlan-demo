@@ -1,7 +1,8 @@
 <template>
     <div
-        class="flex items-center py-1 pl-2 pr-2 text-sm text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer hover:text-white group"
+        class="flex items-center py-1 text-sm text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer  group"
         :data-test-id="displayName"
+        :class="noHover?'':'pl-2 pr-2 hover:text-white'"
         :style="`background-color: ${bgHover}!important;`"
         @mouseenter="
             () => {
@@ -22,7 +23,7 @@
             :mouse-enter="mouseEnter"
         />
 
-        <div class="ml-1">
+        <div class="ml-1 overflow-ellipsis truncate">
             {{ displayName || name }}
         </div>
 

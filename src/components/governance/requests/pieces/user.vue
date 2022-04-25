@@ -14,9 +14,8 @@
         >
             <AtlanIcon icon="Key" class="h-3" /> API key
         </span>
-        <span v-else class="text-gray-700">{{
-            user?.username || defaultName
-        }}</span>
+
+        <Tooltip :tooltipText="user?.username || defaultName" />
     </a-popover>
 </template>
 
@@ -25,9 +24,10 @@
 
     import UserInfo from '~/components/common/hovercards/ownerInfo.vue'
     import Pill from '~/components/UI/pill/pill.vue'
+    import Tooltip from '~/components/common/ellipsis/index.vue'
 
     export default defineComponent({
-        components: { UserInfo, Pill },
+        components: { UserInfo, Pill, Tooltip },
         props: {
             user: {
                 type: Object,

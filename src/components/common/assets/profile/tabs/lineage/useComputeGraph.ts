@@ -12,7 +12,6 @@ import useGraph from './useGraph'
 
 /** UTILS */
 import { isCyclicEdge, getFilteredRelations } from './util.js'
-import { iconMinusB64, iconPlusB64 } from './iconsBase64'
 import useGetNodes from './useGetNodes'
 
 export default async function useComputeGraph({
@@ -24,9 +23,9 @@ export default async function useComputeGraph({
 }) {
     const lineageStore = useLineageStore()
     lineageStore.cyclicRelations = []
-    lineageStore.columnToSelect = {}
+    lineageStore.portToSelect = {}
     lineageStore.mergedLineageData = {}
-    lineageStore.nodesColumnList = {}
+    lineageStore.nodesPortsList = {}
     lineageStore.portLineage = {}
 
     const model = ref(null)

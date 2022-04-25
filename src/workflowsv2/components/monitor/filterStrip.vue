@@ -1,7 +1,11 @@
 <template>
-    <div class="flex flex-col w-full h-28">
+    <div class="flex flex-col w-full h-16">
         <div
-            class="flex items-center w-full px-5 py-4 bg-white border-b gap-x-4"
+            class="z-10 flex items-center w-full px-5 py-4 border-b gap-x-4"
+            style="
+                background-color: #f9fafc;
+                box-shadow: 0px 2px 2px 0px #0000000d;
+            "
         >
             <PackageSelector v-model:value="packageId" />
             <WorkflowSelector
@@ -11,16 +15,6 @@
             />
 
             <TabbedDateRangePicker v-model:value="runDateRange" />
-        </div>
-        <div class="flex items-center px-5 py-4 gap-x-3">
-            <!-- <PackageWorkflowSelector
-                v-model:packageId="packageId"
-                v-model:workflowId="workflowId"
-            /> -->
-            <!-- <StatusSelector v-model:value="status" /> -->
-            <span>Run Status</span>
-            <TabbedStatusSelector v-model:value="status" />
-            <CreatorSelector v-model:value="creators" />
         </div>
     </div>
 </template>
@@ -70,29 +64,14 @@
 
             const packageId = computed(computedFactory('packageId'))
             const workflowId = computed(computedFactory('workflowId'))
-            const status = computed(computedFactory('status'))
             const runDateRange = computed(computedFactory('dateRange'))
-
-            const creators = computed(computedFactory('creators'))
 
             return {
                 runDateRange,
                 packageId,
                 workflowId,
-                creators,
                 activeKey,
-                status,
             }
         },
     })
 </script>
-
-<style lang="less" module>
-    .request-filter-wrapper {
-        :global(.filter-head) {
-            background: inherit !important;
-            height: 52px;
-            @apply pt-4 !important;
-        }
-    }
-</style>

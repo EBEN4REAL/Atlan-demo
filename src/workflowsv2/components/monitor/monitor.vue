@@ -1,8 +1,8 @@
 <template>
-    <div>
+    <div class="flex flex-col overflow-hidden">
         <FilterStrip v-model:filters="filters" />
 
-        <div class="flex flex-col m-5 gap-y-4">
+        <div class="flex flex-col p-5 overflow-y-auto gap-y-4">
             <RunHistoryTable v-model:filters="filters" />
             <DashboardComponent :widgets="Metadata" />
         </div>

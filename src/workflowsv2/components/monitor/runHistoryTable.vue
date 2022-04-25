@@ -1,14 +1,13 @@
 <template>
     <div class="px-5 bg-white rounded-lg">
-        <div class="flex items-center h-16">
+        <div class="flex items-center h-16 gap-x-3">
             <span class="text-sm font-bold leading-6 tracking-widest"
                 >WORKFLOW RUN HISTORY</span
             >
-            <IconButton
-                icon="Retry"
-                class="ml-auto"
-                @click="fetchRuns(false)"
-            />
+
+            <TabbedStatusSelector v-model:value="status" class="ml-auto" />
+            <CreatorSelector v-model:value="creators" />
+            <IconButton icon="Retry" @click="fetchRuns(false)" />
         </div>
         <div
             class="flex flex-col overflow-hidden border divide-y divide-gray-300 rounded-lg border-new-gray-300"
@@ -80,6 +79,9 @@
     import Pagination from '@/common/list/pagination.vue'
     import RunListItem from './runListItem.vue'
 
+    import TabbedStatusSelector from '~/workflowsv2/components/common/selectors/tabbedStatusSelector.vue'
+    import CreatorSelector from '~/workflowsv2/components/common/selectors/creatorSelector.vue'
+
     import EmptyLogsIllustration from '~/assets/images/illustrations/empty_logs.svg'
     import { useWorkflowStore } from '~/workflowsv2/store'
     import { useWorkflowDiscoverList } from '~/workflowsv2/composables/useWorkflowDiscoverList'
@@ -87,7 +89,12 @@
 
     export default defineComponent({
         name: 'RunHistoryTable',
-        components: { RunListItem, Pagination },
+        components: {
+            RunListItem,
+            Pagination,
+            TabbedStatusSelector,
+            CreatorSelector,
+        },
         props: {
             filters: {
                 type: Object,
@@ -95,8 +102,23 @@
             },
         },
         emits: ['update:filters'],
-        setup(props) {
+        setup(props, { emit }) {
             const { filters } = toRefs(props)
+
+            const setFilter = (key: string, value: any) => {
+                const tmpFilter = filters.value
+                tmpFilter[key] = value
+                emit('update:filters', tmpFilter)
+            }
+
+            const computedFactory = (key: string) => ({
+                get: () => filters.value?.[key],
+                set: (val: any) => setFilter(key, val),
+            })
+
+            const status = computed(computedFactory('status'))
+            const creators = computed(computedFactory('creators'))
+
             const limit = ref(30)
             const offset = ref(0)
             const queryText = ref('')
@@ -210,6 +232,8 @@
 
             return {
                 runs,
+                status,
+                creators,
                 tableHeaders,
                 isLoading,
                 EmptyLogsIllustration,

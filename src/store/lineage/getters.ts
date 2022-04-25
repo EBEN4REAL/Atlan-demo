@@ -2,16 +2,16 @@ export const getters = {
     getCyclicRelations(state) {
         return () => state.cyclicRelations
     },
-    getColumnToSelect(state) {
-        return () => state.columnToSelect
+    getPortToSelect(state) {
+        return () => state.portToSelect
     },
     getMergedLineageData(state) {
         return () => state.mergedLineageData
     },
-    getNodesColumnList(state) {
+    getNodesPortList(state) {
         return (nodeId) => {
-            if (nodeId) return state.nodesColumnList[nodeId]
-            return state.nodesColumnList
+            if (nodeId) return state.nodesPortsList[nodeId]
+            return state.nodesPortsList
         }
     },
     getPortsLineage(state) {
@@ -20,11 +20,11 @@ export const getters = {
             return state.portLineage
         }
     },
-    hasColumnList(state) {
+    hasPortsList(state) {
         return (nodeId) => {
             if (!nodeId) return false
-            const columns = state.nodesColumnList?.[nodeId]?.columns
-            return !!columns
+            const ports = state.nodesPortsList?.[nodeId]?.ports
+            return !!ports
         }
     },
     hasPortLineage(state) {

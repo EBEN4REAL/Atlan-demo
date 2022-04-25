@@ -3,17 +3,17 @@ export const actions = {
         if (this.cyclicRelations.includes(relStr)) return
         this.cyclicRelations.push(relStr)
     },
-    setColumnToSelect(column) {
-        this.columnToSelect = column
+    setPortToSelect(port) {
+        this.portToSelect = port
     },
     setMergedLineageData(lineage) {
         this.mergedLineageData = lineage
     },
-    setNodesColumnList(nodeId, columns?, offset?, total?) {
+    setNodesPortsList(nodeId, ports?, offset?, total?) {
         if (nodeId) {
-            this.nodesColumnList[nodeId] = { columns, offset, total }
+            this.nodesPortsList[nodeId] = { ports, offset, total }
         } else {
-            this.nodesColumnList = {}
+            this.nodesPortsList = {}
         }
     },
     setPortLineage(portId, lineage?) {

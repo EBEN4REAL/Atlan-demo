@@ -1,6 +1,16 @@
 <template>
     <div>
-        <a-tabs :class="$style.emojiPicker" default-active-key="1" size="small">
+        <EmojiPicker
+            v-if="!allowImageUpload"
+            :picker-element-id="pickerElementId"
+            @select="emitSelectedEmoji"
+        />
+        <a-tabs
+            v-else
+            :class="$style.emojiPicker"
+            default-active-key="1"
+            size="small"
+        >
             <template v-if="emoji || image" #rightExtra>
                 <a-button class="border-0" @click="emit('remove')">
                     <AtlanIcon
@@ -16,12 +26,7 @@
                     @select="emitSelectedEmoji"
                 />
             </a-tab-pane>
-            <a-tab-pane
-                v-if="allowImageUpload"
-                key="2"
-                tab="Upload Image"
-                force-render
-            >
+            <a-tab-pane key="2" tab="Upload Image" force-render>
                 <div class="p-3" style="width: 375px">
                     <div class="p-3 text-center border border-dashed rounded">
                         <a-upload

@@ -107,6 +107,16 @@
                                     v-model:checked="preferences.showSchema"
                                 />
                             </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-500"
+                                    >Show Announcement</span
+                                >
+                                <a-switch
+                                    v-model:checked="
+                                        preferences.showAnnouncement
+                                    "
+                                />
+                            </div>
                         </div>
                     </template>
 

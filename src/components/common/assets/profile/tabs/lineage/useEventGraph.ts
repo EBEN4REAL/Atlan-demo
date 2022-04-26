@@ -17,7 +17,10 @@ import useGraph from './useGraph'
 import fetchPorts from './fetchPorts'
 
 /** CONSTANTS */
-import { LineageAttributes } from '~/constant/projection'
+import {
+    LineageAttributes,
+    LineageAttributesPortLevel,
+} from '~/constant/projection'
 
 /** UTILS */
 import { isCyclicEdge, getFilteredRelations } from './util.js'
@@ -207,7 +210,11 @@ export default function useEventGraph({
 
     // isPortTypeName
     const isPortTypeName = (typeName) => {
-        const typeNames = ['Column', 'TableauDatasourceField']
+        const typeNames = [
+            'Column',
+            'TableauDatasourceField',
+            'TableauCalculatedField',
+        ]
         return typeNames.includes(typeName)
     }
 
@@ -504,6 +511,7 @@ export default function useEventGraph({
             guid,
             direction: isLeafNode ? 'OUTPUT' : 'INPUT',
             hideProcess: true,
+            allowDeletedProcess: false,
             entityFilters: {
                 attributeName: '__state',
                 operator: 'eq',
@@ -843,7 +851,7 @@ export default function useEventGraph({
             depth: depthCounter.value,
             guid: portId,
             direction: 'BOTH',
-            attributes: ['dataType', 'qualifiedName', 'certificateStatus'],
+            attributes: LineageAttributesPortLevel,
             hideProcess: true,
         }))
 
@@ -1513,6 +1521,17 @@ export default function useEventGraph({
         })
     }
 
+    // controlAnnouncementToggle
+    const controlAnnouncementToggle = () => {
+        const val = preferences.value.showAnnouncement
+        const nodesList = document.querySelectorAll('.node-announcement')
+        const nodesArr = Array.from(nodesList)
+        nodesArr.forEach((n) => {
+            if (val) n?.classList.remove('hidden')
+            else n?.classList.add('hidden')
+        })
+    }
+
     /** Resets */
     // resetSelectedNode
     const resetSelectedNode = () => {
@@ -1814,6 +1833,12 @@ export default function useEventGraph({
         () => preferences.value.showSchema,
         () => {
             controlSchemaToggle()
+        }
+    )
+    watch(
+        () => preferences.value.showAnnouncement,
+        () => {
+            controlAnnouncementToggle()
         }
     )
 }

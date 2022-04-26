@@ -211,6 +211,7 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { MenuItem } from 'ant-design-vue'
     import InsightsThreeDotMenu from '~/components/insights/common/dropdown/index.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         components: { Tooltip, InsightsThreeDotMenu },
@@ -253,8 +254,14 @@
                 'activeResultPreviewTab'
             ) as Ref<boolean>
             const selectActiveResultTab = () => {
+                const index = insights_Store.previewTabs.findIndex(
+                    (el) => el.asset.guid === insights_Store.activePreviewGuid
+                )
                 activeResultPreviewTab.value = !activeResultPreviewTab.value
                 insights_Store.activePreviewGuid = undefined
+                useAddEvent('insights', 'previewTabs', 'resultTabSwitched', {
+                    previous_index: index,
+                })
             }
 
             const previewModeActive = computed(
@@ -268,25 +275,63 @@
 
                 if (index > 0) {
                     // select previous tab
+                    useAddEvent('insights', 'previewTabs', 'previewTabClose', {
+                        query_tab_id:
+                            insights_Store.previewTabs[index].asset.guid,
+                        click_index: index,
+                    })
                     insights_Store.previewTabs.splice(index, 1)
+
                     if (insights_Store.activePreviewGuid) {
                         insights_Store.activePreviewGuid =
                             insights_Store.previewTabs[index - 1].asset.guid
                     }
                 } else {
                     if (insights_Store.previewTabs.length > 1) {
+                        useAddEvent(
+                            'insights',
+                            'previewTabs',
+                            'previewTabClose',
+                            {
+                                query_tab_id:
+                                    insights_Store.previewTabs[index].asset
+                                        .guid,
+                                click_index: index,
+                            }
+                        )
                         insights_Store.previewTabs.splice(index, 1)
                         if (insights_Store.activePreviewGuid) {
                             insights_Store.activePreviewGuid =
                                 insights_Store.previewTabs[0].asset.guid
                         }
                     } else {
+                        useAddEvent(
+                            'insights',
+                            'previewTabs',
+                            'previewTabClose',
+                            {
+                                query_tab_id:
+                                    insights_Store.previewTabs[index].asset
+                                        .guid,
+                                click_index: index,
+                            }
+                        )
                         insights_Store.previewTabs.splice(index, 1)
                         insights_Store.activePreviewGuid = undefined
                     }
                 }
             }
             const selectPreviewTab = (guid: string) => {
+                const previousIndex = insights_Store.previewTabs.findIndex(
+                    (el) => el.asset.guid === insights_Store.activePreviewGuid
+                )
+                const clickIndex = insights_Store.previewTabs.findIndex(
+                    (el) => el.asset.guid === guid
+                )
+                useAddEvent('insights', 'previewTabs', 'previewTabSwitched', {
+                    click_index: clickIndex,
+                    previous_index: previousIndex,
+                })
                 insights_Store.activePreviewGuid = guid
                 activeResultPreviewTab.value = false
                 if (lastElement.value) lastElement.value.style.background = ''
@@ -440,6 +485,14 @@
                 )
                 insights_Store.activePreviewGuid =
                     insights_Store.previewTabs[0].asset.guid
+                useAddEvent(
+                    'insights',
+                    'previewTabs',
+                    'previewTabRightClickAction',
+                    {
+                        action: 'close_other',
+                    }
+                )
             }
             const closeAllTabsOnRight = ({ item }) => {
                 const _index = getIndexById(item.asset.guid)
@@ -447,11 +500,27 @@
                     (el, index) => index <= _index
                 )
                 insights_Store.activePreviewGuid = item.asset.guid
+                useAddEvent(
+                    'insights',
+                    'previewTabs',
+                    'previewTabRightClickAction',
+                    {
+                        action: 'close_right_tabs',
+                    }
+                )
             }
             const closeAllTabs = ({ item }) => {
                 insights_Store.activePreviewGuid = undefined
                 insights_Store.isNewTabAdded = -1
                 insights_Store.previewTabs = []
+                useAddEvent(
+                    'insights',
+                    'previewTabs',
+                    'previewTabRightClickAction',
+                    {
+                        action: 'close_all',
+                    }
+                )
             }
 
             const dropdownOptions = computed(() => {
@@ -493,6 +562,14 @@
                         disabled: false,
                         hide: false,
                         handleClick: ({ item }) => {
+                            useAddEvent(
+                                'insights',
+                                'previewTabs',
+                                'previewTabRightClickAction',
+                                {
+                                    action: 'close_tab',
+                                }
+                            )
                             onPreviewTabClose(item.asset.guid)
                         },
                     },

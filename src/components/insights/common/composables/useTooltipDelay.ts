@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-export function useTooltipDelay(mouseDelay = 1) {
+export function useTooltipDelay(mouseDelay: number = 1) {
     // delay in seconds
     const MOUSE_ENTER_DELAY = mouseDelay
     const MOUSE_TRACK_MAXIMUM_DELAY = 0.2

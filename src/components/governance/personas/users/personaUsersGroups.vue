@@ -279,7 +279,7 @@
                                                         }${
                                                             item.emailVerified ===
                                                             false
-                                                                ? ' / pending'
+                                                                ? ' - invited'
                                                                 : ''
                                                         }`
                                                     }}

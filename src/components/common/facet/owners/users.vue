@@ -53,7 +53,7 @@
                                     {{
                                         `${fullName(item)} ${
                                             item.emailVerified === false
-                                                ? '/ Pending'
+                                                ? '- Invited'
                                                 : ''
                                         }`
                                     }}

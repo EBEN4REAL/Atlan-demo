@@ -71,13 +71,33 @@ export function useEditor(
         t = t.replaceAll(' } }', '}}')
         return t
     }
+
+    function getFirstValidQuery(queries: string[], index = 0) {
+        debugger
+        if (index >= queries.length) return queries[0]
+        if (
+            queries[index].includes('-- ') &&
+            queries[index].includes('\nSELECT')
+        ) {
+            return queries[index]
+        }
+        if (queries[index].includes('-- ') || queries[index].includes('--')) {
+            return getFirstValidQuery(queries, index + 1)
+        } else return queries[index]
+    }
     function semicolonSeparateQuery(query: string) {
+        debugger
         // check if it have semicolon
-        const queryTextValues = query?.split(';')
+        let queryTextValues = query?.split(';')
+        queryTextValues = queryTextValues.filter(
+            (el) => el !== '' && el !== '\n'
+        )
         // always select the first one for now
+
+        // check if it have commented one too
         let queryText = ''
         if (queryTextValues && queryTextValues.length) {
-            queryText = queryTextValues[0]
+            queryText = getFirstValidQuery(queryTextValues)
         }
         return queryText
     }
@@ -85,6 +105,7 @@ export function useEditor(
         variables: CustomVaribaleInterface[],
         query: string
     ) {
+        debugger
         if (
             variables.length > 0 &&
             query?.match(/{{\s*[\w\.]+\s*}}/g)?.length > 0
@@ -152,6 +173,7 @@ export function useEditor(
         monacoInstance: any
     ) {
         // console.log('cursor')
+        debugger
 
         // console.log('cursor')
         if (type === 'auto') {
@@ -175,11 +197,37 @@ export function useEditor(
                     let match = toRaw(editorInstance)
                         ?.getModel()
                         ?.findMatches(`${q.replace(/^\s+|\s+$/g, '')}`)
-                    queryPositions.push({
-                        match: match,
-                        token: query.replace(/^\s+|\s+$/g, ''),
-                        rawQuery: query,
-                    })
+                    // removing the commented ones
+                    if (query.replace(/^\s+|\s+$/g, '').length > 0) {
+                        if (
+                            query.includes('-- ') &&
+                            query.includes('\nSELECT')
+                        ) {
+                            queryPositions.push({
+                                match: match,
+                                token: query.replace(/^\s+|\s+$/g, ''),
+                                rawQuery: query,
+                            })
+                        } else if (!query.includes('-- ')) {
+                            queryPositions.push({
+                                match: match,
+                                token: query.replace(/^\s+|\s+$/g, ''),
+                                rawQuery: query,
+                            })
+                        } else {
+                            queryPositions.push({
+                                match: null,
+                                token: null,
+                                rawQuery: null,
+                            })
+                        }
+                    } else {
+                        queryPositions.push({
+                            match: null,
+                            token: null,
+                            rawQuery: null,
+                        })
+                    }
                 })
             }
 
@@ -192,16 +240,17 @@ export function useEditor(
 
             let independentQueryMatches = semiColonMatchs.map(
                 (match, index) => {
-                    let data = queryPositions[index].match.map((m) => {
+                    let data = []
+                    queryPositions[index]?.match?.forEach((m) => {
                         if (
                             m.range.endLineNumber ===
                                 match.range.endLineNumber &&
                             m.range.endColumn === match.range.endColumn
                         ) {
-                            return {
+                            data.push({
                                 range: m.range,
                                 rawQuery: queryPositions[index].rawQuery,
-                            }
+                            })
                         }
                     })
                     for (var i = 0; i < data.length; i++) {
@@ -210,6 +259,10 @@ export function useEditor(
                         }
                     }
                 }
+            )
+            // for clearing up any unnecessary blank queries
+            independentQueryMatches = independentQueryMatches.filter(
+                (el) => el !== undefined || null
             )
 
             // console.log('position match final: ', independentQueryMatches)
@@ -504,8 +557,8 @@ export function useEditor(
         if (activeInlineTab.value) {
             activeInlineTab.value.playground.resultsPane.result.errorDecorations =
                 editor?.deltaDecorations(
-                    activeInlineTab.value.playground.resultsPane.result
-                        .errorDecorations,
+                    activeInlineTab.value.playground?.resultsPane?.result
+                        ?.errorDecorations,
                     []
                 ) ?? []
         }

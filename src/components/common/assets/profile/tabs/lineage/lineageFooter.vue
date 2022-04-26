@@ -5,10 +5,10 @@
                 <div>Legend</div>
                 <div>
                     <AtlanIcon
-                        @click="preferences.showLegend = false"
                         icon="Cross"
                         class="cursor-pointer"
                         style="width: 0.8rem !important"
+                        @click="preferences.showLegend = false"
                     ></AtlanIcon>
                 </div>
             </div>

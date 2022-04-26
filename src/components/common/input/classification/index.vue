@@ -197,9 +197,20 @@
             const { guid, editPermission, selectedAsset } = toRefs(props)
             const localValue = ref(modelValue.value)
             const { role } = whoami()
+
+            const isPropagated = (classification) => {
+                if (!guid?.value) {
+                    return false
+                }
+                return guid.value !== classification.entityGuid
+            }
+
             const selectedValue = ref({
-                classifications: modelValue.value.map((i) => i.typeName),
+                classifications: modelValue.value
+                    .filter((i) => !isPropagated(i))
+                    .map((j) => j.typeName),
             })
+
             const existingClassifications = computed(() =>
                 modelValue.value.map((i) => i.typeName)
             )
@@ -212,13 +223,6 @@
 
             const { classificationList } = useTypedefData()
 
-            const isPropagated = (classification) => {
-                if (!guid?.value) {
-                    return false
-                }
-                return guid.value !== classification.entityGuid
-            }
-
             const list = computed(() => {
                 const { matchingIdsResult } = mergeArray(
                     classificationList.value,
@@ -226,7 +230,7 @@
                     'name',
                     'typeName'
                 )
-                console.log(matchingIdsResult)
+
                 return matchingIdsResult
             })
 
@@ -363,6 +367,14 @@
                 requestLoading.value = false
             }
             const { mouseEnterDelay, enteredPill } = useMouseEnterDelay()
+
+            watch(
+                selectedValue,
+                () => console.log('hello', selectedValue.value),
+                {
+                    immediate: true,
+                }
+            )
 
             return {
                 localValue,

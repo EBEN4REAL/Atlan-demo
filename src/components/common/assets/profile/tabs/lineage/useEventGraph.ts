@@ -669,21 +669,18 @@ export default function useEventGraph({
                     addPorts(node, ports, overrideExp, {
                         portsCount: total,
                     })
-                    removeShowMorePort(node)
-                    if (ports.length < total) addShowMorePort(node)
 
-                    let portsLength = ports.length
                     const newPorts = []
 
                     if (lineageStore.hasPortsList(node.id)) {
                         const { ports: c } = lineageStore.getNodesPortList(
                             node.id
                         )
-                        portsLength = c.length + newPorts.length
                         newPorts.push(...c)
                     }
 
                     newPorts.push(...ports)
+                    const portsLength = newPorts.length
 
                     lineageStore.setNodesPortsList(
                         node.id,

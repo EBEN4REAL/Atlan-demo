@@ -994,7 +994,7 @@
                                     newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
 
                                     if (isPreview) {
-                                        handleAddNewTab(
+                                        const tabKey = handleAddNewTab(
                                             newQuery,
                                             {
                                                 attributeName:
@@ -1008,6 +1008,12 @@
                                             },
                                             item.value
                                         )
+                                        const tabIndex =
+                                            inlineTabs.value.findIndex(
+                                                (tab) => tab.key === tabKey
+                                            )
+
+                                        previewQuery(newQuery, tabIndex)
                                     } else playQuery(newQuery, item.value)
 
                                     return
@@ -1046,7 +1052,7 @@
                                     if (cqn !== queryConnectionQualifiedName) {
                                         newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
                                         if (isPreview) {
-                                            handleAddNewTab(
+                                            const tabKey = handleAddNewTab(
                                                 newQuery,
                                                 {
                                                     attributeName:
@@ -1061,6 +1067,12 @@
                                                 },
                                                 item.value
                                             )
+                                            const tabIndex =
+                                                inlineTabs.value.findIndex(
+                                                    (tab) => tab.key === tabKey
+                                                )
+
+                                            previewQuery(newQuery, tabIndex)
                                         } else playQuery(newQuery, item.value)
                                         return
                                     } else {
@@ -1127,7 +1139,7 @@
 
                                     if (cqn !== queryConnectionQualifiedName) {
                                         if (isPreview) {
-                                            handleAddNewTab(
+                                            const tabKey = handleAddNewTab(
                                                 newQuery,
                                                 {
                                                     attributeName:
@@ -1142,6 +1154,12 @@
                                                 },
                                                 item.value
                                             )
+                                            const tabIndex =
+                                                inlineTabs.value.findIndex(
+                                                    (tab) => tab.key === tabKey
+                                                )
+
+                                            previewQuery(newQuery, tabIndex)
                                         } else playQuery(newQuery, item.value)
                                         return
                                     } else {

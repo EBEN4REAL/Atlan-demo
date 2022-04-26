@@ -606,6 +606,12 @@
             }
             const handleRequest = () => {
                 console.log('raising request')
+                if (!entity?.attributes?.name) {
+                    message.warning(`Please enter a name`)
+                    titleBar.value?.focus()
+                    return
+                }
+
                 let requestType
                 constructPayload()
                 const glossaryPayload = entity
@@ -619,8 +625,6 @@
                     name: props.glossaryName,
                 }
 
-                console.log(requestType)
-                console.log(glossaryPayload)
                 const {
                     error: requestError,
                     isLoading: isRequestLoading,

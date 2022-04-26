@@ -257,15 +257,8 @@
                                     </a-tooltip>
                                 </div>
 
-                                <div class="pl-2" v-if="showVQB">
-                                    <VQBThreeDotMenuForTable
-                                        v-if="showVQB"
-                                        :item="item"
-                                        :treeData="treeData"
-                                    />
-                                </div>
                                 <div
-                                    class="pl-1 pr-1"
+                                    :class="showVQB ? 'pl-2 pr-1' : 'pl-1 pr-1'"
                                     :data-test-id="'preview'"
                                     @click="() => actionClick('info', item)"
                                 >
@@ -369,6 +362,7 @@
                                 </div>
                                 <div
                                     class="pl-1"
+                                    v-if="!showVQB"
                                     :data-test-id="'preview-table-query'"
                                     :class="
                                         activeInlineTab.playground.resultsPane
@@ -410,6 +404,13 @@
                                             ></AtlanIcon>
                                         </div>
                                     </a-tooltip>
+                                </div>
+                                <div class="pl-1" v-else>
+                                    <VQBThreeDotMenuForTable
+                                        v-if="showVQB"
+                                        :item="item"
+                                        :treeData="treeData"
+                                    />
                                 </div>
 
                                 <!-- <div

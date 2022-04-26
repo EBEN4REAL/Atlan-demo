@@ -817,18 +817,27 @@ export default function useEventGraph({
                     const _node = graph.value
                         .getNodes()
                         .find((x) => x.id === node.id)
-                    const { ports: p, total: t } =
-                        lineageStore.getNodesPortList(_node.id)
-                    removePorts(_node)
-                    addPorts(_node, p)
-                    removeShowMorePort(_node)
-                    if (p.length < t) addShowMorePort(_node)
+                    if (lineageStore.hasPortsList(_node.id)) {
+                        const { ports: p, total: t } =
+                            lineageStore.getNodesPortList(_node.id)
+                        removePorts(_node)
+                        addPorts(_node, p)
+                        removeShowMorePort(_node)
+                        if (p.length < t) addShowMorePort(_node)
+                    } else {
+                        const port = portLineage.guidEntityMap[portId]
+                        addPorts(_node, [port])
+                    }
                     translateSubsequentNodes(_node)
                     selectPort(_node, portId, false)
                     addLineagePorts(nodesForPortLineage, portLineage)
                 }
             })
         } else addLineagePorts(nodesForPortLineage, portLineage)
+
+        const parentNode = getPortNode(portId)
+        const cellToFit = graph.value.getCellById(parentNode.id)
+        graph.value.scrollToCell(cellToFit, { animation: { duration: 600 } })
 
         controlPortsLoader(node, false, 'item')
     }
@@ -1070,7 +1079,7 @@ export default function useEventGraph({
     }
 
     // addPortEdge
-    const addPortEdge = (relation, guidEntityMap = {}) => {
+    const addPortEdge = (relation, guidEntityMap = {}, mode = '') => {
         const getTypeName = (guid) => guidEntityMap[guid]?.typeName
 
         const { fromEntityId, toEntityId, processId } = relation
@@ -1083,7 +1092,10 @@ export default function useEventGraph({
         let targetCell = ''
         let targetPort = ''
 
-        if (isPortTypeName(sourceTypeName) && isPortTypeName(targetTypeName)) {
+        const isPortToPort =
+            isPortTypeName(sourceTypeName) && isPortTypeName(targetTypeName)
+
+        if (isPortToPort || mode === 'port>port') {
             sourceCell = getPortNode(fromEntityId)?.id
             sourcePort = fromEntityId
             targetCell = getPortNode(toEntityId)?.id
@@ -1224,10 +1236,7 @@ export default function useEventGraph({
             if (!newState && !cell.isVisible()) newState = 'col'
             cell.toggleVisible()
 
-            if (newState === 'col') {
-                n.toBack()
-                node.toFront()
-            }
+            if (newState === 'col') n.toBack()
         })
         graph.value.unfreeze('controlColCTAPort')
 
@@ -1247,7 +1256,7 @@ export default function useEventGraph({
                 ctaPortLeftIcon: newState,
             })
 
-        if (newState === 'col') {
+        if (!selectedPortId.value && newState === 'col') {
             graph.value
                 .getEdges()
                 .filter((edge) =>
@@ -1258,9 +1267,17 @@ export default function useEventGraph({
                 .forEach((edge) => {
                     edge.toBack()
                 })
-
-            node.toFront()
         }
+
+        if (selectedPortId.value)
+            graph.value
+                .getEdges()
+                .filter((edge) => edge.id.includes('port'))
+                .forEach((edge) => {
+                    edge.toFront()
+                })
+
+        node.toFront()
     }
 
     // isSelectedPortNode
@@ -1308,7 +1325,7 @@ export default function useEventGraph({
                         processId,
                     }
 
-                    addPortEdge(newRelation)
+                    addPortEdge(newRelation, {}, 'port>port')
                 })
                 activeNodesToggled.value[node.id].portsEdges.push(...portsEdges)
             })
@@ -1341,7 +1358,7 @@ export default function useEventGraph({
                     toEntityId: target,
                     processId,
                 }
-                addPortEdge(relation)
+                addPortEdge(relation, {}, 'port>port')
             })
 
             activeNodesToggled.value[node.id].newEdgesId.forEach((edgeId) => {

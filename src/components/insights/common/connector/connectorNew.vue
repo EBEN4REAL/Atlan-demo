@@ -811,7 +811,6 @@
                 }
 
                 if (item === 'icon') {
-                    debugger
                     if (chunks?.length > 2)
                         return store.getConnectorImageMapping[
                             chunks[1]?.toLowerCase()

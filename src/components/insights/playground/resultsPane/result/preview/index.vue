@@ -254,8 +254,14 @@
                 'activeResultPreviewTab'
             ) as Ref<boolean>
             const selectActiveResultTab = () => {
+                const index = insights_Store.previewTabs.findIndex(
+                    (el) => el.asset.guid === insights_Store.activePreviewGuid
+                )
                 activeResultPreviewTab.value = !activeResultPreviewTab.value
                 insights_Store.activePreviewGuid = undefined
+                useAddEvent('insights', 'previewTabs', 'resultTabSwitched', {
+                    previous_index: index,
+                })
             }
 
             const previewModeActive = computed(

@@ -396,6 +396,12 @@ const keyMap = {
                     action: props?.action,
                 }),
             },
+            resultTabSwitched: {
+                action: 'insights_result_tab_switched',
+                properties: (props) => ({
+                    previous_index: props?.previous_index,
+                }),
+            },
         },
         collection: {
             created: {

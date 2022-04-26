@@ -917,9 +917,9 @@
                     }
                     // This case is used for preview & Play
                     case 'play': {
-                        if (isPreview) {
+                        if (!isPreview) {
                             useAddEvent('insights', 'schemaTree', 'itemClick', {
-                                action: 'preview',
+                                action: 'preview_data',
                                 trigger: 'quick_action',
                                 query_tab_id: activeInlineTab.value.key,
                                 asset_type: t.typeName,

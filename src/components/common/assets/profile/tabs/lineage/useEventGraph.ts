@@ -924,16 +924,13 @@ export default function useEventGraph({
         const { ports } = node.getData()
         const mergedPorts = [...ports, ...newPorts]
         const uniquePorts = []
-        console.log({ newPorts })
-        console.log({ ports })
-        console.log({ mergedPorts })
+
         mergedPorts.forEach((x) => {
             if (!x.guid) return
             const exist = uniquePorts.find((y) => y.guid === x.guid)
             if (!exist) uniquePorts.push(x)
         })
 
-        console.log({ uniquePorts })
         node.updateData({
             ports: uniquePorts,
             portsListExpanded: true,
@@ -1017,9 +1014,6 @@ export default function useEventGraph({
 
     // addLineagePorts
     const addLineagePorts = (nodesForPortLineage, portLineage) => {
-        console.log({ nodesForPortLineage })
-        console.log({ portLineage })
-
         dimNodesEdges(true)
 
         const { guidEntityMap, relations } = portLineage

@@ -12,6 +12,13 @@ jobs:
     # needs: bump-version
 
     steps:
+      - name: Log userflow vars
+        run: echo Build not configured for current branch ${{ secrets.VITE_USERFLOW_KEY }}
+        env:
+          VITE_SEGMENT_ANALYTICS_KEY: ${{ steps.get_segment_analytics_key.outputs.analytics_key }}
+          VITE_USERFLOW_KEY: ${{ secrets.VITE_USERFLOW_KEY }}
+          VITE_USERFLOW_WHITELISTED_DOMAINS: ${{ secrets.VITE_USERFLOW_WHITELISTED_DOMAINS }}
+
       - name: Get branch name
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: get_branch

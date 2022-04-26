@@ -342,17 +342,30 @@ function getLocalSQLSugggestions(currWrd: string) {
 export function getLastMappedKeyword(
     token_param: string[],
     mappingKeywords,
-    mappingKeywordsKeys
+    mappingKeywordsKeys,
+    typesKeywordsMap: Record<string, Record<string, string[]>>
 ) {
     // console.log(tokens)
     let tokens = token_param.map((token) => token?.toUpperCase())
+    debugger
     for (let i = tokens.length - 1; i >= 0; i--) {
         /* type- TABLE/COLUMN/SQL keyword */
         if (mappingKeywordsKeys.includes(tokens[i])) {
+            let functionType: undefined | string = undefined
+            let tokenPosition = tokens.length - 1 - (i + 1) // counting start from last 0->extreme
+            const _keys = Object.keys(typesKeywordsMap)
+            _keys.forEach((key) => {
+                if (typesKeywordsMap[key].trigger.includes(tokens[i])) {
+                    functionType = key
+                }
+            })
+
             return {
                 token: tokens[i],
                 index: i,
                 type: mappingKeywords[tokens[i]],
+                functionType,
+                tokenPosition,
             }
         }
     }
@@ -632,7 +645,8 @@ export async function useAutoSuggestions(
     /* ------------------------------------------------------------- */
     const { getConnectionQualifiedName, getDatabaseName, getSchemaName } =
         useConnector()
-    const { mappingKeywordsKeys, mappingKeywords } = useMapping()
+    const { mappingKeywordsKeys, mappingKeywords, typesKeywordsMap } =
+        useMapping()
     const endColumn = changes.range.endColumn
     const endLineNumber = changes.range.endLineNumber
 
@@ -683,19 +697,61 @@ export async function useAutoSuggestions(
     } else {
         const lastMatchedKeyword:
             | undefined
-            | { token: string; index: number; type: string } =
-            getLastMappedKeyword(tokens, mappingKeywords, mappingKeywordsKeys)
+            | {
+                  token: string
+                  index: number
+                  type: string
+                  functionType: string
+                  tokenPosition: number
+              } = getLastMappedKeyword(
+            tokens,
+            mappingKeywords,
+            mappingKeywordsKeys,
+            typesKeywordsMap
+        )
         // console.log('inside', lastMatchedKeyword, tokens)
-
+        debugger
         if (lastMatchedKeyword) {
-            return getSuggestionsUsingType(
-                lastMatchedKeyword.type,
-                lastMatchedKeyword.token,
-                currentWord,
-                connectorsInfo,
-                cancelTokenSource,
-                context
-            )
+            switch (lastMatchedKeyword.functionType) {
+                case 'FILTER': {
+                    debugger
+                    if (lastMatchedKeyword.tokenPosition === 0) {
+                        return getSuggestionsUsingType(
+                            lastMatchedKeyword.type,
+                            lastMatchedKeyword.token,
+                            currentWord,
+                            connectorsInfo,
+                            cancelTokenSource,
+                            context
+                        )
+                    } else {
+                        const filterKeywords = typesKeywordsMap['FILTER'].values
+                        let suggestions = filterKeywords.map((keyword) => {
+                            return {
+                                label: keyword,
+                                kind: monaco.languages.CompletionItemKind
+                                    .Keyword,
+                                insertText: keyword,
+                            }
+                        })
+
+                        return Promise.resolve({
+                            suggestions: suggestions,
+                            incomplete: true,
+                        })
+                    }
+                }
+                default: {
+                    return getSuggestionsUsingType(
+                        lastMatchedKeyword.type,
+                        lastMatchedKeyword.token,
+                        currentWord,
+                        connectorsInfo,
+                        cancelTokenSource,
+                        context
+                    )
+                }
+            }
         }
     }
 

@@ -109,9 +109,9 @@
         overflow: auto;
         height: auto;
     }
-    .group-count {
-        &:hover {
-            text-decoration: underline;
-        }
-    }
+    // .group-count {
+    // &:hover {
+    //     text-decoration: underline;
+    // }
+    // }
 </style>

@@ -467,6 +467,7 @@ import QueryMetadata from '~/assets/images/icons/query_metadata.svg'
 import QueryOutputFail from '~/assets/images/icons/query_output_fail.svg'
 import QueryOutputNeutral from '~/assets/images/icons/query_output_neutral.svg'
 import PreviewQuery from '~/assets/images/icons/preview.svg'
+import Trident from '~/assets/images/icons/trident.svg'
 
 export default {
     PreviewQuery,
@@ -917,4 +918,5 @@ export default {
     Workflow,
     Package,
     Display,
+    Trident,
 }

@@ -182,6 +182,13 @@ const keyMap = {
                     asset_type: props.asset_type,
                 }),
             },
+            suggestion_applied: {
+                action: 'discovery_metadata_suggestion_applied',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
+                    suggestion_index: props.index,
+                }),
+            },
         },
         announcement: {
             created: {
@@ -505,6 +512,7 @@ const keyMap = {
                     denied: !!props.denied,
                     user_count: props.user_count,
                     group_count: props.group_count,
+                    all_users_enabled: !!props.all_users_enabled,
                 }),
             },
             policy_updated: {
@@ -515,6 +523,7 @@ const keyMap = {
                     denied: !!props.denied,
                     user_count: props.user_count,
                     group_count: props.group_count,
+                    all_users_enabled: !!props.all_users_enabled,
                 }),
             },
             policy_deleted: {

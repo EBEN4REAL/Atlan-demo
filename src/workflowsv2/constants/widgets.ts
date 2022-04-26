@@ -2,25 +2,18 @@ import bodybuilder from 'bodybuilder'
 import { useWorkflowStore } from '~/workflowsv2/store'
 import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
 import { usePackageInfo } from '~/workflowsv2/composables/usePackageInfo'
+import {
+    findIntervalByDate,
+    getFilterText,
+} from '~/workflowsv2/composables/utils'
 
 const workflowStore = useWorkflowStore()
 const { packageType, name } = useWorkflowInfo()
 const { source } = usePackageInfo()
 
-const findIntervalByDate = (gt: number, lt = Date.now()) => {
-    if (gt) {
-        const days = Math.round((lt - gt) / (1000 * 60 * 60 * 24)) // ms * seconds * minutes * hours
-        if (days < 2) return '1h'
-        if (days < 20) return '1d'
-        return '1w'
-    }
-    return 'day'
-}
-
 export interface WidgetData {
     id: string
     label?: string
-
     showHeader?: boolean
     class?: string
     component: string
@@ -76,6 +69,8 @@ export const Metadata: WidgetData[] = [
 
                 return query.build()
             },
+            filterText: (filters: Record<string, any>) =>
+                getFilterText({ dateRange: filters.dateRange }),
         },
     },
     {
@@ -93,7 +88,6 @@ export const Metadata: WidgetData[] = [
             graphOptions: {
                 responsive: true,
                 maintainAspectRatio: false,
-
                 plugins: {
                     legend: {
                         display: false,
@@ -185,6 +179,8 @@ export const Metadata: WidgetData[] = [
 
                 return query.build()
             },
+            filterText: (filters: Record<string, any>) =>
+                getFilterText({ dateRange: filters.dateRange }),
         },
     },
     {
@@ -240,19 +236,32 @@ export const Metadata: WidgetData[] = [
                         display: false,
                     },
                 },
+                elements: {
+                    bar: {
+                        borderRadius: 4,
+                        backgroundColor: '#3C71DF',
+                    },
+                },
                 scales: {
                     x: {
                         grid: {
-                            display: false,
+                            display: true,
                             drawBorder: false,
+                            borderColor: '#EFF1F5',
+                            color: '#EFF1F5',
+                        },
+                        title: {
+                            display: false,
                         },
                         ticks: {
-                            display: false,
+                            display: true,
+                            maxTicksLimit: 5,
                         },
                     },
                     y: {
                         grid: {
                             display: false,
+                            borderColor: '#EFF1F5',
                         },
                         ticks: {
                             display: true,
@@ -273,6 +282,8 @@ export const Metadata: WidgetData[] = [
 
                 return query.build()
             },
+            filterText: (filters: Record<string, any>) =>
+                getFilterText({ dateRange: filters.dateRange }),
         },
     },
 ]

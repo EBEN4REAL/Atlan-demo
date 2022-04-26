@@ -2,15 +2,18 @@
     <div
         class="flex flex-col px-5 py-4 bg-white border rounded-lg border-new-gray-300"
     >
-        <div class="pb-3 mb-2 border-b border-new-gray-200">
-            <p class="text-base font-bold text-new-gray-700">
+        <div class="pb-3 mb-2 border-b border-new-gray-200 text-new-gray-700">
+            <p class="text-base font-bold">
                 {{ data?.label }}
+            </p>
+            <p class="text-sm">
+                {{ data?.componentData?.filterText?.(filters) }}
             </p>
         </div>
         <component
             :is="componentType"
             :data="data"
-            style="height: calc(100% - 44px)"
+            style="height: calc(100% - 64px)"
         />
     </div>
 </template>
@@ -20,7 +23,9 @@
         computed,
         defineAsyncComponent,
         defineComponent,
+        inject,
         PropType,
+        Ref,
         toRefs,
     } from 'vue'
 
@@ -51,6 +56,7 @@
         },
         setup(props, { emit }) {
             const { data } = toRefs(props)
+            const filters = inject<Ref<Record<string, any>>>('monitorFilters')!
 
             const componentType = computed(() => {
                 if (data.value.component && data.value.component !== '') {
@@ -59,7 +65,7 @@
                 return 'default'
             })
 
-            return { data, componentType }
+            return { data, componentType, filters }
         },
     })
 </script>

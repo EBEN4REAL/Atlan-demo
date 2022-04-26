@@ -226,6 +226,7 @@
                     'name',
                     'typeName'
                 )
+                console.log(matchingIdsResult)
                 return matchingIdsResult
             })
 

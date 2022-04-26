@@ -25,6 +25,7 @@ export const mergeArray = (
 
     for (let i = 0; i < bData.length; i++) {
         merged.push({
+            ...bData[i],
             ...aData.find((itmInner) => itmInner[keyA] === bData[i][keyB]),
         })
     }

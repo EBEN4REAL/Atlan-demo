@@ -87,7 +87,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, inject, Ref } from 'vue'
+    import { defineComponent, computed, inject, Ref, toRefs } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useError } from '~/components/insights/playground/common/composables/UseError'
     import { copyToClipboard } from '~/utils/clipboard'
@@ -96,22 +96,22 @@
 
     export default defineComponent({
         components: { AtlanIcon },
-        props: {},
-        setup() {
+        props: {
+            isQueryRunning: {
+                type: String,
+                required: true,
+            },
+            queryErrorObj: {
+                type: Object,
+                required: true,
+            },
+        },
+        setup(props) {
+            const { isQueryRunning, queryErrorObj } = toRefs(props)
+
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
-
-            const isQueryRunning = computed(
-                () =>
-                    activeInlineTab.value.playground.resultsPane.result
-                        .isQueryRunning
-            )
-            const queryErrorObj = computed(
-                () =>
-                    activeInlineTab.value.playground.resultsPane.result
-                        .queryErrorObj
-            )
 
             const handleCopy = () => {
                 if (queryErrorObj.value) {

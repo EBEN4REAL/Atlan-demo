@@ -1,14 +1,11 @@
 <template>
-    <div
-        class="h-full overflow-y-hidden"
-        v-if="!insights_Store.activePreviewGuid || isQueryRunning === 'loading'"
-    >
+    <div class="h-full overflow-y-hidden">
         <div
             class="flex flex-col h-full"
             :style="{
                 background:
-                    activeInlineTab.playground.editor.columnList.length > 0 &&
-                    activeInlineTab.playground.editor.dataList.length > 0 &&
+                    columnList.length > 0 &&
+                    dataList.length > 0 &&
                     isQueryRunning === 'success'
                         ? '#f6f7f9'
                         : '#ffffff',
@@ -23,33 +20,22 @@
                     :isQueryRunning="isQueryRunning"
                 />
                 <QueryTimer
-                    v-if="
-                        !activeInlineTab.playground.resultsPane.result
-                            .buttonDisable
-                    "
-                    :timer-id="`${activeInlineTab.key}_timer`"
+                    :timerId="`${insights_Store.activePreviewGuid}_timer`"
+                    v-if="!buttonDisable"
                 />
                 <div
-                    v-if="isQueryRunning === 'loading'"
                     class="flex justify-center mt-2"
+                    v-if="isQueryRunning === 'loading'"
                 >
                     <AtlanBtn
                         class="flex items-center justify-between h-6 px-4 py-1 border button-shadow"
                         size="lg"
                         color="secondary"
                         padding="compact"
-                        :disabled="
-                            activeInlineTab.playground.resultsPane.result
-                                .buttonDisable
-                        "
+                        :disabled="buttonDisable"
                         @click="abortRunningQuery"
                     >
-                        <span
-                            v-if="
-                                !activeInlineTab.playground.resultsPane.result
-                                    .buttonDisable
-                            "
-                            class="text-gray-700"
+                        <span v-if="!buttonDisable" class="text-gray-700"
                             >Abort</span
                         >
                         <span v-else class="text-gray-700">Aborting</span>
@@ -58,31 +44,26 @@
             </div>
 
             <!-- <a-spin v-if="isQueryRunning === 'loading'" /> -->
-
             <div
+                class="flex flex-col h-full m-2 mb-0 overflow-hidden border rounded-lg border-gray-light"
                 v-if="
-                    activeInlineTab.playground.editor.columnList.length > 0 &&
-                    activeInlineTab.playground.editor.dataList.length > 0 &&
+                    columnList.length > 0 &&
+                    dataList.length > 0 &&
                     isQueryRunning === 'success'
                         ? true
                         : false
                 "
-                class="flex flex-col h-full m-2 mb-0 overflow-hidden border rounded-lg border-gray-light"
             >
                 <AtlanPreviewTable
-                    :key="activeInlineTab.key"
-                    :data-list="activeInlineTab.playground.editor.dataList"
-                    :columns="activeInlineTab.playground.editor.columnList"
-                    :table-instance-i-d="'query-result'"
+                    :dataList="dataList"
+                    :columns="columnList"
+                    :key="insights_Store.activePreviewGuid"
                 />
             </div>
 
             <div
                 v-else-if="
-                    (activeInlineTab.playground.editor.columnList.length ===
-                        0 ||
-                        activeInlineTab.playground.editor.dataList.length ===
-                            0) &&
+                    (columnList.length === 0 || dataList.length === 0) &&
                     isQueryRunning === 'success'
                 "
                 class="flex flex-col items-center justify-center w-full h-full"
@@ -94,9 +75,10 @@
             <!-- --------------- -->
 
             <!-- First screen -->
+
             <QueryAbort
-                :isQueryAborted="isQueryAborted"
                 :isQueryRunning="isQueryRunning"
+                :isQueryAborted="isQueryAborted"
                 v-else-if="isQueryRunning === '' && isQueryAborted"
             />
 
@@ -128,40 +110,26 @@
                 v-else-if="
                     isQueryRunning === 'error' && haveLineNumber(queryErrorObj)
                 "
-                :error-decorations="errorDecorations"
             />
         </div>
     </div>
-    <PreviewTabResult
-        v-else-if="
-            insights_Store.activePreviewGuid && isQueryRunning !== 'loading'
-        "
-    />
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        Ref,
-        inject,
-        computed,
-        PropType,
-        ref,
-        watch,
-    } from 'vue'
-    import LoadingView from '@common/loaders/page.vue'
+    import { defineComponent, Ref, inject, computed, PropType, ref } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import LoadingView from '@common/loaders/page.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
     import ResultsImg from '~/assets/images/insights/results.png'
-    import QueryError from './queryError.vue'
-    import QueryAbort from './queryAbort.vue'
-    import Loading from './loading.vue'
-    import ResultPaneFooter from './resultPaneFooter.vue'
-    import LineError from './lineError.vue'
+    import QueryError from '../queryError.vue'
+    import QueryAbort from '../queryAbort.vue'
+    import Loading from '../loading.vue'
+    import ResultPaneFooter from '../resultPaneFooter.vue'
+    import LineError from '../lineError.vue'
     // import { LINE_ERROR_NAMES, SOURCE_ACCESS_ERROR_NAMES } from '~/components/insights/common/constants'
     import AtlanBtn from '~/components/UI/button.vue'
     import AtlanPreviewTable from '@/common/table/previewTable/tablePreview.vue'
-    import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
+    import useRunQuery from '~/components/insights/playground/common/composables/previewQueryRun'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import { useError } from '~/components/insights/playground/common/composables/UseError'
     import { useResultPane } from '~/components/insights/playground/resultsPane/common/composables/useResultPane'
@@ -169,7 +137,6 @@
     import { canQueryAbort } from '~/components/insights/common/composables/getDialectInfo'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
     import insightsStore from '~/store/insights/index'
-    import PreviewTabResult from '~/components/insights/playground/resultsPane/result/preview/result.vue'
 
     // import { useTimer } from '~/components/insights/playground/resultsPane/result/timer/useTimer'
 
@@ -186,7 +153,6 @@
             AtlanIcon,
             AtlanPreviewTable,
             QueryTimer,
-            PreviewTabResult,
         },
         props: {
             dataList: {
@@ -218,47 +184,97 @@
             const outputPaneSize = inject('outputPaneSize') as Ref<number>
             const { haveLineNumber } = useResultPane(inlineTabs)
 
+            const dataList = computed(
+                () =>
+                    insights_Store.previewTabs[
+                        insights_Store.previewTabs.findIndex(
+                            (el) =>
+                                el.asset.guid ===
+                                insights_Store.activePreviewGuid
+                        )
+                    ]?.rows ?? []
+            )
+            const columnList = computed(
+                () =>
+                    insights_Store.previewTabs[
+                        insights_Store.previewTabs.findIndex(
+                            (el) =>
+                                el.asset.guid ===
+                                insights_Store.activePreviewGuid
+                        )
+                    ]?.columns ?? []
+            )
+            const buttonDisable = computed(
+                () =>
+                    insights_Store.previewTabs[
+                        insights_Store.previewTabs.findIndex(
+                            (el) =>
+                                el.asset.guid ===
+                                insights_Store.activePreviewGuid
+                        )
+                    ].buttonDisable
+            )
+
             const queryErrorObj = computed(
                 () =>
-                    activeInlineTab.value?.playground?.resultsPane?.result
-                        ?.queryErrorObj
+                    insights_Store.previewTabs[
+                        insights_Store.previewTabs.findIndex(
+                            (el) =>
+                                el.asset.guid ===
+                                insights_Store.activePreviewGuid
+                        )
+                    ]?.queryErrorObj
             )
             const rowCountErrObj = ref()
             const queryExecutionTime = computed(
                 () =>
-                    activeInlineTab.value?.playground?.resultsPane?.result
-                        ?.executionTime
+                    insights_Store.previewTabs[
+                        insights_Store.previewTabs.findIndex(
+                            (el) =>
+                                el.asset.guid ===
+                                insights_Store.activePreviewGuid
+                        )
+                    ]?.executionTime
             )
-            const isQueryRunning = computed(
-                () =>
-                    activeInlineTab.value?.playground?.resultsPane?.result
-                        ?.isQueryRunning
-            )
+            const isQueryRunning = computed(() => {
+                const x =
+                    insights_Store.previewTabs[
+                        insights_Store.previewTabs.findIndex(
+                            (el) =>
+                                el.asset.guid ===
+                                insights_Store.activePreviewGuid
+                        )
+                    ]?.isQueryRunning
+                return x
+            })
             const isQueryAborted = computed(
                 () =>
-                    activeInlineTab.value?.playground?.resultsPane?.result
-                        ?.isQueryAborted
+                    insights_Store.previewTabs[
+                        insights_Store.previewTabs.findIndex(
+                            (el) =>
+                                el.asset.guid ===
+                                insights_Store.activePreviewGuid
+                        )
+                    ]?.isQueryAborted
             )
-            const errorDecorations =
-                activeInlineTab.value?.playground?.resultsPane?.result
-                    ?.errorDecorations
+            const errorDecorations = []
 
             const { LINE_ERROR_NAMES, SOURCE_ACCESS_ERROR_NAMES } = useError()
             // let isQueryAborted = ref(false)
 
             const abortRunningQuery = () => {
-                const activeInlineTabKeyCopy = activeInlineTabKey.value
-
-                const tabIndex = inlineTabs.value.findIndex(
-                    (tab) => tab.key === activeInlineTabKeyCopy
+                const index = insights_Store.previewTabs.findIndex(
+                    (el) => el.asset.guid === insights_Store.activePreviewGuid
                 )
 
-                abortQuery(tabIndex, inlineTabs, editorInstance, monacoInstance)
-                // isQueryAborted.value = true
+                abortQuery(insights_Store.previewTabs[index].asset.guid)
             }
 
             return {
                 insights_Store,
+                buttonDisable,
+                dataList,
+                columnList,
                 getConnectorName,
                 canQueryAbort,
                 haveLineNumber,

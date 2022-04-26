@@ -54,7 +54,7 @@
                             </div>
                             <div
                                 v-if="hoverActions"
-                                class="absolute right-0 flex items-center text-gray-500 opacity-0 h-7 margin-align-top group-hover:opacity-100"
+                                class="absolute right-0 flex items-center opacity-0 text-new-gray-700 h-7 margin-align-top group-hover:opacity-100"
                                 style="width: "
                                 :class="
                                     item?.selected
@@ -69,12 +69,21 @@
                                     v-if="!showVQB"
                                     @click="() => actionClick('add', item)"
                                 >
-                                    <a-tooltip color="#363636" placement="top">
+                                    <a-tooltip
+                                        color="#363636"
+                                        placement="top"
+                                        :mouseEnterDelay="
+                                            lastTooltipPresence !== undefined
+                                                ? ADJACENT_TOOLTIP_DELAY
+                                                : MOUSE_ENTER_DELAY
+                                        "
+                                    >
                                         <template #title
                                             >Place name in editor</template
                                         >
                                         <div
                                             class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                            @mouseout="recordTooltipPresence"
                                         >
                                             <AtlanIcon
                                                 icon="AddAssetName"
@@ -89,12 +98,25 @@
                                     class="pl-2"
                                     @click="() => actionClick('info', item)"
                                 >
-                                    <a-tooltip color="#363636" placement="top">
+                                    <a-tooltip
+                                        color="#363636"
+                                        placement="top"
+                                        :mouseEnterDelay="
+                                            lastTooltipPresence !== undefined
+                                                ? ADJACENT_TOOLTIP_DELAY
+                                                : MOUSE_ENTER_DELAY
+                                        "
+                                    >
                                         <template #title
-                                            >Open preview sidebar</template
+                                            >Open
+                                            <span class="lowercase">{{
+                                                assetType(item)
+                                            }}</span>
+                                            sidebar</template
                                         >
                                         <div
                                             class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                            @mouseout="recordTooltipPresence"
                                         >
                                             <AtlanIcon
                                                 icon="SidebarSwitch"
@@ -115,7 +137,11 @@
                                         () => actionClick('bookmark', item)
                                     "
                                 >
-                                    <a-tooltip placement="top">
+                                    <a-tooltip placement="top"> :mouseEnterDelay="
+                    lastTooltipPresence !== undefined
+                        ? ADJACENT_TOOLTIP_DELAY
+                        : MOUSE_ENTER_DELAY
+                "
                                         <template #title>Bookmark</template>
 
                                         <AtlanIcon
@@ -193,7 +219,7 @@
 
                             <div
                                 v-if="hoverActions"
-                                class="absolute right-0 flex items-center text-gray-500 opacity-0 h-7 margin-align-top group-hover:opacity-100"
+                                class="absolute right-0 flex items-center opacity-0 text-new-gray-700 h-7 margin-align-top group-hover:opacity-100"
                                 @click.stop="() => {}"
                                 :class="
                                     item?.selected
@@ -207,12 +233,21 @@
                                     v-if="!showVQB"
                                     @click="() => actionClick('add', item)"
                                 >
-                                    <a-tooltip color="#363636" placement="top">
+                                    <a-tooltip
+                                        color="#363636"
+                                        placement="top"
+                                        :mouseEnterDelay="
+                                            lastTooltipPresence !== undefined
+                                                ? ADJACENT_TOOLTIP_DELAY
+                                                : MOUSE_ENTER_DELAY
+                                        "
+                                    >
                                         <template #title
                                             >Place name in editor</template
                                         >
                                         <div
                                             class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                            @mouseout="recordTooltipPresence"
                                         >
                                             <AtlanIcon
                                                 icon="AddAssetName"
@@ -222,24 +257,30 @@
                                     </a-tooltip>
                                 </div>
 
-                                <div class="pl-2" v-if="showVQB">
-                                    <VQBThreeDotMenuForTable
-                                        v-if="showVQB"
-                                        :item="item"
-                                        :treeData="treeData"
-                                    />
-                                </div>
                                 <div
-                                    class="pl-1 pr-1"
+                                    :class="showVQB ? 'pl-2 pr-1' : 'pl-1 pr-1'"
                                     :data-test-id="'preview'"
                                     @click="() => actionClick('info', item)"
                                 >
-                                    <a-tooltip color="#363636" placement="top">
+                                    <a-tooltip
+                                        color="#363636"
+                                        placement="top"
+                                        :mouseEnterDelay="
+                                            lastTooltipPresence !== undefined
+                                                ? ADJACENT_TOOLTIP_DELAY
+                                                : MOUSE_ENTER_DELAY
+                                        "
+                                    >
                                         <template #title
-                                            >Open preview sidebar</template
+                                            >Open
+                                            <span class="lowercase">{{
+                                                assetType(item)
+                                            }}</span>
+                                            sidebar</template
                                         >
                                         <div
                                             class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                            @mouseout="recordTooltipPresence"
                                         >
                                             <AtlanIcon
                                                 icon="SidebarSwitch"
@@ -260,15 +301,27 @@
                                     "
                                     @click="() => previewVQBQuery(item)"
                                 >
-                                    <a-tooltip color="#363636" placement="top">
-                                        <template #title>{{
-                                            tooltipText
-                                        }}</template>
+                                    <a-tooltip
+                                        color="#363636"
+                                        placement="top"
+                                        :mouseEnterDelay="
+                                            lastTooltipPresence !== undefined
+                                                ? ADJACENT_TOOLTIP_DELAY
+                                                : MOUSE_ENTER_DELAY
+                                        "
+                                    >
+                                        <template #title
+                                            >Preview this
+                                            <span class="lowercase">{{
+                                                assetType(item)
+                                            }}</span></template
+                                        >
                                         <div
                                             class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                            @mouseout="recordTooltipPresence"
                                         >
                                             <AtlanIcon
-                                                icon="Play"
+                                                icon="PreviewQuery"
                                                 class="w-4 h-4 my-auto outline-none"
                                             ></AtlanIcon>
                                         </div>
@@ -279,20 +332,71 @@
                                 <div
                                     :data-test-id="'run-table-query'"
                                     v-if="!showVQB"
+                                    @click="() => previewData(item)"
+                                >
+                                    <a-tooltip
+                                        color="#363636"
+                                        placement="top"
+                                        :mouseEnterDelay="
+                                            lastTooltipPresence !== undefined
+                                                ? ADJACENT_TOOLTIP_DELAY
+                                                : MOUSE_ENTER_DELAY
+                                        "
+                                    >
+                                        <template #title
+                                            >Preview this
+                                            <span class="lowercase">{{
+                                                assetType(item)
+                                            }}</span></template
+                                        >
+                                        <div
+                                            class="flex items-center w-6 h-6 p-1 rounded text-new-gray-700 hover:bg-new-gray-300"
+                                            @mouseout="recordTooltipPresence"
+                                        >
+                                            <AtlanIcon
+                                                icon="PreviewQuery"
+                                                class="w-4 h-4 my-auto outline-none text-new-gray-700"
+                                            ></AtlanIcon>
+                                        </div>
+                                    </a-tooltip>
+                                </div>
+                                <div
+                                    class="pl-1"
+                                    v-if="!showVQB"
+                                    :data-test-id="'preview-table-query'"
                                     :class="
                                         activeInlineTab.playground.resultsPane
                                             .result.isQueryRunning === 'loading'
                                             ? 'opacity-50 cursor-not-allowed'
                                             : ''
                                     "
-                                    @click="() => previewData(item)"
+                                    @click="
+                                        () =>
+                                            actionClick(
+                                                'play',
+                                                item,
+                                                (isPreview = true)
+                                            )
+                                    "
                                 >
-                                    <a-tooltip color="#363636" placement="top">
-                                        <template #title>{{
-                                            tooltipText
-                                        }}</template>
+                                    <a-tooltip
+                                        color="#363636"
+                                        placement="top"
+                                        :mouseEnterDelay="
+                                            lastTooltipPresence !== undefined
+                                                ? ADJACENT_TOOLTIP_DELAY
+                                                : MOUSE_ENTER_DELAY
+                                        "
+                                    >
+                                        <template #title>
+                                            <span>{{ tooltipText }}</span>
+                                            <span class="lowercase">{{
+                                                assetType(item)
+                                            }}</span>
+                                        </template>
                                         <div
                                             class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                            @mouseout="recordTooltipPresence"
                                         >
                                             <AtlanIcon
                                                 icon="Play"
@@ -301,13 +405,25 @@
                                         </div>
                                     </a-tooltip>
                                 </div>
+                                <div class="pl-1" v-else>
+                                    <VQBThreeDotMenuForTable
+                                        v-if="showVQB"
+                                        :item="item"
+                                        :treeData="treeData"
+                                    />
+                                </div>
+
                                 <!-- <div
                                     class="bg-gray-light-color"
                                     @click.stop="
                                         () => actionClick('bookmark', item)
                                     "
                                 >
-                                    <a-tooltip color="#363636"  placement="top">
+                                    <a-tooltip color="#363636"  placement="top"> :mouseEnterDelay="
+                    lastTooltipPresence !== undefined
+                        ? ADJACENT_TOOLTIP_DELAY
+                        : MOUSE_ENTER_DELAY
+                "
                                         <template #title>Bookmark</template>
 
                                         <AtlanIcon
@@ -368,7 +484,7 @@
 
                     <div
                         v-if="hoverActions"
-                        class="absolute right-0 flex items-center text-gray-500 opacity-0 h-7 margin-align-top group-hover:opacity-100"
+                        class="absolute right-0 flex items-center opacity-0 text-new-gray-700 h-7 margin-align-top group-hover:opacity-100"
                         :class="
                             item?.selected
                                 ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
@@ -377,23 +493,22 @@
                         @click.stop="() => {}"
                     >
                         <div class="pl-2 ml-4">
-                            <InsightsThreeDotMenu
-                                :options="dropdownOptions"
-                                :item="item"
-                                class="w-4 h-4 my-auto -mr-1.5 outline-none"
+                            <div
+                                class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
                             >
-                                <template #menuTrigger>
-                                    <AtlanIcon
-                                        icon="KebabMenu"
-                                        class="w-4 h-4 my-auto -mr-1.5 outline-none"
-                                        :class="
-                                            item?.selected
-                                                ? 'tree-light-color'
-                                                : 'bg-gray-light-color'
-                                        "
-                                    />
-                                </template>
-                            </InsightsThreeDotMenu>
+                                <InsightsThreeDotMenu
+                                    :options="dropdownOptions"
+                                    :item="item"
+                                    class="w-4 h-4 my-auto -mr-1.5 outline-none"
+                                >
+                                    <template #menuTrigger>
+                                        <AtlanIcon
+                                            icon="KebabMenuHorizontal"
+                                            class="w-4 h-4 my-auto -mr-1.5 outline-none"
+                                        />
+                                    </template>
+                                </InsightsThreeDotMenu>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -442,79 +557,6 @@
                                 {{ childCount(item) }}</span
                             >
                         </span>
-                        <div
-                            v-if="hoverActions"
-                            class="absolute right-0 flex items-center text-gray-500 opacity-0 h-7 margin-align-top group-hover:opacity-100"
-                            @click.stop="() => {}"
-                            :class="
-                                item?.selected
-                                    ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
-                                    : 'bg-gradient-to-l from-tree-light-color via-tree-light-color'
-                            "
-                        >
-                            <div
-                                :data-test-id="'insert-in-editor'"
-                                class="pl-2 ml-24"
-                                @click="() => actionClick('add', item)"
-                            >
-                                <a-tooltip color="#363636" placement="top">
-                                    <template #title
-                                        >Place name in editor</template
-                                    >
-                                    <div
-                                        class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
-                                    >
-                                        <AtlanIcon
-                                            icon="AddAssetName"
-                                            class="w-4 h-4 my-auto focus:outline-none"
-                                        ></AtlanIcon>
-                                    </div>
-                                </a-tooltip>
-                            </div>
-                            <div
-                                class="pl-1 pr-1"
-                                :data-test-id="'preview'"
-                                @click="() => actionClick('info', item)"
-                            >
-                                <a-tooltip color="#363636" placement="top">
-                                    <template #title
-                                        >Open preview sidebar</template
-                                    >
-                                    <div
-                                        class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
-                                    >
-                                        <AtlanIcon
-                                            icon="SidebarSwitch"
-                                            class="w-4 h-4 my-auto outline-none"
-                                        ></AtlanIcon>
-                                    </div>
-                                </a-tooltip>
-                            </div>
-                            <div
-                                :data-test-id="'run-table-query'"
-                                :class="
-                                    activeInlineTab.playground.resultsPane
-                                        .result.isQueryRunning === 'loading'
-                                        ? 'opacity-50 cursor-not-allowed pointer-events-none'
-                                        : ''
-                                "
-                                @click="() => previewData(item)"
-                            >
-                                <a-tooltip color="#363636" placement="top">
-                                    <template #title>{{
-                                        tooltipText
-                                    }}</template>
-                                    <div
-                                        class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
-                                    >
-                                        <AtlanIcon
-                                            icon="Play"
-                                            class="w-4 h-4 my-auto outline-none"
-                                        ></AtlanIcon>
-                                    </div>
-                                </a-tooltip>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -564,6 +606,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
     import useRunQuery from '~/components/insights/playground/common/composables/useRunQuery'
+    import usePreviewQueryRun from '~/components/insights/playground/common/composables/previewQueryRun'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import { useEditor } from '~/components/insights/common/composables/useEditor'
     import StatusBadge from '@common/badge/status/index.vue'
@@ -583,8 +626,11 @@
     import VQBThreeDotMenuForTable from '~/components/insights/explorers/schema/VQBThreeDotMenu/table.vue'
     import { TreeDataItem } from 'ant-design-vue/lib/tree/Tree'
     import { generateSQLQuery } from '~/components/insights/playground/editor/vqb/composables/generateSQLQuery'
+    import insightsStore from '~/store/insights/index'
     import InsightsThreeDotMenu from '~/components/insights/common/dropdown/index.vue'
     import { MenuItem } from 'ant-design-vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import { useTooltipDelay } from '~/components/insights/common/composables/useTooltipDelay'
 
     export function getLastMappedKeyword(
         token_param: string[],
@@ -632,13 +678,24 @@
             },
         },
         setup(props) {
+            const {
+                recordTooltipPresence,
+                MOUSE_ENTER_DELAY,
+                ADJACENT_TOOLTIP_DELAY,
+                lastTooltipPresence,
+            } = useTooltipDelay(2)
+            const insights_Store = insightsStore()
             const { hoverActions, treeData } = toRefs(props)
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
             >
+            const lastElement = inject('lastPreviewTabElement') as Ref<any>
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
+            const activeResultPreviewTab = inject(
+                'activeResultPreviewTab'
+            ) as Ref<boolean>
             const editorInstanceRef = inject('editorInstance') as Ref<any>
             const monacoInstanceRef = inject('monacoInstance') as Ref<any>
             const popoverAllowed = ['Column', 'Table', 'View']
@@ -648,7 +705,25 @@
 
             const editorInstance = inject('editorInstance') as Ref<any>
             const monacoInstance = inject('monacoInstance') as Ref<any>
+            const isQueryCreatedByCurrentUser = inject(
+                'isQueryCreatedByCurrentUser'
+            ) as ComputedRef
+            const hasQueryReadPermission = inject(
+                'hasQueryReadPermission'
+            ) as ComputedRef
+            const hasQueryWritePermission = inject(
+                'hasQueryWritePermission'
+            ) as ComputedRef
 
+            const readOnly = computed(() =>
+                activeInlineTab?.value?.qualifiedName?.length === 0
+                    ? false
+                    : isQueryCreatedByCurrentUser?.value
+                    ? false
+                    : hasQueryWritePermission?.value
+                    ? false
+                    : true
+            )
             const selectionObject: Ref<any> = ref({
                 startLineNumber: 1,
                 startColumnNumber: 1,
@@ -677,6 +752,7 @@
 
             const { item } = toRefs(props)
             const { queryRun } = useRunQuery()
+            const { previewRun } = usePreviewQueryRun()
             const showVQB = computed(() => {
                 return activeInlineTab?.value?.playground?.isVQB
             })
@@ -774,11 +850,15 @@
                 ) {
                     return 'Another query is running'
                 } else {
-                    return 'Preview data'
+                    return 'Query this '
                 }
             })
 
-            const actionClick = (action: string, t: assetInterface) => {
+            const actionClick = (
+                action: string,
+                t: assetInterface,
+                isPreview?: boolean
+            ) => {
                 // for assetQuote Info of different sources
                 const assetQuoteType = getDialectInfo(
                     getConnectorName(
@@ -826,10 +906,32 @@
                                 }
                             )
                         }
+                        useAddEvent('insights', 'schemaTree', 'itemClick', {
+                            action: 'place_name_in_editor',
+                            trigger: 'quick_action',
+                            query_tab_id: activeInlineTab.value.key,
+                            asset_type: t.typeName,
+                        })
 
                         break
                     }
+                    // This case is used for preview & Play
                     case 'play': {
+                        if (isPreview) {
+                            useAddEvent('insights', 'schemaTree', 'itemClick', {
+                                action: 'preview',
+                                trigger: 'quick_action',
+                                query_tab_id: activeInlineTab.value.key,
+                                asset_type: t.typeName,
+                            })
+                        } else {
+                            useAddEvent('insights', 'schemaTree', 'itemClick', {
+                                action: 'query_run',
+                                trigger: 'quick_action',
+                                query_tab_id: activeInlineTab.value.key,
+                                asset_type: t.typeName,
+                            })
+                        }
                         const activeInlineTabCopy: activeInlineTabInterface =
                             JSON.parse(
                                 JSON.stringify(toRaw(activeInlineTab.value))
@@ -863,91 +965,38 @@
                         const prevText =
                             activeInlineTabCopy.playground.editor.text
                         // new text
-                        let editorContext =
-                            activeInlineTabCopy.playground.editor.context
-                        let editorContextType = editorContext?.attributeName
-                        let editorContextValue = editorContext?.attributeValue
+                        let context =
+                            activeInlineTabCopy.explorer.schema.connectors
+                        if (isPreview) {
+                            // select context from editor
+                            context =
+                                activeInlineTabCopy.playground.editor.context
+                        }
+                        let contextType = context?.attributeName
+                        let contextValue = context?.attributeValue
 
-                        console.log('editorContextType', editorContextType)
+                        console.log('contextType', contextType)
 
                         // 1st missing context in editor:
                         // 2nd context mismatch in editor and query
 
                         // console.log('run query')
 
-                        switch (editorContextType) {
+                        switch (contextType) {
                             case 'connectionQualifiedName': {
                                 // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
                                 newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${databaseName}${assetQuoteType}.${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
                                 if (
-                                    editorContextValue !==
+                                    contextValue !==
                                     queryConnectionQualifiedName
                                 ) {
                                     // openContextModal()
                                     // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
                                     newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                    let newText = `${newQuery}`
-                                    const tabKey = handleAddNewTab(
-                                        newText,
-                                        {
-                                            attributeName:
-                                                'schemaQualifiedName',
-                                            attributeValue:
-                                                updatedEditorSchemaQualifiedName,
-                                        },
-                                        {
-                                            ...activeInlineTab.value.explorer
-                                                .schema.connectors,
-                                        },
-                                        item.value
-                                    )
-                                    const tabIndex = inlineTabs.value.findIndex(
-                                        (tab) => tab.key === tabKey
-                                    )
-                                    playQuery(newQuery, newQuery, tabIndex)
 
-                                    return
-                                } else {
-                                    const tabIndex = inlineTabs.value.findIndex(
-                                        (tab) =>
-                                            tab.key === activeInlineTabKey.value
-                                    )
-
-                                    const newText = `${newQuery}${prevText}`
-                                    playQuery(newQuery, newText, tabIndex)
-                                    return
-                                }
-                                break
-                            }
-                            case 'databaseQualifiedName': {
-                                // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
-                                newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-
-                                if (
-                                    editorContextValue !==
-                                    queryDatabaseQualifiedName
-                                ) {
-                                    let editorContextValueArray =
-                                        editorContextValue?.split('/')
-                                    let cqn = editorContextValueArray
-                                        ?.slice(0, 3)
-                                        .join('/')
-                                    let dbqn = editorContextValueArray
-                                        ?.slice(0, 4)
-                                        .join('/')
-
-                                    if (cqn !== queryConnectionQualifiedName) {
-                                        // console.log('cqn: ', {
-                                        //     cqn,
-                                        //     queryConnectionQualifiedName,
-                                        // })
-                                        // open in new tab
-                                        // openContextModal()
-                                        // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
-                                        newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                        let newText = `${newQuery}`
+                                    if (isPreview) {
                                         const tabKey = handleAddNewTab(
-                                            newText,
+                                            newQuery,
                                             {
                                                 attributeName:
                                                     'schemaQualifiedName',
@@ -964,26 +1013,86 @@
                                             inlineTabs.value.findIndex(
                                                 (tab) => tab.key === tabKey
                                             )
-                                        playQuery(newQuery, newQuery, tabIndex)
+
+                                        previewQuery(newQuery, tabIndex)
+                                    } else playQuery(newQuery, item.value)
+
+                                    return
+                                } else {
+                                    if (isPreview) {
+                                        const tabIndex =
+                                            inlineTabs.value.findIndex(
+                                                (tab) =>
+                                                    tab.key ===
+                                                    activeInlineTabKey.value
+                                            )
+                                        const newText = `${newQuery}${prevText}`
+                                        previewQuery(newText, tabIndex)
+                                        //REMAINS
+                                    } else playQuery(newQuery, item.value)
+                                    return
+                                }
+                                break
+                            }
+                            case 'databaseQualifiedName': {
+                                // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
+                                newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
+
+                                if (
+                                    contextValue !== queryDatabaseQualifiedName
+                                ) {
+                                    let editorContextValueArray =
+                                        contextValue?.split('/')
+                                    let cqn = editorContextValueArray
+                                        ?.slice(0, 3)
+                                        .join('/')
+                                    let dbqn = editorContextValueArray
+                                        ?.slice(0, 4)
+                                        .join('/')
+
+                                    if (cqn !== queryConnectionQualifiedName) {
+                                        newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
+                                        if (isPreview) {
+                                            const tabKey = handleAddNewTab(
+                                                newQuery,
+                                                {
+                                                    attributeName:
+                                                        'schemaQualifiedName',
+                                                    attributeValue:
+                                                        updatedEditorSchemaQualifiedName,
+                                                },
+                                                {
+                                                    ...activeInlineTab.value
+                                                        .explorer.schema
+                                                        .connectors,
+                                                },
+                                                item.value
+                                            )
+                                            const tabIndex =
+                                                inlineTabs.value.findIndex(
+                                                    (tab) => tab.key === tabKey
+                                                )
+
+                                            previewQuery(newQuery, tabIndex)
+                                        } else playQuery(newQuery, item.value)
                                         return
                                     } else {
                                         if (
                                             dbqn !== queryDatabaseQualifiedName
                                         ) {
-                                            const tabIndex =
-                                                inlineTabs.value.findIndex(
-                                                    (tab) =>
-                                                        tab.key ===
-                                                        activeInlineTabKey.value
-                                                )
-                                            // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
                                             newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${databaseName}${assetQuoteType}.${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                            const newText = `${newQuery}${prevText}`
-                                            playQuery(
-                                                newQuery,
-                                                newText,
-                                                tabIndex
-                                            )
+                                            if (isPreview) {
+                                                const tabIndex =
+                                                    inlineTabs.value.findIndex(
+                                                        (tab) =>
+                                                            tab.key ===
+                                                            activeInlineTabKey.value
+                                                    )
+                                                const newText = `${newQuery}${prevText}`
+                                                previewQuery(newText, tabIndex)
+                                                //REMAINS
+                                            } else
+                                                playQuery(newQuery, item.value)
                                             return
                                         }
                                     }
@@ -991,12 +1100,17 @@
                                 } else {
                                     // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
                                     newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                    const newText = `${newQuery}${prevText}`
-                                    const tabIndex = inlineTabs.value.findIndex(
-                                        (tab) =>
-                                            tab.key === activeInlineTabKey.value
-                                    )
-                                    playQuery(newQuery, newText, tabIndex)
+                                    if (isPreview) {
+                                        const tabIndex =
+                                            inlineTabs.value.findIndex(
+                                                (tab) =>
+                                                    tab.key ===
+                                                    activeInlineTabKey.value
+                                            )
+                                        const newText = `${newQuery}${prevText}`
+                                        previewQuery(newText, tabIndex)
+                                        //REMAINS
+                                    } else playQuery(newQuery, item.value)
                                     return
                                 }
                                 break
@@ -1011,12 +1125,9 @@
                                 // )
 
                                 // console.log('run in schema')
-                                if (
-                                    editorContextValue !==
-                                    querySchemaQualifiedName
-                                ) {
+                                if (contextValue !== querySchemaQualifiedName) {
                                     let editorContextValueArray =
-                                        editorContextValue?.split('/')
+                                        contextValue?.split('/')
                                     let cqn = editorContextValueArray
                                         ?.slice(0, 3)
                                         .join('/')
@@ -1028,48 +1139,48 @@
                                         .join('/')
 
                                     if (cqn !== queryConnectionQualifiedName) {
-                                        // open in new tab
-                                        // openContextModal()
-                                        let newText = `${newQuery}`
-                                        const tabKey = handleAddNewTab(
-                                            newText,
-                                            {
-                                                attributeName:
-                                                    'schemaQualifiedName',
-                                                attributeValue:
-                                                    updatedEditorSchemaQualifiedName,
-                                            },
-                                            {
-                                                ...activeInlineTab.value
-                                                    .explorer.schema.connectors,
-                                            },
-                                            item.value
-                                        )
-                                        const tabIndex =
-                                            inlineTabs.value.findIndex(
-                                                (tab) => tab.key === tabKey
+                                        if (isPreview) {
+                                            const tabKey = handleAddNewTab(
+                                                newQuery,
+                                                {
+                                                    attributeName:
+                                                        'schemaQualifiedName',
+                                                    attributeValue:
+                                                        updatedEditorSchemaQualifiedName,
+                                                },
+                                                {
+                                                    ...activeInlineTab.value
+                                                        .explorer.schema
+                                                        .connectors,
+                                                },
+                                                item.value
                                             )
-                                        playQuery(newQuery, newQuery, tabIndex)
+                                            const tabIndex =
+                                                inlineTabs.value.findIndex(
+                                                    (tab) => tab.key === tabKey
+                                                )
+
+                                            previewQuery(newQuery, tabIndex)
+                                        } else playQuery(newQuery, item.value)
                                         return
                                     } else {
-                                        const tabIndex =
-                                            inlineTabs.value.findIndex(
-                                                (tab) =>
-                                                    tab.key ===
-                                                    activeInlineTabKey.value
-                                            )
                                         if (
                                             dbqn !== queryDatabaseQualifiedName
                                         ) {
                                             // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
                                             newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${databaseName}${assetQuoteType}.${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                            const newText = `${newQuery}${prevText}`
-
-                                            playQuery(
-                                                newQuery,
-                                                newText,
-                                                tabIndex
-                                            )
+                                            if (isPreview) {
+                                                const tabIndex =
+                                                    inlineTabs.value.findIndex(
+                                                        (tab) =>
+                                                            tab.key ===
+                                                            activeInlineTabKey.value
+                                                    )
+                                                const newText = `${newQuery}${prevText}`
+                                                previewQuery(newText, tabIndex)
+                                                //REMAINS
+                                            } else
+                                                playQuery(newQuery, item.value)
                                             return
                                         } else {
                                             if (
@@ -1077,12 +1188,24 @@
                                             ) {
                                                 // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
                                                 newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                                const newText = `${newQuery}${prevText}`
-                                                playQuery(
-                                                    newQuery,
-                                                    newText,
-                                                    tabIndex
-                                                )
+                                                if (isPreview) {
+                                                    const tabIndex =
+                                                        inlineTabs.value.findIndex(
+                                                            (tab) =>
+                                                                tab.key ===
+                                                                activeInlineTabKey.value
+                                                        )
+                                                    const newText = `${newQuery}${prevText}`
+                                                    previewQuery(
+                                                        newText,
+                                                        tabIndex
+                                                    )
+                                                    //REMAINS
+                                                } else
+                                                    playQuery(
+                                                        newQuery,
+                                                        item.value
+                                                    )
                                                 return
                                             }
                                         }
@@ -1093,12 +1216,17 @@
                                     console.log('match here')
                                     // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
                                     newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                    const newText = `${newQuery}${prevText}`
-                                    const tabIndex = inlineTabs.value.findIndex(
-                                        (tab) =>
-                                            tab.key === activeInlineTabKey.value
-                                    )
-                                    playQuery(newQuery, newText, tabIndex)
+                                    if (isPreview) {
+                                        const tabIndex =
+                                            inlineTabs.value.findIndex(
+                                                (tab) =>
+                                                    tab.key ===
+                                                    activeInlineTabKey.value
+                                            )
+                                        const newText = `${newQuery}${prevText}`
+                                        previewQuery(newText, tabIndex)
+                                        //REMAINS
+                                    } else playQuery(newQuery, item.value)
                                     return
                                 }
                                 break
@@ -1108,6 +1236,12 @@
                         break
                     }
                     case 'info': {
+                        useAddEvent('insights', 'schemaTree', 'itemClick', {
+                            action: 'open_sidebar',
+                            trigger: 'quick_action',
+                            query_tab_id: activeInlineTab.value.key,
+                            asset_type: t.typeName,
+                        })
                         // i button clicked on the same node -> close the sidebar
                         console.log('info: ', activeInlineTab)
                         if (
@@ -1181,32 +1315,94 @@
                 }
             }
 
-            const playQuery = (newQuery, newText, tabIndex: number) => {
+            const hightLightCurrentActivePreviewTab = () => {
+                const x = setTimeout(() => {
+                    const elements = document.getElementsByClassName(
+                        'ant-tabs-tab-active'
+                    )
+                    const tabElements = document.getElementsByClassName(
+                        'insights_preview_tabs'
+                    )
+                    Array.from(tabElements).forEach((el) => {
+                        el.style.background = ''
+                    })
+                    if (elements.length) {
+                        if (lastElement.value) {
+                            lastElement.value.style.background = ''
+                        }
+                        lastElement.value = elements[elements.length - 1]
+                        lastElement.value.style.background =
+                            'rgba(254, 247, 228, 1)'
+                        const t = setTimeout(() => {
+                            if (lastElement.value.style.background !== '') {
+                                lastElement.value.style.background = 'white'
+                            }
+                            clearTimeout(t)
+                        }, 1500)
+                    }
+                    clearTimeout(x)
+                }, 50)
+            }
+
+            const playQuery = (newQuery, asset: assetInterface) => {
+                const index = insights_Store.previewTabs.findIndex(
+                    (el) => el.asset.guid === asset.guid
+                )
+                if (index > -1) {
+                    if (insights_Store.activePreviewGuid === asset.guid) {
+                        hightLightCurrentActivePreviewTab()
+                    }
+                    insights_Store.activePreviewGuid = asset.guid
+
+                    return
+                }
+                activeResultPreviewTab.value = false
+                insights_Store.addPreviewTab(asset)
+                insights_Store.activePreviewGuid = asset.guid
+                // schema explorer context
+                const attributeValue =
+                    activeInlineTab.value.explorer.schema.connectors
+                        ?.attributeValue
+                const tabIndex = inlineTabs.value.findIndex(
+                    (tab) => tab.key === activeInlineTabKey.value
+                )
+
+                previewRun({
+                    guid: asset.guid,
+                    tabsArray: inlineTabs,
+                    queryText: newQuery,
+                    attributeValue,
+                    tabIndex,
+                    getData: insights_Store.getData,
+                    limitRows,
+                    inlineTabs,
+                })
+            }
+
+            const previewQuery = (queryText: string, tabIndex: number) => {
+                activeResultPreviewTab.value = true
+                insights_Store.activePreviewGuid = undefined
                 const { onRunCompletion, onQueryIdGeneration } =
                     useRunQueryUtils(editorInstance, monacoInstance)
-                // debugger
                 if (!readOnly.value) {
-                    inlineTabs.value[tabIndex].playground.editor.text = newText
+                    inlineTabs.value[tabIndex].playground.editor.text =
+                        queryText
                     selectionObject.value.startLineNumber = 2
                     selectionObject.value.startColumnNumber = 1
                     selectionObject.value.endLineNumber = 2
-                    selectionObject.value.endColumnNumber = newQuery.length + 1 // +1 for semicolon
-                    toRaw(editorInstanceRef.value).getModel().setValue(newText)
+                    selectionObject.value.endColumnNumber = queryText.length + 1 // +1 for semicolon
+                    toRaw(editorInstanceRef.value)
+                        .getModel()
+                        .setValue(queryText)
                     // models[tabIndex].setValue(newText)
-                    setSelection(
-                        toRaw(editorInstanceRef.value),
-                        toRaw(monacoInstanceRef.value),
-                        selectionObject.value
-                    )
                 }
-
                 queryRun(
                     tabIndex,
                     getData,
                     limitRows,
                     onRunCompletion,
                     onQueryIdGeneration,
-                    newText,
+                    queryText,
                     editorInstance,
                     monacoInstance,
                     ref(false),
@@ -1265,6 +1461,9 @@
             // const router = useRouter()
             // const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
+            const showcustomToolBar = inject(
+                'showcustomToolBar'
+            ) as Ref<boolean>
 
             const handleAddNewTab = (
                 query,
@@ -1287,6 +1486,7 @@
                 })
 
                 inlineTabAdd(inlineTabData, tabs, activeInlineTabKey)
+                showcustomToolBar.value = false
                 return inlineTabData.key
             }
 
@@ -1310,30 +1510,7 @@
                 setVQBInInlineTab(activeInlineTabCopy, inlineTabs)
             }
 
-            const isQueryCreatedByCurrentUser = inject(
-                'isQueryCreatedByCurrentUser'
-            ) as ComputedRef
-            const hasQueryReadPermission = inject(
-                'hasQueryReadPermission'
-            ) as ComputedRef
-            const hasQueryWritePermission = inject(
-                'hasQueryWritePermission'
-            ) as ComputedRef
-
-            const readOnly = computed(() =>
-                activeInlineTab?.value?.qualifiedName?.length === 0
-                    ? false
-                    : isQueryCreatedByCurrentUser?.value
-                    ? false
-                    : hasQueryWritePermission?.value
-                    ? false
-                    : true
-            )
-
             const previewVQBQuery = (item: any) => {
-                const { onRunCompletion, onQueryIdGeneration } =
-                    useRunQueryUtils(editorInstance, monacoInstance)
-
                 const activeInlineTabCopy = JSON.parse(
                     JSON.stringify(toRaw(activeInlineTab.value))
                 )
@@ -1376,23 +1553,8 @@
                     limitRows.value,
                     useSchemaExplorerContext
                 )
-                const tabIndex = inlineTabs.value.findIndex(
-                    (tab) => tab.key === activeInlineTab.value.key
-                )
 
-                queryRun(
-                    tabIndex,
-                    getData,
-                    limitRows,
-                    onRunCompletion,
-                    onQueryIdGeneration,
-                    selectedText,
-                    editorInstance,
-                    monacoInstance,
-                    showVQB,
-                    inlineTabs,
-                    useSchemaExplorerContext
-                )
+                playQuery(selectedText, item?.entity)
             }
 
             const dropdownOptions = [
@@ -1401,11 +1563,11 @@
                     key: 'Set in editor context',
                     class: `
                                                 ${
-                                                    readOnly.value
+                                                    readOnly?.value
                                                         ? ' bg-gray-100 cursor-not-allowed pointer-events-none'
                                                         : 'cursor-pointer'
                                                 }
-                                                    
+
                                             `,
                     disabled: false,
                     icon: 'Add',
@@ -1413,6 +1575,12 @@
                     wrapperClass: 'flex items-center ',
                     component: MenuItem,
                     handleClick: ({ item }) => {
+                        useAddEvent('insights', 'schemaTree', 'itemClick', {
+                            action: 'set_editor_context',
+                            trigger: 'kebab_menu',
+                            query_tab_id: activeInlineTab.value.key,
+                            asset_type: item.typeName,
+                        })
                         setContextInEditor(item)
                     },
                 },
@@ -1427,12 +1595,22 @@
                     hide: showVQB.value,
                     disabled: false,
                     handleClick: ({ item }) => {
+                        useAddEvent('insights', 'schemaTree', 'itemClick', {
+                            action: 'place_name_in_editor',
+                            trigger: 'kebab_menu',
+                            query_tab_id: activeInlineTab.value.key,
+                            asset_type: item.typeName,
+                        })
                         actionClick('add', item)
                     },
                 },
             ]
 
             return {
+                recordTooltipPresence,
+                MOUSE_ENTER_DELAY,
+                ADJACENT_TOOLTIP_DELAY,
+                lastTooltipPresence,
                 dropdownOptions,
                 // showContextModal,
                 // closeContextModal,
@@ -1501,7 +1679,7 @@
     .via-tree-light-color {
         // --tw-gradient-stops: var(--tw-gradient-from), #dbe9fe,
         --tw-gradient-stops: var(--tw-gradient-from), #eff1f5,
-            var(--tw-gradient-to, rgba(244, 246, 253, 0)) !important;
+            var(--tw-gradient-to, rgba(244, 246, 253, 0.45)) !important;
     }
     .from-tree-light-color {
         // --tw-gradient-from: #dbe9fe !important;

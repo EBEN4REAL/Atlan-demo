@@ -155,6 +155,7 @@
     import { useConnector } from '~/components/insights/common/composables/useConnector'
     import { getDialectInfo } from '~/components/insights/common/composables/getDialectInfo'
     import { useQuery } from '~/components/insights/common/composables/useQuery'
+    import insightsStore from '~/store/insights/index'
     import { assetInterface } from '~/types/assets/asset.interface'
 
     import { useRunQueryUtils } from '~/components/insights/common/composables/useRunQueryUtils'
@@ -185,7 +186,10 @@
         },
         props: {},
         setup(props) {
+            // insights Store initialization
+            const store = insightsStore()
             const UrlDetectedAsset = ref()
+            const lastPreviewTabElement = ref()
             const refreshSchedulesWorkflowTab = ref()
             const activeKey = ref(0)
             const observer = ref()
@@ -207,6 +211,7 @@
                 'isCollectionCreated'
             ) as Ref<Boolean>
             const collectionSelectorChange = ref(false)
+            const activeResultPreviewTab = ref(false)
 
             const {
                 MIN_EXPLORER_WIDTH,
@@ -367,6 +372,8 @@
             */
 
             const provideData: provideDataInterface = {
+                lastPreviewTabElement,
+                activeResultPreviewTab,
                 activeExplorerTabId: activeTabId,
                 showcustomToolBar,
                 activeInlineTab,

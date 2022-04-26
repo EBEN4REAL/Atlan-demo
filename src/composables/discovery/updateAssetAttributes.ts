@@ -536,6 +536,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         }
         body.value.entities = [entity.value]
         currentMessage.value = 'Categories have been updated'
+        sendMetadataTrackEvent('categories_updated',{count:localCategories.value?.length})
         mutate()
     }
     const handleSeeAlsoUpdate = () => {
@@ -551,6 +552,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         }
         body.value.entities = [entity.value]
         currentMessage.value = 'Related terms have been updated'
+        sendMetadataTrackEvent('related_terms_updated',{count:localSeeAlso.value?.length})
         mutate()
     }
     const handleParentCategoryUpdate = () => {

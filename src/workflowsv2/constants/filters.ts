@@ -1,3 +1,5 @@
+import dayjs from 'dayjs'
+
 export const workflowFilter = [
     {
         id: 'creators',
@@ -75,4 +77,52 @@ export const runStatuses = [
         label: 'Waiting',
         colorDot: '#6A7692',
     },
+]
+
+export const dateRanges = [
+    {
+        label: 'Today',
+        value: { gt: dayjs().startOf('day').valueOf() },
+        hint:
+            'Runs created on/' +
+            dayjs().startOf('day').format('D MMM YYYY [(GMT] Z[)]'),
+    },
+    {
+        label: 'Yesterday',
+        value: {
+            lt: dayjs().startOf('day').valueOf(),
+            gt: dayjs().startOf('day').subtract(1, 'day').valueOf(),
+        },
+        hint:
+            'Runs created on/' +
+            dayjs()
+                .startOf('day')
+                .subtract(1, 'day')
+                .format('D MMM YYYY [(GMT] Z[)]'),
+    },
+    {
+        label: 'Last 7D',
+        value: {
+            gt: dayjs().startOf('day').subtract(7, 'day').valueOf(),
+        },
+        hint:
+            'Runs created since/' +
+            dayjs()
+                .startOf('day')
+                .subtract(7, 'day')
+                .format('D MMM YYYY [(GMT] Z[)]'),
+    },
+    {
+        label: 'Last 30D',
+        value: {
+            gt: dayjs().startOf('day').subtract(30, 'day').valueOf(),
+        },
+        hint:
+            'Runs created since/' +
+            dayjs()
+                .startOf('day')
+                .subtract(30, 'day')
+                .format('D MMM YYYY [(GMT] Z[)]'),
+    },
+    // { label: 'Custom' },
 ]

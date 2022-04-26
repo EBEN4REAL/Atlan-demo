@@ -10,6 +10,7 @@
 </template>
 
 <script lang="ts">
+    import { useHead } from '@vueuse/head'
     import { defineComponent, provide, ref } from 'vue'
     import { Metadata } from '~/workflowsv2/constants/widgets'
 
@@ -23,6 +24,9 @@
         props: {},
         emits: [],
         setup() {
+            useHead({
+                title: 'Monitor Workflows',
+            })
             const filters = ref({})
             provide('monitorFilters', filters)
             return { filters, Metadata }

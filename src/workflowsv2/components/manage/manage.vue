@@ -84,6 +84,7 @@
 <script lang="ts">
     import { until, useDebounceFn, watchOnce, whenever } from '@vueuse/core'
     import { computed, defineComponent, provide, ref, watch } from 'vue'
+    import { useHead } from '@vueuse/head'
 
     import { capitalizeFirstLetter } from '~/utils/string'
 
@@ -114,6 +115,9 @@
         props: {},
         emits: [],
         setup() {
+            useHead({
+                title: 'Manage Workflows',
+            })
             const { name } = useWorkflowInfo()
             const { name: pkgName } = usePackageInfo()
             const workflowStore = useWorkflowStore()

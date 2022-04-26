@@ -161,6 +161,7 @@
     import Schedule from '@/common/input/schedule.vue'
     import UserWrapper from '~/workflowsv2/components/common/user.vue'
     import PackageIcon from '~/workflowsv2/components/common/packageIcon.vue'
+    import { useHead } from '@vueuse/head'
 
     export default defineComponent({
         name: 'WorkflowHeader',
@@ -341,6 +342,13 @@
                         archiveWorkflow(workflowObject.value?.metadata?.name),
                 },
             ]
+
+            useHead({
+                title: displayName(
+                    packageObject.value,
+                    name(workflowObject.value)
+                ),
+            })
             return {
                 handleBack,
                 name,

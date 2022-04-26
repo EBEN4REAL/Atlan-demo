@@ -3,7 +3,7 @@
         class="box-border flex items-stretch h-8 overflow-hidden border border-gray-300 divide-x divide-gray-300 rounded-lg"
     >
         <a-tooltip
-            v-for="item in ranges"
+            v-for="item in dateRanges"
             :key="item.label"
             placement="top"
             color="#2A2F45"
@@ -32,6 +32,7 @@
 <script lang="ts">
     import dayjs from 'dayjs'
     import { defineComponent, ref } from 'vue'
+    import { dateRanges } from '~/workflowsv2/constants/filters'
 
     export default defineComponent({
         name: 'TabbedDateRangePicker',
@@ -42,56 +43,7 @@
         emits: ['update:value'],
         setup(_, { emit }) {
             const selected = ref(undefined)
-            const ranges = [
-                {
-                    label: 'Today',
-                    value: { gt: dayjs().startOf('day').valueOf() },
-                    hint:
-                        'Runs created on/' +
-                        dayjs().startOf('day').format('D MMM YYYY [(GMT] Z[)]'),
-                },
-                {
-                    label: 'Yesterday',
-                    value: {
-                        lt: dayjs().startOf('day').valueOf(),
-                        gt: dayjs().startOf('day').subtract(1, 'day').valueOf(),
-                    },
-                    hint:
-                        'Runs created on/' +
-                        dayjs()
-                            .startOf('day')
-                            .subtract(1, 'day')
-                            .format('D MMM YYYY [(GMT] Z[)]'),
-                },
-                {
-                    label: 'Last 7D',
-                    value: {
-                        gt: dayjs().startOf('day').subtract(7, 'day').valueOf(),
-                    },
-                    hint:
-                        'Runs created since/' +
-                        dayjs()
-                            .startOf('day')
-                            .subtract(7, 'day')
-                            .format('D MMM YYYY [(GMT] Z[)]'),
-                },
-                {
-                    label: 'Last 30D',
-                    value: {
-                        gt: dayjs()
-                            .startOf('day')
-                            .subtract(30, 'day')
-                            .valueOf(),
-                    },
-                    hint:
-                        'Runs created since/' +
-                        dayjs()
-                            .startOf('day')
-                            .subtract(30, 'day')
-                            .format('D MMM YYYY [(GMT] Z[)]'),
-                },
-                // { label: 'Custom' },
-            ]
+
             const handleSelect = (sel, val) => {
                 if (sel === selected.value) {
                     emit('update:value', undefined)
@@ -105,7 +57,7 @@
             // Select today by default
             handleSelect('Today', { gt: dayjs().startOf('day').valueOf() })
 
-            return { selected, ranges, handleSelect }
+            return { selected, dateRanges, handleSelect }
         },
     })
 </script>

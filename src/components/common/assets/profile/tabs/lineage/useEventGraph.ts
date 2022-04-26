@@ -776,7 +776,6 @@ export default function useEventGraph({
 
         Object.entries(guidEntityMap).forEach(([k, v]) => {
             if (isPortTypeName(v.typeName) && k !== portId) {
-                // TODO: xx
                 const parentName = getNodeQN(v?.attributes?.qualifiedName)
                 const parentNode = Object.values(
                     mergedLineageData.value.guidEntityMap
@@ -1063,10 +1062,11 @@ export default function useEventGraph({
         const portEdges = graph.value
             .getEdges()
             .filter((x) => x.id.includes('port'))
+
         if (!portEdges.length)
             message.info(
-                'There are no related assets present on the graph for the selected port' // TODO: xx
-            )
+                'There are no related assets present on the graph for the selected port'
+            ) // TODO: rename "port" to appropriate label
     }
 
     // addPortEdge

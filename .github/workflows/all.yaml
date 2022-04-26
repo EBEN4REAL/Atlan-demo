@@ -16,7 +16,7 @@ jobs:
 
       - name: Log userflow
         run: echo "$(echo ${secrets.VITE_USERFLOW_KEY})"
-        id: get_branch
+        id: log_userflow
 
       - name: Get previous tag from charts repo
         id: get_channel

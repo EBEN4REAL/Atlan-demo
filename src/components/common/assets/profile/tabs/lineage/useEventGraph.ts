@@ -521,7 +521,7 @@ export default function useEventGraph({
 
         const n = getX6Node(guid)
         const { data, error } = useFetchLineage(nodeConfig, true)
-        const { lineageDirection } = data.value
+        const lineageDirection = nodeConfig.value.direction
         const path = lineageDirection === 'OUTPUT' ? 'right' : 'left'
 
         watchOnce(error, () => {
@@ -669,21 +669,18 @@ export default function useEventGraph({
                     addPorts(node, ports, overrideExp, {
                         portsCount: total,
                     })
-                    removeShowMorePort(node)
-                    if (ports.length < total) addShowMorePort(node)
 
-                    let portsLength = ports.length
                     const newPorts = []
 
                     if (lineageStore.hasPortsList(node.id)) {
                         const { ports: c } = lineageStore.getNodesPortList(
                             node.id
                         )
-                        portsLength = c.length + newPorts.length
                         newPorts.push(...c)
                     }
 
                     newPorts.push(...ports)
+                    const portsLength = newPorts.length
 
                     lineageStore.setNodesPortsList(
                         node.id,
@@ -779,7 +776,6 @@ export default function useEventGraph({
 
         Object.entries(guidEntityMap).forEach(([k, v]) => {
             if (isPortTypeName(v.typeName) && k !== portId) {
-                // TODO: xx
                 const parentName = getNodeQN(v?.attributes?.qualifiedName)
                 const parentNode = Object.values(
                     mergedLineageData.value.guidEntityMap
@@ -927,16 +923,13 @@ export default function useEventGraph({
         const { ports } = node.getData()
         const mergedPorts = [...ports, ...newPorts]
         const uniquePorts = []
-        console.log({ newPorts })
-        console.log({ ports })
-        console.log({ mergedPorts })
+
         mergedPorts.forEach((x) => {
             if (!x.guid) return
             const exist = uniquePorts.find((y) => y.guid === x.guid)
             if (!exist) uniquePorts.push(x)
         })
 
-        console.log({ uniquePorts })
         node.updateData({
             ports: uniquePorts,
             portsListExpanded: true,
@@ -1020,9 +1013,6 @@ export default function useEventGraph({
 
     // addLineagePorts
     const addLineagePorts = (nodesForPortLineage, portLineage) => {
-        console.log({ nodesForPortLineage })
-        console.log({ portLineage })
-
         dimNodesEdges(true)
 
         const { guidEntityMap, relations } = portLineage
@@ -1072,10 +1062,11 @@ export default function useEventGraph({
         const portEdges = graph.value
             .getEdges()
             .filter((x) => x.id.includes('port'))
+
         if (!portEdges.length)
             message.info(
-                'There are no related assets present on the graph for the selected port' // TODO: xx
-            )
+                'There are no related assets present on the graph for the selected port'
+            ) // TODO: rename "port" to appropriate label
     }
 
     // addPortEdge

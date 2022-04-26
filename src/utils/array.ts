@@ -4,7 +4,7 @@ export const mergeArray = (
     keyA: string,
     keyB: string
 ) => {
-    const bDataMap = new Map(bData.map((o) => [o[keyB], o]))
+    /*  const bDataMap = new Map(bData.map((o) => [o[keyB], o]))
 
     const [matchingIdsResult, unmatchingIdsResult] = aData.reduce(
         (r, o) => {
@@ -20,6 +20,17 @@ export const mergeArray = (
     return {
         matchingIdsResult,
         unmatchingIdsResult,
+    } */
+    let merged = []
+
+    for (let i = 0; i < bData.length; i++) {
+        merged.push({
+            ...aData.find((itmInner) => itmInner[keyA] === bData[i][keyB]),
+        })
+    }
+
+    return {
+        matchingIdsResult: merged,
     }
 }
 /* Handles null,undefiend */

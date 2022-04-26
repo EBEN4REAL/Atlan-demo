@@ -362,6 +362,7 @@
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
             // handle create permissions for gtc
             const glossaryForPermission = ref(getGlossaryByQF(anchorQf.value))
+
             const {
                 createPermission: hasCreatePermission,
                 fetch: fetchPermissions,
@@ -380,7 +381,7 @@
             }
             const showModal = async () => {
                 //               handleFetchPermission()
-                fetchPermissions()
+                if (entityType !== 'AtlasGlossary') fetchPermissions()
                 resetInput()
                 visible.value = true
                 await nextTick()
@@ -601,7 +602,7 @@
             const handleSelectGlossary = (val) => {
                 // handleFetchPermission()
                 glossaryForPermission.value = getGlossaryByQF(anchorQf.value)
-                fetchPermissions()
+                if (entityType !== 'AtlasGlossary') fetchPermissions()
             }
             const handleRequest = () => {
                 console.log('raising request')

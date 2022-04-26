@@ -14,10 +14,6 @@ jobs:
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: get_branch
 
-      - name: Log userflow
-        run: echo "${{secrets.VITE_USERFLOW_KEY}}"
-        id: log_userflow
-
       - name: Get previous tag from charts repo
         id: get_channel
         run: |

@@ -74,6 +74,7 @@
     import useCreateGraph from './useCreateGraph'
     import useComputeGraph from './useComputeGraph'
     import useEventGraph from './useEventGraph'
+    import usePrefGraph from './usePrefGraph'
 
     export default defineComponent({
         name: 'LineageGraph',
@@ -138,6 +139,12 @@
                     graphHeight,
                 })
 
+                // usePrefGraph
+                const { controlPrefRetainer } = usePrefGraph({
+                    graph,
+                    preferences,
+                })
+
                 // useComputeGraph
                 const {
                     addSubGraph,
@@ -153,6 +160,7 @@
                     lineage,
                     currZoom,
                     isComputeDone,
+                    controlPrefRetainer,
                 })
 
                 // useEventGraph
@@ -170,6 +178,7 @@
                     onCloseDrawer,
                     addSubGraph,
                     renderLayout,
+                    controlPrefRetainer,
                 })
             }
 

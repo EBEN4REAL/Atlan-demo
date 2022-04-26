@@ -521,7 +521,7 @@ export default function useEventGraph({
 
         const n = getX6Node(guid)
         const { data, error } = useFetchLineage(nodeConfig, true)
-        const { lineageDirection } = data.value
+        const lineageDirection = nodeConfig.value.direction
         const path = lineageDirection === 'OUTPUT' ? 'right' : 'left'
 
         watchOnce(error, () => {

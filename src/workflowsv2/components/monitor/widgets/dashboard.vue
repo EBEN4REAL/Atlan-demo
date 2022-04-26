@@ -1,14 +1,12 @@
 <template>
     <div class="grid grid-cols-12 gap-4">
-        <div
+        <WidgetComponent
             v-for="item in widgets"
             :id="item.id"
             :key="item.id"
+            :data="item"
             :class="item.class"
-            :style="item.style"
-        >
-            <WidgetComponent :data="item" />
-        </div>
+        />
     </div>
 </template>
 

@@ -20,7 +20,7 @@ const findIntervalByDate = (gt: number, lt = Date.now()) => {
 export interface WidgetData {
     id: string
     label?: string
-    info?: string
+
     showHeader?: boolean
     class?: string
     component: string
@@ -30,10 +30,8 @@ export interface WidgetData {
 export const Metadata: WidgetData[] = [
     {
         id: 'summary-assets',
-        label: 'Summary',
-        info: 'Assets stats',
-        showHeader: false,
-        class: 'col-span-4 h-48 border border-light px-5 py-3 rounded-lg bg-white',
+        label: 'Total assets updated',
+        class: 'col-span-4 h-64',
         component: 'summary',
         componentData: {
             query: {
@@ -53,7 +51,7 @@ export const Metadata: WidgetData[] = [
                 },
             },
             dataOptions: {
-                mainStatText: 'Total Assets Synced',
+                mainStatText: 'Assets updated',
                 mainStatKey: 'sum_state',
                 aggregationKey: 'group_by_state',
             },
@@ -82,10 +80,10 @@ export const Metadata: WidgetData[] = [
     },
     {
         id: 'new-assets',
-        label: 'New Assets Distribution',
-        info: 'New Assets',
+        label: 'New assets distribution',
+
         showHeader: true,
-        class: 'col-span-8 h-48 border border-light px-5 py-3 rounded-lg bg-white',
+        class: 'col-span-8 h-64',
         component: 'graph',
         componentData: {
             query: {
@@ -191,11 +189,9 @@ export const Metadata: WidgetData[] = [
     },
     {
         id: 'connector-assets',
-        label: 'Top 5 Sources',
-        info: 'Sources having the most number of assets',
+        label: 'Top Connector workflows by asset count',
         showHeader: true,
-        class: 'col-span-6 border border-light px-5 py-3 rounded h-48 rounded-lg bg-white',
-
+        class: 'col-span-6 h-64',
         component: 'graph',
         componentData: {
             query: {

@@ -1,20 +1,17 @@
 <template>
-    <div class="flex flex-col h-full">
-        <div v-if="data.showHeader" class="flex items-center">
-            <p class="mr-1 text-sm font-semibold text-gray-700">
+    <div
+        class="flex flex-col px-5 py-4 bg-white border rounded-lg border-new-gray-300"
+    >
+        <div class="pb-3 mb-2 border-b border-new-gray-200">
+            <p class="text-base font-bold text-new-gray-700">
                 {{ data?.label }}
             </p>
-            <a-tooltip placement="right">
-                <template #title>{{ data?.info }}</template>
-
-                <AtlanIcon icon="Info" class="w-4 h-4 my-auto"></AtlanIcon>
-            </a-tooltip>
         </div>
         <component
             :is="componentType"
             :data="data"
-            :class="data.showHeader ? 'graph-container' : 'h-full'"
-        ></component>
+            style="height: calc(100% - 44px)"
+        />
     </div>
 </template>
 
@@ -66,9 +63,3 @@
         },
     })
 </script>
-
-<style scoped>
-    .graph-container {
-        height: calc(100% - 10px);
-    }
-</style>

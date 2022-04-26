@@ -50,7 +50,13 @@
                                 <div
                                     class="text-sm leading-none capitalize text-gray"
                                 >
-                                    {{ fullName(item) }}
+                                    {{
+                                        `${fullName(item)} ${
+                                            item.emailVerified === false
+                                                ? '/ Pending'
+                                                : ''
+                                        }`
+                                    }}
                                 </div>
                             </div>
                         </a-checkbox>
@@ -75,8 +81,8 @@
                         />
                     </div>
                     <div
-                        class="flex items-center ml-auto text-xs cursor-pointer text-primary"
                         v-else
+                        class="flex items-center ml-auto text-xs cursor-pointer text-primary"
                     >
                         <div
                             v-if="
@@ -104,7 +110,7 @@
                 Loading users
             </div>
         </div>
-        <div class="pl-4" v-if="totalActiveUsers">
+        <div v-if="totalActiveUsers" class="pl-4">
             <p class="text-xs text-gray-500">
                 {{ userList.length }} of
                 {{ excludeMe ? totalActiveUsers - 1 : totalActiveUsers }} users
@@ -122,11 +128,11 @@
         toRefs,
         onMounted,
     } from 'vue'
-    import { useVModels, onKeyStroke } from '@vueuse/core'
+    import { useVModels, onKeyStroke, watchOnce } from '@vueuse/core'
     import useFacetUsers from '~/composables/user/useFacetUsers'
     import Avatar from '~/components/common/avatar/avatar.vue'
     import whoami from '~/composables/user/whoami'
-    import { watchOnce } from '@vueuse/core'
+
     export default defineComponent({
         name: 'UsersFilter',
         components: {
@@ -194,6 +200,10 @@
                 default: false,
                 required: false,
             },
+            noFilterPending: {
+                type: Boolean,
+                required: false,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
@@ -207,6 +217,7 @@
                 groupId,
                 excludeMe,
                 showLoggedInUser,
+                noFilterPending,
             } = toRefs(props)
             const localValue = ref(modelValue.value)
             const allUsers = ref({}) // map of all users (userId: userRecord)
@@ -230,6 +241,7 @@
             } = useFacetUsers({
                 groupId,
                 excludeMe: excludeMe.value,
+                noFilterPending: noFilterPending.value,
             })
 
             watch(
@@ -337,7 +349,7 @@
             const totalActiveUsers = ref(0)
 
             onMounted(() => {
-                /**filterTotal is the fiterRecord value from response (we need to add filter to get only active users), it'll change everytime someone searches - so saving it in totalActiveUsers for the first time we fetch the users assuming no searchText would be present at that point and we'll get active users count. */
+                /** filterTotal is the fiterRecord value from response (we need to add filter to get only active users), it'll change everytime someone searches - so saving it in totalActiveUsers for the first time we fetch the users assuming no searchText would be present at that point and we'll get active users count. */
                 watchOnce(filterTotal, (v) => {
                     if (filterTotal.value) {
                         totalActiveUsers.value = filterTotal.value

@@ -106,6 +106,7 @@
                         /> -->
                                 <OwnersSelector
                                     v-model:modelValue="userGroupData"
+                                    :no-filter-pending="true"
                                     :show-none="false"
                                     :enable-tabs="enableTabs"
                                     select-group-key="id"
@@ -268,12 +269,21 @@
                                                     }
                                                 "
                                             >
-                                                <span class="text-primary">{{
-                                                    item.name ||
-                                                    item.username ||
-                                                    item.email ||
-                                                    '-'
-                                                }}</span>
+                                                <span class="text-primary">
+                                                    {{
+                                                        `${
+                                                            item.name ||
+                                                            item.username ||
+                                                            item.email ||
+                                                            '-'
+                                                        }${
+                                                            item.emailVerified ===
+                                                            false
+                                                                ? ' / pending'
+                                                                : ''
+                                                        }`
+                                                    }}
+                                                </span>
                                             </div>
                                             <span class="text-xs text-gray-500">
                                                 @{{ item.username }}</span

@@ -1,11 +1,11 @@
 import { computed, ref, ComputedRef, watch, Ref } from 'vue'
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 
+import group from '@common/pills/group.vue'
 import { userInterface } from '~/types/users/user.interface'
 import { Users } from '~/services/service/users'
 import useUserData from '~/composables/user/useUserData'
 import useGroupMembers from '~/composables/group/useGroupMembers'
-import group from '@common/pills/group.vue'
 
 export default function useFacetUsers(
     config: {
@@ -14,6 +14,7 @@ export default function useFacetUsers(
         immediate?: boolean
         groupId?: Ref<string>
         excludeMe?: boolean
+        noFilterPending?: boolean
     } = { immediate: true }
 ) {
     const params = ref(new URLSearchParams())
@@ -35,9 +36,11 @@ export default function useFacetUsers(
         params.value.append('columns', 'lastName')
         params.value.append('columns', 'username')
         params.value.append('columns', 'id')
+        params.value.append('columns', 'emailVerified')
     }
-
-    params.value.append('filter', '{"$and":[{"emailVerified":true}]}')
+    if(!config.noFilterPending){
+        params.value.append('filter', '{"$and":[{"emailVerified":true}]}')
+    }
 
     const { data, mutate, isLoading, error, isReady } = Users.List(params, {
         asyncOptions: {
@@ -99,13 +102,11 @@ export default function useFacetUsers(
             if (data.value.records && data.value.records?.length > 0) {
                 list.value.push(...data.value.records)
             }
-        } else {
-            if (data.value.records && data.value.records?.length > 0) {
+        } else if (data.value.records && data.value.records?.length > 0) {
                 list.value = [...data.value.records]
             } else {
                 list.value = []
             }
-        }
 
         enrichRecords()
     })
@@ -117,14 +118,14 @@ export default function useFacetUsers(
                 let res = [...list.value]
                 res = res.filter((el) => el.username !== username)
                 return res
-            } else return [...list.value]
+            } return [...list.value]
         }
         const tempList = list.value.filter((obj) => obj.username !== username)
         const myIndex = list.value.findIndex((obj) => obj.username === username)
 
         if (config?.excludeMe) {
             return [...tempList]
-        } else {
+        } 
             return [
                 {
                     firstName,
@@ -134,7 +135,7 @@ export default function useFacetUsers(
                 },
                 ...tempList,
             ]
-        }
+        
     })
 
     // const total: ComputedRef<number> = computed(() => data.value?.totalRecord)

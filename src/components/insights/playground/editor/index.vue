@@ -38,8 +38,15 @@
                 "
                 :collection="activeTabCollection"
             />
-            <VQB v-if="showVQB" :key="activeInlineTab.key" />
-            <Monaco @editorInstance="setInstance" />
+            <div class="relative h-full">
+                <VQB
+                    v-if="showVQB"
+                    :key="activeInlineTab.key"
+                    class="absolute w-full"
+                    style="z-index: 10; height: calc(100% - 5rem) !important"
+                />
+                <Monaco @editorInstance="setInstance" />
+            </div>
 
             <!-- START: EDITOR FOOTER -->
             <div
